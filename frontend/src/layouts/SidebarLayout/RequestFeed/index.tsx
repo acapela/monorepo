@@ -20,6 +20,4 @@ export const RequestFeed = observer(({ topicSlug }: Props) => {
   );
 });
 
-const UIHolder = styled.div<{}>`
-  overflow-x: hidden;
-`;
+const UIHolder = styled.div<{}>``;

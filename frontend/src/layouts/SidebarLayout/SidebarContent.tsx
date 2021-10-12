@@ -1,15 +1,16 @@
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
 import { UserMenu } from "~frontend/layouts/UserMenu";
 import { RouteLink, routes } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
+import { Shortcut } from "~ui/keyboard/Shortcut";
 import { theme } from "~ui/theme";
 
 import { RequestFeed } from "./RequestFeed";
+import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
 interface Props {
   selectedTopicSlug?: string;
@@ -17,11 +18,9 @@ interface Props {
 
 export const SidebarContent = observer(function SidebarContent({ selectedTopicSlug }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const isInSearchMode = searchTerm.trim().length > 0;
 
-  const db = useDb();
-
-  console.info(db.topic.search(searchTerm));
-  console.info(db.message.search(searchTerm));
   return (
     <UIHolder>
       <UIHeader>
@@ -40,12 +39,19 @@ export const SidebarContent = observer(function SidebarContent({ selectedTopicSl
           placeholder="Search by topic or person..."
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
+          ref={searchInputRef}
         ></UISearchPlaceholder>
-        <UISearchShortcut>⌘/</UISearchShortcut>
+        <Shortcut
+          shortcut={["Mod", "/"]}
+          callback={() => {
+            searchInputRef.current?.focus();
+          }}
+        />
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed topicSlug={selectedTopicSlug} />
+        {!isInSearchMode && <RequestFeed topicSlug={selectedTopicSlug} />}
+        {isInSearchMode && <RequestSearchResults searchTerm={searchTerm} />}
       </UIRequestFeed>
     </UIHolder>
   );
