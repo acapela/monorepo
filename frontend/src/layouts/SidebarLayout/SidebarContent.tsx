@@ -1,27 +1,22 @@
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
 import { UserMenu } from "~frontend/layouts/UserMenu";
 import { RouteLink, routes } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
+import { Shortcut } from "~ui/keyboard/Shortcut";
 import { theme } from "~ui/theme";
 
 import { RequestFeed } from "./RequestFeed";
+import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
-interface Props {
-  selectedTopicSlug?: string;
-}
-
-export const SidebarContent = observer(function SidebarContent({ selectedTopicSlug }: Props) {
+export const SidebarContent = observer(function SidebarContent() {
   const [searchTerm, setSearchTerm] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const isInSearchMode = searchTerm.trim().length > 0;
 
-  const db = useDb();
-
-  console.info(db.topic.search(searchTerm));
-  console.info(db.message.search(searchTerm));
   return (
     <UIHolder>
       <UIHeader>
@@ -40,12 +35,19 @@ export const SidebarContent = observer(function SidebarContent({ selectedTopicSl
           placeholder="Search by topic or person..."
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
+          ref={searchInputRef}
         ></UISearchPlaceholder>
-        <UISearchShortcut>⌘/</UISearchShortcut>
+        <Shortcut
+          shortcut={["Mod", "/"]}
+          callback={() => {
+            searchInputRef.current?.focus();
+          }}
+        />
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed topicSlug={selectedTopicSlug} />
+        {!isInSearchMode && <RequestFeed />}
+        {isInSearchMode && <RequestSearchResults searchTerm={searchTerm} />}
       </UIRequestFeed>
     </UIHolder>
   );
@@ -53,6 +55,9 @@ export const SidebarContent = observer(function SidebarContent({ selectedTopicSl
 
 const UIHolder = styled.div<{}>`
   width: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UIHeader = styled.div<{}>`
@@ -63,7 +68,9 @@ const UIHeader = styled.div<{}>`
   justify-content: space-between;
 `;
 
-const UIRequestFeed = styled.div<{}>``;
+const UIRequestFeed = styled.div<{}>`
+  overflow-y: auto;
+`;
 
 const UISearch = styled.div<{}>`
   border-color: rgba(0, 0, 0, 0.05);
@@ -80,6 +87,7 @@ const UISearch = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 `;
 
 const UISearchPlaceholder = styled.input<{}>`
@@ -89,5 +97,3 @@ const UISearchPlaceholder = styled.input<{}>`
   outline: none;
   background: transparent;
 `;
-
-const UISearchShortcut = styled.span<{}>``;

@@ -6,7 +6,7 @@ import { ThemeColorScheme } from ".";
 
 export const defaultTheme: ThemeColorScheme = {
   layout: {
-    background: createColor(colors.BASE_GREY_7),
+    background: createColor("hsl(220, 33%, 98%)"),
     foreground: createColor(colors.WHITE),
     softLine: createColor(colors.BASE_GREY_5),
     strongLine: createColor(colors.BASE_GREY_4),

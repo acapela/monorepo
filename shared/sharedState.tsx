@@ -45,10 +45,10 @@ export function createStoreContext<T extends object, P = {}>(
     return makeAutoObservable(rawResult);
   }
 
-  function SharedStateContextProvider(props: PropsWithChildren<P>) {
-    const initialValue = useConst(() => createStore(props));
+  function SharedStateContextProvider({ children, ...baseProps }: PropsWithChildren<P>) {
+    const initialValue = useConst(() => createStore(baseProps as P));
 
-    return <context.Provider value={initialValue}>{props.children}</context.Provider>;
+    return <context.Provider value={initialValue}>{children}</context.Provider>;
   }
 
   return [SharedStateContextProvider, useSharedStateContext] as const;
