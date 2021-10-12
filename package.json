@@ -47,7 +47,6 @@
     "richEditor": "yarn workspace ~richEditor",
     "shared": "yarn workspace ~shared",
     "e2e": "yarn workspace ~e2e",
-    "clientdb": "yarn workspace ~clientdb",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --all-databases --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev",
