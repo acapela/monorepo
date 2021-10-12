@@ -67,7 +67,8 @@ export type EntityQuery<Data, Connections> = {
  */
 export function createEntityQuery<Data, Connections>(
   // Might be plain array or any observable array. This allows creating nested queries of previously created queries
-  source: () => MaybeObservableArray<Entity<Data, Connections>>,
+  // It is getter as source value might be computed value, so we want to observe getting it (especially in nested queries)
+  getSource: () => MaybeObservableArray<Entity<Data, Connections>>,
   config: EntityQueryConfig<Data, Connections>,
   store: EntityStore<Data, Connections>
 ): EntityQuery<Data, Connections> {
@@ -93,7 +94,7 @@ export function createEntityQuery<Data, Connections>(
   // TLDR: query value is cached between renders if no items it used changed.
   const passingItems = computed(
     () => {
-      const passedItems = source().filter(cachedFilter);
+      const passedItems = getSource().filter(cachedFilter);
 
       if (cachedSort) {
         return sortBy(passedItems, cachedSort);
@@ -106,7 +107,7 @@ export function createEntityQuery<Data, Connections>(
 
   const hasItemsComputed = computed(
     () => {
-      return source().some(cachedFilter);
+      return getSource().some(cachedFilter);
     },
     { name: `${entityName}HasItems` }
   );

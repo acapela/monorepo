@@ -37,10 +37,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const end = measureTime("init pers");
   const persistanceDb = await initializePersistance(definitions, db);
-
-  end();
 
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {

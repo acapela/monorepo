@@ -24,6 +24,13 @@ interface DefineEntityConfig<Data, Connections> {
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
   customObservableAnnotations?: AnnotationsMap<Data, never>;
+  /**
+   * It is possible to define entity level rule deciding if given entity should be 'visible' via public api.
+   *
+   * This is useful for cases where we have some item locally, but we also manage permissions to see it locally.
+   *
+   * Aka 'soft permissions'.
+   */
   accessValidator?: EntityAccessValidator<Data, Connections>;
   getConnections?: EntityDefinitionGetConnections<Data, Connections>;
   search?: EntitySearchConfig<Data>;
