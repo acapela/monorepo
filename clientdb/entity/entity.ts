@@ -42,7 +42,7 @@ export function createEntity<D, C>({
   store,
   databaseUtilities,
 }: CreateEntityInput<D, C>): Entity<D, C> {
-  const { config, getConnections } = definition;
+  const { config } = definition;
   const dataWithDefaults: D = { ...config.getDefaultValues?.(databaseUtilities), ...data } as D;
 
   const rawDataKeys = typedKeys(dataWithDefaults);
@@ -65,7 +65,7 @@ export function createEntity<D, C>({
   );
 
   const connections =
-    getConnections?.(observableData, {
+    config.getConnections?.(observableData, {
       ...databaseUtilities,
     }) ?? ({} as C);
 

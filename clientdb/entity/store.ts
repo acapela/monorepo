@@ -1,4 +1,3 @@
-import { uniq } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { assert } from "~shared/assert";
@@ -6,6 +5,7 @@ import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
+import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
@@ -45,7 +45,8 @@ export type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntitySt
  * Store is inner 'registry' of all items of given entity. It is like 'raw' database with no extra logic (like syncing)
  */
 export function createEntityStore<Data, Connections>(
-  definition: EntityDefinition<Data, Connections>
+  definition: EntityDefinition<Data, Connections>,
+  utilities: DatabaseUtilities
 ): EntityStore<Data, Connections> {
   type StoreEntity = Entity<Data, Connections>;
   const { config } = definition;
@@ -63,13 +64,18 @@ export function createEntityStore<Data, Connections>(
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.
   const existingItems = computed(() => {
-    const { getIsDeleted } = definition.config;
-    if (!getIsDeleted) {
-      return items;
-    }
-
-    return items.filter((item) => !getIsDeleted(item));
+    return items.filter(getIsEntityAccessable);
   });
+
+  function getIsEntityAccessable(entity: Entity<Data, Connections>) {
+    const { getIsDeleted, accessValidator } = definition.config;
+
+    if (getIsDeleted && !getIsDeleted(entity)) return false;
+
+    if (accessValidator && !accessValidator(entity, utilities)) return false;
+
+    return true;
+  }
 
   function getExistingItemById(id: string) {
     const item = itemsMap[id];
@@ -78,7 +84,7 @@ export function createEntityStore<Data, Connections>(
       return null;
     }
 
-    if (definition.config.getIsDeleted?.(item)) {
+    if (!getIsEntityAccessable(item)) {
       return null;
     }
 
@@ -107,16 +113,36 @@ export function createEntityStore<Data, Connections>(
     },
     simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[] {
       return computed(() => {
-        const computedResults = typedKeys(simpleQuery).map((requiredKey) => {
+        let passingResults: Entity<Data, Connections>[] | null = null;
+
+        for (const requiredKey of typedKeys(simpleQuery)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const requiredValue = simpleQuery[requiredKey]!;
 
           const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
 
-          return index.find(requiredValue);
-        });
+          const keyResults = index.find(requiredValue);
 
-        return uniq(computedResults.flat());
+          // Nothing passed previous results. We can instantly return as there is no point to 'narrow down' empty result.
+          if (!keyResults.length) {
+            return [];
+          }
+
+          if (passingResults === null) {
+            passingResults = keyResults;
+            continue;
+          }
+
+          if (!passingResults.length) {
+            return passingResults;
+          }
+
+          passingResults = passingResults.filter((previouslyPassedResult) =>
+            keyResults.includes(previouslyPassedResult)
+          );
+        }
+
+        return passingResults ?? [];
       }).get();
     },
     findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
