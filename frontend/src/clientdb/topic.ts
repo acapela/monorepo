@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import gql from "graphql-tag";
 import { maxBy } from "lodash";
 
@@ -135,7 +136,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
     };
   })
-  .addAccessValidation((topic, { getContextValue }) => {
+  .addAccessValidation((topic) => {
     return topic.isCurrentUserParticipating;
   });
 
