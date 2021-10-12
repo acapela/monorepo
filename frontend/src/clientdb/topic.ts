@@ -115,8 +115,8 @@ export const topicEntity = defineEntity<TopicFragment>({
         return !!topic.closed_at;
       },
       get isNew() {
+        // TODO: Implement tracking if topic is new for current user.
         return false;
-        return !!topic.archived_at;
       },
       get lastActivityDate() {
         if (!messages.hasItems) {
