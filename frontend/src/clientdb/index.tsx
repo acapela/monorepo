@@ -94,6 +94,10 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     };
   }, [userId, teamId, apolloClient]);
 
+  if (isDev() && db) {
+    Reflect.set(window, "db", db);
+  }
+
   return (
     <reactContext.Provider value={db}>
       {canRender && children}
