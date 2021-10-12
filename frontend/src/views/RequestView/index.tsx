@@ -1,7 +1,6 @@
 import { autorun } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -40,7 +39,9 @@ export const RequestView = observer(({ topicSlug }: Props) => {
 
   useUpdateRouterIfSlugChanges(topic);
 
-  return <UIHolder>{topic && <TopicWithMessages topic={topic} />}</UIHolder>;
-});
+  if (!topic) {
+    return null;
+  }
 
-const UIHolder = styled.div<{}>``;
+  return <TopicWithMessages topic={topic} />;
+});

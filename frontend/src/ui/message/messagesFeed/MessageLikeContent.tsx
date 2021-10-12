@@ -44,7 +44,7 @@ export const MessageLikeContent = styledObserver<Props>(
 const UIFlyingTools = styled(motion.div)<{}>`
   position: absolute;
   /* Doesn't block text */
-  top: -16px;
+  top: -12px;
   right: 0;
 `;
 
@@ -64,6 +64,7 @@ const UIContentContainer = styled.div<{}>`
 const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
+  padding: 0 20px;
 
   ${theme.borderRadius.item}
   ${theme.transitions.hover()}

@@ -97,9 +97,8 @@ export function createEntityStore<Data, Connections>(
       runInAction(() => {
         items.push(entity);
         itemsMap[id] = entity;
+        events.emit("itemAdded", entity, source);
       });
-
-      events.emit("itemAdded", entity, source);
 
       return entity;
     },
