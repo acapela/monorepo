@@ -117,36 +117,35 @@ export function createEntity<D, C>({
       return pick(rawObject, rawDataKeys);
     },
     update(input, source: EntityChangeSource = "user") {
-      let updatedFieldsCount = 0;
-      const dataNow = entity.getData();
+      const changedKeys = typedKeys(input).filter((keyToUpdate) => {
+        const value = input[keyToUpdate];
+        if (value === undefined) return false;
+
+        const existingValue = entity[keyToUpdate];
+
+        return value !== existingValue;
+      });
+
+      // No changes will be made, return early
+      if (!changedKeys.length) return false;
+
+      const dataBeforeUpdate = entity.getData();
+
+      store.events.emit("itemWillUpdate", entity, input, source);
+
       runInAction(() => {
-        typedKeys(input).forEach((keyToUpdate) => {
+        changedKeys.forEach((keyToUpdate) => {
           const value = input[keyToUpdate];
-
-          if (value === undefined) return;
-
-          const existingValue = entity[keyToUpdate];
-
-          if (existingValue === value) {
-            return;
-          }
-
-          updatedFieldsCount++;
-
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           (entity as D)[keyToUpdate] = value!;
         });
 
-        if (updatedFieldsCount) {
-          touchUpdatedAt();
-        }
+        touchUpdatedAt();
       });
 
-      if (updatedFieldsCount) {
-        store.events.emit("itemUpdated", entity, source, dataNow);
-      }
+      store.events.emit("itemUpdated", entity, dataBeforeUpdate, source);
 
-      return updatedFieldsCount > 0;
+      return true;
     },
   };
 

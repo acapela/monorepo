@@ -4,6 +4,7 @@ import { getHash } from "~shared/hash";
 
 import { DatabaseUtilities } from "./entitiesConnections";
 import { SortResult } from "./query";
+import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
 
 interface DefineEntityConfig<Data> {
@@ -17,6 +18,7 @@ interface DefineEntityConfig<Data> {
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
   customObservableAnnotations?: AnnotationsMap<Data, never>;
+  search?: EntitySearchConfig<Data>;
 }
 
 export interface EntityDefinition<Data, Connections> {

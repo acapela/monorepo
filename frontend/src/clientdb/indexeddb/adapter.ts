@@ -42,7 +42,8 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
               return tr.get(key);
             },
             async updateItem(key, input) {
-              const existingItem = await tableAdapter.fetchItem(key);
+              const tr = await getTransaction();
+              const existingItem: Data | null = await tr.get(key);
 
               if (existingItem === null) {
                 return false;
@@ -50,7 +51,9 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
 
               const updateData: Data = { ...existingItem, ...input };
 
-              return tableAdapter.saveItem(key, updateData);
+              await tr.put(updateData);
+
+              return true;
             },
 
             async clearTable() {

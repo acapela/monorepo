@@ -3,6 +3,7 @@ import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 
 import { attachmentEntity } from "./attachment";
 import { messageReactionEntity } from "./messageReaction";
@@ -49,6 +50,15 @@ export const messageEntity = defineEntity<MessageFragment>({
     // Content might be very nested and we dont want to observe any single change in it. We always change content as a whole.
     // We never do message.content.doc.foo.bar = 2, we always do message.content = newContent, so no nested observation needed.
     content: observable.ref,
+  },
+  search: {
+    fields: {
+      content: {
+        extract(content) {
+          return convertMessageContentToPlainText(content);
+        },
+      },
+    },
   },
 }).addConnections((message, { getEntity, getContextValue }) => {
   return {

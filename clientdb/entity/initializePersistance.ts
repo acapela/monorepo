@@ -94,7 +94,6 @@ export async function initializePersistance(
 ): Promise<PersistanceDB> {
   const databaseName = getStorageDatabaseName(nameSuffix);
   const allDatabasesInfoSystemTable = await openLocalDatabasesInfoTable(adapter);
-
   const existingDatabaseInfo = await allDatabasesInfoSystemTable.fetchItem(databaseName);
 
   const entityTablesInfo = getTablesConfigFromDefinitions(definitions);
@@ -121,13 +120,11 @@ export async function initializePersistance(
 
   // We have persistance table already. Let's see if schema it has is matching current schema
 
-  // Let's also mark it as being used.
-  await allDatabasesInfoSystemTable.updateItem(existingDatabaseInfo.name, { lastUsedAt: new Date() });
-
   const previousHash = existingDatabaseInfo.schemaHash;
 
   // Schema did change. Let's upgrade version forcing data wipe-out.
   if (currentSchemaHash !== previousHash) {
+    console.info(`Local db schema changed - creating new version`);
     const newVersion = existingDatabaseInfo.version + 1;
     const persistanceDB = await adapter.openDB({ name: databaseName, version: newVersion, tables: entityTablesInfo });
     // Let's register version change.
@@ -135,11 +132,14 @@ export async function initializePersistance(
       version: newVersion,
       schemaHash: currentSchemaHash,
       updatedAt: now,
+      lastUsedAt: now,
     });
     return persistanceDB;
   }
 
   // We have persistance database already, and schema did not change. There is no need to make any changes to it
+  // Let's only  mark it as being used. (No need to await it)
+  allDatabasesInfoSystemTable.updateItem(existingDatabaseInfo.name, { lastUsedAt: new Date() });
 
   // Let's open DB using current version - it means no update migration will be performed and data will be untouched.
   const persistanceDB = await adapter.openDB({
@@ -148,5 +148,6 @@ export async function initializePersistance(
     version: existingDatabaseInfo.version,
     tables: entityTablesInfo,
   });
+
   return persistanceDB;
 }
