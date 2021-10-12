@@ -44,7 +44,7 @@ export const MessageLikeContent = styledObserver<Props>(
 const UIFlyingTools = styled(motion.div)<{}>`
   position: absolute;
   /* Doesn't block text */
-  top: 0;
+  top: -12px;
   right: 0;
 `;
 
