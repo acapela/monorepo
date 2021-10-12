@@ -12,10 +12,14 @@ import { RequestParticipants } from "./RequestParticipants";
 
 interface Props {
   topic: TopicEntity;
-  isHighlighted: boolean;
 }
 
-export const RequestItem = observer(function RequestItem({ topic, isHighlighted = false }: Props) {
+export const RequestItem = observer(function RequestItem({ topic }: Props) {
+  const topicRouteParams = routes.topic.useParams();
+
+  // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
+  const isHighlighted = topicRouteParams?.route.topicSlug === topic.slug;
+
   return (
     <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
       <UIFeedItem isHighlighted={isHighlighted}>
