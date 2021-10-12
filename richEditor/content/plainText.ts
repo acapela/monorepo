@@ -1,5 +1,3 @@
-import { measureTime } from "~shared/dev";
-
 import { RichEditorNode } from "./types";
 
 /**
@@ -37,9 +35,7 @@ export function recursiveConvertMessageContentToPlainText(
 }
 
 export function convertMessageContentToPlainText(content: RichEditorNode): string {
-  const end = measureTime("mess");
   const result = recursiveConvertMessageContentToPlainText(content, true, []) as string;
-  end();
 
   return result;
 }

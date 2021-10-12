@@ -19,7 +19,7 @@ function getStorageDatabaseName(suffix?: string) {
   return `${CACHE_DB_NAME}-${suffix}`;
 }
 
-export interface PersistedCache {
+export interface PersistedKeyValueCache {
   get<V>(key: string): Promise<V | null>;
   set<V>(key: string, value: V): Promise<boolean>;
   getOrCreate<V>(key: string, getter: () => V): Promise<V>;
@@ -33,10 +33,10 @@ interface CacheItem<V> {
 /**
  * Will setup persistance storage database, and if needed wipe out existing data on schema change.
  */
-export async function initializePersistedCache({
+export async function initializePersistedKeyValueCache({
   adapter,
   nameSuffix,
-}: PersistanceAdapterInfo): Promise<PersistedCache> {
+}: PersistanceAdapterInfo): Promise<PersistedKeyValueCache> {
   const databaseName = getStorageDatabaseName(nameSuffix);
   const cacheDatabase = await adapter.openDB({
     name: databaseName,

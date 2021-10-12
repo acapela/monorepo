@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 import { observable } from "mobx";
 
-import { convertMessageContentToPlainText } from "~frontend/../../richEditor/content/plainText";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 
 import { attachmentEntity } from "./attachment";
 import { messageReactionEntity } from "./messageReaction";

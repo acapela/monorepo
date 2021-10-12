@@ -37,7 +37,7 @@ export interface EntitySearch<Data, Connections> {
   destroy(): void;
 }
 
-const DEV_MEASURE = true;
+const DEV_SHOULD_MEASURE_PERFORMANCE = true;
 
 export function createEntitySearch<Data, Connections>(
   { fields }: EntitySearchConfig<Data>,
@@ -79,7 +79,7 @@ export function createEntitySearch<Data, Connections>(
   });
 
   function populateIndex() {
-    const end = measureTime(`Indexing existing ${entityName} items`, DEV_MEASURE);
+    const end = measureTime(`Indexing existing ${entityName} items`, DEV_SHOULD_MEASURE_PERFORMANCE);
     runUntracked(() => {
       store.items.forEach((entity) => {
         index.add(entity.getKey(), prepareEntitySearchTerm(entity));
@@ -98,7 +98,7 @@ export function createEntitySearch<Data, Connections>(
     status.updatesCount++;
   }
 
-  const initializeUpdatesIfNeeded = memoize(() => {
+  const listenToUpdatesIfNeeded = memoize(() => {
     const cancelAdd = store.events.on("itemAdded", (entity) => {
       index.add(entity.getKey(), prepareEntitySearchTerm(entity));
       trackUpdate();
@@ -124,19 +124,20 @@ export function createEntitySearch<Data, Connections>(
   const initializeIfNeeded = memoize(() => {
     populateIndex();
 
-    return initializeUpdatesIfNeeded();
+    return listenToUpdatesIfNeeded();
   });
 
   function search(input: string) {
     // Return empty list of empty input. No need to make it observable.
     if (!input.trim().length) return [];
 
+    // Index is built on first search (aka. it is lazy)
     initializeIfNeeded();
 
     return computed(() => {
       // We simply read this value to let mobx know to re-compute if there is change in the index
       status.updatesCount;
-      const end = measureTime(`Search ${entityName}`, DEV_MEASURE);
+      const end = measureTime(`Search ${entityName}`, DEV_SHOULD_MEASURE_PERFORMANCE);
       const foundIds = index.search(input, { limit: 20, suggest: true });
 
       end();

@@ -132,7 +132,7 @@ export async function initializePersistance(
       version: newVersion,
       schemaHash: currentSchemaHash,
       updatedAt: now,
-      lastUsedAt: new Date(),
+      lastUsedAt: now,
     });
     return persistanceDB;
   }

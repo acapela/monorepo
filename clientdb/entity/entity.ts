@@ -129,7 +129,7 @@ export function createEntity<D, C>({
       // No changes will be made, return early
       if (!changedKeys.length) return false;
 
-      const dataNow = entity.getData();
+      const dataBeforeUpdate = entity.getData();
 
       store.events.emit("itemWillUpdate", entity, input, source);
 
@@ -143,7 +143,7 @@ export function createEntity<D, C>({
         touchUpdatedAt();
       });
 
-      store.events.emit("itemUpdated", entity, dataNow, source);
+      store.events.emit("itemUpdated", entity, dataBeforeUpdate, source);
 
       return true;
     },
