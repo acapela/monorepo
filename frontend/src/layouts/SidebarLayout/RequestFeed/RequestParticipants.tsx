@@ -59,7 +59,6 @@ const avatarLayoutByCount: Record<number, AvatarsLayoutDescription> = {
 };
 
 const MAX_PARTICIPANTS_TO_SHOW = 4;
-const PARTICIPANTS_BOX_SIZE = 30;
 
 function getParticipantsToShow(
   participants: UserEntity[]
@@ -110,6 +109,8 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
     </UIHolder>
   );
 });
+
+const PARTICIPANTS_BOX_SIZE = 30;
 
 const UIHolder = styled.div`
   font-size: ${PARTICIPANTS_BOX_SIZE}px;

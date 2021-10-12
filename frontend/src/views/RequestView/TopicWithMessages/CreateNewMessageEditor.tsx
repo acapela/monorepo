@@ -144,7 +144,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
         onSubmit={async () => {
           if (validator(content)) {
             setShouldValidateOnChange(true);
-            // return;
+            return;
           }
 
           attachmentsList.clear();

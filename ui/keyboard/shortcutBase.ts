@@ -31,9 +31,7 @@ export type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
  * ^ if we just do .join('+'), the two above would return different string, while they mean exactly the same shortcut.
  */
 function getShortcutDescription(keys: ShortcutKeys) {
-  return sortBy(keys, (key) => key)
-    .join("+")
-    .toLowerCase();
+  return sortBy(keys).join("+").toLowerCase();
 }
 
 export function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys {

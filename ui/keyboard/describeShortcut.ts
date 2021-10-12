@@ -7,6 +7,11 @@ type KeyboardPlatform = "mac" | "windows";
 
 type KeyNiceVersion = string | Partial<Record<KeyboardPlatform, string>>;
 
+/**
+ * Map describing 'UI' version of shortcut keys for proper platform.
+ *
+ * It is useful with showing UI hints for shortcuts.
+ */
 const shortcutKeyNiceVersionMap: Partial<Record<Key, KeyNiceVersion>> = {
   Mod: { mac: "⌘", windows: "CTRL" },
   Meta: { mac: "⌘", windows: "CTRL" },
