@@ -7,22 +7,18 @@ import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { assert } from "~shared/assert";
-import { MentionType } from "~shared/types/mention";
 import { theme } from "~ui/theme";
 
 interface Props {
   task: TaskEntity;
 }
 
-const taskTypeToLabel = (type: MentionType, isDone: boolean) => {
-  switch (type) {
-    case "request-read":
-      return isDone ? "Confirmed" : "Confirmation";
-
-    case "request-response":
-      return isDone ? "Feedbacked" : "Feedback";
-  }
-};
+const TASK_TYPE_LABELS = new Map(
+  Object.entries({
+    "request-read": "Confirmation",
+    "request-response": "Feedback",
+  })
+);
 
 export const MessageTask = observer(({ task }: Props) => {
   const teamInvitation = task.teamInvitation;
@@ -38,7 +34,7 @@ export const MessageTask = observer(({ task }: Props) => {
         <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
         <UIStatusLabel isDone={isDone}>
           {isDone && "✓ "}
-          {taskTypeToLabel(task.type as MentionType, isDone)}
+          {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
         </UIStatusLabel>
       </UITextInfo>
     </UISingleTask>
@@ -62,5 +58,5 @@ const UIUserNameLabel = styled.span<{}>`
 
 const UIStatusLabel = styled.span<{ isDone: boolean }>`
   ${theme.font.withExceptionalSize("11px", "small").withExceptionalLineHeight("1.2", "new design").build()}
-  color: ${(props) => (props.isDone ? "#ff57e3" : "rgba(0, 0, 0, 0.4)")};
+  color: ${(props) => (props.isDone ? "#ff57e3" : "hsla(0, 0%, 0%, 0.4)")};
 `;
