@@ -70,7 +70,7 @@ export const Button = styled(
         {...finalProps}
       >
         {iconPosition === "start" && iconNode}
-        <UIContentHolder>{children}</UIContentHolder>
+        {children && <UIContentHolder>{children}</UIContentHolder>}
         {iconPosition === "end" && iconNode}
       </UIButton>
     );

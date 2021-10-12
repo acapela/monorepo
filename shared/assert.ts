@@ -7,7 +7,7 @@ export class AssertError extends Error {
   }
 }
 
-type MessageOrError = string | Error;
+export type MessageOrError = string | Error;
 
 function getErrorFromMessageOrError(messageOrError: MessageOrError): Error {
   if (typeof messageOrError === "string") {

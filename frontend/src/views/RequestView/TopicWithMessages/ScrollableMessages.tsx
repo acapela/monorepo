@@ -31,9 +31,7 @@ export const ScrollableMessages = styledObserver<Props>(
 )``;
 
 const UIHolder = styled.div<{}>`
-  overflow-y: scroll;
-  /* Avoid scrollbar handle to fly over messages */
-  padding-right: 20px;
+  overflow-y: auto;
 `;
 
 const UIInner = styled.div<{}>`

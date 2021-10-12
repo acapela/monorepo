@@ -5,6 +5,7 @@ import { getHash } from "~shared/hash";
 
 import { DatabaseUtilities } from "./entitiesConnections";
 import { SortResult } from "./query";
+import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
 
 type EntityAccessValidator<Data, Connections> = (
@@ -25,6 +26,7 @@ interface DefineEntityConfig<Data, Connections> {
   customObservableAnnotations?: AnnotationsMap<Data, never>;
   accessValidator?: EntityAccessValidator<Data, Connections>;
   getConnections?: EntityDefinitionGetConnections<Data, Connections>;
+  search?: EntitySearchConfig<Data>;
 }
 
 export interface EntityDefinition<Data, Connections> {

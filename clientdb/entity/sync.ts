@@ -87,7 +87,7 @@ export function createEntitySyncManager<Data, Connections>(
       }
     });
 
-    const cancelUpdates = store.events.on("itemUpdated", async (entity, source, dataBefore) => {
+    const cancelUpdates = store.events.on("itemUpdated", async (entity, dataBefore, source) => {
       if (source !== "user") return;
 
       try {

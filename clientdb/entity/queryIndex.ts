@@ -86,7 +86,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
     });
   });
 
-  const cancelUpdated = store.events.on("itemUpdated", (entity, source, dataBefore) => {
+  const cancelUpdated = store.events.on("itemUpdated", (entity, dataBefore) => {
     const indexValueBefore = getCurrentIndexValue(dataBefore);
     const indexValueNow = getCurrentIndexValue(entity);
 

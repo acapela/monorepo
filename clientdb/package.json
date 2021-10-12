@@ -2,11 +2,15 @@
   "name": "~clientdb",
   "version": "0.1.0",
   "license": "UNLICENSED",
+  "dependencies": {
+    "flexsearch": "^0.7.21"
+  },
+  "devDependencies": {
+    "@types/flexsearch": "^0.7.1",
+    "babel-jest": "^27.2.5"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch"
-  },
-  "devDependencies": {
-    "babel-jest": "^27.2.5"
   }
 }
