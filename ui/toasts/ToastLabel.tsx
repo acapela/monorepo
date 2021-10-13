@@ -52,7 +52,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
         </UIIconHolder>
       )}
       <UITitle>{title}</UITitle>
-      <CircleCloseIconButton size="small" onClick={() => onCloseRequest(toast)} />
+      <CircleCloseIconButton onClick={() => onCloseRequest(toast)} />
       {isDetailed && (
         <>
           <UIPlaceholder />

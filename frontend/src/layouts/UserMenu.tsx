@@ -53,7 +53,7 @@ export const UserMenu = observer(function UserMenu() {
           },
         ]}
       >
-        <CircleIconButton kind="transparent" icon={<IconMoreHoriz />} />
+        <CircleIconButton icon={<IconMoreHoriz />} />
       </PopoverMenuTrigger>
     </UIHolder>
   );

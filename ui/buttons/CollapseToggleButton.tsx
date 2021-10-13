@@ -17,7 +17,7 @@ export const CollapseToggleButton = styled(function CollapseToggleButton({ isOpe
       className={className}
       icon={<IconChevronDown />}
       onClick={() => onToggle(!isOpen)}
-      kind="tertiary"
+      kind="secondary"
     />
   );
 })``;

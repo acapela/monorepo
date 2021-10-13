@@ -40,7 +40,7 @@ export const ReplyingToMessage = observer(({ onRemove, message }: Props) => {
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>
-          <CircleCloseIconButton size="small" onClick={onRemove} />
+          <CircleCloseIconButton onClick={onRemove} />
         </CornerButtonWrapper>
       )}
     </UIHolder>

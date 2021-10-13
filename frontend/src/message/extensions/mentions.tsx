@@ -189,7 +189,7 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         @{db.user.findById(data.userId)?.name ?? "???"}
         {isEditable && (
           <UIMentionPopoverOpenIndicator>
-            <UIMentionIcon icon={<IconChevronUp />} size={"inherit"} />
+            <UIMentionIcon icon={<IconChevronUp />} />
           </UIMentionPopoverOpenIndicator>
         )}
       </UIMention>
