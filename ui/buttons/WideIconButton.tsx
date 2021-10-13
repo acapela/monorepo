@@ -35,7 +35,7 @@ export const UIButton = styled.button<{ kind: ButtonKind }>`
 
   cursor: pointer;
 
-  ${theme.borderRadius.tag}
+  ${theme.radius.tag}
   ${theme.transitions.hover()}
 
   ${({ kind }) => buttonKindSpecificStyle[kind]}

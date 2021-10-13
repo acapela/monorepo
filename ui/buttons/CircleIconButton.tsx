@@ -65,15 +65,15 @@ const buttonSizeSpecificStyle: Record<ButtonSize, StylesPart> = {
 
 const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css`
-    ${theme.colors.actions.primary.all()}
+    ${theme.colors.action.primary.interactive("backgroundColor")}
     border: 1px solid transparent;
   `,
   secondary: css`
-    ${theme.colors.actions.secondary.all()}
+    ${theme.colors.action.secondary.interactive("backgroundColor")}
     border: 1px solid transparent;
   `,
   tertiary: css`
-    ${theme.colors.actions.tertiary.all()}
+    ${theme.colors.action.secondary.interactive("backgroundColor")}
     border: 1px solid transparent;
   `,
   transparent: css`
@@ -81,7 +81,7 @@ const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
 
     &:hover,
     &:active {
-      ${theme.colors.actions.secondary.hover()}
+      ${theme.colors.action.secondary.hover()}
     }
   `,
 };
@@ -103,7 +103,7 @@ export const UIButton = styled.button<{
   ${({ kind }) => buttonKindSpecificStyle[kind]}
   ${({ size }) => buttonSizeSpecificStyle[size]};
 
-  ${theme.borderRadius.circle};
+  ${theme.radius.circle};
   ${theme.transitions.hover()}
 
   svg {

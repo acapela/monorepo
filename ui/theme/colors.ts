@@ -21,6 +21,8 @@ const lightGray = color("hsl(220, 33%, 98%)", {
 });
 
 export const colors = {
+  primary,
+  text: black,
   action: {
     // Used for buttons
     primary,
@@ -47,8 +49,13 @@ export const colors = {
   },
   status: {
     // TODO: Adjust
-    error: primary,
+    danger: primary,
     warning: primary,
     success: primary,
+  },
+  tags: {
+    primary,
+    secondary: primary,
+    tertiary: primary,
   },
 };

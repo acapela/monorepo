@@ -2,7 +2,7 @@ import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { TextBody12 } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 const now = new Date();
 const firstDay = startOfWeek(now, { weekStartsOn: 1 });
@@ -14,7 +14,7 @@ export function WeekDaysNames() {
   return (
     <UIDays>
       {days.map((dayDate) => (
-        <UILabel tertiary semibold data-tooltip={format(dayDate, "EEEE")} key={dayDate.getTime()}>
+        <UILabel data-tooltip={format(dayDate, "EEEE")} key={dayDate.getTime()}>
           {format(dayDate, "EEEEEE")}
         </UILabel>
       ))}
@@ -30,8 +30,7 @@ const UIDays = styled.div<{}>`
   margin-bottom: 4%;
 `;
 
-const UILabel = styled(TextBody12)<{}>`
-  font-weight: 450;
-  text-transform: uppercase;
+const UILabel = styled.div<{}>`
+  ${theme.typo.functional.hint.semibold.upper.secondary};
   user-select: none;
 `;

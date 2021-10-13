@@ -1,18 +1,20 @@
 import { css } from "styled-components";
 
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 export const baseInputStyles = css`
   display: flex;
   flex-direction: row;
   align-items: center;
 
+  /* TODO PR */
   padding: 16px;
   width: 100%;
 
+  /* TODO PR */
   border: 1px solid hsla(0, 0%, 75%, 0.25);
   box-sizing: border-box;
-  ${borderRadius.input}
+  ${theme.radius.secondaryItem}
 
   outline: none;
 `;

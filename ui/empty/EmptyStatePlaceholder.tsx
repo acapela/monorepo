@@ -38,19 +38,17 @@ const UIHolder = styled.div<{ noSpacing: boolean }>`
 
     return css`
       padding: 16px;
-      background-color: ${theme.colors.layout.background()};
-      border: 1px solid ${theme.colors.layout.softLine()};
-      ${theme.borderRadius.card}
+      ${theme.colors.layout.background.withBorder.asBg};
+      ${theme.radius.primaryItem}
     `;
   }}
 `;
 
 const UITitle = styled.div<{}>`
-  ${theme.font.h3.build}
-  opacity: 0.8;
+  ${theme.typo.secondaryTitle}
 `;
 
 const UIBody = styled.div<{}>`
-  ${theme.font.body.spezia.build}
+  ${theme.font.spezia}
   opacity: 0.8;
 `;

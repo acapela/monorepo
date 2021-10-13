@@ -52,10 +52,10 @@ const UITextInfo = styled.div<{}>`
 `;
 
 const UIUserNameLabel = styled.span<{}>`
-  ${theme.font.semibold.build()}
+  ${theme.typo.content.semibold}
 `;
 
 const UIStatusLabel = styled.span<{ isDone: boolean }>`
-  ${theme.font.withExceptionalSize("11px", "small").withExceptionalLineHeight("1.2", "new design").build()}
+  ${theme.typo.label};
   color: ${(props) => (props.isDone ? "#ff57e3" : "hsla(0, 0%, 0%, 0.4)")};
 `;

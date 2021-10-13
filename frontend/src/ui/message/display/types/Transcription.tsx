@@ -57,7 +57,7 @@ const UIWord = styled.span<{ isActive: boolean }>`
   padding: 2px 4px;
   border: 1px solid transparent;
 
-  ${theme.borderRadius.label}
+  ${theme.radius.label}
 
   &:hover {
     ${theme.colors.actions.tertiary.hover()}

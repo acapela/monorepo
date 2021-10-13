@@ -5,13 +5,13 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { runUntracked } from "~frontend/../../shared/mobxUtils";
+import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { TextH3 } from "~ui/typo";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
@@ -101,9 +101,9 @@ const UIHolder = styled.div`
   flex-direction: column;
 `;
 
-const UITitle = styled(TextH3)`
+const UITitle = styled.h3`
+  ${theme.typo.pageTitle};
   padding: 20px;
-  font-weight: 700;
 `;
 
 const UIMessageComposer = styled.div`

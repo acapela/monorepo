@@ -49,7 +49,7 @@ const UIInviteNewMembersSection = styled.div<{}>`
 `;
 
 const UIInviteNewMembersTitle = styled.h1<{}>`
-  ${theme.font.h2.build()}
+  ${theme.typo.pageTitle}
 `;
 
 const UIDropFileHolder = styled(DropFileContext)<{}>`

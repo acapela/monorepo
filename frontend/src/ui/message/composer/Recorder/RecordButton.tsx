@@ -20,8 +20,8 @@ export const UIButton = styled.button<{}>`
   width: 1.75em;
   height: 1.75em;
 
-  ${theme.borderRadius.circle}
-  ${theme.colors.actions.tertiary.all()}
+  ${theme.radius.circle}
+  ${theme.colors.action.secondary.interactive("backgroundColor")}
 
   cursor: pointer;
 `;

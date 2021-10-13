@@ -1,7 +1,9 @@
 import { font } from "./utils/font";
 
-const readable = font().inter.readingLineHeight;
-const header = font().inter.headerLineHeight;
+const inter = font().inter;
+
+const readable = inter.inter.readingLineHeight;
+const header = inter.inter.headerLineHeight;
 
 const subtitle = readable.size(11).secondary;
 const content = readable.size(14);
@@ -11,14 +13,15 @@ const textTitle = content.bold;
 export const typo = {
   content: readable.size(14),
   pageTitle: header.size(24).bold,
-  textTitle,
+  secondaryTitle: header.size(18).bold,
   input: {
-    placeholder: font().secondary,
+    placeholder: inter.secondary,
   },
   action: {
     // Used for all sort of buttons
     regular: readable.bold.size(13),
   },
+  label: subtitle,
   item: {
     // Used for message title, topic list title, options section title etc
     title: textTitle,

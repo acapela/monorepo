@@ -2,8 +2,8 @@ import React, { ReactNode, RefObject } from "react";
 import styled from "styled-components";
 
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { borderRadius, colors, fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { theme } from "~ui/theme";
 
 import { Popover, PopoverPlacement } from "./Popover";
 
@@ -23,12 +23,11 @@ export const TooltipLabel = styled<TooltipLabelProps>(({ anchorRef, label, isDis
 })``;
 
 const UITooltip = styled(PresenceAnimator)<{}>`
-  font-size: ${fontSize.label};
+  ${theme.typo.functional.tooltip};
   font-weight: bold;
-  background-color: ${colors.tooltip.background};
-  color: ${colors.tooltip.color};
+  ${theme.colors.panels.tooltip.asBgWithReadableText};
   padding: 0.5rem 0.75rem;
-  ${borderRadius.item};
+  ${theme.radius.secondaryItem};
   pointer-events: none;
   line-height: 1.5em;
   font-size: 0.875rem;

@@ -7,7 +7,6 @@ import { createLocalStorageValueManager } from "~shared/localStorage";
 import { EndFpsMeasurement, startMeasuringFps } from "~shared/performance";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
-import { MODAL_BACKGROUND_COLOR } from "~ui/theme/colors/base";
 
 interface Props {
   children: ReactNode;
@@ -36,16 +35,17 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
       return {};
     }
 
-    const onlyBackgroundColorAnimation: PresenceStyles = {
-      backgroundColor: [setColorOpacity(MODAL_BACKGROUND_COLOR, 0), setColorOpacity(MODAL_BACKGROUND_COLOR, 0.7)],
-    };
+    // TODO PR
+    // const onlyBackgroundColorAnimation: PresenceStyles = {
+    //   backgroundColor: [setColorOpacity(MODAL_BACKGROUND_COLOR, 0), setColorOpacity(MODAL_BACKGROUND_COLOR, 0.7)],
+    // };
 
-    if (shouldUseBlurAnimation === false) {
-      return onlyBackgroundColorAnimation;
-    }
+    // if (shouldUseBlurAnimation === false) {
+    //   return onlyBackgroundColorAnimation;
+    // }
 
     return {
-      ...onlyBackgroundColorAnimation,
+      // ...onlyBackgroundColorAnimation,
       backdropFilter: ["blur(0px)", `blur(${BACKGROUND_BLUR_SIZE_PX}px)`],
     };
   }

@@ -26,8 +26,10 @@ const UIHolder = styled.div<{}>`
   gap: 8px;
 `;
 
+/* ${theme.font.permanentMarker.build()} */
 const UICreateATopicLabel = styled.div<{}>`
-  ${theme.font.permanentMarker.build()}
+  /* TODO PR */
+
   padding-right: 46px;
 
   /* <Framer css> */

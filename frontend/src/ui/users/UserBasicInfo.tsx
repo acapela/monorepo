@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
 import React from "react";
+import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { UserEntity } from "~frontend/clientdb/user";
-import { TextBody14, TextMeta10 } from "~ui/typo";
 
 import { Avatar } from "./Avatar";
 import { UserBasicInfoContainer } from "./UserBasicInfoContainer";
@@ -13,8 +14,16 @@ export const UserBasicInfo = observer(({ user }: Props) => (
   <UserBasicInfoContainer>
     <Avatar url={user.avatar_url} />
     <div>
-      <TextBody14 semibold>{user.name}</TextBody14>
-      <TextMeta10 secondary>{user.email}</TextMeta10>
+      <UIUserName>{user.name}</UIUserName>
+      <UIEmail>{user.email}</UIEmail>
     </div>
   </UserBasicInfoContainer>
 ));
+
+const UIUserName = styled.div`
+  ${theme.typo.item.title};
+`;
+
+const UIEmail = styled.div`
+  ${theme.typo.item.subtitle};
+`;

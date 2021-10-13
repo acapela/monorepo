@@ -57,10 +57,12 @@ export function font(parentStyles: StylesPart[] = []): Font {
   }
 
   const self: Font = createThemeTarget<FontVariants>(
-    () =>
-      css`
+    () => {
+      console.log({ parentStyles });
+      return css`
         ${parentStyles}
-      `,
+      `;
+    },
     {
       get semibold() {
         return withStyles(css`

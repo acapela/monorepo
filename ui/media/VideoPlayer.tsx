@@ -81,7 +81,7 @@ const UIVideoHolder = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
-  ${theme.borderRadius.card};
+  ${theme.radius.card};
 `;
 
 const UIControlsHolder = styled(PopPresenceAnimator)`

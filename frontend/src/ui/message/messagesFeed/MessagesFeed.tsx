@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
 import { niceFormatDate } from "~shared/dates/format";
-import { fontSize } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 import { Message } from "./Message";
 
@@ -86,7 +86,5 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIDateHeader = styled.div<{}>`
-  font-size: ${fontSize.label};
-  text-align: center;
-  font-weight: bold;
+  font-size: ${theme.typo.content.bold.center};
 `;

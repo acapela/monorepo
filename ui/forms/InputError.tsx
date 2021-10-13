@@ -1,8 +1,7 @@
 import styled from "styled-components";
 
-import { fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { DANGER_COLOR } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 interface Props {
   message: string;
@@ -13,6 +12,6 @@ export function InputError({ message }: Props) {
 }
 
 const UIHolder = styled(PresenceAnimator)<{}>`
-  color: ${DANGER_COLOR};
-  font-size: ${fontSize.label};
+  ${theme.typo.label};
+  ${theme.colors.status.danger.asBg};
 `;

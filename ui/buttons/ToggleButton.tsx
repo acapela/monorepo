@@ -25,12 +25,12 @@ export const ToggleButton = ({ isActive, onClick, children, icon, tooltip }: Pro
 const UIIconHolder = styled.div<{}>``;
 
 const activeButtonStyles = css`
-  ${theme.colors.actions.secondary.active()}
+  ${theme.colors.action.secondary.interactive("backgroundColor")}
 `;
 
 const forceIconColorToBeTextColor = css`
   svg {
-    color: ${theme.colors.interactive.actions.secondary.regular.text()};
+    ${theme.colors.action.secondary.asColor}
   }
 `;
 
@@ -40,12 +40,12 @@ export const UIButton = styled.button<{ isActive: boolean }>`
 
   ${buttonSizeSpecificStyle.small}
   ${buttonKindSpecificStyle.secondary}
-  ${theme.font.spezia.semibold.build}
+  ${theme.font.spezia.semibold}
   
   cursor: pointer;
 
   ${({ isActive }) => (isActive ? activeButtonStyles : forceIconColorToBeTextColor)}
 
-  ${theme.borderRadius.circle}
+  ${theme.radius.circle}
   ${theme.transitions.hover()}
 `;

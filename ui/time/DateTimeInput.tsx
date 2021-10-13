@@ -6,7 +6,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { FieldWithLabel } from "~ui/forms/FieldWithLabel";
 import { IconCalendar } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 import { DateTimePicker } from "./DateTimePicker";
 
@@ -54,7 +54,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipC
         cursorType="action"
       >
         <UIHolder isReadonly={isReadonly} onFocus={openPicker} onClick={openPicker}>
-          <TextBody>{value.toLocaleString()}</TextBody>
+          <UIBody>{value.toLocaleString()}</UIBody>
         </UIHolder>
       </FieldWithLabel>
     </>
@@ -65,4 +65,8 @@ const UIHolder = styled.div<{ isReadonly: boolean }>`
   display: flex;
   align-items: center;
   font-weight: bold;
+`;
+
+const UIBody = styled.div`
+  ${theme.typo.content};
 `;

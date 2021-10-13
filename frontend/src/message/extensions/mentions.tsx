@@ -209,27 +209,25 @@ const UIMention = styled.span<{ mentionType: MentionType }>`
   height: 1.25em;
   padding: 2px 8px;
 
-  ${theme.borderRadius.tag}
-  ${theme.font.medium.inter.body12.build}
+  ${theme.radius.secondaryItem}
+  ${theme.typo.label}
 
   ${(props) => {
     switch (props.mentionType) {
       case "request-read":
         return css`
-          color: ${theme.colors.tags.shareInformation.foreground()};
-          background-color: ${theme.colors.tags.shareInformation.background()};
+          ${theme.colors.tags.primary.asBgWithReadableText};
 
           svg {
-            color: ${theme.colors.tags.shareInformation.foreground()};
+            color: inherit;
           }
         `;
       case "request-response":
         return css`
-          color: ${theme.colors.tags.discussion.foreground()};
-          background-color: ${theme.colors.tags.discussion.background()};
+          ${theme.colors.tags.primary.asBgWithReadableText};
 
           svg {
-            color: ${theme.colors.tags.discussion.foreground()};
+            color: inherit;
           }
         `;
       default:
@@ -257,5 +255,5 @@ const UIMentionPopoverOpenIndicator = styled.span<{}>`
   padding-left: 4px;
   margin-left: 4px;
 
-  border-left: 1px solid ${theme.colors.layout.strongLine((modifiers) => [modifiers.opacity(0.3)])};
+  border-left: 1px solid ${theme.colors.layout.background.border};
 `;

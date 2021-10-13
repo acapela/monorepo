@@ -85,7 +85,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
   justify-content: center;
   white-space: nowrap;
 
-  ${theme.font.body.spezia.normal.withExceptionalLineHeight("1.2", "Line height for buttons").build}
+  ${theme.typo.content};
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
@@ -96,7 +96,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
 
   ${theme.transitions.hover()}
 
-  ${theme.borderRadius.circle}
+  ${theme.radius.circle}
 
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
   ${(props) =>

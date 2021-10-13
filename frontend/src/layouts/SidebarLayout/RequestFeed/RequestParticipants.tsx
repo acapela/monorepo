@@ -145,11 +145,11 @@ const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDesc
 const UIMoreIndicator = styled.div`
   height: 1em;
   width: 1em;
-  ${theme.borderRadius.circle};
+  ${theme.radius.circle};
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${theme.colors.layout.softLine()};
+  background-color: ${theme.colors.layout.background.border};
   span {
     font-size: 0.7em;
     font-weight: bold;

@@ -3,9 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 import { Calendar } from "~ui/time/Calendar";
 
 import { TimePicker } from "./TimePicker";
@@ -66,9 +65,9 @@ export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation 
 };
 
 const UIDateTimePickerForm = styled(PopPresenceAnimator)<{}>`
-  background: #ffffff;
-  ${shadow.popover};
-  ${borderRadius.modal}
+  ${theme.colors.layout.background.asBgWithReadableText};
+  ${theme.shadow.popover};
+  ${theme.radius.panel};
   display: grid;
   grid-gap: 24px;
   grid-template-columns: 1fr;
@@ -83,7 +82,7 @@ const UIPickers = styled.div<{}>`
 
 const UITimePickerWrapper = styled.div<{}>`
   padding: 16px;
-  border-left: 1px solid ${BACKGROUND_ACCENT};
+  border-left: 1px solid ${theme.colors.layout.background.border};
   overflow: auto;
   max-height: 300px;
 `;

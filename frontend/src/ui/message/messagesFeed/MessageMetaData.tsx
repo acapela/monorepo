@@ -49,7 +49,7 @@ const UIHead = styled.div<{}>`
   align-items: center;
   gap: 10px;
 
-  ${theme.font.body14.semibold.build()}
+  ${theme.typo.content.semibold}
 `;
 
 const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
@@ -58,7 +58,7 @@ const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.font.body12.withExceptionalLineHeight("1", "Prevents adding space when content only has one line").build()};
+  ${theme.typo.label};
   opacity: 0.4;
   user-select: none;
 `;

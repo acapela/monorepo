@@ -98,15 +98,15 @@ const UIPanel = styled.div<{}>`
   gap: 32px;
   padding: 24px;
 
-  background: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.modal};
+  ${theme.colors.layout.backgroundAccent.asBg};
+  ${theme.radius.primaryItem};
   ${theme.shadow.popover}
 
   width: 100%;
 `;
 
 const UITitle = styled.h3<{}>`
-  ${theme.font.h3.spezia.build()};
+  ${theme.typo.secondaryTitle};
 `;
 
 const UILabel = styled.label<{}>`
@@ -120,6 +120,5 @@ const UILabel = styled.label<{}>`
 
 const UIByline = styled.div<{}>`
   margin-top: 4px;
-  ${theme.font.body12.build()};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.label.secondary};
 `;

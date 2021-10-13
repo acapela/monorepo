@@ -10,7 +10,7 @@ import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
 import { isServer } from "~shared/isServer";
 import { BodyPortal } from "~ui/BodyPortal";
-import { zIndex } from "~ui/zIndex";
+import { theme } from "~ui/theme";
 
 interface PopoverProps {
   children: ReactNode;
@@ -133,7 +133,7 @@ const UIHolder = styled.div<{ enableTransitions: boolean }>`
   position: fixed;
   position: relative;
   will-change: transform;
-  z-index: ${zIndex.Popover};
+  z-index: ${theme.zIndex.popover};
 
   ${(props) =>
     props.enableTransitions &&

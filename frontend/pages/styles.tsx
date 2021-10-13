@@ -1,3 +1,20 @@
+import styled from "styled-components";
+
+import { devAssingWindowVariable } from "~shared/dev";
+import { AppThemeProvider, defaultTheme, theme } from "~ui/theme";
+
 export default function App() {
-  return <div>foo</div>;
+  return (
+    <AppThemeProvider theme={defaultTheme}>
+      <UITest>fool</UITest>
+    </AppThemeProvider>
+  );
 }
+
+console.log(theme);
+
+devAssingWindowVariable("theme", theme);
+
+const UITest = styled.div`
+  ${theme.typo.pageTitle}
+`;

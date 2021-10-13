@@ -66,8 +66,8 @@ const UIAnimatedMessageWrapper = styled.div<{}>`
   align-items: start;
   padding: 0 20px;
 
-  ${theme.borderRadius.item}
-  ${theme.transitions.hover()}
+  ${theme.radius.secondaryItem};
+  ${theme.transitions.hover()};
 
   ${UIFlyingTools} {
     opacity: 0;
@@ -75,7 +75,7 @@ const UIAnimatedMessageWrapper = styled.div<{}>`
   }
 
   &:hover {
-    background: ${theme.colors.interactive.selected()};
+    background: ${theme.colors.layout.backgroundAccent};
 
     ${UIFlyingTools} {
       opacity: 1;

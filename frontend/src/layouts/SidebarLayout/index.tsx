@@ -67,5 +67,5 @@ const UIMainContent = styled.div<{}>`
   flex-grow: 1;
   min-width: 0;
   max-height: 100vh;
-  background-color: ${theme.colors.layout.foreground()};
+  background-color: ${theme.colors.layout.backgroundAccent};
 `;

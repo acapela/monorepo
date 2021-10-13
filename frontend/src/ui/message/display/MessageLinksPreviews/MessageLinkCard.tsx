@@ -27,8 +27,8 @@ const UIHolder = styled.div<{}>`
   gap: 12px;
 
   ${theme.transitions.hover()};
-  ${theme.borderRadius.card};
-  ${theme.colors.actions.tertiary.all()}
+  ${theme.radius.primaryItem};
+  ${theme.colors.action.secondary.interactive("backgroundColor")}
 `;
 
 const UIIconHolder = styled.div`
@@ -41,5 +41,5 @@ const UIIconHolder = styled.div`
 `;
 
 const UIText = styled.p`
-  ${theme.font.semibold.build()};
+  ${theme.typo.content.bold}
 `;

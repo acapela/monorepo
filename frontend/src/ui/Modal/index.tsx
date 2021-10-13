@@ -1,12 +1,11 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { TextBody, TextH3 } from "~ui/typo";
 
 import { ScreenCover } from "./ScreenCover";
 
@@ -45,10 +44,8 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
           <UIHead>
             {head && (
               <>
-                <TextH3 speziaExtended semibold>
-                  {head.title}
-                </TextH3>
-                <TextBody secondary>{head.description}</TextBody>
+                <UITitle>{head.title}</UITitle>
+                <UIDescription>{head.description}</UIDescription>
               </>
             )}
           </UIHead>
@@ -73,15 +70,17 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   );
 }
 
+const background = theme.colors.layout.background;
+
 const UIModal = styled(PopPresenceAnimator)<{}>`
   min-width: 368px;
 
-  background: #ffffff;
+  ${background.asBg};
 
-  border: 1px solid #f8f8f8;
+  border: 1px solid ${background.border.value};
 
-  ${shadow.modal};
-  ${borderRadius.modal};
+  ${theme.shadow.modal};
+  ${theme.radius.panel};
 `;
 
 const UIHead = styled.div<{}>`
@@ -101,4 +100,12 @@ const UIToolbar = styled.div<{}>`
   ${CircleCloseIconButton} {
     margin-top: -4px;
   }
+`;
+
+const UITitle = styled.h3`
+  ${theme.typo.pageTitle};
+`;
+
+const UIDescription = styled.h3`
+  ${theme.typo.content.secondary};
 `;

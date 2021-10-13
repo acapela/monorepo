@@ -2,15 +2,14 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
-import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_1 } from "~ui/theme/colors/base";
 
 type Props = {
   message: MessageEntity;
@@ -63,19 +62,14 @@ const UIHolder = styled.div<{}>`
   display: flex;
   position: relative;
   border-radius: 0 8px 8px 0px;
-  background: ${ITEM_BACKGROUND_WEAK};
+  ${theme.colors.layout.backgroundAccent.asBg};
   cursor: pointer;
 `;
 
 const UIBorder = styled.div<{}>`
   width: 2px;
-  ${borderRadius.circle};
-  background-image: linear-gradient(
-    359.7deg,
-    ${SECONDARY_ORANGE_1} -18.05%,
-    ${PRIMARY_PINK_1} 24.03%,
-    ${PRIMARY_TEAL_1} 105.82%
-  );
+  ${theme.radius.circle};
+  /* TODO PR: Restore gradient */
 `;
 
 const UIContent = styled.div<{}>`

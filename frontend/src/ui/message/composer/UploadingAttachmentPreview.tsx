@@ -25,8 +25,8 @@ const UIHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid ${theme.colors.layout.softLine()};
-  ${theme.borderRadius.item}
+  border: 1px solid ${theme.colors.layout.background.border};
+  ${theme.radius.item}
 `;
 
 const spinAnimation = keyframes`
@@ -50,6 +50,5 @@ const UIIconHolder = styled.div`
 const UIPercentageHolder = styled.div`
   position: absolute;
   bottom: -20px;
-  ${theme.font.body12.build};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.label.secondary};
 `;

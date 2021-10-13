@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "~ui/icons";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -17,10 +16,10 @@ interface Props {
   className?: string;
 }
 
-const toastColors: Record<ToastType, string> = {
+const toastColors = {
   success: theme.colors.status.success(),
   warning: theme.colors.status.warning(),
-  error: theme.colors.status.error(),
+  error: theme.colors.status.danger(),
 };
 
 const toastDefaultIcon: Record<ToastType, ReactNode> = {
@@ -68,7 +67,7 @@ const UIPlaceholder = styled.div<{}>``;
 
 const UIIconHolder = styled.div<{ size: "small" | "medium"; type: ToastType; isColored: boolean }>`
   font-size: ${({ size }) => (size === "small" ? 1.25 : 1.5)}rem;
-  color: ${({ type, isColored }) => (isColored ? toastColors[type] : theme.colors.layout.supportingText())};
+  color: ${({ type, isColored }) => (isColored ? toastColors[type] : theme.colors.text)};
 `;
 
 const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; type: ToastType }>`
@@ -78,19 +77,15 @@ const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; type: ToastType
   gap: 4px 12px;
   width: 100%;
   padding: 16px ${({ isDetailed }) => (isDetailed ? 12 : 16)}px;
-  ${borderRadius.item}
-  background: ${theme.colors.layout.foreground()};
-  border: 1px solid ${({ type }) => toastColors[type]};
-  ${theme.borderRadius.toast};
-
+  ${theme.radius.secondaryItem};
+  ${theme.colors.primary.withBorder.asBgWithReadableText};
   ${theme.shadow.popover};
 `;
 
 const UITitle = styled.div<{}>`
-  ${theme.font.h6.medium.build()}
+  ${theme.typo.item.title}
 `;
 
 const UIDescription = styled.div<{}>`
-  ${theme.font.body14.build()};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.content};
 `;

@@ -1,34 +1,25 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { NamedSize, getNamedSizeSquareStyles } from "~ui/namedSize";
-import { PRIMARY_COLOR } from "~ui/theme/colors/base";
-import { getTextColorForBackgroundColor } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props {
   className?: string;
   label: ReactNode;
-  size?: NamedSize;
+  // TODO PR: named size
 }
 
-export const CircleLabel = styled(function CircleLabel({ className, label, size = "small" }: Props) {
-  return (
-    <UIHolder className={className} size={size}>
-      {label}
-    </UIHolder>
-  );
+export const CircleLabel = styled(function CircleLabel({ className, label }: Props) {
+  return <UIHolder className={className}>{label}</UIHolder>;
 })``;
 
-const UIHolder = styled.div<{ size: NamedSize }>`
-  ${(props) => getNamedSizeSquareStyles(props.size)};
-  background-color: ${PRIMARY_COLOR};
-  ${borderRadius.circle};
-  color: ${getTextColorForBackgroundColor(PRIMARY_COLOR)};
+const UIHolder = styled.div`
+  ${theme.colors.primary.asBgWithReadableText};
+  ${theme.radius.circle};
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: ${fontSize.label};
+  font-size: ${theme.typo.item.subtitle};
 `;

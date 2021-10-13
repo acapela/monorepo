@@ -188,8 +188,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 });
 
 const UIValidationError = styled.div`
-  color: ${theme.colors.layout.supportingText()};
-  ${theme.font.body14.build()};
+  ${theme.typo.content.secondary};
 `;
 
 const UIEditorContainer = styled.div<{}>`

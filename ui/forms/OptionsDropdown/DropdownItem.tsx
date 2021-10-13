@@ -5,7 +5,6 @@ import { setColorOpacity } from "~shared/colors";
 import { handleWithStopPropagation } from "~shared/events";
 import { IconCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { PRIMARY_PINK_1 } from "~ui/theme/colors/base";
 
 import { OptionLabel } from "./OptionLabel";
 
@@ -64,7 +63,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   border: 1px solid transparent;
 
   transition: 0.15s all;
-  ${theme.borderRadius.item};
+  ${theme.radius.secondaryItem};
 
   svg {
     font-size: 24px;
@@ -75,17 +74,17 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   }
 
   &:hover {
-    background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+    ${theme.colors.primary.opacity(0.05).asBg};
   }
 
   svg {
-    color: ${PRIMARY_PINK_1};
+    ${theme.colors.primary.asColor};
   }
 
   ${(props) =>
     props.isHighlighted &&
     css`
-      border: 1px solid ${PRIMARY_PINK_1};
-      background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+      border: 1px solid ${theme.colors.primary};
+      ${theme.colors.primary.opacity(0.05).asBg};
     `}
 `;

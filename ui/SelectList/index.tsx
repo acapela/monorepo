@@ -2,9 +2,8 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props<T> {
   items: T[];
@@ -56,12 +55,11 @@ const UIHolder = styled.div<{}>`
   min-width: 15rem;
   padding: 0.5rem 0;
 
-  background: #ffffff;
+  ${theme.colors.layout.background.withBorder.asBgWithReadableText};
 
-  border: 1px solid #f8f8f8;
   box-sizing: border-box;
-  ${shadow.modal};
-  ${borderRadius.menu}
+  ${theme.shadow.modal};
+  ${theme.radius.panel};
 `;
 
 const UIItem = styled.div<{ isActive: boolean }>`
@@ -71,9 +69,11 @@ const UIItem = styled.div<{ isActive: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  ${hoverActionCss};
+  ${theme.colors.layout.background.interactive("backgroundColor")};
 
-  ${(props) => props.isActive && hoverActionActiveCss}
+  ${theme.transitions.hover()}
+
+  ${(props) => props.isActive && theme.colors.layout.background.hover.asBg};
 
   border-radius: 0;
 `;

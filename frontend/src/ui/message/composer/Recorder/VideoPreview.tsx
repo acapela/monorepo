@@ -31,8 +31,8 @@ export const VideoPreview = styled(PureVideoPreview)<{}>`
 
   object-fit: cover;
 
-  border: 1px solid ${theme.colors.layout.softLine()};
-  ${theme.borderRadius.circle}
+  border: 1px solid ${theme.colors.layout.background.border};
+  ${theme.radius.circle}
 
   ${({ flip }) =>
     flip &&

@@ -80,8 +80,7 @@ const UISearch = styled.div<{}>`
 
   padding: 20px;
 
-  ${theme.font.body12.withExceptionalSize("13px", "fitting new design").build()};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.label.secondary};
 
   display: flex;
   flex-direction: row;

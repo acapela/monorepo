@@ -26,9 +26,9 @@ export function PlaybackRateButton({ playbackRate = 1, onPlaybackRateChangeReque
 
 const UIPlaybackRateButton = styled.button`
   padding: 4px 12px;
-  ${theme.font.body12.medium.inter.build()};
-  ${theme.colors.actions.tertiary.all}
-  ${theme.borderRadius.item};
+  ${theme.typo.label};
+  ${theme.colors.action.secondary.interactive("backgroundColor")}
+  ${theme.radius.secondaryItem};
   ${theme.transitions.hover()}
   /* We don't want width of this button to flicker when changing between "1x" or "1.5x" (<- they have different width) */
   min-width: 7ch;

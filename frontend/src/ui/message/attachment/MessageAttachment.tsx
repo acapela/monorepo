@@ -49,6 +49,6 @@ const UIInlineAttachmentHolder = styled.div<{}>`
   height: 100%;
   display: flex;
   position: relative;
-  ${theme.borderRadius.item}
+  ${theme.radius.item}
   overflow: hidden;
 `;

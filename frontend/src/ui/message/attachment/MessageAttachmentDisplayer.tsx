@@ -92,7 +92,7 @@ const UIFileAttachmentDisplayer = styled(motion.a)<{}>`
 `;
 
 const UIFileName = styled.div<{}>`
-  ${theme.font.body12.semibold.build()}
+  ${theme.typo.label};
   text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -111,5 +111,5 @@ const UIPlayableMediaWrapper = styled.div<{}>`
 `;
 
 const UIMediaTypeIndicator = styled.div`
-  ${theme.font.body12.semibold.build()};
+  ${theme.typo.label}; ;
 `;

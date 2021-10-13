@@ -10,7 +10,7 @@ import { useRefValue } from "~shared/hooks/useRefValue";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
 import { BodyPortal } from "~ui/BodyPortal";
-import { zIndex } from "~ui/zIndex";
+import { theme } from "~ui/theme";
 
 export type PopoverPlacement = Placement;
 
@@ -93,5 +93,6 @@ const UIHolder = styled.div<{}>`
   position: fixed;
   position: relative;
   will-change: transform;
-  z-index: ${zIndex.Popover};
+  /* TODO PR: add z-index automatically */
+  z-index: ${theme.zIndex.popover};
 `;

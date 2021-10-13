@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { getInitials } from "~frontend/utils";
 import { Maybe } from "~gql";
-import { borderRadius } from "~ui/baseStyles";
-import { NamedSize, getNamedSizeValue } from "~ui/namedSize";
-import { PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";
 
 interface Props {
   name?: Maybe<string>;
@@ -15,9 +13,9 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export type AvatarSize = NamedSize | "inherit";
+export type AvatarSize = "inherit" | number;
 
-export const Avatar = styled<Props>(({ url, name, className, size = "regular", disableNameTooltip }) => {
+export const Avatar = styled<Props>(({ url, name, className, size = "inherit", disableNameTooltip }) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
@@ -48,10 +46,8 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
 
   font-weight: 600;
 
-  background-color: ${PRIMARY_PINK_1};
-  color: ${WHITE};
-
-  ${borderRadius.circle}
+  ${theme.colors.primary.asBgWithReadableText};
+  ${theme.radius.circle};
   overflow: hidden;
 
   img {
@@ -67,7 +63,5 @@ const UINameLabel = styled.span<{}>`
 function getAvatarSize(size: AvatarSize) {
   if (size === "inherit") return "1em";
 
-  const sizeInPx = getNamedSizeValue(size);
-
-  return `${sizeInPx}px`;
+  return `${size}px`;
 }

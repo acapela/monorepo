@@ -69,13 +69,12 @@ const UIFeedItemLabels = styled.div<{}>`
 `;
 
 const UIFeedItemTitle = styled.h6<{ isSelected?: boolean }>`
-  ${(props) => (props.isSelected ? theme.font.h6.medium.build() : theme.font.h6.build())}
+  ${(props) => (props.isSelected ? theme.typo.content.bold : theme.typo.content)}
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
-  ${theme.font.withExceptionalSize("11px", "New sizing").build()}
+  ${theme.typo.item.secondaryTitle.secondary};
 
-  opacity: 0.6;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;

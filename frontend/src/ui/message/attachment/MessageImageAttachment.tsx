@@ -52,7 +52,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;
   position: relative;
-  ${theme.borderRadius.item}
+  ${theme.radius.item}
   overflow: hidden;
   cursor: pointer;
 `;
@@ -67,7 +67,7 @@ const ImageWrapper = styled.img<{}>`
 
   user-select: none;
 
-  ${theme.borderRadius.item};
+  ${theme.radius.item};
   will-change: transform, opacity;
 
   /* Safari fix - make sure image always keeps its aspect ratio. */

@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
 import { StylesPart, css } from "styled-components";
 
-import { changeColorLightness, isColorDark, setColorOpacity } from "~/shared/colors";
-import { Thunk, resolveThunk } from "~/shared/thunk";
+import { changeColorLightness, isColorDark, setColorOpacity } from "~shared/colors";
+import { Thunk, resolveThunk } from "~shared/thunk";
 
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 
@@ -14,6 +14,8 @@ type ColorVariants = {
   opacity(ratio?: number): Color;
   secondary: Color;
   tertiary: Color;
+
+  withBorder: Color;
 
   asBg: StylesPart;
   asBgWithReadableText: StylesPart;
@@ -32,13 +34,33 @@ type ColorVariants = {
 export type Color = ThemeTarget<ColorVariants>;
 
 interface ColorPredefinedVariants {
-  hover?: Thunk<Color>;
-  active?: Thunk<Color>;
-  border?: Thunk<Color>;
-  readableText?: Thunk<Color>;
+  hover?: Color;
+  active?: Color;
+  border?: Color;
+  readableText?: Color;
 }
 
-export function color(input: string, config: ColorPredefinedVariants = {}): Color {
+interface State {
+  hasBorder?: boolean;
+}
+
+export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}, state: State = {}): Color {
+  function flushFullstyles(styles: StylesPart): StylesPart {
+    if (!state.hasBorder) {
+      return styles;
+    }
+
+    return css`
+      ${styles};
+      border: 1px solid ${self.border};
+    `;
+  }
+
+  const lazyConfig = {
+    get resolve() {
+      return resolveThunk(config);
+    },
+  };
   const self: Color = createThemeTarget<ColorVariants>(
     () =>
       css`
@@ -55,22 +77,25 @@ export function color(input: string, config: ColorPredefinedVariants = {}): Colo
         return color(input).asStyle("color");
       },
       get asBgWithReadableText() {
-        return css`
+        return flushFullstyles(css`
           ${self.asBg};
           ${self.readableText.asColor};
-        `;
+        `);
+      },
+      get withBorder() {
+        return color(input, config, { ...state, hasBorder: true });
       },
       get hover() {
-        return resolveThunk(config.hover) ?? color(getColorHoverVariant(input));
+        return lazyConfig.resolve.hover ?? color(getColorHoverVariant(input));
       },
       get active() {
-        return resolveThunk(config.active) ?? color(getColorActiveVariant(input));
+        return lazyConfig.resolve.active ?? color(getColorActiveVariant(input));
       },
       get border() {
-        return resolveThunk(config.border) ?? getColorBorderVariant(input);
+        return lazyConfig.resolve.border ?? getColorBorderVariant(input);
       },
       get readableText() {
-        return resolveThunk(config.readableText) ?? getColorReadableText(input);
+        return lazyConfig.resolve.readableText ?? getColorReadableText(input);
       },
       get secondary() {
         return color(setColorOpacity(input, 0.8));
@@ -79,12 +104,12 @@ export function color(input: string, config: ColorPredefinedVariants = {}): Colo
         return color(setColorOpacity(input, 0.8));
       },
       asStyle(property: CssPropertyName) {
-        return css`
+        return flushFullstyles(css`
           ${{ [property]: input }};
-        `;
+        `);
       },
       interactive(property: CssPropertyName) {
-        return css`
+        return flushFullstyles(css`
           ${self.asStyle(property)};
           &:hover {
             ${self.hover.asStyle(property)};
@@ -92,7 +117,7 @@ export function color(input: string, config: ColorPredefinedVariants = {}): Colo
           &:active {
             ${self.active.asStyle(property)};
           }
-        `;
+        `);
       },
       opacity(ratio = 1) {
         return color(setColorOpacity(input, ratio));

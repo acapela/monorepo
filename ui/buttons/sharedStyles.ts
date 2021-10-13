@@ -32,53 +32,37 @@ export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = 
   `,
 };
 
-export const activeTransparentButtonStyles = css`
-  color: ${theme.colors.layout.bodyText()};
-  background: ${theme.colors.interactive.selected()};
-
-  svg {
-    color: ${theme.colors.interactive.active()};
-  }
-`;
-
 export const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css`
-    ${theme.colors.actions.primary.all()}
-    ${theme.shadow.button}
+    ${theme.colors.action.primary.interactive("backgroundColor")}
   `,
   secondary: css`
     border-style: solid;
     border-width: 1.5px;
 
-    ${theme.colors.actions.secondary.all()}
-    ${theme.shadow.button}
+    ${theme.colors.action.secondary.interactive("backgroundColor")}
   `,
   tertiary: css`
-    ${theme.colors.actions.tertiary.all()}
-    ${theme.shadow.button}
+    ${theme.colors.action.secondary.interactive("backgroundColor")}
   `,
 
   // TODO: Remove most transparent buttons and create a new component for remaining non-button components
   transparent: css`
-    ${theme.font.inter.normal.build}
+    ${theme.typo.content.secondary}
 
     background: transparent;
-    color: ${theme.colors.layout.supportingText()};
+    ${theme.colors.text.asColor};
 
     svg {
-      color: ${theme.colors.layout.supportingText()};
+      ${theme.colors.text.asColor};
     }
 
     &:hover {
-      color: ${theme.colors.layout.bodyText()};
-      background: ${theme.colors.interactive.selected()};
+      ${theme.typo.content.secondary};
+      ${theme.colors.layout.background.hover.asBg}
       svg {
-        color: ${theme.colors.layout.bodyText()};
+        ${theme.colors.text.asColor};
       }
-    }
-
-    &:active {
-      ${activeTransparentButtonStyles};
     }
   `,
 };

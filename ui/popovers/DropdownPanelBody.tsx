@@ -1,18 +1,18 @@
 import styled from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { BASE_GREY_5, WHITE } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 export const UIDropdownPanelBody = styled(PopPresenceAnimator)<{}>`
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: ${WHITE};
-  border: 1px solid ${BASE_GREY_5};
+  ${theme.colors.layout.background.asBg};
+  /* TODO PR: easier api for border */
+  border: 1px solid ${theme.colors.layout.background.border};
   box-sizing: border-box;
-  ${shadow.popover};
-  ${borderRadius.menu}
+  ${theme.shadow.popover};
+  ${theme.radius.panel};
   min-width: 200px;
 `;

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~frontend/../../ui/theme";
 import { IconCalendar } from "~ui/icons";
 
 interface Props {
@@ -32,7 +32,7 @@ const UILink = styled.a<{ isActive: boolean }>`
   font-weight: 500;
   padding: 0.75rem 1rem;
   margin: 0 -1rem;
-  ${borderRadius.menu};
+  ${theme.radius.secondaryItem};
 
   ${(props) =>
     props.isActive &&

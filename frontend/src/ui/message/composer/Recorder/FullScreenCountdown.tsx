@@ -32,6 +32,5 @@ export const FullScreenCountdown = ({ seconds: startFrom, onCancelled }: Countdo
 };
 
 const UICounter = styled(PopPresenceAnimator)`
-  color: ${theme.colors.interactive.actions.primary.regular.text()};
-  ${theme.font.spezia.withExceptionalSize("6rem", "This needs to be very large and centered").build}
+  ${theme.font.size(60).bold.secondary}
 `;

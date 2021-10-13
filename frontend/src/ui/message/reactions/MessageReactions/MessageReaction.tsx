@@ -2,12 +2,11 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
-import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
@@ -49,24 +48,21 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
   );
 });
 
+const background = theme.colors.layout.backgroundAccent;
+
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 28px;
-  border-radius: 1000px;
-  padding: 0 8px;
+  ${theme.spacing.horizontalActions.asGap}
+  ${theme.radius.circle}
   cursor: pointer;
-  font-size: ${fontSize.label};
-  color: ${SECONDARY_TEXT_COLOR};
+  ${theme.typo.action.regular};
+  ${theme.colors.text.secondary.asColor}
+  ${background.asBg};
 
   ${(p) =>
-    p.isSelected
-      ? css`
-          background: ${BACKGROUND_ACCENT_WEAK};
-        `
-      : css`
-          background: ${WHITE};
-          border: 1px solid ${BACKGROUND_ACCENT};
-        `}
+    p.isSelected &&
+    css`
+      ${background.hover.asBg};
+    `}
 `;

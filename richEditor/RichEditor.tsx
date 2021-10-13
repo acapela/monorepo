@@ -9,9 +9,9 @@ import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
-import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { theme } from "~ui/theme";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
@@ -346,5 +346,5 @@ const UIHolder = styled.div<{}>`
   width: 100%;
   min-width: 500px;
   border: 1px solid #ccc;
-  ${borderRadius.card}
+  ${theme.radius.panel};
 `;

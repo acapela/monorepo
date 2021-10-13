@@ -28,10 +28,9 @@ const UIHolder = styled.div<{ isHighlighted: boolean }>`
   height: 1.25rem;
   min-width: 1.25rem;
 
-  background: ${(props) =>
-    props.isHighlighted ? props.theme?.colors.interactive.notification() : props.theme?.colors.interactive.inactive()};
+  ${theme.colors.panels.notification.asBg};
 
   color: #fff;
-  ${theme.borderRadius.label}
-  ${theme.font.body14.semibold.build}
+  ${theme.radius.secondaryItem}
+  ${theme.typo.content}
 `;

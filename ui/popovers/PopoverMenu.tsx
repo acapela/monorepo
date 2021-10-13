@@ -5,9 +5,7 @@ import styled, { css } from "styled-components";
 
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { openInNewTab } from "~frontend/src/utils/openInNewTab";
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { BASE_GREY_1, DANGER_COLOR, PRIMARY_PINK_1_TRANSPARENT, PRIMARY_PINK_2 } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 import { UIDropdownPanelBody } from "./DropdownPanelBody";
 import { Popover, PopoverPlacement } from "./Popover";
@@ -81,18 +79,17 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
   align-items: center;
   padding: 10px 8px;
 
-  font-size: ${fontSize.label};
-  line-height: 1.5em;
+  ${theme.typo.label.readingLineHeight};
   border: 1px solid transparent;
 
   ${(props) =>
     props.isClickable &&
     css`
       cursor: pointer;
-      ${hoverTransition()};
+      ${theme.transitions.hover()};
       &:hover {
-        border-color: ${PRIMARY_PINK_2};
-        background: ${PRIMARY_PINK_1_TRANSPARENT};
+        border-color: ${theme.colors.primary.border};
+        background: ${theme.colors.primary.opacity(0.05)};
       }
     `}
 
@@ -103,9 +100,9 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
       pointer-events: none;
     `}
 
-  color: ${(props) => (props.isDestructive ? DANGER_COLOR : BASE_GREY_1)};
+  color: ${(props) => (props.isDestructive ? theme.colors.status.danger : theme.colors.text)};
 
-  ${borderRadius.item}
+  ${theme.radius.secondaryItem};
 `;
 
 const UIItemIcon = styled.div<{}>`

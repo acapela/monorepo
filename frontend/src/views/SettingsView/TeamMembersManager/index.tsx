@@ -90,8 +90,8 @@ const UIPanel = styled.div<{}>`
   gap: 32px;
   padding: 24px;
 
-  background: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.modal};
+  ${theme.colors.layout.backgroundAccent.asBg};
+  ${theme.radius.panel};
   ${theme.shadow.popover}
 
   width: 100%
@@ -105,7 +105,7 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UITitle = styled.h3<{}>`
-  ${theme.font.h3.spezia.build()};
+  ${theme.typo.secondaryTitle};
 `;
 
 const UIItemHolder = styled.div<{}>`
@@ -130,6 +130,6 @@ const UISelectGridContainer = styled.div<{}>`
 
   width: 100%;
   padding: 8px;
-  border: 1px solid ${theme.colors.layout.softLine()};
-  ${theme.borderRadius.menu}
+  border: 1px solid ${theme.colors.layout.background.border};
+  ${theme.radius.menu}
 `;
