@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
-import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { assert } from "~shared/assert";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
@@ -12,6 +11,7 @@ import { theme } from "~ui/theme";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
 import { SlackInstallationButton } from "./SlackInstallationButton";
+import { UserBasicInfo } from "./UserBasicInfo";
 
 export const CurrentTeamMembersManager = observer(() => {
   const team = useCurrentTeam();
