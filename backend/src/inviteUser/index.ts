@@ -9,7 +9,7 @@ import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { enrichPayload, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 
-function getNormalizedUserName(user: User): string {
+function getUserNameWithFallbacks(user: User): string {
   if (user.name) {
     return user.name;
   }
@@ -37,7 +37,7 @@ async function sendInvitationEmail(teamId: string, email: string, inviter: User,
 
   assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
 
-  const inviterName = getNormalizedUserName(inviter);
+  const inviterName = getUserNameWithFallbacks(inviter);
   await sendEmail({
     from: DEFAULT_NOTIFICATION_EMAIL,
     to: email,
@@ -95,7 +95,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     if (!user) {
       await db.team_member.create({
         data: {
-          user: { connectOrCreate: { where: { email }, create: { email } } },
+          user: { connectOrCreate: { where: { email }, create: { email, current_team_id: team_id } } },
           team: { connect: { id: team_id } },
         },
       });
