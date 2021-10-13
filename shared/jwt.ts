@@ -25,6 +25,7 @@ export const enrichPayload = ({
 }: JwtPayload & { userId: string; teamId?: Maybe<string> }) => ({
   ...payload,
   id: payload.sub || userId,
+  sub: payload.sub || userId,
   currentTeamId: teamId ?? null,
   // Make JWT token compatible with hasura
   "https://hasura.io/jwt/claims": {
