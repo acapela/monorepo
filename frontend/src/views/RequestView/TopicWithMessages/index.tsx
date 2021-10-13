@@ -106,6 +106,7 @@ const UIHolder = styled.div`
   flex-direction: column;
   align-items: center;
   min-height: 0;
+  flex-grow: 1;
 `;
 
 const UIHead = styled.div`

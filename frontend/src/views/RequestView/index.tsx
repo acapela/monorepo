@@ -58,4 +58,5 @@ const UIHolder = styled.div`
   max-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 `;

@@ -42,4 +42,5 @@ const UIInner = styled.div<{}>`
   position: relative;
   padding-bottom: 40px;
   max-width: 800px;
+  width: 100%;
 `;
