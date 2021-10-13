@@ -1,7 +1,10 @@
-import React, { ReactNode } from "react";
+import { observer } from "mobx-react";
+import { signOut } from "next-auth/client";
+import React, { ReactNode, useEffect } from "react";
 import styled from "styled-components";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
+import { useNullableDb } from "~frontend/clientdb";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -14,11 +17,25 @@ interface Props {
   children?: ReactNode;
 }
 
-export const SidebarLayout = ({ children }: Props) => {
-  const user = useCurrentUserTokenData();
+export const SidebarLayout = observer(({ children }: Props) => {
+  const userTokenData = useCurrentUserTokenData();
   const currentTeamId = useCurrentTeamId();
 
-  if (!user) {
+  const db = useNullableDb();
+  const user = userTokenData && db && db.user.findById(userTokenData.id);
+  const isUserWithoutAccount = user && !user.has_account;
+
+  useEffect(() => {
+    if (isUserWithoutAccount) {
+      signOut();
+    }
+  }, [isUserWithoutAccount]);
+
+  if (isUserWithoutAccount) {
+    return null;
+  }
+
+  if (!userTokenData) {
     return (
       <WindowView>
         <LoginOptionsView />
@@ -42,7 +59,7 @@ export const SidebarLayout = ({ children }: Props) => {
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>
   );
-};
+});
 
 const UISidebar = styled.div<{}>`
   max-height: 100vh;

@@ -108,6 +108,9 @@ const CommonMetadata = () => {
   );
 };
 
+/*
+  Plucks ?jwt=TTT from a URL and creates a redirect with it as a session token cookie and the query bit removed
+ */
 function tryRedirectWithCookie({ req, res }: NextPageContext) {
   if (!req || !res) {
     return false;
