@@ -99,7 +99,7 @@ const UIHolder = styled.div`
 `;
 
 const UITogglePlayButton = styled(PopPresenceAnimator)`
-  ${theme.colors.action.primary.interactive("backgroundColor")};
+  ${theme.colors.action.primary.interactive};
   height: 32px;
   width: 32px;
   display: flex;

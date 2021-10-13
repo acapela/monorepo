@@ -68,12 +68,12 @@ const UIFeedItemLabels = styled.div<{}>`
   gap: 4px;
 `;
 
-const UIFeedItemTitle = styled.h6<{ isSelected?: boolean }>`
-  ${(props) => (props.isSelected ? theme.typo.content.bold : theme.typo.content)}
+const UIFeedItemTitle = styled.h6`
+  ${theme.typo.content};
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
-  ${theme.typo.item.secondaryTitle.secondary};
+  ${theme.typo.item.subtitle.secondary};
 
   display: -webkit-box;
   -webkit-line-clamp: 1;

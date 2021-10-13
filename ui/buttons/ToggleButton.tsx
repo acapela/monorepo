@@ -25,7 +25,7 @@ export const ToggleButton = ({ isActive, onClick, children, icon, tooltip }: Pro
 const UIIconHolder = styled.div<{}>``;
 
 const activeButtonStyles = css`
-  ${theme.colors.action.secondary.interactive("backgroundColor")}
+  ${theme.colors.action.secondary.interactive}
 `;
 
 const forceIconColorToBeTextColor = css`

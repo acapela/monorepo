@@ -34,16 +34,16 @@ export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = 
 
 export const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css`
-    ${theme.colors.action.primary.interactive("backgroundColor")}
+    ${theme.colors.action.primary.interactive}
   `,
   secondary: css`
     border-style: solid;
     border-width: 1.5px;
 
-    ${theme.colors.action.secondary.interactive("backgroundColor")}
+    ${theme.colors.action.secondary.interactive}
   `,
   tertiary: css`
-    ${theme.colors.action.secondary.interactive("backgroundColor")}
+    ${theme.colors.action.secondary.interactive}
   `,
 
   // TODO: Remove most transparent buttons and create a new component for remaining non-button components

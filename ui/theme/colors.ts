@@ -13,6 +13,7 @@ const black = color("hsl(0, 0%, 0%)", {
 const primary = color("hsl(310, 100%, 67%)", {
   hover: color("hsl(310, 79%, 57%)"),
   active: color("hsl(310, 79%, 40%)"),
+  readableText: white,
 });
 
 const lightGray = color("hsl(220, 33%, 98%)", {

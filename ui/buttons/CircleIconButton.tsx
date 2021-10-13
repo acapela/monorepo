@@ -65,15 +65,15 @@ const buttonSizeSpecificStyle: Record<ButtonSize, StylesPart> = {
 
 const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css`
-    ${theme.colors.action.primary.interactive("backgroundColor")}
+    ${theme.colors.action.primary.interactive}
     border: 1px solid transparent;
   `,
   secondary: css`
-    ${theme.colors.action.secondary.interactive("backgroundColor")}
+    ${theme.colors.action.secondary.interactive}
     border: 1px solid transparent;
   `,
   tertiary: css`
-    ${theme.colors.action.secondary.interactive("backgroundColor")}
+    ${theme.colors.action.secondary.interactive}
     border: 1px solid transparent;
   `,
   transparent: css`

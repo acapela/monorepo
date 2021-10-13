@@ -28,7 +28,7 @@ const UIHolder = styled.div<{}>`
 
   ${theme.transitions.hover()};
   ${theme.radius.primaryItem};
-  ${theme.colors.action.secondary.interactive("backgroundColor")}
+  ${theme.colors.action.secondary.interactive}
 `;
 
 const UIIconHolder = styled.div`

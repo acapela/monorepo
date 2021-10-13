@@ -80,7 +80,7 @@ const UISearch = styled.div<{}>`
 
   padding: 20px;
 
-  ${theme.typo.label.secondary};
+  ${theme.typo.content};
 
   display: flex;
   flex-direction: row;

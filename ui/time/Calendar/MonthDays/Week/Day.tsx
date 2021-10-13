@@ -93,7 +93,7 @@ const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
 
       if (props.isSelected) {
         return css`
-          ${theme.colors.primary.interactive("backgroundColor")};
+          ${theme.colors.primary.interactive};
           ${theme.colors.primary.readableText.asColor};
         `;
       }

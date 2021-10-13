@@ -69,7 +69,7 @@ const UIItem = styled.div<{ isActive: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  ${theme.colors.layout.background.interactive("backgroundColor")};
+  ${theme.colors.layout.background.interactive};
 
   ${theme.transitions.hover()}
 

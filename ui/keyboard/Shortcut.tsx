@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import { theme } from "~ui/theme";
+
 import { getShortcutNiceKeys } from "./describeShortcut";
 import { ShortcutCallback, ShortcutDefinition, ShortcutOptions } from "./shortcutBase";
 import { useShortcut } from "./useShortcut";
@@ -30,4 +32,6 @@ const UIHolder = styled.div`
   user-select: none;
   gap: 2px;
 `;
-const UIKey = styled.div``;
+const UIKey = styled.div`
+  ${theme.typo.content.secondary};
+`;

@@ -35,8 +35,8 @@ const UIHolder = styled.button<{ isActive: boolean; isDisabled: boolean }>`
   justify-content: center;
   ${theme.radius.button};
 
-  ${theme.colors.action.secondary.interactive("backgroundColor")};
+  ${theme.colors.action.secondary.interactive};
 
   ${(props) => props.isDisabled && disabledCss}
-  ${(props) => props.isActive && theme.colors.action.primary.interactive("backgroundColor")}
+  ${(props) => props.isActive && theme.colors.action.primary.interactive}
 `;

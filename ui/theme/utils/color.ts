@@ -24,7 +24,7 @@ type ColorVariants = {
 
   hover: Color;
   active: Color;
-  interactive(property: CssPropertyName): StylesPart;
+  interactive: StylesPart;
 
   border: Color;
 
@@ -108,19 +108,19 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
           ${{ [property]: input }};
         `);
       },
-      interactive(property: CssPropertyName) {
+      get interactive() {
         return flushFullstyles(css`
-          ${self.asStyle(property)};
+          ${self.asBgWithReadableText};
           &:hover {
-            ${self.hover.asStyle(property)};
+            ${self.hover.asBg};
           }
           &:active {
-            ${self.active.asStyle(property)};
+            ${self.active.asBg};
           }
         `);
       },
       opacity(ratio = 1) {
-        return color(setColorOpacity(input, ratio));
+        return color(setColorOpacity(input, ratio), config);
       },
     }
   );

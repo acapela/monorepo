@@ -119,7 +119,7 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
   }
 
   input:checked + label {
-    ${theme.colors.primary.interactive("backgroundColor")};
+    ${theme.colors.primary.interactive};
   }
 
   input:checked + label:after {
