@@ -35,7 +35,6 @@ export async function findSlackUserId(teamId: string, user: User) {
   }
 }
 
-// Finds a user for a Slack user id either through a team_member's slack installation, team_invitation or by email
 export async function findUserBySlackId(slackToken: string, slackUserId: string, teamId?: string) {
   const user = await db.user.findFirst({
     where: { team_member: { some: { team_id: teamId, team_member_slack: { slack_user_id: slackUserId } } } },

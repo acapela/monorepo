@@ -28,7 +28,7 @@ async function sendInvitationSlackMessage(teamId: string, inviter: User, slackUs
   await slackClient.chat.postMessage({
     token: botToken,
     channel: slackUserId,
-    text: `${inviterName} has invited you to join Acapela: ${inviteURL}`,
+    text: `${inviterName} <${inviteURL}|has invited you to join Acapela>`,
   });
 }
 

@@ -5,8 +5,6 @@ import styled from "styled-components";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
-import { assert } from "~shared/assert";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -20,25 +18,18 @@ const TASK_TYPE_LABELS = new Map(
   })
 );
 
-export const MessageTask = observer(({ task }: Props) => {
-  const teamInvitation = task.teamInvitation;
-  assert(task.user || teamInvitation, "task has neither user nor invitation");
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const assigneeName = task.user?.name ?? getTeamInvitationDisplayName(teamInvitation!);
-
-  return (
-    <UISingleTask key={task.id}>
-      {task.user ? <UserAvatar user={task.user} /> : <Avatar name="?" />}
-      <UITextInfo>
-        <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
-        <UIStatusLabel isDone={task.isDone}>
-          {task.isDone && "✓ "}
-          {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
-        </UIStatusLabel>
-      </UITextInfo>
-    </UISingleTask>
-  );
-});
+export const MessageTask = observer(({ task }: Props) => (
+  <UISingleTask key={task.id}>
+    {task.user ? <UserAvatar user={task.user} /> : <Avatar name="?" />}
+    <UITextInfo>
+      <UIUserNameLabel>{task.user?.name}</UIUserNameLabel>
+      <UIStatusLabel isDone={task.isDone}>
+        {task.isDone && "✓ "}
+        {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
+      </UIStatusLabel>
+    </UITextInfo>
+  </UISingleTask>
+));
 
 const UISingleTask = styled.div<{}>`
   display: flex;
