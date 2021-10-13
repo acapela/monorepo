@@ -18,19 +18,24 @@ interface Props {
 
 const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
 
-function shouldBundleCurrentMessageWithPrevious(currentMsg: MessageEntity, prevMsg: MessageEntity | null): boolean {
-  if (!prevMsg) {
+function shouldBundleCurrentMessageWithPrevious(
+  currentMsg: MessageEntity,
+  previousMessage: MessageEntity | null
+): boolean {
+  if (!previousMessage) {
     return false;
   }
 
-  const isSameOwnerForBothMessages = prevMsg.user_id === currentMsg.user_id;
+  if (previousMessage.tasks.hasItems) return false;
+
+  const isSameOwnerForBothMessages = previousMessage.user_id === currentMsg.user_id;
   if (!isSameOwnerForBothMessages) {
     return false;
   }
 
   const minutesBetweenCurrentAndPreviousMessage = differenceInMinutes(
     new Date(currentMsg.created_at),
-    new Date(prevMsg.created_at)
+    new Date(previousMessage.created_at)
   );
 
   return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;

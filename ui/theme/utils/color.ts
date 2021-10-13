@@ -61,6 +61,11 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
       return resolveThunk(config);
     },
   };
+
+  function inherit(input: string, newConfig: Thunk<ColorPredefinedVariants> = {}) {
+    return color(input, { ...config, ...newConfig, state });
+  }
+
   const self: Color = createThemeTarget<ColorVariants>(
     () =>
       css`
@@ -71,10 +76,10 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
         return input;
       },
       get asBg() {
-        return color(input).asStyle("backgroundColor");
+        return self.asStyle("backgroundColor");
       },
       get asColor() {
-        return color(input).asStyle("color");
+        return self.asStyle("color");
       },
       get asBgWithReadableText() {
         return flushFullstyles(css`
@@ -98,10 +103,10 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
         return lazyConfig.resolve.readableText ?? getColorReadableText(input);
       },
       get secondary() {
-        return color(setColorOpacity(input, 0.8));
+        return self.opacity(0.8);
       },
       get tertiary() {
-        return color(setColorOpacity(input, 0.8));
+        return self.opacity(0.6);
       },
       asStyle(property: CssPropertyName) {
         return flushFullstyles(css`
@@ -122,7 +127,7 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
         `);
       },
       opacity(ratio = 1) {
-        return color(setColorOpacity(input, ratio), config);
+        return color(setColorOpacity(input, ratio), config, state);
       },
     }
   );

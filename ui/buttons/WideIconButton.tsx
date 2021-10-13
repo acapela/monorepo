@@ -22,8 +22,12 @@ export const WideIconButton = namedForwardRef<HTMLButtonElement, Props>(function
 });
 
 export const UIButton = styled.button`
-  width: 40px;
-  height: 24px;
+  ${theme.box.squareButton};
+  ${theme.colors.layout.background.withBorder.interactive}
+
+  svg {
+    font-size: 1.5em;
+  }
 
   display: flex;
   align-items: center;

@@ -1,6 +1,6 @@
 import { formatRelative } from "date-fns";
 import { AnimateSharedLayout } from "framer-motion";
-import { noop } from "lodash";
+import { noop, upperFirst } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
@@ -31,12 +31,10 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
           <Button
             kind="secondary"
             icon={<IconClock />}
-            iconPosition="start"
-            size="medium"
+            iconAtStart
             data-tooltip={firstTask.due_at ? "Change due date" : "Add due date"}
-            onClick={noop /* Required to make the button look clickable */}
           >
-            {firstTask.due_at ? formatRelative(new Date(firstTask.due_at), new Date()) : null}
+            {firstTask.due_at ? upperFirst(formatRelative(new Date(firstTask.due_at), new Date())) : null}
           </Button>
         </TaskDueDateSetter>
       </AnimateSharedLayout>

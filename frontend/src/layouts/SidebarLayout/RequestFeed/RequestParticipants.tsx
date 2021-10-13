@@ -110,11 +110,12 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
   );
 });
 
-const PARTICIPANTS_BOX_SIZE = 30;
+const PARTICIPANTS_BOX_SIZE = 35;
 
 const UIHolder = styled.div`
   font-size: ${PARTICIPANTS_BOX_SIZE}px;
   height: 1em;
+  min-width: 1em;
   width: 1em;
   position: relative;
 `;

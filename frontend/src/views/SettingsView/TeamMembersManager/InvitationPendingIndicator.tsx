@@ -34,9 +34,9 @@ const UIIconHolder = styled.div<{}>`
 `;
 
 const UILabel = styled.div`
-  ${theme.typo.content};
+  ${theme.typo.content.bold};
 `;
 
 const UIStatus = styled.div`
-  ${theme.typo.content.secondary};
+  ${theme.typo.label.secondary};
 `;

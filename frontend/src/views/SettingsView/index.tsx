@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 
 import { NotificationSettings } from "./NotificationSettings";
@@ -23,9 +24,9 @@ export const SettingsView = observer(function SettingsView() {
           <CurrentTeamMembersManager />
 
           {appVersion && (
-            <div>
+            <UIVersionInfo>
               Version: {appVersion} ({appBuildDate})
-            </div>
+            </UIVersionInfo>
           )}
         </UIHolder>
       )}
@@ -42,4 +43,10 @@ const UIHolder = styled.div<{}>`
   gap: 16px;
 `;
 
-const UIHeader = styled.div<{}>``;
+const UIHeader = styled.div<{}>`
+  ${theme.typo.pageTitle};
+`;
+
+const UIVersionInfo = styled.div`
+  ${theme.typo.label.secondary.center};
+`;

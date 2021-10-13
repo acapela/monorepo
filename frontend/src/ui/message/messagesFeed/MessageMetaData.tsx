@@ -36,7 +36,7 @@ export const MessageMetaDataWrapper = styledObserver(
               <UIHeaderTimeLabel date={date} />
             </UIHead>
           )}
-          {isHovered && <UISideTimeLabel date={date} />}
+          {isHovered && isNextSameUserMessage && <UISideTimeLabel date={date} />}
           {children}
         </UIMessageBody>
       </UIHolder>
@@ -53,7 +53,9 @@ const UIMessageSideInfo = styled.div`
   min-width: ${AVATAR_SIZE}px;
 `;
 
-const UIMessageBody = styled.div``;
+const UIMessageBody = styled.div`
+  position: relative;
+`;
 
 const UIAuthorInfo = styled.div``;
 
@@ -76,7 +78,10 @@ const UIAuthorName = styled.div`
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.typo.label};
-  opacity: 0.4;
+  ${theme.typo.content.secondary};
+  position: absolute;
+  right: 100%;
+  top: 0;
   user-select: none;
+  margin-right: 5px;
 `;

@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
@@ -160,13 +161,13 @@ const UIHolder = styled.div<{}>``;
 
 const UITools = styled.div<{}>`
   display: flex;
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIMessageBody = styled.div<{}>`

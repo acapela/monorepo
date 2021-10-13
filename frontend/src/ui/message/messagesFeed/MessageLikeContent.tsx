@@ -44,17 +44,14 @@ export const MessageLikeContent = styledObserver<Props>(
 
 const UIFlyingTools = styled(motion.div)<{}>`
   position: absolute;
-  /* Doesn't block text */
-  top: -12px;
-  right: 0;
+  top: 10px;
+  right: 10px;
 `;
 
 const UIContentContainer = styled.div<{}>`
   position: relative;
 
-  /* Needed to have tools fly close to text */
-  min-width: 332px;
-  max-width: 732px;
+  width: 100%;
 
   ${MessageMetaDataWrapper} {
     /* About half text size in padding */

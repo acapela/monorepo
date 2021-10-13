@@ -56,8 +56,13 @@ export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button
   );
 })``;
 
+const ICON_SIZE_TO_TEXT_RATIO = 1.5;
+
 const UIIconHolder = styled.div<{}>`
-  font-size: 1.5em;
+  font-size: ${ICON_SIZE_TO_TEXT_RATIO}em;
+  height: ${1 / ICON_SIZE_TO_TEXT_RATIO}em;
+  display: flex;
+  align-items: center;
 `;
 
 export const UIButton = styled(motion.button)<Props & { kind: ButtonKind }>`

@@ -36,14 +36,10 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
 });
 
 const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
-  width: 100%;
-
-  height: 60px;
-  padding: 10px;
-  border-radius: 8px;
-
-  display: grid;
-  grid-template-columns: 40px 1fr;
+  display: flex;
+  ${theme.box.item};
+  ${theme.spacing.horizontalActions.asGap};
+  ${theme.radius.primaryItem}
 
   align-items: center;
 
@@ -66,6 +62,7 @@ const UIFeedItemLabels = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 `;
 
 const UIFeedItemTitle = styled.h6`

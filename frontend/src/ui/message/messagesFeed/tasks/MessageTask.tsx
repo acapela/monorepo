@@ -53,7 +53,7 @@ const UITextInfo = styled.div<{}>`
 `;
 
 const UIUserNameLabel = styled.span<{}>`
-  ${theme.typo.content.semibold}
+  ${theme.typo.content.semibold.resetLineHeight}
 `;
 
 const UIStatusLabel = styled.span<{ isDone: boolean }>`

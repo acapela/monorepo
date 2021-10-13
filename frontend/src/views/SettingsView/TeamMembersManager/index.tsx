@@ -90,11 +90,10 @@ const UIPanel = styled.div<{}>`
   gap: 32px;
   padding: 24px;
 
-  ${theme.colors.layout.backgroundAccent.asBg};
+  ${theme.colors.layout.background.withBorder.asBg};
   ${theme.radius.panel};
-  ${theme.shadow.popover}
 
-  width: 100%
+  width: 100%;
 `;
 
 const UIHeader = styled.div<{}>`

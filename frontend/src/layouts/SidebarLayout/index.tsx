@@ -77,7 +77,7 @@ const UIMainContent = styled.div<{}>`
 `;
 
 const UIMainContentBody = styled.div`
-  max-width: 1200px;
+  max-width: 800px;
   width: 100%;
   padding: 40px 20px;
 `;
