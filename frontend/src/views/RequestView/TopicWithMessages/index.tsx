@@ -102,12 +102,17 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 });
 
 const UIHolder = styled.div`
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-height: 0;
 `;
 
-const UIHead = styled.div``;
+const UIHead = styled.div`
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+`;
 
 const UITitle = styled.h3`
   ${theme.typo.pageTitle};
@@ -120,6 +125,7 @@ const UIAdditionalInfo = styled.div`
 const UIMessageComposer = styled.div`
   width: 100%;
   margin-top: auto;
-  padding: 24px;
+  padding-top: 20px;
   padding-top: 0px;
+  max-width: 800px;
 `;

@@ -1,6 +1,7 @@
 import { autorun } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
+import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -43,5 +44,18 @@ export const RequestView = observer(({ topicSlug }: Props) => {
     return null;
   }
 
-  return <TopicWithMessages topic={topic} />;
+  return (
+    <UIHolder>
+      <TopicWithMessages topic={topic} />
+    </UIHolder>
+  );
 });
+
+const UIHolder = styled.div`
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;

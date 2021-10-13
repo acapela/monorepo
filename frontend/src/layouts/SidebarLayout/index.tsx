@@ -73,11 +73,9 @@ const UIMainContent = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  overflow-y: hidden;
 `;
 
 const UIMainContentBody = styled.div`
-  max-width: 800px;
   width: 100%;
-  padding: 40px 20px;
 `;
