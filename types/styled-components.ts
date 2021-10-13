@@ -264,7 +264,13 @@ declare module "styled-components" {
 
   export type InterpolationPart<P> = InterpolationStaticValue | InterpolationFunction<P>;
   export type StylesPart = InterpolationPart<any> | InterpolationPart<any>[];
-  export type InterpolationStaticValue = string | number | FalseyValue | Keyframes | StyledComponentInterpolation;
+  export type InterpolationStaticValue =
+    | string
+    | number
+    | FalseyValue
+    | Keyframes
+    | Record<string, unknown>
+    | StyledComponentInterpolation;
   // Static interpolation is used in cases where no props are passed eg. css`definition with no functions inside`
   export type StaticInterpolation =
     | InterpolationStaticValue
