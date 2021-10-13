@@ -111,6 +111,8 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
       get interactive() {
         return flushFullstyles(css`
           ${self.asBgWithReadableText};
+          will-change: background-color;
+
           &:hover {
             ${self.hover.asBg};
           }

@@ -58,7 +58,6 @@ export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button
 
 const UIIconHolder = styled.div<{}>`
   font-size: 1.5em;
-  margin: -0.25em 0;
 `;
 
 export const UIButton = styled(motion.button)<Props & { kind: ButtonKind }>`

@@ -10,6 +10,7 @@ import { useRefValue } from "~shared/hooks/useRefValue";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
 import { BodyPortal } from "~ui/BodyPortal";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
 export type PopoverPlacement = Placement;
@@ -70,6 +71,10 @@ export const Popover = styled<PopoverProps>(
 
     useResizeCallback(poperRef, () => {
       throttledUpdate?.();
+    });
+
+    useShortcut("Esc", () => {
+      onClickOutside?.();
     });
 
     if (isDisabled) return null;

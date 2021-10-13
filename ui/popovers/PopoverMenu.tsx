@@ -66,32 +66,23 @@ export const PopoverMenu = styled<Props>(
 )``;
 
 export const UIPopoverMenuModal = styled(UIDropdownPanelBody)<{}>`
-  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 200px;
 `;
 
 const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isClickable: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px 8px;
+  cursor: pointer;
 
-  ${theme.typo.label.readingLineHeight};
+  ${theme.typo.action.regular.readingLineHeight.medium};
+  ${theme.transitions.hover()};
+  ${theme.box.selectOption};
+
+  ${theme.colors.panels.popover.interactive}
+
   border: 1px solid transparent;
-
-  ${(props) =>
-    props.isClickable &&
-    css`
-      cursor: pointer;
-      ${theme.transitions.hover()};
-      &:hover {
-        border-color: ${theme.colors.primary.border};
-        background: ${theme.colors.primary.opacity(0.05)};
-      }
-    `}
 
   ${(props) =>
     props.isDisabled &&
@@ -100,9 +91,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
       pointer-events: none;
     `}
 
-  color: ${(props) => (props.isDestructive ? theme.colors.status.danger : theme.colors.text)};
-
-  ${theme.radius.secondaryItem};
+  color: ${(props) => props.isDestructive && theme.colors.status.danger};
 `;
 
 const UIItemIcon = styled.div<{}>`
