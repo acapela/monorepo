@@ -36,8 +36,8 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
   return (
     <>
       <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={!!isSelectedByCurrentUser}>
-        <p>{emoji}</p>
-        <p>{reactions.length}</p>
+        <UIEmoji>{emoji}</UIEmoji>
+        <span>{reactions.length}</span>
       </UIReactionButton>
       <Tooltip
         anchorRef={buttonRef}
@@ -53,16 +53,21 @@ const background = theme.colors.layout.backgroundAccent;
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
+  ${theme.box.label};
   ${theme.spacing.horizontalActions.asGap}
-  ${theme.radius.circle}
+  ${theme.radius.secondaryItem}
   cursor: pointer;
   ${theme.typo.action.regular};
   ${theme.colors.text.secondary.asColor}
   ${background.asBg};
 
-  ${(p) =>
-    p.isSelected &&
+  ${(props) =>
+    props.isSelected &&
     css`
       ${background.hover.asBg};
     `}
+`;
+
+const UIEmoji = styled.span`
+  font-size: 1.25em;
 `;

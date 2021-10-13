@@ -37,6 +37,6 @@ export const typo = {
   functional: {
     // eg "Hit ⌘ + Enter to create Topic"
     hint: subtitle,
-    tooltip: subtitle.bold,
+    tooltip: subtitle,
   },
 };
