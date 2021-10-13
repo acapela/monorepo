@@ -20,7 +20,7 @@ export const UserMenu = observer(function UserMenu() {
 
   return (
     <UIHolder>
-      <UserAvatar user={user} size="regular" disableNameTooltip />
+      <UserAvatar user={user} size={30} disableNameTooltip />
       <PopoverMenuTrigger
         onOpen={() => {
           routes.settings.prefetch({});

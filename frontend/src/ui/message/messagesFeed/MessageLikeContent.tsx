@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
@@ -13,13 +13,13 @@ interface Props {
   user: UserEntity;
   date: Date;
   children: ReactNode;
-  hasHiddenMetadata?: boolean;
+  showOnlyContent?: boolean;
   tools?: ReactNode;
   className?: string;
 }
 
 export const MessageLikeContent = styledObserver<Props>(
-  ({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
+  ({ user, date, children, tools, className, showOnlyContent = false }) => {
     const holderRef = useRef<HTMLDivElement>(null);
     const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
@@ -29,9 +29,10 @@ export const MessageLikeContent = styledObserver<Props>(
         className={className}
         onMouseEnter={() => setHovered()}
         onMouseLeave={() => unsetHovered()}
+        hasTopSpacing={!showOnlyContent}
       >
         <UIContentContainer>
-          <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
+          <MessageMetaDataWrapper user={user} date={date} isNextSameUserMessage={showOnlyContent} isHovered={isHovered}>
             {children}
           </MessageMetaDataWrapper>
           {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
@@ -61,7 +62,7 @@ const UIContentContainer = styled.div<{}>`
   }
 `;
 
-const UIAnimatedMessageWrapper = styled.div<{}>`
+const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
   display: flex;
   align-items: start;
 
@@ -72,6 +73,12 @@ const UIAnimatedMessageWrapper = styled.div<{}>`
     opacity: 0;
     transition: 0.1s all;
   }
+
+  ${(props) =>
+    props.hasTopSpacing &&
+    css`
+      margin-top: 30px;
+    `}
 
   &:hover {
     background: ${theme.colors.layout.backgroundAccent};

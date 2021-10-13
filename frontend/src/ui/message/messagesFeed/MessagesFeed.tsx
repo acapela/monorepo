@@ -86,5 +86,6 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIDateHeader = styled.div<{}>`
-  font-size: ${theme.typo.content.bold.center};
+  font-size: ${theme.typo.content.secondary.center};
+  margin-top: 30px;
 `;

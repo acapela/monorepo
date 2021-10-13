@@ -12,49 +12,67 @@ interface Props {
   date: Date;
   children: ReactNode;
   className?: string;
-  isHidden?: boolean;
+  isNextSameUserMessage?: boolean;
   isHovered?: boolean;
 }
 
-export const MessageMetaDataWrapper = styledObserver(
-  ({ user, date, children, isHidden = false, isHovered = false, className }: Props) => {
-    const canShowSideTimeLabel = isHidden && isHovered;
+const AVATAR_SIZE = 30;
 
+export const MessageMetaDataWrapper = styledObserver(
+  ({ user, date, children, isNextSameUserMessage = false, isHovered = false, className }: Props) => {
     return (
       <UIHolder className={className}>
-        {!isHidden && (
-          <>
-            <UserAvatar user={user} />{" "}
+        <UIMessageSideInfo>
+          {!isNextSameUserMessage && (
+            <>
+              <UserAvatar user={user} size={AVATAR_SIZE} />{" "}
+            </>
+          )}
+        </UIMessageSideInfo>
+        <UIMessageBody>
+          {!isNextSameUserMessage && (
             <UIHead>
-              {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
+              <UIAuthorName>{user.name || "Guest"}</UIAuthorName>
+              <UIHeaderTimeLabel date={date} />
             </UIHead>
-          </>
-        )}
-        <div>{canShowSideTimeLabel && <UISideTimeLabel date={date} />}</div>
-        {children}
+          )}
+          {isHovered && <UISideTimeLabel date={date} />}
+          {children}
+        </UIMessageBody>
       </UIHolder>
     );
   }
 )``;
 
 const UIHolder = styled.div<{}>`
-  display: grid;
-
-  grid-template-columns: 24px minmax(360px, 700px);
-  gap: 0 10px;
+  display: flex;
+  ${theme.spacing.horizontalActions.asGap};
 `;
+
+const UIMessageSideInfo = styled.div`
+  min-width: ${AVATAR_SIZE}px;
+`;
+
+const UIMessageBody = styled.div``;
+
+const UIAuthorInfo = styled.div``;
 
 const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
-  gap: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 
-  ${theme.typo.content.semibold}
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
   opacity: 0.4;
   user-select: none;
+`;
+
+const UIAuthorName = styled.div`
+  ${theme.typo.content.semibold}
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`

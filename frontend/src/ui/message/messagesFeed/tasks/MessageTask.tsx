@@ -28,7 +28,7 @@ export const MessageTask = observer(({ task }: Props) => {
 
   return (
     <UISingleTask key={task.id}>
-      {task.user ? <UserAvatar user={task.user} /> : <Avatar name="?" />}
+      {task.user ? <UserAvatar size={30} user={task.user} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
         <UIStatusLabel isDone={task.isDone}>
@@ -42,7 +42,8 @@ export const MessageTask = observer(({ task }: Props) => {
 
 const UISingleTask = styled.div<{}>`
   display: flex;
-  gap: 10px;
+  align-items: center;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UITextInfo = styled.div<{}>`

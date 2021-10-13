@@ -7,7 +7,7 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
-  ${theme.typo.content}
+  ${theme.font.readingLineHeight};
 
   ol {
     list-style-type: decimal;

@@ -206,34 +206,12 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
 
 const UIMention = styled.span<{ mentionType: MentionType }>`
   cursor: default;
-  height: 1.25em;
-  padding: 2px 8px;
 
-  ${theme.radius.secondaryItem}
-  ${theme.typo.label}
+  ${theme.colors.tags.primary.asColor};
 
-  ${(props) => {
-    switch (props.mentionType) {
-      case "request-read":
-        return css`
-          ${theme.colors.tags.primary.asBgWithReadableText};
-
-          svg {
-            color: inherit;
-          }
-        `;
-      case "request-response":
-        return css`
-          ${theme.colors.tags.primary.asBgWithReadableText};
-
-          svg {
-            color: inherit;
-          }
-        `;
-      default:
-        return "";
-    }
-  }};
+  svg {
+    color: inherit;
+  }
 `;
 
 const UISelectItem = styled.div<{}>`

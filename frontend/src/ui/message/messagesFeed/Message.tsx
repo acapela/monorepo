@@ -131,7 +131,7 @@ export const Message = styledObserver<Props>(
             )
           }
           user={message.user}
-          hasHiddenMetadata={isBundledWithPreviousMessage}
+          showOnlyContent={isBundledWithPreviousMessage}
           date={new Date(message.created_at)}
         >
           <UIMessageBody>

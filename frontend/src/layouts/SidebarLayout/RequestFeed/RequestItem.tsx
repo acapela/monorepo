@@ -69,7 +69,7 @@ const UIFeedItemLabels = styled.div<{}>`
 `;
 
 const UIFeedItemTitle = styled.h6`
-  ${theme.typo.content};
+  ${theme.typo.content.semibold.resetLineHeight};
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
