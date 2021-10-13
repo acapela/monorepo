@@ -87,11 +87,16 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
   }
   const layout = avatarLayoutByCount[participantsLayoutCount];
 
+  if (!layout) {
+    console.warn(`Incorrect count of participants - ${participantsLayoutCount}`);
+    return null;
+  }
+
   const avatarSize = layout.avatarSize;
 
   return (
     <UIHolder>
-      {participants.map((participant, index) => {
+      {participantsToShow.map((participant, index) => {
         const avatarLayout = layout.avatars[index];
         return (
           <UIAvatarHolder key={participant.id + index} avatarSize={avatarSize} layout={avatarLayout}>
