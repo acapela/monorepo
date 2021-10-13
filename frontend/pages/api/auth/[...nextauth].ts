@@ -126,16 +126,28 @@ const authAdapterProvider = {
       },
 
       async linkAccount(userId, providerId, providerType, providerAccountId, refreshToken, accessToken) {
-        await db.account.create({
-          data: {
-            user_id: userId,
-            provider_id: providerId,
-            provider_type: providerType,
-            provider_account_id: providerAccountId,
-            refresh_token: refreshToken,
-            access_token: accessToken,
-          },
-        });
+        await db.$transaction([
+          db.account.create({
+            data: {
+              user_id: userId,
+              provider_id: providerId,
+              provider_type: providerType,
+              provider_account_id: providerAccountId,
+              refresh_token: refreshToken,
+              access_token: accessToken,
+            },
+          }),
+          // has_account field needs to be updated
+          db.user.update({
+            where: {
+              id: userId,
+            },
+            data: {
+              // sets updated_at to now()
+              updated_at: null,
+            },
+          }),
+        ]);
       },
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -200,13 +212,7 @@ async function sendVerificationRequest({ identifier: email, url }: VerificationR
   });
 }
 
-const GOOGLE_AUTH_SCOPES = [
-  "userinfo.profile",
-  "userinfo.email",
-  "calendar.readonly",
-  "calendar.events",
-  "directory.readonly",
-];
+const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
