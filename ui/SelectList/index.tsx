@@ -53,27 +53,26 @@ const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   min-width: 15rem;
-  padding: 0.5rem 0;
+  padding: 5px 0;
+  overflow: hidden;
 
-  ${theme.colors.layout.background.withBorder.asBgWithReadableText};
+  ${theme.colors.panels.popover.asBgWithReadableText};
 
-  box-sizing: border-box;
   ${theme.shadow.modal};
   ${theme.radius.panel};
 `;
 
 const UIItem = styled.div<{ isActive: boolean }>`
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  ${theme.box.selectOption};
   display: flex;
   align-items: center;
   cursor: pointer;
 
-  ${theme.colors.layout.background.interactive};
+  ${theme.colors.panels.popover.interactive};
 
   ${theme.transitions.hover()}
 
-  ${(props) => props.isActive && theme.colors.layout.background.hover.asBg};
+  ${(props) => props.isActive && theme.colors.panels.popover.active.asBg};
 
   border-radius: 0;
 `;

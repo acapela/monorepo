@@ -49,9 +49,10 @@ export const DropdownItem = styled(function DropdownItem({
   );
 })``;
 
+const background = theme.colors.panels.popover;
+
 const UIOption = styled.div<{ isHighlighted: boolean }>`
-  padding: 0 16px;
-  height: 42px;
+  ${theme.box.selectOption};
 
   display: flex;
   align-items: center;
@@ -60,21 +61,16 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  border: 1px solid transparent;
-
-  transition: 0.15s all;
-  ${theme.radius.secondaryItem};
+  ${theme.transitions.hover()};
+  ${background.interactive};
+  ${theme.spacing.horizontalActions.asGap};
 
   svg {
-    font-size: 24px;
+    font-size: 1.25em;
   }
 
   ${OptionLabel} {
     flex-grow: 1;
-  }
-
-  &:hover {
-    ${theme.colors.primary.opacity(0.05).asBg};
   }
 
   svg {
@@ -84,7 +80,6 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   ${(props) =>
     props.isHighlighted &&
     css`
-      border: 1px solid ${theme.colors.primary};
-      ${theme.colors.primary.opacity(0.05).asBg};
+      ${background.active.asBg};
     `}
 `;

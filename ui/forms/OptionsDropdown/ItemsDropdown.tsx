@@ -95,16 +95,9 @@ const UIMenu = styled(PopPresenceAnimator)<{ maxHeight?: number }>`
       max-height: ${maxHeight}px;
     `}
   overflow-y: auto;
-  border: 1px solid ${theme.colors.layout.background.border};
   width: 100%;
-  padding: 12px;
+  padding: 5px 0;
   ${theme.radius.panel};
   ${theme.colors.panels.popover.asBgWithReadableText};
   ${theme.shadow.popover};
-
-  ${DropdownItem} {
-    &:not(:last-child) {
-      margin-bottom: 4px;
-    }
-  }
 `;

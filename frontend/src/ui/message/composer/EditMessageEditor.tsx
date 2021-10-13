@@ -120,10 +120,10 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
         hideEditorSubmitButton
       />
       <UIButtons gap={8} justifyContent="end">
-        <Button kind="transparent" onClick={onCancelRequest}>
+        <Button kind="secondary" onClick={onCancelRequest}>
           Cancel
         </Button>
-        <Button isDisabled={!getCanSubmit()} onClick={handleSubmit}>
+        <Button kind="primary" isDisabled={!getCanSubmit()} onClick={handleSubmit}>
           Save
         </Button>
       </UIButtons>
