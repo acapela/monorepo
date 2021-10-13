@@ -13,7 +13,8 @@ import { NewRequest } from "./NewRequest";
 
 export const NewRequestView = observer(function NewRequestView() {
   const db = useDb();
-  const user = useCurrentUserTokenData();
+  const userToken = useCurrentUserTokenData();
+  const user = userToken && db.user.findById(userToken.id);
   const hasTeamMembers = db.teamMember.all.length > 1;
 
   return (
