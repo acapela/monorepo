@@ -87,8 +87,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       db.user.findFirst({ where: { email, team_member: { some: { team_id } } }, include: { account: true } });
 
     let user = await findUserByEmailAndTeamId();
-    const hasAlreadyAcceptedInvitation = (user?.account.length || 0) > 0;
-    if (hasAlreadyAcceptedInvitation || !invitingUserId) {
+    if (user || !invitingUserId) {
       return { success: false };
     }
 
@@ -104,7 +103,10 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
 
     assert(user, "user must have been created");
 
-    await sendInviteNotification(user, team_id, invitingUserId);
+    if (user.account.length === 0) {
+      // Only send invite notification email to users without an account
+      await sendInviteNotification(user, team_id, invitingUserId);
+    }
 
     return {
       success: true,
