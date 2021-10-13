@@ -58,7 +58,6 @@ export function font(parentStyles: StylesPart[] = []): Font {
 
   const self: Font = createThemeTarget<FontVariants>(
     () => {
-      console.log({ parentStyles });
       return css`
         ${parentStyles}
       `;

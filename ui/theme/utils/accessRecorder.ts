@@ -11,15 +11,17 @@ export type AccessAction =
     };
 
 export function replayAccess(newTarget: object, records: AccessAction[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentResult: any = newTarget;
 
   for (const record of records) {
     if (record.type === "get") {
-      currentResult = Reflect.get(currentResult, record.property);
+      currentResult = currentResult[record.property];
       continue;
     }
     if (record.type === "apply") {
-      currentResult = Reflect.apply(currentResult, null, record.args);
+      // eslint-disable-next-line prefer-spread
+      currentResult = (currentResult as Function).apply(null, record.args);
       continue;
     }
 

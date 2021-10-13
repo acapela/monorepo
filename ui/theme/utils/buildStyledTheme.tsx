@@ -2,6 +2,8 @@ import { PropsWithChildren } from "react";
 import { ThemeProvider } from "styled-components";
 import { isPrimitive } from "utility-types";
 
+import { measureTime } from "~shared/dev";
+
 import { AccessAction, replayAccess } from "./accessRecorder";
 import { DeepProxyThisArgument, createDeepProxy } from "./DeepProxy";
 
@@ -61,8 +63,6 @@ export function buildStyledTheme<T extends object>(theme: T) {
       try {
         const valueFromTheme = replayAccess(theme, accessRecord);
 
-        console.log({ valueFromTheme, accessRecord });
-
         return valueFromTheme;
       } catch (error) {
         console.error(`Failed to get value from theme`, { accessRecord });
@@ -80,7 +80,6 @@ export function buildStyledTheme<T extends object>(theme: T) {
     value: unknown,
     valuePositionInParent: AccessAction
   ) {
-    console.log("convert", { value, valuePositionInParent });
     const parentAccessPath = trap.parentContext.accessPath ?? [];
     const newAccessPath = [...parentAccessPath, valuePositionInParent];
 
@@ -114,7 +113,10 @@ export function buildStyledTheme<T extends object>(theme: T) {
         return convertProxyValueToThemeGetterOrNestedProxy(this, result, { type: "apply", args });
       },
       get(target, propertyName, receiver) {
-        console.log(propertyName);
+        if (!Reflect.getOwnPropertyDescriptor(target, propertyName)) {
+          return undefined;
+        }
+
         const result = Reflect.get(target, propertyName, receiver);
 
         // No part of the theme should return undefined at any point.

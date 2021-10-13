@@ -5,7 +5,7 @@ const inter = font().inter;
 const readable = inter.inter.readingLineHeight;
 const header = inter.inter.headerLineHeight;
 
-const subtitle = readable.size(11).secondary;
+const subtitle = readable.size(11);
 const content = readable.size(14);
 
 const textTitle = content.bold;
@@ -28,7 +28,7 @@ export const typo = {
     // Used for topic message snippet, options section item description, team member email etc.
     subtitle: subtitle,
     // Used eg. for attachment titles
-    secondaryTitle: readable.size(11).bold.secondary,
+    secondaryTitle: readable.size(11).semibold.secondary,
   },
   section: {
     // Used for 'open', 'closed' topic groups titles,

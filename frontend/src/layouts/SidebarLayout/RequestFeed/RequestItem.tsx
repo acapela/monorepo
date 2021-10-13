@@ -73,7 +73,7 @@ const UIFeedItemTitle = styled.h6`
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
-  ${theme.typo.item.subtitle.secondary};
+  ${theme.typo.item.subtitle};
 
   display: -webkit-box;
   -webkit-line-clamp: 1;

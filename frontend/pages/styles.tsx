@@ -11,8 +11,6 @@ export default function App() {
   );
 }
 
-console.log(theme);
-
 devAssingWindowVariable("theme", theme);
 
 const UITest = styled.div`
