@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { runUntracked } from "~frontend/../../shared/mobxUtils";
+import { pluralize } from "~frontend/../../shared/text/pluralize";
 import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -56,7 +57,12 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   return (
     <TopicStoreContext>
       <UIHolder>
-        <UITitle>{topic.name}</UITitle>
+        <UIHead>
+          <UITitle>{topic.name}</UITitle>
+          <UIAdditionalInfo>
+            {topic.participants.count} {pluralize(topic.participants.count, "participant", "participants")}
+          </UIAdditionalInfo>
+        </UIHead>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <AnimateSharedLayout>
@@ -101,8 +107,14 @@ const UIHolder = styled.div`
   flex-direction: column;
 `;
 
+const UIHead = styled.div``;
+
 const UITitle = styled.h3`
   ${theme.typo.pageTitle};
+`;
+
+const UIAdditionalInfo = styled.div`
+  ${theme.typo.content.secondary}
 `;
 
 const UIMessageComposer = styled.div`
