@@ -26,7 +26,7 @@ const UIHolder = styled.div`
   align-items: center;
   justify-content: center;
   border: 1px solid ${theme.colors.layout.background.border};
-  ${theme.radius.item}
+  ${theme.radius.secondaryItem}
 `;
 
 const spinAnimation = keyframes`

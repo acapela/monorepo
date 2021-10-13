@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 import { theme } from "~ui/theme";
 
-import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
+import { getButtonKindtyles } from "./variants";
 
 interface Props {
   isActive: boolean;
@@ -38,10 +38,9 @@ export const UIButton = styled.button<{ isActive: boolean }>`
   display: flex;
   align-items: center;
 
-  ${buttonSizeSpecificStyle.small}
-  ${buttonKindSpecificStyle.secondary}
+  ${getButtonKindtyles("secondary")};
   ${theme.font.spezia.semibold}
-  
+
   cursor: pointer;
 
   ${({ isActive }) => (isActive ? activeButtonStyles : forceIconColorToBeTextColor)}

@@ -130,5 +130,5 @@ const UISelectGridContainer = styled.div<{}>`
   width: 100%;
   padding: 8px;
   border: 1px solid ${theme.colors.layout.background.border};
-  ${theme.radius.menu}
+  ${theme.radius.panel}
 `;

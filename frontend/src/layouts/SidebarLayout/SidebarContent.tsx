@@ -23,7 +23,7 @@ export const SidebarContent = observer(function SidebarContent() {
         <UserMenu />
         <RouteLink route={routes.newRequest} params={{}}>
           <a>
-            <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
+            <Button kind="secondary" icon={<IconPlus />} iconAtStart>
               New Request
             </Button>
           </a>

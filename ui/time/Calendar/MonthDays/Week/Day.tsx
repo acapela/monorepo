@@ -25,7 +25,6 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
       <UISquareWrapper>
         <UISquareContent>
           <UIDayButton
-            kind="transparent"
             data-tooltip={isTodayDay && "Today"}
             isToday={isTodayDay}
             isSelected={isSelected}

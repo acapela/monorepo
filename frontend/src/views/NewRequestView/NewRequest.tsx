@@ -234,7 +234,7 @@ export const NewRequest = observer(function NewRequest() {
       </UIContentHolder>
       <UIFooter>
         <FileInput onFileSelected={(file) => uploadAttachments([file])}>
-          <Button kind="secondary" icon={<IconFolder />} iconPosition="start">
+          <Button kind="secondary" icon={<IconFolder />} iconAtStart>
             Add File
           </Button>
         </FileInput>
