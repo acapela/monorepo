@@ -1,4 +1,5 @@
 import { radius } from "./borderRadius";
+import { box } from "./box";
 import { colors } from "./colors";
 import { shadow } from "./shadow";
 import { spacing } from "./spacing";
@@ -17,6 +18,7 @@ export const defaultTheme = {
   shadow: shadow,
   radius: radius,
   zIndex: zIndexValues,
+  box: box,
 };
 
 export const [theme, AppThemeProvider] = buildStyledTheme(defaultTheme);

@@ -1,8 +1,8 @@
 import { color } from "./utils/color";
 
 const white = color("hsl(0, 0%, 100%)", {
-  hover: color("hsl(0, 0%, 95%)"),
-  active: color("hsl(0, 0%, 90%)"),
+  hover: color("hsl(220, 33%, 98%)"),
+  active: color("hsl(220, 33%, 95%)"),
 });
 
 const black = color("hsl(0, 0%, 0%)", {

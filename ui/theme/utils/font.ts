@@ -25,6 +25,7 @@ type FontVariants = {
 
   readingLineHeight: Font;
   headerLineHeight: Font;
+  resetLineHeight: Font;
 
   opacity(opacity: number): Font;
   secondary: Font;
@@ -141,6 +142,11 @@ export function font(parentStyles: StylesPart[] = []): Font {
       get headerLineHeight() {
         return withStyles(css`
           line-height: 1.2em;
+        `);
+      },
+      get resetLineHeight() {
+        return withStyles(css`
+          line-height: 1em;
         `);
       },
     }
