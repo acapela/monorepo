@@ -24,6 +24,7 @@ export const colors = {
   action: {
     // Used for buttons
     primary,
+    link: primary,
     // Used for secondary buttons
     secondary: white,
     // Used eg. for icon buttons in composer
@@ -41,5 +42,12 @@ export const colors = {
   panels: {
     popover: black,
     tooltip: black,
+    notification: primary,
+  },
+  status: {
+    // TODO: Adjust
+    error: primary,
+    warning: primary,
+    success: primary,
   },
 };
