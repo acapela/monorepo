@@ -43,6 +43,7 @@ export const colors = {
     popover: black,
     tooltip: black,
     notification: primary,
+    modal: white,
   },
   status: {
     // TODO: Adjust
