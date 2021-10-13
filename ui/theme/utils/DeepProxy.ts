@@ -29,6 +29,7 @@ interface DeepProxyHandlers<T extends object, C> {
   construct?(this: DeepProxyThisArgument<T, C>, target: T, argArray: any, newTarget?: any): object;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DeepProxyThisArgument<T, C> {
   nest(value?: unknown, context?: C): object;
   parentContext: C;
