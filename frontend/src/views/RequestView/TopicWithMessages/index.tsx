@@ -103,7 +103,6 @@ const UIHolder = styled.div`
 
 const UITitle = styled.h3`
   ${theme.typo.pageTitle};
-  padding: 20px;
 `;
 
 const UIMessageComposer = styled.div`
