@@ -1,11 +1,11 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
+import { theme } from "~ui/theme";
 
 import { ScreenCover } from "./ScreenCover";
 

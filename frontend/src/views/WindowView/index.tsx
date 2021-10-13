@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { Logo } from "~frontend/ui/Logo";
+import { theme } from "~ui/theme";
 
 interface Props {
   children: ReactNode;

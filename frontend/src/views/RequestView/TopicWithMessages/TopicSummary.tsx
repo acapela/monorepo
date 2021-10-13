@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
+import { theme } from "~ui/theme";
 
 type Props = {
   topic: TopicEntity;

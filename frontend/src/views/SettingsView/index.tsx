@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
 import { CurrentTeamMembersManager } from "./TeamMembersManager";

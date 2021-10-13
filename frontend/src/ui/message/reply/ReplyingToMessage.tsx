@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
@@ -10,6 +9,7 @@ import { MessageText } from "~frontend/ui/message/display/types/TextMessageConte
 import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { theme } from "~ui/theme";
 
 type Props = {
   message: MessageEntity;

@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
@@ -27,6 +26,7 @@ import { select } from "~shared/sharedState";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { theme } from "~ui/theme";
 
 import { MessageLikeContent } from "./MessageLikeContent";
 import { MessageTasks } from "./tasks/MessageTasks";

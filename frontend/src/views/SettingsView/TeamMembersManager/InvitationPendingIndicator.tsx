@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
 import { IconUserPlus } from "~ui/icons";
+import { theme } from "~ui/theme";
 
 interface Props {
   label: string;

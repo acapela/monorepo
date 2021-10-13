@@ -4,8 +4,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
+import { theme } from "~ui/theme";
 
 interface Props {
   emoji: string;

@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { UserEntity } from "~frontend/clientdb/user";
+import { theme } from "~ui/theme";
 
 import { Avatar } from "./Avatar";
 import { UserBasicInfoContainer } from "./UserBasicInfoContainer";
