@@ -62,10 +62,6 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
     },
   };
 
-  function inherit(input: string, newConfig: Thunk<ColorPredefinedVariants> = {}) {
-    return color(input, { ...config, ...newConfig, state });
-  }
-
   const self: Color = createThemeTarget<ColorVariants>(
     () =>
       css`

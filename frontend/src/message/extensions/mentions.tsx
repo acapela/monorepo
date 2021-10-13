@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import { toPairs } from "lodash";
 import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";

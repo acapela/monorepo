@@ -1,6 +1,6 @@
 import { formatRelative } from "date-fns";
 import { AnimateSharedLayout } from "framer-motion";
-import { noop, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
 import React from "react";
 import styled from "styled-components";
 

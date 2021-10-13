@@ -1,7 +1,6 @@
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { setColorOpacity } from "~shared/colors";
 import { handleWithStopPropagation } from "~shared/events";
 import { createLocalStorageValueManager } from "~shared/localStorage";
 import { EndFpsMeasurement, startMeasuringFps } from "~shared/performance";

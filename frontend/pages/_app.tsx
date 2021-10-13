@@ -10,7 +10,6 @@ import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { ThemeProvider } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";

@@ -2,8 +2,6 @@ import { PropsWithChildren } from "react";
 import { ThemeProvider } from "styled-components";
 import { isPrimitive } from "utility-types";
 
-import { measureTime } from "~shared/dev";
-
 import { AccessAction, replayAccess } from "./accessRecorder";
 import { DeepProxyThisArgument, createDeepProxy } from "./DeepProxy";
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mapValues } from "lodash";
 
 type AnyFunction = (...args: unknown[]) => unknown;

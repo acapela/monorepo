@@ -57,8 +57,6 @@ const UIMessageBody = styled.div`
   position: relative;
 `;
 
-const UIAuthorInfo = styled.div``;
-
 const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
