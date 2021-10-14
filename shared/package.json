@@ -22,7 +22,8 @@
     "@types/color": "^3.0.2",
     "@types/is-hotkey": "^0.1.5",
     "@types/jsonwebtoken": "^8.5.5",
-    "@types/pino": "^6.3.11"
+    "@types/pino": "^6.3.11",
+    "jest": "^27.2.5"
   },
   "scripts": {
     "test": "jest",
