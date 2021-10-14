@@ -10,7 +10,6 @@ import { Entity } from "./entity";
 import {
   EntityFilterInput,
   EntityQuery,
-  EntityQueryConfig,
   EntityQuerySortFuntion,
   EntityQuerySortInput,
   createEntityQuery,
@@ -26,13 +25,13 @@ export interface EntityStoreFindMethods<Data, Connections> {
     sort?: EntityQuerySortFuntion<Data, Connections>
   ) => EntityQuery<Data, Connections>;
   sort: (sort: EntityQuerySortInput<Data, Connections>) => EntityQuery<Data, Connections>;
-  findByUniqueIndex<K extends keyof IndexQueryInput<Data | Connections>>(
+  findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
     key: K,
-    value: IndexQueryInput<Data | Connections>[K]
+    value: IndexQueryInput<Data & Connections>[K]
   ): Entity<Data, Connections> | null;
-  assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data | Connections>>(
+  assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
     key: K,
-    value: Data[K]
+    value: IndexQueryInput<Data & Connections>[K]
   ): Entity<Data, Connections>;
 
   findById(id: string): Entity<Data, Connections> | null;
@@ -173,11 +172,11 @@ export function createEntityStore<Data, Connections>(
         return passingResults ?? [];
       }).get();
     },
-    findByUniqueIndex<K extends keyof IndexQueryInput<Data | Connections>>(
+    findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,
-      value: IndexQueryInput<Data | Connections>[K]
+      value: IndexQueryInput<Data & Connections>[K]
     ) {
-      const query: IndexQueryInput<Data | Connections> = {};
+      const query: IndexQueryInput<Data & Connections> = {};
       // TS was complaining about ^ {[key]: value} as it considered key as string in such case, not as keyof Data
       query[key] = value;
 
@@ -190,7 +189,10 @@ export function createEntityStore<Data, Connections>(
         return results[0];
       }).get();
     },
-    assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data | Connections>>(key: K, value: Data[K]) {
+    assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+      key: K,
+      value: IndexQueryInput<Data & Connections>[K]
+    ) {
       const entity = store.findByUniqueIndex(key, value);
 
       assert(entity, `Assertion error for assertFindByUniqueIndex for key ${key} and value ${value}`);
