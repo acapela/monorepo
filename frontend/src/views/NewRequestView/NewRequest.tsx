@@ -149,8 +149,8 @@ export const NewRequest = observer(function NewRequest() {
     };
   }, [isSubmitting, clearTopicName, clearMessageContent, attachmentsList, router.events]);
 
-  function getAvailableSlugForTopicName(topicName: string) {
-    const optimisticSlug = slugify(topicName);
+  async function getAvailableSlugForTopicName(topicName: string) {
+    const optimisticSlug = await slugify(topicName);
 
     return runUntracked(() => {
       if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
@@ -170,15 +170,17 @@ export const NewRequest = observer(function NewRequest() {
     editorRef.current?.chain().focus("start");
   }
 
-  function submit() {
+  async function submit() {
     if (!isValid) {
       return;
     }
 
     markAsSubmittingInProgress();
 
+    const topicNameSlug = await getAvailableSlugForTopicName(topicName);
+
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
+      const topic = db.topic.create({ name: topicName, slug: topicNameSlug });
       const newMessage = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
 
       for (const { userId, type } of getUniqueMentionDataFromContent(messageContent)) {
