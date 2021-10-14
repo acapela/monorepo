@@ -11,7 +11,6 @@ import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { runUntracked } from "~shared/mobxUtils";
-import { pluralize } from "~shared/text/pluralize";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -60,7 +59,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         <UIHead>
           <UITitle>{topic.name}</UITitle>
           <UIAdditionalInfo>
-            {topic.participants.count} {pluralize(topic.participants.count, "participant", "participants")}
+            {topic.participants.count} {topic.participants.count === 1 ? "participant" : "participants"}
           </UIAdditionalInfo>
         </UIHead>
 

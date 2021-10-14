@@ -15,8 +15,8 @@ export const defaultTheme = {
   spacing,
   colors,
   transitions,
-  shadow: shadow,
-  radius: radius,
+  shadow,
+  radius,
   zIndex: zIndexValues,
   box: box,
 };
