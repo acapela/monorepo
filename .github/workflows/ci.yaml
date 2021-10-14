@@ -83,6 +83,7 @@ jobs:
           yarn hasura:update
           yarn generate
       - run: yarn run backend:test
+      - run: yarn shared test
 
   e2e:
     name: E2E Tests
