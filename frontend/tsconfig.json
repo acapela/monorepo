@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
       "~frontend/*": ["./*"]

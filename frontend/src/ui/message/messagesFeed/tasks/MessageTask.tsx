@@ -20,7 +20,7 @@ const TASK_TYPE_LABELS = new Map(
 
 export const MessageTask = observer(({ task }: Props) => (
   <UISingleTask key={task.id}>
-    {task.user ? <UserAvatar user={task.user} /> : <Avatar name="?" />}
+    {task.user ? <UserAvatar size={30} user={task.user} /> : <Avatar name="?" />}
     <UITextInfo>
       <UIUserNameLabel>{task.user?.name}</UIUserNameLabel>
       <UIStatusLabel isDone={task.isDone}>
@@ -33,7 +33,8 @@ export const MessageTask = observer(({ task }: Props) => (
 
 const UISingleTask = styled.div<{}>`
   display: flex;
-  gap: 10px;
+  align-items: center;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UITextInfo = styled.div<{}>`
@@ -43,10 +44,10 @@ const UITextInfo = styled.div<{}>`
 `;
 
 const UIUserNameLabel = styled.span<{}>`
-  ${theme.font.semibold.build()}
+  ${theme.typo.content.semibold.resetLineHeight}
 `;
 
 const UIStatusLabel = styled.span<{ isDone: boolean }>`
-  ${theme.font.withExceptionalSize("11px", "small").withExceptionalLineHeight("1.2", "new design").build()}
+  ${theme.typo.label};
   color: ${(props) => (props.isDone ? "#ff57e3" : "hsla(0, 0%, 0%, 0.4)")};
 `;

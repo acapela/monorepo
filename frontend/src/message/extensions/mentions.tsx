@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import { toPairs } from "lodash";
 import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
@@ -189,7 +189,7 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         @{db.user.findById(data.userId)?.name ?? "???"}
         {isEditable && (
           <UIMentionPopoverOpenIndicator>
-            <UIMentionIcon icon={<IconChevronUp />} size={"inherit"} />
+            <UIMentionIcon icon={<IconChevronUp />} />
           </UIMentionPopoverOpenIndicator>
         )}
       </UIMention>
@@ -206,36 +206,12 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
 
 const UIMention = styled.span<{ mentionType: MentionType }>`
   cursor: default;
-  height: 1.25em;
-  padding: 2px 8px;
 
-  ${theme.borderRadius.tag}
-  ${theme.font.medium.inter.body12.build}
+  ${theme.colors.tags.primary.asColor};
 
-  ${(props) => {
-    switch (props.mentionType) {
-      case "request-read":
-        return css`
-          color: ${theme.colors.tags.shareInformation.foreground()};
-          background-color: ${theme.colors.tags.shareInformation.background()};
-
-          svg {
-            color: ${theme.colors.tags.shareInformation.foreground()};
-          }
-        `;
-      case "request-response":
-        return css`
-          color: ${theme.colors.tags.discussion.foreground()};
-          background-color: ${theme.colors.tags.discussion.background()};
-
-          svg {
-            color: ${theme.colors.tags.discussion.foreground()};
-          }
-        `;
-      default:
-        return "";
-    }
-  }};
+  svg {
+    color: inherit;
+  }
 `;
 
 const UISelectItem = styled.div<{}>`
@@ -257,5 +233,5 @@ const UIMentionPopoverOpenIndicator = styled.span<{}>`
   padding-left: 4px;
   margin-left: 4px;
 
-  border-left: 1px solid ${theme.colors.layout.strongLine((modifiers) => [modifiers.opacity(0.3)])};
+  border-left: 1px solid ${theme.colors.layout.background.border};
 `;

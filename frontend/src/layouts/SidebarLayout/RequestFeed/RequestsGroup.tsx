@@ -37,6 +37,6 @@ const UISection = styled.div<{}>`
 
 const UISectionTitle = styled.div<{}>`
   padding-left: 10px;
-  ${theme.font.withExceptionalSize("11px", "New sizing").build()}
+  ${theme.typo.item.secondaryTitle}
   opacity: 0.6;
 `;

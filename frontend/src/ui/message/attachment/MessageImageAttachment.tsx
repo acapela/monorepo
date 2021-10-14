@@ -37,7 +37,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
         {isFullscreenOpened && (
           <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
             <CornerButtonWrapper>
-              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
+              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} icon={<IconCross />} />
             </CornerButtonWrapper>
             <PopPresenceAnimator>
               <ImageWrapper src={attachmentUrl} className={className} />
@@ -52,7 +52,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;
   position: relative;
-  ${theme.borderRadius.item}
+  ${theme.radius.secondaryItem}
   overflow: hidden;
   cursor: pointer;
 `;
@@ -67,7 +67,7 @@ const ImageWrapper = styled.img<{}>`
 
   user-select: none;
 
-  ${theme.borderRadius.item};
+  ${theme.radius.secondaryItem};
   will-change: transform, opacity;
 
   /* Safari fix - make sure image always keeps its aspect ratio. */

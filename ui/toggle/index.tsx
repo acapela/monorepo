@@ -2,9 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 
 import { useId } from "~shared/id";
-import { getColorHoverVariant } from "~ui/transitions";
-
-import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../theme/colors/base";
+import { theme } from "~ui/theme";
 
 /**
  * How big part of full width will toggle occupy to indicate change on long press.
@@ -73,6 +71,8 @@ function getDimensions(toggleSize: ToggleSize) {
   }
 }
 
+const disabledBg = theme.colors.layout.backgroundAccent;
+
 const UIToggle = styled.div<{ dimensions: Dimensions }>`
   user-select: none;
 
@@ -91,14 +91,14 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
     width: ${({ dimensions }) => dimensions.width}px;
     height: ${({ dimensions }) => dimensions.height}px;
 
-    background: ${BACKGROUND_ACCENT};
+    ${disabledBg.asBg};
 
     border-radius: ${({ dimensions }) => dimensions.height}px;
 
     transition: 0.2s;
 
     &:hover {
-      background: ${getColorHoverVariant(BACKGROUND_ACCENT)};
+      ${disabledBg.hover.asBg};
     }
   }
 
@@ -113,17 +113,13 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
     width: ${(props) => props.dimensions.innerCircleDiameter}px;
     height: ${(props) => props.dimensions.innerCircleDiameter}px;
 
-    background: ${WHITE};
+    ${theme.colors.layout.background.asBg};
     border-radius: ${(props) => props.dimensions.innerCircleDiameter}px;
     transition: 0.2s;
   }
 
   input:checked + label {
-    background: ${BUTTON_BACKGROUND_COLOR};
-
-    &:hover {
-      background: ${getColorHoverVariant(BUTTON_BACKGROUND_COLOR)};
-    }
+    ${theme.colors.primary.interactive};
   }
 
   input:checked + label:after {

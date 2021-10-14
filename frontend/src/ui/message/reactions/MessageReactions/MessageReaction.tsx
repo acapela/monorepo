@@ -5,9 +5,8 @@ import styled, { css } from "styled-components";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
-import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
@@ -37,8 +36,8 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
   return (
     <>
       <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={!!isSelectedByCurrentUser}>
-        <p>{emoji}</p>
-        <p>{reactions.length}</p>
+        <UIEmoji>{emoji}</UIEmoji>
+        <span>{reactions.length}</span>
       </UIReactionButton>
       <Tooltip
         anchorRef={buttonRef}
@@ -49,24 +48,26 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
   );
 });
 
+const background = theme.colors.layout.backgroundAccent;
+
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 28px;
-  border-radius: 1000px;
-  padding: 0 8px;
+  ${theme.box.label};
+  ${theme.spacing.horizontalActions.asGap}
+  ${theme.radius.secondaryItem}
   cursor: pointer;
-  font-size: ${fontSize.label};
-  color: ${SECONDARY_TEXT_COLOR};
+  ${theme.typo.action.regular};
+  ${theme.colors.text.secondary.asColor}
+  ${background.asBg};
 
-  ${(p) =>
-    p.isSelected
-      ? css`
-          background: ${BACKGROUND_ACCENT_WEAK};
-        `
-      : css`
-          background: ${WHITE};
-          border: 1px solid ${BACKGROUND_ACCENT};
-        `}
+  ${(props) =>
+    props.isSelected &&
+    css`
+      ${background.hover.asBg};
+    `}
+`;
+
+const UIEmoji = styled.span`
+  font-size: 1.25em;
 `;

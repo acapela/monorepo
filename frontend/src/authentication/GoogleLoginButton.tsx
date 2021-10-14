@@ -20,7 +20,7 @@ export const GoogleLoginButton = ({
   }
 
   return (
-    <Button kind="secondary" size="large" className={className} onClick={() => handleLogin()} isLoading={false}>
+    <Button kind="secondary" className={className} onClick={() => handleLogin()} isLoading={false}>
       {children || "Log in with Google"}
     </Button>
   );

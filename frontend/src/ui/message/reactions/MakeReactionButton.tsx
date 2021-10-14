@@ -45,13 +45,7 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
   return (
     <>
-      <WideIconButton
-        ref={buttonRef}
-        tooltip="Add reaction"
-        kind="secondary"
-        onClick={open}
-        icon={<IconEmotionSmile />}
-      />
+      <WideIconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
           <Popover anchorRef={buttonRef} placement="bottom-end">

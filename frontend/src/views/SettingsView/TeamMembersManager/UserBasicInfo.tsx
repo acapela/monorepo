@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { UserEntity } from "~frontend/clientdb/user";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { HStack } from "~ui/Stack";
-import { TextBody14, TextMeta10, TextMeta12 } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 type Props = { user: UserEntity };
 
@@ -13,14 +13,10 @@ export const UserBasicInfo = observer(({ user }: Props) => (
   <UIHolder>
     <Avatar url={user.avatar_url} />
     <div>
-      <TextBody14 semibold>{user.name}</TextBody14>
+      <UIUserName>{user.name}</UIUserName>
       <HStack gap={10}>
-        <TextMeta10 secondary>{user.email}</TextMeta10>
-        {!user.has_account && (
-          <TextMeta12 primary speziaMono>
-            (Invite pending)
-          </TextMeta12>
-        )}
+        <UIEmail>{user.email}</UIEmail>
+        {!user.has_account && <UIIndicator>(Invite pending)</UIIndicator>}
       </HStack>
     </div>
   </UIHolder>
@@ -29,5 +25,17 @@ export const UserBasicInfo = observer(({ user }: Props) => (
 const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
+`;
+
+const UIUserName = styled.div`
+  ${theme.typo.item.title};
+`;
+
+const UIEmail = styled.div`
+  ${theme.typo.item.subtitle};
+`;
+
+const UIIndicator = styled.div`
+  ${theme.typo.item.secondaryTitle.speziaMono};
 `;

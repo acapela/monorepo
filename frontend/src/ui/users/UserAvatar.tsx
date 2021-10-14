@@ -12,7 +12,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export const UserAvatar = styledObserver<Props>(({ user, className, size = "regular", disableNameTooltip }) => (
+export const UserAvatar = styledObserver<Props>(({ user, className, size = "inherit", disableNameTooltip }) => (
   <Avatar
     name={user.name}
     url={user.avatar_url}

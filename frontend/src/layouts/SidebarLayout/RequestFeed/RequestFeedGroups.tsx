@@ -1,8 +1,8 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { groupByFilter } from "~frontend/../../shared/groupByFilter";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { groupByFilter } from "~shared/groupByFilter";
 
 import { RequestsGroup } from "./RequestsGroup";
 

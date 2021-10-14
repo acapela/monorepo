@@ -23,3 +23,8 @@ export function changeColorLightness(color: string, offset: number): string {
     .hsl()
     .toString();
 }
+
+export function darkenColor(color: string, offset: number): string {
+  const colorInstance = new Color(color);
+  return colorInstance.hsl().darken(offset).rgb().toString();
+}

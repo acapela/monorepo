@@ -1,11 +1,9 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { setColorOpacity } from "~shared/colors";
 import { handleWithStopPropagation } from "~shared/events";
 import { IconCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { PRIMARY_PINK_1 } from "~ui/theme/colors/base";
 
 import { OptionLabel } from "./OptionLabel";
 
@@ -50,9 +48,10 @@ export const DropdownItem = styled(function DropdownItem({
   );
 })``;
 
+const background = theme.colors.panels.popover;
+
 const UIOption = styled.div<{ isHighlighted: boolean }>`
-  padding: 0 16px;
-  height: 42px;
+  ${theme.box.selectOption};
 
   display: flex;
   align-items: center;
@@ -61,31 +60,25 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  border: 1px solid transparent;
-
-  transition: 0.15s all;
-  ${theme.borderRadius.item};
+  ${theme.transitions.hover()};
+  ${background.interactive};
+  ${theme.spacing.horizontalActions.asGap};
 
   svg {
-    font-size: 24px;
+    font-size: 1.25em;
   }
 
   ${OptionLabel} {
     flex-grow: 1;
   }
 
-  &:hover {
-    background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
-  }
-
   svg {
-    color: ${PRIMARY_PINK_1};
+    ${theme.colors.primary.asColor};
   }
 
   ${(props) =>
     props.isHighlighted &&
     css`
-      border: 1px solid ${PRIMARY_PINK_1};
-      background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+      ${background.active.asBg};
     `}
 `;

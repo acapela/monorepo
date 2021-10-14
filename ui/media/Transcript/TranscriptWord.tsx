@@ -51,7 +51,7 @@ const UIHolder = styled.div`
 
   ${theme.transitions.hover()}
   &:hover {
-    background-color: ${theme.colors.layout.softLine()};
+    background-color: ${theme.colors.layout.background.border};
   }
 `;
 
@@ -103,5 +103,5 @@ const UIActiveWordHighlight = styled(motion.div)<{ isFirstActive: boolean; isLas
    * We need bg color to not be transparent as it'd be very visible when multiple words are animating next to each other.
    * Our current theme has no easy was of doing primary>lighten, so I'm inlining the color.
    */
-  background-color: ${theme.colors.layout.link((modifiers) => [modifiers.lighten(30)])};
+  background-color: ${theme.colors.action.link};
 `;

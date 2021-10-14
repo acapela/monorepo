@@ -26,6 +26,7 @@ import { select } from "~shared/sharedState";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { theme } from "~ui/theme";
 
 import { MessageLikeContent } from "./MessageLikeContent";
 import { MessageTasks } from "./tasks/MessageTasks";
@@ -131,7 +132,7 @@ export const Message = styledObserver<Props>(
             )
           }
           user={message.user}
-          hasHiddenMetadata={isBundledWithPreviousMessage}
+          showOnlyContent={isBundledWithPreviousMessage}
           date={new Date(message.created_at)}
         >
           <UIMessageBody>
@@ -160,13 +161,13 @@ const UIHolder = styled.div<{}>``;
 
 const UITools = styled.div<{}>`
   display: flex;
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIMessageBody = styled.div<{}>`

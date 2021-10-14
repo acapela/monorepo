@@ -1,22 +1,10 @@
-import { IObservableArray, ObservableMap, computed, observable, runInAction } from "mobx";
+import { IObservableArray, ObservableMap, observable, runInAction } from "mobx";
 
 import { Entity } from "~clientdb";
+import { Thunk, resolveThunk } from "~shared/thunk";
 
 import { EntityStore } from "./store";
-
-/**
- * Thunk is a value or lazy getter of that value. It is useful if we don't want to have to eagerly provide some value,
- * but instead calculate it when demanded.
- */
-type Thunk<T> = T | (() => T);
-
-function resolveThunk<T>(thunk: Thunk<T>): T {
-  if (typeof thunk === "function") {
-    return (thunk as () => T)();
-  }
-
-  return thunk as T;
-}
+import { computedArray } from "./utils/computedArray";
 
 export type QueryIndexValue<T> = Thunk<T | T[]>;
 
@@ -150,7 +138,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
   }
 
   function find(indexValue: QueryIndexValue<Data[K]>) {
-    return computed(() => {
+    return computedArray(() => {
       return findResultsForSingleOrMultipleValues(indexValue);
     }).get();
   }

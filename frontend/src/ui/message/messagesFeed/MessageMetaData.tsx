@@ -12,44 +12,58 @@ interface Props {
   date: Date;
   children: ReactNode;
   className?: string;
-  isHidden?: boolean;
+  isNextSameUserMessage?: boolean;
   isHovered?: boolean;
 }
 
-export const MessageMetaDataWrapper = styledObserver(
-  ({ user, date, children, isHidden = false, isHovered = false, className }: Props) => {
-    const canShowSideTimeLabel = isHidden && isHovered;
+const AVATAR_SIZE = 30;
 
+export const MessageMetaDataWrapper = styledObserver(
+  ({ user, date, children, isNextSameUserMessage = false, isHovered = false, className }: Props) => {
     return (
       <UIHolder className={className}>
-        {!isHidden && (
-          <>
-            <UserAvatar user={user} />{" "}
+        <UIMessageSideInfo>
+          {!isNextSameUserMessage && (
+            <>
+              <UserAvatar user={user} size={AVATAR_SIZE} />{" "}
+            </>
+          )}
+        </UIMessageSideInfo>
+        <UIMessageBody>
+          {!isNextSameUserMessage && (
             <UIHead>
-              {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
+              <UIAuthorName>{user.name || "Guest"}</UIAuthorName>
+              <UIHeaderTimeLabel date={date} />
             </UIHead>
-          </>
-        )}
-        <div>{canShowSideTimeLabel && <UISideTimeLabel date={date} />}</div>
-        {children}
+          )}
+          {isHovered && isNextSameUserMessage && <UISideTimeLabel date={date} />}
+          {children}
+        </UIMessageBody>
       </UIHolder>
     );
   }
 )``;
 
 const UIHolder = styled.div<{}>`
-  display: grid;
+  display: flex;
+  ${theme.spacing.horizontalActions.asGap};
+`;
 
-  grid-template-columns: 24px minmax(360px, 700px);
-  gap: 0 10px;
+const UIMessageSideInfo = styled.div`
+  min-width: ${AVATAR_SIZE}px;
+`;
+
+const UIMessageBody = styled.div`
+  position: relative;
 `;
 
 const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
-  gap: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 
-  ${theme.font.body14.semibold.build()}
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
@@ -57,8 +71,15 @@ const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
   user-select: none;
 `;
 
+const UIAuthorName = styled.div`
+  ${theme.typo.content.semibold}
+`;
+
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.font.body12.withExceptionalLineHeight("1", "Prevents adding space when content only has one line").build()};
-  opacity: 0.4;
+  ${theme.typo.content.secondary};
+  position: absolute;
+  right: 100%;
+  top: 0;
   user-select: none;
+  margin-right: 5px;
 `;

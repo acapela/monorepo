@@ -3,8 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { Button } from "~ui/buttons/Button";
-import { ACTIVE_COLOR } from "~ui/theme/colors/base";
-import { getButtonColorStyles } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props {
   dayDate: Date;
@@ -26,7 +25,6 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
       <UISquareWrapper>
         <UISquareContent>
           <UIDayButton
-            kind="transparent"
             data-tooltip={isTodayDay && "Today"}
             isToday={isTodayDay}
             isSelected={isSelected}
@@ -93,12 +91,15 @@ const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
       }
 
       if (props.isSelected) {
-        return getButtonColorStyles(ACTIVE_COLOR);
+        return css`
+          ${theme.colors.primary.interactive};
+          ${theme.colors.primary.readableText.asColor};
+        `;
       }
 
       if (props.isToday) {
         return css`
-          color: ${ACTIVE_COLOR};
+          ${theme.colors.primary.asColor};
         `;
       }
     }}

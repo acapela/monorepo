@@ -52,7 +52,7 @@ export function AddSlackInstallationButton({
         ).url;
       }}
       icon={<IconPlus />}
-      iconPosition="start"
+      iconAtStart
       tooltip={tooltip}
     >
       Add Slack integration
@@ -101,7 +101,7 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
       disabled={isDeletingSlackInstallation}
       onClick={handleClickDisableSlack}
       icon={<IconMinus />}
-      iconPosition="start"
+      iconAtStart
       tooltip="Disable notifications through slack"
     >
       Remove Slack integration

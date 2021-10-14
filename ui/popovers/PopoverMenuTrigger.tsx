@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { zIndex } from "~ui/zIndex";
+import { theme } from "~ui/theme";
 
 import { PopoverPlacement } from "./Popover";
 import { PopoverMenu, PopoverMenuOption } from "./PopoverMenu";
@@ -63,5 +63,5 @@ export const PopoverMenuTrigger = styled<Props>(
 const UIHolder = styled.div<{}>``;
 
 const UIPopoverMenu = styled(PopoverMenu)<{}>`
-  z-index: ${zIndex.Popover};
+  z-index: ${theme.zIndex.popover};
 `;

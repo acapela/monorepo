@@ -99,13 +99,13 @@ const UIHolder = styled.div`
 `;
 
 const UITogglePlayButton = styled(PopPresenceAnimator)`
-  ${theme.colors.actions.primary.all};
+  ${theme.colors.action.primary.interactive};
   height: 32px;
   width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  ${theme.borderRadius.circle}
+  ${theme.radius.circle}
   font-size: 20px;
   min-width: 32px;
   cursor: pointer;
@@ -121,8 +121,8 @@ const UIProgressBar = styled.div`
 
 const UIProgressInner = styled.div`
   height: 3px;
-  background-color: ${theme.colors.layout.strongLine()};
-  ${theme.borderRadius.circle}
+  background-color: ${theme.colors.layout.background.border};
+  ${theme.radius.circle}
   min-width: 160px;
   position: relative;
   flex-grow: 1;
@@ -130,14 +130,14 @@ const UIProgressInner = styled.div`
 
 const UIProgressBarProgressIndicator = styled(motion.div)`
   height: 3px;
-  ${theme.borderRadius.circle};
-  background-color: ${theme.colors.actions.primary.regular()};
+  ${theme.radius.circle};
+  ${theme.colors.action.primary.asBg};
   position: absolute;
 `;
 
 const UIProgressTextLabel = styled.div`
   white-space: nowrap;
-  ${theme.font.body12.inter.semibold.build()};
+  ${theme.typo.label};
   user-select: none;
 `;
 

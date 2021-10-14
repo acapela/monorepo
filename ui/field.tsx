@@ -1,15 +1,15 @@
 import { ChangeEventHandler, InputHTMLAttributes, RefObject, useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { borderRadius } from "./baseStyles";
+import { theme } from "./theme";
 
 export const Field = styled.input<{}>`
   font: inherit;
   width: 100%;
   font-weight: 500;
   padding: 0.75rem 1rem;
-  background-color: #fbfbfb;
-  border-radius: ${borderRadius.menu};
+  ${theme.colors.layout.backgroundAccent.asBg};
+  ${theme.radius.secondaryItem};
   outline: none;
 `;
 

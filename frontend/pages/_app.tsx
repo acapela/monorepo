@@ -10,7 +10,7 @@ import { Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
@@ -24,7 +24,7 @@ import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { getTheme } from "~ui/theme";
+import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
@@ -75,7 +75,7 @@ export default function App({
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider websocketEndpoint={hasuraWebsocketEndpoint}>
-            <ThemeProvider theme={getTheme("default")}>
+            <AppThemeProvider theme={theme}>
               <CurrentTeamIdProvider>
                 <ClientDbProvider>
                   <AnalyticsManager />
@@ -89,7 +89,7 @@ export default function App({
                   </AnimatePresence>
                 </ClientDbProvider>
               </CurrentTeamIdProvider>
-            </ThemeProvider>
+            </AppThemeProvider>
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>

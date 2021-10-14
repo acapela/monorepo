@@ -58,13 +58,12 @@ const UISelectItem = styled.div<{}>`
 
 const StateDescription = styled.div<{}>`
   width: 240px;
-  ${theme.font.body14.semibold.build()};
+  ${theme.typo.label.semibold};
   padding: 16px;
-  background: ${theme.colors.layout.foreground()};
-  border: 1px solid ${theme.colors.layout.softLine()};
+  ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   box-sizing: border-box;
   ${theme.shadow.modal};
-  ${theme.borderRadius.menu}
+  ${theme.radius.secondaryItem}
 `;
 
 /**

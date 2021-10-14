@@ -33,7 +33,7 @@ export const InviteMemberForm = observer(() => {
   return (
     <UIHolder>
       <RoundedTextInput placeholder="Enter email" value={email} onChangeText={setEmail} />
-      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
+      <Button iconAtStart icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
         Add Member
       </Button>
     </UIHolder>

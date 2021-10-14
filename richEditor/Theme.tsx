@@ -7,7 +7,7 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
-  ${theme.font.body14.build}
+  ${theme.font.readingLineHeight};
 
   ol {
     list-style-type: decimal;
@@ -38,16 +38,16 @@ export const richEditorContentCss = css`
 
   code,
   pre {
-    ${theme.font.speziaMono.build}
+    ${theme.font.speziaMono}
   }
 
   a {
     text-decoration: underline;
-    color: ${theme.colors.layout.link()};
+    color: ${theme.colors.action.link};
   }
 
   blockquote {
-    border-left: 2px solid ${theme.colors.layout.strongLine()};
+    border-left: 2px solid ${theme.colors.layout.background.border};
     padding: 0.5rem 0 0.5rem 0.5rem;
   }
 
@@ -62,6 +62,6 @@ export const richEditorContentCss = css`
     pointer-events: none;
     height: 0;
 
-    ${theme.font.body14.semibold.build()}
+    ${theme.typo.content.semibold}
   }
 `;

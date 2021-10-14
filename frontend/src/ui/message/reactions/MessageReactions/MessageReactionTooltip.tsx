@@ -5,7 +5,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
-import { WHITE } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 interface Props {
   emoji: string;
@@ -39,14 +39,12 @@ export const MessageReactionTooltip = observer(({ reactions, emoji }: Props) => 
 });
 
 const UIContent = styled.div<{}>`
-  color: hsla(0, 0%, 100%, 60%);
+  ${theme.colors.panels.tooltip.asBgWithReadableText};
   text-align: center;
   word-break: break-word;
 `;
 
-const UIReacted = styled.span<{}>`
-  color: ${WHITE};
-`;
+const UIReacted = styled.span<{}>``;
 
 const UIEmojiName = styled.div<{}>`
   word-break: break-all;

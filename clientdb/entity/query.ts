@@ -5,6 +5,7 @@ import { typedKeys } from "~shared/object";
 
 import { Entity } from "./entity";
 import { EntitySimpleQuery, EntityStore } from "./store";
+import { computedArray } from "./utils/computedArray";
 import { createEntityCache } from "./utils/entityCache";
 
 type EntityFunctionQuery<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
@@ -56,6 +57,8 @@ export type EntityQuery<Data, Connections> = {
   first: Entity<Data, Connections> | null;
   last: Entity<Data, Connections> | null;
   hasItems: boolean;
+  count: number;
+
   findById(id: string): Entity<Data, Connections> | null;
   query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
@@ -92,7 +95,7 @@ export function createEntityQuery<Data, Connections>(
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
-  const passingItems = computed(
+  const passingItems = computedArray(
     () => {
       const passedItems = getSource().filter(cachedFilter);
 
@@ -119,6 +122,9 @@ export function createEntityQuery<Data, Connections>(
   return {
     get hasItems() {
       return hasItemsComputed.get();
+    },
+    get count() {
+      return computed(() => getAll().length).get();
     },
     get all() {
       return getAll();

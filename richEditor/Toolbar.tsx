@@ -15,7 +15,7 @@ import {
   IconTextItalic,
   IconTextStrikethrough,
 } from "~ui/icons";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 import { useRichEditorContext } from "./context";
 import { EmojiButton } from "./EmojiButton";
@@ -155,7 +155,7 @@ const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid ${BACKGROUND_ACCENT};
+  border-top: 1px solid ${theme.colors.layout.background.border};
 
   ${() => UISection} {
     ${() => UIToolButton} {

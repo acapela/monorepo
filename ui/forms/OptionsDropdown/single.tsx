@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
+import styled from "styled-components";
 
-import { TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 import { MultipleOptionsDropdown } from "./multiple";
 import { OptionLabel } from "./OptionLabel";
@@ -53,7 +54,7 @@ export function SingleOptionDropdown<I>({
       isDisabled={isDisabled}
       selectedItemsPreviewRenderer={([item]) => {
         if (!item) {
-          return <TextBody>{placeholder}</TextBody>;
+          return <UIBody>{placeholder}</UIBody>;
         }
 
         return <OptionLabel label={labelGetter(item)} icon={iconGetter?.(item)} />;
@@ -61,3 +62,7 @@ export function SingleOptionDropdown<I>({
     />
   );
 }
+
+const UIBody = styled.div`
+  ${theme.typo.content}
+`;

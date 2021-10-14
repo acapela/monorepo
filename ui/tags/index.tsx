@@ -1,15 +1,20 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { borderRadius } from "~ui/baseStyles";
-
 import { theme } from "../theme";
-import { ThemeColorScheme } from "../theme/colors";
 
+type TagKind = keyof typeof tagsColorsMap;
+
+const tagsColorsMap = {
+  //  TODO PR
+  private: theme.colors.primary,
+  shareInformation: theme.colors.primary,
+  discussion: theme.colors.primary,
+};
 interface TagProps {
   children: ReactNode;
   tooltipLabel?: string;
-  kind: keyof ThemeColorScheme["tags"];
+  kind: TagKind;
 }
 
 export const Tag = ({ kind, children, tooltipLabel }: TagProps) => {
@@ -20,14 +25,13 @@ export const Tag = ({ kind, children, tooltipLabel }: TagProps) => {
   );
 };
 
-const UITag = styled.button<{ kind: keyof ThemeColorScheme["tags"] }>`
+const UITag = styled.button<{ kind: TagKind }>`
   padding: 4px 8px;
 
   font-size: 0.75rem;
 
-  color: ${(props) => theme.colors.tags[props.kind].foreground()};
-  background-color: ${(props) => theme.colors.tags[props.kind].background()};
-  ${borderRadius.tag};
+  ${(props) => tagsColorsMap[props.kind].asBgWithReadableText};
+  ${theme.radius.secondaryItem};
 `;
 
 export const PrivateTag = ({ tooltipLabel }: Pick<TagProps, "tooltipLabel">) => (

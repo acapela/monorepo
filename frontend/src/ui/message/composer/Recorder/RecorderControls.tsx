@@ -44,9 +44,7 @@ export const RecorderControls = styled<RecorderControlsProps>(
         <UIControls gap={8} alignItems="center">
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
 
-          <Button kind="transparent" onClick={() => onCancel()}>
-            Cancel
-          </Button>
+          <Button onClick={() => onCancel()}>Cancel</Button>
           <Button onClick={() => onStop()}>Submit</Button>
         </UIControls>
       </UIHolder>
@@ -82,8 +80,8 @@ const UIControls = styled(HStack)<{}>`
   user-select: none;
   padding: 8px;
 
-  background: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.modal}
+  background: ${theme.colors.layout.backgroundAccent};
+  ${theme.radius.panel}
   ${theme.shadow.modal}
 `;
 

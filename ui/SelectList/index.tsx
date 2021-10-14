@@ -2,9 +2,8 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props<T> {
   items: T[];
@@ -54,26 +53,26 @@ const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   min-width: 15rem;
-  padding: 0.5rem 0;
+  padding: 5px 0;
+  overflow: hidden;
 
-  background: #ffffff;
+  ${theme.colors.panels.popover.asBgWithReadableText};
 
-  border: 1px solid #f8f8f8;
-  box-sizing: border-box;
-  ${shadow.modal};
-  ${borderRadius.menu}
+  ${theme.shadow.modal};
+  ${theme.radius.panel};
 `;
 
 const UIItem = styled.div<{ isActive: boolean }>`
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  ${theme.box.selectOption};
   display: flex;
   align-items: center;
   cursor: pointer;
 
-  ${hoverActionCss};
+  ${theme.colors.panels.popover.interactive};
 
-  ${(props) => props.isActive && hoverActionActiveCss}
+  ${theme.transitions.hover()}
+
+  ${(props) => props.isActive && theme.colors.panels.popover.active.asBg};
 
   border-radius: 0;
 `;

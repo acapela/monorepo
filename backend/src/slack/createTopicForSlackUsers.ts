@@ -80,8 +80,8 @@ export async function findOrCreateUsers({
     return userIds;
   }
 
-  const newlyCreatedUsers = await createAndInviteMissingUsers(slackToken, teamId, invitingUserId, missingUsersSlackIds);
-  const newUserIds = newlyCreatedUsers.map(
+  const newUsers = await createAndInviteMissingUsers(slackToken, teamId, invitingUserId, missingUsersSlackIds);
+  const newUserIds = newUsers.map(
     (row) =>
       ({
         userId: row.userId,
