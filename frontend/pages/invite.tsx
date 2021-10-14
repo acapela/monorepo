@@ -26,7 +26,7 @@ export default observer(() => {
     }
 
     if (user.has_account) {
-      addToast({ type: "success", title: "You already have an account" });
+      addToast({ type: "success", title: "Redirecting you into your account" });
       router.push("/");
     }
   }, [router, user]);

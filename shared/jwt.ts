@@ -18,11 +18,7 @@ export interface UserTokenPayload {
   currentTeamId: string | null;
 }
 
-export const enrichPayload = ({
-  userId,
-  teamId,
-  ...payload
-}: JwtPayload & { userId: string; teamId?: Maybe<string> }) => ({
+export const createJWT = ({ userId, teamId, ...payload }: JwtPayload & { userId: string; teamId?: Maybe<string> }) => ({
   ...payload,
   id: payload.sub || userId,
   sub: payload.sub || userId,

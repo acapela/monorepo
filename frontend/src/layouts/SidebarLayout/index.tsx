@@ -17,7 +17,14 @@ interface Props {
   children?: ReactNode;
 }
 
-export const SidebarLayout = observer(({ children }: Props) => {
+/**
+ * This hook returns a view that needs to be interacted with first, before another view can be used. Less abstractly,
+ * that includes:
+ * - login
+ * - creating an account (users without accounts are created for invitations, and forced to log-out for now)
+ * - choosing a team
+ */
+function useBlockingViews() {
   const userTokenData = useCurrentUserTokenData();
   const currentTeamId = useCurrentTeamId();
 
@@ -32,10 +39,10 @@ export const SidebarLayout = observer(({ children }: Props) => {
   }, [isUserWithoutAccount]);
 
   if (isUserWithoutAccount) {
-    return null;
+    return <></>;
   }
 
-  if (!userTokenData) {
+  if (!userTokenData || !user) {
     return (
       <WindowView>
         <LoginOptionsView />
@@ -51,13 +58,20 @@ export const SidebarLayout = observer(({ children }: Props) => {
     );
   }
 
+  return null;
+}
+
+export const SidebarLayout = observer(({ children }: Props) => {
+  const blockingView = useBlockingViews();
   return (
-    <UIHolder>
-      <UISidebar>
-        <SidebarContent />
-      </UISidebar>
-      <UIMainContent>{children}</UIMainContent>
-    </UIHolder>
+    blockingView || (
+      <UIHolder>
+        <UISidebar>
+          <SidebarContent />
+        </UISidebar>
+        <UIMainContent>{children}</UIMainContent>
+      </UIHolder>
+    )
   );
 });
 

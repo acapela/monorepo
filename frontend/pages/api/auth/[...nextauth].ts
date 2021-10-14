@@ -7,8 +7,9 @@ import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { isDev } from "~shared/dev";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { enrichPayload, signJWT, verifyJWT } from "~shared/jwt";
+import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { getSearchParams } from "~shared/urlParams";
 
 /**
@@ -214,8 +215,6 @@ async function sendVerificationRequest({ identifier: email, url }: VerificationR
 
 const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
-const isDevelopment = process.env.NODE_ENV === "development";
-
 async function getAuthInitOptions() {
   await initializeSecrets();
   const authInitOptions: NextAuthOptions = {
@@ -247,13 +246,13 @@ async function getAuthInitOptions() {
     pages: {
       error: "/auth/error", // Error code passed in query string as ?error=
     },
-    debug: isDevelopment,
+    debug: isDev(),
     callbacks: {
       jwt: async (token, user: User) => {
         if (!user) {
           return token;
         }
-        return enrichPayload({ ...token, userId: user.id, teamId: user.current_team_id });
+        return createJWT({ ...token, userId: user.id, teamId: user.current_team_id });
       },
 
       async signIn(user: User | ProviderUser, accountInfo) {

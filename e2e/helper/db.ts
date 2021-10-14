@@ -2,7 +2,7 @@ import "~config";
 
 import { Prisma, PrismaClient } from "@prisma/client";
 
-import { enrichPayload, signJWT } from "~shared/jwt";
+import { createJWT, signJWT } from "~shared/jwt";
 
 import { user } from ".prisma/client";
 
@@ -22,7 +22,7 @@ const PREFIX = "__TESTING__";
 
 function createJWTForUser(user: user): string {
   return signJWT(
-    enrichPayload({
+    createJWT({
       sub: user.id,
       userId: user.id,
       teamId: user.current_team_id,

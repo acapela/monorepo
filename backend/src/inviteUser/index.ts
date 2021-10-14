@@ -6,7 +6,7 @@ import { findTeamById } from "~backend/src/teams/helpers";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { enrichPayload, signJWT } from "~shared/jwt";
+import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 
 function getUserNameWithFallbacks(user: User): string {
@@ -53,7 +53,7 @@ async function sendInvitationEmail(teamId: string, email: string, inviter: User,
 export const sendInviteNotification = async (user: User, teamId: string, invitingUserId: string) => {
   const inviteURL = `${process.env.FRONTEND_URL}/invite?${new URLSearchParams(
     Object.entries({
-      jwt: signJWT(enrichPayload({ userId: user.id, teamId })),
+      jwt: signJWT(createJWT({ userId: user.id, teamId })),
       teamId,
       invitingUserId,
     })
