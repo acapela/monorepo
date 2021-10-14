@@ -7,7 +7,10 @@ import { RequestFeedGroups } from "./RequestFeedGroups";
 
 export const RequestFeed = observer(() => {
   const db = useDb();
-  const topics = db.topic.query({ sort: (topic) => topic.lastActivityDate }).all;
+  const topics = db.topic.sort({
+    sort: (topic) => topic.lastActivityDate,
+    direction: "asc",
+  }).all;
 
   return (
     <UIHolder>
