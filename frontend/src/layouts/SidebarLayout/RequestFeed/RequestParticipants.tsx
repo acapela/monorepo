@@ -110,10 +110,10 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
   );
 });
 
-const PARTICIPANTS_BOX_SIZE = 35;
+const PARTICIPANTS_BOX_SIZE_PX = 35;
 
 const UIHolder = styled.div`
-  font-size: ${PARTICIPANTS_BOX_SIZE}px;
+  font-size: ${PARTICIPANTS_BOX_SIZE_PX}px;
   height: 1em;
   min-width: 1em;
   width: 1em;
@@ -121,7 +121,7 @@ const UIHolder = styled.div`
 `;
 
 const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDescription }>`
-  font-size: ${(props) => PARTICIPANTS_BOX_SIZE * props.avatarSize}px;
+  font-size: ${(props) => PARTICIPANTS_BOX_SIZE_PX * props.avatarSize}px;
   height: 1em;
   width: 1em;
   display: flex;
@@ -137,8 +137,8 @@ const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDesc
     const realY = y * maxMovement;
 
     return css`
-      top: ${realY * PARTICIPANTS_BOX_SIZE}px;
-      left: ${realX * PARTICIPANTS_BOX_SIZE}px;
+      top: ${realY * PARTICIPANTS_BOX_SIZE_PX}px;
+      left: ${realX * PARTICIPANTS_BOX_SIZE_PX}px;
     `;
   }}
 `;

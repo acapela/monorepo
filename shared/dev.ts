@@ -23,7 +23,7 @@ export function measureTime(name: string, isEnabled = true) {
   };
 }
 
-export function devAssingWindowVariable(name: string, value: unknown) {
+export function devAssignWindowVariable(name: string, value: unknown) {
   if (!isDev) return;
   if (typeof window === "undefined") return;
 
