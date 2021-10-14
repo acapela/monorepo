@@ -39,7 +39,9 @@ export const SidebarLayout = ({ children }: Props) => {
       <UISidebar>
         <SidebarContent />
       </UISidebar>
-      <UIMainContent>{children}</UIMainContent>
+      <UIMainContent>
+        <UIMainContentBody>{children}</UIMainContentBody>
+      </UIMainContent>
     </UIHolder>
   );
 };
@@ -47,7 +49,7 @@ export const SidebarLayout = ({ children }: Props) => {
 const UISidebar = styled.div<{}>`
   max-height: 100vh;
   height: 100vh;
-  background-color: ${theme.colors.layout.background()};
+  ${theme.colors.layout.backgroundAccent.asBg};
 
   box-sizing: border-box;
   flex-shrink: 0;
@@ -67,5 +69,16 @@ const UIMainContent = styled.div<{}>`
   flex-grow: 1;
   min-width: 0;
   max-height: 100vh;
-  background-color: ${theme.colors.layout.foreground()};
+  ${theme.colors.layout.background.asBg};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: hidden;
+`;
+
+const UIMainContentBody = styled.div`
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;

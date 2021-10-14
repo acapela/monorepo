@@ -26,5 +26,5 @@ export const Transcript = styled(function Transcript({ transcript, time, onTimeC
 })``;
 
 const UIHolder = styled.div`
-  ${theme.font.body14.build()}
+  ${theme.typo.label};
 `;

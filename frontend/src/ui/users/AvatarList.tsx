@@ -18,12 +18,7 @@ interface Props {
   size?: AvatarSize;
 }
 
-export const AvatarList = styledObserver(function AvatarList({
-  users,
-  className,
-  maxVisibleCount = 3,
-  size = "small",
-}: Props) {
+export const AvatarList = styledObserver(function AvatarList({ users, className, maxVisibleCount = 3, size }: Props) {
   const [visibleAvatars, avatarsInPopover] = groupByFilter(users, (user, index) => index < maxVisibleCount);
   const holderRef = useRef<HTMLDivElement>(null);
 

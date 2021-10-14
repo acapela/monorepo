@@ -12,7 +12,8 @@
     "start": "yarn start:build && berglas exec -- node ./next-server.js",
     "start:ci": "./start-ci.sh",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "dev:find-dead-code": "next-unused"
   },
   "peerDependencies": {
     "axios": "*",
@@ -76,10 +77,25 @@
     "msw": "^0.35.0",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^8.0.0",
+    "next-unused": "^0.0.6",
     "postcss": "^8.3.8",
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
     "typescript": "*",
     "whatwg-fetch": "^3.6.2"
+  },
+  "next-unused": {
+    "debug": true,
+    "alias": {
+      "~frontend": "src"
+    },
+    "include": [
+      "pages",
+      "src"
+    ],
+    "exclude": [],
+    "entrypoints": [
+      "pages"
+    ]
   }
 }

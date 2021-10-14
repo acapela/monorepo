@@ -29,7 +29,7 @@ const LabeledToggle = ({
 }) => (
   <UILabel>
     <div>
-      {title}
+      <UILabeledToggleTitle>{title}</UILabeledToggleTitle>
       <UIByline>{description}</UIByline>
     </div>
     <Toggle
@@ -41,6 +41,10 @@ const LabeledToggle = ({
     />
   </UILabel>
 );
+
+const UILabeledToggleTitle = styled.div`
+  ${theme.typo.content.bold};
+`;
 
 export const NotificationSettings = observer(() => {
   const currentUser = useAssertCurrentUser();
@@ -98,15 +102,14 @@ const UIPanel = styled.div<{}>`
   gap: 32px;
   padding: 24px;
 
-  background: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.modal};
-  ${theme.shadow.popover}
+  ${theme.colors.layout.background.withBorder.asBg};
+  ${theme.radius.primaryItem};
 
   width: 100%;
 `;
 
 const UITitle = styled.h3<{}>`
-  ${theme.font.h3.spezia.build()};
+  ${theme.typo.secondaryTitle};
 `;
 
 const UILabel = styled.label<{}>`
@@ -120,6 +123,5 @@ const UILabel = styled.label<{}>`
 
 const UIByline = styled.div<{}>`
   margin-top: 4px;
-  ${theme.font.body12.build()};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.label.secondary};
 `;

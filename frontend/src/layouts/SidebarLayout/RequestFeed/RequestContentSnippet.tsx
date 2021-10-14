@@ -1,10 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import { observer } from "mobx-react";
+import styled from "styled-components";
 
-import { getIsMentionNode } from "~frontend/../../shared/editor/mentions";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { getIsMentionNode } from "~shared/editor/mentions";
+import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicEntity;
@@ -91,5 +93,13 @@ export const RequestContentSnippet = observer(({ topic }: Props) => {
     return null;
   }
 
-  return <MessageText content={contentSnippet} />;
+  return (
+    <UIHolder>
+      <MessageText content={contentSnippet} />
+    </UIHolder>
+  );
 });
+
+const UIHolder = styled.div`
+  ${theme.typo.label};
+`;

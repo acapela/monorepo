@@ -5,9 +5,8 @@ import styled, { css } from "styled-components";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 import { DropdownItem } from "./DropdownItem";
 
@@ -96,16 +95,9 @@ const UIMenu = styled(PopPresenceAnimator)<{ maxHeight?: number }>`
       max-height: ${maxHeight}px;
     `}
   overflow-y: auto;
-  border: 1px solid ${BACKGROUND_ACCENT};
   width: 100%;
-  padding: 12px;
-  ${borderRadius.menu};
-  background: #ffffff;
-  ${shadow.popover}
-
-  ${DropdownItem} {
-    &:not(:last-child) {
-      margin-bottom: 4px;
-    }
-  }
+  padding: 5px 0;
+  ${theme.radius.panel};
+  ${theme.colors.panels.popover.asBgWithReadableText};
+  ${theme.shadow.popover};
 `;

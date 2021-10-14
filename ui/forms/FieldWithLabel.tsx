@@ -5,9 +5,8 @@ import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
-import { borderRadius } from "~ui/baseStyles";
 import { IconChevronDown } from "~ui/icons";
-import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 type CursorType = "action" | "input";
 export interface Props {
@@ -65,15 +64,14 @@ const UIHolder = styled.div<{ cursorType: CursorType }>`
 
   width: 100%;
 
-  border: 1px solid ${BACKGROUND_ACCENT};
+  ${theme.colors.layout.background.asBg};
+  border: 1px solid ${theme.colors.layout.background.border};
   box-sizing: border-box;
-  ${borderRadius.input}
+  ${theme.radius.secondaryItem};
 
   outline: none;
   min-height: 16px;
 
-  /* TODO: add theme.colors.forms and replace it with this */
-  background-color: ${WHITE};
   cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
 `;
 
@@ -108,7 +106,7 @@ const sharedPlaceholderStyles = css`
   overflow: hidden;
   text-overflow: ellipsis; /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
   height: 1.5em;
-  color: ${SECONDARY_TEXT_COLOR};
+  ${theme.font.secondary};
 `;
 
 const UIPlaceholder = styled(motion.div)<{}>`

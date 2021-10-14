@@ -2,10 +2,8 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { borderRadius } from "~ui/baseStyles";
 import { disabledCss } from "~ui/disabled";
-import { PRIMARY_COLOR, WHITE } from "~ui/theme/colors/base";
-import { getButtonColorStyles } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props {
   icon: ReactNode;
@@ -35,10 +33,10 @@ const UIHolder = styled.button<{ isActive: boolean; isDisabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${borderRadius.button};
+  ${theme.radius.button};
 
-  ${getButtonColorStyles(WHITE)}
+  ${theme.colors.action.secondary.interactive};
 
   ${(props) => props.isDisabled && disabledCss}
-  ${(props) => props.isActive && getButtonColorStyles(PRIMARY_COLOR)}
+  ${(props) => props.isActive && theme.colors.action.primary.interactive}
 `;

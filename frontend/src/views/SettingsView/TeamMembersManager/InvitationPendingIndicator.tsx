@@ -1,10 +1,8 @@
 import styled from "styled-components";
 
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
-import { borderRadius } from "~ui/baseStyles";
 import { IconUserPlus } from "~ui/icons";
-import { PRIMARY_PURPLE_1, WHITE } from "~ui/theme/colors/base";
-import { TextMeta10, TextMeta12 } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 interface Props {
   label: string;
@@ -16,10 +14,8 @@ export const InvitationPendingIndicator = ({ label }: Props) => {
       <UIIconHolder>
         <IconUserPlus />
       </UIIconHolder>
-      <TextMeta10 secondary>{label}</TextMeta10>
-      <TextMeta12 primary speziaMono>
-        (Invite pending)
-      </TextMeta12>
+      <UILabel>{label}</UILabel>
+      <UIStatus>(Invite pending)</UIStatus>
     </UserBasicInfoContainer>
   );
 };
@@ -32,9 +28,15 @@ const UIIconHolder = styled.div<{}>`
   width: 32px;
   height: 32px;
 
-  font-size: 1.25rem;
-  color: ${WHITE};
+  /* TODO PR: font size  */
+  ${theme.colors.primary.asBgWithReadableText};
+  ${theme.radius.circle};
+`;
 
-  background: ${PRIMARY_PURPLE_1};
-  ${borderRadius.circle};
+const UILabel = styled.div`
+  ${theme.typo.content.bold};
+`;
+
+const UIStatus = styled.div`
+  ${theme.typo.label.secondary};
 `;

@@ -1,7 +1,9 @@
 import styled from "styled-components";
 
+import { theme } from "~ui/theme";
+
 export const UserBasicInfoContainer = styled.div<{}>`
   display: flex;
   align-items: center;
-  gap: 8px;
+  ${theme.spacing.horizontalActions.asGap};
 `;

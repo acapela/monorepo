@@ -1,13 +1,12 @@
 import { HTMLMotionProps, motion } from "framer-motion";
-import { ForwardedRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { styledForwardRef } from "~shared/component";
 import { disabledOpacityCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
 
-import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
-import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
+import { ButtonKind, getButtonKindtyles } from "./variants";
 
 export interface ButtonDisabledInfo {
   reason: string;
@@ -15,79 +14,67 @@ export interface ButtonDisabledInfo {
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
-  iconPosition?: ButtonIconPosition;
+  iconAtStart?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
   tooltip?: string;
-  size?: ButtonSize;
   kind?: ButtonKind;
 }
 
-export const Button = styled(
-  namedForwardRef<HTMLButtonElement, Props>(function Button(
-    {
-      isLoading,
-      isDisabled,
-      isWide,
-      icon,
-      tooltip,
-      iconPosition = "end",
-      size = "medium",
-      kind = "primary",
-      children,
-      ...htmlProps
-    },
-    ref
-  ) {
-    const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
-    const isClickable = !!htmlProps.onClick && !isDisabled;
+export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button(
+  { isLoading, isDisabled, isWide, icon, tooltip, iconAtStart = true, kind = "secondary", children, ...htmlProps },
+  ref
+) {
+  const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
 
-    const isDisabledBoolean = !!isDisabled;
+  const isDisabledBoolean = !!isDisabled;
 
-    function getTooltipLabel() {
-      if (isDisabled && typeof isDisabled !== "boolean") {
-        return isDisabled.reason;
-      }
-
-      return tooltip ?? null;
+  function getTooltipLabel() {
+    if (isDisabled && typeof isDisabled !== "boolean") {
+      return isDisabled.reason;
     }
 
-    const finalProps = isClickable ? htmlProps : removeProps(htmlProps, ["onClick"]);
+    return tooltip ?? null;
+  }
 
-    return (
-      <UIButton
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ref={ref as ForwardedRef<any>}
-        isLoading={isLoading}
-        isDisabled={isDisabledBoolean}
-        disabled={isDisabledBoolean}
-        isWide={isWide}
-        isClickable={isClickable}
-        data-tooltip={getTooltipLabel()}
-        size={size}
-        kind={kind}
-        {...finalProps}
-      >
-        {iconPosition === "start" && iconNode}
-        {children && <UIContentHolder>{children}</UIContentHolder>}
-        {iconPosition === "end" && iconNode}
-      </UIButton>
-    );
-  })
-)``;
+  return (
+    <UIButton
+      ref={ref}
+      isLoading={isLoading}
+      isDisabled={isDisabledBoolean}
+      disabled={isDisabledBoolean}
+      isWide={isWide}
+      data-tooltip={getTooltipLabel()}
+      kind={kind}
+      {...htmlProps}
+    >
+      {iconAtStart && iconNode}
+      {children && <UIContentHolder>{children}</UIContentHolder>}
+      {!iconAtStart && iconNode}
+    </UIButton>
+  );
+})``;
 
-const UIIconHolder = styled.div<{}>``;
+const ICON_SIZE_TO_TEXT_RATIO = 1.5;
 
-export const UIButton = styled(motion.button)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
+const UIIconHolder = styled.div<{}>`
+  font-size: ${ICON_SIZE_TO_TEXT_RATIO}em;
+  height: ${1 / ICON_SIZE_TO_TEXT_RATIO}em;
+  display: flex;
+  align-items: center;
+`;
+
+export const UIButton = styled(motion.button)<Props & { kind: ButtonKind }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
 
-  ${theme.font.body.spezia.normal.withExceptionalLineHeight("1.2", "Line height for buttons").build}
-
-  cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
+  ${theme.typo.content.medium.resetLineHeight};
+  ${theme.box.button};
+  ${theme.radius.secondaryItem};
+  ${theme.spacing.horizontalActions.asGap};
 
   a & {
     /* It is possible that button is inside <a> tag without having onClick handler. It means it should also have cursor pointer. */
@@ -96,7 +83,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
 
   ${theme.transitions.hover()}
 
-  ${theme.borderRadius.circle}
+  ${(props) => getButtonKindtyles(props.kind)}
 
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
   ${(props) =>
@@ -104,9 +91,6 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
     css`
       width: 100%;
     `}
-
-  ${({ size }) => buttonSizeSpecificStyle[size]}
-  ${({ kind }) => buttonKindSpecificStyle[kind]}
 `;
 
 const UIContentHolder = styled.div<{}>`
@@ -114,14 +98,3 @@ const UIContentHolder = styled.div<{}>`
   align-items: center;
   justify-content: center;
 `;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function removeProps<T extends Record<string, any>>(input: T, listOfPropsToRemove: Array<keyof T>) {
-  const clone = { ...input };
-
-  for (const propToRemove of listOfPropsToRemove) {
-    Reflect.deleteProperty(clone, propToRemove);
-  }
-
-  return clone;
-}

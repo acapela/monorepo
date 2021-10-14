@@ -21,5 +21,5 @@ export const ReplyButton = observer(({ messageId }: Props) => {
     });
   }
 
-  return <WideIconButton kind="secondary" tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
+  return <WideIconButton tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
 });

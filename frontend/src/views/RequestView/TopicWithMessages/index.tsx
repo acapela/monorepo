@@ -4,14 +4,14 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { runUntracked } from "~frontend/../../shared/mobxUtils";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { TextH3 } from "~ui/typo";
+import { runUntracked } from "~shared/mobxUtils";
+import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
@@ -56,7 +56,12 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   return (
     <TopicStoreContext>
       <UIHolder>
-        <UITitle>{topic.name}</UITitle>
+        <UIHead>
+          <UITitle>{topic.name}</UITitle>
+          <UIAdditionalInfo>
+            {topic.participants.count} {topic.participants.count === 1 ? "participant" : "participants"}
+          </UIAdditionalInfo>
+        </UIHead>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <AnimateSharedLayout>
@@ -96,19 +101,31 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 });
 
 const UIHolder = styled.div`
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  flex-grow: 1;
 `;
 
-const UITitle = styled(TextH3)`
-  padding: 20px;
-  font-weight: 700;
+const UIHead = styled.div`
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+`;
+
+const UITitle = styled.h3`
+  ${theme.typo.pageTitle};
+`;
+
+const UIAdditionalInfo = styled.div`
+  ${theme.typo.content.secondary}
 `;
 
 const UIMessageComposer = styled.div`
   width: 100%;
   margin-top: auto;
-  padding: 24px;
+  padding-top: 20px;
   padding-top: 0px;
+  max-width: 800px;
 `;

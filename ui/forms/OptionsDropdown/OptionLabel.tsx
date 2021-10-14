@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 interface Props {
   label: string;
@@ -13,7 +13,7 @@ export const OptionLabel = styled(function OptionLabel({ label, icon, className 
   return (
     <UIHolder className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}
-      <TextBody>{label}</TextBody>
+      <UIBody>{label}</UIBody>
     </UIHolder>
   );
 })``;
@@ -24,13 +24,17 @@ const UIHolder = styled.div<{}>`
   align-items: center;
   user-select: none;
 
-  ${TextBody} {
+  ${() => UIBody} {
     flex: 1;
   }
 
   svg {
     font-size: 24px;
   }
+`;
+
+const UIBody = styled.div`
+  ${theme.typo.content};
 `;
 
 const UIIcon = styled.div<{}>`

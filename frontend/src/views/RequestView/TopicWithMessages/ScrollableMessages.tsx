@@ -32,8 +32,15 @@ export const ScrollableMessages = styledObserver<Props>(
 
 const UIHolder = styled.div<{}>`
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
 `;
 
 const UIInner = styled.div<{}>`
   position: relative;
+  padding-bottom: 40px;
+  max-width: 800px;
+  width: 100%;
 `;

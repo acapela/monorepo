@@ -6,7 +6,7 @@ import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLik
 import { styledObserver } from "~shared/component";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 type Props = {
   topic: TopicEntity;
@@ -41,9 +41,10 @@ export const TopicSummaryMessage = styledObserver<Props>(({ topic, className }) 
 const UIHolder = styled.div<{}>`
   padding: 10px;
 
+  /* TODO PR */
   background: #f0faf5;
   border: 1px solid #d7f4e4;
-  ${borderRadius.card}
+  ${theme.radius.panel};
 `;
 
 const UIHead = styled.div<{}>`

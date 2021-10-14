@@ -1,13 +1,12 @@
 import { ReactNode } from "react";
-import styled, { StylesPart, css } from "styled-components";
+import styled, { css } from "styled-components";
 
 import { theme } from "~ui/theme";
 
-import { ButtonKind, ButtonSize } from "./types";
+import { ButtonKind, getButtonKindtyles } from "./variants";
 
 export interface Props {
   icon: ReactNode;
-  size?: ButtonSize;
   kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
@@ -24,8 +23,7 @@ const DEFAULT_ICON_SIZE_RATIO = 0.75;
 
 export const CircleIconButton = styled(function CircleIconButton({
   icon,
-  size = "small",
-  kind = "tertiary",
+  kind = "secondary",
   onClick,
   className,
   tooltip,
@@ -37,7 +35,6 @@ export const CircleIconButton = styled(function CircleIconButton({
       data-tooltip={tooltip}
       className={className}
       onClick={onClick}
-      size={size}
       kind={kind}
       isDisabled={isDisabled}
       disabled={isDisabled}
@@ -48,46 +45,7 @@ export const CircleIconButton = styled(function CircleIconButton({
   );
 })``;
 
-const buttonSizeSpecificStyle: Record<ButtonSize, StylesPart> = {
-  small: css`
-    font-size: 24px;
-  `,
-  medium: css`
-    font-size: 30px;
-  `,
-  large: css`
-    font-size: 36px;
-  `,
-  inherit: css`
-    font-size: inherit;
-  `,
-};
-
-const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
-  primary: css`
-    ${theme.colors.actions.primary.all()}
-    border: 1px solid transparent;
-  `,
-  secondary: css`
-    ${theme.colors.actions.secondary.all()}
-    border: 1px solid transparent;
-  `,
-  tertiary: css`
-    ${theme.colors.actions.tertiary.all()}
-    border: 1px solid transparent;
-  `,
-  transparent: css`
-    background: transparent;
-
-    &:hover,
-    &:active {
-      ${theme.colors.actions.secondary.hover()}
-    }
-  `,
-};
-
 export const UIButton = styled.button<{
-  size: ButtonSize;
   kind: ButtonKind;
   isDisabled: boolean;
   iconSizeRatio: number;
@@ -99,11 +57,9 @@ export const UIButton = styled.button<{
   display: flex;
   align-items: center;
   justify-content: center;
+  ${(props) => getButtonKindtyles(props.kind)}
 
-  ${({ kind }) => buttonKindSpecificStyle[kind]}
-  ${({ size }) => buttonSizeSpecificStyle[size]};
-
-  ${theme.borderRadius.circle};
+  ${theme.radius.circle};
   ${theme.transitions.hover()}
 
   svg {

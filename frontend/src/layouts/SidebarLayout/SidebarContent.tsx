@@ -23,7 +23,7 @@ export const SidebarContent = observer(function SidebarContent() {
         <UserMenu />
         <RouteLink route={routes.newRequest} params={{}}>
           <a>
-            <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
+            <Button kind="secondary" icon={<IconPlus />} iconAtStart>
               New Request
             </Button>
           </a>
@@ -80,8 +80,7 @@ const UISearch = styled.div<{}>`
 
   padding: 20px;
 
-  ${theme.font.body12.withExceptionalSize("13px", "fitting new design").build()};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.content};
 
   display: flex;
   flex-direction: row;

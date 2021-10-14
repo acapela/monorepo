@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 export const TopicClosureBanner = styled(() => (
   <UIBanner>
@@ -15,9 +15,10 @@ const UIBanner = styled.div<{}>`
   padding: 16px;
   max-width: 600px;
 
-  ${borderRadius.card};
+  ${theme.radius.panel};
+
   background-color: transparent;
-  border: 1px solid hsla(300, 2%, 92%, 1);
+  border: 1px solid ${theme.colors.layout.background.border};
 `;
 
 const UIClosingInfo = styled.div<{}>`

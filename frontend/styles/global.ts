@@ -22,5 +22,6 @@ export const global = css`
   body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-size: 14px;
   }
 `;

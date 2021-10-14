@@ -115,17 +115,18 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
   );
 });
 
-const PARTICIPANTS_BOX_SIZE = 30;
+const PARTICIPANTS_BOX_SIZE_PX = 35;
 
 const UIHolder = styled.div`
-  font-size: ${PARTICIPANTS_BOX_SIZE}px;
+  font-size: ${PARTICIPANTS_BOX_SIZE_PX}px;
   height: 1em;
+  min-width: 1em;
   width: 1em;
   position: relative;
 `;
 
 const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDescription }>`
-  font-size: ${(props) => PARTICIPANTS_BOX_SIZE * props.avatarSize}px;
+  font-size: ${(props) => PARTICIPANTS_BOX_SIZE_PX * props.avatarSize}px;
   height: 1em;
   width: 1em;
   display: flex;
@@ -141,8 +142,8 @@ const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDesc
     const realY = y * maxMovement;
 
     return css`
-      top: ${realY * PARTICIPANTS_BOX_SIZE}px;
-      left: ${realX * PARTICIPANTS_BOX_SIZE}px;
+      top: ${realY * PARTICIPANTS_BOX_SIZE_PX}px;
+      left: ${realX * PARTICIPANTS_BOX_SIZE_PX}px;
     `;
   }}
 `;
@@ -150,11 +151,11 @@ const UIAvatarHolder = styled.div<{ avatarSize: number; layout: AvatarLayoutDesc
 const UIMoreIndicator = styled.div`
   height: 1em;
   width: 1em;
-  ${theme.borderRadius.circle};
+  ${theme.radius.circle};
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${theme.colors.layout.softLine()};
+  background-color: ${theme.colors.layout.background.border};
   span {
     font-size: 0.7em;
     font-weight: bold;

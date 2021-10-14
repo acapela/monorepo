@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { getObjectKey } from "~shared/object";
 import { BodyPortal } from "~ui/BodyPortal";
-import { zIndex } from "~ui/zIndex";
+import { theme } from "~ui/theme";
 
 import { removeToast, useToasts } from "./data";
 import { ToastLabel } from "./ToastLabel";
@@ -35,7 +35,7 @@ const UIFlyer = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: ${zIndex.Toast};
+  z-index: ${theme.zIndex.toast};
   pointer-events: none;
 `;
 

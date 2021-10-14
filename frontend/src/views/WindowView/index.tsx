@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { Logo } from "~frontend/ui/Logo";
-import { borderRadius, shadow } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 interface Props {
   children: ReactNode;
@@ -27,8 +27,8 @@ const UIHolder = styled.div<{}>`
 
 const UIWindow = styled.div<{}>`
   background: #ffffff;
-  ${shadow.modal};
-  ${borderRadius.modal}
+  ${theme.radius.panel};
+  ${theme.shadow.modal};
   padding: 2rem;
   display: flex;
   flex-direction: column;

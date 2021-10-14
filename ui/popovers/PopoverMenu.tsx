@@ -5,9 +5,7 @@ import styled, { css } from "styled-components";
 
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { openInNewTab } from "~frontend/src/utils/openInNewTab";
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { BASE_GREY_1, DANGER_COLOR, PRIMARY_PINK_1_TRANSPARENT, PRIMARY_PINK_2 } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 import { UIDropdownPanelBody } from "./DropdownPanelBody";
 import { Popover, PopoverPlacement } from "./Popover";
@@ -68,33 +66,23 @@ export const PopoverMenu = styled<Props>(
 )``;
 
 export const UIPopoverMenuModal = styled(UIDropdownPanelBody)<{}>`
-  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 200px;
 `;
 
 const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isClickable: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px 8px;
+  cursor: pointer;
 
-  font-size: ${fontSize.label};
-  line-height: 1.5em;
+  ${theme.typo.action.regular.readingLineHeight.medium};
+  ${theme.transitions.hover()};
+  ${theme.box.selectOption};
+
+  ${theme.colors.panels.popover.interactive}
+
   border: 1px solid transparent;
-
-  ${(props) =>
-    props.isClickable &&
-    css`
-      cursor: pointer;
-      ${hoverTransition()};
-      &:hover {
-        border-color: ${PRIMARY_PINK_2};
-        background: ${PRIMARY_PINK_1_TRANSPARENT};
-      }
-    `}
 
   ${(props) =>
     props.isDisabled &&
@@ -103,9 +91,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
       pointer-events: none;
     `}
 
-  color: ${(props) => (props.isDestructive ? DANGER_COLOR : BASE_GREY_1)};
-
-  ${borderRadius.item}
+  color: ${(props) => props.isDestructive && theme.colors.status.danger};
 `;
 
 const UIItemIcon = styled.div<{}>`

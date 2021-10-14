@@ -2,9 +2,7 @@ import { ChangeEvent, ComponentPropsWithoutRef, ReactNode, useRef } from "react"
 import styled from "styled-components";
 
 import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
-import { borderRadius } from "~ui/baseStyles";
-import { BASE_GREY_1, BASE_GREY_3, BASE_GREY_5, BASE_GREY_6, PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 interface Props extends ComponentPropsWithoutRef<"input"> {
   onChangeText?: (text: string) => void;
@@ -30,35 +28,36 @@ export const RoundedTextInput = ({ icon, onChangeText, onChange, ...inputProps }
   );
 };
 
+const background = theme.colors.layout.background;
+
 const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;
 
-  color: ${BASE_GREY_1};
+  ${background.asBgWithReadableText};
   font-size: 0.875rem;
   line-height: 1.5;
 
-  background: ${WHITE};
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid ${BASE_GREY_5};
-  ${borderRadius.circle}
+  border: 1px solid ${background.border};
+  ${theme.radius.circle}
 
-  ${hoverTransition()}
+  ${theme.transitions.hover()}
+
   &:hover {
-    background: ${BASE_GREY_6};
+    ${background.hover.asBg}
   }
 
   :focus-within {
-    background: ${WHITE};
-    border-color: ${PRIMARY_PINK_1};
+    border-color: ${theme.colors.primary};
   }
 `;
 
 const UIIconHolder = styled.div<{}>`
   font-size: 1.5rem;
-  color: ${BASE_GREY_3};
+  ${theme.colors.text.secondary.asColor};
 `;
 
 const UIInput = styled.input<{}>`
@@ -68,6 +67,6 @@ const UIInput = styled.input<{}>`
   width: 100%;
 
   ::placeholder {
-    color: ${BASE_GREY_3};
+    ${theme.colors.text.secondary.asColor};
   }
 `;

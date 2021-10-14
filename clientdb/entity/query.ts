@@ -57,6 +57,8 @@ export type EntityQuery<Data, Connections> = {
   first: Entity<Data, Connections> | null;
   last: Entity<Data, Connections> | null;
   hasItems: boolean;
+  count: number;
+
   findById(id: string): Entity<Data, Connections> | null;
   query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
@@ -120,6 +122,9 @@ export function createEntityQuery<Data, Connections>(
   return {
     get hasItems() {
       return hasItemsComputed.get();
+    },
+    get count() {
+      return computed(() => getAll().length).get();
     },
     get all() {
       return getAll();

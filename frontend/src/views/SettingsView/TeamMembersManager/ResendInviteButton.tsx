@@ -30,7 +30,7 @@ export const ResendInviteButton = ({ invitationId }: Props) => {
   };
 
   return (
-    <Button onClick={handleClick} isLoading={loading} size="small">
+    <Button onClick={handleClick} isLoading={loading}>
       Re-send invite
     </Button>
   );

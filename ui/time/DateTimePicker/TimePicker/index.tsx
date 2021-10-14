@@ -4,7 +4,7 @@ import { useRendersCount } from "react-use";
 import styled from "styled-components";
 
 import { RadioOption } from "~ui/forms/RadioOption";
-import { TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 interface Props {
   value: number;
@@ -45,7 +45,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
         return (
           <div key={minutes} ref={isSelected ? selectedElement : undefined}>
             <RadioOption value={minutes} onSelect={() => onChange(minutes)} name="time" selected={isSelected}>
-              <TextBody>{format(addMinutes(dayStart, minutes), "p")}</TextBody>
+              <UIBody>{format(addMinutes(dayStart, minutes), "p")}</UIBody>
             </RadioOption>
           </div>
         );
@@ -54,8 +54,8 @@ export const TimePicker = ({ value, onChange }: Props) => {
   );
 };
 
-const UIHolder = styled.div<{}>`
-  ${TextBody} {
-    font-weight: bold;
-  }
+const UIBody = styled.div`
+  ${theme.typo.content.bold};
 `;
+
+const UIHolder = styled.div<{}>``;

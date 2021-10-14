@@ -56,15 +56,14 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UITitle = styled.p<{}>`
-  ${theme.font.h3.medium.build};
+  ${theme.typo.secondaryTitle};
   color: ${theme.colors.status.warning()};
 `;
 
 const UISubtitle = styled.p<{}>`
-  ${theme.font.h3.medium.build};
+  ${theme.typo.content.bold};
 `;
 
 const UIDescription = styled.p<{}>`
-  ${theme.font.body14.build};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.typo.label.secondary};
 `;
