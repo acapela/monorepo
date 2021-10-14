@@ -15,11 +15,6 @@ ALTER TABLE "public"."team_member_slack"
 ALTER TABLE "public"."team_member_slack"
   RENAME COLUMN "data" TO "installation_data";
 
-ALTER TABLE "public"."team_invitation"
-  ALTER COLUMN "used_by_user_id" SET NOT NULL;
-ALTER TABLE "public"."team_invitation"
-  RENAME COLUMN "used_by_user_id" TO "user_id";
-
 DROP VIEW "public"."team_invitation_info";
 
 DROP TABLE "public"."team_invitation";

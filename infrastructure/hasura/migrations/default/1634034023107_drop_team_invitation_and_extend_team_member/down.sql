@@ -35,33 +35,33 @@
 -- Please write an appropriate down migration for the SQL below:
 -- DROP VIEW "public"."team_invitation_info";
 
-alter table "public"."team_invitation" alter column "slack_user_id" drop not null;
-alter table "public"."team_invitation" add column "slack_user_id" text;
-
-alter table "public"."team_invitation"
-  add constraint "team_invitation_used_by_user_id_fkey"
-  foreign key (user_id)
-  references "public"."user"
-  (id) on update cascade on delete cascade;
-alter table "public"."team_invitation" alter column "user_id" drop not null;
-alter table "public"."team_invitation" add column "user_id" uuid;
-
-alter table "public"."team_invitation" rename column "user_id" to "used_by_user_id";
-alter table "public"."team_invitation" alter column "used_by_user_id" drop not null;
-
-alter table "public"."team_member_slack" rename column "installation_data" to "data";
-alter table "public"."team_member_slack" alter column "data" set not null;
-
-alter table "public"."team_member_slack" rename to "team_member_slack_installation";
-
-alter table "public"."task" alter column "user_id" drop not null;
-
-alter table "public"."task"
-  add constraint "task_team_invitation_id_fkey"
-  foreign key (team_invitation_id)
-  references "public"."team_invitation"
-  (id) on update no action on delete cascade;
-alter table "public"."task" alter column "team_invitation_id" drop not null;
-alter table "public"."task" add column "team_invitation_id" uuid;
-
-alter table "public"."task" add constraint "task_has_user_id_or_team_invitation_id" check (CHECK (user_id IS NOT NULL OR team_invitation_id IS NOT NULL));
+-- alter table "public"."team_invitation" alter column "slack_user_id" drop not null;
+-- alter table "public"."team_invitation" add column "slack_user_id" text;
+--
+-- alter table "public"."team_invitation"
+--   add constraint "team_invitation_used_by_user_id_fkey"
+--   foreign key (user_id)
+--   references "public"."user"
+--   (id) on update cascade on delete cascade;
+-- alter table "public"."team_invitation" alter column "user_id" drop not null;
+-- alter table "public"."team_invitation" add column "user_id" uuid;
+--
+-- alter table "public"."team_invitation" rename column "user_id" to "used_by_user_id";
+-- alter table "public"."team_invitation" alter column "used_by_user_id" drop not null;
+--
+-- alter table "public"."team_member_slack" rename column "installation_data" to "data";
+-- alter table "public"."team_member_slack" alter column "data" set not null;
+--
+-- alter table "public"."team_member_slack" rename to "team_member_slack_installation";
+--
+-- alter table "public"."task" alter column "user_id" drop not null;
+--
+-- alter table "public"."task"
+--   add constraint "task_team_invitation_id_fkey"
+--   foreign key (team_invitation_id)
+--   references "public"."team_invitation"
+--   (id) on update no action on delete cascade;
+-- alter table "public"."task" alter column "team_invitation_id" drop not null;
+-- alter table "public"."task" add column "team_invitation_id" uuid;
+--
+-- alter table "public"."task" add constraint "task_has_user_id_or_team_invitation_id" check (CHECK (user_id IS NOT NULL OR team_invitation_id IS NOT NULL));
