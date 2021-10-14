@@ -78,7 +78,7 @@ export function createEntityStore<Data, Connections>(
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
 
-  const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, any>>();
+  const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.

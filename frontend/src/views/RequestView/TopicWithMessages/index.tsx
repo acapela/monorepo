@@ -22,6 +22,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   const user = useAssertCurrentUser();
   const messages = topic.messages.all;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     action(() => {
       const unseenTasks = topic.tasks.query({ user_id: user.id, seen_at: null }).all;

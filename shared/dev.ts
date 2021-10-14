@@ -30,9 +30,9 @@ export function devAssignWindowVariable(name: string, value: unknown) {
   Reflect.set(window, name, value);
 }
 
-export function createDebugLogger(name: string, isEnabled: boolean) {
+export function createDebugLogger(name: string, isEnabled?: boolean) {
   return function log(...input: unknown[]) {
-    if (!isDev) return;
+    if (!isDev || isEnabled == false) return;
     console.info(`[${name}]`, ...input);
   };
 }

@@ -163,6 +163,7 @@ export const topicEntity = defineEntity<TopicFragment>({
           return new Date(topic.updated_at);
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
 
         return messageWithLatestActivity.lastActivityDate;
