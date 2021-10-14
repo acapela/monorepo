@@ -4,6 +4,7 @@ import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlack
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { routes } from "~shared/routes";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
@@ -68,7 +69,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       topicMessage,
       slackUserIdsWithRequestType,
     });
-    const topicURL = `${process.env.FRONTEND_URL}/topic/${topic.slug}`;
+    const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
     await ack();
     await respond({
       response_type: "in_channel",

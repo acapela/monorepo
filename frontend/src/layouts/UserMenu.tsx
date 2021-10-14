@@ -3,11 +3,10 @@ import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
-import { routes } from "~frontend/router";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { routes } from "~shared/routes";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -22,15 +21,10 @@ export const UserMenu = observer(function UserMenu() {
     <UIHolder>
       <UserAvatar user={user} size={30} disableNameTooltip />
       <PopoverMenuTrigger
-        onOpen={() => {
-          routes.settings.prefetch({});
-        }}
         options={[
           {
             label: "Settings",
-            onSelect: () => {
-              routes.settings.push({});
-            },
+            href: routes.settings,
           },
           {
             label: "Switch teams",
@@ -42,14 +36,11 @@ export const UserMenu = observer(function UserMenu() {
           },
           {
             label: "Visit website",
-            openUrlOnSelect: "https://acapela.com",
+            externalURL: "https://acapela.com",
           },
           {
             label: "Sign out",
-            onSelect: () => {
-              routes.logout.push({});
-              trackEvent("Signed Out");
-            },
+            href: routes.logout,
           },
         ]}
       >
