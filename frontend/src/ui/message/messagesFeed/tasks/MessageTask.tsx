@@ -22,13 +22,13 @@ const TASK_TYPE_LABELS = new Map(
 
 export const MessageTask = observer(({ task }: Props) => {
   const teamInvitation = task.teamInvitation;
-  assert(task.user || teamInvitation, "task has neither user nor invitation");
+  assert(task.assignedUser || teamInvitation, "task has neither user nor invitation");
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const assigneeName = task.user?.name ?? getTeamInvitationDisplayName(teamInvitation!);
+  const assigneeName = task.assignedUser?.name ?? getTeamInvitationDisplayName(teamInvitation!);
 
   return (
     <UISingleTask key={task.id}>
-      {task.user ? <UserAvatar size={30} user={task.user} /> : <Avatar name="?" />}
+      {task.assignedUser ? <UserAvatar size={30} user={task.assignedUser} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
         <UIStatusLabel isDone={task.isDone}>
