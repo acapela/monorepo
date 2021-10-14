@@ -1,11 +1,12 @@
 import { autorun } from "mobx";
 import { observer } from "mobx-react";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { routes } from "~frontend/router";
+import { routes } from "~shared/routes";
 
 import { TopicWithMessages } from "./TopicWithMessages";
 
@@ -17,6 +18,7 @@ interface Props {
  * In case topic slug changes while we have it opened, replace the router so we still have it opened.
  */
 function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
+  const router = useRouter();
   useEffect(() => {
     if (!topic) return;
 
@@ -29,9 +31,9 @@ function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
         return;
       }
 
-      routes.topic.replace({ topicSlug: slugNow });
+      router.replace(routes.topic({ topicSlug: slugNow }));
     });
-  }, [topic]);
+  }, [router, topic]);
 }
 
 function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {

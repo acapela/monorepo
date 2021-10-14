@@ -8,6 +8,7 @@ import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
+import { routes } from "~shared/routes";
 
 async function sendInvitationSlackMessage(teamId: string, inviter: User, slackUserId: string, inviteURL: string) {
   const [botToken, invitingUserSlackId] = await Promise.all([
@@ -40,7 +41,7 @@ async function sendInvitationEmail(teamId: string, email: string, inviter: User,
 }
 
 export const sendInviteNotification = async (user: User, teamId: string, invitingUserId: string) => {
-  const inviteURL = `${process.env.FRONTEND_URL}/invite?${new URLSearchParams(
+  const inviteURL = `${process.env.FRONTEND_URL}${routes.invite}?${new URLSearchParams(
     Object.entries({
       jwt: signJWT(createJWT({ userId: user.id, teamId })),
       teamId,
