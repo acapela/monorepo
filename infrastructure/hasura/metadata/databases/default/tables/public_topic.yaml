@@ -71,6 +71,7 @@ select_permissions:
     - closed_at
     - closed_by_user_id
     - closing_summary
+    - created_at
     - id
     - index
     - name
