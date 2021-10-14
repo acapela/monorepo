@@ -5,8 +5,8 @@ import { PropsWithChildren, createContext, useContext, useEffect, useState } fro
 
 import { createClientDb } from "~clientdb";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { teamMemberEntity } from "~frontend/clientdb/teamMember";
+import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
@@ -46,7 +46,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
       attachment: attachmentEntity,
       team: teamEntity,
       teamMember: teamMemberEntity,
-      teamInvitation: teamInvitationEntity,
+      teamMemberSlack: teamMemberSlackEntity,
       task: taskEntity,
       messageReaction: messageReactionEntity,
     }

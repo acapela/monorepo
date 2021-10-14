@@ -1,11 +1,3 @@
-type Mutation {
-  accept_invitations(token: uuid!): AcceptInvitationsOutput
-}
-
-type Query {
-  find_slack_user(input: FindSlackUserInput!): FindSlackUserOutput
-}
-
 type Query {
   get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
 }
@@ -15,7 +7,7 @@ type Query {
 }
 
 type Mutation {
-  resend_invitation(invitation_id: ID!): ResendInvitationResponse
+  invite_user(input: InviteUserInput!): InviteUserOutput
 }
 
 type Mutation {
@@ -29,6 +21,11 @@ input GetTeamSlackInstallationURLInput {
 }
 
 input FindSlackUserInput {
+  team_id: uuid!
+}
+
+input InviteUserInput {
+  email: String!
   team_id: uuid!
 }
 
@@ -58,5 +55,9 @@ type FindSlackUserOutput {
 }
 
 type AcceptInvitationsOutput {
+  success: Boolean!
+}
+
+type InviteUserOutput {
   success: Boolean!
 }

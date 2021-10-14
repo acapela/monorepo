@@ -1,32 +1,56 @@
+import { sendInviteNotification } from "~backend/src/inviteUser";
+import { slackClient } from "~backend/src/slack/app";
 import { findUserBySlackId } from "~backend/src/slack/utils";
-import { Prisma, db } from "~db";
+import { User, db } from "~db";
+import { Sentry } from "~shared/sentry";
 import { slugify } from "~shared/slugify";
 import { MentionType } from "~shared/types/mention";
 
-async function createMissingTeamInvitations(teamId: string, invitingUserId: string, slackUserIds: string[]) {
-  await db.team_invitation.createMany({
-    data: slackUserIds.map((slackUserId) => ({
-      slack_user_id: slackUserId,
-      team_id: teamId,
-      inviting_user_id: invitingUserId,
-    })),
-    skipDuplicates: true,
+async function createAndInviteMissingUsers(
+  slackToken: string,
+  teamId: string,
+  invitingUserId: string,
+  slackUserIds: string[]
+) {
+  const usersWithSlackIds: { slackUserId: string; user: User }[] = [];
+  await db.$transaction(async (transactionUntyped) => {
+    const transaction = transactionUntyped as typeof db;
+    await Promise.all(
+      slackUserIds.map(async (slackUserId) => {
+        const { profile } = await slackClient.users.profile.get({
+          token: slackToken,
+          user: slackUserId,
+        });
+        const name = profile?.real_name;
+        const email = profile?.email;
+        if (!name || !email) {
+          return;
+        }
+        const user = await transaction.user.create({ data: { name, email, avatar_url: profile?.image_original } });
+        await transaction.team_member.create({
+          data: {
+            team_id: teamId,
+            user_id: user.id,
+            team_member_slack: { create: { slack_user_id: slackUserId } },
+          },
+        });
+        usersWithSlackIds.push({ slackUserId, user });
+      })
+    );
   });
-  return db.team_invitation.findMany({
-    where: {
-      team_id: teamId,
-      slack_user_id: { in: slackUserIds },
-      // we get existing accepted invitations through findUsersBySlackId
-      used_by_user_id: null,
-    },
-  });
+
+  Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, teamId, invitingUserId))).catch(
+    (error) => Sentry.captureException(error)
+  );
+
+  return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
 }
 
-type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string; requestType: MentionType };
+type UserWithRequest = { userId: string; requestType: MentionType };
 
 type SlackUserIdWithRequestType = { slackUserId: string; requestType: MentionType };
 
-export async function findUsersOrCreateTeamInvitations({
+export async function findOrCreateUsers({
   slackToken,
   teamId,
   invitingUserId,
@@ -36,7 +60,7 @@ export async function findUsersOrCreateTeamInvitations({
   teamId: string;
   invitingUserId: string;
   slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
-}): Promise<UserOrTeamInvitation[]> {
+}): Promise<UserWithRequest[]> {
   const usersForSlackIds = await Promise.all(
     slackUserIdsWithRequestType.map(async ({ slackUserId, requestType }) => ({
       slackUserId,
@@ -48,7 +72,7 @@ export async function findUsersOrCreateTeamInvitations({
   const userIds = usersForSlackIds
     .filter((item) => item.user)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .map((item) => ({ type: "user", id: item.user!.id, requestType: item.requestType } as const));
+    .map((item) => ({ userId: item.user!.id, requestType: item.requestType } as const));
 
   const missingUsersSlackIds = usersForSlackIds.filter((item) => !item.user).map((item) => item.slackUserId);
 
@@ -56,17 +80,16 @@ export async function findUsersOrCreateTeamInvitations({
     return userIds;
   }
 
-  const teamInvitations = await createMissingTeamInvitations(teamId, invitingUserId, missingUsersSlackIds);
-  const teamInvitationIds = teamInvitations.map(
+  const newUsers = await createAndInviteMissingUsers(slackToken, teamId, invitingUserId, missingUsersSlackIds);
+  const newUserIds = newUsers.map(
     (row) =>
       ({
-        type: "team_invitation",
-        id: row.id,
+        userId: row.userId,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        requestType: slackUserIdsWithRequestType.find((item) => item.slackUserId == row.slack_user_id)!.requestType,
+        requestType: slackUserIdsWithRequestType.find((item) => item.slackUserId == row.slackUserId)!.requestType,
       } as const)
   );
-  return [...userIds, ...teamInvitationIds];
+  return [...userIds, ...newUserIds];
 }
 
 export async function createTopicForSlackUsers({
@@ -84,20 +107,13 @@ export async function createTopicForSlackUsers({
   topicMessage: string;
   slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
 }) {
-  const usersAndTeamInvitations = await findUsersOrCreateTeamInvitations({
+  const usersWithRequestType = await findOrCreateUsers({
     slackToken: token,
     teamId,
     invitingUserId: ownerId,
     slackUserIdsWithRequestType,
   });
 
-  const taskData = usersAndTeamInvitations.map(
-    (item) =>
-      ({
-        type: item.requestType,
-        [item.type == "user" ? "user_id" : "team_invitation_id"]: item.id,
-      } as Prisma.taskUncheckedCreateWithoutMessageInput)
-  );
   return await db.topic.create({
     data: {
       team_id: teamId,
@@ -114,7 +130,14 @@ export async function createTopicForSlackUsers({
             content: [{ type: "paragraph", content: [{ type: "text", text: topicMessage }] }],
           },
           content_text: topicMessage,
-          task: { createMany: { data: taskData } },
+          task: {
+            createMany: {
+              data: usersWithRequestType.map((item) => ({
+                type: item.requestType,
+                user_id: item.userId,
+              })),
+            },
+          },
         },
       },
     },

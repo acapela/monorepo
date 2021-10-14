@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
+import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
 import { userEntity } from "~frontend/clientdb/user";
 import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaultData";
@@ -34,5 +35,8 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
 }).addConnections((teamMember, { getEntity }) => ({
   get user() {
     return getEntity(userEntity).assertFindById(teamMember.user_id);
+  },
+  get teamMemberSlack() {
+    return getEntity(teamMemberSlackEntity).findByUniqueIndex("team_member_id", teamMember.id);
   },
 }));

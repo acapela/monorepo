@@ -6,13 +6,6 @@ object_relationships:
   using:
     foreign_key_constraint_on: current_team_id
 array_relationships:
-- name: created_team_invitations
-  using:
-    foreign_key_constraint_on:
-      column: inviting_user_id
-      table:
-        name: team_invitation
-        schema: public
 - name: messages
   using:
     manual_configuration:
@@ -36,6 +29,12 @@ array_relationships:
       table:
         name: team_member
         schema: public
+computed_fields:
+- definition:
+    function:
+      name: has_user_account
+      schema: public
+  name: has_account
 select_permissions:
 - permission:
     columns:
@@ -44,6 +43,8 @@ select_permissions:
     - id
     - name
     - updated_at
+    computed_fields:
+    - has_account
     filter:
       _or:
       - team_memberships:

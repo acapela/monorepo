@@ -44,11 +44,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       if (!teamMember) {
         return;
       }
-      await db.team_member_slack_installation.create({
+      await db.team_member_slack.create({
         data: {
           team_member_id: teamMember.id,
-          data: installation.user as never,
-          slack_team_id: slackTeamId,
+          installation_data: installation.user as never,
           slack_user_id: installation.user.id,
         },
       });
@@ -58,7 +57,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         db.team_slack_installation.findFirst({
           where: { slack_team_id: query.teamId },
         }),
-        db.team_member_slack_installation.findFirst({
+        db.team_member_slack.findFirst({
           where: { slack_user_id: query.userId },
         }),
       ]);
@@ -66,14 +65,14 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         teamSlackInstallation?.data,
         new UnprocessableEntityError(`No team Slack installation found for query ${JSON.stringify(query)}`)
       ) as unknown as SlackInstallation;
-      const memberData = teamMemberSlackInstallation?.data;
+      const memberData = teamMemberSlackInstallation?.installation_data;
       return { ...teamData, user: memberData ?? {} } as SlackInstallation;
     },
     async deleteInstallation(query) {
       await db.$transaction([
         db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } }),
-        db.team_member_slack_installation.deleteMany({
-          where: { team_slack_installation: { slack_team_id: query.teamId } },
+        db.team_member_slack.deleteMany({
+          where: { team_member: { team: { team_slack_installation: { slack_team_id: query.teamId } } } },
         }),
       ]);
     },

@@ -1,7 +1,7 @@
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "~shared/types/analytics";
 
 export function identifyUser(userProfile: AnalyticsUserProfile) {
-  if (window.analytics) {
+  if (window.analytics && userProfile.id) {
     window.analytics.identify(userProfile.id, userProfile);
   }
 }

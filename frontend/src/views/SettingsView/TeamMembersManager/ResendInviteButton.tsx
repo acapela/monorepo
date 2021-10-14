@@ -1,36 +1,20 @@
-import { gql, useMutation } from "@apollo/client";
 import React from "react";
 
-import { ResendInvitationMutation, ResendInvitationMutationVariables } from "~gql";
+import { UserEntity } from "~frontend/clientdb/user";
+import { useInviteUser } from "~frontend/views/SettingsView/TeamMembersManager/shared";
 import { Button } from "~ui/buttons/Button";
 import { addToast } from "~ui/toasts/data";
 
-interface Props {
-  invitationId: string;
-}
+export const ResendInviteButton = ({ user, teamId }: { user: UserEntity; teamId: string }) => {
+  const [inviteUser, { loading, called }] = useInviteUser();
 
-export const ResendInviteButton = ({ invitationId }: Props) => {
-  const [resendInvitation, { loading }] = useMutation<ResendInvitationMutation, ResendInvitationMutationVariables>(
-    gql`
-      mutation ResendInvitation($invitation_id: ID!) {
-        resend_invitation(invitation_id: $invitation_id) {
-          sent_at
-        }
-      }
-    `,
-    {
-      onCompleted() {
-        addToast({ type: "success", title: `Team invitation was sent` });
-      },
-    }
-  );
-
-  const handleClick = () => {
-    resendInvitation({ variables: { invitation_id: invitationId } });
+  const handleClick = async () => {
+    await inviteUser({ variables: { input: { email: user.email, team_id: teamId } } });
+    addToast({ type: "success", title: `Team invitation was sent` });
   };
 
   return (
-    <Button onClick={handleClick} isLoading={loading}>
+    <Button onClick={handleClick} isLoading={loading} isDisabled={called}>
       Re-send invite
     </Button>
   );

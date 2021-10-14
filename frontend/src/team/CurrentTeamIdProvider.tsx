@@ -27,9 +27,7 @@ export function CurrentTeamIdProvider({ children }: PropsWithChildren<{}>) {
   const liveUser = data?.user ?? null;
 
   return (
-    <CurrentTeamIdContext.Provider
-      value={liveUser?.current_team ? liveUser.current_team.id : null ?? user?.currentTeamId ?? null}
-    >
+    <CurrentTeamIdContext.Provider value={liveUser?.current_team ? liveUser.current_team.id : null}>
       {children}
     </CurrentTeamIdContext.Provider>
   );

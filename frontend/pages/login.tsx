@@ -10,13 +10,11 @@ import { WindowView } from "~frontend/views/WindowView";
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
-  const { query } = useRouter();
-  const isEmailLoginEnabled = query.isEmailLoginEnabled === "true";
 
   return (
     <div>
       <WindowView>
-        {!isAuthenticated && <LoginOptionsView isEmailLoginEnabled={isEmailLoginEnabled} />}
+        {!isAuthenticated && <LoginOptionsView />}
         {isRedirecting && <div>Redirecting...</div>}
       </WindowView>
     </div>

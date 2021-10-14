@@ -10,7 +10,6 @@ export const routes = {
   home: createRoute("/", {}),
   settings: createRoute("/settings", {}),
   logout: createRoute("/logout", {}),
-  invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 
 export function useIsAnyRouteActive(paths: Array<string>) {

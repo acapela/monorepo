@@ -15,13 +15,6 @@ object_relationships:
         name: team_slack_installation
         schema: public
 array_relationships:
-- name: invitations
-  using:
-    foreign_key_constraint_on:
-      column: team_id
-      table:
-        name: team_invitation
-        schema: public
 - name: memberships
   using:
     foreign_key_constraint_on:

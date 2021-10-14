@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.15.0",
-    "jsonwebtoken": "^8.5.1"
+    "@playwright/test": "^1.15.0"
   },
   "scripts": {
     "test": "APP=e2e playwright test --workers 1",
