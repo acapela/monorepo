@@ -45,7 +45,9 @@ export async function createClientDb<Entities extends EntitiesMap>(
       });
 
       if (!foundClient) {
-        throw new Error("no client for given definition in this db");
+        throw new Error(
+          `no client for given definition (${definition.config.name}) in this db. Make sure it is added to entities map when creating client db`
+        );
       }
 
       return foundClient;
