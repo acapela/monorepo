@@ -118,7 +118,7 @@ export async function createTopicForSlackUsers({
     data: {
       team_id: teamId,
       name: topicName,
-      slug: slugify(topicName),
+      slug: await slugify(topicName),
       index: "a",
       owner_id: ownerId,
       message: {
