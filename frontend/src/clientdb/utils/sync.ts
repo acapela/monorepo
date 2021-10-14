@@ -24,6 +24,7 @@ import {
   Task_Update_Column,
   Team_Constraint,
   Team_Insert_Input,
+  Team_Invitation_Insert_Input,
   Team_Member_Constraint,
   Team_Member_Insert_Input,
   Team_Member_Update_Column,
@@ -67,8 +68,6 @@ type ConstraintsValueMap = {
   [key in keyof ConstraintsTypeMap]: ConstraintsTypeMap[key];
 };
 
-type UpsertConstraint = ConstraintsTypeMap[keyof ConstraintsTypeMap];
-
 const upsertConstraints: ConstraintsValueMap = {
   task: "task_pkey",
   topic: "thread_pkey",
@@ -89,6 +88,7 @@ type InsertTypeMap = {
   message_reaction: Message_Reaction_Insert_Input;
   attachment: Attachment_Insert_Input;
   last_seen_message: Last_Seen_Message_Insert_Input;
+  team_invitation: Team_Invitation_Insert_Input;
 };
 
 type UpdateTypeMap = {
