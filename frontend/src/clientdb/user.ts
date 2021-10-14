@@ -32,8 +32,9 @@ export const userEntity = defineEntity<UserFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment, {
-    insertColumns: ["avatar_url", "name"],
-    updateColumns: ["avatar_url", "name"],
+    // TODO currently clientdb is not working for user updates, as user insert is not allowed on db (so upsert as well)
+    insertColumns: [],
+    updateColumns: [],
   }),
 }).addConnections((user, { getEntity, getContextValue }) => {
   return {
