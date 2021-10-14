@@ -9,16 +9,6 @@ import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 
-function getUserNameWithFallbacks(user: User): string {
-  if (user.name) {
-    return user.name;
-  }
-  if (user.email) {
-    return user.email;
-  }
-  return "Your colleague";
-}
-
 async function sendInvitationSlackMessage(teamId: string, inviter: User, slackUserId: string, inviteURL: string) {
   const [botToken, invitingUserSlackId] = await Promise.all([
     fetchTeamBotToken(teamId),
@@ -37,14 +27,13 @@ async function sendInvitationEmail(teamId: string, email: string, inviter: User,
 
   assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
 
-  const inviterName = getUserNameWithFallbacks(inviter);
   await sendEmail({
     from: DEFAULT_NOTIFICATION_EMAIL,
     to: email,
-    subject: `${inviterName} has invited you to collaborate on ${team.name}`,
+    subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
     html: [
       "Hey!",
-      `${inviterName} has invited you to join ${team.name} team on Acapela.`,
+      `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
       `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
     ].join("<br>"),
   });
@@ -67,10 +56,8 @@ export const sendInviteNotification = async (user: User, teamId: string, invitin
 
   if (teamMemberSlack) {
     await sendInvitationSlackMessage(teamId, invitingUser, teamMemberSlack.slack_user_id, inviteURL);
-  } else if (user.email) {
-    await sendInvitationEmail(teamId, user.email, invitingUser, inviteURL);
   } else {
-    return;
+    await sendInvitationEmail(teamId, user.email, invitingUser, inviteURL);
   }
 
   log.info("Sent invite notification", {
@@ -94,7 +81,16 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     if (!user) {
       await db.team_member.create({
         data: {
-          user: { connectOrCreate: { where: { email }, create: { email, current_team_id: team_id } } },
+          user: {
+            connectOrCreate: {
+              where: { email },
+              create: {
+                email,
+                name: email,
+                current_team_id: team_id,
+              },
+            },
+          },
           team: { connect: { id: team_id } },
         },
       });

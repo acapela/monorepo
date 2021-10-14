@@ -123,7 +123,7 @@ const authAdapterProvider = {
       },
 
       async getUserByEmail(email) {
-        return await db.user.findFirst({ where: { email } });
+        return email ? await db.user.findFirst({ where: { email } }) : null;
       },
 
       async linkAccount(userId, providerId, providerType, providerAccountId, refreshToken, accessToken) {
@@ -255,14 +255,12 @@ async function getAuthInitOptions() {
         return createJWT({ ...token, userId: user.id, teamId: user.current_team_id });
       },
 
-      async signIn(user: User | ProviderUser, accountInfo) {
+      async signIn(user: User | ProviderUser, accountInfo, profile) {
         if (getIsNewUser(user)) {
           return true;
         }
 
-        if (user.email) {
-          trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
-        }
+        trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
 
         try {
           const existingAccount = await db.account.findFirst({

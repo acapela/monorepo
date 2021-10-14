@@ -22,7 +22,7 @@ export async function findSlackUserId(teamId: string, user: User) {
   }
 
   const token = await fetchTeamBotToken(teamId);
-  if (!token || !user.email) {
+  if (!token) {
     return;
   }
   try {

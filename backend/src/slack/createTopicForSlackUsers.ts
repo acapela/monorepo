@@ -15,27 +15,28 @@ async function createAndInviteMissingUsers(
   const usersWithSlackIds: { slackUserId: string; user: User }[] = [];
   await db.$transaction(async (transactionUntyped) => {
     const transaction = transactionUntyped as typeof db;
-    for (const slackUserId of slackUserIds) {
-      const { profile } = await slackClient.users.profile.get({
-        token: slackToken,
-        user: slackUserId,
-      });
-      const user = await transaction.user.create({
-        data: {
-          name: profile?.real_name,
-          email: profile?.email,
-          avatar_url: profile?.image_original,
-        },
-      });
-      await transaction.team_member.create({
-        data: {
-          team_id: teamId,
-          user_id: user.id,
-          team_member_slack: { create: { slack_user_id: slackUserId } },
-        },
-      });
-      usersWithSlackIds.push({ slackUserId, user });
-    }
+    await Promise.all(
+      slackUserIds.map(async (slackUserId) => {
+        const { profile } = await slackClient.users.profile.get({
+          token: slackToken,
+          user: slackUserId,
+        });
+        const name = profile?.real_name;
+        const email = profile?.email;
+        if (!name || !email) {
+          return;
+        }
+        const user = await transaction.user.create({ data: { name, email, avatar_url: profile?.image_original } });
+        await transaction.team_member.create({
+          data: {
+            team_id: teamId,
+            user_id: user.id,
+            team_member_slack: { create: { slack_user_id: slackUserId } },
+          },
+        });
+        usersWithSlackIds.push({ slackUserId, user });
+      })
+    );
   });
 
   Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, teamId, invitingUserId))).catch(

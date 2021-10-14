@@ -25,7 +25,7 @@ export const TopicSummaryMessage = styledObserver<Props>(({ topic, className }) 
     <MessageLikeContent user={closedByUser} date={closedAtDate} className={className}>
       <UIHolder>
         <UIHead>
-          Topic was closed by {closedByUser.name ?? closedByUser.email} on {niceFormatDate(closedAtDate)} 🎉
+          Topic was closed by {closedByUser.name} on {niceFormatDate(closedAtDate)} 🎉
         </UIHead>
         {closing_summary && (
           <UISummary>
