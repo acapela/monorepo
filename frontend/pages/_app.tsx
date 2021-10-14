@@ -6,7 +6,7 @@ import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
-import { Provider as SessionProvider } from "next-auth/client";
+import { SessionProvider } from "next-auth/react";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";

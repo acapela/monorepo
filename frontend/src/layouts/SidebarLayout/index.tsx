@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { signOut } from "next-auth/client";
+import { signOut } from "next-auth/react";
 import React, { ReactNode, useEffect } from "react";
 import styled from "styled-components";
 

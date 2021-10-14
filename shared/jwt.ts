@@ -15,14 +15,12 @@ export interface UserTokenPayload {
   iat: number;
   sub: string;
   id: string;
-  currentTeamId: string | null;
 }
 
 export const createJWT = ({ userId, teamId, ...payload }: JwtPayload & { userId: string; teamId?: Maybe<string> }) => ({
   ...payload,
   id: payload.sub || userId,
-  sub: payload.sub || userId,
-  currentTeamId: teamId ?? null,
+  sub: userId,
   // Make JWT token compatible with hasura
   "https://hasura.io/jwt/claims": {
     "x-hasura-allowed-roles": ["user"],

@@ -1,4 +1,4 @@
-import { signIn } from "next-auth/client";
+import { signIn } from "next-auth/react";
 import React, { ReactNode } from "react";
 
 import { Maybe } from "~shared/types";

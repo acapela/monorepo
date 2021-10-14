@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
@@ -6,8 +6,8 @@ import { assertDefined } from "~shared/assert";
 import { UserTokenPayload } from "~shared/jwt";
 
 export function useCurrentUserTokenData(): UserTokenPayload | null {
-  const [user] = useSession();
-  return user as ReturnType<typeof useCurrentUserTokenData>;
+  const { data } = useSession();
+  return data as ReturnType<typeof useCurrentUserTokenData>;
 }
 
 /**

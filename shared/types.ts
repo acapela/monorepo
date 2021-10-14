@@ -30,11 +30,4 @@ export type JsonValue<T> = DeepReplace<
   ]
 >;
 
-export interface AuthorizationUrlParams {
-  response_type: "code";
-  prompt: "select_account";
-  access_type: "offline";
-  hd?: string;
-}
-
 export type PromiseResult<T> = T extends PromiseLike<infer U> ? U : T;
