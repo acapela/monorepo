@@ -103,7 +103,7 @@ export const messageEntity = defineEntity<MessageFragment>({
       return max(ownTasks.map((task) => task.lastOwnActivityDate))!;
     },
     get isUnread() {
-      if (!currentUserId) return false;
+      if (!currentUserId || message.user_id == currentUserId) return false;
 
       const lastUnreadInTheSameTopic = getEntity(lastSeenMessageEntity).query({
         topic_id: message.topic_id,
