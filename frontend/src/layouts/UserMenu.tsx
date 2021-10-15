@@ -1,5 +1,4 @@
 import { observer } from "mobx-react";
-import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
@@ -30,7 +29,6 @@ export const UserMenu = observer(function UserMenu() {
             onSelect: async () => {
               addToast({ icon: <IconLoader />, type: "success", title: "Exiting current team..." });
               await changeCurrentTeam({ variables: { userId: user.id, teamId: null } });
-              router.reload();
             },
           },
           {
