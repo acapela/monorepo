@@ -92,7 +92,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     topicContext && (topicContext.currentlyReplyingToMessageId = null);
   });
 
-  const submitMessage = action(async ({ type, content, attachments }: SubmitMessageParams) => {
+  const submitMessage = action(({ type, content, attachments }: SubmitMessageParams) => {
     const newMessage = db.message.create({
       topic_id: topicId,
       type,

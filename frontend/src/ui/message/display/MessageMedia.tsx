@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
@@ -19,7 +20,9 @@ export const MessageMedia = observer(({ message, nonInteractive }: Props) => {
           message={message}
           attachment={attachment}
           onAttachmentRemoveRequest={() => {
-            attachment.remove();
+            action(() => {
+              attachment.remove();
+            });
           }}
         />
       ))}
