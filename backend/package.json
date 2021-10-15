@@ -31,7 +31,6 @@
     "express-async-errors": "^3.1.1",
     "googleapis": "^81.0.0",
     "helmet": "^4.6.0",
-    "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.32",
     "pg": "^8.7.1",
     "ts-node": "^10.2.1",

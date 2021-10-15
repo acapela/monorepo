@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
+import { useNullableDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
@@ -10,9 +11,12 @@ import { SegmentScript } from "./SegmentScript";
 import { identifyUser, identifyUserGroup } from "./tracking";
 
 export const AnalyticsManager = observer(() => {
-  const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
-  const currentUser = useCurrentUserTokenData();
+  const db = useNullableDb();
+  const userToken = useCurrentUserTokenData();
   const team = useCurrentTeam();
+  const user = userToken && db ? db.user.findById(userToken.id) : null;
+
+  const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
 
   function tryToInitialize() {
     if (!window.analytics) {
@@ -33,21 +37,15 @@ export const AnalyticsManager = observer(() => {
   const teamId = team?.id;
 
   useEffect(() => {
-    if (!teamName || !teamId) return;
-    if (!isSegmentLoaded) return;
-    if (!currentUser) return;
+    if (!teamName || !teamId || !isSegmentLoaded || !user) {
+      return;
+    }
 
-    const { id, email, name, picture } = currentUser;
-
-    identifyUser({
-      id,
-      email,
-      name,
-      avatarUrl: picture ?? undefined,
-    });
+    const { id, name, email, avatar_url } = user;
+    identifyUser({ id, name, email, avatarUrl: avatar_url });
 
     identifyUserGroup(teamId, { teamName, teamId });
-  }, [currentUser, isSegmentLoaded, teamName, teamId]);
+  }, [user, isSegmentLoaded, teamName, teamId]);
 
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>

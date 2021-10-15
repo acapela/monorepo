@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 import { max } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
-import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
@@ -23,9 +22,6 @@ const taskFragment = gql`
     type
     updated_at
     due_at
-    team_invitation {
-      id
-    }
   }
 `;
 
@@ -39,7 +35,6 @@ export const taskEntity = defineEntity<TaskFragment>({
       done_at: null,
       seen_at: null,
       due_at: null,
-      team_invitation: null,
       ...getGenericDefaultData(),
     };
   },
@@ -106,10 +101,6 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get isDone() {
       return Boolean(task.done_at);
-    },
-    get teamInvitation() {
-      if (!task.team_invitation?.id) return null;
-      return getEntity(teamInvitationEntity).findById(task.team_invitation.id);
     },
   };
 

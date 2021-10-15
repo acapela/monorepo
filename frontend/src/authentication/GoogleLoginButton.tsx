@@ -1,6 +1,7 @@
-import { signIn } from "next-auth/client";
+import { signIn } from "next-auth/react";
 import React, { ReactNode } from "react";
 
+import { Maybe } from "~shared/types";
 import { Button } from "~ui/buttons/Button";
 
 export const GoogleLoginButton = ({
@@ -10,7 +11,7 @@ export const GoogleLoginButton = ({
 }: {
   className?: string;
   children?: ReactNode;
-  signupEmail?: string;
+  signupEmail: Maybe<string>;
 }): JSX.Element => {
   function handleLogin() {
     signIn("google", undefined, {

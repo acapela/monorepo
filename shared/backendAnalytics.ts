@@ -7,10 +7,8 @@ import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
 function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
   return {
     id: user.id,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    email: user.email!,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    name: user.name!,
+    email: user.email,
+    name: user.name,
     avatarUrl: user.avatar_url ?? undefined,
   };
 }

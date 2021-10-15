@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
-import { verify } from "jsonwebtoken";
 import { get } from "lodash";
 
 import { db } from "~db";
+import { verifyJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 
 import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
@@ -25,7 +25,7 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
 
   let session;
   try {
-    session = verify(jwtToken, process.env.AUTH_JWT_TOKEN_SECRET);
+    session = verifyJWT(jwtToken);
   } catch (e) {
     throw new AuthenticationError();
   }

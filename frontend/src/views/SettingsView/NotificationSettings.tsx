@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -6,7 +5,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
-import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
@@ -53,22 +51,9 @@ export const NotificationSettings = observer(() => {
   const team = useCurrentTeam();
   const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).all[0];
 
-  const { data } = useQuery<FindSlackUserQuery, FindSlackUserQueryVariables>(
-    gql`
-      query FindSlackUser($teamId: uuid!) {
-        findSlackUserOutput: find_slack_user(input: { team_id: $teamId }) {
-          has_slack_user
-        }
-      }
-    `,
-    team ? { variables: { teamId: team.id } } : { skip: true }
-  );
-
-  if (!team || !teamMember || !data) {
+  if (!team || !teamMember) {
     return null;
   }
-
-  const hasSlackUser = Boolean(data.findSlackUserOutput?.has_slack_user);
 
   return (
     <UIPanel>
@@ -80,18 +65,17 @@ export const NotificationSettings = observer(() => {
         isSet={teamMember.notify_email}
         onChange={(isChecked) => teamMember.update({ notify_email: isChecked })}
       />
-      {team.hasSlackInstallation && hasSlackUser && (
-        <LabeledToggle
-          title="Slack"
-          description={getNotificationChannelDescription("slack")}
-          isSet={teamMember.notify_slack}
-          onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
-        />
-      )}
-
-      {team.hasSlackInstallation && !hasSlackUser && (
-        <AddSlackInstallationButton teamId={team.id} tooltip="Connect Slack to receive notifications through it" />
-      )}
+      {team.hasSlackInstallation &&
+        (teamMember.teamMemberSlack ? (
+          <LabeledToggle
+            title="Slack"
+            description={getNotificationChannelDescription("slack")}
+            isSet={teamMember.notify_slack}
+            onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
+          />
+        ) : (
+          <AddSlackInstallationButton teamId={team.id} tooltip="Connect Slack to receive notifications through it" />
+        ))}
     </UIPanel>
   );
 });

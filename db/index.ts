@@ -14,7 +14,6 @@ export type {
   transcription as Transcription,
   task as Task,
   team as Team,
-  team_invitation as TeamInvitation,
   team_member as TeamMember,
   whitelist as Whitelist,
   PrismaPromise,
