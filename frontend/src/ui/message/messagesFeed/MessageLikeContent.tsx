@@ -2,10 +2,10 @@ import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
 
 import { MessageMetaDataWrapper } from "./MessageMetaData";

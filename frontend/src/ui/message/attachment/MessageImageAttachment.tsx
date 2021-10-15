@@ -2,11 +2,11 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 import { useShortcuts } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";

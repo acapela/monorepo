@@ -2,10 +2,10 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { niceFormatDateTime } from "~frontend/../../shared/dates/format";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { niceFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
 interface Props {
