@@ -29,6 +29,7 @@ export const transcriptionEntity = defineEntity<TranscriptionFragment>({
   sync: createHasuraSyncSetupFromFragment<TranscriptionFragment>(transcriptionFragment, {
     insertColumns: [],
     updateColumns: [],
+    teamScopeCondition: (teamId) => ({ attachments: { message: { topic: { team_id: { _eq: teamId } } } } }),
   }),
 });
 

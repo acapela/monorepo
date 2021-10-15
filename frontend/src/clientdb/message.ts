@@ -47,6 +47,7 @@ export const messageEntity = defineEntity<MessageFragment>({
   sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
     updateColumns: ["content"],
+    teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
   customObservableAnnotations: {
     // Content might be very nested and we dont want to observe any single change in it. We always change content as a whole.

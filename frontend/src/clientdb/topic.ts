@@ -79,6 +79,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       "owner_id",
       "slug",
     ],
+    teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
   search: { fields: { name: true } },
 })

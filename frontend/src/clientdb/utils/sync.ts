@@ -5,32 +5,43 @@ import { max, pick } from "lodash";
 
 import { EntitySyncConfig } from "~clientdb";
 import {
+  Attachment_Bool_Exp,
   Attachment_Constraint,
   Attachment_Insert_Input,
   Attachment_Update_Column,
+  Last_Seen_Message_Bool_Exp,
   Last_Seen_Message_Constraint,
   Last_Seen_Message_Insert_Input,
   Last_Seen_Message_Update_Column,
+  Message_Bool_Exp,
   Message_Constraint,
   Message_Insert_Input,
+  Message_Reaction_Bool_Exp,
   Message_Reaction_Constraint,
   Message_Reaction_Insert_Input,
   Message_Reaction_Update_Column,
   Message_Update_Column,
   PullSyncRequestsSubscription,
   PullSyncRequestsSubscriptionVariables,
+  Task_Bool_Exp,
   Task_Constraint,
   Task_Insert_Input,
   Task_Update_Column,
+  Team_Bool_Exp,
   Team_Constraint,
   Team_Insert_Input,
+  Team_Member_Bool_Exp,
   Team_Member_Constraint,
   Team_Member_Insert_Input,
+  Team_Member_Slack_Bool_Exp,
   Team_Member_Update_Column,
   Team_Update_Column,
+  Topic_Bool_Exp,
   Topic_Constraint,
   Topic_Insert_Input,
   Topic_Update_Column,
+  Transcription_Bool_Exp,
+  User_Bool_Exp,
 } from "~gql";
 import { assert } from "~shared/assert";
 import { runUntracked } from "~shared/mobxUtils";
@@ -100,6 +111,20 @@ type UpdateTypeMap = {
   last_seen_message: Last_Seen_Message_Update_Column;
 };
 
+type WhereTypeMap = {
+  task: Task_Bool_Exp;
+  topic: Topic_Bool_Exp;
+  team: Team_Bool_Exp;
+  team_member: Team_Member_Bool_Exp;
+  message: Message_Bool_Exp;
+  message_reaction: Message_Reaction_Bool_Exp;
+  attachment: Attachment_Bool_Exp;
+  last_seen_message: Last_Seen_Message_Bool_Exp;
+  user: User_Bool_Exp;
+  transcription: Transcription_Bool_Exp;
+  team_member_slack: Team_Member_Slack_Bool_Exp;
+};
+
 /**
  * We use special 'sync_request' table for 2 purposes:
  * 1. To track deletes
@@ -135,13 +160,19 @@ type FragmentEntityType<T> = T extends { __typename: infer S } ? S : never;
 type UpdateColumnsForFragment<T> = FragmentEntityType<T> extends keyof UpdateTypeMap
   ? UpdateTypeMap[FragmentEntityType<T>]
   : never;
+
 type InsertColumnsForFragment<T> = FragmentEntityType<T> extends keyof InsertTypeMap
   ? keyof InsertTypeMap[FragmentEntityType<T>]
+  : never;
+
+type AdditionalWhereQueryForFragment<T> = FragmentEntityType<T> extends keyof WhereTypeMap
+  ? WhereTypeMap[FragmentEntityType<T>]
   : never;
 
 interface HasuraSyncSettings<T> {
   updateColumns: Array<UpdateColumnsForFragment<T>>;
   insertColumns?: Array<InsertColumnsForFragment<T>>;
+  teamScopeCondition?: (teamId: string) => AdditionalWhereQueryForFragment<T>;
 }
 
 function getFirstUpper(input: string) {
@@ -150,7 +181,7 @@ function getFirstUpper(input: string) {
 
 export function createHasuraSyncSetupFromFragment<T>(
   fragment: DocumentNode,
-  { updateColumns, insertColumns }: HasuraSyncSettings<T>
+  { updateColumns, insertColumns, teamScopeCondition }: HasuraSyncSettings<T>
 ): EntitySyncConfig<T> {
   const { name, type, keys } = analyzeFragment<T>(fragment);
 
@@ -279,13 +310,25 @@ export function createHasuraSyncSetupFromFragment<T>(
   return {
     pullUpdated({ lastSyncDate, updateItems, getContextValue }) {
       const apollo = getContextValue(apolloContext);
+      const teamId = getContextValue(teamIdContext);
 
-      const observer = apollo.subscribe<{ updates: T[] }, { lastSyncDate: Date }>({
-        variables: { lastSyncDate: fixLastUpdateDateForHasura(lastSyncDate) },
+      function getTeamScopeWhere() {
+        if (!teamId) return {};
+
+        return teamScopeCondition?.(teamId) ?? {};
+      }
+
+      const observer = apollo.subscribe<{ updates: T[] }, { where: Record<string, unknown> }>({
+        variables: {
+          where: {
+            updated_at: { _gt: fixLastUpdateDateForHasura(lastSyncDate) },
+            ...getTeamScopeWhere(),
+          },
+        },
         query: gqlTag`
           ${fragment}
-          subscription Pull${upperType}Updates($lastSyncDate: timestamptz!) {
-            updates: ${type}(where: { updated_at: { _gt: $lastSyncDate } }) {
+          subscription Pull${upperType}Updates($where: ${type}_bool_exp!) {
+            updates: ${type}(where: $where) {
               ...${name}
             }
           }
