@@ -20,6 +20,7 @@ import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import { useConst } from "~shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
@@ -61,6 +62,10 @@ export default function App({
     initializeUserbackPlugin();
   }, []);
 
+  // We need to remember this from first render, as getInitialProps is not run on client side navigation
+  const hasuraWebsocketEndpointFromServer = useConst(() => hasuraWebsocketEndpoint);
+  const sessionFromServer = useConst(() => session);
+
   return (
     <ErrorBoundary
       fallback={
@@ -72,9 +77,9 @@ export default function App({
     >
       <BuiltInStyles />
       <CommonMetadata />
-      <SessionProvider session={session}>
+      <SessionProvider session={sessionFromServer}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider websocketEndpoint={hasuraWebsocketEndpoint}>
+          <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
             <AppThemeProvider theme={theme}>
               <CurrentTeamIdProvider>
                 <ClientDbProvider>
