@@ -1,7 +1,6 @@
 import jwt, { JwtPayload, Secret, SignOptions, VerifyOptions } from "jsonwebtoken";
 
 import { isServer } from "~shared/isServer";
-import { Maybe } from "~shared/types";
 
 const JWT_OPTIONS: SignOptions & VerifyOptions = { algorithm: "HS256" };
 
