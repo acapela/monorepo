@@ -8,7 +8,7 @@ import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicEntity;
-  isAbleToSend?: boolean;
+  isOnlyShowingSend?: boolean;
   onSendRequest?: () => void;
   onCompleteRequest?: () => void;
   onCloseRequest?: () => void;
@@ -58,9 +58,20 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
 }
 
 export const NewMessageButtons = observer(
-  ({ topic, isAbleToSend, onSendRequest, onCompleteRequest, onCloseRequest }: Props) => {
+  ({
+    topic,
+    isOnlyShowingSend: isOnlyShowingSend = false,
+    onSendRequest,
+    onCompleteRequest,
+    onCloseRequest,
+  }: Props) => {
     const currentUser = useAssertCurrentUser();
-    const { actions, primaryAction } = getAllowedActions(topic);
+    const { actions, primaryAction } = isOnlyShowingSend
+      ? {
+          actions: ["send"],
+          primaryAction: "send",
+        }
+      : getAllowedActions(topic);
 
     function handleCloseRequest() {
       onCloseRequest?.();
@@ -72,7 +83,6 @@ export const NewMessageButtons = observer(
         {actions.includes("send") && (
           <Button
             shortcut={["Enter"]}
-            isDisabled={!isAbleToSend}
             kind={primaryAction === "send" ? "primary" : "secondary"}
             tooltip="Send without completing pending tasks"
             onClick={onSendRequest}

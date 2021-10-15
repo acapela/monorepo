@@ -159,25 +159,27 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
             });
           }}
         />
-        <Recorder
-          onRecordingReady={async (recording) => {
-            const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
+        <UIRequestControls>
+          <Recorder
+            onRecordingReady={async (recording) => {
+              const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
 
-            const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+              const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-            await submitMessage({
-              type: messageType,
-              content: getEmptyRichContent(),
-              attachments: uploadedAttachments,
-            });
-          }}
-        />
-        <NewMessageButtons
-          topic={topic}
-          isAbleToSend={hasTypedMessageContent}
-          onSendRequest={() => handleSubmitTextMessage(false)}
-          onCompleteRequest={() => handleSubmitTextMessage(true)}
-        />
+              await submitMessage({
+                type: messageType,
+                content: getEmptyRichContent(),
+                attachments: uploadedAttachments,
+              });
+            }}
+          />
+          <NewMessageButtons
+            topic={topic}
+            isOnlyShowingSend={hasTypedMessageContent}
+            onSendRequest={() => handleSubmitTextMessage(false)}
+            onCompleteRequest={() => handleSubmitTextMessage(true)}
+          />
+        </UIRequestControls>
       </UIEditorContainer>
     </UIHolder>
   );
@@ -196,8 +198,15 @@ const UIHolder = styled.div`
 const UIEditorContainer = styled.div<{}>`
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* Keeps the message controls pegged to the bottom when message is multiple lines */
+  align-items: flex-end;
   width: 100%;
 
+  ${theme.spacing.horizontalActionsSection.asGap}
+`;
+const UIRequestControls = styled.div<{}>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   ${theme.spacing.horizontalActionsSection.asGap}
 `;
