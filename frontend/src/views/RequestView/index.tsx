@@ -55,8 +55,7 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
 
       db.lastSeenMessage.create({ topic_id: topic.id, message_id: lastMessage?.id, seen_at: nowISO });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topic]);
+  }, [topic, db]);
 }
 
 export const RequestView = observer(({ topicSlug }: Props) => {
