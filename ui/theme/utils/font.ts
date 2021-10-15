@@ -10,6 +10,7 @@ type FontVariants = {
   speziaExtended: Font;
   speziaMono: Font;
   inter: Font;
+  permanentMarker: Font;
 
   semibold: Font;
   medium: Font;
@@ -103,6 +104,12 @@ export function font(parentStyles: StylesPart[] = []): Font {
       get inter() {
         return withStyles(css`
           font-family: "Inter", ${BACKUP_FONT_FAMILIES};
+        `);
+      },
+
+      get permanentMarker() {
+        return withStyles(css`
+          font-family: "Permanent Marker", ${BACKUP_FONT_FAMILIES};
         `);
       },
       size(px, mobilePx = px) {

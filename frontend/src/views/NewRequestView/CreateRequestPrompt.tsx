@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { CurvedArrow } from "~ui/arrows/CurvedArrow";
+import { theme } from "~ui/theme";
 
 interface Props {
   className?: string;
@@ -25,9 +26,8 @@ const UIHolder = styled.div<{}>`
   gap: 8px;
 `;
 
-/* ${theme.font.permanentMarker.build()} */
 const UICreateATopicLabel = styled.div<{}>`
-  /* TODO PR */
+  ${theme.font.permanentMarker}
 
   padding-right: 46px;
 
