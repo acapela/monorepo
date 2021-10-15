@@ -313,12 +313,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
           </UIEditorHolder>
           {additionalBottomContent}
         </UIEditorContent>
-        <Toolbar
-          onSubmit={handleSubmitIfEnabled}
-          onFilesSelected={onFilesSelected}
-          onEmojiSelected={insertEmoji}
-          submitMode={submitMode}
-        />
       </RichEditorContext>
     </UIHolder>
   );
@@ -344,7 +338,4 @@ const UIEditorContent = styled.div<{}>`
 
 const UIHolder = styled.div<{}>`
   width: 100%;
-  min-width: 500px;
-  border: 1px solid #ccc;
-  ${theme.radius.panel};
 `;

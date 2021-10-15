@@ -80,7 +80,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         {!isClosed && (
           <UIMessageComposer>
             <CreateNewMessageEditor
-              topicId={topic.id}
+              topic={topic}
               requireMention={messages.length === 0}
               onMessageSent={() => {
                 scrollerRef.current?.scrollToBottom("auto");

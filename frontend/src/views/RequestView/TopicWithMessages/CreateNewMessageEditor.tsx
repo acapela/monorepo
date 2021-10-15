@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
@@ -24,8 +25,10 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
+import { NewMessageButtons } from "./NewMessageButtons";
+
 interface Props {
-  topicId: string;
+  topic: TopicEntity;
   isDisabled?: boolean;
   requireMention: boolean;
   onMessageSent: () => void;
@@ -37,8 +40,9 @@ interface SubmitMessageParams {
   attachments: EditorAttachmentInfo[];
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
+export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, requireMention }: Props) => {
   const db = useDb();
+  const topicId = topic.id;
 
   const editorRef = useRef<Editor>(null);
 
@@ -48,7 +52,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   });
 
   const [content, setContent] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + topicId,
+    key: "message-draft-for-topic:" + topic,
     initialValue: getEmptyRichContent(),
   });
 
@@ -93,7 +97,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const submitMessage = action(async ({ type, content, attachments }: SubmitMessageParams) => {
     const newMessage = db.message.create({
-      topic_id: topicId,
+      topic_id: topic.id,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
@@ -123,19 +127,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   return (
     <UIEditorContainer>
-      <Recorder
-        onRecordingReady={async (recording) => {
-          const uploadedAttachments = await uploadFiles([recording]);
-
-          const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
-
-          await submitMessage({
-            type: messageType,
-            content: getEmptyRichContent(),
-            attachments: uploadedAttachments,
-          });
-        }}
-      />
       <MessageContentEditor
         ref={editorRef}
         isDisabled={isDisabled || isEditingAnyMessage}
@@ -183,6 +174,20 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           </>
         }
       />
+      <Recorder
+        onRecordingReady={async (recording) => {
+          const uploadedAttachments = await uploadFiles([recording]);
+
+          const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+
+          await submitMessage({
+            type: messageType,
+            content: getEmptyRichContent(),
+            attachments: uploadedAttachments,
+          });
+        }}
+      />
+      <NewMessageButtons topic={topic} />
     </UIEditorContainer>
   );
 });
