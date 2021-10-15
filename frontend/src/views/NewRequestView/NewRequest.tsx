@@ -58,7 +58,7 @@ function useMessageContentExamplePlaceholder(): string {
         const teamMemberIndex = unusedMemberIndexes.splice(randomIndex, 1)[0];
 
         const randomTeamMember = teamMembers[teamMemberIndex];
-        displayNames += `@${randomTeamMember.user.name} `;
+        displayNames += `@${randomTeamMember.user?.name || "???"} `;
       }
 
       return displayNames;

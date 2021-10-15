@@ -13,6 +13,7 @@ import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/auto
 import { assert } from "~shared/assert";
 import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { isNotNullish } from "~shared/nullish";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
@@ -28,13 +29,11 @@ import { theme } from "~ui/theme";
 
 const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
   const team = useAssertCurrentTeam();
-  const teamMemberUsers = team.members.all.map((member) => member.user);
+  const teamMemberUsers = team.members.all.map((member) => member.user).filter(isNotNullish);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const getMatchingUsers = useSearch(teamMemberUsers, (user) => [user.email, user.name]);
-
-  const matchingUsers = getMatchingUsers(keyword);
+  const matchingUsers = useSearch(teamMemberUsers, (user) => [user.email, user.name])(keyword);
 
   useEffect(() => {
     // In case user is selected, but then we continue typing (aka searching for different user)
@@ -73,7 +72,7 @@ const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePicke
     );
   }
 
-  const selectedUser = teamMemberUsers.find((teamMember) => teamMember.id === selectedUserId);
+  const selectedUser = teamMemberUsers.find((teamMember) => teamMember && teamMember.id === selectedUserId);
 
   assert(selectedUser, "Incorrect user selected");
 

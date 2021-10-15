@@ -5,6 +5,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
+import { isNotNullish } from "~shared/nullish";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
@@ -23,7 +24,7 @@ export const CurrentTeamMembersManager = observer(() => {
 
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
-  const teamUsers = team.members.all.map((teamMember) => teamMember.user) ?? [];
+  const teamUsers = team.members.all.map((teamMember) => teamMember.user).filter(isNotNullish) ?? [];
 
   const handleRemoveTeamMember = (userId: string) => {
     const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
