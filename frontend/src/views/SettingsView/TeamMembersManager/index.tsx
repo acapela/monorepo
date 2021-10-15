@@ -6,7 +6,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
-import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { theme } from "~ui/theme";
 
 import { InviteMemberForm } from "./InviteMemberForm";
@@ -49,7 +49,7 @@ export const CurrentTeamMembersManager = observer(() => {
               <UIActionsHolder>
                 {!user.has_account && <ResendInviteButton user={user} teamId={team.id} />}
                 {!(user.id === team.owner_id) && (
-                  <CircleCloseIconButton
+                  <CloseIconButton
                     isDisabled={!isCurrentUserTeamOwner}
                     onClick={() => handleRemoveTeamMember(user.id)}
                     tooltip={isCurrentUserTeamOwner ? undefined : "Only team owner can delete members"}

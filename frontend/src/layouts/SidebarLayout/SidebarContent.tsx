@@ -1,9 +1,10 @@
 import { observer } from "mobx-react";
+import Link from "next/link";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
 import { UserMenu } from "~frontend/layouts/UserMenu";
-import { RouteLink, routes } from "~frontend/router";
+import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { Shortcut } from "~ui/keyboard/Shortcut";
@@ -21,13 +22,13 @@ export const SidebarContent = observer(function SidebarContent() {
     <UIHolder>
       <UIHeader>
         <UserMenu />
-        <RouteLink route={routes.newRequest} params={{}}>
+        <Link href={routes.newRequest}>
           <a>
             <Button kind="secondary" icon={<IconPlus />} iconAtStart>
               New Request
             </Button>
           </a>
-        </RouteLink>
+        </Link>
       </UIHeader>
 
       <UISearch>

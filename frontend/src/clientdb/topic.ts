@@ -2,10 +2,10 @@ import gql from "graphql-tag";
 import { maxBy } from "lodash";
 import { action } from "mobx";
 
-import { niceFormatTime } from "~frontend/../../shared/dates/format";
-import { createDebugLogger } from "~frontend/../../shared/dev";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
+import { niceFormatTime } from "~shared/dates/format";
+import { createDebugLogger } from "~shared/dev";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";

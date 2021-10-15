@@ -2,7 +2,7 @@ import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
-import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
@@ -49,7 +49,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
               </>
             )}
           </UIHead>
-          <CircleCloseIconButton onClick={onCloseRequest} />
+          <CloseIconButton onClick={onCloseRequest} />
         </UIToolbar>
       )}
       <UIBody>{children}</UIBody>
@@ -97,7 +97,7 @@ const UIToolbar = styled.div<{}>`
   padding: 24px 24px 0;
   margin-bottom: 32px;
 
-  ${CircleCloseIconButton} {
+  ${CloseIconButton} {
     margin-top: -4px;
   }
 `;

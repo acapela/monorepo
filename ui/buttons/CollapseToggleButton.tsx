@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconChevronDown } from "~ui/icons";
 
 interface Props {
@@ -22,7 +22,7 @@ export const CollapseToggleButton = styled(function CollapseToggleButton({ isOpe
   );
 })``;
 
-const UIToggleButton = styled(CircleIconButton)<{ isOpen: boolean }>`
+const UIToggleButton = styled(IconButton)<{ isOpen: boolean }>`
   svg {
     transform: rotateZ(
       ${(props) => {

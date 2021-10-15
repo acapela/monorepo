@@ -9,6 +9,9 @@ export const buttonKindMap = {
   secondary: css`
     ${theme.colors.action.secondary.withBorder.interactive}
   `,
+  transparent: css`
+    ${theme.colors.action.transparent.interactive}
+  `,
 };
 
 export type ButtonKind = keyof typeof buttonKindMap;

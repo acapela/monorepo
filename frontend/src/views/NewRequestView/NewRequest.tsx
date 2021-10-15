@@ -10,7 +10,6 @@ import styled, { css } from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
-import { routes } from "~frontend/router";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
 import { UploadingAttachmentPreview } from "~frontend/ui/message/composer/UploadingAttachmentPreview";
@@ -24,6 +23,7 @@ import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
+import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
@@ -186,7 +186,7 @@ export const NewRequest = observer(function NewRequest() {
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
 
-      routes.topic.push({ topicSlug: topic.slug });
+      router.push(routes.topic({ topicSlug: topic.slug }));
     });
   }
 

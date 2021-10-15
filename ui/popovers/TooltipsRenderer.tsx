@@ -31,9 +31,8 @@ export function TooltipsRenderer() {
       const target = event.target as HTMLElement;
       const tooltipInfo = getClosestElementTooltipInfo(target);
 
-      if (tooltipInfo) {
-        setCurrentTooltipAnchor(tooltipInfo.element);
-      }
+      if (!tooltipInfo) return;
+      setCurrentTooltipAnchor(tooltipInfo.element);
     },
     { capture: true }
   );
@@ -45,6 +44,22 @@ export function TooltipsRenderer() {
 
       // If it was current tooltip, clear it.
       if (target === currentTooltipAnchor) {
+        setCurrentTooltipAnchor(null);
+      }
+    },
+    { capture: true }
+  );
+
+  // If active tooltip element is clicked - instantly hide tooltip
+  useDocumentEvent(
+    "click",
+    (event) => {
+      const target = event.target as HTMLElement;
+      const tooltipInfo = getClosestElementTooltipInfo(target);
+
+      if (!tooltipInfo) return;
+
+      if (currentTooltipAnchor === tooltipInfo.element) {
         setCurrentTooltipAnchor(null);
       }
     },

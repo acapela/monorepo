@@ -3,57 +3,47 @@ import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
-import { routes } from "~frontend/router";
+import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { routes } from "~shared/routes";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
 
 export const UserMenu = observer(function UserMenu() {
   const user = useAssertCurrentUser();
-
-  const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
+  const [changeCurrentTeam] = useChangeCurrentTeam();
 
   return (
     <UIHolder>
       <UserAvatar user={user} size={30} disableNameTooltip />
       <PopoverMenuTrigger
-        onOpen={() => {
-          routes.settings.prefetch({});
-        }}
         options={[
           {
             label: "Settings",
-            onSelect: () => {
-              routes.settings.push({});
-            },
+            href: routes.settings,
           },
           {
             label: "Switch teams",
             onSelect: async () => {
               addToast({ icon: <IconLoader />, type: "success", title: "Exiting current team..." });
-              await changeCurrentTeam({ userId: user.id, teamId: null });
+              await changeCurrentTeam({ variables: { userId: user.id, teamId: null } });
               router.reload();
             },
           },
           {
             label: "Visit website",
-            openUrlOnSelect: "https://acapela.com",
+            externalURL: "https://acapela.com",
           },
           {
             label: "Sign out",
-            onSelect: () => {
-              routes.logout.push({});
-              trackEvent("Signed Out");
-            },
+            href: routes.logout,
           },
         ]}
       >
-        <CircleIconButton icon={<IconMoreHoriz />} />
+        <IconButton icon={<IconMoreHoriz />} />
       </PopoverMenuTrigger>
     </UIHolder>
   );

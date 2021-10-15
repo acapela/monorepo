@@ -1,10 +1,12 @@
 import { observer } from "mobx-react";
+import Link from "next/link";
 import React from "react";
 import styled, { css } from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { routes } from "~frontend/router";
-import { RouteLink } from "~frontend/router/RouteLink";
+import { useRouteParams } from "~frontend/hooks/useRouteParams";
+import { routes } from "~shared/routes";
+import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
 import { RequestContentSnippet } from "./RequestContentSnippet";
@@ -15,23 +17,27 @@ interface Props {
 }
 
 export const RequestItem = observer(function RequestItem({ topic }: Props) {
-  const topicRouteParams = routes.topic.useParams();
+  const topicRouteParams = useRouteParams(routes.topic);
 
   // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
-  const isHighlighted = topicRouteParams?.route.topicSlug === topic.slug;
+  const isHighlighted = topicRouteParams.slug === topic.slug;
 
+  const unreadMessagesCount = topic.unreadMessages.count;
   return (
-    <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
+    <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
       <UIFeedItem isHighlighted={isHighlighted}>
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
-          <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+          <HStack alignItems="center">
+            <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+            {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
+          </HStack>
           <UIFeedItemSubTitle>
             <RequestContentSnippet topic={topic} />
           </UIFeedItemSubTitle>
         </UIFeedItemLabels>
       </UIFeedItem>
-    </RouteLink>
+    </Link>
   );
 });
 
@@ -67,6 +73,18 @@ const UIFeedItemLabels = styled.div<{}>`
 
 const UIFeedItemTitle = styled.h6`
   ${theme.typo.content.semibold.resetLineHeight};
+`;
+
+const UIBubble = styled.div`
+  ${theme.radius.circle}
+  margin-left: 6px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${theme.font.size(8).bold.resetLineHeight}
+  background-color: rgba(0, 0, 0, 0.05);
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`

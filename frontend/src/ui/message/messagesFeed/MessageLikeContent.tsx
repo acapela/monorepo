@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
 
 import { MessageMetaDataWrapper } from "./MessageMetaData";
@@ -35,41 +36,37 @@ export const MessageLikeContent = styledObserver<Props>(
           <MessageMetaDataWrapper user={user} date={date} isNextSameUserMessage={showOnlyContent} isHovered={isHovered}>
             {children}
           </MessageMetaDataWrapper>
-          {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
+          {tools && (
+            <AnimatePresence>
+              {isHovered && <UIFlyingTools presenceStyles={{ opacity: [0, 1] }}>{tools}</UIFlyingTools>}
+            </AnimatePresence>
+          )}
         </UIContentContainer>
       </UIAnimatedMessageWrapper>
     );
   }
 )``;
 
-const UIFlyingTools = styled(motion.div)<{}>`
+const UIFlyingTools = styled(PresenceAnimator)<{}>`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  right: 0;
 `;
 
 const UIContentContainer = styled.div<{}>`
   position: relative;
 
   width: 100%;
-
-  ${MessageMetaDataWrapper} {
-    /* About half text size in padding */
-    padding: 0.5rem 8px;
-  }
 `;
 
 const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
   display: flex;
   align-items: start;
+  padding: 7px;
+  margin: 0 -7px;
 
   ${theme.radius.secondaryItem};
   ${theme.transitions.hover()};
-
-  ${UIFlyingTools} {
-    opacity: 0;
-    transition: 0.1s all;
-  }
 
   ${(props) =>
     props.hasTopSpacing &&
@@ -78,10 +75,6 @@ const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
     `}
 
   &:hover {
-    background: ${theme.colors.layout.backgroundAccent};
-
-    ${UIFlyingTools} {
-      opacity: 1;
-    }
+    ${theme.colors.layout.background.hover.opacity(0.5).asBg};
   }
 `;

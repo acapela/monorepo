@@ -6,7 +6,7 @@ import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 import { useShortcuts } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
@@ -37,7 +37,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
         {isFullscreenOpened && (
           <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
             <CornerButtonWrapper>
-              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} icon={<IconCross />} />
+              <IconButton tooltip="Esc or Space" onClick={closeFullscreen} icon={<IconCross />} />
             </CornerButtonWrapper>
             <PopPresenceAnimator>
               <ImageWrapper src={attachmentUrl} className={className} />

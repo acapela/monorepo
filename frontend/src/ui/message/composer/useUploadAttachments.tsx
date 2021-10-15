@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import { useList } from "react-use";
 
 import { EditorUploadingAttachmentInfo, uploadFile } from "~frontend/ui/message/composer/attachments";
@@ -10,6 +11,7 @@ interface UseUploadAttachmentsParams {
 }
 
 export const useUploadAttachments = ({ onUploadFinish }: UseUploadAttachmentsParams) => {
+  const apolloClient = useApolloClient();
   const [uploadingAttachments, uploadingAttachmentsList] = useList<EditorUploadingAttachmentInfo>([]);
 
   const uploadAttachments = async (files: File[]) => {
@@ -21,7 +23,7 @@ export const useUploadAttachments = ({ onUploadFinish }: UseUploadAttachmentsPar
         });
 
         try {
-          const newAttachment = await uploadFile(file, {
+          const newAttachment = await uploadFile(apolloClient, file, {
             onUploadProgress: (percentage) => {
               uploadingAttachmentsList.update((attachment) => attachment.file === file, {
                 file,

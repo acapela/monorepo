@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
@@ -23,7 +23,7 @@ export const AttachmentPreview = observer(({ id, onRemoveRequest }: Props) => {
       <MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment} />
       {!!onRemoveRequest && (
         <UIRemoveButtonHolder>
-          <CircleIconButton kind="primary" icon={<IconCross />} onClick={() => onRemoveRequest(id)} />
+          <IconButton kind="primary" icon={<IconCross />} onClick={() => onRemoveRequest(id)} />
         </UIRemoveButtonHolder>
       )}
     </UIHolder>
