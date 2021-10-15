@@ -16,5 +16,5 @@ image_name_version="$image_name:$version"
 
 echo "image: $image_name_version"
 
-docker build -t $image_name_version .
+docker buildx build --platform linux/amd64 -t $image_name_version .
 docker tag $image_name_version $image_name
