@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -56,7 +57,14 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
 }
 
 export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteRequest, onCloseRequest }: Props) => {
+  const currentUser = useAssertCurrentUser();
   const { actions, primaryAction } = getAllowedActions(topic);
+
+  function handleCloseRequest() {
+    onCloseRequest?.();
+    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: currentUser.id });
+  }
+
   return (
     <UIHolder>
       {actions.includes("send") && (
@@ -84,7 +92,7 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
           shortcut={["Mod", "X"]}
           kind={primaryAction === "close-request" ? "primary" : "secondary"}
           tooltip="Close entire request"
-          onClick={onCloseRequest}
+          onClick={handleCloseRequest}
         >
           Close request
         </Button>
