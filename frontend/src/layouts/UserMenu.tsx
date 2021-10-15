@@ -4,7 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
+import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { routes } from "~shared/routes";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
@@ -14,8 +14,7 @@ import { addToast } from "~ui/toasts/data";
 
 export const UserMenu = observer(function UserMenu() {
   const user = useAssertCurrentUser();
-
-  const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
+  const [changeCurrentTeam] = useChangeCurrentTeam();
 
   return (
     <UIHolder>
@@ -30,7 +29,7 @@ export const UserMenu = observer(function UserMenu() {
             label: "Switch teams",
             onSelect: async () => {
               addToast({ icon: <IconLoader />, type: "success", title: "Exiting current team..." });
-              await changeCurrentTeam({ userId: user.id, teamId: null });
+              await changeCurrentTeam({ variables: { userId: user.id, teamId: null } });
               router.reload();
             },
           },

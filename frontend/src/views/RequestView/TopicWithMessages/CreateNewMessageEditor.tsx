@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -6,7 +7,6 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
-import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
@@ -38,6 +38,7 @@ interface SubmitMessageParams {
 }
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
+  const apolloClient = useApolloClient();
   const db = useDb();
 
   const editorRef = useRef<Editor>(null);
@@ -91,7 +92,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     topicContext && (topicContext.currentlyReplyingToMessageId = null);
   });
 
-  const submitMessage = action(async ({ type, content, attachments }: SubmitMessageParams) => {
+  const submitMessage = action(({ type, content, attachments }: SubmitMessageParams) => {
     const newMessage = db.message.create({
       topic_id: topicId,
       type,
@@ -101,6 +102,9 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
     }
+    for (const attachment of attachments) {
+      db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
+    }
 
     setContent(getEmptyRichContent());
 
@@ -109,12 +113,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
       isReply: !!topicContext?.currentlyReplyingToMessageId,
       hasAttachments: attachments.length > 0,
     });
-    await Promise.all(
-      bindAttachmentsToMessage(
-        newMessage.id,
-        attachments.map(({ uuid }) => uuid)
-      )
-    );
 
     handleStopReplyingToMessage();
 
@@ -125,7 +123,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     <UIEditorContainer>
       <Recorder
         onRecordingReady={async (recording) => {
-          const uploadedAttachments = await uploadFiles([recording]);
+          const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
 
           const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 

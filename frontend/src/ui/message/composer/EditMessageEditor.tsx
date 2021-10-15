@@ -7,7 +7,6 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
@@ -59,19 +58,18 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => !message.attachments.findById(attachmentNow.uuid));
 
+    for (const { uuid } of attachmentsToAdd) {
+      db.attachment.findById(uuid)?.update({ message_id: message.id });
+    }
+
     const existingAttachmentsToRemove = message.attachments.query(
       (existingMessageAttachment) =>
         !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id)
     ).all;
 
-    const addAttachmentsPromises = bindAttachmentsToMessage(
-      message.id,
-      attachmentsToAdd.map(({ uuid }) => uuid)
-    );
-
-    const removingAttachmentsPromises = existingAttachmentsToRemove.map(async (attachmentToRemove) => {
-      await removeAttachment({ id: attachmentToRemove.id });
-    });
+    for (const attachment of existingAttachmentsToRemove) {
+      attachment.remove();
+    }
 
     message.update({ content });
 
@@ -92,7 +90,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       db.task.create({ message_id: message.id, user_id: userId, type });
     }
 
-    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
     trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }

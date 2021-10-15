@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { changeCurrentTeamId } from "~frontend/gql/user";
+import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
@@ -19,9 +19,10 @@ export const TeamPickerView = observer(() => {
   const teams = db.team.all;
   const user = useAssertCurrentUser();
   const router = useRouter();
+  const [changeCurrentTeam] = useChangeCurrentTeam();
 
   async function handleChangeTeam(teamId: string) {
-    await changeCurrentTeamId({ teamId, userId: user.id });
+    await changeCurrentTeam({ variables: { teamId, userId: user.id } });
   }
 
   async function handleCreateNewTeam() {

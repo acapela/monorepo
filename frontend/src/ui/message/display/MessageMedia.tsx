@@ -1,8 +1,8 @@
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
-import { removeAttachment } from "~frontend/gql/attachments";
 import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
 
 interface Props {
@@ -19,9 +19,9 @@ export const MessageMedia = observer(({ message, nonInteractive }: Props) => {
           key={attachment.id}
           message={message}
           attachment={attachment}
-          onAttachmentRemoveRequest={() => {
-            removeAttachment({ id: attachment.id });
-          }}
+          onAttachmentRemoveRequest={action(() => {
+            attachment.remove();
+          })}
         />
       ))}
     </UIAttachments>
