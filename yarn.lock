@@ -1047,65 +1047,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/accessibility@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@dnd-kit/accessibility@npm:3.0.0"
-  dependencies:
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: feac6afea07ece1568df38973d7a1a1b994782a6df119983250c3849ca2a3818a7bcc67fe4c5d22b0a1cfde866081644d677d2188abed507b3eccc255da79320
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/core@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@dnd-kit/core@npm:3.1.1"
-  dependencies:
-    "@dnd-kit/accessibility": ^3.0.0
-    "@dnd-kit/utilities": ^2.0.0
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  checksum: e52a49ad1e831644544da0e4a0e2e44621f9bb55754f9498ea5bc915ec6b5c46108444e7d67592f94c517618ef53b569f11ad1846798db31fcdee56a57685334
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/modifiers@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@dnd-kit/modifiers@npm:3.0.0"
-  dependencies:
-    "@dnd-kit/utilities": ^2.0.0
-    tslib: ^2.0.0
-  peerDependencies:
-    "@dnd-kit/core": ^3.1.0
-  checksum: 6928a08a57d49728c2d71e0c53b1eafa76903f15690cde72e0929eab33584a857aef69c228e6643757cf013b6a806fdb65db32fa52c4d1296f2aa03c3089febd
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/sortable@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@dnd-kit/sortable@npm:4.0.0"
-  dependencies:
-    "@dnd-kit/utilities": ^2.0.0
-    tslib: ^2.0.0
-  peerDependencies:
-    "@dnd-kit/core": ^3.1.0
-    react: ">=16.8.0"
-  checksum: c2c23a1ed4528e8b05901891a1852458d8b201d0fc0848750630f705f8547869078f08f2ac9026e7aede3464a52c6c4dcbc9e6b0e1bcd0c652c77f98f592d8ab
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/utilities@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@dnd-kit/utilities@npm:2.0.0"
-  dependencies:
-    tslib: ^2.0.0
-  checksum: 10173fc8d6fa8e46394ac2b739e443a3254e31854cbdbe810782bb7b6f4b4dd948752c3114479827c0da757e6616dd44a70394b6e8524d807514db0be192b18d
-  languageName: node
-  linkType: hard
-
 "@emotion/is-prop-valid@npm:^0.8.2, @emotion/is-prop-valid@npm:^0.8.8":
   version: 0.8.8
   resolution: "@emotion/is-prop-valid@npm:0.8.8"
@@ -6196,13 +6137,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clipboard-polyfill@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "clipboard-polyfill@npm:3.0.3"
-  checksum: 735a1006eac8c7bbde64a23f47eb8ce15e8558591dd1a7bffe11f3f17c68fb6aa1d7c459f51e22348c65539d60e3746b15692fbc9b7930b8e14a22c7ce33948d
-  languageName: node
-  linkType: hard
-
 "clipboardy@npm:^2.3.0":
   version: 2.3.0
   resolution: "clipboardy@npm:2.3.0"
@@ -8064,7 +7998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-html@npm:^1.0.3, escape-html@npm:~1.0.3":
+"escape-html@npm:~1.0.3":
   version: 1.0.3
   resolution: "escape-html@npm:1.0.3"
   checksum: 6213ca9ae00d0ab8bccb6d8d4e0a98e76237b2410302cf7df70aaa6591d509a2a37ce8998008cbecae8fc8ffaadf3fb0229535e6a145f3ce0b211d060decbb24
@@ -15660,17 +15594,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:^7.4.10":
-  version: 7.4.10
-  resolution: "react-day-picker@npm:7.4.10"
-  dependencies:
-    prop-types: ^15.6.2
-  peerDependencies:
-    react: ~0.13.x || ~0.14.x || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 33a4614bb4d457a3e72462d092fa131d3d7ec1ba858ac7e70d65b59e464606ffc039afdd226db37ead1326e248ca9a103007ee0bb829b277cd7297e5f5807ad1
-  languageName: node
-  linkType: hard
-
 "react-devtools-core@npm:^4.6.0":
   version: 4.18.0
   resolution: "react-devtools-core@npm:4.18.0"
@@ -17463,21 +17386,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"subscriptions-transport-ws@npm:^0.9.19":
-  version: 0.9.19
-  resolution: "subscriptions-transport-ws@npm:0.9.19"
-  dependencies:
-    backo2: ^1.0.2
-    eventemitter3: ^3.1.0
-    iterall: ^1.2.1
-    symbol-observable: ^1.0.4
-    ws: ^5.2.0 || ^6.0.0 || ^7.0.0
-  peerDependencies:
-    graphql: ">=0.10.0"
-  checksum: 6979b36e03c0a48e33836cb412941e41bae8743767dff2aa453159cfffa983b879cc80cd4e744e82afbf11062c66899c37f5dca0281253ee240098ada0078533
-  languageName: node
-  linkType: hard
-
 "superagent@npm:^6.1.0":
   version: 6.1.0
   resolution: "superagent@npm:6.1.0"
@@ -19196,9 +19104,6 @@ __metadata:
   resolution: "~frontend@workspace:frontend"
   dependencies:
     "@apollo/client": ^3.4.13
-    "@dnd-kit/core": ^3.1.1
-    "@dnd-kit/modifiers": ^3.0.0
-    "@dnd-kit/sortable": ^4.0.0
     "@next/bundle-analyzer": ^11.1.2
     "@popperjs/core": ^2.10.1
     "@segment/analytics.js-core": ^4.1.11
@@ -19208,14 +19113,11 @@ __metadata:
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.1.1
     "@types/dom-mediacapture-record": ^1.0.10
-    "@types/jsonwebtoken": ^8.5.5
     "@types/react-dom": ^17.0.9
     "@types/validator": ^13.6.3
     autoprefixer: ^10.3.6
     babel-jest: ^27.2.2
     babel-plugin-styled-components: ^1.13.2
-    clipboard-polyfill: ^3.0.3
-    escape-html: ^1.0.3
     eslint-plugin-react-hooks: ^4.2.0
     express-http-proxy: ^1.6.2
     focus-visible: ^5.2.0
@@ -19223,6 +19125,7 @@ __metadata:
     http-proxy: ^1.18.1
     identity-obj-proxy: ^3.0.0
     immer: ^9.0.6
+    mobx-react: ^7.2.0
     msw: ^0.35.0
     next: ^11.1.2
     next-auth: beta
@@ -19232,11 +19135,9 @@ __metadata:
     postcss: ^8.3.8
     postcss-focus-visible: ^5.0.0
     postcss-preset-env: ^6.7.0
-    react-day-picker: ^7.4.10
     react-popper: ^2.2.5
     styled-normalize: ^8.0.7
     styled-reset: ^4.3.4
-    subscriptions-transport-ws: ^0.9.19
     typescript: "*"
     validator: ^13.6.0
     whatwg-fetch: ^3.6.2
@@ -19316,7 +19217,6 @@ __metadata:
     jest: ^27.2.2
     lint-staged: ^11.1.2
     mobx: ^6.3.3
-    mobx-react: ^7.2.0
     ntl: ^5.1.0
     prettier: ^2.4.1
     prettier-plugin-import-sort: ^0.0.7
@@ -19342,6 +19242,7 @@ __metadata:
     "@types/analytics-node": ^3.1.6
     "@types/color": ^3.0.2
     "@types/is-hotkey": ^0.1.5
+    "@types/jsonwebtoken": ^8.5.5
     "@types/pino": ^6.3.11
     analytics-node: ^4.0.1
     color: ^3.1.3
