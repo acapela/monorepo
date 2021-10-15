@@ -11,7 +11,6 @@ import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
@@ -19,7 +18,7 @@ import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
-import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
+import { RichEditorSubmitMode } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 
 export type { Editor } from "@tiptap/react";
@@ -324,18 +323,16 @@ const UIEditorHolder = styled.div<{}>`
 `;
 
 const UIEditorContent = styled.div<{}>`
-  padding: 16px;
   display: flex;
 
   flex-direction: column;
   gap: 16px;
 
-  max-height: 25vh;
-  min-height: 50px;
   overflow: auto;
   cursor: text;
 `;
 
 const UIHolder = styled.div<{}>`
   width: 100%;
+  min-width: 0;
 `;
