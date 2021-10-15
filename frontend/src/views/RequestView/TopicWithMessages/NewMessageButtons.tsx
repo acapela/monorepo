@@ -20,9 +20,40 @@ type AllowedActionsInfo = {
 };
 
 function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
+  const pendingTasksQuery = topic.tasks.query({ isDone: false });
+  const hasAnyPendingTasks = pendingTasksQuery.hasItems;
+  const hasSelfPendingTasks = pendingTasksQuery.query({ isSelfAssigned: true }).hasItems;
+
+  if (!hasAnyPendingTasks) {
+    return {
+      actions: ["send", "close-request"],
+      primaryAction: "close-request",
+    };
+  }
+
+  // This topic has some pending tasks
+
+  // Those are mine
+  if (hasSelfPendingTasks) {
+    return {
+      actions: ["send", "complete"],
+      primaryAction: "complete",
+    };
+  }
+
+  const isOwnTopic = topic.isOwn;
+
+  if (isOwnTopic) {
+    return {
+      actions: ["send", "close-request"],
+      primaryAction: "close-request",
+    };
+  }
+
+  // There is some pending task for someone else, but this is not my topic
   return {
-    actions: ["send", "complete"],
-    primaryAction: "complete",
+    actions: ["send"],
+    primaryAction: "send",
   };
 }
 
