@@ -69,7 +69,15 @@ export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button
       {iconAtStart && iconNode}
       {children && <UIContentHolder>{children}</UIContentHolder>}
       {!iconAtStart && iconNode}
-      {shortcut && <Shortcut shortcut={shortcut} callback={() => onClick?.()} />}
+      {shortcut && (
+        <Shortcut
+          shortcut={shortcut}
+          callback={() => {
+            onClick?.();
+            return true;
+          }}
+        />
+      )}
     </UIButton>
   );
 })``;
