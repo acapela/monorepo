@@ -17,10 +17,9 @@ import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
-import { IconButton } from "~ui/buttons/IconButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { IconChevronUp, IconUser } from "~ui/icons";
+import { IconUser } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
@@ -184,13 +183,11 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         mentionType={data.type}
         ref={anchorRef}
         onClick={handleOpenMentionTypePicker}
-        data-tooltip={mentionTypeLabelMap[data.type]}
+        data-tooltip="Change request type"
       >
         @{db.user.findById(data.userId)?.name ?? "???"}
         {isEditable && (
-          <UIMentionPopoverOpenIndicator>
-            <UIMentionIcon icon={<IconChevronUp />} />
-          </UIMentionPopoverOpenIndicator>
+          <UIMentionPopoverOpenIndicator> ({mentionTypeLabelMap[data.type]})</UIMentionPopoverOpenIndicator>
         )}
       </UIMention>
     </>
@@ -223,15 +220,7 @@ const UISelectItem = styled.div<{}>`
   }
 `;
 
-const UIMentionIcon = styled(IconButton)`
-  display: inline;
-`;
-
 const UIMentionPopoverOpenIndicator = styled.span<{}>`
   display: inline;
-
-  padding-left: 4px;
-  margin-left: 4px;
-
-  border-left: 1px solid ${theme.colors.layout.background.border};
+  cursor: pointer;
 `;
