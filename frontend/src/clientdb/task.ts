@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { max } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TaskFragment } from "~gql";
@@ -43,7 +44,7 @@ export const taskEntity = defineEntity<TaskFragment>({
     updateColumns: ["done_at", "due_at", "seen_at"],
   }),
 }).addConnections((task, { getEntity, getContextValue }) => {
-  return {
+  const connections = {
     get message() {
       return getEntity(messageEntity).findById(task.message_id);
     },
@@ -54,16 +55,56 @@ export const taskEntity = defineEntity<TaskFragment>({
 
       return message.topic;
     },
-    get user() {
+    get assignedUser() {
+      if (!task.user_id) {
+        return null;
+      }
+
       return getEntity(userEntity).findById(task.user_id);
     },
-    get isOwn() {
+    get creatingUser() {
+      return connections.message?.user ?? null;
+    },
+    get lastActivityDate() {
+      if (!task.done_at) {
+        return new Date(task.created_at);
+      }
+
+      // Note - we cannot base on 'updated_at' because 'seen_at' is set automatically when you see the topic
+      // as updating seen_at is update, it will also push 'updated_at' on server side.
+
+      // Product wise - we can consider 'activity' as explicit action on the task
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return max([new Date(task.done_at), new Date(task.created_at)])!;
+    },
+    get lastOwnActivityDate() {
+      if (connections.isSelfAssigned) {
+        if (task.done_at) {
+          return new Date(task.done_at);
+        }
+      }
+
+      if (connections.isSelfCreated) {
+        return new Date(task.created_at);
+      }
+
+      return null;
+    },
+
+    get isSelfAssigned() {
       return task.user_id === getContextValue(userIdContext);
+    },
+    get isSelfCreated() {
+      const createdByUserId = connections.creatingUser?.id;
+      if (!createdByUserId) return false;
+      return createdByUserId === getContextValue(userIdContext);
     },
     get isDone() {
       return Boolean(task.done_at);
     },
   };
+
+  return connections;
 });
 
 export type TaskEntity = EntityByDefinition<typeof taskEntity>;

@@ -6,14 +6,32 @@ import { max, pick } from "lodash";
 import { EntitySyncConfig } from "~clientdb";
 import {
   Attachment_Constraint,
+  Attachment_Insert_Input,
+  Attachment_Update_Column,
+  Last_Seen_Message_Constraint,
+  Last_Seen_Message_Insert_Input,
+  Last_Seen_Message_Update_Column,
   Message_Constraint,
+  Message_Insert_Input,
   Message_Reaction_Constraint,
+  Message_Reaction_Insert_Input,
+  Message_Reaction_Update_Column,
+  Message_Update_Column,
   PullSyncRequestsSubscription,
   PullSyncRequestsSubscriptionVariables,
   Task_Constraint,
+  Task_Insert_Input,
+  Task_Update_Column,
   Team_Constraint,
+  Team_Insert_Input,
+  Team_Invitation_Insert_Input,
   Team_Member_Constraint,
+  Team_Member_Insert_Input,
+  Team_Member_Update_Column,
+  Team_Update_Column,
   Topic_Constraint,
+  Topic_Insert_Input,
+  Topic_Update_Column,
 } from "~gql";
 import { assert } from "~shared/assert";
 import { runUntracked } from "~shared/mobxUtils";
@@ -43,6 +61,7 @@ type ConstraintsTypeMap = {
   message: Message_Constraint;
   message_reaction: Message_Reaction_Constraint;
   attachment: Attachment_Constraint;
+  last_seen_message: Last_Seen_Message_Constraint;
 };
 
 type ConstraintsValueMap = {
@@ -57,6 +76,30 @@ const upsertConstraints: ConstraintsValueMap = {
   message: "message_id_key",
   message_reaction: "message_reaction_id_key",
   attachment: "attachment_id_key",
+  last_seen_message: "last_seen_message_pkey",
+};
+
+type InsertTypeMap = {
+  task: Task_Insert_Input;
+  topic: Topic_Insert_Input;
+  team: Team_Insert_Input;
+  team_member: Team_Member_Insert_Input;
+  message: Message_Insert_Input;
+  message_reaction: Message_Reaction_Insert_Input;
+  attachment: Attachment_Insert_Input;
+  last_seen_message: Last_Seen_Message_Insert_Input;
+  team_invitation: Team_Invitation_Insert_Input;
+};
+
+type UpdateTypeMap = {
+  task: Task_Update_Column;
+  topic: Topic_Update_Column;
+  team: Team_Update_Column;
+  team_member: Team_Member_Update_Column;
+  message: Message_Update_Column;
+  message_reaction: Message_Reaction_Update_Column;
+  attachment: Attachment_Update_Column;
+  last_seen_message: Last_Seen_Message_Update_Column;
 };
 
 /**
@@ -89,9 +132,18 @@ const pullSyncRequestsSubscription = gql`
 
 const gqlTag = gql;
 
+type FragmentEntityType<T> = T extends { __typename: infer S } ? S : never;
+
+type UpdateColumnsForFragment<T> = FragmentEntityType<T> extends keyof UpdateTypeMap
+  ? UpdateTypeMap[FragmentEntityType<T>]
+  : never;
+type InsertColumnsForFragment<T> = FragmentEntityType<T> extends keyof InsertTypeMap
+  ? keyof InsertTypeMap[FragmentEntityType<T>]
+  : never;
+
 interface HasuraSyncSettings<T> {
-  updateColumns: Array<keyof T>;
-  insertColumns?: Array<keyof T>;
+  updateColumns: Array<UpdateColumnsForFragment<T>>;
+  insertColumns?: Array<InsertColumnsForFragment<T>>;
 }
 
 function getFirstUpper(input: string) {
@@ -105,6 +157,13 @@ export function createHasuraSyncSetupFromFragment<T>(
   const { name, type, keys } = analyzeFragment<T>(fragment);
 
   const upperType = getFirstUpper(type);
+
+  const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
+
+  // Throw early in case of incorrect input
+  if (updateColumns.length) {
+    assert(upsertConstraint, `${type} of entity has no upsert constraint defined which is required for updates`);
+  }
 
   /**
    * Provide array of ids you want to check if you have access to. Will return list of items you dont have access to.
@@ -160,6 +219,65 @@ export function createHasuraSyncSetupFromFragment<T>(
     return new Date(date.getTime() + 1);
   }
 
+  async function upsert(input: Partial<T>, apollo: ApolloClient<unknown>) {
+    assert(upsertConstraint, `${type} of entity has no upsert constraint defined`);
+    return await apollo.mutate<{ result: T }, { input: Partial<T>; updateColumns: Array<keyof T>; constraint: string }>(
+      {
+        variables: {
+          input,
+          updateColumns: updateColumns as Array<string> as Array<keyof T>,
+          constraint: upsertConstraint,
+        },
+        mutation: gqlTag`
+          ${fragment}
+          mutation PushUpdate${upperType}(
+            $input: ${type}_insert_input!
+            $updateColumns: [${type}_update_column!]! 
+            $constraint: ${type}_constraint!
+          ) {
+            result: insert_${type}_one(
+              object: $input
+              on_conflict: {
+                constraint: $constraint
+                update_columns: $updateColumns
+              }
+            ) {
+              ...${name}
+            }
+          }
+        `,
+      }
+    );
+  }
+
+  async function insert(input: Partial<T>, apollo: ApolloClient<unknown>) {
+    return await apollo.mutate<{ result: T }, { input: Partial<T> }>({
+      variables: { input },
+      mutation: gqlTag`
+        ${fragment}
+        mutation PushUpdate${upperType}(
+          $input: ${type}_insert_input!
+        ) {
+          result: insert_${type}_one(
+            object: $input
+          ) {
+            ...${name}
+          }
+        }
+      `,
+    });
+  }
+
+  async function insertOrUpsert(input: Partial<T>, apollo: ApolloClient<unknown>) {
+    const hasUpdateColumns = updateColumns.length > 0;
+
+    if (!hasUpdateColumns) {
+      return insert(input, apollo);
+    }
+
+    return upsert(input, apollo);
+  }
+
   return {
     pullUpdated({ lastSyncDate, updateItems, getContextValue }) {
       const apollo = getContextValue(apolloContext);
@@ -167,13 +285,13 @@ export function createHasuraSyncSetupFromFragment<T>(
       const observer = apollo.subscribe<{ updates: T[] }, { lastSyncDate: Date }>({
         variables: { lastSyncDate: fixLastUpdateDateForHasura(lastSyncDate) },
         query: gqlTag`
-        ${fragment}
-        subscription Pull${upperType}Updates($lastSyncDate: timestamptz!) {
-          updates: ${type}(where: { updated_at: { _gt: $lastSyncDate } }) {
-            ...${name}
+          ${fragment}
+          subscription Pull${upperType}Updates($lastSyncDate: timestamptz!) {
+            updates: ${type}(where: { updated_at: { _gt: $lastSyncDate } }) {
+              ...${name}
+            }
           }
-        }
-      `,
+        `,
       });
 
       const subscription = observer.subscribe((nextResult) => {
@@ -190,46 +308,7 @@ export function createHasuraSyncSetupFromFragment<T>(
       const apollo = getContextValue(apolloContext);
       const input = getPushInputFromData(entity);
 
-      const hasUpdateColumns = updateColumns.length > 0;
-
-      const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
-      assert(upsertConstraint, `${type} of entity has no upsert constraint defined`);
-
-      const result = await apollo.mutate<
-        { result: T },
-        { input: Partial<T>; updateColumns?: Array<keyof T>; constraint?: string }
-      >({
-        variables: hasUpdateColumns ? { input, updateColumns, constraint: upsertConstraint } : { input },
-        mutation: gqlTag`
-          ${fragment}
-          mutation PushUpdate${upperType}(
-            $input: ${type}_insert_input!
-            ${
-              hasUpdateColumns
-                ? ` 
-            $updateColumns: [${type}_update_column!]! 
-            $constraint: ${type}_constraint!
-            `
-                : ""
-            }
-          ) {
-            result: insert_${type}_one(
-              object: $input
-              ${
-                hasUpdateColumns
-                  ? `
-              on_conflict: {
-                constraint: $constraint
-                update_columns: $updateColumns
-              }`
-                  : ""
-              }
-            ) {
-              ...${name}
-            }
-          }
-        `,
-      });
+      const result = await insertOrUpsert(input, apollo);
 
       if (result.errors) {
         throw result.errors;

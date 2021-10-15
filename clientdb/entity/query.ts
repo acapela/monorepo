@@ -1,53 +1,48 @@
 import { sortBy } from "lodash";
 import { IObservableArray, computed } from "mobx";
 
-import { typedKeys } from "~shared/object";
-
 import { Entity } from "./entity";
-import { EntitySimpleQuery, EntityStore } from "./store";
+import { IndexQueryInput } from "./queryIndex";
+import { EntityStore } from "./store";
 import { computedArray } from "./utils/computedArray";
 import { createEntityCache } from "./utils/entityCache";
 
-type EntityFunctionQuery<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
+type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
-type EntityQueryFilter<Data, Connections> = EntitySimpleQuery<Data> | EntityFunctionQuery<Data, Connections>;
-type EntityQuerySorter<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
+export type EntityQuerySortFuntion<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
+
+export type EntitySortDirection = "asc" | "desc";
+
+type EntityQuerySortConfig<Data, Connections> = {
+  sort: EntityQuerySortFuntion<Data, Connections>;
+  direction: "asc" | "desc";
+};
+
+export type EntityQuerySortInput<Data, Connections> =
+  | EntityQuerySortFuntion<Data, Connections>
+  | EntityQuerySortConfig<Data, Connections>;
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
 
-type EntityQueryResolvedConfig<Data, Connections> = {
-  filter?: EntityQueryFilter<Data, Connections>;
-  sort?: EntityQuerySorter<Data, Connections>;
+export type EntityFilterInput<Data, Connections> =
+  | EntityFilterFunction<Data, Connections>
+  | IndexQueryInput<Data & Connections>;
+
+export type EntityQueryConfig<Data, Connections> = {
+  filter?: EntityFilterInput<Data, Connections>;
+  sort?: EntityQuerySortInput<Data, Connections>;
 };
 
-export type EntityQueryConfig<Data, Connections> =
-  | EntityQueryFilter<Data, Connections>
-  | EntityQueryResolvedConfig<Data, Connections>;
+function resolveSortInput<Data, Connections>(
+  sort?: EntityQuerySortInput<Data, Connections>
+): EntityQuerySortConfig<Data, Connections> | null {
+  if (!sort) return null;
 
-function isPlainFilter<Data, Connections>(
-  filter: EntitySimpleQuery<Data> | EntityQueryResolvedConfig<Data, Connections>,
-  store: EntityStore<Data, Connections>
-): filter is EntitySimpleQuery<Data> {
-  return typedKeys(filter).every((configKey) => {
-    return store.definition.config.keys.includes(configKey);
-  });
-}
-
-function resolveEntityQueryConfig<Data, Connections>(
-  config: EntityQueryConfig<Data, Connections>,
-  store: EntityStore<Data, Connections>
-): EntityQueryResolvedConfig<Data, Connections> {
-  if (typeof config === "function") {
-    return {
-      filter: config,
-    };
+  if (typeof sort === "function") {
+    return { sort, direction: "desc" };
   }
 
-  if (isPlainFilter(config, store)) {
-    return { filter: config };
-  }
-
-  return config;
+  return sort;
 }
 
 type MaybeObservableArray<T> = IObservableArray<T> | T[];
@@ -60,7 +55,10 @@ export type EntityQuery<Data, Connections> = {
   count: number;
 
   findById(id: string): Entity<Data, Connections> | null;
-  query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
+  query: (
+    filter: EntityFilterInput<Data, Connections>,
+    sort?: EntityQuerySortFuntion<Data, Connections>
+  ) => EntityQuery<Data, Connections>;
 };
 
 /**
@@ -77,21 +75,26 @@ export function createEntityQuery<Data, Connections>(
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
   const entityName = definition.config.name;
-  const { filter, sort = definition.config.defaultSort as EntityQuerySorter<Data, Connections> } =
-    resolveEntityQueryConfig(config, store);
+  const { filter, sort = definition.config.defaultSort as EntityQuerySortFuntion<Data, Connections> } = config;
 
-  function isEntityPassingFilter(item: Entity<Data, Connections>) {
+  if (!filter && !sort) {
+    throw new Error(
+      `Either filter or sort is needed to be provided to query. If no sort or filter is needed, use .all property.`
+    );
+  }
+
+  const sortConfig = resolveSortInput(sort);
+
+  function isEntityPassingFilter(item: Entity<Data, Connections>): boolean {
     if (!filter) return true;
 
-    if (typeof filter === "function") {
-      return filter(item);
-    }
+    if (typeof filter === "function") return filter(item);
 
     return store.simpleQuery(filter).includes(item);
   }
 
   const cachedFilter = createEntityCache(isEntityPassingFilter);
-  const cachedSort = sort ? createEntityCache(sort) : null;
+  const cachedSortFunction = sortConfig ? createEntityCache(sortConfig.sort) : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
@@ -99,8 +102,14 @@ export function createEntityQuery<Data, Connections>(
     () => {
       const passedItems = getSource().filter(cachedFilter);
 
-      if (cachedSort) {
-        return sortBy(passedItems, cachedSort);
+      if (cachedSortFunction) {
+        const descSortedResults = sortBy(passedItems, cachedSortFunction);
+
+        if (sortConfig?.direction === "desc") {
+          return descSortedResults;
+        }
+
+        return descSortedResults.reverse();
       }
 
       return passedItems;
@@ -149,8 +158,8 @@ export function createEntityQuery<Data, Connections>(
         { name: `${entityName}FindById${id}` }
       ).get();
     },
-    query(config) {
-      return createEntityQuery(() => passingItems.get(), config, store);
+    query(filter, sort) {
+      return createEntityQuery(() => passingItems.get(), { filter, sort }, store);
     },
   };
 }

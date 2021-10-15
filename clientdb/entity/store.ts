@@ -7,30 +7,46 @@ import { typedKeys } from "~shared/object";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
-import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
-import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
+import {
+  EntityFilterInput,
+  EntityQuery,
+  EntityQuerySortFuntion,
+  EntityQuerySortInput,
+  createEntityQuery,
+} from "./query";
+import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
 import { computedArray } from "./utils/computedArray";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
-export type EntitySimpleQuery<Data> = Partial<{
-  [key in keyof Data]: QueryIndexValue<Data[key]>;
-}>;
+export interface EntityStoreFindMethods<Data, Connections> {
+  query: (
+    filter: EntityFilterInput<Data, Connections>,
+    sort?: EntityQuerySortFuntion<Data, Connections>
+  ) => EntityQuery<Data, Connections>;
+  sort: (sort: EntityQuerySortInput<Data, Connections>) => EntityQuery<Data, Connections>;
+  findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+    key: K,
+    value: IndexQueryInput<Data & Connections>[K]
+  ): Entity<Data, Connections> | null;
+  assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+    key: K,
+    value: IndexQueryInput<Data & Connections>[K]
+  ): Entity<Data, Connections>;
 
-export type EntityStore<Data, Connections> = {
-  items: IObservableArray<Entity<Data, Connections>>;
   findById(id: string): Entity<Data, Connections> | null;
   assertFindById(id: string, error?: MessageOrError): Entity<Data, Connections>;
-  simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[];
   removeById(id: string, source?: EntityChangeSource): boolean;
-  query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
+}
+
+export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
+  items: IObservableArray<Entity<Data, Connections>>;
   add(input: Entity<Data, Connections>, source?: EntityChangeSource): Entity<Data, Connections>;
-  findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
-  assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
   destroy: () => void;
-};
+  simpleQuery(simpleQuery: IndexQueryInput<Data | Connections>): Entity<Data, Connections>[];
+}
 
 export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknown, unknown>> =
   Definition extends EntityDefinition<infer Data, infer Connections> ? EntityStore<Data, Connections> : never;
@@ -62,7 +78,7 @@ export function createEntityStore<Data, Connections>(
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
 
-  const queryIndexes = new Map<keyof Data, QueryIndex<Data, Connections, keyof Data>>();
+  const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.
@@ -121,14 +137,14 @@ export function createEntityStore<Data, Connections>(
 
       return item;
     },
-    simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[] {
+    simpleQuery(input: IndexQueryInput<Data & Connections>): Entity<Data, Connections>[] {
       // Reuse the same array in case of same results to avoid waster observers triggers (like re-renders)
       return computedArray(() => {
         let passingResults: Entity<Data, Connections>[] | null = null;
 
-        for (const requiredKey of typedKeys(simpleQuery)) {
+        for (const requiredKey of typedKeys(input)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const requiredValue = simpleQuery[requiredKey]!;
+          const requiredValue = input[requiredKey]!;
 
           const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
 
@@ -156,8 +172,11 @@ export function createEntityStore<Data, Connections>(
         return passingResults ?? [];
       }).get();
     },
-    findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
-      const query: Partial<Data> = {};
+    findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+      key: K,
+      value: IndexQueryInput<Data & Connections>[K]
+    ) {
+      const query: IndexQueryInput<Data & Connections> = {};
       // TS was complaining about ^ {[key]: value} as it considered key as string in such case, not as keyof Data
       query[key] = value;
 
@@ -170,7 +189,10 @@ export function createEntityStore<Data, Connections>(
         return results[0];
       }).get();
     },
-    assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
+    assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+      key: K,
+      value: IndexQueryInput<Data & Connections>[K]
+    ) {
       const entity = store.findByUniqueIndex(key, value);
 
       assert(entity, `Assertion error for assertFindByUniqueIndex for key ${key} and value ${value}`);
@@ -193,8 +215,11 @@ export function createEntityStore<Data, Connections>(
 
       return didRemove;
     },
-    query(config: EntityQueryConfig<Data, Connections>) {
-      return createEntityQuery(() => existingItems.get(), config, store);
+    query(filter, sort) {
+      return createEntityQuery(() => existingItems.get(), { filter, sort }, store);
+    },
+    sort(sort) {
+      return createEntityQuery(() => existingItems.get(), { sort }, store);
     },
     destroy() {
       queryIndexes.forEach((queryIndex) => {

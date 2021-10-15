@@ -1,4 +1,5 @@
 import { IObservableArray, ObservableMap, observable, runInAction } from "mobx";
+import { Primitive } from "utility-types";
 
 import { Entity } from "~clientdb";
 import { Thunk, resolveThunk } from "~shared/thunk";
@@ -6,11 +7,17 @@ import { Thunk, resolveThunk } from "~shared/thunk";
 import { EntityStore } from "./store";
 import { computedArray } from "./utils/computedArray";
 
+export type IndexQueryInput<I> = Partial<IndexableData<I>>;
+
+type IndexableData<T> = {
+  [key in keyof T]: T[key] extends Primitive ? QueryIndexValue<T[key]> : never;
+};
+
 export type QueryIndexValue<T> = Thunk<T | T[]>;
 
-export interface QueryIndex<Data, Connections, K extends keyof Data> {
+export interface QueryIndex<D, C, V> {
   destroy(): void;
-  find(value: QueryIndexValue<Data[K]>): Entity<Data, Connections>[];
+  find(value: V): Entity<D, C>[];
 }
 
 /**
@@ -32,10 +39,14 @@ function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter
 /**
  * Will create unique key index for entity store that will automatically add/update/delete items from the index on changes.
  */
-export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
+export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & C>>(
   key: K,
-  store: EntityStore<Data, Connections>
-): QueryIndex<Data, Connections, K> {
+  store: EntityStore<D, C>
+): QueryIndex<D, C, Entity<D, C>[K]> {
+  type TargetEntity = Entity<D, C>;
+  type TargetValue = TargetEntity[K];
+  type TargetValueInput = QueryIndexValue<TargetValue>;
+
   /**
    * Index map. Example: topic has slug. Lets say we have 2 slugs 'foo' and 'bar'.
    *
@@ -45,17 +56,27 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
    *   bar: entity2
    * }
    */
-  const observableIndex = observable.map<Data[K], IObservableArray<Entity<Data, Connections>>>({});
+  const observableIndex = observable.map<TargetValue, IObservableArray<TargetEntity>>({});
 
-  function getCurrentIndexValue(entity: Data): Data[K] {
+  function getCurrentIndexValue(entity: TargetEntity): TargetValue {
     return entity[key];
   }
 
-  function addItemToIndex(entity: Entity<Data, Connections>) {
+  function addItemToIndex(entity: TargetEntity) {
     const indexValue = getCurrentIndexValue(entity);
     const list = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
 
-    list.push(entity);
+    runInAction(() => {
+      list.push(entity);
+    });
+  }
+
+  function removeItemFromIndex(entity: TargetEntity) {
+    const indexValue = getCurrentIndexValue(entity);
+    const list = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
+    runInAction(() => {
+      list.remove(entity);
+    });
   }
 
   function populateIndex() {
@@ -68,46 +89,20 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
 
   populateIndex();
 
-  const cancelAdded = store.events.on("itemAdded", (entity) => {
-    runInAction(() => {
-      addItemToIndex(entity);
-    });
-  });
-
-  const cancelUpdated = store.events.on("itemUpdated", (entity, dataBefore) => {
-    const indexValueBefore = getCurrentIndexValue(dataBefore);
-    const indexValueNow = getCurrentIndexValue(entity);
-
-    if (indexValueBefore === indexValueNow) return;
-
-    const listBefore = observableMapGetOrCreate(observableIndex, indexValueBefore, () => observable.array());
-    const listNow = observableMapGetOrCreate(observableIndex, indexValueNow, () => observable.array());
-
-    runInAction(() => {
-      listBefore.remove(entity);
-      listNow.push(entity);
-    });
-  });
-
-  const cancelDeleted = store.events.on("itemRemoved", (entity) => {
-    const indexValue = getCurrentIndexValue(entity);
-
-    const list = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
-
-    runInAction(() => {
-      list.remove(entity);
-    });
-  });
+  const cancelAdded = store.events.on("itemAdded", addItemToIndex);
+  const cancelWillUpdate = store.events.on("itemWillUpdate", removeItemFromIndex);
+  const cancelUpdated = store.events.on("itemUpdated", addItemToIndex);
+  const cancelDeleted = store.events.on("itemRemoved", removeItemFromIndex);
 
   function destroy() {
     cancelAdded();
     cancelUpdated();
     cancelDeleted();
+    cancelWillUpdate();
   }
 
-  function findResultsForIndexValue(indexValue: Data[K]) {
+  function findResultsForIndexValue(indexValue: TargetValue) {
     const results = observableIndex.get(indexValue);
-
     if (!results) return [];
 
     return results;
@@ -117,13 +112,13 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
    * In case of single value - eg "foo" will find all entities that have this exact value.
    * In case of array values eg. ["foo", "bar"] will find all entities that has either of those (aka. "or")
    */
-  function findResultsForSingleOrMultipleValues(indexValue: QueryIndexValue<Data[K]>) {
+  function findResultsForSingleOrMultipleValues(indexValue: TargetValueInput) {
     const resolvedIndexValue = resolveThunk(indexValue);
     if (!Array.isArray(resolvedIndexValue)) {
       return findResultsForIndexValue(resolvedIndexValue);
     }
 
-    const results: Entity<Data, Connections>[] = [];
+    const results: TargetEntity[] = [];
 
     for (const possibleValue of resolvedIndexValue) {
       const possibleValueResults = findResultsForIndexValue(possibleValue);
@@ -137,7 +132,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
     return results;
   }
 
-  function find(indexValue: QueryIndexValue<Data[K]>) {
+  function find(indexValue: TargetValueInput) {
     return computedArray(() => {
       return findResultsForSingleOrMultipleValues(indexValue);
     }).get();

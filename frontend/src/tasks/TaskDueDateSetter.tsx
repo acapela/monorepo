@@ -1,5 +1,6 @@
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
@@ -27,7 +28,7 @@ function getNextWorkDayEndOfDay() {
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
-export const TaskDueDateSetter = ({ task, children }: Props) => {
+export const TaskDueDateSetter = observer(({ task, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
@@ -105,7 +106,7 @@ export const TaskDueDateSetter = ({ task, children }: Props) => {
       </UITriggerHolder>
     </>
   );
-};
+});
 
 const UITriggerHolder = styled.div<{}>`
   display: inline-block;

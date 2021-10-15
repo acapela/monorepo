@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { maxBy } from "lodash";
+import { max } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
@@ -7,6 +7,7 @@ import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 
 import { attachmentEntity } from "./attachment";
+import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
@@ -62,38 +63,71 @@ export const messageEntity = defineEntity<MessageFragment>({
     },
   },
 }).addConnections((message, { getEntity, getContextValue }) => {
+  const currentUserId = getContextValue(userIdContext);
+
   const tasks = getEntity(taskEntity).query({ message_id: message.id });
-  return {
+
+  const connections = {
     get topic() {
       return getEntity(topicEntity).findById(message.topic_id);
     },
     get user() {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return getEntity(userEntity).findById(message.user_id)!;
+      return getEntity(userEntity).assertFindById(message.user_id);
     },
     tasks,
     reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
     attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
-    get lastActivityDate() {
+    get lastActivityDate(): Date {
       if (!tasks.hasItems) {
         return new Date(message.updated_at);
       }
 
       // We know we have at least one item as we just did `tasks.hasItems`.
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const lastTask = maxBy(tasks.all, (task) => task.getUpdatedAt())!;
+      return max(tasks.all.map((task) => task.lastActivityDate))!;
+    },
+    // Last activity performed by current user
+    get lastOwnActivityDate(): Date | null {
+      const messageOwnUpdateDate = connections.isOwn ? new Date(message.updated_at) : null;
 
-      return lastTask.getUpdatedAt();
+      if (!tasks.hasItems) {
+        return messageOwnUpdateDate;
+      }
+
+      const ownTasks = tasks.query({ isSelfAssigned: true }).all;
+
+      if (!ownTasks.length) {
+        return messageOwnUpdateDate;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return max(ownTasks.map((task) => task.lastOwnActivityDate))!;
+    },
+    get isUnread() {
+      if (!currentUserId) return false;
+
+      const lastUnreadInTheSameTopic = getEntity(lastSeenMessageEntity).query({
+        topic_id: message.topic_id,
+        user_id: currentUserId,
+      }).first;
+
+      if (!lastUnreadInTheSameTopic) return true;
+
+      // This very message is last unread one
+      if (lastUnreadInTheSameTopic.id === message.id) return true;
+
+      return new Date(message.updated_at) >= lastUnreadInTheSameTopic.getUpdatedAt();
     },
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
 
       return getEntity(messageEntity).findById(message.replied_to_message_id);
     },
-    get isOwnMessage() {
-      return getContextValue(userIdContext) === message.user_id;
+    get isOwn() {
+      return currentUserId === message.user_id;
     },
   };
+
+  return connections;
 });
 
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;

@@ -7,21 +7,14 @@ import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
 import { createEntityPersistanceManager } from "./persistance";
-import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntitySearch } from "./search";
-import { createEntityStore } from "./store";
+import { EntityStoreFindMethods, createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
 import { EntityChangeSource } from "./types";
 
-export type EntityClient<Data, Connections> = {
-  findById(id: string): Entity<Data, Connections> | null;
-  assertFindById(id: string, errorMessage?: string): Entity<Data, Connections>;
-  findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
-  assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
-  removeById(id: string, source?: EntityChangeSource): boolean;
+export interface EntityClient<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
   all: Entity<Data, Connections>[];
   search(term: string): Entity<Data, Connections>[];
-  query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   createOrUpdate(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
@@ -29,7 +22,7 @@ export type EntityClient<Data, Connections> = {
   definition: EntityDefinition<Data, Connections>;
   persistanceLoaded: Promise<void>;
   firstSyncLoaded: Promise<void>;
-};
+}
 
 export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unknown>> = Def extends EntityDefinition<
   infer Data,
@@ -53,6 +46,8 @@ export function createEntityClient<Data, Connections>(
   { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
+
+  const { query, findById, findByUniqueIndex, assertFindById, removeById, assertFindByUniqueIndex, sort } = store;
 
   const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
 
@@ -100,35 +95,20 @@ export function createEntityClient<Data, Connections>(
 
   const client: EntityClient<Data, Connections> = {
     definition,
-    findById(id) {
-      return store.findById(id);
-    },
-    assertFindById(id, errorMessage) {
-      const item = store.findById(id);
-
-      assert(item, errorMessage ?? `Entity ${definition.config.name} assertion failed. No item with id ${id}`);
-
-      return item;
-    },
-    findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
-      return store.findByUniqueIndex(key, value);
-    },
-    assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> {
-      return store.assertFindByUniqueIndex(key, value);
-    },
+    query,
+    findById,
+    findByUniqueIndex,
+    assertFindById,
+    removeById,
+    assertFindByUniqueIndex,
+    sort,
     search(term) {
       assert(searchEngine, `No search configuration is provided for entity ${definition.config.name}`);
 
       return searchEngine.search(term);
     },
     get all() {
-      return client.query({ filter: () => true, sort: definition.config.defaultSort }).all;
-    },
-    query(config) {
-      return store.query(config);
-    },
-    removeById(id, source = "user") {
-      return store.removeById(id, source);
+      return client.query(() => true, definition.config.defaultSort).all;
     },
     create(input, source = "user") {
       const newEntity = createEntityWithData(input);
