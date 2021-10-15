@@ -110,6 +110,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }) as unknown as Session;
       },
     },
+
+    events: {
+      async signIn({ user, profile }) {
+        await db.user.update({
+          where: { id: user.id },
+          data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
+        });
+      },
+    },
+
     cookies: {
       sessionToken: {
         name: `next-auth.session-token`,
@@ -183,7 +193,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         ),
       getUserByEmail: async (email) => toMaybeAdapterUser(email ? await db.user.findFirst({ where: { email } }) : null),
 
-      async linkAccount(account, profile) {
+      async linkAccount(account) {
         await db.$transaction([
           db.account.create({
             data: {
@@ -202,8 +212,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             data: {
               // user.has_account will change, but since it is computed we need to bump updated_at
               updated_at: null, // (null sets it to `now()`)
-              name: profile.name ?? undefined,
-              avatar_url: profile.image ?? undefined,
             },
           }),
         ]);

@@ -917,7 +917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.9.2":
   version: 7.15.4
   resolution: "@babel/runtime@npm:7.15.4"
   dependencies:
@@ -9085,7 +9085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"futoin-hkdf@npm:^1.4.2":
+"futoin-hkdf@npm:^1.3.3":
   version: 1.4.2
   resolution: "futoin-hkdf@npm:1.4.2"
   checksum: 273c7368ae1adb39bdf13eeee0ba504b0a28a27bd13838497e802e4fe47a6687290d649c5b82a1cde4981a939747f0e684236bccf4f5a05b4ce14105b90490f1
@@ -13181,25 +13181,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:next-auth-with-link-account-profile@0.0.0-semantically-released":
-  version: 0.0.0-semantically-released
-  resolution: "next-auth-with-link-account-profile@npm:0.0.0-semantically-released"
+"next-auth@npm:beta":
+  version: 4.0.0-beta.4
+  resolution: "next-auth@npm:4.0.0-beta.4"
   dependencies:
-    "@babel/runtime": ^7.15.4
-    futoin-hkdf: ^1.4.2
+    "@babel/runtime": ^7.14.6
+    futoin-hkdf: ^1.3.3
     jose: ^1.27.2
     oauth: ^0.9.15
-    openid-client: ^4.9.0
-    preact: ^10.5.14
+    openid-client: ^4.7.4
+    preact: ^10.5.13
     preact-render-to-string: ^5.1.19
   peerDependencies:
-    nodemailer: ^6.6.5
+    nodemailer: ^6.6.2
     react: ^17.0.2
     react-dom: ^17.0.2
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: c307b99a1aea79625187cf969107c5b898bf48a9e29e80b31b3f8b421ff1de989db90b4f4cc2a21c815d855739ecf25ed9cf7844a01d4975d4efbb3aa2401da7
+  checksum: b3f817dc6fa3270acfe8e8b23bc73549d5b90d3cd72aaa72b724eb64c83412160aa22467e16b50a846a24c2c5347bf80a5ad8aaf5abeef8e62ede6213e555fc5
   languageName: node
   linkType: hard
 
@@ -13770,7 +13770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^4.9.0":
+"openid-client@npm:^4.7.4":
   version: 4.9.1
   resolution: "openid-client@npm:4.9.1"
   dependencies:
@@ -14956,7 +14956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact@npm:^10.5.14":
+"preact@npm:^10.5.13":
   version: 10.5.15
   resolution: "preact@npm:10.5.15"
   checksum: 1c9f025ed6ff9c6cbe85da4feb88011795914d615244089396d1157376897a09f478eac0d582c66bc5a96c2841ebd9f8dfbe0a28e8c1820bdd7c314083350d40
@@ -19225,7 +19225,7 @@ __metadata:
     immer: ^9.0.6
     msw: ^0.35.0
     next: ^11.1.2
-    next-auth: "npm:next-auth-with-link-account-profile@0.0.0-semantically-released"
+    next-auth: beta
     next-compose-plugins: ^2.2.1
     next-transpile-modules: ^8.0.0
     next-unused: ^0.0.6
