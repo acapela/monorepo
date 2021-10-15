@@ -20,6 +20,7 @@ import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { topicEntity } from "./topic";
+import { transcriptionEntity } from "./transcription";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
@@ -51,6 +52,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
       task: taskEntity,
       messageReaction: messageReactionEntity,
       lastSeenMessage: lastSeenMessageEntity,
+      transcription: transcriptionEntity,
     }
   );
 
