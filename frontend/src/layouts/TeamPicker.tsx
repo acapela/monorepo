@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
@@ -7,6 +8,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { CreateTeamMutation, CreateTeamMutationVariables } from "~gql";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
 import { createLengthValidator } from "~shared/validation/inputValidation";
@@ -19,6 +21,14 @@ export const TeamPickerView = observer(() => {
   const teams = db.team.all;
   const user = useAssertCurrentUser();
   const router = useRouter();
+
+  const [createTeam] = useMutation<CreateTeamMutation, CreateTeamMutationVariables>(gql`
+    mutation CreateTeam($name: String!, $slug: String!) {
+      team: insert_team_one(object: { name: $name, slug: $slug }) {
+        id
+      }
+    }
+  `);
   const [changeCurrentTeam] = useChangeCurrentTeam();
 
   async function handleChangeTeam(teamId: string) {
@@ -36,11 +46,24 @@ export const TeamPickerView = observer(() => {
       return;
     }
 
-    const team = db.team.create({ name, slug: slugify(name) });
+    const { data } = await createTeam({ variables: { name, slug: slugify(name) } });
+    const team = data?.team;
 
-    if (team) {
-      handleChangeTeam(team.id);
+    if (!team) {
+      addToast({
+        type: "error",
+        title: "Team creation failed!",
+        description: "There was an error while creating your team, we are looking into it.",
+      });
+      return;
     }
+
+    await handleChangeTeam(team.id);
+
+    trackEvent("Account Created", { teamName: name });
+    trackEvent("Trial Started", { teamName: name });
+
+    await router.push(routes.settings);
 
     addToast({
       type: "success",
@@ -49,11 +72,6 @@ export const TeamPickerView = observer(() => {
       description:
         "The team has been created successfully and we are happy to have you on board. Now you can invite your team members and start the collaboration!",
     });
-
-    trackEvent("Account Created", { teamName: name });
-    trackEvent("Trial Started", { teamName: name });
-
-    await router.push(routes.settings);
   }
 
   return (
