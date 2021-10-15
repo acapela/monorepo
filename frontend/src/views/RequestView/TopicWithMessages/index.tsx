@@ -9,13 +9,12 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
-import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicSummaryMessage } from "./TopicSummary";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
@@ -47,6 +46,16 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
     });
     trackEvent("Closed Topic", { topicId: topic.id });
   });
+
+  const handleReopenTopic = action(() => {
+    topic.update({
+      closed_at: null,
+      closed_by_user_id: null,
+      closing_summary: null,
+    });
+    trackEvent("Reopened Topic", { topicId: topic.id });
+  });
+
   const onCloseTopicRequest = isClosed ? undefined : handleCloseTopic;
 
   return (
@@ -63,26 +72,20 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
           <AnimateSharedLayout>
             <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
 
+            {/* TODO: Replace with events */}
             {topic && isClosed && <TopicSummaryMessage topic={topic} />}
           </AnimateSharedLayout>
-
-          {!messages.length && !isClosed && (
-            <UIContentWrapper>Start a request by adding a first message with an @-mention below.</UIContentWrapper>
-          )}
-
-          {isClosed && <TopicClosureNote />}
         </ScrollableMessages>
 
-        {!isClosed && (
-          <UIMessageComposer>
-            <UIMessageComposerBody>
+        <UIFooterContainer>
+          <UIFooter>
+            {!isClosed && (
               <CreateNewMessageEditor
                 topic={topic}
-                onMessageSent={({ closePendingTasks }) => {
+                onMessageSent={() => {
                   scrollerRef.current?.scrollToBottom("auto");
-
-                  if (!closePendingTasks) return;
-
+                }}
+                onClosePendingTasks={() => {
                   const openTasks = messages.flatMap(
                     (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
                   );
@@ -93,9 +96,16 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
                   }
                 }}
               />
-            </UIMessageComposerBody>
-          </UIMessageComposer>
-        )}
+            )}
+            {isClosed && (
+              <UICloseTopicFooter>
+                <Button shortcut={["Mod", "O"]} kind="secondary" tooltip="Reopen Request" onClick={handleReopenTopic}>
+                  Reopen request
+                </Button>
+              </UICloseTopicFooter>
+            )}
+          </UIFooter>
+        </UIFooterContainer>
       </UIHolder>
     </TopicStoreContext>
   );
@@ -123,7 +133,7 @@ const UIAdditionalInfo = styled.div`
   ${theme.typo.content.secondary}
 `;
 
-const UIMessageComposer = styled.div`
+const UIFooterContainer = styled.div`
   width: 100%;
   margin-top: auto;
   padding-top: 20px;
@@ -132,7 +142,15 @@ const UIMessageComposer = styled.div`
   justify-content: center;
 `;
 
-const UIMessageComposerBody = styled.div`
+const UIFooter = styled.div`
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
+`;
+
+const UICloseTopicFooter = styled.div<{}>`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  ${theme.spacing.horizontalActions.asGap};
 `;
