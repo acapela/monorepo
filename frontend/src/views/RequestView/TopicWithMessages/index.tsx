@@ -80,20 +80,22 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
         {!isClosed && (
           <UIMessageComposer>
-            <CreateNewMessageEditor
-              topic={topic}
-              requireMention={messages.length === 0}
-              onMessageSent={() => {
-                scrollerRef.current?.scrollToBottom("auto");
-                const openTasks = messages.flatMap(
-                  (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
-                );
-                const doneAt = new Date().toISOString();
-                for (const openTask of openTasks) {
-                  openTask.update({ done_at: doneAt });
-                }
-              }}
-            />
+            <UIMessageComposerBody>
+              <CreateNewMessageEditor
+                topic={topic}
+                requireMention={messages.length === 0}
+                onMessageSent={() => {
+                  scrollerRef.current?.scrollToBottom("auto");
+                  const openTasks = messages.flatMap(
+                    (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
+                  );
+                  const doneAt = new Date().toISOString();
+                  for (const openTask of openTasks) {
+                    openTask.update({ done_at: doneAt });
+                  }
+                }}
+              />
+            </UIMessageComposerBody>
           </UIMessageComposer>
         )}
       </UIHolder>
@@ -127,6 +129,12 @@ const UIMessageComposer = styled.div`
   width: 100%;
   margin-top: auto;
   padding-top: 20px;
-  padding-top: 0px;
+  border-top: 1px solid ${theme.colors.layout.background.border};
+  display: flex;
+  justify-content: center;
+`;
+
+const UIMessageComposerBody = styled.div`
+  width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
