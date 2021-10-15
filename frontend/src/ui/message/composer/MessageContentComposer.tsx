@@ -12,7 +12,6 @@ import { UploadingAttachmentPreview } from "./UploadingAttachmentPreview";
 
 interface Props {
   autofocusKey?: string;
-  onSubmit?: () => void;
   content: RichEditorNode;
   onContentChange: (content: RichEditorNode) => void;
   uploadingAttachments?: EditorUploadingAttachmentInfo[];
@@ -28,7 +27,6 @@ interface Props {
 export const MessageContentEditor = namedForwardRef<Editor, Props>(function MessageContentEditor(
   {
     autofocusKey,
-    onSubmit,
     content,
     onContentChange,
     uploadingAttachments = [],
@@ -49,7 +47,6 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
       value={content}
       onChange={onContentChange}
       onFilesSelected={onFilesSelected}
-      onSubmit={onSubmit}
       placeholder="Your feedback on this topic…"
       autofocusKey={autofocusKey}
       isDisabled={isDisabled}

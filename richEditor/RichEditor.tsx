@@ -37,7 +37,6 @@ export interface RichEditorProps {
   value: RichEditorNode;
   onChange?: (value: RichEditorNode) => void;
   onFilesSelected?: (files: File[]) => void;
-  onSubmit?: () => void;
   additionalTopContent?: ReactNode;
   additionalBottomContent?: ReactNode;
   placeholder?: string;
@@ -101,7 +100,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   {
     value = getEmptyRichContent(),
     onChange,
-    onSubmit,
     onFilesSelected,
     additionalTopContent,
     additionalBottomContent,

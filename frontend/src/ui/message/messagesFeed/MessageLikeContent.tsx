@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 

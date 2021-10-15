@@ -1,6 +1,6 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
@@ -17,7 +17,6 @@ import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAtt
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
@@ -30,7 +29,6 @@ import { NewMessageButtons } from "./NewMessageButtons";
 interface Props {
   topic: TopicEntity;
   isDisabled?: boolean;
-  requireMention: boolean;
   onMessageSent: (params: SubmitMessageParams) => void;
 }
 
@@ -41,9 +39,7 @@ interface SubmitMessageParams {
   closePendingTasks: boolean;
 }
 
-const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
-
-export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, requireMention }: Props) => {
+export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent }: Props) => {
   const db = useDb();
 
   const editorRef = useRef<Editor>(null);
