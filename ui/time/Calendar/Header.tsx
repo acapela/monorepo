@@ -4,7 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconCalendar, IconChevronLeft, IconChevronRight } from "~ui/icons";
 import { theme } from "~ui/theme";
 
@@ -27,7 +27,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
       <AnimatePresence>
         {canReturnToCurrentMonth && (
           <PopPresenceAnimator key="fo">
-            <WideIconButton
+            <IconButton
               tooltip={`Current month - ${format(now, "MMMM")}`}
               icon={<IconCalendar />}
               onClick={() => {
@@ -38,7 +38,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
         )}
       </AnimatePresence>
 
-      <WideIconButton
+      <IconButton
         tooltip={format(endOfPrevious, "MMMM")}
         icon={<IconChevronLeft />}
         onClick={() => {
@@ -46,7 +46,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
         }}
       />
 
-      <WideIconButton
+      <IconButton
         icon={<IconChevronRight />}
         tooltip={format(startOfNext, "MMMM")}
         onClick={() => {

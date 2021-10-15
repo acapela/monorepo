@@ -2,8 +2,8 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 
+import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconReply } from "~ui/icons";
 
 interface Props {
@@ -21,5 +21,5 @@ export const ReplyButton = observer(({ messageId }: Props) => {
     });
   }
 
-  return <WideIconButton tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
+  return <IconButton tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
 });

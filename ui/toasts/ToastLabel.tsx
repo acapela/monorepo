@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "~ui/icons";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
@@ -52,7 +52,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
         </UIIconHolder>
       )}
       <UITitle>{title}</UITitle>
-      <CircleCloseIconButton onClick={() => onCloseRequest(toast)} />
+      <CloseIconButton onClick={() => onCloseRequest(toast)} />
       {isDetailed && (
         <>
           <UIPlaceholder />

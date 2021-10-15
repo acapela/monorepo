@@ -27,6 +27,10 @@ export const colors = {
   action: {
     // Used for buttons
     primary,
+    transparent: color("hsla(0, 0%, 100%, 0.0)", {
+      hover: color("hsla(0, 0%, 0%, 0.05)"),
+      active: color("hsla(0, 0%, 0%, 0.075)"),
+    }),
     link: primary,
     // Used for secondary buttons
     secondary: white,

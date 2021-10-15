@@ -19,11 +19,11 @@ export interface Props {
  * By default icon occupy 0.75 of circle size. It might 'look' good for various icons or use cases to modify this ratio.
  * eg. 0.5 means if circle has 32px size, icon will have 16px size.
  */
-const DEFAULT_ICON_SIZE_RATIO = 0.75;
+const DEFAULT_ICON_SIZE_RATIO = 1;
 
-export const CircleIconButton = styled(function CircleIconButton({
+export const IconButton = styled(function CircleIconButton({
   icon,
-  kind = "secondary",
+  kind = "transparent",
   onClick,
   className,
   tooltip,
@@ -50,17 +50,18 @@ export const UIButton = styled.button<{
   isDisabled: boolean;
   iconSizeRatio: number;
 }>`
-  padding: 0;
-  width: 1em;
-  height: 1em;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 20px;
+  aspect-ratio: 1;
+
+  ${theme.radius.button};
+  ${theme.transitions.hover()};
+
   ${(props) => getButtonKindtyles(props.kind)}
 
-  ${theme.radius.circle};
-  ${theme.transitions.hover()}
+  cursor: pointer;
 
   svg {
     font-size: ${(props) => props.iconSizeRatio}em;

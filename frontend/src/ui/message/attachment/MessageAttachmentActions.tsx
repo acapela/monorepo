@@ -1,7 +1,7 @@
 import React from "react";
 
+import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconTrash } from "~ui/icons";
 
 interface AttachmentProps {
@@ -11,7 +11,7 @@ interface AttachmentProps {
 export const MessageAttachmentActions = ({ onRemoveRequest }: AttachmentProps) => {
   return (
     <CornerButtonWrapper showOnlyIfParentHovered>
-      <WideIconButton icon={<IconTrash />} onClick={onRemoveRequest} tooltip="Remove attachment" />
+      <IconButton icon={<IconTrash />} onClick={onRemoveRequest} tooltip="Remove attachment" />
     </CornerButtonWrapper>
   );
 };

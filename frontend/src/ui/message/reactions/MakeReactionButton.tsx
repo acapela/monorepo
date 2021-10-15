@@ -4,12 +4,12 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
+import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
@@ -45,7 +45,7 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
   return (
     <>
-      <WideIconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
+      <IconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
           <Popover anchorRef={buttonRef} placement="bottom-end">

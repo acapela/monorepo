@@ -41,6 +41,8 @@ interface SubmitMessageParams {
   closePendingTasks: boolean;
 }
 
+const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
+
 export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, requireMention }: Props) => {
   const db = useDb();
 
@@ -60,26 +62,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
-
-  const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
-  const validator = useCallback(
-    (value: RichEditorNode) => {
-      if (requireMention) {
-        const mentionNodes = getNodesFromContentByType(value, "mention");
-        if (mentionNodes.length < 1) {
-          return "The first message should have a mention.";
-        }
-      }
-
-      return null;
-    },
-    [requireMention]
-  );
-  const validationErrorMessage = useMemo(() => {
-    if (!shouldValidateOnChange) return null;
-
-    return validator(content);
-  }, [shouldValidateOnChange, validator, content]);
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -128,11 +110,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   });
 
   const handleSubmitTextMessage = action(async (closePendingTasks: boolean) => {
-    if (validator(content)) {
-      setShouldValidateOnChange(true);
-      return;
-    }
-
     attachmentsList.clear();
 
     try {
@@ -153,7 +130,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   return (
     <UIHolder>
       <>
-        {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
         {topicContext?.currentlyReplyingToMessageId && (
           <ReplyingToMessageById
             onRemove={handleStopReplyingToMessage}
@@ -200,10 +176,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     </UIHolder>
   );
 });
-
-const UIValidationError = styled.div`
-  ${theme.typo.content.secondary};
-`;
 
 const UIHolder = styled.div`
   display: flex;

@@ -17,7 +17,7 @@ import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { IconChevronUp, IconUser } from "~ui/icons";
@@ -223,7 +223,7 @@ const UISelectItem = styled.div<{}>`
   }
 `;
 
-const UIMentionIcon = styled(CircleIconButton)`
+const UIMentionIcon = styled(IconButton)`
   display: inline;
 `;
 

@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -10,7 +11,6 @@ import { addToast } from "~ui/toasts/data";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
-import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { useRecorderErrors } from "./useRecorderErrors";
 
@@ -214,9 +214,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   if (isUnsupportedBrowser) {
     return (
       <div className={className}>
-        <RecordButton disabled title="Media recording is not supported by your browser">
-          <IconMicSlash />
-        </RecordButton>
+        <IconButton icon={<IconMicSlash />} isDisabled tooltip="Media recording is not supported by your browser" />
       </div>
     );
   }
@@ -238,21 +236,22 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           },
         ]}
       >
-        <RecordButton
+        <IconButton
+          icon={<IconVideoCamera />}
           onClick={cancelRecording}
-          disabled={isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))}
+          isDisabled={isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))}
         >
           <IconVideoCamera />
-        </RecordButton>
+        </IconButton>
       </PopoverMenuTrigger>
-      <RecordButton
+      <IconButton
+        icon={<IconMic />}
         onClick={onAudioButtonClick}
-        tooltipLabel={isRecording ? undefined : "Start recording audio"}
-        disabled={!!getRecorderError(MediaSource.Microphone)}
-        title={getRecorderError(MediaSource.Microphone) ?? ""}
+        tooltip={isRecording ? undefined : "Start recording audio"}
+        isDisabled={!!getRecorderError(MediaSource.Microphone)}
       >
         <IconMic />
-      </RecordButton>
+      </IconButton>
 
       <AnimatePresence>
         {isCountdownStarted && <FullScreenCountdown seconds={COUNTDOWN_IN_SECONS} onCancelled={cancelRecording} />}
