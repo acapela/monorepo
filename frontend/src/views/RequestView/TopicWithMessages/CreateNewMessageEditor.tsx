@@ -50,7 +50,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   });
 
   const [content, setContent] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + topic,
+    key: "message-draft-for-topic:" + topic.id,
     initialValue: getEmptyRichContent(),
   });
 

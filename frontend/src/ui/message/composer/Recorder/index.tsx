@@ -2,8 +2,8 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";

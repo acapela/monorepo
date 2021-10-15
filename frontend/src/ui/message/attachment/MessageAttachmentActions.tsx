@@ -1,7 +1,7 @@
 import React from "react";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconTrash } from "~ui/icons";
 
 interface AttachmentProps {

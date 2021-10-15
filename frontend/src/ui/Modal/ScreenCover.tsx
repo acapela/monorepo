@@ -1,12 +1,12 @@
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { handleWithStopPropagation } from "~shared/events";
 import { createLocalStorageValueManager } from "~shared/localStorage";
 import { EndFpsMeasurement, startMeasuringFps } from "~shared/performance";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
+import { theme } from "~ui/theme";
 
 interface Props {
   children: ReactNode;

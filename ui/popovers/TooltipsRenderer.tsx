@@ -1,7 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { RefObject, useEffect, useRef, useState } from "react";
 
-import { createElementEvent, useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
+import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { getObjectKey } from "~shared/object";
 

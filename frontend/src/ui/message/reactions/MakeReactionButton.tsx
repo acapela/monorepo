@@ -4,12 +4,12 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { IconButton } from "~ui/buttons/IconButton";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";

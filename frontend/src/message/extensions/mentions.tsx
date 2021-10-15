@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import { toPairs } from "lodash";
 import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
@@ -19,7 +19,7 @@ import { MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { IconUser } from "~ui/icons";
+import { IconArrowTop, IconUser } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
@@ -183,11 +183,15 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         mentionType={data.type}
         ref={anchorRef}
         onClick={handleOpenMentionTypePicker}
-        data-tooltip="Change request type"
+        data-tooltip={isEditable ? "Change request type" : ""}
+        isEditable={isEditable}
       >
         @{db.user.findById(data.userId)?.name ?? "???"}
         {isEditable && (
-          <UIMentionPopoverOpenIndicator> ({mentionTypeLabelMap[data.type]})</UIMentionPopoverOpenIndicator>
+          <UIMentionPopoverOpenIndicator>
+            {" "}
+            ({mentionTypeLabelMap[data.type]} <IconArrowTop />)
+          </UIMentionPopoverOpenIndicator>
         )}
       </UIMention>
     </>
@@ -201,10 +205,16 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
   pickerComponent: MentionPicker,
 });
 
-const UIMention = styled.span<{ mentionType: MentionType }>`
+const UIMention = styled.span<{ mentionType: MentionType; isEditable: boolean }>`
   cursor: default;
 
   ${theme.colors.tags.primary.asColor};
+
+  ${(props) =>
+    props.isEditable &&
+    css`
+      cursor: pointer;
+    `}
 
   svg {
     color: inherit;
@@ -223,4 +233,8 @@ const UISelectItem = styled.div<{}>`
 const UIMentionPopoverOpenIndicator = styled.span<{}>`
   display: inline;
   cursor: pointer;
+
+  svg {
+    display: inline;
+  }
 `;

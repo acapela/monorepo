@@ -2,8 +2,8 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconReply } from "~ui/icons";
 
 interface Props {

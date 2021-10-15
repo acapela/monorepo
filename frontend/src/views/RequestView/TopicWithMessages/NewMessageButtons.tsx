@@ -21,10 +21,10 @@ type AllowedActionsInfo = {
 
 function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
   const pendingTasksQuery = topic.tasks.query({ isDone: false });
-  const hasAnyPendingTasks = pendingTasksQuery.hasItems;
-  const hasSelfPendingTasks = pendingTasksQuery.query({ isSelfAssigned: true }).hasItems;
+  const hasAllTasksCompleted = !pendingTasksQuery.hasItems;
+  const hasCurrentUserCompletedAssignedTasks = !pendingTasksQuery.query({ isAssignedToSelf: true }).hasItems;
 
-  if (!hasAnyPendingTasks) {
+  if (hasAllTasksCompleted) {
     return {
       actions: ["send", "close-request"],
       primaryAction: "close-request",
@@ -34,16 +34,14 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
   // This topic has some pending tasks
 
   // Those are mine
-  if (hasSelfPendingTasks) {
+  if (!hasCurrentUserCompletedAssignedTasks) {
     return {
       actions: ["send", "complete"],
       primaryAction: "complete",
     };
   }
 
-  const isOwnTopic = topic.isOwn;
-
-  if (isOwnTopic) {
+  if (topic.isOwn) {
     return {
       actions: ["send", "close-request"],
       primaryAction: "close-request",

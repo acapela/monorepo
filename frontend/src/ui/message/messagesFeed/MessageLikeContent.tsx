@@ -49,8 +49,8 @@ export const MessageLikeContent = styledObserver<Props>(
 
 const UIFlyingTools = styled(PresenceAnimator)<{}>`
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 0;
+  right: 0;
 `;
 
 const UIContentContainer = styled.div<{}>`
