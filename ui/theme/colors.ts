@@ -1,8 +1,8 @@
 import { color } from "./utils/color";
 
 const white = color("hsl(0, 0%, 100%)", {
-  hover: color("hsl(220, 33%, 98%)"),
-  active: color("hsl(220, 33%, 95%)"),
+  hover: color("hsl(220, 33%, 97%)"),
+  active: color("hsl(220, 33%, 94%)"),
 });
 
 const black = color("hsl(0, 0%, 0%)", {
@@ -44,6 +44,7 @@ export const colors = {
   },
   panels: {
     popover: black,
+    secondaryPopover: white,
     tooltip: black,
     notification: primary,
     modal: white,
