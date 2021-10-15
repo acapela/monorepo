@@ -13,6 +13,7 @@ import { isDev } from "~shared/dev";
 
 import { attachmentEntity } from "./attachment";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
+import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { LoadingScreen } from "./LoadingScreen";
 import { messageEntity } from "./message";
 import { messageReactionEntity } from "./messageReaction";
@@ -49,6 +50,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
       teamMemberSlack: teamMemberSlackEntity,
       task: taskEntity,
       messageReaction: messageReactionEntity,
+      lastSeenMessage: lastSeenMessageEntity,
     }
   );
 

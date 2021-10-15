@@ -1,4 +1,4 @@
-import { Message, MessageReaction, db } from "~db";
+import { Message, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -24,8 +24,6 @@ export async function prepareMessagePlainTextData(message: Message) {
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
-  await db.topic.update({ where: { id: event.item.topic_id }, data: { updated_at: new Date() } });
-
   if (event.type === "delete") return;
 
   const topicInfo = await db.topic.findFirst({ where: { id: event.item.topic_id } });
@@ -33,8 +31,4 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
   assert(topicInfo, "Message has no topic attached");
 
   await Promise.all([prepareMessagePlainTextData(event.item)]);
-}
-
-export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
-  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
 }

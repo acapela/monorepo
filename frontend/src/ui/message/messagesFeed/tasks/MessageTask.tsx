@@ -20,9 +20,9 @@ const TASK_TYPE_LABELS = new Map(
 
 export const MessageTask = observer(({ task }: Props) => (
   <UISingleTask key={task.id}>
-    {task.user ? <UserAvatar size={30} user={task.user} /> : <Avatar name="?" />}
+    {task.assignedUser ? <UserAvatar size={30} user={task.assignedUser} /> : <Avatar name="?" />}
     <UITextInfo>
-      <UIUserNameLabel>{task.user?.name}</UIUserNameLabel>
+      <UIUserNameLabel>{task.assignedUser?.name}</UIUserNameLabel>
       <UIStatusLabel isDone={task.isDone}>
         {task.isDone && "✓ "}
         {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}

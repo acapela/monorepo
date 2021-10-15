@@ -1,23 +1,30 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import gql from "graphql-tag";
 import { maxBy } from "lodash";
+import { action } from "mobx";
 
+import { niceFormatTime } from "~frontend/../../shared/dates/format";
+import { createDebugLogger } from "~frontend/../../shared/dev";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
 
+import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { taskEntity } from "./task";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
+import { conditionalMemoize } from "./utils/conditionalMemoize";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
+
+const debug = createDebugLogger("topic", false);
 
 const topicFragment = gql`
   fragment Topic on topic {
     id
     closed_at
     updated_at
+    created_at
     closed_by_user_id
     closing_summary
     archived_at
@@ -76,6 +83,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   search: { fields: { name: true } },
 })
   .addConnections((topic, { getEntity, getContextValue }) => {
+    const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
     const tasks = getEntity(taskEntity).query({ message_id: () => messages.all.map((message) => message.id) });
@@ -88,7 +96,45 @@ export const topicEntity = defineEntity<TopicFragment>({
       return messages.query((message) => message.tasks.query({ user_id: user.id }).hasItems).hasItems;
     });
 
-    return {
+    const unseedMessages = getEntity(lastSeenMessageEntity).query({
+      // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
+      user_id: currentUserId ?? "no-user",
+      topic_id: topic.id,
+    });
+
+    function getLastSeenMessageByCurrentUserInfo() {
+      if (!currentUserId) return null;
+
+      // There is unique index so we know there is only one 'last_seen_message' per user per topic
+      return unseedMessages.first ?? null;
+    }
+
+    const unreadMessages = getEntity(messageEntity)
+      .query({ topic_id: topic.id })
+      .query((message) => {
+        return message.isUnread;
+      });
+
+    /**
+     * For calculating if topic 'is new' we only once calculate last seen message date, and not refresh it until page is reloaded.
+     *
+     * This is to avoid bad UX when 'new' message disappears from 'new' as soon as you click it.
+     *
+     * Exception is if new message appears. Then we calculate it again
+     */
+    const initialLastSeenMessageDate = conditionalMemoize(
+      action(() => {
+        // We'll 'cache' result only for one message. If this function returns same message, it will memoize - otherwise it will re-calculate
+        return connections.lastSeenMessageByCurrentUserInfo;
+      }),
+      action((lastSeenMessageInfo) => {
+        if (!lastSeenMessageInfo) return null;
+
+        return new Date(lastSeenMessageInfo.seen_at);
+      })
+    );
+
+    const connections = {
       get owner() {
         return getEntity(userEntity).findById(topic.owner_id);
       },
@@ -98,34 +144,71 @@ export const topicEntity = defineEntity<TopicFragment>({
         return participants;
       },
       get isCurrentUserParticipating() {
-        const userId = getContextValue(userIdContext);
+        if (!currentUserId) return false;
 
-        if (!userId) return false;
+        if (topic.owner_id === currentUserId) return true;
 
-        if (topic.owner_id === userId) return true;
-
-        if (getEntity(messageEntity).query({ user_id: userId, topic_id: topic.id }).hasItems) return true;
+        if (getEntity(messageEntity).query({ user_id: currentUserId, topic_id: topic.id }).hasItems) return true;
         // TODO: optimize
-        return messages.query((message) => message.tasks.query({ user_id: userId }).hasItems).hasItems;
+        return messages.query((message) => message.tasks.query({ user_id: currentUserId }).hasItems).hasItems;
       },
       get isOwn() {
-        return topic.owner_id === getContextValue(userIdContext);
+        return topic.owner_id === currentUserId;
       },
       get isClosed() {
         return !!topic.closed_at;
-      },
-      get isNew() {
-        // TODO: Implement tracking if topic is new for current user.
-        return false;
       },
       get lastActivityDate() {
         if (!messages.hasItems) {
           return new Date(topic.updated_at);
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
 
         return messageWithLatestActivity.lastActivityDate;
+      },
+      get lastOwnActivityDate() {
+        const topicOwnUpdateDate = connections.isOwn ? new Date(topic.updated_at) : null;
+        if (!messages.hasItems) {
+          return topicOwnUpdateDate;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastOwnActivityDate);
+
+        if (!messageWithLatestActivity) {
+          return null;
+        }
+
+        return messageWithLatestActivity.lastOwnActivityDate;
+      },
+      get isNew() {
+        const lastOwnActivityDate = connections.lastOwnActivityDate;
+        const lastActiviyDate = connections.lastActivityDate;
+
+        debug(topic.name);
+        debug("own", lastOwnActivityDate && niceFormatTime(lastOwnActivityDate));
+        debug("all", lastActiviyDate && niceFormatTime(lastActiviyDate));
+
+        // If user performed some activity and this is last activity - it is not new
+        // UX: if you see something new, you open it - it is still in 'new' as we intentionally dont update 'last message seen at' after entity is loaded
+        // but if you reply or perform any explicit action - it is new activity so topic goes away from 'new'
+        if (lastOwnActivityDate && lastOwnActivityDate >= lastActiviyDate) return false;
+
+        const lastSeenMessageDate = initialLastSeenMessageDate();
+
+        debug(
+          "lastSeenMessageDate",
+          lastSeenMessageDate && lastSeenMessageDate.toLocaleTimeString(undefined, { timeStyle: "long" })
+        );
+        debug("lastActiviyDate", lastActiviyDate.toLocaleTimeString(undefined, { timeStyle: "long" }));
+
+        if (!lastSeenMessageDate) {
+          return true;
+        }
+
+        return lastActiviyDate > lastSeenMessageDate;
       },
       get isArchived() {
         return !!topic.archived_at;
@@ -134,7 +217,13 @@ export const topicEntity = defineEntity<TopicFragment>({
         if (!topic.closed_by_user_id) return null;
         return getEntity(userEntity).findById(topic.closed_by_user_id);
       },
+      get lastSeenMessageByCurrentUserInfo() {
+        return getLastSeenMessageByCurrentUserInfo();
+      },
+      unreadMessages,
     };
+
+    return connections;
   })
   .addAccessValidation((topic) => {
     return topic.isCurrentUserParticipating;

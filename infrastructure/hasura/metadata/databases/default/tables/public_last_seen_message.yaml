@@ -8,7 +8,9 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
+    - id
     - message_id
+    - seen_at
     - topic_id
     set:
       user_id: x-hasura-User-Id
@@ -16,9 +18,12 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
+    - id
     - message_id
     - seen_at
     - topic_id
+    - updated_at
+    - user_id
     filter:
       user_id:
         _eq: X-Hasura-User-Id
@@ -28,6 +33,7 @@ update_permissions:
     check: null
     columns:
     - message_id
+    - seen_at
     - topic_id
     filter:
       user_id:

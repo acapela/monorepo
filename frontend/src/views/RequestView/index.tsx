@@ -34,11 +34,36 @@ function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
   }, [topic]);
 }
 
+function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
+  const db = useDb();
+  useEffect(() => {
+    if (!topic) return;
+
+    // On load update seen at
+    // Then each time new 'last' message is changed - update it again.
+    return autorun(() => {
+      const lastSeenMessageInfo = topic.lastSeenMessageByCurrentUserInfo;
+      const lastMessage = topic.messages.last;
+
+      const nowISO = new Date().toISOString();
+
+      if (lastSeenMessageInfo) {
+        lastSeenMessageInfo.update({ seen_at: nowISO, message_id: lastMessage?.id });
+
+        return;
+      }
+
+      db.lastSeenMessage.create({ topic_id: topic.id, message_id: lastMessage?.id, seen_at: nowISO });
+    });
+  }, [topic, db]);
+}
+
 export const RequestView = observer(({ topicSlug }: Props) => {
   const db = useDb();
   const topic = db.topic.findByUniqueIndex("slug", topicSlug);
 
   useUpdateRouterIfSlugChanges(topic);
+  useUpdateTopicLastSeenMessage(topic);
 
   if (!topic) {
     return null;

@@ -10,7 +10,6 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { runUntracked } from "~shared/mobxUtils";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -23,21 +22,17 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   const user = useAssertCurrentUser();
   const messages = topic.messages.all;
 
-  // TODO figure out how to only run this for actually really existing messages
-  // useMarkTopicAsRead(
-  //   topic.id,
-  //   messages.map((m) => m.id)
-  // );
-
-  useEffect(() => {
-    const unseenTasks = runUntracked(() =>
-      messages.flatMap((message) => message.tasks.query((task) => !task.seen_at && task.user_id === user.id).all)
-    );
-    const seenAt = new Date().toISOString();
-    for (const unseenTask of unseenTasks) {
-      unseenTask.update({ seen_at: seenAt });
-    }
-  }, [messages, user.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(
+    action(() => {
+      const unseenTasks = topic.tasks.query({ user_id: user.id, seen_at: null }).all;
+      const seenAt = new Date().toISOString();
+      for (const unseenTask of unseenTasks) {
+        unseenTask.update({ seen_at: seenAt });
+      }
+    }),
+    [messages, user.id]
+  );
 
   const isClosed = topic.isClosed;
 
@@ -82,16 +77,15 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
             <CreateNewMessageEditor
               topicId={topic.id}
               requireMention={messages.length === 0}
-              onMessageSent={() => {
+              onMessageSent={action(() => {
                 scrollerRef.current?.scrollToBottom("auto");
-                const openTasks = messages.flatMap(
-                  (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
-                );
+
+                const openTasks = topic.tasks.query({ done_at: null, user_id: user.id }).all;
                 const doneAt = new Date().toISOString();
                 for (const openTask of openTasks) {
                   openTask.update({ done_at: doneAt });
                 }
-              }}
+              })}
             />
           </UIMessageComposer>
         )}

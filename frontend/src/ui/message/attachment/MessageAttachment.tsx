@@ -20,7 +20,7 @@ interface Props {
 export const MessageAttachment = styledObserver<Props>(
   ({ message, attachment, className, onAttachmentRemoveRequest }) => {
     function getCanEditAttachments() {
-      if (!message.isOwnMessage) return false;
+      if (!message.isOwn) return false;
 
       // For messages of non-text type, attachment is essential part of it, so entire message should be removed instead.
       return message.type === "TEXT";
