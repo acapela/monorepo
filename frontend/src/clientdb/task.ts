@@ -42,6 +42,7 @@ export const taskEntity = defineEntity<TaskFragment>({
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
     insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
     updateColumns: ["done_at", "due_at", "seen_at"],
+    teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((task, { getEntity, getContextValue }) => {
   const connections = {

@@ -35,6 +35,7 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
   sync: createHasuraSyncSetupFromFragment<MessageReactionFragment>(messageReactionFragment, {
     insertColumns: ["id", "emoji", "user_id", "message_id"],
     updateColumns: ["emoji"],
+    teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((reaction, { getEntity, getContextValue }) => {
   return {

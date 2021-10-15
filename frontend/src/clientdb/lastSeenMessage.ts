@@ -38,6 +38,7 @@ export const lastSeenMessageEntity = defineEntity<LastSeenMessageFragment>({
   sync: createHasuraSyncSetupFromFragment<LastSeenMessageFragment>(lastSeenMessageFragment, {
     insertColumns: ["id", "message_id", "seen_at", "topic_id"],
     updateColumns: ["message_id", "topic_id", "seen_at"],
+    teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
 }).addConnections((lastSeenMessage, { getEntity }) => {
   return {

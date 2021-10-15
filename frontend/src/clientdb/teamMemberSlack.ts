@@ -28,5 +28,6 @@ export const teamMemberSlackEntity = defineEntity<TeamMemberSlackFragment>({
   sync: createHasuraSyncSetupFromFragment<TeamMemberSlackFragment>(teamMemberSlackFragment, {
     insertColumns: [],
     updateColumns: [],
+    teamScopeCondition: (teamId) => ({ team_member: { team_id: { _eq: teamId } } }),
   }),
 });
