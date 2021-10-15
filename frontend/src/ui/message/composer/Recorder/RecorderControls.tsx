@@ -45,7 +45,9 @@ export const RecorderControls = styled<RecorderControlsProps>(
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
 
           <Button onClick={() => onCancel()}>Cancel</Button>
-          <Button onClick={() => onStop()}>Submit</Button>
+          <Button kind="primary" onClick={() => onStop()}>
+            Submit
+          </Button>
         </UIControls>
       </UIHolder>
     );
@@ -78,17 +80,16 @@ const UIHolder = styled.div<{}>`
 
 const UIControls = styled(HStack)<{}>`
   user-select: none;
-  padding: 8px;
+  ${theme.box.popover};
 
-  background: ${theme.colors.layout.backgroundAccent};
-  ${theme.radius.panel}
-  ${theme.shadow.modal}
+  ${theme.colors.panels.secondaryPopover.asBgWithReadableText};
+  ${theme.radius.panel};
+  ${theme.shadow.modal};
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 const UIElapsedTime = styled.span<{}>`
-  margin: 0 8px;
   min-width: 48px;
-  text-align: left;
 `;
 
 const UICornerOfScreen = styled.div<{}>`

@@ -16,12 +16,13 @@ export const UIButton = styled.button<{}>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  width: 1.75em;
-  height: 1.75em;
+  font-size: 20px;
+  aspect-ratio: 1;
 
-  ${theme.radius.circle}
-  ${theme.colors.action.secondary.interactive}
+  ${theme.radius.button};
+  ${theme.colors.action.secondary.interactive};
+
+  ${theme.transitions.hover()};
 
   cursor: pointer;
 `;

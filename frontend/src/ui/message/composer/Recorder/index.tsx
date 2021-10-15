@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { theme } from "~ui/theme";
 import { addToast } from "~ui/toasts/data";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
@@ -274,8 +275,5 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 export const Recorder = styled(PureRecorder)<{}>`
   display: flex;
   flex-direction: row;
-
-  ${RecordButton} {
-    margin-right: 1rem;
-  }
+  ${theme.spacing.horizontalActionsSection.asGap};
 `;
