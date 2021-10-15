@@ -1,14 +1,13 @@
 import React from "react";
 
+import { useRouteParams } from "~frontend/hooks/useRouteParams";
 import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
-import { routes } from "~frontend/router";
 import { NewRequestView } from "~frontend/views/NewRequestView";
 import { RequestView } from "~frontend/views/RequestView";
+import { routes } from "~shared/routes";
 
 export default function RequestPage(): JSX.Element {
-  const topicParams = routes.topic.useParams()?.route;
-
-  const topicSlug = topicParams?.topicSlug;
+  const { topicSlug } = useRouteParams(routes.topic);
 
   if (!topicSlug) {
     return (

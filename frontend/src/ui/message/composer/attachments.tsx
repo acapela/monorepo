@@ -1,14 +1,36 @@
+import { ApolloClient, gql } from "@apollo/client";
 import axios from "axios";
 
-import { uploadUrlQueryManager } from "~frontend/gql/attachments";
+import { UploadUrlQuery, UploadUrlQueryVariables } from "~gql";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;
 }
 
-export async function uploadFile(file: File, config: UploadFileConfig = {}): Promise<EditorAttachmentInfo> {
+const fetchUploadURL = (client: ApolloClient<unknown>, variables: UploadUrlQueryVariables) =>
+  client.query<UploadUrlQuery, UploadUrlQueryVariables>({
+    query: gql`
+      query UploadURL($fileName: String!, $mimeType: String!) {
+        uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
+          uploadUrl
+          uuid
+        }
+      }
+    `,
+    variables,
+    fetchPolicy: "no-cache",
+  });
+
+export async function uploadFile(
+  client: ApolloClient<unknown>,
+  file: File,
+  config: UploadFileConfig = {}
+): Promise<EditorAttachmentInfo> {
   const { name: fileName, type: mimeType } = file;
-  const { uploadUrlInfo } = await uploadUrlQueryManager.fetch({ fileName, mimeType }, { fetchPolicy: "no-cache" });
+
+  const {
+    data: { uploadUrlInfo },
+  } = await fetchUploadURL(client, { fileName, mimeType });
 
   if (!uploadUrlInfo) {
     throw new Error("unable to upload file");
@@ -44,10 +66,10 @@ export interface EditorUploadingAttachmentInfo {
   percentage: number;
 }
 
-export async function uploadFiles(files: File[]): Promise<EditorAttachmentInfo[]> {
+export async function uploadFiles(client: ApolloClient<unknown>, files: File[]): Promise<EditorAttachmentInfo[]> {
   const uploadedAttachments = await Promise.all(
     files.map(async (file): Promise<EditorAttachmentInfo> => {
-      return await uploadFile(file);
+      return await uploadFile(client, file);
     })
   );
 

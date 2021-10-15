@@ -3,6 +3,7 @@ import { ViewsOpenArguments } from "@slack/web-api";
 import { SlackInstallation, slackClient } from "~backend/src/slack/app";
 import { isWebAPIErrorType } from "~backend/src/slack/errors";
 import { User, db } from "~db";
+import { routes } from "~shared/routes";
 
 export async function fetchTeamBotToken(teamId: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });
@@ -62,7 +63,7 @@ export const createLinkSlackWithAcapelaView = ({ triggerId }: { triggerId: strin
           type: "mrkdwn",
           text: [
             "We could not find a user with your email on Acapela.",
-            `<${process.env.FRONTEND_URL}/team|Connect Acapela with Slack> to use this feature.`,
+            `<${process.env.FRONTEND_URL + routes.settings}|Connect Acapela with Slack> to use this feature.`,
           ].join(" "),
         },
       },

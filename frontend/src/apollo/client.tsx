@@ -15,7 +15,6 @@ import React, { ReactNode, useMemo } from "react";
 
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
-import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
 import { Maybe } from "~shared/types";
 import { addToast } from "~ui/toasts/data";
@@ -135,16 +134,8 @@ interface ApolloClientProviderProps {
   websocketEndpoint?: string | null;
 }
 
-let renderedApolloClient: ApolloClient<unknown> | null;
-
-export function getRenderedApolloClient() {
-  return assertDefined(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
-}
-
 export const ApolloClientProvider = ({ children, websocketEndpoint }: ApolloClientProviderProps) => {
   const client = useMemo(() => getApolloClient(websocketEndpoint ?? undefined), [websocketEndpoint]);
-
-  renderedApolloClient = client;
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

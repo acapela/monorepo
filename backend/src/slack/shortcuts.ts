@@ -6,6 +6,7 @@ import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlack
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { routes } from "~shared/routes";
 import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
@@ -197,7 +198,7 @@ export function setupSlackShortcuts(slackApp: App) {
     await ack({ response_action: "clear" });
 
     const metadata = JSON.parse(view.private_metadata) as ShortcutMetadata;
-    const topicURL = `${process.env.FRONTEND_URL}/topic/${topic.slug}`;
+    const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
     if (metadata.isMessageShortcut) {
       await new IncomingWebhook(metadata.responseURL).send({
         response_type: "in_channel",
