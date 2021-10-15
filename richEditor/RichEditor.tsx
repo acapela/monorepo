@@ -18,11 +18,9 @@ import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
-import { RichEditorSubmitMode } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 
 export type { Editor } from "@tiptap/react";
-export type { RichEditorSubmitMode } from "./Toolbar";
 
 export function getEmptyRichContent(): JSONContent {
   return {
@@ -44,7 +42,6 @@ export interface RichEditorProps {
   additionalBottomContent?: ReactNode;
   placeholder?: string;
   autofocusKey?: string;
-  submitMode?: RichEditorSubmitMode;
   isDisabled?: boolean;
   extensions?: Extensions;
   onEditorReady?: (editor: Editor) => void;
@@ -109,7 +106,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     additionalBottomContent,
     placeholder,
     autofocusKey,
-    submitMode = "enable",
     isDisabled,
     extensions = [],
     onEditorReady,
@@ -215,27 +211,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
-  /**
-   * We replace default enter handling.
-   *
-   * We'll use it to submit, while we'll map both shift+enter and mod+enter to default enter behavior.
-   *
-   * enter = submit + stop propagation (handled by useShortcut)
-   * shift+enter / mod+enter > default enter behavior
-   */
-  useShortcut(
-    "Enter",
-    () => {
-      handleSubmitIfEnabled();
-
-      // Mark as handled which will prevent it from reaching editor itself
-      return true;
-    },
-    {
-      isEnabled: isFocused && submitMode === "enable",
-    }
-  );
-
   function handleEnterShortcut() {
     editor?.commands.keyboardShortcut("Enter");
 
@@ -266,12 +241,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     { isEnabled: !isFocused && !isDisabled }
   );
 
-  function handleSubmitIfEnabled() {
-    if (submitMode !== "enable") return;
-
-    onSubmit?.();
-  }
-
   useFileDroppedInContext(
     (files) => {
       onFilesSelected?.(files);
@@ -286,13 +255,13 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     { isDisabled }
   );
 
-  function insertEmoji(emoji: string) {
-    if (!editor) return;
+  // function insertEmoji(emoji: string) {
+  //   if (!editor) return;
 
-    const contentToInsert = `${emoji} `;
+  //   const contentToInsert = `${emoji} `;
 
-    editor.chain().focus().insertContent(contentToInsert).run();
-  }
+  //   editor.chain().focus().insertContent(contentToInsert).run();
+  // }
 
   function handleEditorClick() {
     if (isRichEditorContentEmpty(value)) {
