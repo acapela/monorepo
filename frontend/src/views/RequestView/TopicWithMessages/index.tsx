@@ -84,12 +84,16 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
               <CreateNewMessageEditor
                 topic={topic}
                 requireMention={messages.length === 0}
-                onMessageSent={() => {
+                onMessageSent={({ closePendingTasks }) => {
                   scrollerRef.current?.scrollToBottom("auto");
+
+                  if (!closePendingTasks) return;
+
                   const openTasks = messages.flatMap(
                     (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
                   );
                   const doneAt = new Date().toISOString();
+
                   for (const openTask of openTasks) {
                     openTask.update({ done_at: doneAt });
                   }

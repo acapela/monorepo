@@ -31,7 +31,7 @@ interface Props {
   topic: TopicEntity;
   isDisabled?: boolean;
   requireMention: boolean;
-  onMessageSent: () => void;
+  onMessageSent: (params: SubmitMessageParams) => void;
 }
 
 interface SubmitMessageParams {
@@ -95,13 +95,15 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     topicContext && (topicContext.currentlyReplyingToMessageId = null);
   });
 
-  const submitMessage = action(async ({ type, content, attachments }: SubmitMessageParams) => {
+  const submitMessage = action(async (params: SubmitMessageParams) => {
+    const { type, content, attachments, closePendingTasks } = params;
     const newMessage = db.message.create({
       topic_id: topic.id,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
+
     for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
     }
@@ -122,7 +124,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
     handleStopReplyingToMessage();
 
-    onMessageSent();
+    onMessageSent(params);
   });
 
   const handleSubmitTextMessage = action(async (closePendingTasks: boolean) => {
