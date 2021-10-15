@@ -4425,6 +4425,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:>=16.0.0":
+  version: 17.0.30
+  resolution: "@types/react@npm:17.0.30"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: e3aaac1b8fda6e3622b75db0bd7d8dc412c2f2b77a00afdd32cae8c71fb0b1ca6926ab1fbe1c536dd51d96c0ba372738993837a8df1637637aaab7b86e421b7f
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:^17.0.24":
   version: 17.0.24
   resolution: "@types/react@npm:17.0.24"
@@ -17143,6 +17154,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"simple-markdown@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "simple-markdown@npm:0.7.3"
+  dependencies:
+    "@types/react": ">=16.0.0"
+  checksum: 165941899fddfaa7c398410f8ce6941109bc86fbc9abb17f8b6be7a9ac8ae36c0af643a3e0adcba60053a9f1eaecdd4016d46d79eef39b8ae04982d2bd52bbc9
+  languageName: node
+  linkType: hard
+
 "simple-output@npm:^2.1.1":
   version: 2.2.1
   resolution: "simple-output@npm:2.2.1"
@@ -19851,6 +19871,7 @@ __metadata:
     jest: ^27.2.5
     jsonwebtoken: ^8.5.1
     pino: ^6.13.3
+    simple-markdown: ^0.7.3
     unicode-emoji-json: ^0.3.0
   peerDependencies:
     date-fns: "*"
