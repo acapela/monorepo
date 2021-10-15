@@ -39,7 +39,7 @@ export const SidebarContent = observer(function SidebarContent() {
           ref={searchInputRef}
         ></UISearchPlaceholder>
         <Shortcut
-          shortcut={["Mod", "/"]}
+          shortcut={["Mod", "K"]}
           callback={() => {
             searchInputRef.current?.focus();
           }}

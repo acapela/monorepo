@@ -218,7 +218,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   }
 
   useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
-  useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
 
   /**
    * Let's use any key pressed to instantly focus inside the editor

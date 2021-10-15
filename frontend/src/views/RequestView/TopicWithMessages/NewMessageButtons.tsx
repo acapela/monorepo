@@ -71,7 +71,7 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
       )}
       {actions.includes("complete") && (
         <Button
-          shortcut={["Mod", "C"]}
+          shortcut={["Mod", "Enter"]}
           kind={primaryAction === "complete" ? "primary" : "secondary"}
           tooltip="Send and complete pending tasks"
           onClick={onCompleteRequest}
@@ -81,7 +81,7 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
       )}
       {actions.includes("close-request") && (
         <Button
-          shortcut={["Mod", "X"]}
+          shortcut={["Mod", "J"]}
           kind={primaryAction === "close-request" ? "primary" : "secondary"}
           tooltip="Close entire request"
           onClick={onCloseRequest}
