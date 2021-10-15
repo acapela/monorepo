@@ -6,7 +6,6 @@ import { styledForwardRef } from "~shared/component";
 import { disabledOpacityCss } from "~ui/disabled";
 import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
-import { useOptionalShortcut, useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
 import { ButtonKind, getButtonKindtyles } from "./variants";
@@ -94,6 +93,7 @@ export const UIButton = styled(motion.button)<{
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  cursor: pointer;
 
   ${theme.typo.content.medium.resetLineHeight};
   ${theme.box.button};
