@@ -22,7 +22,7 @@ export interface Props {
  */
 const DEFAULT_ICON_SIZE_RATIO = 1;
 
-export const IconButton = styledForwardRef<HTMLDivElement, Props>(function CircleIconButton(
+export const IconButton = styledForwardRef<HTMLButtonElement, Props>(function CircleIconButton(
   {
     icon,
     kind = "transparent",

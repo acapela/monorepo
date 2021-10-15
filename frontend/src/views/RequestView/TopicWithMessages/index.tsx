@@ -78,7 +78,6 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
             <UIMessageComposerBody>
               <CreateNewMessageEditor
                 topic={topic}
-                requireMention={messages.length === 0}
                 onMessageSent={({ closePendingTasks }) => {
                   scrollerRef.current?.scrollToBottom("auto");
 
