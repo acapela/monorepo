@@ -38,11 +38,11 @@ interface SubmitMessageParams {
   type: Message_Type_Enum;
   content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
+  closePendingTasks: boolean;
 }
 
 export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, requireMention }: Props) => {
   const db = useDb();
-  const topicId = topic.id;
 
   const editorRef = useRef<Editor>(null);
 
@@ -125,70 +125,77 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     onMessageSent();
   });
 
+  const handleSubmitTextMessage = action(async (closePendingTasks: boolean) => {
+    if (validator(content)) {
+      setShouldValidateOnChange(true);
+      return;
+    }
+
+    attachmentsList.clear();
+
+    try {
+      await submitMessage({
+        type: "TEXT",
+        content: content,
+        attachments,
+        closePendingTasks,
+      });
+    } catch (error) {
+      console.error("error while submitting message", error);
+      // In case of error - restore attachments and content you were trying to send
+      attachmentsList.set(attachments);
+      setContent(content);
+    }
+  });
+
   return (
-    <UIEditorContainer>
-      <MessageContentEditor
-        ref={editorRef}
-        isDisabled={isDisabled || isEditingAnyMessage}
-        content={content}
-        onContentChange={setContent}
-        onSubmit={async () => {
-          if (validator(content)) {
-            setShouldValidateOnChange(true);
-            return;
-          }
-
-          attachmentsList.clear();
-
-          try {
-            await submitMessage({
-              type: "TEXT",
-              content: content,
-              attachments,
+    <UIHolder>
+      <>
+        {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
+        {topicContext?.currentlyReplyingToMessageId && (
+          <ReplyingToMessageById
+            onRemove={handleStopReplyingToMessage}
+            messageId={topicContext.currentlyReplyingToMessageId}
+          />
+        )}
+      </>
+      <UIEditorContainer>
+        <MessageContentEditor
+          ref={editorRef}
+          isDisabled={isDisabled || isEditingAnyMessage}
+          content={content}
+          onContentChange={setContent}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
+          attachments={attachments}
+          onEditorReady={focusEditor}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
             });
-          } catch (error) {
-            console.error("error while submitting message", error);
-            // In case of error - restore attachments and content you were trying to send
-            attachmentsList.set(attachments);
-            setContent(content);
-          }
-        }}
-        onFilesSelected={uploadAttachments}
-        uploadingAttachments={uploadingAttachments}
-        attachments={attachments}
-        onEditorReady={focusEditor}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        additionalContent={
-          <>
-            {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
-            {topicContext?.currentlyReplyingToMessageId && (
-              <ReplyingToMessageById
-                onRemove={handleStopReplyingToMessage}
-                messageId={topicContext.currentlyReplyingToMessageId}
-              />
-            )}
-          </>
-        }
-      />
-      <Recorder
-        onRecordingReady={async (recording) => {
-          const uploadedAttachments = await uploadFiles([recording]);
+          }}
+        />
+        <Recorder
+          onRecordingReady={async (recording) => {
+            const uploadedAttachments = await uploadFiles([recording]);
 
-          const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+            const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-          await submitMessage({
-            type: messageType,
-            content: getEmptyRichContent(),
-            attachments: uploadedAttachments,
-          });
-        }}
-      />
-      <NewMessageButtons topic={topic} />
-    </UIEditorContainer>
+            await submitMessage({
+              type: messageType,
+              content: getEmptyRichContent(),
+              attachments: uploadedAttachments,
+              closePendingTasks: false,
+            });
+          }}
+        />
+        <NewMessageButtons
+          topic={topic}
+          onSendRequest={() => handleSubmitTextMessage(false)}
+          onCompleteRequest={() => handleSubmitTextMessage(true)}
+        />
+      </UIEditorContainer>
+    </UIHolder>
   );
 });
 
@@ -196,9 +203,17 @@ const UIValidationError = styled.div`
   ${theme.typo.content.secondary};
 `;
 
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  ${theme.spacing.regular.asGap};
+`;
+
 const UIEditorContainer = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
+
+  ${theme.spacing.horizontalActionsSection.asGap}
 `;
