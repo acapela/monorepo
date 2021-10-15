@@ -174,6 +174,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
         />
         <NewMessageButtons
           topic={topic}
+          isAbleToSend={hasTypedMessageContent}
           onSendRequest={() => handleSubmitTextMessage(false)}
           onCompleteRequest={() => handleSubmitTextMessage(true)}
         />

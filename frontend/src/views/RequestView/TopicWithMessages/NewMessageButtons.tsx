@@ -8,6 +8,7 @@ import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicEntity;
+  isAbleToSend?: boolean;
   onSendRequest?: () => void;
   onCompleteRequest?: () => void;
   onCloseRequest?: () => void;
@@ -56,50 +57,53 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
   };
 }
 
-export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteRequest, onCloseRequest }: Props) => {
-  const currentUser = useAssertCurrentUser();
-  const { actions, primaryAction } = getAllowedActions(topic);
+export const NewMessageButtons = observer(
+  ({ topic, isAbleToSend, onSendRequest, onCompleteRequest, onCloseRequest }: Props) => {
+    const currentUser = useAssertCurrentUser();
+    const { actions, primaryAction } = getAllowedActions(topic);
 
-  function handleCloseRequest() {
-    onCloseRequest?.();
-    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: currentUser.id });
+    function handleCloseRequest() {
+      onCloseRequest?.();
+      topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: currentUser.id });
+    }
+
+    return (
+      <UIHolder>
+        {actions.includes("send") && (
+          <Button
+            shortcut={["Enter"]}
+            isDisabled={!isAbleToSend}
+            kind={primaryAction === "send" ? "primary" : "secondary"}
+            tooltip="Send without completing pending tasks"
+            onClick={onSendRequest}
+          >
+            Send
+          </Button>
+        )}
+        {actions.includes("complete") && (
+          <Button
+            shortcut={["Mod", "C"]}
+            kind={primaryAction === "complete" ? "primary" : "secondary"}
+            tooltip="Send and complete pending tasks"
+            onClick={onCompleteRequest}
+          >
+            Complete
+          </Button>
+        )}
+        {actions.includes("close-request") && (
+          <Button
+            shortcut={["Mod", "X"]}
+            kind={primaryAction === "close-request" ? "primary" : "secondary"}
+            tooltip="Close entire request"
+            onClick={handleCloseRequest}
+          >
+            Close request
+          </Button>
+        )}
+      </UIHolder>
+    );
   }
-
-  return (
-    <UIHolder>
-      {actions.includes("send") && (
-        <Button
-          shortcut={["Enter"]}
-          kind={primaryAction === "send" ? "primary" : "secondary"}
-          tooltip="Send without completing pending tasks"
-          onClick={onSendRequest}
-        >
-          Send
-        </Button>
-      )}
-      {actions.includes("complete") && (
-        <Button
-          shortcut={["Mod", "C"]}
-          kind={primaryAction === "complete" ? "primary" : "secondary"}
-          tooltip="Send and complete pending tasks"
-          onClick={onCompleteRequest}
-        >
-          Complete
-        </Button>
-      )}
-      {actions.includes("close-request") && (
-        <Button
-          shortcut={["Mod", "X"]}
-          kind={primaryAction === "close-request" ? "primary" : "secondary"}
-          tooltip="Close entire request"
-          onClick={handleCloseRequest}
-        >
-          Close request
-        </Button>
-      )}
-    </UIHolder>
-  );
-});
+);
 
 const UIHolder = styled.div`
   display: flex;
