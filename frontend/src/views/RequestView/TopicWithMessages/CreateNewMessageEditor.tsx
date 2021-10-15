@@ -74,7 +74,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   });
 
   const submitMessage = action(async (params: SubmitMessageParams) => {
-    const { type, content, attachments, closePendingTasks } = params;
+    const { type, content, attachments } = params;
     const newMessage = db.message.create({
       topic_id: topic.id,
       type,
