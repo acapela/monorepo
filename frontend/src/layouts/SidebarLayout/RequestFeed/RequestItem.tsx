@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { routes } from "~frontend/router";
 import { RouteLink } from "~frontend/router/RouteLink";
+import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
 import { RequestContentSnippet } from "./RequestContentSnippet";
@@ -20,12 +21,16 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
   const isHighlighted = topicRouteParams?.route.topicSlug === topic.slug;
 
+  const unreadMessagesCount = topic.unreadMessages.count;
   return (
     <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
       <UIFeedItem isHighlighted={isHighlighted}>
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
-          <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+          <HStack alignItems="center">
+            <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+            {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
+          </HStack>
           <UIFeedItemSubTitle>
             <RequestContentSnippet topic={topic} />
           </UIFeedItemSubTitle>
@@ -67,6 +72,20 @@ const UIFeedItemLabels = styled.div<{}>`
 
 const UIFeedItemTitle = styled.h6`
   ${theme.typo.content.semibold.resetLineHeight};
+`;
+
+const UIBubble = styled.div`
+  border-radius: 40px;
+  margin-left: 6px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1;
+  background-color: rgba(0, 0, 0, 0.05);
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
