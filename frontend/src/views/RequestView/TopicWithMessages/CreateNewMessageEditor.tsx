@@ -1,12 +1,13 @@
 import { useApolloClient } from "@apollo/client";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useList } from "react-use";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
@@ -16,7 +17,6 @@ import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAtt
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
@@ -24,20 +24,22 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
+import { NewMessageButtons } from "./NewMessageButtons";
+
 interface Props {
-  topicId: string;
+  topic: TopicEntity;
   isDisabled?: boolean;
-  requireMention: boolean;
-  onMessageSent: () => void;
+  onMessageSent: (params: SubmitMessageParams) => void;
 }
 
 interface SubmitMessageParams {
   type: Message_Type_Enum;
   content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
+  closePendingTasks: boolean;
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
+export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent }: Props) => {
   const apolloClient = useApolloClient();
   const db = useDb();
 
@@ -49,7 +51,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   });
 
   const [content, setContent] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + topicId,
+    key: "message-draft-for-topic:" + topic.id,
     initialValue: getEmptyRichContent(),
   });
 
@@ -57,26 +59,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
-
-  const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
-  const validator = useCallback(
-    (value: RichEditorNode) => {
-      if (requireMention) {
-        const mentionNodes = getNodesFromContentByType(value, "mention");
-        if (mentionNodes.length < 1) {
-          return "The first message should have a mention.";
-        }
-      }
-
-      return null;
-    },
-    [requireMention]
-  );
-  const validationErrorMessage = useMemo(() => {
-    if (!shouldValidateOnChange) return null;
-
-    return validator(content);
-  }, [shouldValidateOnChange, validator, content]);
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -92,13 +74,15 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     topicContext && (topicContext.currentlyReplyingToMessageId = null);
   });
 
-  const submitMessage = action(({ type, content, attachments }: SubmitMessageParams) => {
+  const submitMessage = action((params: SubmitMessageParams) => {
+    const { type, content, attachments } = params;
     const newMessage = db.message.create({
-      topic_id: topicId,
+      topic_id: topic.id,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
+
     for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
     }
@@ -116,77 +100,86 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
     handleStopReplyingToMessage();
 
-    onMessageSent();
+    onMessageSent(params);
+  });
+
+  const handleSubmitTextMessage = action(async (closePendingTasks: boolean) => {
+    attachmentsList.clear();
+
+    try {
+      await submitMessage({
+        type: "TEXT",
+        content: content,
+        attachments,
+        closePendingTasks,
+      });
+    } catch (error) {
+      console.error("error while submitting message", error);
+      // In case of error - restore attachments and content you were trying to send
+      attachmentsList.set(attachments);
+      setContent(content);
+    }
   });
 
   return (
-    <UIEditorContainer>
-      <Recorder
-        onRecordingReady={async (recording) => {
-          const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
-
-          const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
-
-          await submitMessage({
-            type: messageType,
-            content: getEmptyRichContent(),
-            attachments: uploadedAttachments,
-          });
-        }}
-      />
-      <MessageContentEditor
-        ref={editorRef}
-        isDisabled={isDisabled || isEditingAnyMessage}
-        content={content}
-        onContentChange={setContent}
-        onSubmit={async () => {
-          if (validator(content)) {
-            setShouldValidateOnChange(true);
-            return;
-          }
-
-          attachmentsList.clear();
-
-          try {
-            await submitMessage({
-              type: "TEXT",
-              content: content,
-              attachments,
+    <UIHolder>
+      <>
+        {topicContext?.currentlyReplyingToMessageId && (
+          <ReplyingToMessageById
+            onRemove={handleStopReplyingToMessage}
+            messageId={topicContext.currentlyReplyingToMessageId}
+          />
+        )}
+      </>
+      <UIEditorContainer>
+        <MessageContentEditor
+          ref={editorRef}
+          isDisabled={isDisabled || isEditingAnyMessage}
+          content={content}
+          onContentChange={setContent}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
+          attachments={attachments}
+          onEditorReady={focusEditor}
+          customEditFieldStyles={messageEditorSpacing}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
             });
-          } catch (error) {
-            console.error("error while submitting message", error);
-            // In case of error - restore attachments and content you were trying to send
-            attachmentsList.set(attachments);
-            setContent(content);
-          }
-        }}
-        onFilesSelected={uploadAttachments}
-        uploadingAttachments={uploadingAttachments}
-        attachments={attachments}
-        onEditorReady={focusEditor}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        additionalContent={
-          <>
-            {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
-            {topicContext?.currentlyReplyingToMessageId && (
-              <ReplyingToMessageById
-                onRemove={handleStopReplyingToMessage}
-                messageId={topicContext.currentlyReplyingToMessageId}
-              />
-            )}
-          </>
-        }
-      />
-    </UIEditorContainer>
+          }}
+        />
+        <Recorder
+          onRecordingReady={async (recording) => {
+            const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
+
+            const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+
+            await submitMessage({
+              type: messageType,
+              content: getEmptyRichContent(),
+              attachments: uploadedAttachments,
+              closePendingTasks: false,
+            });
+          }}
+        />
+        <NewMessageButtons
+          topic={topic}
+          onSendRequest={() => handleSubmitTextMessage(false)}
+          onCompleteRequest={() => handleSubmitTextMessage(true)}
+        />
+      </UIEditorContainer>
+    </UIHolder>
   );
 });
 
-const UIValidationError = styled.div`
-  ${theme.typo.content.secondary};
+const messageEditorSpacing = css`
+  padding: 15px 0;
+`;
+
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  ${theme.spacing.regular.asGap};
 `;
 
 const UIEditorContainer = styled.div<{}>`
@@ -194,4 +187,6 @@ const UIEditorContainer = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   width: 100%;
+
+  ${theme.spacing.horizontalActionsSection.asGap}
 `;

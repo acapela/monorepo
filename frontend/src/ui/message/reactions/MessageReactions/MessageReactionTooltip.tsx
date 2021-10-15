@@ -1,5 +1,3 @@
-import { Data as EmojiDataset, getEmojiDataFromNative } from "emoji-mart";
-import data from "emoji-mart/data/all.json";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -29,11 +27,9 @@ export const MessageReactionTooltip = observer(({ reactions, emoji }: Props) => 
     return namesOfUsersReacting;
   };
 
-  const emojiShortName = getEmojiDataFromNative(emoji, "apple", data as never as EmojiDataset).id;
-
   return (
     <UIContent>
-      <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>:{emojiShortName}:</UIEmojiName>
+      <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>{emoji}</UIEmojiName>
     </UIContent>
   );
 });
@@ -48,4 +44,5 @@ const UIReacted = styled.span<{}>``;
 
 const UIEmojiName = styled.div<{}>`
   word-break: break-all;
+  font-size: 1.5em;
 `;

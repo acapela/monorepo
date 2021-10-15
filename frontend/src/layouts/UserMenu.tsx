@@ -7,7 +7,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { routes } from "~shared/routes";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
@@ -43,7 +43,7 @@ export const UserMenu = observer(function UserMenu() {
           },
         ]}
       >
-        <CircleIconButton icon={<IconMoreHoriz />} />
+        <IconButton icon={<IconMoreHoriz />} />
       </PopoverMenuTrigger>
     </UIHolder>
   );

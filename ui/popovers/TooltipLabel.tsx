@@ -24,13 +24,9 @@ export const TooltipLabel = styled<TooltipLabelProps>(({ anchorRef, label, isDis
 
 const UITooltip = styled(PresenceAnimator)<{}>`
   ${theme.typo.functional.tooltip};
-  font-weight: bold;
   ${theme.colors.panels.tooltip.asBgWithReadableText};
-  padding: 0.5rem 0.75rem;
+  ${theme.box.item};
   ${theme.radius.secondaryItem};
   pointer-events: none;
-  line-height: 1.5em;
-  font-size: 0.875rem;
-  max-width: 240px;
-  text-align: center;
+  max-width: 300px;
 `;

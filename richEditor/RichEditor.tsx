@@ -2,7 +2,7 @@ import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from 
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import { useUpdate } from "react-use";
-import styled from "styled-components";
+import styled, { StylesPart } from "styled-components";
 
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
@@ -11,7 +11,6 @@ import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
@@ -19,11 +18,9 @@ import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
-import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 
 export type { Editor } from "@tiptap/react";
-export type { RichEditorSubmitMode } from "./Toolbar";
 
 export function getEmptyRichContent(): JSONContent {
   return {
@@ -40,15 +37,14 @@ export interface RichEditorProps {
   value: RichEditorNode;
   onChange?: (value: RichEditorNode) => void;
   onFilesSelected?: (files: File[]) => void;
-  onSubmit?: () => void;
   additionalTopContent?: ReactNode;
   additionalBottomContent?: ReactNode;
   placeholder?: string;
   autofocusKey?: string;
-  submitMode?: RichEditorSubmitMode;
   isDisabled?: boolean;
   extensions?: Extensions;
   onEditorReady?: (editor: Editor) => void;
+  customEditFieldStyles?: StylesPart;
 }
 
 /**
@@ -104,16 +100,15 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   {
     value = getEmptyRichContent(),
     onChange,
-    onSubmit,
     onFilesSelected,
     additionalTopContent,
     additionalBottomContent,
     placeholder,
     autofocusKey,
-    submitMode = "enable",
     isDisabled,
     extensions = [],
     onEditorReady,
+    customEditFieldStyles,
   },
   ref
 ) {
@@ -216,27 +211,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
-  /**
-   * We replace default enter handling.
-   *
-   * We'll use it to submit, while we'll map both shift+enter and mod+enter to default enter behavior.
-   *
-   * enter = submit + stop propagation (handled by useShortcut)
-   * shift+enter / mod+enter > default enter behavior
-   */
-  useShortcut(
-    "Enter",
-    () => {
-      handleSubmitIfEnabled();
-
-      // Mark as handled which will prevent it from reaching editor itself
-      return true;
-    },
-    {
-      isEnabled: isFocused && submitMode === "enable",
-    }
-  );
-
   function handleEnterShortcut() {
     editor?.commands.keyboardShortcut("Enter");
 
@@ -267,12 +241,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     { isEnabled: !isFocused && !isDisabled }
   );
 
-  function handleSubmitIfEnabled() {
-    if (submitMode !== "enable") return;
-
-    onSubmit?.();
-  }
-
   useFileDroppedInContext(
     (files) => {
       onFilesSelected?.(files);
@@ -287,13 +255,13 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     { isDisabled }
   );
 
-  function insertEmoji(emoji: string) {
-    if (!editor) return;
+  // function insertEmoji(emoji: string) {
+  //   if (!editor) return;
 
-    const contentToInsert = `${emoji} `;
+  //   const contentToInsert = `${emoji} `;
 
-    editor.chain().focus().insertContent(contentToInsert).run();
-  }
+  //   editor.chain().focus().insertContent(contentToInsert).run();
+  // }
 
   function handleEditorClick() {
     if (isRichEditorContentEmpty(value)) {
@@ -308,43 +276,33 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
       <RichEditorContext value={editor}>
         <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
-          <UIEditorHolder>
+          <UIEditorHolder customEditFieldStyles={customEditFieldStyles}>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
           </UIEditorHolder>
           {additionalBottomContent}
         </UIEditorContent>
-        <Toolbar
-          onSubmit={handleSubmitIfEnabled}
-          onFilesSelected={onFilesSelected}
-          onEmojiSelected={insertEmoji}
-          submitMode={submitMode}
-        />
       </RichEditorContext>
     </UIHolder>
   );
 });
 
-const UIEditorHolder = styled.div<{}>`
+const UIEditorHolder = styled.div<{ customEditFieldStyles?: StylesPart }>`
   flex-grow: 1;
+  ${(props) => props.customEditFieldStyles};
   ${richEditorContentCss};
 `;
 
 const UIEditorContent = styled.div<{}>`
-  padding: 16px;
   display: flex;
 
   flex-direction: column;
   gap: 16px;
 
-  max-height: 25vh;
-  min-height: 50px;
   overflow: auto;
   cursor: text;
 `;
 
 const UIHolder = styled.div<{}>`
   width: 100%;
-  min-width: 500px;
-  border: 1px solid #ccc;
-  ${theme.radius.panel};
+  min-width: 0;
 `;

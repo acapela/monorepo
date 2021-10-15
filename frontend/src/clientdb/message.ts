@@ -94,7 +94,7 @@ export const messageEntity = defineEntity<MessageFragment>({
         return messageOwnUpdateDate;
       }
 
-      const ownTasks = tasks.query({ isSelfAssigned: true }).all;
+      const ownTasks = tasks.query({ isAssignedToSelf: true }).all;
 
       if (!ownTasks.length) {
         return messageOwnUpdateDate;

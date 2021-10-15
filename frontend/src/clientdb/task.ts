@@ -78,7 +78,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return max([new Date(task.done_at), new Date(task.created_at)])!;
     },
     get lastOwnActivityDate() {
-      if (connections.isSelfAssigned) {
+      if (connections.isAssignedToSelf) {
         if (task.done_at) {
           return new Date(task.done_at);
         }
@@ -91,7 +91,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return null;
     },
 
-    get isSelfAssigned() {
+    get isAssignedToSelf() {
       return task.user_id === getContextValue(userIdContext);
     },
     get isSelfCreated() {

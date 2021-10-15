@@ -55,6 +55,7 @@ const UIMessageSideInfo = styled.div`
 
 const UIMessageBody = styled.div`
   position: relative;
+  flex-grow: 1;
 `;
 
 const UIHead = styled.div<{}>`

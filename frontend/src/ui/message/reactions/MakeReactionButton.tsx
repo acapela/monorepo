@@ -9,7 +9,7 @@ import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
@@ -45,7 +45,7 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
   return (
     <>
-      <WideIconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
+      <IconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
           <Popover anchorRef={buttonRef} placement="bottom-end">

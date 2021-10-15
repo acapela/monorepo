@@ -1,11 +1,10 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { StylesPart } from "styled-components";
 
 import { messageComposerExtensions } from "~frontend/message/extensions";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
-import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
+import { Editor, RichEditor } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 import { EditorAttachmentInfo, EditorUploadingAttachmentInfo } from "./attachments";
@@ -13,46 +12,34 @@ import { UploadingAttachmentPreview } from "./UploadingAttachmentPreview";
 
 interface Props {
   autofocusKey?: string;
-  onSubmit?: () => void;
   content: RichEditorNode;
   onContentChange: (content: RichEditorNode) => void;
   uploadingAttachments?: EditorUploadingAttachmentInfo[];
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
-  hideEditorSubmitButton?: boolean;
   additionalContent?: React.ReactNode;
   isDisabled?: boolean;
   onEditorReady?: (editor: Editor) => void;
+  customEditFieldStyles?: StylesPart;
 }
 
 export const MessageContentEditor = namedForwardRef<Editor, Props>(function MessageContentEditor(
   {
     autofocusKey,
-    onSubmit,
     content,
     onContentChange,
     uploadingAttachments = [],
     attachments,
     onFilesSelected,
     onAttachmentRemoveRequest,
-    hideEditorSubmitButton,
     additionalContent = null,
     isDisabled,
     onEditorReady,
+    customEditFieldStyles,
   },
   ref
 ) {
-  function getSubmitButtonMode(): RichEditorSubmitMode {
-    if (hideEditorSubmitButton) return "hide";
-
-    const canSubmit = attachments.length > 0 || !isRichEditorContentEmpty(content);
-
-    if (canSubmit) return "enable";
-
-    return "disable";
-  }
-
   return (
     <RichEditor
       ref={ref}
@@ -60,13 +47,12 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
       value={content}
       onChange={onContentChange}
       onFilesSelected={onFilesSelected}
-      onSubmit={onSubmit}
-      placeholder="Type here to start contributing..."
+      placeholder="Your feedback on this topic…"
       autofocusKey={autofocusKey}
-      submitMode={getSubmitButtonMode()}
       isDisabled={isDisabled}
       additionalTopContent={additionalContent}
       onEditorReady={onEditorReady}
+      customEditFieldStyles={customEditFieldStyles}
       additionalBottomContent={
         (uploadingAttachments.length > 0 || attachments.length > 0) && (
           <UIAttachmentsPreviews>

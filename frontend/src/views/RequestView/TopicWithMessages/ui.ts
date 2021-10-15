@@ -1,0 +1,1 @@
+export const MESSAGES_VIEW_MAX_WIDTH_PX = 900;

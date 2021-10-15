@@ -7,7 +7,7 @@ import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
-import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { theme } from "~ui/theme";
 
@@ -40,7 +40,7 @@ export const ReplyingToMessage = observer(({ onRemove, message }: Props) => {
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>
-          <CircleCloseIconButton onClick={onRemove} />
+          <CloseIconButton onClick={onRemove} />
         </CornerButtonWrapper>
       )}
     </UIHolder>
