@@ -75,16 +75,14 @@ const UIFeedItemTitle = styled.h6`
 `;
 
 const UIBubble = styled.div`
-  border-radius: 40px;
+  ${theme.radius.circle}
   margin-left: 6px;
   width: 16px;
   height: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 8px;
-  font-weight: 600;
-  line-height: 1;
+  ${theme.font.size(8).bold.resetLineHeight}
   background-color: rgba(0, 0, 0, 0.05);
 `;
 
