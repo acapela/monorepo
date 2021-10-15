@@ -19,11 +19,9 @@ export const MessageMedia = observer(({ message, nonInteractive }: Props) => {
           key={attachment.id}
           message={message}
           attachment={attachment}
-          onAttachmentRemoveRequest={() => {
-            action(() => {
-              attachment.remove();
-            });
-          }}
+          onAttachmentRemoveRequest={action(() => {
+            attachment.remove();
+          })}
         />
       ))}
     </UIAttachments>
