@@ -1,4 +1,5 @@
 import { runInAction } from "mobx";
+import Link from "next/link";
 import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
@@ -19,15 +20,13 @@ interface Props {
   onCloseRequest?: () => void;
 }
 
-export interface PopoverMenuOption {
+export type PopoverMenuOption = {
   key?: string;
   label: string;
   icon?: ReactNode;
   isDisabled?: boolean;
   isDestructive?: boolean;
-  onSelect?: () => void;
-  openUrlOnSelect?: string;
-}
+} & ({ href: string } | { onSelect: () => void } | { externalURL: string });
 
 export const PopoverMenu = styled<Props>(
   ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }) => {
@@ -42,19 +41,20 @@ export const PopoverMenu = styled<Props>(
                 <UIMenuItem
                   isDestructive={option.isDestructive ?? false}
                   isDisabled={option.isDisabled ?? false}
-                  isClickable={!!option.onSelect || !!option.openUrlOnSelect}
                   key={option.key ?? option.label}
                   onClick={() => {
-                    option.openUrlOnSelect && openInNewTab(option.openUrlOnSelect);
+                    if ("externalURL" in option) {
+                      openInNewTab(option.externalURL);
+                    }
                     onItemSelected?.(option);
                     onCloseRequest?.();
                     runInAction(() => {
-                      option.onSelect?.();
+                      "onSelect" in option && option.onSelect();
                     });
                   }}
                 >
                   {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
-                  {option.label}
+                  {"href" in option ? <Link href={option.href}>{option.label}</Link> : option.label}
                 </UIMenuItem>
               );
             })}
@@ -70,7 +70,7 @@ export const UIPopoverMenuModal = styled(UIDropdownPanelBody)<{}>`
   flex-direction: column;
 `;
 
-const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isClickable: boolean }>`
+const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
