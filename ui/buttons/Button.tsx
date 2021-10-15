@@ -4,6 +4,9 @@ import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "~shared/component";
 import { disabledOpacityCss } from "~ui/disabled";
+import { Shortcut } from "~ui/keyboard/Shortcut";
+import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
+import { useOptionalShortcut, useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
 import { ButtonKind, getButtonKindtyles } from "./variants";
@@ -20,10 +23,24 @@ interface Props extends HTMLMotionProps<"button"> {
   isWide?: boolean;
   tooltip?: string;
   kind?: ButtonKind;
+  shortcut?: ShortcutDefinition;
+  onClick?: () => void;
 }
 
 export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button(
-  { isLoading, isDisabled, isWide, icon, tooltip, iconAtStart = true, kind = "secondary", children, ...htmlProps },
+  {
+    isLoading,
+    isDisabled,
+    isWide,
+    icon,
+    tooltip,
+    iconAtStart = true,
+    kind = "secondary",
+    children,
+    shortcut,
+    onClick,
+    ...htmlProps
+  },
   ref
 ) {
   const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -47,11 +64,13 @@ export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button
       isWide={isWide}
       data-tooltip={getTooltipLabel()}
       kind={kind}
+      onClick={onClick}
       {...htmlProps}
     >
       {iconAtStart && iconNode}
       {children && <UIContentHolder>{children}</UIContentHolder>}
       {!iconAtStart && iconNode}
+      {shortcut && <Shortcut shortcut={shortcut} callback={() => onClick?.()} />}
     </UIButton>
   );
 })``;
@@ -65,7 +84,12 @@ const UIIconHolder = styled.div<{}>`
   align-items: center;
 `;
 
-export const UIButton = styled(motion.button)<Props & { kind: ButtonKind }>`
+export const UIButton = styled(motion.button)<{
+  kind: ButtonKind;
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  isWide?: boolean;
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;

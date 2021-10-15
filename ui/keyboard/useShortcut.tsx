@@ -11,6 +11,21 @@ import {
   resolveShortcutsDefinition,
 } from "./shortcutBase";
 
+export function useOptionalShortcut(
+  shortcut?: ShortcutDefinition,
+  callback?: ShortcutCallback,
+  options?: ShortcutOptions
+) {
+  const keys = shortcut ? resolveShortcutsDefinition(shortcut) : null;
+
+  useEffect(() => {
+    if (!callback) return;
+    if (!keys) return;
+
+    return createShortcutListener(keys, { callback, options });
+  }, [keys, callback, options]);
+}
+
 export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutOptions) {
   const keys = resolveShortcutsDefinition(shortcut);
 

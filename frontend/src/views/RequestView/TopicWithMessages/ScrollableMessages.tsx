@@ -6,6 +6,7 @@ import { styledObserver } from "~shared/component";
 import { select } from "~shared/sharedState";
 
 import { ScrollHandle, ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
+import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
 interface Props {
   children: ReactNode;
@@ -41,6 +42,6 @@ const UIHolder = styled.div<{}>`
 const UIInner = styled.div<{}>`
   position: relative;
   padding-bottom: 40px;
-  max-width: 800px;
+  max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
   width: 100%;
 `;

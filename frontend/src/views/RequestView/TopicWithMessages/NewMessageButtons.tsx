@@ -12,9 +12,11 @@ interface Props {
 export const NewMessageButtons = observer(({ topic }: Props) => {
   return (
     <UIHolder>
-      <Button>Send</Button>
-      <Button>Complete</Button>
-      <Button kind="primary">Close request</Button>
+      <Button shortcut={["Mod", "Enter"]}>Send</Button>
+      <Button shortcut={["Mod", "C"]}>Complete</Button>
+      <Button shortcut={["Mod", "X"]} kind="primary">
+        Close request
+      </Button>
     </UIHolder>
   );
 });

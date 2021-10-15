@@ -18,6 +18,7 @@ import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicSummaryMessage } from "./TopicSummary";
+import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
   const user = useAssertCurrentUser();
@@ -111,7 +112,7 @@ const UIHolder = styled.div`
 const UIHead = styled.div`
   margin-bottom: 20px;
   width: 100%;
-  max-width: 800px;
+  max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
 
 const UITitle = styled.h3`
@@ -127,5 +128,5 @@ const UIMessageComposer = styled.div`
   margin-top: auto;
   padding-top: 20px;
   padding-top: 0px;
-  max-width: 800px;
+  max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
