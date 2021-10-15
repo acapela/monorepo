@@ -100,12 +100,12 @@ export const NewRequest = observer(function NewRequest() {
     return true;
   });
 
-  const [topicName, setTopicName] = useLocalStorageState<string>({
+  const [topicName, setTopicName, clearTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
     initialValue: "",
   });
 
-  const [messageContent, setMessageContent] = useLocalStorageState<RichEditorNode>({
+  const [messageContent, setMessageContent, clearMessageContent] = useLocalStorageState<RichEditorNode>({
     key: "message-draft-for-new-request",
     initialValue: getEmptyRichContent(),
   });
@@ -136,15 +136,15 @@ export const NewRequest = observer(function NewRequest() {
       if (isSubmitting) {
         return;
       }
-      setTopicName("");
-      setMessageContent(getEmptyRichContent());
       attachmentsList.clear();
+      clearTopicName();
+      clearMessageContent();
     });
 
     return () => {
       router.events.off("routeChangeComplete", noop);
     };
-  }, [isSubmitting, setTopicName, setMessageContent, attachmentsList, router.events]);
+  }, [isSubmitting, clearTopicName, clearMessageContent, attachmentsList, router.events]);
 
   function getAvailableSlugForTopicName(topicName: string) {
     const optimisticSlug = slugify(topicName);
