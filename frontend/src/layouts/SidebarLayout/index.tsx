@@ -104,7 +104,7 @@ const UIMainContent = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: hidden;
+  overflow-y: auto;
 `;
 
 const UIMainContentBody = styled.div`
