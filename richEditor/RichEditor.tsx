@@ -2,7 +2,7 @@ import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from 
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import { useUpdate } from "react-use";
-import styled from "styled-components";
+import styled, { StylesPart } from "styled-components";
 
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
@@ -45,6 +45,7 @@ export interface RichEditorProps {
   isDisabled?: boolean;
   extensions?: Extensions;
   onEditorReady?: (editor: Editor) => void;
+  customEditFieldStyles?: StylesPart;
 }
 
 /**
@@ -109,6 +110,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     isDisabled,
     extensions = [],
     onEditorReady,
+    customEditFieldStyles,
   },
   ref
 ) {
@@ -276,7 +278,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
       <RichEditorContext value={editor}>
         <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
-          <UIEditorHolder>
+          <UIEditorHolder customEditFieldStyles={customEditFieldStyles}>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
           </UIEditorHolder>
           {additionalBottomContent}
@@ -286,8 +288,9 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   );
 });
 
-const UIEditorHolder = styled.div<{}>`
+const UIEditorHolder = styled.div<{ customEditFieldStyles?: StylesPart }>`
   flex-grow: 1;
+  ${(props) => props.customEditFieldStyles};
   ${richEditorContentCss};
 `;
 

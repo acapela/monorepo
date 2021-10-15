@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+import { styledForwardRef } from "~shared/component";
 import { theme } from "~ui/theme";
 
 import { ButtonKind, getButtonKindtyles } from "./variants";
@@ -21,17 +22,21 @@ export interface Props {
  */
 const DEFAULT_ICON_SIZE_RATIO = 1;
 
-export const IconButton = styled(function CircleIconButton({
-  icon,
-  kind = "transparent",
-  onClick,
-  className,
-  tooltip,
-  isDisabled = false,
-  iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
-}: Props) {
+export const IconButton = styledForwardRef<HTMLDivElement, Props>(function CircleIconButton(
+  {
+    icon,
+    kind = "transparent",
+    onClick,
+    className,
+    tooltip,
+    isDisabled = false,
+    iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
+  }: Props,
+  ref
+) {
   return (
     <UIButton
+      ref={ref}
       data-tooltip={tooltip}
       className={className}
       onClick={onClick}

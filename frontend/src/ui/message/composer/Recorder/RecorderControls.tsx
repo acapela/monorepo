@@ -44,7 +44,9 @@ export const RecorderControls = styled<RecorderControlsProps>(
         <UIControls gap={8} alignItems="center">
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
 
-          <Button onClick={() => onCancel()}>Cancel</Button>
+          <Button kind="transparent" onClick={() => onCancel()}>
+            Cancel
+          </Button>
           <Button kind="primary" onClick={() => onStop()}>
             Submit
           </Button>

@@ -2,7 +2,7 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useList } from "react-use";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
@@ -147,6 +147,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           uploadingAttachments={uploadingAttachments}
           attachments={attachments}
           onEditorReady={focusEditor}
+          customEditFieldStyles={messageEditorSpacing}
           onAttachmentRemoveRequest={(attachmentId) => {
             attachmentsList.filter((existingAttachment) => {
               return existingAttachment.uuid !== attachmentId;
@@ -176,6 +177,10 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     </UIHolder>
   );
 });
+
+const messageEditorSpacing = css`
+  padding: 15px 0;
+`;
 
 const UIHolder = styled.div`
   display: flex;

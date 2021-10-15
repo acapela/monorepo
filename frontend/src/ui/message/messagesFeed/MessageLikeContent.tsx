@@ -49,8 +49,8 @@ export const MessageLikeContent = styledObserver<Props>(
 
 const UIFlyingTools = styled(PresenceAnimator)<{}>`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0px;
+  right: 0px;
 `;
 
 const UIContentContainer = styled.div<{}>`
@@ -62,8 +62,8 @@ const UIContentContainer = styled.div<{}>`
 const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
   display: flex;
   align-items: start;
-  padding: 5px;
-  margin: -5px;
+  padding: 7px;
+  margin: 0 -7px;
 
   ${theme.radius.secondaryItem};
   ${theme.transitions.hover()};
@@ -75,6 +75,6 @@ const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
     `}
 
   &:hover {
-    ${theme.colors.layout.background.hover.asBg};
+    ${theme.colors.layout.background.hover.opacity(0.5).asBg};
   }
 `;

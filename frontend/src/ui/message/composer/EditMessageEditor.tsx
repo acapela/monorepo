@@ -117,7 +117,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
           });
         }}
         autofocusKey={message.id}
-        hideEditorSubmitButton
       />
       <UIButtons gap={8} justifyContent="end">
         <Button kind="secondary" onClick={onCancelRequest}>
