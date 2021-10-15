@@ -78,11 +78,10 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
             <UIMessageComposerBody>
               <CreateNewMessageEditor
                 topic={topic}
-                onMessageSent={({ closePendingTasks }) => {
+                onMessageSent={() => {
                   scrollerRef.current?.scrollToBottom("auto");
-
-                  if (!closePendingTasks) return;
-
+                }}
+                onClosePendingTasks={() => {
                   const openTasks = messages.flatMap(
                     (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
                   );

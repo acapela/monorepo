@@ -1,7 +1,8 @@
 import { useApolloClient } from "@apollo/client";
+import { isEqual } from "lodash";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
@@ -30,16 +31,16 @@ interface Props {
   topic: TopicEntity;
   isDisabled?: boolean;
   onMessageSent: (params: SubmitMessageParams) => void;
+  onClosePendingTasks: () => void;
 }
 
 interface SubmitMessageParams {
   type: Message_Type_Enum;
   content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
-  closePendingTasks: boolean;
 }
 
-export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent }: Props) => {
+export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, onClosePendingTasks }: Props) => {
   const apolloClient = useApolloClient();
   const db = useDb();
 
@@ -59,6 +60,8 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
+
+  const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -103,16 +106,24 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     onMessageSent(params);
   });
 
-  const handleSubmitTextMessage = action(async (closePendingTasks: boolean) => {
-    attachmentsList.clear();
+  const handleSubmitTextMessage = action(async (shouldClosePendingTasks: boolean) => {
+    if (shouldClosePendingTasks) {
+      onClosePendingTasks();
+    }
+
+    // Nothing to submit
+    if (!hasTypedMessageContent && attachments.length === 0) {
+      return;
+    }
 
     try {
       await submitMessage({
         type: "TEXT",
         content: content,
         attachments,
-        closePendingTasks,
       });
+
+      attachmentsList.clear();
     } catch (error) {
       console.error("error while submitting message", error);
       // In case of error - restore attachments and content you were trying to send
@@ -158,7 +169,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
               type: messageType,
               content: getEmptyRichContent(),
               attachments: uploadedAttachments,
-              closePendingTasks: false,
             });
           }}
         />
