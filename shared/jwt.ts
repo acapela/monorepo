@@ -17,7 +17,7 @@ export interface UserTokenPayload {
   id: string;
 }
 
-export const createJWT = ({ userId, teamId, ...payload }: JwtPayload & { userId: string; teamId?: Maybe<string> }) => ({
+export const createJWT = ({ userId, ...payload }: JwtPayload & { userId: string } & Record<string, unknown>) => ({
   ...payload,
   id: payload.sub || userId,
   sub: userId,

@@ -100,11 +100,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           return false;
         }
       },
-      session: async ({ session, token }) =>
-        ({
+      async session({ session, token }) {
+        const user = toMaybeAdapterUser(await db.user.findFirst({ where: { id: token.id as string } }));
+        return createJWT({
           ...session,
-          user: toMaybeAdapterUser(await db.user.findFirst({ where: { id: token.id as string } })),
-        } as Session),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          userId: (user?.id ?? token.sub)!,
+          user,
+        }) as unknown as Session;
+      },
     },
     cookies: {
       sessionToken: {

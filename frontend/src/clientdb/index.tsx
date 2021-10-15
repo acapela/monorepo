@@ -65,7 +65,8 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
   const [canRender, setCanRender] = useState(false);
   const teamId = useCurrentTeamId();
-  const userId = useCurrentUserTokenData()?.id ?? null;
+  const token = useCurrentUserTokenData();
+  const userId = token?.id ?? null;
   const apolloClient = useApolloClient();
 
   useEffect(() => {
