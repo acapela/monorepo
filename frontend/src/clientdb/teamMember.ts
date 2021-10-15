@@ -34,7 +34,7 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
   }),
 }).addConnections((teamMember, { getEntity }) => ({
   get user() {
-    return getEntity(userEntity).assertFindById(teamMember.user_id);
+    return getEntity(userEntity).findById(teamMember.user_id);
   },
   get teamMemberSlack() {
     return getEntity(teamMemberSlackEntity).findByUniqueIndex("team_member_id", teamMember.id);

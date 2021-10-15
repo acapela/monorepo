@@ -36,7 +36,7 @@ export const TeamPickerView = observer(() => {
       return;
     }
 
-    const team = await db.team.create({ name, slug: slugify(name) });
+    const team = db.team.create({ name, slug: slugify(name) });
 
     if (team) {
       handleChangeTeam(team.id);

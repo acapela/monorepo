@@ -6,6 +6,7 @@ import isEmail from "validator/lib/isEmail";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { useInviteUser } from "~frontend/views/SettingsView/TeamMembersManager/shared";
+import { isNotNullish } from "~shared/nullish";
 import { Button } from "~ui/buttons/Button";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { IconPlusSquare } from "~ui/icons";
@@ -16,7 +17,10 @@ export const InviteMemberForm = observer(() => {
 
   const [inviteUser] = useInviteUser();
 
-  const teamEmails = useMemo(() => new Set(team.members.all.map((members) => members.user.email)), [team]);
+  const teamEmails = useMemo(
+    () => new Set(team.members.all.map((members) => members.user?.email).filter(isNotNullish)),
+    [team]
+  );
 
   const [email, setEmail] = useState("");
 
