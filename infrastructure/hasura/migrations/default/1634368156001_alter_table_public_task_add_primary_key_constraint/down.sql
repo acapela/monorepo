@@ -1,0 +1,1 @@
+ALTER TABLE ONLY public.task DROP CONSTRAINT IF EXISTS task_pkey;

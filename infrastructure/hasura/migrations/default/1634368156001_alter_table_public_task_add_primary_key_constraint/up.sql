@@ -1,0 +1,3 @@
+ALTER TABLE ONLY public.task DROP CONSTRAINT IF EXISTS task_pkey;
+ALTER TABLE ONLY public.task
+    ADD CONSTRAINT task_pkey PRIMARY KEY (id);
