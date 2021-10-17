@@ -18,8 +18,8 @@ interface Props {
   topic: TopicEntity;
 }
 
-const sortByEarliestDueDate = (task: TaskEntity) => task.due_at;
-const filterByUnfinishedTasksAssingedToCurrentUser = (task: TaskEntity) =>
+const sortByEarliestTaskDueDate = (task: TaskEntity) => task.due_at;
+const filterByUnfinishedTasksAssignedToCurrentUser = (task: TaskEntity) =>
   task.isAssignedToSelf && !!task.due_at && !task.isDone;
 
 const getRelativeDueTimeLabel = (rawDate: string) => {
@@ -56,8 +56,8 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
 
   const unreadMessagesCount = topic.unreadMessages.count;
   const unfinishedTaskWithEarliestDueDate = topic.tasks.query(
-    filterByUnfinishedTasksAssingedToCurrentUser,
-    sortByEarliestDueDate
+    filterByUnfinishedTasksAssignedToCurrentUser,
+    sortByEarliestTaskDueDate
   ).first;
 
   return (
