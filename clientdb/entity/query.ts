@@ -9,17 +9,17 @@ import { createEntityCache } from "./utils/entityCache";
 
 type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
-export type EntityQuerySortFuntion<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
+export type EntityQuerySortFunction<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
 
 export type EntitySortDirection = "asc" | "desc";
 
 type EntityQuerySortConfig<Data, Connections> = {
-  sort: EntityQuerySortFuntion<Data, Connections>;
+  sort: EntityQuerySortFunction<Data, Connections>;
   direction: "asc" | "desc";
 };
 
 export type EntityQuerySortInput<Data, Connections> =
-  | EntityQuerySortFuntion<Data, Connections>
+  | EntityQuerySortFunction<Data, Connections>
   | EntityQuerySortConfig<Data, Connections>;
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
@@ -57,7 +57,7 @@ export type EntityQuery<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   query: (
     filter: EntityFilterInput<Data, Connections>,
-    sort?: EntityQuerySortFuntion<Data, Connections>
+    sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
 };
 
@@ -75,7 +75,7 @@ export function createEntityQuery<Data, Connections>(
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
   const entityName = definition.config.name;
-  const { filter, sort = definition.config.defaultSort as EntityQuerySortFuntion<Data, Connections> } = config;
+  const { filter, sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections> } = config;
 
   if (!filter && !sort) {
     throw new Error(

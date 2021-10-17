@@ -10,7 +10,7 @@ import { Entity } from "./entity";
 import {
   EntityFilterInput,
   EntityQuery,
-  EntityQuerySortFuntion,
+  EntityQuerySortFunction,
   EntityQuerySortInput,
   createEntityQuery,
 } from "./query";
@@ -22,7 +22,7 @@ import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 export interface EntityStoreFindMethods<Data, Connections> {
   query: (
     filter: EntityFilterInput<Data, Connections>,
-    sort?: EntityQuerySortFuntion<Data, Connections>
+    sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
   sort: (sort: EntityQuerySortInput<Data, Connections>) => EntityQuery<Data, Connections>;
   findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(

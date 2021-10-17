@@ -5,24 +5,35 @@ import React from "react";
 import styled from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
 import { Button } from "~ui/buttons/Button";
 import { IconClock } from "~ui/icons";
 
+import { CollapsedTasksButton } from "./CollapsedTasksButton";
 import { MessageTask } from "./MessageTask";
 
 interface Props {
   message: MessageEntity;
 }
 
-export const MessageTasks = styledObserver(({ message }: Props) => {
-  const tasks = message.tasks.all;
-  const firstTask = tasks[0];
+const COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING = 4;
 
-  if (!firstTask) {
+const allTasksInMessageFilter = () => true;
+
+const sortCurrentUserInFront = (item: TaskEntity) => (item.assignedUser?.isCurrentUser ? -1 : 0);
+
+export const MessageTasks = styledObserver(({ message }: Props) => {
+  const tasks = message.tasks.query(allTasksInMessageFilter, sortCurrentUserInFront).all;
+
+  if (!message.tasks.hasItems) {
     return null;
   }
+
+  const firstTask = tasks[0];
+  const displayedTasks = tasks.slice(0, COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
+  const collapsedTasks = tasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
 
   return (
     <UIHolder>
@@ -41,8 +52,10 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
       <UIDivider />
 
+      {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
+
       <UITasks>
-        {tasks.map((task) => (
+        {displayedTasks.map((task) => (
           <MessageTask key={task.id} task={task} />
         ))}
       </UITasks>
