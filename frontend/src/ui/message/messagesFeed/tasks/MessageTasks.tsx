@@ -11,7 +11,7 @@ import { styledObserver } from "~shared/component";
 import { Button } from "~ui/buttons/Button";
 import { IconClock } from "~ui/icons";
 
-import { CollapsedTasks } from "./CollapsedTasks";
+import { CollapsedTasksButton } from "./CollapsedTasksButton";
 import { MessageTask } from "./MessageTask";
 
 interface Props {
@@ -38,7 +38,6 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
   return (
     <UIHolder>
       <AnimateSharedLayout>
-        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         <TaskDueDateSetter task={firstTask}>
           <Button
             kind="secondary"
@@ -53,7 +52,7 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
       <UIDivider />
 
-      {collapsedTasks.length > 0 && <CollapsedTasks tasks={collapsedTasks} />}
+      {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
 
       <UITasks>
         {displayedTasks.map((task) => (

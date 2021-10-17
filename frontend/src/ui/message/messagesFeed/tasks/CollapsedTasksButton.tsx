@@ -15,13 +15,13 @@ interface Props {
   tasks: TaskEntity[];
 }
 
-export const CollapsedTasks = observer(function CollapsedTasks({ tasks }: Props): JSX.Element {
+export const CollapsedTasksButton = observer(function CollapsedTasks({ tasks }: Props): JSX.Element {
   const ref = useRef<HTMLButtonElement>(null);
 
   const [isPopoverOpen, { set: openPopover, unset: closePopover }] = useBoolean(false);
 
   return (
-    <div>
+    <>
       <Button ref={ref} kind="secondary" onClick={openPopover}>
         +{tasks.length}
       </Button>
@@ -34,7 +34,7 @@ export const CollapsedTasks = observer(function CollapsedTasks({ tasks }: Props)
           </UICollapsedTasks>
         </Popover>
       )}
-    </div>
+    </>
   );
 });
 
