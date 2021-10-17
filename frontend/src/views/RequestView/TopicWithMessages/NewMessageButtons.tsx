@@ -1,9 +1,10 @@
 import { observer } from "mobx-react";
+import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { Button } from "~ui/buttons/Button";
+import { PopAnimatedButton } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -81,34 +82,34 @@ export const NewMessageButtons = observer(
     return (
       <UIHolder>
         {actions.includes("send") && (
-          <Button
+          <PopAnimatedButton
             shortcut={["Enter"]}
             kind={primaryAction === "send" ? "primary" : "secondary"}
             tooltip="Send without completing pending tasks"
             onClick={onSendRequest}
           >
             Send
-          </Button>
+          </PopAnimatedButton>
         )}
         {actions.includes("complete") && (
-          <Button
+          <PopAnimatedButton
             shortcut={["Mod", "C"]}
             kind={primaryAction === "complete" ? "primary" : "secondary"}
             tooltip="Send and complete pending tasks"
             onClick={onCompleteRequest}
           >
             Complete
-          </Button>
+          </PopAnimatedButton>
         )}
         {actions.includes("close-request") && (
-          <Button
+          <PopAnimatedButton
             shortcut={["Mod", "X"]}
             kind={primaryAction === "close-request" ? "primary" : "secondary"}
             tooltip="Close entire request"
             onClick={handleCloseRequest}
           >
             Close request
-          </Button>
+          </PopAnimatedButton>
         )}
       </UIHolder>
     );

@@ -9,7 +9,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { Button } from "~ui/buttons/Button";
+import { PopAnimatedButton } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -99,9 +99,14 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
             )}
             {isClosed && (
               <UICloseTopicFooter>
-                <Button shortcut={["Mod", "O"]} kind="secondary" tooltip="Reopen Request" onClick={handleReopenTopic}>
+                <PopAnimatedButton
+                  shortcut={["Mod", "O"]}
+                  kind="secondary"
+                  tooltip="Reopen Request"
+                  onClick={handleReopenTopic}
+                >
                   Reopen request
-                </Button>
+                </PopAnimatedButton>
               </UICloseTopicFooter>
             )}
           </UIFooter>
