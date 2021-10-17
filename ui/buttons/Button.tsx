@@ -1,5 +1,5 @@
 import { HTMLMotionProps, motion } from "framer-motion";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "~shared/component";
@@ -8,13 +8,14 @@ import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { theme } from "~ui/theme";
 
+import { PopPresenceAnimator } from "../animations";
 import { ButtonKind, getButtonKindtyles } from "./variants";
 
 export interface ButtonDisabledInfo {
   reason: string;
 }
 
-interface Props extends HTMLMotionProps<"button"> {
+export interface ButtonProps extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
   iconAtStart?: boolean;
   isLoading?: boolean;
@@ -26,7 +27,15 @@ interface Props extends HTMLMotionProps<"button"> {
   onClick?: () => void;
 }
 
-export const Button = styledForwardRef<HTMLButtonElement, Props>(function Button(
+export const PopAnimatedButton = (props: ButtonProps) => {
+  return (
+    <PopPresenceAnimator>
+      <Button {...props} />
+    </PopPresenceAnimator>
+  );
+};
+
+export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
     isLoading,
     isDisabled,
