@@ -20,7 +20,7 @@ import { MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { IconArrowTop, IconUser } from "~ui/icons";
+import { IconUser } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
@@ -182,16 +182,10 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         mentionType={data.type}
         ref={anchorRef}
         onClick={handleOpenMentionTypePicker}
-        data-tooltip={isEditable ? "Change request type" : ""}
+        data-tooltip={isEditable ? "Change request type" : mentionTypeLabelMap[data.type]}
         isEditable={isEditable}
       >
         @{db.user.findById(data.userId)?.name ?? "???"}
-        {isEditable && (
-          <UIMentionPopoverOpenIndicator>
-            {" "}
-            ({mentionTypeLabelMap[data.type]} <IconArrowTop />)
-          </UIMentionPopoverOpenIndicator>
-        )}
       </UIMention>
     </>
   );
@@ -226,14 +220,5 @@ const UISelectItem = styled.div<{}>`
   ${UserAvatar} {
     font-size: 1.5rem;
     margin-right: 8px;
-  }
-`;
-
-const UIMentionPopoverOpenIndicator = styled.span<{}>`
-  display: inline;
-  cursor: pointer;
-
-  svg {
-    display: inline;
   }
 `;
