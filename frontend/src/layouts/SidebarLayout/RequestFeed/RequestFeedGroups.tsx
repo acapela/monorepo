@@ -28,7 +28,7 @@ function isTopicUrgent(topic: TopicEntity) {
     return true;
   }
 
-  const isTopicDueWithinNext24Hours = Math.abs(differenceInHours(now, dueDate)) < 24;
+  const isTopicDueWithinNext24Hours = differenceInHours(dueDate, now) < 24;
   if (isTopicDueWithinNext24Hours) {
     return true;
   }
