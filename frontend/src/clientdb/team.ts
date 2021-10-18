@@ -40,8 +40,13 @@ export const teamEntity = defineEntity<TeamFragment>({
     insertColumns: ["id", "slug", "name"],
     updateColumns: [],
   }),
-}).addConnections((team, { getEntity }) => ({
-  hasSlackInstallation: !!team.slack_installation?.team_id,
+}).addConnections((team, { getEntity, getContextValue }) => ({
+  get hasSlackInstallation() {
+    return !!team.slack_installation?.team_id;
+  },
+  get isOwnedByCurrentUser() {
+    return team.owner_id === getContextValue(userIdContext);
+  },
   members: getEntity(teamMemberEntity).query({ team_id: team.id }),
 }));
 
