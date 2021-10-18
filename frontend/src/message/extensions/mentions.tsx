@@ -6,7 +6,7 @@ import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
-import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/autocomplete/component";

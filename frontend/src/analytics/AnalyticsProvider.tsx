@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useNullableDb } from "~frontend/clientdb";
-import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 import { SegmentScript } from "./SegmentScript";
