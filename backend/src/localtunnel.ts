@@ -20,7 +20,7 @@ export const getDevPublicTunnel = createSelfCleaningCache(async (reset, port: nu
   }
 
   const tunnel = await localtunnel({
-    subdomain: "acapela-dev-schmacles-local-3000" || `acapela-dev-${hostname}-${port}`,
+    subdomain: `acapela-dev-${hostname}-${port}`,
     port,
     allow_invalid_cert: true,
   });
