@@ -36,7 +36,7 @@ export const userEntity = defineEntity<UserFragment>({
     // TODO currently clientdb is not working for user updates, as user insert is not allowed on db (so upsert as well)
     insertColumns: [],
     updateColumns: [],
-    teamScopeCondition: (teamId) => ({ team_memberships: { team_id: { _eq: teamId } } }),
+    // teamScopeCondition: (teamId) => ({ team_memberships: { team_id: { _eq: teamId } } }),
   }),
 }).addConnections((user, { getEntity, getContextValue }) => {
   return {
