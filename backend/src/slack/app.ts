@@ -1,5 +1,3 @@
-import * as crypto from "crypto";
-
 import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import _ from "lodash";
@@ -23,7 +21,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
   clientId,
   clientSecret,
-  stateSecret: crypto.randomBytes(64).toString("hex"),
+  stateSecret: assertDefined(process.env.SLACK_STATE_SECRET, "missing SLACK_SIGNING_SECRET"),
 
   installationStore: {
     async storeInstallation(installation) {
