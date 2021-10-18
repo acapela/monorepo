@@ -38,6 +38,13 @@ async function createUser(name: string, email: string, currentTeam: string | nul
       name,
       email: PREFIX + email,
       current_team_id: currentTeam,
+      account: {
+        create: {
+          provider_id: PREFIX,
+          provider_type: PREFIX,
+          provider_account_id: PREFIX + email,
+        },
+      },
     },
   });
   return {
@@ -62,12 +69,13 @@ export async function setupDatabase() {
   });
 
   return {
-    data: { user1, user2, team },
+    data: { user1, user2 },
     async cleanup() {
       await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
       // Prisma does its own constraint checking, so we have to go raw SQL to make deletion cascade
-      await db.$executeRaw`DELETE FROM team WHERE id = ${team.id}`;
-      await db.$executeRaw`DELETE FROM "user" WHERE id IN (${Prisma.join([user1.id, user2.id])})`;
+      const userIds = Prisma.join([user1.id, user2.id]);
+      await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
+      await db.$executeRaw`DELETE FROM "user" WHERE id IN (${userIds})`;
     },
   };
 }

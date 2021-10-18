@@ -38,6 +38,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
       className={className}
       // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
       onClick={(event) => event.stopPropagation()}
+      role="dialog"
     >
       {hasCloseButton && (
         <UIToolbar>
