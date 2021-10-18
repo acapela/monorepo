@@ -13,14 +13,11 @@ import { theme } from "~ui/theme";
 
 import { RequestContentSnippet } from "./RequestContentSnippet";
 import { RequestParticipants } from "./RequestParticipants";
+import { getUnfinishedTopicTaskWithEarliestDueDate } from "./utils";
 
 interface Props {
   topic: TopicEntity;
 }
-
-const sortByEarliestTaskDueDate = (task: TaskEntity) => task.due_at;
-const filterByUnfinishedTasksAssignedToCurrentUser = (task: TaskEntity) =>
-  task.isAssignedToSelf && !!task.due_at && !task.isDone;
 
 const getRelativeDueTimeLabel = (rawDate: string) => {
   const now = new Date();
@@ -58,10 +55,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   const isHighlighted = topicRouteParams.slug === topic.slug;
 
   const unreadMessagesCount = topic.unreadMessages.count;
-  const unfinishedTaskWithEarliestDueDate = topic.tasks.query(
-    filterByUnfinishedTasksAssignedToCurrentUser,
-    sortByEarliestTaskDueDate
-  ).first;
+  const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
 
   return (
     <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
