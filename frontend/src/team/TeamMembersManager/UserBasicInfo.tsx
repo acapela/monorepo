@@ -11,7 +11,7 @@ type Props = { user: UserEntity };
 
 export const UserBasicInfo = observer(({ user }: Props) => (
   <UIHolder>
-    <Avatar url={user.avatar_url} />
+    <Avatar url={user.avatar_url} size={30} />
     <div>
       <UIUserName>{user.name}</UIUserName>
       <HStack gap={10}>
@@ -33,9 +33,9 @@ const UIUserName = styled.div`
 `;
 
 const UIEmail = styled.div`
-  ${theme.typo.item.subtitle};
+  ${theme.typo.item.subtitle.medium};
 `;
 
 const UIIndicator = styled.div`
-  ${theme.typo.item.secondaryTitle.speziaMono};
+  ${theme.typo.item.secondaryTitle.secondary};
 `;

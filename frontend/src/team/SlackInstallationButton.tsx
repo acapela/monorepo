@@ -1,6 +1,8 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import P from "pino";
 import styled from "styled-components";
 
+import { SlackLogo } from "~frontend/../../ui/icons/logos/SlackLogo";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import {
@@ -17,7 +19,6 @@ import { addToast } from "~ui/toasts/data";
 
 type Props = {
   team: TeamEntity;
-  isCurrentUserTeamOwner: boolean;
 };
 
 export function AddSlackInstallationButton({
@@ -26,7 +27,7 @@ export function AddSlackInstallationButton({
   withBot,
 }: {
   teamId: string;
-  tooltip: string;
+  tooltip?: string;
   withBot?: boolean;
 }) {
   const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
@@ -51,9 +52,10 @@ export function AddSlackInstallationButton({
           "should have slack installation"
         ).url;
       }}
-      icon={<IconPlus />}
+      icon={<SlackLogo />}
       iconAtStart
       tooltip={tooltip}
+      isWide
     >
       Add Slack integration
     </UISlackButton>
@@ -109,10 +111,8 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
   );
 }
 
-export function SlackInstallationButton({ team, isCurrentUserTeamOwner }: Props) {
-  if (team.hasSlackInstallation) {
-    return isCurrentUserTeamOwner ? <RemoveSlackInstallationButton teamId={team.id} /> : null;
-  } else {
+export function SlackInstallationButton({ team }: Props) {
+  if (!team.hasSlackInstallation) {
     return (
       <AddSlackInstallationButton
         teamId={team.id}
@@ -121,8 +121,12 @@ export function SlackInstallationButton({ team, isCurrentUserTeamOwner }: Props)
       />
     );
   }
+
+  if (!team.isOwnedByCurrentUser) {
+    return null;
+  }
+
+  return <RemoveSlackInstallationButton teamId={team.id} />;
 }
 
-const UISlackButton = styled(Button)`
-  width: fit-content;
-`;
+const UISlackButton = styled(Button)``;
