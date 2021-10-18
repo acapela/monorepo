@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "~shared/component";
-import { disabledOpacityCss } from "~ui/disabled";
+import { disabledCss } from "~ui/disabled";
 import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { theme } from "~ui/theme";
@@ -126,7 +126,7 @@ export const UIButton = styled(motion.button)<{
 
   ${(props) => getButtonKindtyles(props.kind)}
 
-  ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
+  ${(props) => (props.isDisabled || props.isLoading) && disabledCss};
   ${(props) =>
     props.isWide &&
     css`
