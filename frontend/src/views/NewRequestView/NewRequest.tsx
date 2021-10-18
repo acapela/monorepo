@@ -84,7 +84,7 @@ export const NewRequest = observer(function NewRequest() {
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const isDraggingFile = useFileDroppedInContext((files) => {
+  const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
     uploadAttachments(files);
   });
 
