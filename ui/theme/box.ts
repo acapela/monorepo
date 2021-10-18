@@ -7,4 +7,5 @@ export const box = {
   item: createBox(10, 10),
   label: createBox(10, 4),
   popover: createBox(10, 10),
+  pageCart: createBox(30, 30),
 };
