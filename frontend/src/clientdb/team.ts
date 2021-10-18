@@ -5,6 +5,7 @@ import { EntityByDefinition } from "~clientdb/entity/entity";
 import { TeamFragment } from "~gql";
 
 import { teamMemberEntity } from "./teamMember";
+import { teamSlackInstallationEntity } from "./teamSlackInstallation";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -17,9 +18,6 @@ const teamFragment = gql`
     slug
     owner_id
     updated_at
-    slack_installation {
-      team_id
-    }
   }
 `;
 
@@ -41,7 +39,9 @@ export const teamEntity = defineEntity<TeamFragment>({
     updateColumns: [],
   }),
 }).addConnections((team, { getEntity }) => ({
-  hasSlackInstallation: !!team.slack_installation?.team_id,
+  get hasSlackInstallation() {
+    return getEntity(teamSlackInstallationEntity).query({ team_id: team.id }).count > 0;
+  },
   members: getEntity(teamMemberEntity).query({ team_id: team.id }),
 }));
 

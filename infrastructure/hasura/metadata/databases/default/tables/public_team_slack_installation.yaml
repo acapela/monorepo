@@ -8,7 +8,9 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
+    - id
     - team_id
+    - updated_at
     filter:
       team:
         memberships:
