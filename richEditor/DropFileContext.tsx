@@ -50,11 +50,11 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void, opti
   /* 
     There is weird race condition happening between the start/ongoing drag and stop drag events.
 
-    When the drag leaves a parent element, drag-leave event gets triggered, however the children elements
-    immediately fire dragenter event and this even bubbles up the DOM until getting to the parent.
+    When the drag leaves a parent element, drag-leave event gets triggered. However the children elements
+    immediately fire dragenter event, and this bubbles up through the DOM until getting to the parent.
 
-    In a lot of cases, the drag and drop context is placed on a parent element, or an element that has multiple 
-    children
+    In a lot of cases, the drag and drop context is placed on a parent element, 
+    or an element that has multiple children, so this happens quite a lot.
     
     Because of this, when we set the "isDragging" state directly in the event handler we will
     have constant blinking of "isDragging" when we drag the file around.
