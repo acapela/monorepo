@@ -36,6 +36,8 @@ const requiredEnvVarNames = [
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "BACKEND_AUTH_TOKEN",
+  "SLACK_CLIENT_ID",
+  "SLACK_CLIENT_SECRET",
 ] as const;
 
 const requiredEnvVarNamesBackend = [

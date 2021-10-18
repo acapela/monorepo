@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
+import SlackProvider from "next-auth/providers/slack";
 
 import { initializeSecrets } from "~config";
 import { User, db } from "~db";
@@ -25,6 +26,8 @@ assertEnvVariable(process.env.AUTH_SECRET, "AUTH_SECRET");
 assertEnvVariable(process.env.AUTH_JWT_TOKEN_SECRET, "AUTH_JWT_TOKEN_SECRET");
 assertEnvVariable(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID");
 assertEnvVariable(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET");
+assertEnvVariable(process.env.SLACK_CLIENT_ID, "SLACK_CLIENT_ID");
+assertEnvVariable(process.env.SLACK_CLIENT_SECRET, "SLACK_CLIENT_SECRET");
 
 const toAdapterUser = (user: User): AdapterUser => ({ ...user, id: user.id, emailVerified: user.email_verified });
 const toMaybeAdapterUser = (user: Maybe<User>): AdapterUser | null => (user ? toAdapterUser(user) : null);
@@ -141,6 +144,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           access_type: "offline", // !!! Get new refresh token each time user gives content for our access scopes
           scope: GOOGLE_AUTH_SCOPES.map((scopeName) => `https://www.googleapis.com/auth/${scopeName}`).join(" "),
         })}`,
+      }),
+      SlackProvider({
+        clientId: process.env.SLACK_CLIENT_ID,
+        clientSecret: process.env.SLACK_CLIENT_SECRET,
       }),
     ],
 
