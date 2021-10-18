@@ -12,9 +12,14 @@ insert_permissions:
 - permission:
     backend_only: false
     check:
-      message:
-        user_id:
-          _eq: X-Hasura-User-Id
+      _or:
+      - message:
+          user_id:
+            _eq: X-Hasura-User-Id
+      - message:
+          tasks:
+            user_id:
+              _eq: X-Hasura-User-Id
     columns:
     - done_at
     - due_at
