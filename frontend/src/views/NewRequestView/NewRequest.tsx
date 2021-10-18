@@ -25,11 +25,14 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
+import { PopPresenceAnimator } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
-import { IconFolder } from "~ui/icons";
+import { IconFilePlus, IconFolder } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
@@ -81,7 +84,7 @@ export const NewRequest = observer(function NewRequest() {
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  useFileDroppedInContext((files) => {
+  const isDraggingFile = useFileDroppedInContext((files) => {
     uploadAttachments(files);
   });
 
@@ -211,7 +214,7 @@ export const NewRequest = observer(function NewRequest() {
           onSubmit={submit}
         />
 
-        {(uploadingAttachments.length > 0 || attachments.length > 0) && (
+        {(uploadingAttachments.length > 0 || attachments.length > 0 || isDraggingFile) && (
           <UIAttachmentsPreviews>
             {attachments.map((attachment) => (
               <AttachmentPreview
@@ -227,8 +230,14 @@ export const NewRequest = observer(function NewRequest() {
             {uploadingAttachments.map(({ percentage }, index) => (
               <UploadingAttachmentPreview percentage={percentage} key={index} />
             ))}
+            {isDraggingFile && (
+              <PopPresenceAnimator>
+                <UIFileDropPlaceholder description="Drop file here" icon={<IconFilePlus />} />
+              </PopPresenceAnimator>
+            )}
           </UIAttachmentsPreviews>
         )}
+
         {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
         {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
       </UIContentHolder>
@@ -325,4 +334,10 @@ const UIFooter = styled.div<{}>`
   border-color: rgba(0, 0, 0, 0.05);
   border-style: solid;
   border-top-width: 1px;
+`;
+
+const UIFileDropPlaceholder = styled(EmptyStatePlaceholder)`
+  border-style: dashed;
+  border-width: 2px;
+  ${theme.colors.layout.backgroundAccent.asBgWithReadableText};
 `;
