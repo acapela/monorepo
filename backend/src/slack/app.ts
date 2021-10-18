@@ -21,7 +21,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
   clientId,
   clientSecret,
-  stateSecret: assertDefined(process.env.SLACK_STATE_SECRET, "missing SLACK_SIGNING_SECRET"),
+  stateSecret: assertDefined(process.env.SLACK_STATE_SECRET, "missing SLACK_STATE_SECRET"),
 
   installationStore: {
     async storeInstallation(installation) {
