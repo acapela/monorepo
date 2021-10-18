@@ -2,7 +2,7 @@ import { differenceInHours, isBefore } from "date-fns";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { TopicEntity, topicEntity } from "~frontend/clientdb/topic";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 
 import { RequestsGroup } from "./RequestsGroup";

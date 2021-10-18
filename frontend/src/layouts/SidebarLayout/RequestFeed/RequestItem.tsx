@@ -4,7 +4,6 @@ import Link from "next/link";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRouteParams } from "~frontend/hooks/useRouteParams";
 import { routes } from "~shared/routes";
