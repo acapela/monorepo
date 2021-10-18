@@ -4071,6 +4071,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jest@npm:^27.0.2":
+  version: 27.0.2
+  resolution: "@types/jest@npm:27.0.2"
+  dependencies:
+    jest-diff: ^27.0.0
+    pretty-format: ^27.0.0
+  checksum: 814ad5f5d2f277849f47e52906da4b745758e555630fc8cb46a071bde648eefeffb1b35710c530a8cea7fc4ea7c1d813812c120484bf7902ab6c5e473cdd49c9
+  languageName: node
+  linkType: hard
+
 "@types/js-cookie@npm:^2.2.6":
   version: 2.2.7
   resolution: "@types/js-cookie@npm:2.2.7"
@@ -12976,6 +12986,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.memoize@npm:4.x":
+  version: 4.1.2
+  resolution: "lodash.memoize@npm:4.1.2"
+  checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -18592,6 +18609,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-jest@npm:^27.0.7":
+  version: 27.0.7
+  resolution: "ts-jest@npm:27.0.7"
+  dependencies:
+    bs-logger: 0.x
+    fast-json-stable-stringify: 2.x
+    jest-util: ^27.0.0
+    json5: 2.x
+    lodash.memoize: 4.x
+    make-error: 1.x
+    semver: 7.x
+    yargs-parser: 20.x
+  peerDependencies:
+    "@babel/core": ">=7.0.0-beta.0 <8"
+    "@types/jest": ^27.0.0
+    babel-jest: ">=27.0.0 <28"
+    jest: ^27.0.0
+    typescript: ">=3.8 <5.0"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@types/jest":
+      optional: true
+    babel-jest:
+      optional: true
+  bin:
+    ts-jest: cli.js
+  checksum: 3711361cb5ae54aac547b00f8ad118ec88333c391af4bff0420497e9faa296eace4e8272c627ecbf4be675af9f68c437e4c2ccc5693c6d744796ec7da6dda131
+  languageName: node
+  linkType: hard
+
 "ts-loader@npm:^7.0.0":
   version: 7.0.5
   resolution: "ts-loader@npm:7.0.5"
@@ -20001,6 +20049,7 @@ __metadata:
     "@types/analytics-node": ^3.1.6
     "@types/color": ^3.0.2
     "@types/is-hotkey": ^0.1.5
+    "@types/jest": ^27.0.2
     "@types/jsonwebtoken": ^8.5.5
     "@types/pino": ^6.3.11
     analytics-node: ^4.0.1
@@ -20010,6 +20059,7 @@ __metadata:
     jsonwebtoken: ^8.5.1
     pino: ^6.13.3
     simple-markdown: ^0.7.3
+    ts-jest: ^27.0.7
     unicode-emoji-json: ^0.3.0
   peerDependencies:
     date-fns: "*"
