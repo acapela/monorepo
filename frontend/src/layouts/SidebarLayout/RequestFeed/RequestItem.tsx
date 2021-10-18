@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInHours, differenceInMinutes, isBefore, isToday } from "date-fns";
+import { differenceInDays, differenceInHours, differenceInMinutes, isBefore, isToday, startOfDay } from "date-fns";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import React from "react";
@@ -23,18 +23,21 @@ const filterByUnfinishedTasksAssignedToCurrentUser = (task: TaskEntity) =>
   task.isAssignedToSelf && !!task.due_at && !task.isDone;
 
 const getRelativeDueTimeLabel = (rawDate: string) => {
-  const dueDate = new Date(rawDate);
   const now = new Date();
+  const dueDate = new Date(rawDate);
+  const dayOfDueDate = startOfDay(dueDate);
+  const today = startOfDay(now);
+
   const isPastDue = isBefore(dueDate, now);
-  const isDueToday = isToday(dueDate);
+  const isDueToday = isToday(dayOfDueDate);
 
   const isLessThan1HourFromNow = Math.abs(differenceInMinutes(now, dueDate)) < 60;
   if (isLessThan1HourFromNow) {
     return isPastDue ? "Recently past due" : "Due soon";
   }
 
-  const getHoursFromDueDate = () => (isPastDue ? differenceInHours(now, dueDate) : differenceInHours(dueDate, now));
-  const getDaysFromDueDate = () => (isPastDue ? differenceInDays(now, dueDate) : differenceInDays(dueDate, now));
+  const getHoursFromDueDate = () => Math.abs(differenceInHours(now, dueDate));
+  const getDaysFromDueDate = () => Math.abs(differenceInDays(today, dayOfDueDate));
 
   const amount = isDueToday ? getHoursFromDueDate() : getDaysFromDueDate();
   const hourOrDay = isDueToday ? "Hour" : "Day";
