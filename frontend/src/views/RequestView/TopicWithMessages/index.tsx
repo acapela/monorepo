@@ -9,6 +9,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
+import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PopAnimatedButton } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
@@ -63,15 +64,15 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
       <UIHolder>
         <UIHead>
           <UITitle>{topic.name}</UITitle>
-          <UIAdditionalInfo>
-            {topic.participants.count} {topic.participants.count === 1 ? "participant" : "participants"}
-          </UIAdditionalInfo>
+          <UIParticipants>
+            <AvatarList users={topic.participants.all} maxVisibleCount={5} />
+            {/* TODO: Include invite button */}
+          </UIParticipants>
         </UIHead>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <AnimateSharedLayout>
             <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
-
             {/* TODO: Replace with events */}
             {topic && isClosed && <TopicSummaryMessage topic={topic} />}
           </AnimateSharedLayout>
@@ -125,6 +126,10 @@ const UIHolder = styled.div`
 `;
 
 const UIHead = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
@@ -134,8 +139,12 @@ const UITitle = styled.h3`
   ${theme.typo.pageTitle};
 `;
 
-const UIAdditionalInfo = styled.div`
-  ${theme.typo.content.secondary}
+const UIParticipants = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  ${theme.spacing.horizontalActions.asGap}
+  ${theme.typo.pageTitle};
 `;
 
 const UIFooterContainer = styled.div`
