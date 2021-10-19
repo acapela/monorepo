@@ -20,7 +20,7 @@ import { useFileDroppedInContext } from "~richEditor/DropFileContext";
 import { FileInput } from "~richEditor/FileInput";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
-import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
@@ -181,7 +181,7 @@ export const NewRequest = observer(function NewRequest() {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
       const newMessage = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
 
-      for (const { userId, type } of getUniqueMentionDataFromContent(messageContent)) {
+      for (const { userId, type } of getUniqueRequestMentionDataFromContent(messageContent)) {
         db.task.create({ message_id: newMessage.id, user_id: userId, type });
       }
 

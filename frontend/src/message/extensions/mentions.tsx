@@ -16,7 +16,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { isNotNullish } from "~shared/nullish";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
-import { MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, NEW_MENTION_TYPE_LABELS } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
@@ -85,13 +85,6 @@ const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePicke
   );
 });
 
-type MentionTypeLabel = string;
-
-const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
-  "request-read": "Request read receipt",
-  "request-response": "Request response",
-};
-
 function MentionTypePicker({
   selected,
   onSelect,
@@ -99,10 +92,8 @@ function MentionTypePicker({
   selected: MentionType;
   onSelect: (mention: MentionType) => void;
 }) {
-  type MentionLabelPair = [MentionType, MentionTypeLabel];
-
-  const mentionLabelPairs = toPairs(mentionTypeLabelMap) as Array<MentionLabelPair>;
-  const selectedPair = [selected, mentionTypeLabelMap[selected]] as MentionLabelPair;
+  const mentionLabelPairs = toPairs(NEW_MENTION_TYPE_LABELS) as [MentionType, string][];
+  const selectedPair = [selected, NEW_MENTION_TYPE_LABELS[selected]] as const;
 
   return (
     <ItemsDropdown
@@ -111,6 +102,7 @@ function MentionTypePicker({
       onItemSelected={([mentionType]) => onSelect(mentionType)}
       labelGetter={([, mentionLabel]) => mentionLabel}
       selectedItems={[selectedPair]}
+      dividerIndexes={[mentionLabelPairs.length - 1]}
     />
   );
 }
@@ -179,10 +171,9 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         </Popover>
       )}
       <UIMention
-        mentionType={data.type}
         ref={anchorRef}
         onClick={handleOpenMentionTypePicker}
-        data-tooltip={isEditable ? "Change request type" : mentionTypeLabelMap[data.type]}
+        data-tooltip={isEditable ? "Change request type" : MENTION_TYPE_LABELS[data.type]}
         isEditable={isEditable}
       >
         @{db.user.findById(data.userId)?.name ?? "???"}
@@ -198,7 +189,7 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
   pickerComponent: MentionPicker,
 });
 
-const UIMention = styled.span<{ mentionType: MentionType; isEditable: boolean }>`
+const UIMention = styled.span<{ isEditable: boolean }>`
   cursor: default;
 
   ${theme.colors.tags.primary.asColor};

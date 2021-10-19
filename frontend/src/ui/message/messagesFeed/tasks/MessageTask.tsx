@@ -6,6 +6,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { niceFormatDateTime } from "~shared/dates/format";
+import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -14,13 +15,6 @@ import { theme } from "~ui/theme";
 interface Props {
   task: TaskEntity;
 }
-
-const TASK_TYPE_LABELS = new Map(
-  Object.entries({
-    "request-read": "Confirmation",
-    "request-response": "Feedback",
-  })
-);
 
 export const MessageTask = observer(({ task }: Props) => {
   function getTooltip() {
@@ -64,7 +58,7 @@ export const MessageTask = observer(({ task }: Props) => {
         <PopoverMenuTrigger isDisabled={!task.isAssignedToSelf} options={taskEditOptions} placement="bottom">
           <UIStatusLabel isDone={task.isDone} isActionable={task.isAssignedToSelf}>
             {task.isDone && <UIMark>✓&nbsp;</UIMark>}
-            {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
+            {MENTION_TYPE_LABELS[task.type as RequestType] ?? task.type}
             {!task.isDone && task.isAssignedToSelf && <UIChevronDown />}
           </UIStatusLabel>
         </PopoverMenuTrigger>

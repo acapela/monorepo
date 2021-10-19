@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
 import { maxBy } from "lodash";
 import { action } from "mobx";
@@ -6,6 +7,7 @@ import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
 import { niceFormatTime } from "~shared/dates/format";
 import { createDebugLogger } from "~shared/dev";
+import { getMentionNodesFromContent } from "~shared/editor/mentions";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
@@ -87,17 +89,18 @@ export const topicEntity = defineEntity<TopicFragment>({
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
-    const tasks = getEntity(taskEntity).query({ message_id: () => messages.all.map((message) => message.id) });
+    const isCurrentUserMentioned = (content: JSONContent) =>
+      getMentionNodesFromContent(content).some((mentionNode) => mentionNode.attrs.data.userId === currentUserId);
 
     const participants = getEntity(userEntity).query((user) => {
       if (topic.owner_id === user.id) return true;
 
       if (getEntity(messageEntity).query({ user_id: user.id, topic_id: topic.id }).hasItems) return true;
 
-      return messages.query((message) => message.tasks.query({ user_id: user.id }).hasItems).hasItems;
+      return messages.query((message) => isCurrentUserMentioned(message.content)).hasItems;
     });
 
-    const unseedMessages = getEntity(lastSeenMessageEntity).query({
+    const unseenMessages = getEntity(lastSeenMessageEntity).query({
       // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
       user_id: currentUserId ?? "no-user",
       topic_id: topic.id,
@@ -107,7 +110,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       if (!currentUserId) return null;
 
       // There is unique index so we know there is only one 'last_seen_message' per user per topic
-      return unseedMessages.first ?? null;
+      return unseenMessages.first ?? null;
     }
 
     const unreadMessages = getEntity(messageEntity)
@@ -140,7 +143,11 @@ export const topicEntity = defineEntity<TopicFragment>({
         return getEntity(userEntity).findById(topic.owner_id);
       },
       messages,
-      tasks,
+      get tasks() {
+        return getEntity(taskEntity).query({
+          message_id: () => messages.all.map((message) => message.id),
+        });
+      },
       get participants() {
         return participants;
       },
@@ -149,9 +156,15 @@ export const topicEntity = defineEntity<TopicFragment>({
 
         if (topic.owner_id === currentUserId) return true;
 
-        if (getEntity(messageEntity).query({ user_id: currentUserId, topic_id: topic.id }).hasItems) return true;
+        if (
+          getEntity(messageEntity).query({
+            user_id: currentUserId,
+            topic_id: topic.id,
+          }).hasItems
+        )
+          return true;
         // TODO: optimize
-        return messages.query((message) => message.tasks.query({ user_id: currentUserId }).hasItems).hasItems;
+        return messages.query((message) => isCurrentUserMentioned(message.content)).hasItems;
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
@@ -201,7 +214,10 @@ export const topicEntity = defineEntity<TopicFragment>({
 
         debug(
           "lastSeenMessageDate",
-          lastSeenMessageDate && lastSeenMessageDate.toLocaleTimeString(undefined, { timeStyle: "long" })
+          lastSeenMessageDate &&
+            lastSeenMessageDate.toLocaleTimeString(undefined, {
+              timeStyle: "long",
+            })
         );
         debug("lastActiviyDate", lastActiviyDate.toLocaleTimeString(undefined, { timeStyle: "long" }));
 
