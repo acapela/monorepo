@@ -223,6 +223,6 @@ export function cleanupAst(ast: markdown.SingleASTNode[]): markdown.SingleASTNod
 }
 
 export function parseSlackMarkdown(text: string) {
-  const ast = markdown.parserFor(rules as markdown.ParserRules)(text);
+  const ast = markdown.parserFor(rules, { inline: true })(text);
   return cleanupAst(ast);
 }
