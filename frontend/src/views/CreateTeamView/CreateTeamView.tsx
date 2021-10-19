@@ -4,10 +4,11 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
+import { Button } from "~frontend/../../ui/buttons/Button";
+import { TextButton } from "~frontend/../../ui/buttons/TextButton";
 import { TextInput } from "~frontend/../../ui/forms/TextInput";
 import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
@@ -17,6 +18,7 @@ import { slugify } from "~shared/slugify";
 export const CreateTeamView = observer(() => {
   const db = useDb();
   const teamManaer = useCurrentTeamContext();
+  const hasOtherTeams = db.team.all.length > 0;
   const router = useRouter();
   const [name, setName] = useState("");
 
@@ -45,18 +47,21 @@ export const CreateTeamView = observer(() => {
         <TextInput placeholder="Team name..." value={name} onChangeText={setName} />
       </UITeams>
       <ActionWithAlternative
-        onClick={handleCreateNewTeam}
-        isWide
-        kind="primary"
-        isDisabled={name.trim().length < 3}
-        alternative={{
-          label: "Select existing team instead",
-          onClick: () => {
-            router.push(routes.teamSelect);
-          },
-        }}
+        alternative={
+          hasOtherTeams && (
+            <TextButton
+              onClick={() => {
+                router.push(routes.teamSelect);
+              }}
+            >
+              Select existing team instead
+            </TextButton>
+          )
+        }
       >
-        Create new team
+        <Button onClick={handleCreateNewTeam} isWide kind="primary" isDisabled={name.trim().length < 3}>
+          Create new team
+        </Button>
       </ActionWithAlternative>
     </UIHolder>
   );

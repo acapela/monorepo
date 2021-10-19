@@ -5,18 +5,15 @@ import styled from "styled-components";
 
 import { IconPlus } from "~frontend/../../ui/icons";
 import { theme } from "~frontend/../../ui/theme";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
 import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 
 export const SelectTeamView = observer(() => {
   const db = useDb();
   const teams = db.team.all;
-  const user = useAssertCurrentUser();
   const teamManager = useCurrentTeamContext();
   const router = useRouter();
 
@@ -25,6 +22,11 @@ export const SelectTeamView = observer(() => {
   }
 
   const handleSelectExistingTeam = action(async (team: TeamEntity) => {
+    if (team.isCurrentUserCurrentTeam) {
+      router.push(routes.home);
+      return;
+    }
+
     await teamManager.changeTeamId(team.id);
 
     router.push(routes.home);
@@ -35,6 +37,7 @@ export const SelectTeamView = observer(() => {
       {teams.length > 0 && (
         <UITeams>
           {teams.map((team) => {
+            const isCurrentTeam = team.isCurrentUserCurrentTeam;
             return (
               <UITeam key={team.id}>
                 <UITeamInfo>
@@ -42,31 +45,24 @@ export const SelectTeamView = observer(() => {
                   <UITeamMeta>•</UITeamMeta>
                   <UITeamMeta>{team.members.count + ` ${team.members.count === 1 ? "member" : "members"}`}</UITeamMeta>
                 </UITeamInfo>
-                <Button kind="primary" onClick={() => handleSelectExistingTeam(team)}>
-                  Select team
-                </Button>
+                {!isCurrentTeam && (
+                  <Button kind="primary" onClick={() => handleSelectExistingTeam(team)}>
+                    Select team
+                  </Button>
+                )}
+                {isCurrentTeam && (
+                  <Button kind="secondary" onClick={() => handleSelectExistingTeam(team)}>
+                    Keep using
+                  </Button>
+                )}
               </UITeam>
             );
           })}
         </UITeams>
       )}
-      <ActionWithAlternative
-        onClick={handleCreateNewTeam}
-        isWide
-        icon={<IconPlus />}
-        alternative={
-          user.currentTeam
-            ? {
-                label: "Keep using your current team",
-                onClick: () => {
-                  router.push(routes.home);
-                },
-              }
-            : undefined
-        }
-      >
+      <Button onClick={handleCreateNewTeam} kind="primary" isWide icon={<IconPlus />}>
         Create new team
-      </ActionWithAlternative>
+      </Button>
     </UIHolder>
   );
 });

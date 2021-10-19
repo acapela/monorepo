@@ -6,7 +6,7 @@ import { TeamFragment } from "~gql";
 
 import { teamMemberEntity } from "./teamMember";
 import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
+import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -46,6 +46,9 @@ export const teamEntity = defineEntity<TeamFragment>({
   },
   get isOwnedByCurrentUser() {
     return team.owner_id === getContextValue(userIdContext);
+  },
+  get isCurrentUserCurrentTeam() {
+    return team.id === getContextValue(teamIdContext);
   },
   members: getEntity(teamMemberEntity).query({ team_id: team.id }),
 }));
