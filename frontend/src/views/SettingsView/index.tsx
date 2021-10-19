@@ -7,6 +7,7 @@ import { TeamMembersManager } from "~frontend/team/TeamMembersManager";
 import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
+import { TeamManagerSettingsPanel } from "./TeamManager";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 const appBuildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
@@ -19,7 +20,7 @@ export const SettingsView = observer(function SettingsView() {
       <UIHolder>
         <UIHeader>Settings</UIHeader>
         <NotificationSettings />
-        <TeamMembersManager team={currentTeam} />
+        <TeamManagerSettingsPanel team={currentTeam} />
 
         {appVersion && (
           <UIVersionInfo>

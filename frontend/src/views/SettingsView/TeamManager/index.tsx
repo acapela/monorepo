@@ -10,7 +10,7 @@ interface Props {
   team: TeamEntity;
 }
 
-export const TeamManager = observer(({ team }: Props) => {
+export const TeamManagerSettingsPanel = observer(({ team }: Props) => {
   return (
     <UIPanel>
       <UIHeader>
@@ -50,30 +50,4 @@ const UITitle = styled.h3<{}>`
   span {
     ${theme.font.secondary};
   }
-`;
-
-const UIItemHolder = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px;
-`;
-
-const UIActionsHolder = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const UISelectGridContainer = styled.div<{}>`
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  width: 100%;
-  padding: 8px;
-  border: 1px solid ${theme.colors.layout.background.border};
-  ${theme.radius.panel}
 `;
