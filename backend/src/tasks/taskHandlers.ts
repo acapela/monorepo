@@ -4,6 +4,7 @@ import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Task, Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
+import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
 
 export async function markAllOpenTasksAsDone(topic: Topic) {
   const nowInTimestamp = new Date().toISOString();
@@ -39,12 +40,12 @@ export async function handleTaskChanges(event: HasuraEvent<Task>) {
   const teamId = topic.team_id;
   const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
   const slackFrom = await getSlackUserMentionOrLabel(fromUser, teamId);
-  const taskLabel = task.type == "request-response" ? "feedback" : "confirmation";
+  const taskLabel = MENTION_TYPE_LABELS[task.type as MentionType] ?? "attention";
   await sendNotificationPerPreference(toUser, teamId, {
     email: {
-      subject: `${fromUser.name} created a request for you in ${topic.name}`,
+      subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
       html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
     },
-    slack: `${slackFrom} has asked for your ${taskLabel} in <${topicURL}|${topic.name}>`,
+    slack: `${slackFrom} has asked for your *${taskLabel}* in <${topicURL}|${topic.name}>`,
   });
 }

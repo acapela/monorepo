@@ -19,6 +19,7 @@ interface Props<I> {
   onItemSelected: (item: I) => void;
   onCloseRequest?: () => void;
   additionalContent?: ReactNode;
+  dividerIndexes?: number[];
 }
 
 export function ItemsDropdown<I>({
@@ -30,6 +31,7 @@ export function ItemsDropdown<I>({
   onCloseRequest,
   iconGetter,
   additionalContent,
+  dividerIndexes,
 }: Props<I>) {
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(items, {
     enableKeyboard: true,
@@ -65,22 +67,24 @@ export function ItemsDropdown<I>({
 
   return (
     <UIMenu maxHeight={maxHeight} ref={menuRef}>
-      {items.map((item) => {
+      {items.map((item, i) => {
         const itemKey = keyGetter(item);
         const isSelected = getIsItemSelected(item);
         const isHighlighted = keyGetter(highlightedItem) === itemKey;
         return (
-          <DropdownItem
-            key={itemKey}
-            onClick={() => {
-              onItemSelected(item);
-            }}
-            onHighlightRequest={() => setHighlightedItem(item)}
-            isHighlighted={isHighlighted}
-            isSelected={isSelected}
-            icon={iconGetter?.(item)}
-            label={labelGetter(item)}
-          />
+          <React.Fragment key={itemKey}>
+            {dividerIndexes && dividerIndexes.includes(i) && <UIDivider />}
+            <DropdownItem
+              onClick={() => {
+                onItemSelected(item);
+              }}
+              onHighlightRequest={() => setHighlightedItem(item)}
+              isHighlighted={isHighlighted}
+              isSelected={isSelected}
+              icon={iconGetter?.(item)}
+              label={labelGetter(item)}
+            />
+          </React.Fragment>
         );
       })}
       {additionalContent}
@@ -100,4 +104,11 @@ const UIMenu = styled(PopPresenceAnimator)<{ maxHeight?: number }>`
   ${theme.radius.panel};
   ${theme.colors.panels.popover.asBgWithReadableText};
   ${theme.shadow.popover};
+`;
+
+const UIDivider = styled.div<{}>`
+  margin: 5px 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  height: 1px;
+  width: 100%;
 `;

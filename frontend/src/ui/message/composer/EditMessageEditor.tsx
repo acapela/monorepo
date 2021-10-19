@@ -11,7 +11,7 @@ import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
-import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
@@ -73,7 +73,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
     message.update({ content });
 
-    const mentionData = getUniqueMentionDataFromContent(content);
+    const mentionData = getUniqueRequestMentionDataFromContent(content);
 
     const unmentionedTasks = message.tasks.all.filter(
       (task) => !mentionData.some((mention) => isMentioningTask(mention, task))
