@@ -14,7 +14,7 @@ import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
-import { Recorder } from "~frontend/ui/message/composer/Recorder";
+import { MessageTools } from "~frontend/ui/message/composer/Tools";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
@@ -161,8 +161,9 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           }}
         />
         <UIRequestControls>
-          <Recorder
+          <MessageTools
             onRecordingReady={async (recording) => {
+              console.log({ recording });
               const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
 
               const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);

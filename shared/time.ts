@@ -20,6 +20,13 @@ export function createTimeout(callback: () => void, time: number) {
     clearTimeout(timeoutNumber);
   };
 }
+export function createInterval(callback: () => void, time: number) {
+  const intervalNumber = setInterval(callback, time);
+
+  return function clear() {
+    clearInterval(intervalNumber);
+  };
+}
 
 export function formatMsTimeToPlaybackTime(time: number) {
   if (!Number.isFinite(time)) {
