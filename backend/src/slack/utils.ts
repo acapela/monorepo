@@ -14,7 +14,7 @@ export async function fetchTeamBotToken(teamId: string) {
 }
 
 // finds a slack user either through the team_member's slack installation or by email
-export async function findSlackUserId(teamId: string, user: User) {
+export async function findSlackUserId(teamId: string, user: User): Promise<string | undefined> {
   const teamMemberSlack = await db.team_member_slack.findFirst({
     where: { team_member: { team_id: teamId, user_id: user.id } },
   });
@@ -70,3 +70,8 @@ export const createLinkSlackWithAcapelaView = ({ triggerId }: { triggerId: strin
     ],
   },
 });
+
+export async function getSlackUserMentionOrLabel(user: User, teamId: string) {
+  const invitingUserSlackId = await findSlackUserId(teamId, user);
+  return invitingUserSlackId ? `<@${invitingUserSlackId}>` : user.name;
+}

@@ -1,86 +1,86 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { slackClient } from "~backend/src/slack/app";
-import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
-import { findTeamById } from "~backend/src/teams/helpers";
-import { User, db } from "~db";
+import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
+import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
+import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
-import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 import { routes } from "~shared/routes";
 
-async function sendInvitationSlackMessage(teamId: string, inviter: User, slackUserId: string, inviteURL: string) {
-  const [botToken, invitingUserSlackId] = await Promise.all([
-    fetchTeamBotToken(teamId),
-    findSlackUserId(teamId, inviter),
-  ]);
-  const inviterName = invitingUserSlackId ? `<@${invitingUserSlackId}>` : "A colleague";
-  await slackClient.chat.postMessage({
-    token: botToken,
-    channel: slackUserId,
-    text: `${inviterName} <${inviteURL}|has invited you to join Acapela>`,
-  });
-}
-
-async function sendInvitationEmail(teamId: string, email: string, inviter: User, inviteURL: string) {
-  const team = await findTeamById(teamId);
-
-  assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
-
-  await sendEmail({
-    from: DEFAULT_NOTIFICATION_EMAIL,
-    to: email,
-    subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
-    html: [
-      "Hey!",
-      `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
-      `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
-    ].join("<br>"),
-  });
-}
-
-export const sendInviteNotification = async (user: User, teamId: string, invitingUserId: string) => {
+async function sendNewUserInviteNotification(user: User, team: Team, inviter: User) {
   const inviteURL = `${process.env.FRONTEND_URL}${routes.invite}?${new URLSearchParams(
     Object.entries({
-      jwt: signJWT(createJWT({ userId: user.id, teamId })),
-      teamId,
-      invitingUserId,
+      jwt: signJWT(createJWT({ userId: user.id })),
+      teamId: team.id,
+      invitingUserId: inviter.id,
     })
   )}`;
-  const invitingUser = await db.user.findUnique({ where: { id: invitingUserId } });
-  assert(invitingUser, new UnprocessableEntityError(`Inviter ${invitingUserId} does not exist`));
-
-  const teamMemberSlack = await db.team_member_slack.findFirst({
-    where: { team_member: { team_id: teamId, user_id: user.id } },
+  const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
+  await sendNotificationPerPreference(user, team.id, {
+    email: {
+      subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
+      html: [
+        "Hey!",
+        `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
+        `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
+      ].join("<br>"),
+    },
+    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}" Acapela>`,
   });
+}
 
-  if (teamMemberSlack) {
-    await sendInvitationSlackMessage(teamId, invitingUser, teamMemberSlack.slack_user_id, inviteURL);
+async function sendExistingUserInviteNotification(user: User, team: Team, inviter: User) {
+  const inviteURL = `${process.env.FRONTEND_URL}${routes.teamSelect}`;
+  const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
+  await sendNotificationPerPreference(user, team.id, {
+    email: {
+      subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
+      html: [
+        "Hey!",
+        `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
+        `Follow <a href="${inviteURL}">this link</a> and select team "${team.name}" to join the discussion.`,
+      ].join("<br>"),
+    },
+    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}">`,
+  });
+}
+
+export async function sendInviteNotification(
+  user: User & { account: Account[] },
+  teamId: string,
+  invitingUserId: string
+) {
+  const [team, inviter] = await Promise.all([
+    db.team.findUnique({ where: { id: teamId } }),
+    db.user.findUnique({ where: { id: invitingUserId } }),
+  ]);
+  assert(team, `missing team for ${teamId}`);
+  assert(inviter, `Inviter ${invitingUserId} does not exist`);
+
+  if (user.account.length == 0) {
+    await sendNewUserInviteNotification(user, team, inviter);
   } else {
-    await sendInvitationEmail(teamId, user.email, invitingUser, inviteURL);
+    await sendExistingUserInviteNotification(user, team, inviter);
   }
 
-  log.info("Sent invite notification", {
-    userId: user.id,
-    teamId,
-  });
-};
+  log.info("Sent invite notification", { userId: user.id, teamId });
+}
 
 export const inviteUser: ActionHandler<{ input: { email: string; team_id: string } }, { success: boolean }> = {
   actionName: "invite_user",
 
   async handle(invitingUserId, { input: { email, team_id } }) {
-    const findUserByEmailAndTeamId = () =>
-      db.user.findFirst({ where: { email, team_member: { some: { team_id } } }, include: { account: true } });
-
-    let user = await findUserByEmailAndTeamId();
-    if (user || !invitingUserId) {
+    if (!invitingUserId) {
       return { success: false };
     }
 
-    if (!user) {
-      await db.team_member.create({
+    let teamMember = await db.team_member.findFirst({
+      where: { team_id, user: { email } },
+      include: { user: { include: { account: true } } },
+    });
+
+    if (!teamMember) {
+      teamMember = await db.team_member.create({
         data: {
           user: {
             connectOrCreate: {
@@ -94,16 +94,15 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
           },
           team: { connect: { id: team_id } },
         },
+        include: {
+          user: { include: { account: true } },
+        },
       });
-      user = await findUserByEmailAndTeamId();
     }
 
-    assert(user, "user must have been created");
+    assert(teamMember, "teamMember must have been created");
 
-    if (user.account.length === 0) {
-      // Only send invite notification email to users without an account
-      await sendInviteNotification(user, team_id, invitingUserId);
-    }
+    await sendInviteNotification(teamMember.user, team_id, invitingUserId);
 
     return {
       success: true,

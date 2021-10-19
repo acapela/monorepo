@@ -1,8 +1,7 @@
 import { sendInviteNotification } from "~backend/src/inviteUser";
 import { slackClient } from "~backend/src/slack/app";
 import { findUserBySlackId } from "~backend/src/slack/utils";
-import { User, db } from "~db";
-import { Sentry } from "~shared/sentry";
+import { Account, User, db } from "~db";
 import { slugify } from "~shared/slugify";
 import { MentionType } from "~shared/types/mention";
 
@@ -12,7 +11,7 @@ async function createAndInviteMissingUsers(
   invitingUserId: string,
   slackUserIds: string[]
 ) {
-  const usersWithSlackIds: { slackUserId: string; user: User }[] = [];
+  const usersWithSlackIds: { slackUserId: string; user: User & { account: Account[] } }[] = [];
   await db.$transaction(async (transactionUntyped) => {
     const transaction = transactionUntyped as typeof db;
     await Promise.all(
@@ -26,7 +25,10 @@ async function createAndInviteMissingUsers(
         if (!name || !email) {
           return;
         }
-        const user = await transaction.user.create({ data: { name, email, avatar_url: profile?.image_original } });
+        const user = await transaction.user.create({
+          data: { name, email, avatar_url: profile?.image_original },
+          include: { account: true },
+        });
         await transaction.team_member.create({
           data: {
             team_id: teamId,
@@ -39,9 +41,7 @@ async function createAndInviteMissingUsers(
     );
   });
 
-  Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, teamId, invitingUserId))).catch(
-    (error) => Sentry.captureException(error)
-  );
+  await Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, teamId, invitingUserId)));
 
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
 }
