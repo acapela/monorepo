@@ -1,8 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import P from "pino";
 import styled from "styled-components";
 
-import { SlackLogo } from "~frontend/../../ui/icons/logos/SlackLogo";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import {
@@ -14,7 +12,8 @@ import {
 import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
 import { Button } from "~ui/buttons/Button";
-import { IconMinus, IconPlus } from "~ui/icons";
+import { IconMinus } from "~ui/icons";
+import { SlackLogo } from "~ui/icons/logos/SlackLogo";
 import { addToast } from "~ui/toasts/data";
 
 type Props = {

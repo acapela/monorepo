@@ -1,8 +1,7 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { Button, ButtonProps } from "~frontend/../../ui/buttons/Button";
-import { theme } from "~frontend/../../ui/theme";
+import { theme } from "~ui/theme";
 
 interface Props {
   children: ReactNode;

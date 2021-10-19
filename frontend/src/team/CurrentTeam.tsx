@@ -1,16 +1,16 @@
 import { gql, useApolloClient } from "@apollo/client";
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from "react";
 
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
+import { useNullableDb } from "~frontend/clientdb";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
   CurrentTeamSubscription,
   CurrentTeamSubscriptionVariables,
-} from "~frontend/../../gql";
-import { assert } from "~frontend/../../shared/assert";
-import { createChannel } from "~frontend/../../shared/channel";
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useNullableDb } from "~frontend/clientdb";
+} from "~gql";
+import { assert } from "~shared/assert";
+import { createChannel } from "~shared/channel";
 
 function useCurrentTeamManager() {
   const apollo = useApolloClient();
@@ -18,6 +18,7 @@ function useCurrentTeamManager() {
   const [isLoading, setIsLoading] = useState(true);
   const channel = useMemo(() => {
     return createChannel<string | null>();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apollo, userToken]);
 
   useEffect(() => {

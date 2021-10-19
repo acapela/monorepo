@@ -4,16 +4,15 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
-import { Button } from "~frontend/../../ui/buttons/Button";
-import { TextButton } from "~frontend/../../ui/buttons/TextButton";
-import { TextInput } from "~frontend/../../ui/forms/TextInput";
-import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
+import { Button } from "~ui/buttons/Button";
+import { TextButton } from "~ui/buttons/TextButton";
+import { TextInput } from "~ui/forms/TextInput";
 
 export const CreateTeamView = observer(() => {
   const db = useDb();
@@ -71,25 +70,4 @@ const UIHolder = styled.div<{}>``;
 
 const UITeams = styled.div<{}>`
   margin-bottom: 30px;
-`;
-
-const UITeam = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  ${theme.spacing.horizontalActions.asGap}
-`;
-
-const UITeamInfo = styled.div`
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  ${theme.spacing.close.asGap}
-`;
-
-const UITeamName = styled.div`
-  ${theme.typo.item.title};
-`;
-
-const UITeamMeta = styled.div`
-  ${theme.typo.content.secondary};
 `;

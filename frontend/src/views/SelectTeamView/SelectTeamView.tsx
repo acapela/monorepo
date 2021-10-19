@@ -3,13 +3,13 @@ import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-import { IconPlus } from "~frontend/../../ui/icons";
-import { theme } from "~frontend/../../ui/theme";
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
+import { IconPlus } from "~ui/icons";
+import { theme } from "~ui/theme";
 
 export const SelectTeamView = observer(() => {
   const db = useDb();
@@ -99,8 +99,4 @@ const UITeamName = styled.div`
 
 const UITeamMeta = styled.div`
   ${theme.typo.content.secondary};
-`;
-
-const UIEmptyState = styled.div`
-  ${theme.typo.content.center};
 `;

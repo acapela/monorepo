@@ -3,7 +3,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { TeamMembersManager } from "~frontend/team/TeamMembersManager";
 import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";

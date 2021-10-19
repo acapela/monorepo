@@ -1,20 +1,12 @@
 import { signOut } from "next-auth/react";
 import router from "next/router";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 
-import { routes } from "~frontend/../../shared/routes";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useNullableDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-
-interface Props {
-  children?: ReactNode;
-}
-
-interface AppRedirectsReturn {
-  willRedirect: boolean;
-}
+import { routes } from "~shared/routes";
 
 export function useAppRedirects() {
   const [canRender, setCanRender] = useState(false);

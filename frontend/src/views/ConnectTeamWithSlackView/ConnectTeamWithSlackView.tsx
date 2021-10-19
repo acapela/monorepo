@@ -3,11 +3,11 @@ import router from "next/router";
 import { useEffect } from "react";
 import styled from "styled-components";
 
-import { routes } from "~frontend/../../shared/routes";
-import { TextButton } from "~frontend/../../ui/buttons/TextButton";
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
 import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
 import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
+import { routes } from "~shared/routes";
+import { TextButton } from "~ui/buttons/TextButton";
 
 export const ConnectTeamWithSlackView = observer(() => {
   const currentTeam = useAssertCurrentTeam();

@@ -1,6 +1,5 @@
 import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { ConnectTeamWithSlackView } from "~frontend/views/ConnectTeamWithSlackView/ConnectTeamWithSlackView";
-import { CreateTeamView } from "~frontend/views/CreateTeamView/CreateTeamView";
 
 export default function TeamSlack() {
   return (
