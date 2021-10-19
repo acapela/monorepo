@@ -4,14 +4,15 @@ import { observer } from "mobx-react";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
+import { MessageEntity } from "~frontend/clientdb/message";
+import { assert } from "~shared/assert";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
-  task: TaskEntity;
+  message: MessageEntity;
   children: ReactNode;
 }
 
@@ -28,18 +29,22 @@ function getNextWorkDayEndOfDay() {
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
-export const TaskDueDateSetter = observer(({ task, children }: Props) => {
+export const TaskDueDateSetter = observer(({ message, children }: Props) => {
+  assert(message.tasks.hasItems, "Attempting to set due date for message that doesn't have tasks");
+
   const ref = useRef<HTMLDivElement>(null);
+
+  const currentDueDate = message.tasks.first?.due_at;
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
   const handleSubmit = async (date: Date | null) => {
     closeCalendar();
-    task.update({ due_at: date?.toISOString() ?? null });
+    message.tasks.all.forEach((task) => task.update({ due_at: date?.toISOString() ?? null }));
   };
 
-  const calendarInitialValue = task.due_at ? new Date(task.due_at) : getNextWorkDayEndOfDay();
+  const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -86,7 +91,7 @@ export const TaskDueDateSetter = observer(({ task, children }: Props) => {
               ] as PopoverMenuOption[]
             ).concat(
               // Add option to delete due date if previously present
-              task.due_at
+              currentDueDate
                 ? [
                     {
                       key: "delete",

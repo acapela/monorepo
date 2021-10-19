@@ -6,6 +6,7 @@ import React, { useMemo, useRef } from "react";
 import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
+import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -175,7 +176,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           />
           <NewMessageButtons
             topic={topic}
-            isOnlyShowingSend={hasTypedMessageContent}
             onSendRequest={() => handleSubmitTextMessage(false)}
             onCompleteRequest={() => handleSubmitTextMessage(true)}
           />
@@ -204,7 +204,7 @@ const UIEditorContainer = styled.div<{}>`
 
   ${theme.spacing.horizontalActionsSection.asGap}
 `;
-const UIRequestControls = styled.div<{}>`
+const UIRequestControls = styled(PopPresenceAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;

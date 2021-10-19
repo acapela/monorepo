@@ -9,11 +9,18 @@ interface Props {
   description?: ReactNode;
   icon?: ReactNode;
   noSpacing?: boolean;
+  className?: string;
 }
 
-export function EmptyStatePlaceholder({ title, description, noSpacing = false, icon = <IconSelection /> }: Props) {
+export function EmptyStatePlaceholder({
+  title,
+  description,
+  noSpacing = false,
+  icon = <IconSelection />,
+  className,
+}: Props) {
   return (
-    <UIHolder noSpacing={noSpacing}>
+    <UIHolder noSpacing={noSpacing} className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}
       {title && <UITitle>{title}</UITitle>}
       {description && <UIBody>{description}</UIBody>}

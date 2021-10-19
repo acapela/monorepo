@@ -38,7 +38,7 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
   return (
     <UIHolder>
       <AnimateSharedLayout>
-        <TaskDueDateSetter task={firstTask}>
+        <TaskDueDateSetter message={message}>
           <Button
             kind="secondary"
             icon={<IconClock />}
