@@ -18,8 +18,8 @@ export const MENTION_TYPE_LABELS: Record<MentionType, string> = {
 };
 
 export const NEW_MENTION_TYPE_LABELS: Record<MentionType, string> = {
-  [REQUEST_READ]: "Request response",
-  [REQUEST_RESPONSE]: "Request read confirmation",
+  [REQUEST_RESPONSE]: "Request response",
+  [REQUEST_READ]: "Request read confirmation",
   [REQUEST_ACTION]: "Request action",
   [MENTION_OBSERVER]: "Add as observer",
 };
