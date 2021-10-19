@@ -13,6 +13,7 @@ import styled, { createGlobalStyle } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
+import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { ClientDbProvider } from "~frontend/clientdb";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
@@ -26,8 +27,6 @@ import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
-
-import { RequiredSessionProvider } from "./auth/RequiredSessionProvider";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
