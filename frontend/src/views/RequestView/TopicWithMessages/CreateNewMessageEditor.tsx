@@ -174,6 +174,9 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
                 attachments: uploadedAttachments,
               });
             }}
+            onFilesPicked={async (files) => {
+              await uploadAttachments(files);
+            }}
           />
           <NewMessageButtons
             topic={topic}
