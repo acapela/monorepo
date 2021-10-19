@@ -28,7 +28,7 @@ export const CreateTeamView = observer(() => {
     }
 
     runInAction(async () => {
-      const newTeam = db.team.create({ name, slug: slugify(name) });
+      const newTeam = db.team.create({ name, slug: await slugify(name) });
 
       try {
         await newTeam.waitForSync();
