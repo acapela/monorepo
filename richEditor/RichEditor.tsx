@@ -10,7 +10,6 @@ import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
-import { useShortcut } from "~ui/keyboard/useShortcut";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
@@ -210,15 +209,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
 
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
-
-  function handleEnterShortcut() {
-    editor?.commands.keyboardShortcut("Enter");
-
-    return true;
-  }
-
-  useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
-  useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
 
   /**
    * Let's use any key pressed to instantly focus inside the editor
