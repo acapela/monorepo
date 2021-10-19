@@ -10,7 +10,11 @@ interface Props {
 }
 
 export const CircleLabel = styled(function CircleLabel({ className, label }: Props) {
-  return <UIHolder className={className}>{label}</UIHolder>;
+  return (
+    <UIHolder className={className}>
+      <UILabel>{label}</UILabel>
+    </UIHolder>
+  );
 })``;
 
 const UIHolder = styled.div`
@@ -21,5 +25,12 @@ const UIHolder = styled.div`
   align-items: center;
   justify-content: center;
 
+  height: 1em;
+  width: 1em;
+`;
+
+// Separating label font-size from UIHolder allows us to resize the CircleLabel based
+// on inherited fontsize
+const UILabel = styled.span`
   font-size: ${theme.typo.item.subtitle};
 `;
