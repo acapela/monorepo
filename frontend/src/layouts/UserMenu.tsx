@@ -1,19 +1,17 @@
 import { observer } from "mobx-react";
+import { signOut } from "next-auth/react";
 import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useChangeCurrentTeam } from "~frontend/hooks/useChangeCurrentTeam";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { routes } from "~shared/routes";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconLoader, IconMoreHoriz } from "~ui/icons";
+import { IconExternalLink, IconGear, IconMoreHoriz, IconSignOut, IconUsers } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { addToast } from "~ui/toasts/data";
 
 export const UserMenu = observer(function UserMenu() {
   const user = useAssertCurrentUser();
-  const [changeCurrentTeam] = useChangeCurrentTeam();
 
   return (
     <UIHolder>
@@ -23,21 +21,25 @@ export const UserMenu = observer(function UserMenu() {
           {
             label: "Settings",
             href: routes.settings,
+            icon: <IconGear />,
           },
           {
-            label: "Switch teams",
-            onSelect: async () => {
-              addToast({ icon: <IconLoader />, type: "success", title: "Exiting current team..." });
-              await changeCurrentTeam({ variables: { userId: user.id, teamId: null } });
-            },
+            label: "Switch team",
+            href: routes.teamSelect,
+            icon: <IconUsers />,
           },
           {
             label: "Visit website",
             externalURL: "https://acapela.com",
+            icon: <IconExternalLink />,
           },
           {
             label: "Sign out",
-            href: routes.logout,
+            onSelect: () => {
+              signOut({ callbackUrl: "/" });
+            },
+            isDestructive: true,
+            icon: <IconSignOut />,
           },
         ]}
       >
