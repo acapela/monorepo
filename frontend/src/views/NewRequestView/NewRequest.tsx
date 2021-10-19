@@ -247,8 +247,8 @@ export const NewRequest = observer(function NewRequest() {
           </Button>
         </FileInput>
         <Button
-          isDisabled={!isValid ? { reason: nextStepPromptLabel } : false}
-          kind={"primary"}
+          isDisabled={!isValid && { reason: nextStepPromptLabel }}
+          kind="primary"
           tooltip="Create Request"
           onClick={submit}
         >
@@ -283,6 +283,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
     `;
   }}
 
+  /* Mostly a nit: opening the console messes up the view without this */
   @media only screen and (max-width: 900px) {
     width: 100%;
     min-height: 150px;
