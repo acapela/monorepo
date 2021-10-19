@@ -1,11 +1,14 @@
 import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
+import React, { useMemo } from "react";
+import styled, { css } from "styled-components";
 
 import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { niceFormatDateTime } from "~shared/dates/format";
+import { IconChevronDown } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -31,15 +34,40 @@ export const MessageTask = observer(({ task }: Props) => {
 
     return `Not seen yet`;
   }
+
+  const taskEditOptions: PopoverMenuOption[] = useMemo(() => {
+    if (task.isDone) {
+      return [
+        {
+          key: "unfinished",
+          label: "Mark as Incomplete",
+          onSelect: () => task.update({ done_at: null }),
+        },
+      ];
+    } else {
+      return [
+        {
+          key: "complete",
+          label: "Mark as Complete",
+          onSelect: () => task.update({ done_at: new Date().toISOString() }),
+        },
+      ];
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task, task.isDone]);
+
   return (
     <UISingleTask key={task.id} data-tooltip={getTooltip()}>
       {task.assignedUser ? <UserAvatar size={30} user={task.assignedUser} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{task.assignedUser?.name}</UIUserNameLabel>
-        <UIStatusLabel isDone={task.isDone}>
-          {task.isDone && <UIMark>✓&nbsp;</UIMark>}
-          {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
-        </UIStatusLabel>
+        <PopoverMenuTrigger isDisabled={!task.isAssignedToSelf} options={taskEditOptions} placement="bottom">
+          <UIStatusLabel isDone={task.isDone} isActionable={task.isAssignedToSelf}>
+            {task.isDone && <UIMark>✓&nbsp;</UIMark>}
+            {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
+            {!task.isDone && task.isAssignedToSelf && <UIChevronDown />}
+          </UIStatusLabel>
+        </PopoverMenuTrigger>
       </UITextInfo>
     </UISingleTask>
   );
@@ -61,13 +89,26 @@ const UIUserNameLabel = styled.span<{}>`
   ${theme.typo.content.semibold.resetLineHeight}
 `;
 
-const UIStatusLabel = styled.span<{ isDone: boolean }>`
+const UIStatusLabel = styled.span<{ isDone: boolean; isActionable: boolean }>`
   ${theme.typo.label.medium};
   color: ${(props) => (props.isDone ? theme.colors.primary : theme.colors.text.tertiary)};
   display: flex;
   align-items: center;
+
+  ${(props) =>
+    props.isActionable &&
+    css`
+      cursor: pointer;
+    `}
 `;
 
 const UIMark = styled.span`
   font-size: 1.5em;
+`;
+
+const UIChevronDown = styled(IconChevronDown)<{}>`
+  /* Tweak positioning to be inline with font  */
+  margin-bottom: -3px;
+  height: 1.1rem;
+  width: 1.1rem;
 `;
