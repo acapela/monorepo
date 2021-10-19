@@ -108,7 +108,7 @@ const UIMark = styled.span`
 
 const UIChevronDown = styled(IconChevronDown)<{}>`
   /* Tweak positioning to be inline with font  */
-  margin-bottom: -3px;
+  margin-bottom: -2px;
   height: 1.1rem;
   width: 1.1rem;
 `;
