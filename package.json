@@ -59,7 +59,7 @@
     "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
     "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta:reload",
     "tooling:gql-types": "tooling gql frontend --watch",
-    "lint": "eslint . && prettier --check .",
+    "lint": "eslint --max-warnings=0 . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
     "postinstall": "husky install",
