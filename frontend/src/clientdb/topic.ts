@@ -144,9 +144,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       messages,
       get tasks() {
-        return getEntity(taskEntity).query({
+        const tasks = getEntity(taskEntity).query({
           message_id: () => messages.all.map((message) => message.id),
         });
+        return tasks;
       },
       get participants() {
         return participants;
