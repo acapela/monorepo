@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { CurvedArrow } from "~ui/arrows/CurvedArrow";
+import { CurvedArrow } from "~ui/icons/CurvedArrow";
 import { theme } from "~ui/theme";
 
 interface Props {
