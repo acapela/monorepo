@@ -12,7 +12,7 @@ export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
 
   return (
-    <FocusedActionLayout>
+    <FocusedActionLayout title="Log in to start using Acapela">
       {!isAuthenticated && <LoginOptionsView />}
       {isRedirecting && <div>Redirecting...</div>}
     </FocusedActionLayout>

@@ -77,12 +77,13 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     setDb(null);
     setCanRender(false);
 
-    if (teamManager.isLoading) return;
-
     if (!userId || !apolloClient) {
       setCanRender(true);
       return;
     }
+
+    if (teamManager.isLoading) return;
+
     const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamManager.teamId, apolloClient);
 
     let isCancelled = false;

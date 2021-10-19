@@ -1,12 +1,11 @@
-// Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
 
+// Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/nextjs";
 import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -28,6 +27,8 @@ import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
+import { RequiredSessionProvider } from "./auth/RequiredSessionProvider";
+
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
   Sentry.init({
@@ -43,7 +44,7 @@ if (["staging", "production"].includes(stage)) {
 }
 
 interface AddedProps {
-  session: Session;
+  session: Session | null;
   hasuraWebsocketEndpoint: string | null;
 }
 
@@ -77,7 +78,7 @@ export default function App({
     >
       <BuiltInStyles />
       <CommonMetadata />
-      <SessionProvider session={sessionFromServer}>
+      <RequiredSessionProvider session={sessionFromServer}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
             <AppThemeProvider theme={theme}>
@@ -97,7 +98,7 @@ export default function App({
             </AppThemeProvider>
           </ApolloProvider>
         </MotionConfig>
-      </SessionProvider>
+      </RequiredSessionProvider>
     </ErrorBoundary>
   );
 }
