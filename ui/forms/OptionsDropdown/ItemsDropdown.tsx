@@ -72,10 +72,9 @@ export function ItemsDropdown<I>({
         const isSelected = getIsItemSelected(item);
         const isHighlighted = keyGetter(highlightedItem) === itemKey;
         return (
-          <>
+          <React.Fragment key={itemKey}>
             {dividerIndexes && dividerIndexes.includes(i) && <UIDivider />}
             <DropdownItem
-              key={itemKey}
               onClick={() => {
                 onItemSelected(item);
               }}
@@ -85,7 +84,7 @@ export function ItemsDropdown<I>({
               icon={iconGetter?.(item)}
               label={labelGetter(item)}
             />
-          </>
+          </React.Fragment>
         );
       })}
       {additionalContent}
