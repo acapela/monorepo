@@ -28,7 +28,7 @@ export const CreateTeamView = observer(() => {
     runInAction(async () => {
       const newTeam = db.team.create({ name, slug: slugify(name) });
 
-      // TODO await sync
+      await newTeam.waitForSync();
 
       await teamManaer.changeTeamId(newTeam.id);
 

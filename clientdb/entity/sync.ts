@@ -1,5 +1,6 @@
 import { runInAction } from "mobx";
 
+import { mapGetOrCreate } from "~shared/map";
 import { runUntracked } from "~shared/mobxUtils";
 import { createResolvablePromise } from "~shared/promises";
 
@@ -43,6 +44,38 @@ interface EntitySyncManager<Data> {
 }
 
 const pushQueue = createPushQueue();
+
+const awaitingPushOperationsMap = new WeakMap<Entity<unknown, unknown>, Set<Promise<unknown>>>();
+
+function addAwaitingOperationToEntity<Data, Connections>(
+  entity: Entity<Data, Connections>,
+  operationPromise: Promise<unknown>
+) {
+  let currentlyAwaiting = awaitingPushOperationsMap.get(entity);
+
+  if (!currentlyAwaiting) {
+    currentlyAwaiting = new Set();
+    awaitingPushOperationsMap.set(entity, currentlyAwaiting);
+  }
+
+  currentlyAwaiting.add(operationPromise);
+
+  operationPromise.then(() => {
+    currentlyAwaiting?.delete(operationPromise);
+  });
+
+  operationPromise;
+}
+
+export async function waitForEntityAllAwaitingPushOperations<Data, Connections>(entity: Entity<Data, Connections>) {
+  const awaitingOperations = awaitingPushOperationsMap.get(entity);
+
+  if (!awaitingOperations) {
+    return;
+  }
+
+  await Promise.all(Array.from(awaitingOperations));
+}
 
 /**
  * Sync manager sets manages running sync operations and repeating them after previous sync.
@@ -91,7 +124,10 @@ export function createEntitySyncManager<Data, Connections>(
       if (source !== "user") return;
 
       try {
-        await pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity));
+        await addAwaitingOperationToEntity(
+          entity,
+          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity))
+        );
       } catch (error) {
         entity.update(dataBefore, "sync");
       }
@@ -100,7 +136,10 @@ export function createEntitySyncManager<Data, Connections>(
     const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
       if (source !== "user") return;
       try {
-        await pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity));
+        await addAwaitingOperationToEntity(
+          entity,
+          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity))
+        );
       } catch (error) {
         entity.remove("sync");
       }
