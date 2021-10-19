@@ -12,12 +12,12 @@ import {
 import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
 import { Button } from "~ui/buttons/Button";
-import { IconMinus, IconPlus } from "~ui/icons";
+import { IconMinus } from "~ui/icons";
+import { SlackLogo } from "~ui/icons/logos/SlackLogo";
 import { addToast } from "~ui/toasts/data";
 
 type Props = {
   team: TeamEntity;
-  isCurrentUserTeamOwner: boolean;
 };
 
 export function AddSlackInstallationButton({
@@ -26,7 +26,7 @@ export function AddSlackInstallationButton({
   withBot,
 }: {
   teamId: string;
-  tooltip: string;
+  tooltip?: string;
   withBot?: boolean;
 }) {
   const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
@@ -51,9 +51,10 @@ export function AddSlackInstallationButton({
           "should have slack installation"
         ).url;
       }}
-      icon={<IconPlus />}
+      icon={<SlackLogo />}
       iconAtStart
       tooltip={tooltip}
+      isWide
     >
       Add Slack integration
     </UISlackButton>
@@ -109,10 +110,8 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
   );
 }
 
-export function SlackInstallationButton({ team, isCurrentUserTeamOwner }: Props) {
-  if (team.hasSlackInstallation) {
-    return isCurrentUserTeamOwner ? <RemoveSlackInstallationButton teamId={team.id} /> : null;
-  } else {
+export function SlackInstallationButton({ team }: Props) {
+  if (!team.hasSlackInstallation) {
     return (
       <AddSlackInstallationButton
         teamId={team.id}
@@ -121,8 +120,12 @@ export function SlackInstallationButton({ team, isCurrentUserTeamOwner }: Props)
       />
     );
   }
+
+  if (!team.isOwnedByCurrentUser) {
+    return null;
+  }
+
+  return <RemoveSlackInstallationButton teamId={team.id} />;
 }
 
-const UISlackButton = styled(Button)`
-  width: fit-content;
-`;
+const UISlackButton = styled(Button)``;

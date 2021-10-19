@@ -1,79 +1,32 @@
 import { observer } from "mobx-react";
-import { signOut } from "next-auth/react";
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useNullableDb } from "~frontend/clientdb";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
-import { WindowView } from "~frontend/views/WindowView";
 import { theme } from "~ui/theme";
 
-import { TeamPickerView } from "../TeamPicker";
 import { SidebarContent } from "./SidebarContent";
+import { useAppRedirects } from "./useAppRedirects";
 
 interface Props {
   children?: ReactNode;
 }
 
-/**
- * This hook returns a view that needs to be interacted with first, before another view can be used. Less abstractly,
- * that includes:
- * - login
- * - creating an account (users without accounts are created for invitations, and forced to log-out for now)
- * - choosing a team
- */
-function useBlockingViews() {
-  const userTokenData = useCurrentUserTokenData();
-  const currentTeamId = useCurrentTeamId();
-
-  const db = useNullableDb();
-  const user = userTokenData && db && db.user.findById(userTokenData.id);
-  const isUserWithoutAccount = user && !user.has_account;
-
-  useEffect(() => {
-    if (isUserWithoutAccount) {
-      signOut();
-    }
-  }, [isUserWithoutAccount]);
-
-  if (isUserWithoutAccount) {
-    return <></>;
-  }
-
-  if (!userTokenData || !user) {
-    return (
-      <WindowView>
-        <LoginOptionsView />
-      </WindowView>
-    );
-  }
-
-  if (!currentTeamId) {
-    return (
-      <WindowView>
-        <TeamPickerView />
-      </WindowView>
-    );
-  }
-
-  return null;
-}
-
 export const SidebarLayout = observer(({ children }: Props) => {
-  const blockingView = useBlockingViews();
+  const canRender = useAppRedirects();
+
+  if (!canRender) {
+    return null;
+  }
+
   return (
-    blockingView || (
-      <UIHolder>
-        <UISidebar>
-          <SidebarContent />
-        </UISidebar>
-        <UIMainContent>
-          <UIMainContentBody>{children}</UIMainContentBody>
-        </UIMainContent>
-      </UIHolder>
-    )
+    <UIHolder>
+      <UISidebar>
+        <SidebarContent />
+      </UISidebar>
+      <UIMainContent>
+        <UIMainContentBody>{children}</UIMainContentBody>
+      </UIMainContent>
+    </UIHolder>
   );
 });
 

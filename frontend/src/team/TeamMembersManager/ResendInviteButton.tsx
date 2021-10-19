@@ -1,7 +1,7 @@
 import React from "react";
 
 import { UserEntity } from "~frontend/clientdb/user";
-import { useInviteUser } from "~frontend/views/SettingsView/TeamMembersManager/shared";
+import { useInviteUser } from "~frontend/team/useInviteUser";
 import { Button } from "~ui/buttons/Button";
 import { addToast } from "~ui/toasts/data";
 

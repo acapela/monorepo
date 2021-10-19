@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { TeamEntity } from "~frontend/clientdb/team";
 import { assert } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
@@ -11,16 +11,14 @@ import { theme } from "~ui/theme";
 
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
-import { SlackInstallationButton } from "./SlackInstallationButton";
 import { UserBasicInfo } from "./UserBasicInfo";
 
-export const CurrentTeamMembersManager = observer(() => {
-  const team = useCurrentTeam();
-  const currentUser = useAssertCurrentUser();
+interface Props {
+  team: TeamEntity;
+}
 
-  if (!team) {
-    return null;
-  }
+export const TeamMembersManager = observer(({ team }: Props) => {
+  const currentUser = useAssertCurrentUser();
 
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
@@ -35,11 +33,7 @@ export const CurrentTeamMembersManager = observer(() => {
 
   return (
     <UIPanel>
-      <UIHeader>
-        <UITitle>{team.name} Team</UITitle>
-      </UIHeader>
-      {team && <SlackInstallationButton {...{ team, isCurrentUserTeamOwner }} />}
-      <InviteMemberForm />
+      <InviteMemberForm team={team} />
       {teamUsers.length > 0 && (
         <UISelectGridContainer>
           {teamUsers.map((user) => (
@@ -67,24 +61,7 @@ export const CurrentTeamMembersManager = observer(() => {
 const UIPanel = styled.div<{}>`
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  padding: 24px;
-
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.radius.panel};
-
-  width: 100%;
-`;
-
-const UIHeader = styled.div<{}>`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 4px;
-`;
-
-const UITitle = styled.h3<{}>`
-  ${theme.typo.secondaryTitle};
+  ${theme.spacing.pageSections.asGap};
 `;
 
 const UIItemHolder = styled.div<{}>`
@@ -105,10 +82,7 @@ const UISelectGridContainer = styled.div<{}>`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  ${theme.spacing.regular.asGap};
 
   width: 100%;
-  padding: 8px;
-  border: 1px solid ${theme.colors.layout.background.border};
-  ${theme.radius.panel}
 `;

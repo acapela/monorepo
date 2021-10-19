@@ -7,7 +7,7 @@ import { createClientDb } from "~clientdb";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
@@ -70,7 +70,7 @@ const reactContext = createContext<ClientDb | null>(null);
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
   const [canRender, setCanRender] = useState(false);
-  const teamId = useCurrentTeamId();
+  const teamManager = useCurrentTeamContext();
   const token = useCurrentUserTokenData();
   const userId = token?.id ?? null;
   const apolloClient = useApolloClient();
@@ -83,7 +83,10 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
       setCanRender(true);
       return;
     }
-    const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamId, apolloClient);
+
+    if (teamManager.isLoading) return;
+
+    const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamManager.teamId, apolloClient);
 
     let isCancelled = false;
 
@@ -99,7 +102,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
         newDb.destroy();
       });
     };
-  }, [userId, teamId, apolloClient]);
+  }, [userId, teamManager.isLoading, teamManager.teamId, apolloClient]);
 
   // In dev, make currently used db usable via console
   if (isDev() && db) {

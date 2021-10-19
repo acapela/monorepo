@@ -1,6 +1,6 @@
 import { runInAction } from "mobx";
 import Link from "next/link";
-import React, { ReactNode, RefObject } from "react";
+import React, { ReactNode, RefObject, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 
@@ -30,12 +30,13 @@ export type PopoverMenuOption = {
 
 export const PopoverMenu = styled<Props>(
   ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }) => {
-    useClickAway(anchorRef, () => onCloseRequest?.());
+    const popoverRef = useRef<HTMLDivElement>(null);
+    useClickAway(popoverRef, () => onCloseRequest?.());
 
     return (
       <ScreenCover onCloseRequest={onCloseRequest}>
         <Popover anchorRef={anchorRef} placement={placement}>
-          <UIPopoverMenuModal className={className} onClick={(event) => event.stopPropagation()}>
+          <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
             {options.map((option) => {
               return (
                 <UIMenuItem

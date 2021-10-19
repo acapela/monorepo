@@ -2,6 +2,7 @@ import { signOut } from "next-auth/react";
 import { useEffect } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 
 export default function LogoutPage() {
   useEffect(() => {
@@ -9,5 +10,5 @@ export default function LogoutPage() {
     signOut({ callbackUrl: "/" });
   }, []);
 
-  return <div>Logging out...</div>;
+  return <FocusedActionLayout>Logging out...</FocusedActionLayout>;
 }

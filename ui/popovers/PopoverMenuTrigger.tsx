@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
-import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -33,9 +32,7 @@ export const PopoverMenuTrigger = styled<Props>(
     isDisabled,
   }) => {
     const anchorRef = useRef<HTMLDivElement>(null);
-    const [isOpen, { unset: closePopover, toggle: togglePopover }] = useBoolean(false);
-
-    useClickAway(anchorRef, closePopover);
+    const [isOpen, { unset: closePopover, set: openPopover }] = useBoolean(false);
 
     useDependencyChangeEffect(() => {
       isOpen ? onOpen?.() : onClose?.();
@@ -53,7 +50,7 @@ export const PopoverMenuTrigger = styled<Props>(
           onClick={(event) => {
             event.stopPropagation();
             event.preventDefault();
-            togglePopover();
+            openPopover();
           }}
           className={className}
         >

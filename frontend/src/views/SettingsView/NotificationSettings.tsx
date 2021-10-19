@@ -4,11 +4,10 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { useCurrentTeam } from "~frontend/team/CurrentTeam";
+import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
-
-import { AddSlackInstallationButton } from "./TeamMembersManager/SlackInstallationButton";
 
 const getNotificationChannelDescription = (channel: string) => `Requests will be sent via ${channel}.`;
 

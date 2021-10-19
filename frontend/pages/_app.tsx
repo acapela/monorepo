@@ -1,12 +1,11 @@
-// Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
 
+// Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/nextjs";
 import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -14,11 +13,12 @@ import styled, { createGlobalStyle } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
+import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { ClientDbProvider } from "~frontend/clientdb";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
-import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
+import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { useConst } from "~shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
@@ -43,7 +43,7 @@ if (["staging", "production"].includes(stage)) {
 }
 
 interface AddedProps {
-  session: Session;
+  session: Session | null;
   hasuraWebsocketEndpoint: string | null;
 }
 
@@ -77,11 +77,11 @@ export default function App({
     >
       <BuiltInStyles />
       <CommonMetadata />
-      <SessionProvider session={sessionFromServer}>
+      <RequiredSessionProvider session={sessionFromServer}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
             <AppThemeProvider theme={theme}>
-              <CurrentTeamIdProvider>
+              <CurrentTeamProvider>
                 <ClientDbProvider>
                   <AnalyticsManager />
                   <PromiseUIRenderer />
@@ -93,11 +93,11 @@ export default function App({
                     </PresenceAnimator>
                   </AnimatePresence>
                 </ClientDbProvider>
-              </CurrentTeamIdProvider>
+              </CurrentTeamProvider>
             </AppThemeProvider>
           </ApolloProvider>
         </MotionConfig>
-      </SessionProvider>
+      </RequiredSessionProvider>
     </ErrorBoundary>
   );
 }

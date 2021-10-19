@@ -3,45 +3,45 @@ import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 import { max, pick } from "lodash";
 
-import { EntitySyncConfig } from "~clientdb";
+import { Entity, EntitySyncConfig } from "~clientdb";
 import {
   Attachment_Bool_Exp,
   Attachment_Constraint,
   Attachment_Insert_Input,
-  Attachment_Update_Column,
+  Attachment_Set_Input,
   Last_Seen_Message_Bool_Exp,
   Last_Seen_Message_Constraint,
   Last_Seen_Message_Insert_Input,
-  Last_Seen_Message_Update_Column,
+  Last_Seen_Message_Set_Input,
   Message_Bool_Exp,
   Message_Constraint,
   Message_Insert_Input,
   Message_Reaction_Bool_Exp,
   Message_Reaction_Constraint,
   Message_Reaction_Insert_Input,
-  Message_Reaction_Update_Column,
-  Message_Update_Column,
+  Message_Reaction_Set_Input,
+  Message_Set_Input,
   PullSyncRequestsSubscription,
   PullSyncRequestsSubscriptionVariables,
   Task_Bool_Exp,
   Task_Constraint,
   Task_Insert_Input,
-  Task_Update_Column,
+  Task_Set_Input,
   Team_Bool_Exp,
   Team_Constraint,
   Team_Insert_Input,
   Team_Member_Bool_Exp,
   Team_Member_Constraint,
   Team_Member_Insert_Input,
+  Team_Member_Set_Input,
   Team_Member_Slack_Bool_Exp,
-  Team_Member_Update_Column,
-  Team_Update_Column,
   Topic_Bool_Exp,
   Topic_Constraint,
   Topic_Insert_Input,
-  Topic_Update_Column,
+  Topic_Set_Input,
   Transcription_Bool_Exp,
   User_Bool_Exp,
+  User_Set_Input,
 } from "~gql";
 import { assert } from "~shared/assert";
 import { runUntracked } from "~shared/mobxUtils";
@@ -101,14 +101,15 @@ type InsertTypeMap = {
 };
 
 type UpdateTypeMap = {
-  task: Task_Update_Column;
-  topic: Topic_Update_Column;
-  team: Team_Update_Column;
-  team_member: Team_Member_Update_Column;
-  message: Message_Update_Column;
-  message_reaction: Message_Reaction_Update_Column;
-  attachment: Attachment_Update_Column;
-  last_seen_message: Last_Seen_Message_Update_Column;
+  task: Task_Set_Input;
+  topic: Topic_Set_Input;
+  team: never;
+  team_member: Team_Member_Set_Input;
+  message: Message_Set_Input;
+  message_reaction: Message_Reaction_Set_Input;
+  attachment: Attachment_Set_Input;
+  last_seen_message: Last_Seen_Message_Set_Input;
+  user: User_Set_Input;
 };
 
 type WhereTypeMap = {
@@ -158,7 +159,7 @@ const gqlTag = gql;
 type FragmentEntityType<T> = T extends { __typename: infer S } ? S : never;
 
 type UpdateColumnsForFragment<T> = FragmentEntityType<T> extends keyof UpdateTypeMap
-  ? UpdateTypeMap[FragmentEntityType<T>]
+  ? keyof UpdateTypeMap[FragmentEntityType<T>]
   : never;
 
 type InsertColumnsForFragment<T> = FragmentEntityType<T> extends keyof InsertTypeMap
@@ -170,7 +171,7 @@ type AdditionalWhereQueryForFragment<T> = FragmentEntityType<T> extends keyof Wh
   : never;
 
 interface HasuraSyncSettings<T> {
-  updateColumns: Array<UpdateColumnsForFragment<T>>;
+  updateColumns?: Array<UpdateColumnsForFragment<T>>;
   insertColumns?: Array<InsertColumnsForFragment<T>>;
   teamScopeCondition?: (teamId: string) => AdditionalWhereQueryForFragment<T>;
 }
@@ -188,11 +189,6 @@ export function createHasuraSyncSetupFromFragment<T>(
   const upperType = getFirstUpper(type);
 
   const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
-
-  // Throw early in case of incorrect input
-  if (updateColumns.length) {
-    assert(upsertConstraint, `${type} of entity has no upsert constraint defined which is required for updates`);
-  }
 
   /**
    * Provide array of ids you want to check if you have access to. Will return list of items you dont have access to.
@@ -284,7 +280,7 @@ export function createHasuraSyncSetupFromFragment<T>(
       variables: { input },
       mutation: gqlTag`
         ${fragment}
-        mutation PushUpdate${upperType}(
+        mutation PushUpsert${upperType}(
           $input: ${type}_insert_input!
         ) {
           result: insert_${type}_one(
@@ -297,14 +293,39 @@ export function createHasuraSyncSetupFromFragment<T>(
     });
   }
 
-  async function insertOrUpsert(input: Partial<T>, apollo: ApolloClient<unknown>) {
-    const hasUpdateColumns = updateColumns.length > 0;
+  async function update(idPointer: Record<string, string>, input: Partial<T>, apollo: ApolloClient<unknown>) {
+    return await apollo.mutate<{ result: T }, { pk: Record<string, string>; input: Partial<T> }>({
+      variables: { input, pk: idPointer },
+      mutation: gqlTag`
+        ${fragment}
+        mutation PushUpdate${upperType}($pk: ${type}_pk_columns_input!, $input: ${type}_set_input!) {
+          result: update_${type}_by_pk(pk_columns: $pk, _set: $input) {
+            ...${name}
+          }
+        }
+      `,
+    });
+  }
 
-    if (!hasUpdateColumns) {
+  async function handlePush(entity: Entity<T, unknown>, apollo: ApolloClient<unknown>) {
+    const hasUpdateColumns = updateColumns?.length ?? 0 > 0;
+
+    const hasInsertColumns = insertColumns?.length ?? 0 > 0;
+
+    const input = getPushInputFromData(entity);
+
+    if (hasUpdateColumns && hasInsertColumns) {
+      return upsert(input, apollo);
+    }
+
+    if (hasInsertColumns) {
       return insert(input, apollo);
     }
 
-    return upsert(input, apollo);
+    const id = entity.getKey();
+    const idKey = entity.getKeyName();
+
+    return update({ [idKey]: id }, input, apollo);
   }
 
   return {
@@ -347,9 +368,8 @@ export function createHasuraSyncSetupFromFragment<T>(
     },
     async push(entity, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
-      const input = getPushInputFromData(entity);
 
-      const result = await insertOrUpsert(input, apollo);
+      const result = await handlePush(entity, apollo);
 
       if (result.errors) {
         throw result.errors;

@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 
 import { Maybe } from "~shared/types";
 import { Button } from "~ui/buttons/Button";
+import { GoogleGLogoIcon } from "~ui/icons/logos/GoogleGLogo";
 
 export const GoogleLoginButton = ({
   className,
@@ -20,7 +21,13 @@ export const GoogleLoginButton = ({
   }
 
   return (
-    <Button kind="secondary" className={className} onClick={() => handleLogin()} isLoading={false}>
+    <Button
+      kind="secondary"
+      className={className}
+      onClick={() => handleLogin()}
+      isLoading={false}
+      icon={<GoogleGLogoIcon />}
+    >
       {children || "Log in with Google"}
     </Button>
   );

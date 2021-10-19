@@ -7,7 +7,7 @@ import { TeamFragment } from "~gql";
 import { teamMemberEntity } from "./teamMember";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
 import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
+import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -38,9 +38,15 @@ export const teamEntity = defineEntity<TeamFragment>({
     insertColumns: ["id", "slug", "name"],
     updateColumns: [],
   }),
-}).addConnections((team, { getEntity }) => ({
+}).addConnections((team, { getEntity, getContextValue }) => ({
   get hasSlackInstallation() {
     return getEntity(teamSlackInstallationEntity).query({ team_id: team.id }).count > 0;
+  },
+  get isOwnedByCurrentUser() {
+    return team.owner_id === getContextValue(userIdContext);
+  },
+  get isCurrentUserCurrentTeam() {
+    return team.id === getContextValue(teamIdContext);
   },
   members: getEntity(teamMemberEntity).query({ team_id: team.id }),
 }));

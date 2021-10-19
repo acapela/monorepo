@@ -5,8 +5,8 @@ import styled from "styled-components";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
+import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
-import { WindowView } from "~frontend/views/WindowView";
 import { addToast } from "~ui/toasts/data";
 
 export default observer(() => {
@@ -36,7 +36,7 @@ export default observer(() => {
   }
 
   return (
-    <WindowView>
+    <FocusedActionLayout>
       <UIHolder>
         You have been invited {invitingUser && `by ${invitingUser.name} `}to join{" "}
         {team ? `the "${team.name}" team` : "Acapela"}.
@@ -44,7 +44,7 @@ export default observer(() => {
           <LoginOptionsView signupEmail={user.email} />
         </div>
       </UIHolder>
-    </WindowView>
+    </FocusedActionLayout>
   );
 });
 

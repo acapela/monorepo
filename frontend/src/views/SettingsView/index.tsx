@@ -2,34 +2,31 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
 import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
-import { CurrentTeamMembersManager } from "./TeamMembersManager";
+import { TeamManagerSettingsPanel } from "./TeamManager";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 const appBuildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
 
 export const SettingsView = observer(function SettingsView() {
-  const team = useCurrentTeam();
+  const currentTeam = useAssertCurrentTeam();
 
   return (
     <>
-      {!team && <>Loading...</>}
-      {team && (
-        <UIHolder>
-          <UIHeader>Settings</UIHeader>
-          <NotificationSettings />
-          <CurrentTeamMembersManager />
+      <UIHolder>
+        <UIHeader>Settings</UIHeader>
+        <NotificationSettings />
+        <TeamManagerSettingsPanel team={currentTeam} />
 
-          {appVersion && (
-            <UIVersionInfo>
-              Version: {appVersion} ({appBuildDate})
-            </UIVersionInfo>
-          )}
-        </UIHolder>
-      )}
+        {appVersion && (
+          <UIVersionInfo>
+            Version: {appVersion} ({appBuildDate})
+          </UIVersionInfo>
+        )}
+      </UIHolder>
     </>
   );
 });

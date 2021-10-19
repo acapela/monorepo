@@ -1,6 +1,7 @@
 import { pick } from "lodash";
 import { action, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
+import { waitForEntityAllAwaitingPushOperations } from "~clientdb";
 import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
 
@@ -17,6 +18,7 @@ type EntityMethods<Data, Connections> = {
   getKeyName(): string;
   getUpdatedAt(): Date;
   remove(source?: EntityChangeSource): void;
+  waitForSync(): Promise<void>;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -93,6 +95,9 @@ export function createEntity<D, C>({
   const entityMethods: EntityMethods<D, C> = {
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
+    },
+    waitForSync() {
+      return waitForEntityAllAwaitingPushOperations(entity);
     },
     getKey() {
       return `${entity[config.keyField]}`;

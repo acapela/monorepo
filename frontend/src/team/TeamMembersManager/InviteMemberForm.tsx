@@ -4,17 +4,19 @@ import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
-import { useInviteUser } from "~frontend/views/SettingsView/TeamMembersManager/shared";
+import { TeamEntity } from "~frontend/clientdb/team";
+import { useInviteUser } from "~frontend/team/useInviteUser";
 import { isNotNullish } from "~shared/nullish";
 import { Button } from "~ui/buttons/Button";
-import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
+import { TextInput } from "~ui/forms/TextInput";
 import { IconPlusSquare } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
-export const InviteMemberForm = observer(() => {
-  const team = useAssertCurrentTeam();
+interface Props {
+  team: TeamEntity;
+}
 
+export const InviteMemberForm = observer(({ team }: Props) => {
   const [inviteUser] = useInviteUser();
 
   const teamEmails = useMemo(
@@ -36,7 +38,7 @@ export const InviteMemberForm = observer(() => {
 
   return (
     <UIHolder>
-      <RoundedTextInput placeholder="Enter email" value={email} onChangeText={setEmail} />
+      <TextInput placeholder="Enter email" value={email} onChangeText={setEmail} />
       <Button iconAtStart icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
         Add Member
       </Button>
