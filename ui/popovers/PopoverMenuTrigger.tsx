@@ -18,10 +18,20 @@ interface Props {
   onOpen?: () => void;
   onClose?: () => void;
   tooltip?: string;
+  isDisabled?: boolean;
 }
 
 export const PopoverMenuTrigger = styled<Props>(
-  ({ children: triggerElement, options, placement = "bottom-start", className, onOpen, onClose, tooltip }) => {
+  ({
+    children: triggerElement,
+    options,
+    placement = "bottom-start",
+    className,
+    onOpen,
+    onClose,
+    tooltip,
+    isDisabled,
+  }) => {
     const anchorRef = useRef<HTMLDivElement>(null);
     const [isOpen, { unset: closePopover, toggle: togglePopover }] = useBoolean(false);
 
@@ -30,6 +40,10 @@ export const PopoverMenuTrigger = styled<Props>(
     useDependencyChangeEffect(() => {
       isOpen ? onOpen?.() : onClose?.();
     }, [isOpen]);
+
+    if (isDisabled) {
+      return <UIHolder>{triggerElement}</UIHolder>;
+    }
 
     return (
       <>
