@@ -36,7 +36,7 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
   const collapsedTasks = tasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
 
   return (
-    <UIHolder>
+    <UIHolder data-test-message-tasks>
       <AnimateSharedLayout>
         <TaskDueDateSetter message={message}>
           <Button
