@@ -246,6 +246,14 @@ export const NewRequest = observer(function NewRequest() {
             Add File
           </Button>
         </FileInput>
+        <Button
+          isDisabled={!isValid && { reason: nextStepPromptLabel }}
+          kind="primary"
+          tooltip="Create Request"
+          onClick={submit}
+        >
+          Create Request
+        </Button>
       </UIFooter>
     </UIHolder>
   );
@@ -274,6 +282,13 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
       min-height: 150px;
     `;
   }}
+
+  /* Mostly a nit: opening the console messes up the view without this */
+  @media only screen and (max-width: 900px) {
+    width: 100%;
+    min-height: 150px;
+    padding: 20px;
+  }
 `;
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
@@ -333,6 +348,8 @@ const UIFooter = styled.div<{}>`
   border-color: rgba(0, 0, 0, 0.05);
   border-style: solid;
   border-top-width: 1px;
+
+  ${theme.spacing.horizontalActions.asGap}
 `;
 
 const UIFileDropPlaceholder = styled(EmptyStatePlaceholder)`
