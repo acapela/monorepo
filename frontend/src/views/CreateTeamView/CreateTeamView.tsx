@@ -48,7 +48,7 @@ export const CreateTeamView = observer(() => {
   return (
     <UIHolder>
       <UITeams>
-        <TextInput placeholder="Team name..." value={name} onChangeText={setName} />
+        <TextInput autoFocus placeholder="Team name..." value={name} onChangeText={setName} />
       </UITeams>
       <ActionWithAlternative
         alternative={
