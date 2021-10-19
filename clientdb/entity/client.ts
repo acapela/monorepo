@@ -1,4 +1,4 @@
-import { runInAction } from "mobx";
+import { computed, runInAction } from "mobx";
 
 import { assert } from "~shared/assert";
 
@@ -14,6 +14,7 @@ import { EntityChangeSource } from "./types";
 
 export interface EntityClient<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
   all: Entity<Data, Connections>[];
+  hasItems: boolean;
   search(term: string): Entity<Data, Connections>[];
   create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
@@ -93,6 +94,10 @@ export function createEntityClient<Data, Connections>(
     syncManager.start();
   }
 
+  const hasItemsComputed = computed(() => {
+    return client.all.length > 0;
+  });
+
   const client: EntityClient<Data, Connections> = {
     definition,
     query,
@@ -109,6 +114,9 @@ export function createEntityClient<Data, Connections>(
     },
     get all() {
       return client.query(() => true, definition.config.defaultSort).all;
+    },
+    get hasItems() {
+      return hasItemsComputed.get();
     },
     create(input, source = "user") {
       const newEntity = createEntityWithData(input);

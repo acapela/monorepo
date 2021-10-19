@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
+import { addToast } from "~frontend/../../ui/toasts/data";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
@@ -16,8 +17,8 @@ import { TextInput } from "~ui/forms/TextInput";
 
 export const CreateTeamView = observer(() => {
   const db = useDb();
-  const teamManaer = useCurrentTeamContext();
-  const hasOtherTeams = db.team.all.length > 0;
+  const teamManager = useCurrentTeamContext();
+  const hasOtherTeams = db.team.hasItems;
   const router = useRouter();
   const [name, setName] = useState("");
 
@@ -29,9 +30,13 @@ export const CreateTeamView = observer(() => {
     runInAction(async () => {
       const newTeam = db.team.create({ name, slug: slugify(name) });
 
-      await newTeam.waitForSync();
+      try {
+        await newTeam.waitForSync();
+      } catch (error) {
+        addToast({ title: "Creating team failed", type: "error" });
+      }
 
-      await teamManaer.changeTeamId(newTeam.id);
+      await teamManager.changeTeamId(newTeam.id);
 
       trackEvent("Account Created", { teamName: name });
       trackEvent("Trial Started", { teamName: name });

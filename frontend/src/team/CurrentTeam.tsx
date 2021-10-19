@@ -1,5 +1,6 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useNullableDb } from "~frontend/clientdb";
@@ -10,19 +11,16 @@ import {
   CurrentTeamSubscriptionVariables,
 } from "~gql";
 import { assert } from "~shared/assert";
-import { createChannel } from "~shared/channel";
 
 function useCurrentTeamManager() {
   const apollo = useApolloClient();
   const userToken = useCurrentUserTokenData();
   const [isLoading, setIsLoading] = useState(true);
-  const channel = useMemo(() => {
-    return createChannel<string | null>();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apollo, userToken]);
+  const [teamId, setCurrentTeamId] = useState<null | string>(null);
 
   useEffect(() => {
-    if (!userToken) return;
+    setCurrentTeamId(null);
+    if (!userToken?.id) return;
     const subscription = apollo
       .subscribe<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>({
         variables: {
@@ -42,14 +40,16 @@ function useCurrentTeamManager() {
         if (!newResult.data) return;
         const newTeamId = newResult.data.user?.current_team?.id ?? null;
 
-        channel.publish(newTeamId);
-        setIsLoading(false);
+        unstable_batchedUpdates(() => {
+          setCurrentTeamId(newTeamId);
+          setIsLoading(false);
+        });
       });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [channel, apollo, userToken]);
+  }, [apollo, userToken?.id]);
 
   async function changeTeamId(newTeamId: string) {
     if (!userToken) return;
@@ -66,13 +66,11 @@ function useCurrentTeamManager() {
     });
 
     if (result.errors) {
-      return;
+      throw new Error(`Failed to change team id`);
     }
 
-    channel.publish(newTeamId);
+    setCurrentTeamId(newTeamId);
   }
-
-  const teamId = channel.useLastValue();
 
   return {
     teamId,

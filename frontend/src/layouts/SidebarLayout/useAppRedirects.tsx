@@ -8,6 +8,11 @@ import { useNullableDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { routes } from "~shared/routes";
 
+/**
+ * Will manage redirecting user to proper page depending on app state.
+ *
+ * eg. if there is no team - will force redirect to create new team flow.
+ */
 export function useAppRedirects() {
   const [canRender, setCanRender] = useState(false);
   const userTokenData = useCurrentUserTokenData();

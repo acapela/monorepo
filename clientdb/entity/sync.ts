@@ -63,7 +63,7 @@ function addAwaitingOperationToEntity<Data, Connections>(
     currentlyAwaiting?.delete(operationPromise);
   });
 
-  operationPromise;
+  return operationPromise;
 }
 
 export async function waitForEntityAllAwaitingPushOperations<Data, Connections>(entity: Entity<Data, Connections>) {

@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
+import { addToast } from "~frontend/../../ui/toasts/data";
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
@@ -27,9 +28,13 @@ export const SelectTeamView = observer(() => {
       return;
     }
 
-    await teamManager.changeTeamId(team.id);
+    try {
+      await teamManager.changeTeamId(team.id);
 
-    router.push(routes.home);
+      router.push(routes.home);
+    } catch (error) {
+      addToast({ title: "Failed to change current team", type: "error" });
+    }
   });
 
   return (

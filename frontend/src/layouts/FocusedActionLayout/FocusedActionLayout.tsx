@@ -42,7 +42,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
-  background: #ffffff;
+  ${theme.colors.layout.background.asBg};
   ${theme.radius.panel};
   ${theme.shadow.modal};
   ${theme.box.pageCart};
