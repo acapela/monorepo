@@ -40,6 +40,7 @@ function useCurrentTeamManager() {
       .subscribe((newResult) => {
         if (!newResult.data) return;
         const newTeamId = newResult.data.user?.current_team?.id ?? null;
+
         channel.publish(newTeamId);
         setIsLoading(false);
       });
@@ -99,7 +100,7 @@ export function CurrentTeamProvider({ children }: PropsWithChildren<{}>) {
 
 export function useCurrentTeam() {
   const db = useNullableDb();
-  const { teamId } = useCurrentTeamManager();
+  const { teamId } = useCurrentTeamContext();
 
   const team = teamId ? db?.team.findById(teamId) ?? null : null;
 
