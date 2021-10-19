@@ -37,6 +37,11 @@ export async function handleTaskChanges(event: HasuraEvent<Task>) {
 
   assert(fromUser && toUser && topic, "must have users and topic");
 
+  if (fromUser.id === toUser.id) {
+    // do not notify users about tasks created by themselves
+    return;
+  }
+
   const teamId = topic.team_id;
   const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
   const slackFrom = await getSlackUserMentionOrLabel(fromUser, teamId);
