@@ -1,10 +1,12 @@
-import { isArray } from "lodash";
+import { isArray, isString, map } from "lodash";
 import markdown from "simple-markdown";
-
+import emojis from "unicode-emoji-json";
 // The rules have been imported from
 // https://github.com/Sorunome/slack-markdown/blob/be564c166edd7887fcc44b6ebd12723bb3fe149f/index.js
 // Copyright 2021 Sorunome
 // Apache License 2.0
+
+const emojiNameToEmoji = Object.assign({}, ...map(emojis, (v, k) => ({ [v.slug]: k })));
 
 const rules = {
   emoji: {
@@ -225,4 +227,143 @@ export function cleanupAst(ast: markdown.SingleASTNode[]): markdown.SingleASTNod
 export function parseSlackMarkdown(text: string) {
   const ast = markdown.parserFor(rules, { inline: true })(text);
   return cleanupAst(ast);
+}
+
+function textToString(nodes: string | markdown.SingleASTNode[]) {
+  if (isString(nodes)) return nodes;
+  let out = "";
+  for (const n of nodes) {
+    if (isString(n.content)) out += n.content;
+  }
+  return out;
+}
+
+function createLink(href: string, text: string) {
+  return {
+    text: text,
+    type: "text",
+    marks: [
+      {
+        type: "link",
+        attrs: {
+          href: href,
+          target: "_blank",
+        },
+      },
+    ],
+  };
+}
+
+function createBoldText(text: string) {
+  return {
+    text,
+    type: "text",
+    marks: [
+      {
+        type: "bold",
+      },
+    ],
+  };
+}
+
+const typeMap = new Map([
+  ["inlineCode", "code"],
+  ["strong", "bold"],
+  ["em", "italic"],
+  ["strike", "strike"],
+]);
+
+function transformNode(node: markdown.SingleASTNode) {
+  switch (node.type) {
+    case "text":
+      return { text: node.content, type: "text" };
+    case "emoji":
+      return {
+        type: "emoji",
+        attrs: {
+          data: {
+            name: node.content,
+            emoji: emojiNameToEmoji[node.content],
+          },
+        },
+      };
+    case "autolink":
+    case "url":
+      return createLink(node.target, textToString(node.content));
+    case "blockQuote":
+      return {
+        type: "blockquote",
+        content: detectedAndTransformParagraphs(node.content),
+      };
+    case "codeBlock":
+      // currently not supported so let's use blockquote
+      return {
+        type: "blockquote",
+        content: [
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: node.content,
+              },
+            ],
+          },
+        ],
+      };
+    case "slackUser":
+    case "slackChannel":
+    case "slackUserGroup":
+      //todo: correct linking
+      return createLink(`https://slack.com/${node.id}`, `@${textToString(node.content)}`);
+    case "slackAtHere":
+      return createBoldText("@here");
+    case "slackAtChannel":
+      return createBoldText("@channel");
+    case "slackAtEveryone":
+      return createBoldText("@everyone");
+    case "slackDate":
+      return createBoldText(`@${node.name}`);
+  }
+  if (typeMap.has(node.type)) {
+    return {
+      text: textToString(node.content),
+      type: "text",
+      marks: [
+        {
+          type: typeMap.get(node.type),
+        },
+      ],
+    };
+  }
+  return node;
+}
+
+function detectedAndTransformParagraphs(ast: markdown.SingleASTNode[]): markdown.SingleASTNode[] {
+  const paragraphs = [];
+  let buffer = [];
+  for (const node of ast) {
+    if (node.type !== "br") {
+      buffer.push(node);
+      continue;
+    }
+    if (buffer.length !== 0) {
+      paragraphs.push(buffer);
+      buffer = [];
+    }
+  }
+  if (buffer.length !== 0) {
+    paragraphs.push(buffer);
+  }
+  return paragraphs.map((p) => ({
+    type: "paragraph",
+    content: p.map(transformNode),
+  }));
+}
+
+export function transformToTipTapJSON(ast: markdown.SingleASTNode[]) {
+  return {
+    type: "doc",
+    content: detectedAndTransformParagraphs(ast),
+  };
 }

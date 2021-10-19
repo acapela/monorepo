@@ -1,4 +1,10 @@
-import { cleanupAst, parseSlackMarkdown } from "~shared/slackMarkdown/parser";
+import { cleanupAst, parseSlackMarkdown, transformToTipTapJSON } from "~shared/slackMarkdown/parser";
+
+const advancedMessage = `hello <https://www.google.com/> :rolling_on_the_floor_laughing: test <#C02D6BU8J6P|general>
+>  I have a dream
+nice some \`code\`
+*bold* and _italic_
+~llalalalalalal~`;
 
 describe("slack markdown", () => {
   it("basic test", async () => {
@@ -25,12 +31,7 @@ describe("slack markdown", () => {
     ]);
   });
   it("advanced tests", () => {
-    const message = `hello <https://www.google.com/> :rolling_on_the_floor_laughing: test <#C02D6BU8J6P|general>
->  I have a dream
-nice some \`code\`
-*bold* and _italic_
-~llalalalalalal~`;
-    const parsed = parseSlackMarkdown(message);
+    const parsed = parseSlackMarkdown(advancedMessage);
     expect(parsed).toStrictEqual([
       { content: "hello ", type: "text" },
       {
@@ -98,5 +99,86 @@ describe("cleanup", () => {
       { content: [{ content: "BCD", type: "text" }], type: "blockQuote" },
       { content: "information_source", type: "emoji" },
     ]);
+  });
+});
+
+describe("transform", () => {
+  it("basic transform", async () => {
+    expect(
+      transformToTipTapJSON([
+        { content: "A ", type: "text" },
+        { content: "information", type: "emoji" },
+        { content: " BCDEF ", type: "text" },
+        {
+          content: [{ content: "https://www.google.com/", type: "text" }],
+          target: "https://www.google.com/",
+          type: "autolink",
+        },
+      ])
+    ).toStrictEqual({
+      content: [
+        {
+          content: [
+            { text: "A ", type: "text" },
+            { attrs: { data: { emoji: "ℹ️", name: "information" } }, type: "emoji" },
+            { text: " BCDEF ", type: "text" },
+            {
+              marks: [{ attrs: { href: "https://www.google.com/", target: "_blank" }, type: "link" }],
+              text: "https://www.google.com/",
+              type: "text",
+            },
+          ],
+          type: "paragraph",
+        },
+      ],
+      type: "doc",
+    });
+  });
+  it("advanced transform", async () => {
+    const parsed = parseSlackMarkdown(advancedMessage);
+    expect(transformToTipTapJSON(parsed)).toStrictEqual({
+      content: [
+        {
+          content: [
+            { text: "hello ", type: "text" },
+            {
+              marks: [{ attrs: { href: "https://www.google.com/", target: "_blank" }, type: "link" }],
+              text: "https://www.google.com/",
+              type: "text",
+            },
+            { text: " ", type: "text" },
+            { attrs: { data: { emoji: "🤣", name: "rolling_on_the_floor_laughing" } }, type: "emoji" },
+            { text: " test ", type: "text" },
+            {
+              marks: [{ attrs: { href: "https://slack.com/C02D6BU8J6P", target: "_blank" }, type: "link" }],
+              text: "@general",
+              type: "text",
+            },
+          ],
+          type: "paragraph",
+        },
+        {
+          content: [
+            {
+              content: [{ content: [{ text: " I have a dream", type: "text" }], type: "paragraph" }],
+              type: "blockquote",
+            },
+            { text: "nice some ", type: "text" },
+            { marks: [{ type: "code" }], text: "code", type: "text" },
+          ],
+          type: "paragraph",
+        },
+        {
+          content: [
+            { marks: [{ type: "bold" }], text: "bold", type: "text" },
+            { text: " and ", type: "text" },
+            { marks: [{ type: "italic" }], text: "italic", type: "text" },
+          ],
+          type: "paragraph",
+        },
+        { content: [{ marks: [{ type: "strike" }], text: "llalalalalalal", type: "text" }], type: "paragraph" },
+      ],
+      type: "doc",
+    });
   });
 });
