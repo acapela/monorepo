@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import { Message_Type_Enum } from "~frontend/../../gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
@@ -13,6 +14,10 @@ import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecorderControls } from "./RecorderControls";
 import { useRecorderErrors } from "./useRecorderErrors";
+
+// Comment from @Heiki 18/Oct/2021
+// Let's only display audio in the editor while video recording is buggy. We'll also integrate Loom eventually
+const SUPPORTED_RECORDING_FORMATS: Message_Type_Enum[] = ["AUDIO"];
 
 interface RecorderProps {
   className?: string;
@@ -221,37 +226,43 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   return (
     <div className={className} ref={popoverHandlerRef}>
-      <PopoverMenuTrigger
-        tooltip="Record video..."
-        options={[
-          {
-            label: "Record screen",
-            icon: <IconMonitor />,
-            onSelect: () => startVideoRecording(MediaSource.Screen),
-          },
-          {
-            label: "Record with camera",
-            icon: <IconCamera />,
-            onSelect: () => startVideoRecording(MediaSource.Camera),
-          },
-        ]}
-      >
-        <IconButton
-          icon={<IconVideoCamera />}
-          onClick={cancelRecording}
-          isDisabled={isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))}
+      {SUPPORTED_RECORDING_FORMATS.includes("VIDEO") && (
+        <PopoverMenuTrigger
+          tooltip="Record video..."
+          options={[
+            {
+              label: "Record screen",
+              icon: <IconMonitor />,
+              onSelect: () => startVideoRecording(MediaSource.Screen),
+            },
+            {
+              label: "Record with camera",
+              icon: <IconCamera />,
+              onSelect: () => startVideoRecording(MediaSource.Camera),
+            },
+          ]}
         >
-          <IconVideoCamera />
+          <IconButton
+            icon={<IconVideoCamera />}
+            onClick={cancelRecording}
+            isDisabled={
+              isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))
+            }
+          >
+            <IconVideoCamera />
+          </IconButton>
+        </PopoverMenuTrigger>
+      )}
+      {SUPPORTED_RECORDING_FORMATS.includes("AUDIO") && (
+        <IconButton
+          icon={<IconMic />}
+          onClick={onAudioButtonClick}
+          tooltip={isRecording ? undefined : "Start recording audio"}
+          isDisabled={!!getRecorderError(MediaSource.Microphone)}
+        >
+          <IconMic />
         </IconButton>
-      </PopoverMenuTrigger>
-      <IconButton
-        icon={<IconMic />}
-        onClick={onAudioButtonClick}
-        tooltip={isRecording ? undefined : "Start recording audio"}
-        isDisabled={!!getRecorderError(MediaSource.Microphone)}
-      >
-        <IconMic />
-      </IconButton>
+      )}
 
       <AnimatePresence>
         {isCountdownStarted && <FullScreenCountdown seconds={COUNTDOWN_IN_SECONS} onCancelled={cancelRecording} />}
