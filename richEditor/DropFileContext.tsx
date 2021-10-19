@@ -148,6 +148,18 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void, opti
     return () => cleanup.clean();
   }, [dropFileContext, callback, options?.isDisabled]);
 
+  // Prevents delayedDragStopTimer from modifying state after component unmounted
+  useEffect(
+    () => () => {
+      if (delayedDragStopTimerRef) {
+        clearTimeout(delayedDragStopTimerRef);
+        setDelayedDragStopTimerRef(null);
+      }
+      setIsNotDragging();
+    },
+    []
+  );
+
   return { isDragging } as const;
 }
 

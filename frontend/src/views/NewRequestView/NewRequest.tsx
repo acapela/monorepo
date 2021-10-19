@@ -211,7 +211,6 @@ export const NewRequest = observer(function NewRequest() {
           value={messageContent}
           onChange={setMessageContent}
           placeholder={messageContentExample}
-          onSubmit={submit}
         />
 
         {(uploadingAttachments.length > 0 || attachments.length > 0 || isDraggingFile) && (

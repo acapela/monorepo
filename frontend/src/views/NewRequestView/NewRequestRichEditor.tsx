@@ -16,7 +16,6 @@ import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
-import { useShortcut } from "~ui/keyboard/useShortcut";
 
 export type { Editor } from "@tiptap/react";
 
@@ -40,7 +39,6 @@ export function getEmptyRichContent(): JSONContent {
 export interface Props {
   value: RichEditorNode;
   onChange?: (value: RichEditorNode) => void;
-  onSubmit?: () => void;
   placeholder?: string;
   isDisabled?: boolean;
 }
@@ -95,7 +93,7 @@ function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
 }
 
 export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function RichEditor(
-  { value = getEmptyRichContent(), onChange, onSubmit, placeholder = "Write something...", isDisabled },
+  { value = getEmptyRichContent(), onChange, placeholder = "Write something...", isDisabled },
   ref
 ) {
   const placeholderExtension = usePlaceholder(placeholder);
@@ -158,9 +156,6 @@ export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function Rich
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
-  useShortcut(["Shift", "Enter"], handleSubmit, { isEnabled: isFocused && !isDisabled });
-  useShortcut(["Meta", "Enter"], handleSubmit, { isEnabled: isFocused && !isDisabled });
-
   /**
    * Let's use any key pressed to instantly focus inside the editor
    */
@@ -181,10 +176,6 @@ export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function Rich
     },
     { isEnabled: !isFocused && !isDisabled }
   );
-
-  function handleSubmit() {
-    onSubmit?.();
-  }
 
   function handleEditorClick() {
     if (isRichEditorContentEmpty(value)) {
