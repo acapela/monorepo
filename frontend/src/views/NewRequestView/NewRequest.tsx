@@ -107,7 +107,7 @@ export const NewRequest = observer(function NewRequest() {
     return true;
   });
 
-  const [topicName, setTopicName] = usePersistedState<string>({
+  const [topicName, setTopicName, clearTopicName] = usePersistedState<string>({
     key: "topic-name-draft-for-new-request",
     initialValue: "",
   });
@@ -151,6 +151,7 @@ export const NewRequest = observer(function NewRequest() {
     });
 
     clearPersistedContent();
+    clearTopicName();
   }
 
   return (
