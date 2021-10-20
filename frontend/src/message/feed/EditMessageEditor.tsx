@@ -8,15 +8,13 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { useMessageEditorManager } from "~frontend/views/RequestView/TopicWithMessages/useMessageEditorManager";
+import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "~frontend/message/composer/Tools";
+import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
-
-import { MessageContentEditor } from "./MessageContentComposer";
-import { MessageTools } from "./Tools";
 
 interface Props {
   message: MessageEntity;

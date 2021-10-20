@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
+import { styledObserver } from "~shared/component";
+import { StreamRecording } from "~shared/recording/recordStream";
 import { Button } from "~ui/buttons/Button";
 import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
-import { StreamRecording } from "./recording/recordStream";
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {

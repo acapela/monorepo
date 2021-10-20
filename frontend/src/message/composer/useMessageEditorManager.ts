@@ -4,10 +4,11 @@ import { RefObject, useMemo } from "react";
 import { useList } from "react-use";
 
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
-import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
-import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+
+import { EditorAttachmentInfo } from "./attachments";
+import { useUploadAttachments } from "./useUploadAttachments";
 
 interface UseMessageEditorManagerInput {
   editorRef: RefObject<Editor>;

@@ -9,11 +9,12 @@ import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
+import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "~frontend/message/composer/Tools";
+import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
-import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
-import { MessageTools } from "~frontend/ui/message/composer/Tools";
-import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -24,7 +25,6 @@ import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
-import { useMessageEditorManager } from "./useMessageEditorManager";
 
 interface Props {
   topic: TopicEntity;

@@ -4,8 +4,8 @@ import React from "react";
 import styled from "styled-components";
 
 import { getEmptyRichContent } from "~frontend/../../richEditor/RichEditor";
-import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
-import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
+import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
+import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { RichEditorNode } from "~richEditor/content/types";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 

@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
+import { MessageAttachment } from "~frontend/message/attachment/MessageAttachment";
 
 interface Props {
   message: MessageEntity;

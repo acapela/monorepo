@@ -3,8 +3,8 @@ import { useRef } from "react";
 import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 import { IconMic } from "~frontend/../../ui/icons";
 import { Popover } from "~frontend/../../ui/popovers/Popover";
+import { useMicrophoneRecording } from "~shared/recording/useMicrophoneRecording";
 
-import { useMicrophoneRecording } from "./recording/useMicrophoneRecording";
 import { RecordingInProgressManager } from "./RecordingInProgressManager";
 
 interface Props {

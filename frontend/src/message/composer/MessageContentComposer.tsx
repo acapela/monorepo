@@ -1,8 +1,8 @@
 import React from "react";
 import styled, { StylesPart } from "styled-components";
 
+import { AttachmentPreview } from "~frontend/message/attachment/AttachmentPreview";
 import { messageComposerExtensions } from "~frontend/message/extensions";
-import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, RichEditor } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";

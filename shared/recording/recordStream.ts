@@ -1,4 +1,4 @@
-import { AsyncReturnType } from "~frontend/../../shared/types";
+import { AsyncReturnType } from "~shared/types";
 
 import { createDurationObservable } from "./createDurationObservable";
 

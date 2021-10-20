@@ -8,8 +8,9 @@ import styled, { css } from "styled-components";
 
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
-import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
-import { MessageTools } from "~frontend/ui/message/composer/Tools";
+import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "~frontend/message/composer/Tools";
+import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
@@ -24,7 +25,6 @@ import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
-import { useMessageEditorManager } from "../RequestView/TopicWithMessages/useMessageEditorManager";
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
 
 /**

@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from "mobx";
 
-import { createInterval } from "~frontend/../../shared/time";
+import { createInterval } from "~shared/time";
 
 export function createDurationObservable() {
   const observableDuration = makeAutoObservable({ duration: 0 });
