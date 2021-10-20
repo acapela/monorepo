@@ -89,15 +89,15 @@ export const topicEntity = defineEntity<TopicFragment>({
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
-    const isCurrentUserMentioned = (content: JSONContent) =>
-      getMentionNodesFromContent(content).some((mentionNode) => mentionNode.attrs.data.userId === currentUserId);
+    const isUserMentioned = (content: JSONContent, userId: string) =>
+      getMentionNodesFromContent(content).some((mentionNode) => mentionNode.attrs.data.userId === userId);
 
     const participants = getEntity(userEntity).query((user) => {
       if (topic.owner_id === user.id) return true;
 
       if (getEntity(messageEntity).query({ user_id: user.id, topic_id: topic.id }).hasItems) return true;
 
-      return messages.query((message) => isCurrentUserMentioned(message.content)).hasItems;
+      return messages.query((message) => isUserMentioned(message.content, user.id)).hasItems;
     });
 
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
@@ -165,7 +165,7 @@ export const topicEntity = defineEntity<TopicFragment>({
         )
           return true;
         // TODO: optimize
-        return messages.query((message) => isCurrentUserMentioned(message.content)).hasItems;
+        return messages.query((message) => isUserMentioned(message.content, currentUserId)).hasItems;
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
