@@ -4,6 +4,7 @@ import { RefObject, useEffect, useRef, useState } from "react";
 import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { getObjectKey } from "~shared/object";
+import { createInterval } from "~shared/time";
 
 import { TooltipLabel } from "./TooltipLabel";
 
@@ -78,6 +79,10 @@ export function TooltipsRenderer() {
     1000,
     { capture: true }
   );
+
+  useElementRemovedFromDOM(currentTooltipAnchor, () => {
+    setCurrentTooltipAnchor(null);
+  });
 
   return (
     <AnimatePresence>
@@ -179,4 +184,32 @@ function useDOMAttributeValue(ref: RefObject<HTMLElement>, attributeName: string
   const valueNow = ref.current?.getAttribute?.(attributeName);
 
   return valueNow ?? value;
+}
+
+function getIsElementDetachedFromDOM(element: HTMLElement) {
+  return !document.body.contains(element);
+}
+
+function useElementRemovedFromDOM(element: HTMLElement | null, callback: () => void) {
+  useEffect(() => {
+    if (!element) return;
+
+    if (getIsElementDetachedFromDOM(element)) {
+      callback();
+      return;
+    }
+
+    /**
+     * Note - I first tried 'solid' solution with MutationObserver - watching parent for removed direct children.
+     * It worked, but not if parent was removed at once together with child. This was breaking for large DOM changes
+     * like route change etc.
+     *
+     * `getIsElementDetachedFromDOM` is super quick (measure shows 0ms) so it seems safe to do this this way.
+     */
+    return createInterval(() => {
+      if (getIsElementDetachedFromDOM(element)) {
+        callback();
+      }
+    }, 250);
+  }, [element, callback]);
 }
