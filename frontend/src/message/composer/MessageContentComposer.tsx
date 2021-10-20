@@ -43,37 +43,45 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
   ref
 ) {
   return (
-    <RichEditor
-      ref={ref}
-      extensions={messageComposerExtensions}
-      value={content}
-      onChange={onContentChange}
-      onFilesSelected={onFilesSelected}
-      placeholder={placeholder}
-      autofocusKey={autofocusKey}
-      isDisabled={isDisabled}
-      additionalTopContent={additionalContent}
-      onEditorReady={onEditorReady}
-      customEditFieldStyles={customEditFieldStyles}
-      additionalBottomContent={
-        (uploadingAttachments.length > 0 || attachments.length > 0) && (
-          <UIAttachmentsPreviews>
-            {attachments.map((attachment) => (
-              <AttachmentPreview
-                id={attachment.uuid}
-                key={attachment.uuid}
-                onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
-              />
-            ))}
-            {uploadingAttachments.map(({ percentage }, index) => (
-              <UploadingAttachmentPreview percentage={percentage} key={index} />
-            ))}
-          </UIAttachmentsPreviews>
-        )
-      }
-    />
+    <UIEditorHolder>
+      <RichEditor
+        ref={ref}
+        extensions={messageComposerExtensions}
+        value={content}
+        onChange={onContentChange}
+        onFilesSelected={onFilesSelected}
+        placeholder={placeholder}
+        autofocusKey={autofocusKey}
+        isDisabled={isDisabled}
+        additionalTopContent={additionalContent}
+        onEditorReady={onEditorReady}
+        customEditFieldStyles={customEditFieldStyles}
+        additionalBottomContent={
+          (uploadingAttachments.length > 0 || attachments.length > 0) && (
+            <UIAttachmentsPreviews>
+              {attachments.map((attachment) => (
+                <AttachmentPreview
+                  id={attachment.uuid}
+                  key={attachment.uuid}
+                  onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
+                />
+              ))}
+              {uploadingAttachments.map(({ percentage }, index) => (
+                <UploadingAttachmentPreview percentage={percentage} key={index} />
+              ))}
+            </UIAttachmentsPreviews>
+          )
+        }
+      />
+    </UIEditorHolder>
   );
 });
+
+const UIEditorHolder = styled.div`
+  max-height: 30vh;
+  overflow-y: auto;
+  width: 100%;
+`;
 
 const UIAttachmentsPreviews = styled.div<{}>`
   display: grid;
