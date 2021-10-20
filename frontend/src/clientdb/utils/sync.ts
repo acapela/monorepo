@@ -435,6 +435,10 @@ export function createHasuraSyncSetupFromFragment<T>(
           }
         });
 
+        if (idsToCheckAccess.length === 0) {
+          return;
+        }
+
         const itemsWithLostAccess = (await getLostAccessIds(idsToCheckAccess, apollo)) ?? [];
 
         const allItemsToRemove = [...idsToRemove, ...itemsWithLostAccess];
