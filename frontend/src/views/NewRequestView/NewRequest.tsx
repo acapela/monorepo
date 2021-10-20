@@ -1,18 +1,19 @@
 import type { Editor } from "@tiptap/react";
-import { isEqual, sampleSize } from "lodash";
+import { AnimatePresence } from "framer-motion";
+import { sampleSize } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { FadePresenceAnimator } from "~frontend/../../ui/animations";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
-import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -84,6 +85,7 @@ export const NewRequest = observer(function NewRequest() {
     uploadingAttachments,
     uploadAttachments,
     focusEditor,
+    hasAnyTextContent,
   } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-new-request" });
 
   // const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
@@ -110,12 +112,7 @@ export const NewRequest = observer(function NewRequest() {
     initialValue: "",
   });
 
-  const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);
-
-  const hasTypedInAnything = useMemo(
-    () => topicName !== "" || hasTypedMessageContent,
-    [topicName, hasTypedMessageContent]
-  );
+  const hasTypedInAnything = useMemo(() => topicName !== "" || hasAnyTextContent, [topicName, hasAnyTextContent]);
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
     if (topicName.length === 0) {
@@ -177,8 +174,10 @@ export const NewRequest = observer(function NewRequest() {
             uploadingAttachments={uploadingAttachments}
           />
 
-          {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
-          {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+          <AnimatePresence>
+            {hasAnyTextContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
+            {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+          </AnimatePresence>
         </UIEditableParts>
         <UIActions>
           <MessageTools onFilesPicked={uploadAttachments} />
@@ -245,8 +244,10 @@ const UITopicNameInput = styled(TransparentTextInput)<{}>`
   ${theme.typo.pageTitle};
 `;
 
-const UINextStepPrompt = styled.div<{}>`
-  ${theme.typo.label.secondary};
+const UINextStepPrompt = styled(FadePresenceAnimator)<{}>`
+  ${theme.typo.label};
+  ${theme.colors.text.opacity(0.4).asColor};
+  margin-top: 20px;
 `;
 
 const UIActions = styled.div<{}>`

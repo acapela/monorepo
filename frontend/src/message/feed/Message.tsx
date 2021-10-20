@@ -83,16 +83,16 @@ export const Message = styledObserver<Props>(
     const getMessageActionsOptions = () => {
       const options: PopoverMenuOption[] = [];
 
+      if (message.isOwn && message.type === "TEXT") {
+        options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
+      }
+
       if (message.type === "TEXT" && onCloseTopicRequest) {
         options.push({
           label: "Close with message",
           onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
           icon: <IconCheck />,
         });
-      }
-
-      if (message.isOwn && message.type === "TEXT") {
-        options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
       }
 
       if (message.isOwn) {
