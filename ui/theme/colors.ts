@@ -17,7 +17,7 @@ const primary = color("hsl(310, 100%, 67%)", {
 });
 
 const lightGray = color("#F9FAFC", {
-  hover: color("hsla(0, 0%, 0%, 0.05)"),
+  hover: color("hsla(0, 0%, 0%, 0.03)"),
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
