@@ -226,7 +226,8 @@ export function cleanupAst(ast: markdown.SingleASTNode[]): markdown.SingleASTNod
 }
 
 export function parseSlackMarkdown(text: string) {
-  const ast = markdown.parserFor(rules, { inline: true })(text);
+  const cleanedText = text.replace(/&gt;/g, ">");
+  const ast = markdown.parserFor(rules, { inline: true })(cleanedText);
   return cleanupAst(ast);
 }
 
@@ -274,7 +275,11 @@ const typeMap = new Map([
   ["strike", "strike"],
 ]);
 
-function transformNode(node: markdown.SingleASTNode) {
+export type TransformContext = {
+  slackTeamId?: string;
+};
+
+function transformNode(node: markdown.SingleASTNode, context: TransformContext = {}) {
   switch (node.type) {
     case "text":
       return { text: node.content, type: "text" };
@@ -294,7 +299,7 @@ function transformNode(node: markdown.SingleASTNode) {
     case "blockQuote":
       return {
         type: "blockquote",
-        content: detectedAndTransformParagraphs(node.content),
+        content: detectedAndTransformParagraphs(node.content, context),
       };
     case "codeBlock":
       // currently not supported so let's use blockquote
@@ -313,10 +318,16 @@ function transformNode(node: markdown.SingleASTNode) {
         ],
       };
     case "slackUser":
+      return createLink(
+        `https://app.slack.com/client/${context.slackTeamId}/${node.id}`,
+        `@${textToString(node.content) || node.id}`
+      );
     case "slackChannel":
     case "slackUserGroup":
-      //todo: correct linking
-      return createLink(`https://slack.com/${node.id}`, `@${textToString(node.content) || node.id}`);
+      return createLink(
+        `https://app.slack.com/client/${context.slackTeamId}/${node.id}`,
+        `#${textToString(node.content) || node.id}`
+      );
     case "slackAtHere":
       return createBoldText("@here");
     case "slackAtChannel":
@@ -341,7 +352,10 @@ function transformNode(node: markdown.SingleASTNode) {
   return node;
 }
 
-function detectedAndTransformParagraphs(ast: markdown.SingleASTNode[]): markdown.SingleASTNode[] {
+function detectedAndTransformParagraphs(
+  ast: markdown.SingleASTNode[],
+  context: TransformContext = {}
+): markdown.SingleASTNode[] {
   const paragraphs = [];
   let buffer = [];
   for (const node of ast) {
@@ -359,17 +373,17 @@ function detectedAndTransformParagraphs(ast: markdown.SingleASTNode[]): markdown
   }
   return paragraphs.map((p) => ({
     type: "paragraph",
-    content: p.map(transformNode),
+    content: p.map((n) => transformNode(n, context)),
   }));
 }
 
-export function transformToTipTapJSON(ast: markdown.SingleASTNode[]) {
+export function transformToTipTapJSON(ast: markdown.SingleASTNode[], context: TransformContext = {}) {
   return {
     type: "doc",
-    content: detectedAndTransformParagraphs(ast),
+    content: detectedAndTransformParagraphs(ast, context),
   };
 }
 
-export function parseAndTransformToTipTapJSON(text: string) {
-  return transformToTipTapJSON(parseSlackMarkdown(text));
+export function parseAndTransformToTipTapJSON(text: string, context: TransformContext = {}) {
+  return transformToTipTapJSON(parseSlackMarkdown(text), context);
 }
