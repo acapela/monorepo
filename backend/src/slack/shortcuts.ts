@@ -7,7 +7,7 @@ import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_READ } from "~shared/types/mention";
 
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
@@ -57,17 +57,14 @@ const createTopicModalView = ({
         element: {
           type: "static_select",
           action_id: "request_type_select",
-          initial_option: { text: { type: "plain_text", text: "Read Request" }, value: REQUEST_READ },
-          options: [
-            {
-              text: { type: "plain_text", text: "Read Request" },
-              value: REQUEST_READ,
-            },
-            {
-              text: { type: "plain_text", text: "Response Request" },
-              value: REQUEST_RESPONSE,
-            },
-          ],
+          initial_option: {
+            text: { type: "plain_text", text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] },
+            value: REQUEST_READ,
+          },
+          options: Object.entries(MENTION_TYPE_PICKER_LABELS).map(([value, text]) => ({
+            text: { type: "plain_text", text },
+            value,
+          })),
         },
       },
       {
