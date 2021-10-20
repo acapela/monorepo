@@ -11,15 +11,9 @@ const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
   [MENTION_OBSERVER]: "Add as observer",
 };
 
-export function MentionTypePicker({
-  selected,
-  onSelect,
-}: {
-  selected: MentionType;
-  onSelect: (mention: MentionType) => void;
-}) {
+// TODO: Add functionality that displays previously selected mention when editing
+export function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => void }) {
   const mentionLabelPairs = toPairs(MENTION_TYPE_PICKER_LABELS) as [MentionType, string][];
-  const selectedPair = [selected, MENTION_TYPE_PICKER_LABELS[selected]] as const;
 
   return (
     <ItemsDropdown
@@ -27,7 +21,7 @@ export function MentionTypePicker({
       keyGetter={([mentionType]) => mentionType}
       onItemSelected={([mentionType]) => onSelect(mentionType)}
       labelGetter={([, mentionLabel]) => mentionLabel}
-      selectedItems={[selectedPair]}
+      selectedItems={[]}
       dividerIndexes={[mentionLabelPairs.length - 1]}
     />
   );
