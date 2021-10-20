@@ -85,6 +85,7 @@ export const NewRequest = observer(function NewRequest() {
     uploadAttachments,
     focusEditor,
     hasAnyTextContent,
+    clearPersistedContent,
   } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-new-request" });
 
   // const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
@@ -148,6 +149,8 @@ export const NewRequest = observer(function NewRequest() {
 
       router.push(routes.topic({ topicSlug: topic.slug }));
     });
+
+    clearPersistedContent();
   }
 
   return (

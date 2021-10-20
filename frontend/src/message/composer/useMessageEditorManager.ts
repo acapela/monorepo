@@ -26,7 +26,7 @@ export function useMessageEditorManager({
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const [content, setContent] = usePersistedState<RichEditorNode>({
+  const [content, setContent, clearPersistedContent] = usePersistedState<RichEditorNode>({
     key: persistanceKey,
     initialValue,
   });
@@ -46,6 +46,7 @@ export function useMessageEditorManager({
   }
 
   return {
+    clearPersistedContent,
     isEmptyWithNoAttachments,
     hasAnyTextContent,
     attachments,

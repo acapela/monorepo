@@ -55,6 +55,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     attachmentsList,
     isEmptyWithNoAttachments,
     hasAnyTextContent,
+    clearPersistedContent,
   } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-topic:" + topic.id });
 
   const topicContext = useTopicStoreContext();
@@ -99,6 +100,8 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     handleStopReplyingToMessage();
 
     onMessageSent(params);
+
+    clearPersistedContent();
   });
 
   const handleSubmitTextMessage = action(async (shouldClosePendingTasks: boolean) => {

@@ -36,6 +36,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     attachments,
     removeAttachmentById,
     isEmptyWithNoAttachments,
+    clearPersistedContent,
   } = useMessageEditorManager({
     editorRef,
     persistanceKey: "message-draft-for-message" + message.id,
@@ -78,6 +79,8 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     }
 
     trackEvent("Edited Message", { messageId: message.id });
+
+    clearPersistedContent();
     onSaved?.();
   }
 
