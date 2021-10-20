@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-import { pickUserFiles } from "~frontend/../../shared/files";
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
-import { IconFile, IconPaperclip } from "~frontend/../../ui/icons";
+import { pickUserFiles } from "~shared/files";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconFile, IconPaperclip } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { AudioRecordingButton } from "./AudioRecordingButton";

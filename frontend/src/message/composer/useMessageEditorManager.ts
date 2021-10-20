@@ -4,6 +4,7 @@ import { RefObject, useMemo } from "react";
 import { useList } from "react-use";
 
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 
@@ -31,7 +32,9 @@ export function useMessageEditorManager({
     initialValue,
   });
 
-  const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);
+  const hasAnyTextContent = useMemo(() => !isRichEditorContentEmpty(content), [content]);
+
+  const isEmptyWithNoAttachments = !hasAnyTextContent && attachments.length === 0;
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -44,6 +47,8 @@ export function useMessageEditorManager({
   }
 
   return {
+    isEmptyWithNoAttachments,
+    hasAnyTextContent,
     attachments,
     uploadAttachments,
     uploadingAttachments,

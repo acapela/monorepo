@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
@@ -11,10 +10,10 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
+import { theme } from "~ui/theme";
 
 interface Props {
   message: MessageEntity;
@@ -29,12 +28,19 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
   const db = useDb();
   const editorRef = useRef<Editor>(null);
 
-  const { content, setContent, uploadAttachments, uploadingAttachments, attachments, removeAttachmentById } =
-    useMessageEditorManager({
-      editorRef,
-      persistanceKey: "message-draft-for-message" + message.id,
-      initialValue: message.content,
-    });
+  const {
+    content,
+    setContent,
+    uploadAttachments,
+    uploadingAttachments,
+    attachments,
+    removeAttachmentById,
+    isEmptyWithNoAttachments,
+  } = useMessageEditorManager({
+    editorRef,
+    persistanceKey: "message-draft-for-message" + message.id,
+    initialValue: message.content,
+  });
 
   function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => !message.attachments.findById(attachmentNow.uuid));
@@ -75,12 +81,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     onSaved?.();
   }
 
-  function getCanSubmit() {
-    if (attachments.length > 0) return true;
-
-    return !isRichEditorContentEmpty(content);
-  }
-
   return (
     <UIHolder>
       <MessageContentEditor
@@ -98,7 +98,12 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
           <Button kind="secondary" onClick={onCancelRequest} shortcut={"Esc"}>
             Cancel
           </Button>
-          <Button kind="primary" isDisabled={!getCanSubmit()} onClick={handleSubmit} shortcut={["Mod", "Enter"]}>
+          <Button
+            kind="primary"
+            isDisabled={isEmptyWithNoAttachments}
+            onClick={handleSubmit}
+            shortcut={["Mod", "Enter"]}
+          >
             Save
           </Button>
         </UIButtons>

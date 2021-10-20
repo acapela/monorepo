@@ -1,9 +1,9 @@
 import { useRef } from "react";
 
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
-import { IconMic } from "~frontend/../../ui/icons";
-import { Popover } from "~frontend/../../ui/popovers/Popover";
 import { useMicrophoneRecording } from "~shared/recording/useMicrophoneRecording";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconMic } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
 
 import { RecordingInProgressManager } from "./RecordingInProgressManager";
 

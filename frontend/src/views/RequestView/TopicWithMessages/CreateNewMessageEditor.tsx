@@ -1,11 +1,9 @@
 import { useApolloClient } from "@apollo/client";
-import { isEqual } from "lodash";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -22,6 +20,7 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
+import { PopPresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
@@ -54,14 +53,14 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     uploadAttachments,
     uploadingAttachments,
     attachmentsList,
+    isEmptyWithNoAttachments,
+    hasAnyTextContent,
   } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-topic:" + topic.id });
 
   const topicContext = useTopicStoreContext();
 
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
-
-  const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);
 
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
@@ -108,7 +107,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     }
 
     // Nothing to submit
-    if (!hasTypedMessageContent && attachments.length === 0) {
+    if (isEmptyWithNoAttachments) {
       return;
     }
 
@@ -155,23 +154,27 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
         />
         <UIRequestControls>
           <MessageTools
-            onRecordingReady={async (recording) => {
-              console.log({ recording });
-              const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
+            onRecordingReady={
+              hasAnyTextContent
+                ? undefined
+                : async (recording) => {
+                    const uploadedAttachments = await uploadFiles(apolloClient, [recording]);
 
-              const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+                    const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-              await submitMessage({
-                type: messageType,
-                content: getEmptyRichContent(),
-                attachments: uploadedAttachments,
-              });
-            }}
+                    await submitMessage({
+                      type: messageType,
+                      content: getEmptyRichContent(),
+                      attachments: uploadedAttachments,
+                    });
+                  }
+            }
             onFilesPicked={async (files) => {
               await uploadAttachments(files);
             }}
           />
           <NewMessageButtons
+            canSend={!isEmptyWithNoAttachments}
             topic={topic}
             onSendRequest={() => handleSubmitTextMessage(false)}
             onCompleteRequest={() => handleSubmitTextMessage(true)}

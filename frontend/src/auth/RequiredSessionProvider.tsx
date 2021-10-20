@@ -2,9 +2,9 @@ import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
 
-import { useConst } from "~frontend/../../shared/hooks/useConst";
 import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { useConst } from "~shared/hooks/useConst";
 
 interface Props {
   session: Session | null;

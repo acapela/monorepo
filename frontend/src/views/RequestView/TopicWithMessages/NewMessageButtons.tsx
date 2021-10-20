@@ -12,6 +12,7 @@ interface Props {
   onSendRequest?: () => void;
   onCompleteRequest?: () => void;
   onCloseRequest?: () => void;
+  canSend: boolean;
 }
 
 type AllowedActionName = "send" | "complete" | "close-request";
@@ -57,50 +58,53 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
   };
 }
 
-export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteRequest, onCloseRequest }: Props) => {
-  const currentUser = useAssertCurrentUser();
-  const { actions, primaryAction } = getAllowedActions(topic);
+export const NewMessageButtons = observer(
+  ({ topic, onSendRequest, onCompleteRequest, onCloseRequest, canSend }: Props) => {
+    const currentUser = useAssertCurrentUser();
+    const { actions, primaryAction } = getAllowedActions(topic);
 
-  function handleCloseRequest() {
-    onCloseRequest?.();
-    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: currentUser.id });
+    function handleCloseRequest() {
+      onCloseRequest?.();
+      topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: currentUser.id });
+    }
+
+    return (
+      <UIHolder>
+        {actions.includes("send") && (
+          <Button
+            shortcut={["Mod", "Enter"]}
+            kind={primaryAction === "send" ? "primary" : "secondary"}
+            tooltip="Send without marking your part as done"
+            onClick={onSendRequest}
+            isDisabled={!canSend}
+          >
+            Send
+          </Button>
+        )}
+        {actions.includes("complete") && (
+          <Button
+            shortcut={["Mod", "Shift", "Enter"]}
+            kind={primaryAction === "complete" ? "primary" : "secondary"}
+            tooltip="Mark your part as done"
+            onClick={onCompleteRequest}
+          >
+            Mark as Done
+          </Button>
+        )}
+        {actions.includes("close-request") && (
+          <Button
+            shortcut={["Mod", "X"]}
+            kind={primaryAction === "close-request" ? "primary" : "secondary"}
+            tooltip="Close request for all participants"
+            onClick={handleCloseRequest}
+          >
+            Close request
+          </Button>
+        )}
+      </UIHolder>
+    );
   }
-
-  return (
-    <UIHolder>
-      {actions.includes("send") && (
-        <Button
-          shortcut={["Mod", "Enter"]}
-          kind={primaryAction === "send" ? "primary" : "secondary"}
-          tooltip="Send without marking your part as done"
-          onClick={onSendRequest}
-        >
-          Send
-        </Button>
-      )}
-      {actions.includes("complete") && (
-        <Button
-          shortcut={["Mod", "Shift", "Enter"]}
-          kind={primaryAction === "complete" ? "primary" : "secondary"}
-          tooltip="Mark your part as done"
-          onClick={onCompleteRequest}
-        >
-          Mark as Done
-        </Button>
-      )}
-      {actions.includes("close-request") && (
-        <Button
-          shortcut={["Mod", "X"]}
-          kind={primaryAction === "close-request" ? "primary" : "secondary"}
-          tooltip="Close request for all participants"
-          onClick={handleCloseRequest}
-        >
-          Close request
-        </Button>
-      )}
-    </UIHolder>
-  );
-});
+);
 
 const UIHolder = styled.div`
   display: flex;

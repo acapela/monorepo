@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
-import { useDependencyChangeEffect } from "~frontend/../../shared/hooks/useChangeEffect";
-import { createTimeout } from "~frontend/../../shared/time";
+import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { createTimeout } from "~shared/time";
 
 interface Input<S> {
   key?: string;
