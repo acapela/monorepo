@@ -1,13 +1,14 @@
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { ViewsOpenArguments } from "@slack/web-api";
 import { IncomingWebhook } from "@slack/webhook";
+import { Bits, Blocks, Elements, Modal } from "slack-block-builder";
 
 import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_READ } from "~shared/types/mention";
 
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
@@ -18,7 +19,6 @@ type ShortcutMetadata = { userId: string } & (
   | { isMessageShortcut: false }
   | { isMessageShortcut: true; channelId: string; messageTs: string; responseURL: string }
 );
-
 const createTopicModalView = ({
   triggerId,
   messageText,
@@ -29,62 +29,40 @@ const createTopicModalView = ({
   metadata: ShortcutMetadata;
 }): ViewsOpenArguments => ({
   trigger_id: triggerId,
-  view: {
-    type: "modal",
-    callback_id: "create_topic_modal",
-    title: { type: "plain_text", text: "Create a new request" },
-    blocks: [
-      {
-        type: "input",
-        block_id: "topic_block",
-        label: { type: "plain_text", text: "Topic Title" },
-        element: {
-          type: "plain_text_input",
-          action_id: "topic_name",
-          placeholder: { type: "plain_text", text: "Eg feedback for Figma v12" },
-        },
-      },
-      {
-        type: "section",
-        block_id: "members_block",
-        text: { type: "mrkdwn", text: "Request to" },
-        accessory: { action_id: "members_select", type: "multi_users_select" },
-      },
-      {
-        type: "input",
-        block_id: "request_type_block",
-        label: { type: "plain_text", text: "Type" },
-        element: {
-          type: "static_select",
-          action_id: "request_type_select",
-          initial_option: { text: { type: "plain_text", text: "Read Request" }, value: REQUEST_READ },
-          options: [
-            {
-              text: { type: "plain_text", text: "Read Request" },
-              value: REQUEST_READ,
-            },
-            {
-              text: { type: "plain_text", text: "Response Request" },
-              value: REQUEST_RESPONSE,
-            },
-          ],
-        },
-      },
-      {
-        type: "input",
-        block_id: "message_block",
-        label: { type: "plain_text", text: "Request Message" },
-        element: {
-          type: "plain_text_input",
-          action_id: "topic_message",
-          multiline: true,
-          initial_value: messageText,
-        },
-      },
-    ],
-    submit: { type: "plain_text", text: "Create" },
-    private_metadata: JSON.stringify(metadata),
-  },
+  view: Modal({ callbackId: "create_topic_modal", title: "Create a new request" })
+    .blocks(
+      Blocks.Input({ blockId: "topic_block", label: "Topic Title" }).element(
+        Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" })
+      ),
+      Blocks.Input({ blockId: "request_type_block", label: "Request Type" }).element(
+        Elements.StaticSelect({ actionId: "request_type_select" })
+          .initialOption(Bits.Option({ value: REQUEST_READ, text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] }))
+          .optionGroups(
+            Bits.OptionGroup({ label: "Request types" }).options(
+              Object.entries(MENTION_TYPE_PICKER_LABELS)
+                .filter(([value]) => value !== MENTION_OBSERVER)
+                .map(([value, text]) => Bits.Option({ value, text }))
+            )
+          )
+          .optionGroups(
+            Bits.OptionGroup({ label: "Non-request types" }).options(
+              Bits.Option({
+                value: MENTION_OBSERVER,
+                text: MENTION_TYPE_PICKER_LABELS[MENTION_OBSERVER],
+              })
+            )
+          )
+      ),
+      Blocks.Section({ blockId: "members_block", text: "Request to" }).accessory(
+        Elements.UserMultiSelect({ actionId: "members_select" })
+      ),
+      Blocks.Input({ blockId: "message_block", label: "Request Message" }).element(
+        Elements.TextInput({ actionId: "topic_message" }).multiline(true).initialValue(messageText)
+      )
+    )
+    .submit("Create")
+    .privateMetaData(JSON.stringify(metadata))
+    .buildToObject(),
 });
 
 export function setupSlackShortcuts(slackApp: App) {
