@@ -198,9 +198,12 @@ export function createEntitySyncManager<Data, Connections>(
    *
    * Initially set it to latest item date we locally have.
    */
-  let lastRemoveSyncDate = getLastSyncDate();
+  let lastRemoveSyncDate: Date | null = null;
 
   function startNextRemovesSync() {
+    if (lastRemoveSyncDate === null) {
+      lastRemoveSyncDate = getLastSyncDate();
+    }
     const maybeCleanup = syncConfig.pullRemoves?.({
       ...databaseUtilities,
       lastSyncDate: lastRemoveSyncDate,
