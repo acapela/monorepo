@@ -4,8 +4,10 @@ import { parseAndTransformToTipTapJSON } from "~backend/src/slack/slackMarkdown/
 import { findUserBySlackId } from "~backend/src/slack/utils";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 
 async function createAndInviteMissingUsers(
@@ -129,19 +131,27 @@ export async function createTopicForSlackUsers({
 
   const mentionedUsersBySlackId = Object.assign(
     {},
-    ...usersWithRequestType.map((u) => {
-      return {
-        [u.slackUserId]: {
-          type: u.requestType,
-          userId: u.userId,
-        },
-      };
-    })
+    ...usersWithRequestType.map((u) => ({
+      [u.slackUserId]: {
+        type: u.requestType,
+        userId: u.userId,
+      },
+    }))
   );
 
   const topicMessage = parseAndTransformToTipTapJSON(rawTopicMessage, {
     slackTeamId,
     mentionedUsersBySlackId,
+  });
+  topicMessage.content.push({
+    type: "paragraph",
+    content: usersWithRequestType.flatMap(({ userId, requestType }) => {
+      const data: EditorMentionData = { userId, type: requestType };
+      return [
+        { type: MENTION_TYPE_KEY, attrs: { data } },
+        { type: "text", text: " " },
+      ];
+    }),
   });
   const topicMessagePlainText = convertMessageContentToPlainText(topicMessage);
   const finalTopicName =
