@@ -1,4 +1,3 @@
-import type { PickerProps } from "emoji-mart";
 import { Suspense, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
@@ -6,15 +5,18 @@ import styled from "styled-components";
 import { namedLazy } from "~shared/namedLazy";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { theme } from "~ui/theme";
 
-import { EmojiMartStyles } from "./styles";
+import type { EmojiPickerProps } from "./EmojiPickerWindowInner";
+
+export type { EmojiData } from "./EmojiPickerWindowInner";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
-export const EmojiPickerWindowLazy = namedLazy(() => import("emoji-mart"), "Picker");
+export const EmojiPickerWindowLazy = namedLazy(() => import("./EmojiPickerWindowInner"), "EmojiPickerWindowInner");
 
 EmojiPickerWindowLazy.preload();
 
-interface Props extends PickerProps {
+interface Props extends EmojiPickerProps {
   onCloseRequest?: () => void;
 }
 
@@ -27,13 +29,8 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
 
   return (
     <>
-      <EmojiMartStyles />
       <Suspense fallback={null}>
-        <UIHolder
-          ref={holderRef}
-          presenceStyles={POP_PRESENCE_STYLES}
-          transition={{ ...POP_ANIMATION_CONFIG, delay: 0.2 }}
-        >
+        <UIHolder ref={holderRef} presenceStyles={POP_PRESENCE_STYLES} transition={{ ...POP_ANIMATION_CONFIG }}>
           <EmojiPickerWindowLazy {...pickerProps} />
         </UIHolder>
       </Suspense>
@@ -42,15 +39,7 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
 }
 
 const UIHolder = styled(PresenceAnimator)<{}>`
-  .emoji-mart {
-    font: inherit;
-  }
-
-  .emoji-mart-preview {
-    display: none;
-  }
-
-  .emoji-mart-anchors svg {
-    margin: auto;
-  }
+  ${theme.colors.panels.popover.asBgWithReadableText};
+  ${theme.box.popover};
+  ${theme.radius.panel};
 `;

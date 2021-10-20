@@ -33,13 +33,12 @@ import { MessageTasks } from "./tasks/MessageTasks";
 interface Props extends MotionProps {
   message: MessageEntity;
   isBundledWithPreviousMessage?: boolean;
-  onCloseTopicRequest?: (summary: string) => void;
   isReadonly?: boolean;
   className?: string;
 }
 
 export const Message = styledObserver<Props>(
-  ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
+  ({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
@@ -84,14 +83,6 @@ export const Message = styledObserver<Props>(
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
       }
 
-      if (message.type === "TEXT" && onCloseTopicRequest) {
-        options.push({
-          label: "Close with message",
-          onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
-          icon: <IconCheck />,
-        });
-      }
-
       if (message.isOwn) {
         options.push({
           label: "Delete message",
@@ -107,6 +98,7 @@ export const Message = styledObserver<Props>(
 
     return (
       <UIHolder id={message.id}>
+        <MakeReactionButton message={message} />
         <MessageLikeContent
           className={className}
           tools={
