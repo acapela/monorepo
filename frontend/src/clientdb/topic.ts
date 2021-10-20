@@ -177,6 +177,9 @@ export const topicEntity = defineEntity<TopicFragment>({
         if (!messages.hasItems) {
           return new Date(topic.updated_at);
         }
+        if (topic.closed_at) {
+          return new Date(topic.closed_at);
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
@@ -185,6 +188,11 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       get lastOwnActivityDate() {
         const topicOwnUpdateDate = connections.isOwn ? new Date(topic.updated_at) : null;
+
+        if (topic.closed_at && topic.closed_by_user_id === currentUserId) {
+          return new Date(topic.closed_at);
+        }
+
         if (!messages.hasItems) {
           return topicOwnUpdateDate;
         }

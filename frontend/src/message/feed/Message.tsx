@@ -113,7 +113,7 @@ export const Message = styledObserver<Props>(
             shouldShowTools && (
               <UITools>
                 <MakeReactionButton message={message} />
-                <ReplyButton messageId={message.id} />
+                {!message.topic?.isClosed && <ReplyButton messageId={message.id} />}
                 {messageActionsOptions.length > 0 && (
                   <PopoverMenuTrigger
                     onOpen={() => setIsActive(true)}

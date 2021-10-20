@@ -15,15 +15,18 @@
     "is-hotkey": "^0.2.0",
     "jsonwebtoken": "^8.5.1",
     "pino": "^6.13.3",
+    "simple-markdown": "^0.7.3",
     "unicode-emoji-json": "^0.3.0"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.6",
     "@types/color": "^3.0.2",
     "@types/is-hotkey": "^0.1.5",
+    "@types/jest": "^27.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/pino": "^6.3.11",
-    "jest": "^27.2.5"
+    "jest": "^27.2.5",
+    "ts-jest": "^27.0.7"
   },
   "scripts": {
     "test": "jest",

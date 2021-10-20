@@ -15,7 +15,7 @@ interface Props<T> {
 }
 
 export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected, noItemsPlaceholder }: Props<T>) {
-  const { activeItem } = useListWithNavigation(items, { enableKeyboard: true });
+  const { activeItem, setActiveItem } = useListWithNavigation(items, { enableKeyboard: true });
 
   const activeKey = activeItem ? keyGetter(activeItem) : null;
 
@@ -40,7 +40,14 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected, no
         const key = keyGetter(item);
         const isActive = activeKey === key;
         return (
-          <UIItem role="option" isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
+          <UIItem
+            role="option"
+            isActive={isActive}
+            onMouseEnter={() => setActiveItem(item)}
+            onMouseMove={() => setActiveItem(item)}
+            onClick={() => onItemSelected(item)}
+            key={key}
+          >
             {renderItem(item)}
           </UIItem>
         );

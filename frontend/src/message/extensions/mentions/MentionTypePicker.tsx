@@ -4,15 +4,15 @@ import React from "react";
 import { MENTION_TYPE_PICKER_LABELS, MentionType } from "~shared/types/mention";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 
-export function MentionTypePicker({
-  selected,
-  onSelect,
-}: {
-  selected: MentionType;
+interface Props {
+  selected?: MentionType;
   onSelect: (mention: MentionType) => void;
-}) {
+}
+
+// TODO: Add functionality that displays previously selected mention when editing
+export function MentionTypePicker({ selected, onSelect }: Props) {
   const mentionLabelPairs = toPairs(MENTION_TYPE_PICKER_LABELS) as [MentionType, string][];
-  const selectedPair = [selected, MENTION_TYPE_PICKER_LABELS[selected]] as const;
+  const selectedPair = selected ? [selected, MENTION_TYPE_PICKER_LABELS[selected]] : [];
 
   return (
     <ItemsDropdown
@@ -20,7 +20,7 @@ export function MentionTypePicker({
       keyGetter={([mentionType]) => mentionType}
       onItemSelected={([mentionType]) => onSelect(mentionType)}
       labelGetter={([, mentionLabel]) => mentionLabel}
-      selectedItems={[selectedPair]}
+      selectedItems={[selectedPair as [MentionType, string]]}
       dividerIndexes={[mentionLabelPairs.length - 1]}
     />
   );

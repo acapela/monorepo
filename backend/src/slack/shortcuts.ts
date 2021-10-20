@@ -145,7 +145,7 @@ export function setupSlackShortcuts(slackApp: App) {
         topic_name: { value: topicName },
       },
       message_block: {
-        topic_message: { value: topicMessage },
+        topic_message: { value: rawTopicMessage },
       },
       members_block: {
         members_select: { selected_users: members },
@@ -155,7 +155,7 @@ export function setupSlackShortcuts(slackApp: App) {
       },
     } = view.state.values;
 
-    if (!(topicName && topicMessage && members && requestType)) {
+    if (!(topicName && rawTopicMessage && members && requestType)) {
       return ack({
         response_action: "errors",
         errors: { room_block: "Sorry, this isn’t valid input" },
@@ -163,6 +163,9 @@ export function setupSlackShortcuts(slackApp: App) {
     }
 
     const token = context.botToken || body.token;
+
+    assert(body.user.team_id, "must have slack team id");
+
     const [team, owner] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
       findUserBySlackId(token, body.user.id),
@@ -175,8 +178,9 @@ export function setupSlackShortcuts(slackApp: App) {
       token,
       teamId: team.id,
       ownerId: owner.id,
+      slackTeamId: body.user.team_id,
       topicName,
-      topicMessage,
+      rawTopicMessage,
       slackUserIdsWithRequestType: members.map((id) => ({
         slackUserId: id,
         requestType: requestType.value as MentionType,
