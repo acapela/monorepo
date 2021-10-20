@@ -7,9 +7,9 @@ import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { parseAndTransformToTipTapJSON } from "~shared/slackMarkdown/parser";
 import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
+import { parseAndTransformToTipTapJSON } from "./slackMarkdown/parser";
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;

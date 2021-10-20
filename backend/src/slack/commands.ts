@@ -6,36 +6,16 @@ import { convertMessageContentToPlainText } from "~richEditor/content/plainText"
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { parseAndTransformToTipTapJSON } from "~shared/slackMarkdown/parser";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
+import { parseAndTransformToTipTapJSON } from "./slackMarkdown/parser";
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 /**
  * Turns a text like "Hi <@123SOMEID456|gregor>, let's talk in <#13CHNID36|dev>" into "Hi @gregor, let's talk in #dev"
  * It does so by matching with a (hopefully) simple enough regex matching for these texts and the inner symbol and name.
  */
-const USER_OR_CHANNEL_REGEX = /<(@|#).+?\|(.+?)>/gm;
-function stringifySlackText(originalText: string) {
-  const matches = Array.from(originalText.matchAll(USER_OR_CHANNEL_REGEX));
-  return matches.reduce(
-    ({ text, offset }, { 0: fullMatch, 1: symbol, 2: name, index }) => {
-      if (!index) {
-        return { text, offset };
-      }
-      const offsetIndex = index + offset;
-      return {
-        text: text.slice(0, offsetIndex) + symbol + name + text.slice(offsetIndex + fullMatch.length),
-        offset: offset + symbol.length + name.length - fullMatch.length,
-      };
-    },
-    {
-      text: originalText,
-      offset: 0,
-    }
-  ).text;
-}
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
   slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, respond, client, context, body }) => {

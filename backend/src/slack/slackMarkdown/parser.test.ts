@@ -1,9 +1,4 @@
-import {
-  cleanupAst,
-  parseAndTransformToTipTapJSON,
-  parseSlackMarkdown,
-  transformToTipTapJSON,
-} from "~shared/slackMarkdown/parser";
+import { cleanupAst, parseAndTransformToTipTapJSON, parseSlackMarkdown, transformToTipTapJSON } from "./parser";
 
 const advancedMessage = `hello <https://www.google.com/> :rolling_on_the_floor_laughing: test <#C02D6BU8J6P|general>
 >  I have a dream
@@ -162,7 +157,7 @@ describe("transform", () => {
                   type: "link",
                 },
               ],
-              text: "@general",
+              text: "#general",
               type: "text",
             },
           ],
