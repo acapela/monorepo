@@ -1,41 +1,32 @@
 import type { Editor } from "@tiptap/react";
-import { isEqual, noop, range } from "lodash";
+import { AnimatePresence } from "framer-motion";
+import { sampleSize } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useRef } from "react";
-import { useList } from "react-use";
+import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
-import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
-import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
-import { UploadingAttachmentPreview } from "~frontend/ui/message/composer/UploadingAttachmentPreview";
-import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
+import { FadePresenceAnimator } from "~frontend/../../ui/animations";
+import { ClientDb, useDb } from "~frontend/clientdb";
+import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
+import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "~frontend/message/composer/Tools";
+import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
-import { RichEditorNode } from "~richEditor/content/types";
-import { useFileDroppedInContext } from "~richEditor/DropFileContext";
-import { FileInput } from "~richEditor/FileInput";
-import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
-import { PopPresenceAnimator } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
-import { IconFilePlus, IconFolder } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
-import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
 /**
  * Creates a placeholder with up to 2 random team members mentioned
@@ -43,33 +34,39 @@ import { NewRequestRichEditor } from "./NewRequestRichEditor";
  */
 function useMessageContentExamplePlaceholder(): string {
   const db = useDb();
-  const user = useAssertCurrentUser();
-
-  const teamMembers = db.teamMember.query(
-    (teamMember) => teamMember.user_id !== user.id && teamMember.user !== null
-  ).all;
 
   const exampleRequestBodyWithTeamMemberNamesMentioned = useMemo(() => {
-    function getMemberMentions() {
-      let displayNames = "";
+    const otherTeamMembers = db.user.query({ isMemberOfCurrentTeam: true, isCurrentUser: false }).all;
 
-      const unusedMemberIndexes = range(teamMembers.length);
-
-      for (let i = 0; i < 2 && i < teamMembers.length; i++) {
-        const randomIndex = Math.floor(Math.random() * unusedMemberIndexes.length);
-
-        const teamMemberIndex = unusedMemberIndexes.splice(randomIndex, 1)[0];
-
-        const randomTeamMember = teamMembers[teamMemberIndex];
-        displayNames += `@${randomTeamMember.user?.name || "???"} `;
-      }
-
-      return displayNames;
+    if (!otherTeamMembers.length) {
+      return `I would like you to...`;
     }
-    return `${getMemberMentions()} I would like you to...`;
-  }, [teamMembers]);
+
+    const exampleUsers = sampleSize(otherTeamMembers, 2);
+
+    const sampleMentionText = exampleUsers.map((user) => `@${user.name || "???"} `);
+
+    return `${sampleMentionText.join(" ")} I would like you to...`;
+  }, [db]);
 
   return exampleRequestBodyWithTeamMemberNamesMentioned;
+}
+
+async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
+  const optimisticSlug = await slugify(topicName);
+
+  return runUntracked(() => {
+    if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
+      return optimisticSlug;
+    }
+    let suffixIndex = 2;
+
+    while (db.topic.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
+      suffixIndex++;
+    }
+
+    return `${optimisticSlug}-${suffixIndex}`;
+  });
 }
 
 export const NewRequest = observer(function NewRequest() {
@@ -79,14 +76,21 @@ export const NewRequest = observer(function NewRequest() {
   const router = useRouter();
   const [isSubmitting, { set: markAsSubmittingInProgress }] = useBoolean(false);
 
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
-    onUploadFinish: (attachment) => attachmentsList.push(attachment),
-  });
+  const {
+    content,
+    setContent,
+    attachments,
+    removeAttachmentById,
+    uploadingAttachments,
+    uploadAttachments,
+    focusEditor,
+    hasAnyTextContent,
+    clearPersistedContent,
+  } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-new-request" });
 
-  const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
-    uploadAttachments(files);
-  });
+  // const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
+  //   uploadAttachments(files);
+  // });
 
   useDocumentFilesPaste((files) => {
     uploadAttachments(files);
@@ -103,72 +107,24 @@ export const NewRequest = observer(function NewRequest() {
     return true;
   });
 
-  const [topicName, setTopicName, clearTopicName] = useLocalStorageState<string>({
+  const [topicName, setTopicName] = usePersistedState<string>({
     key: "topic-name-draft-for-new-request",
     initialValue: "",
   });
 
-  const [messageContent, setMessageContent, clearMessageContent] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-new-request",
-    initialValue: getEmptyRichContent(),
-  });
-
-  const hasTypedMessageContent = useMemo(() => !isEqual(messageContent, getEmptyRichContent()), [messageContent]);
-
-  const hasTypedInAnything = useMemo(
-    () => topicName !== "" || hasTypedMessageContent,
-    [topicName, hasTypedMessageContent]
-  );
+  const hasTypedInAnything = useMemo(() => topicName !== "" || hasAnyTextContent, [topicName, hasAnyTextContent]);
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
     if (topicName.length === 0) {
       return [false, "Please add a topic name before creating request"];
     }
-    const mentionNodes = getNodesFromContentByType(messageContent, "mention");
+    const mentionNodes = getNodesFromContentByType(content, "mention");
     if (mentionNodes.length < 1) {
       return [false, "You should mention at least one teammate before creating request"];
     }
     return [true, `Hit ${sendShortcutDescription} to create request`];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topicName, messageContent]);
-
-  // Cleanup contents after route has changed
-  useEffect(() => {
-    router.events.on("routeChangeComplete", function cleanup() {
-      // Don't erase contents if changed page by accident
-      if (isSubmitting) {
-        return;
-      }
-      attachmentsList.clear();
-      clearTopicName();
-      clearMessageContent();
-    });
-
-    return () => {
-      router.events.off("routeChangeComplete", noop);
-    };
-  }, [isSubmitting, clearTopicName, clearMessageContent, attachmentsList, router.events]);
-
-  async function getAvailableSlugForTopicName(topicName: string) {
-    const optimisticSlug = await slugify(topicName);
-
-    return runUntracked(() => {
-      if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
-        return optimisticSlug;
-      }
-      let suffixIndex = 2;
-
-      while (db.topic.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
-        suffixIndex++;
-      }
-
-      return `${optimisticSlug}-${suffixIndex}`;
-    });
-  }
-
-  function focusEditor() {
-    editorRef.current?.chain().focus("start");
-  }
+  }, [topicName, content]);
 
   async function submit() {
     if (!isValid) {
@@ -177,13 +133,13 @@ export const NewRequest = observer(function NewRequest() {
 
     markAsSubmittingInProgress();
 
-    const topicNameSlug = await getAvailableSlugForTopicName(topicName);
+    const topicNameSlug = await getAvailableSlugForTopicName(db, topicName);
 
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: topicNameSlug });
-      const newMessage = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+      const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
-      for (const { userId, type } of getUniqueRequestMentionDataFromContent(messageContent)) {
+      for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
         db.task.create({ message_id: newMessage.id, user_id: userId, type });
       }
 
@@ -193,70 +149,54 @@ export const NewRequest = observer(function NewRequest() {
 
       router.push(routes.topic({ topicSlug: topic.slug }));
     });
+
+    clearPersistedContent();
   }
 
   return (
     <UIHolder>
       <UIContentHolder isEmpty={!hasTypedInAnything}>
         {!hasTypedInAnything && <UIFlyingCreateARequestLabel />}
-        <UITopicNameInput
-          autoFocus
-          disabled={isSubmitting}
-          value={topicName}
-          onChangeText={setTopicName}
-          placeholder={"Add topic"}
-          onKeyPress={onEnterPressed(focusEditor)}
-        />
-        <NewRequestRichEditor
-          ref={editorRef}
-          isDisabled={isSubmitting}
-          value={messageContent}
-          onChange={setMessageContent}
-          placeholder={messageContentExample}
-        />
+        <UIEditableParts>
+          <UITopicNameInput
+            autoFocus
+            disabled={isSubmitting}
+            value={topicName}
+            onChangeText={setTopicName}
+            placeholder={"Add topic"}
+            onKeyPress={onEnterPressed(focusEditor)}
+          />
+          <MessageContentEditor
+            ref={editorRef}
+            isDisabled={isSubmitting}
+            placeholder={messageContentExample}
+            content={content}
+            onContentChange={setContent}
+            attachments={attachments}
+            onAttachmentRemoveRequest={removeAttachmentById}
+            onFilesSelected={uploadAttachments}
+            uploadingAttachments={uploadingAttachments}
+          />
 
-        {(uploadingAttachments.length > 0 || attachments.length > 0 || isDraggingFile) && (
-          <UIAttachmentsPreviews>
-            {attachments.map((attachment) => (
-              <AttachmentPreview
-                id={attachment.uuid}
-                key={attachment.uuid}
-                onRemoveRequest={() => {
-                  attachmentsList.filter((existingAttachment) => {
-                    return existingAttachment.uuid !== attachment.uuid;
-                  });
-                }}
-              />
-            ))}
-            {uploadingAttachments.map(({ percentage }, index) => (
-              <UploadingAttachmentPreview percentage={percentage} key={index} />
-            ))}
-            {isDraggingFile && (
-              <PopPresenceAnimator>
-                <UIFileDropPlaceholder description="Drop file here" icon={<IconFilePlus />} />
-              </PopPresenceAnimator>
-            )}
-          </UIAttachmentsPreviews>
-        )}
+          <AnimatePresence>
+            {hasAnyTextContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
+            {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+          </AnimatePresence>
+        </UIEditableParts>
+        <UIActions>
+          <MessageTools onFilesPicked={uploadAttachments} />
 
-        {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
-        {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
-      </UIContentHolder>
-      <UIFooter>
-        <FileInput onFileSelected={(file) => uploadAttachments([file])}>
-          <Button kind="secondary" icon={<IconFolder />} iconAtStart>
-            Add File
+          <Button
+            isDisabled={!isValid && { reason: nextStepPromptLabel }}
+            kind="primary"
+            tooltip="Create Request"
+            onClick={submit}
+            shortcut={["Meta", "Enter"]}
+          >
+            Create Request
           </Button>
-        </FileInput>
-        <Button
-          isDisabled={!isValid && { reason: nextStepPromptLabel }}
-          kind="primary"
-          tooltip="Create Request"
-          onClick={submit}
-        >
-          Create Request
-        </Button>
-      </UIFooter>
+        </UIActions>
+      </UIContentHolder>
     </UIHolder>
   );
 });
@@ -273,24 +213,25 @@ const UIHolder = styled.div<{}>`
 
 const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  ${theme.spacing.horizontalActionsSection.asGap};
+
   ${(props) => {
     if (props.isEmpty) {
       return css`
-        width: 300px;
+        width: 500px;
       `;
     }
     return css`
-      width: 560px;
-      min-height: 150px;
+      width: 900px;
     `;
   }}
+`;
 
-  /* Mostly a nit: opening the console messes up the view without this */
-  @media only screen and (max-width: 900px) {
-    width: 100%;
-    min-height: 150px;
-    padding: 20px;
-  }
+const UIEditableParts = styled.div`
+  width: 100%;
+  min-height: 150px;
 `;
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
@@ -305,57 +246,19 @@ const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
 `;
 
 const UITopicNameInput = styled(TransparentTextInput)<{}>`
-  font-weight: 700;
-  font-family: "Inter", sans-serif;
-
-  font-size: 24px;
+  ${theme.typo.pageTitle};
 `;
 
-const UINextStepPrompt = styled.div<{}>`
-  /* From framer */
-  font-weight: 400;
-  font-style: normal;
-  font-family: "Inter", sans-serif;
-  color: rgba(0, 0, 0, 0.4);
-  font-size: 11px;
-  letter-spacing: 0px;
-  line-height: 1.5;
-  text-align: left;
-  /* From framer */
-
-  margin-top: 24px; ;
+const UINextStepPrompt = styled(FadePresenceAnimator)<{}>`
+  ${theme.typo.label};
+  ${theme.colors.text.opacity(0.4).asColor};
+  margin-top: 20px;
 `;
 
-const UIAttachmentsPreviews = styled.div<{}>`
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 120px);
-  grid-template-rows: repeat(auto-fill, 120px);
-  gap: 12px;
-`;
-
-const UIFooter = styled.div<{}>`
-  position: absolute;
-  bottom: 0;
-
-  padding: 16px;
-
-  width: 100%;
-
+const UIActions = styled.div<{}>`
   display: flex;
-  flex-direction: row;
   justify-content: flex-end;
   align-items: center;
 
-  border-color: rgba(0, 0, 0, 0.05);
-  border-style: solid;
-  border-top-width: 1px;
-
-  ${theme.spacing.horizontalActions.asGap}
-`;
-
-const UIFileDropPlaceholder = styled(EmptyStatePlaceholder)`
-  border-style: dashed;
-  border-width: 2px;
-  ${theme.colors.layout.backgroundAccent.asBgWithReadableText};
+  ${theme.spacing.horizontalActionsSection.asGap}
 `;

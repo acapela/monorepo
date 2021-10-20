@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-import { addToast } from "~frontend/../../ui/toasts/data";
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
@@ -11,6 +10,7 @@ import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
+import { addToast } from "~ui/toasts/data";
 
 export const SelectTeamView = observer(() => {
   const db = useDb();

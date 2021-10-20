@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { useList } from "react-use";
 
-import { EditorUploadingAttachmentInfo, uploadFile } from "~frontend/ui/message/composer/attachments";
+import { EditorUploadingAttachmentInfo, uploadFile } from "~frontend/message/composer/attachments";
 import { addToast } from "~ui/toasts/data";
 
 import { EditorAttachmentInfo } from "./attachments";

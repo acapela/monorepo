@@ -4,9 +4,9 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
-import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { MessageMedia } from "~frontend/message/display/MessageMedia";
+import { MessageText } from "~frontend/message/display/types/TextMessageContent";
+import { MessageMetaDataWrapper } from "~frontend/message/feed/MessageMetaData";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { theme } from "~ui/theme";
