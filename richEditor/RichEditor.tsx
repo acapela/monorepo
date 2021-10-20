@@ -1,3 +1,4 @@
+import Placeholder from "@tiptap/extension-placeholder";
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
@@ -112,7 +113,19 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   },
   ref
 ) {
-  const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
+  const placeholderPlugin = useMemo(
+    () =>
+      Placeholder.configure({
+        placeholder,
+      }),
+    [placeholder]
+  );
+
+  const finalExtensions = useMemo(
+    () => [...richEditorExtensions, placeholderPlugin, ...extensions],
+    [extensions, placeholderPlugin]
+  );
+
   const editor = useConst(
     () =>
       new Editor({
@@ -211,15 +224,6 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
-  function handleEnterShortcut() {
-    editor?.commands.keyboardShortcut("Enter");
-
-    return true;
-  }
-
-  useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
-  useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
-
   /**
    * Let's use any key pressed to instantly focus inside the editor
    */
@@ -270,6 +274,12 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
 
     // If editor is not empty - tiptap will manually (or even dom?) put the cursor in a proper place.
   }
+
+  // Let's mimic Notion shortcut for strike
+  useShortcut(["Mod", "Shift", "S"], () => {
+    editor.chain().toggleStrike().run();
+    return true;
+  });
 
   return (
     <UIHolder>

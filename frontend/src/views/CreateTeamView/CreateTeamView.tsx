@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
-import { addToast } from "~frontend/../../ui/toasts/data";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
@@ -14,6 +13,7 @@ import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { TextInput } from "~ui/forms/TextInput";
+import { addToast } from "~ui/toasts/data";
 
 export const CreateTeamView = observer(() => {
   const db = useDb();

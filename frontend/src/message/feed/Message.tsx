@@ -5,17 +5,15 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
+import { MessageMedia } from "~frontend/message/display/MessageMedia";
+import { MessageText } from "~frontend/message/display/types/TextMessageContent";
+import { MakeReactionButton } from "~frontend/message/reactions/MakeReactionButton";
+import { MessageReactions } from "~frontend/message/reactions/MessageReactions";
+import { ReplyButton } from "~frontend/message/reply/ReplyButton";
+import { ReplyingToMessage } from "~frontend/message/reply/ReplyingToMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
-import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
-import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
-import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
-import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
-import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
-import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
@@ -28,6 +26,7 @@ import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
+import { EditMessageEditor } from "./EditMessageEditor";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { MessageTasks } from "./tasks/MessageTasks";
 
@@ -41,8 +40,6 @@ interface Props extends MotionProps {
 
 export const Message = styledObserver<Props>(
   ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
-    const user = useCurrentUserTokenData();
-
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
@@ -60,8 +57,6 @@ export const Message = styledObserver<Props>(
 
     const [isActive, setIsActive] = useState(false);
     const holderRef = useRef<HTMLDivElement>(null);
-
-    const isOwnMessage = user?.id === message.user?.id;
 
     useClickAway(holderRef, () => {
       setIsActive(false);
@@ -85,7 +80,11 @@ export const Message = styledObserver<Props>(
     const getMessageActionsOptions = () => {
       const options: PopoverMenuOption[] = [];
 
-      if (onCloseTopicRequest) {
+      if (message.isOwn && message.type === "TEXT") {
+        options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
+      }
+
+      if (message.type === "TEXT" && onCloseTopicRequest) {
         options.push({
           label: "Close with message",
           onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
@@ -93,11 +92,7 @@ export const Message = styledObserver<Props>(
         });
       }
 
-      if (isOwnMessage) {
-        options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
-      }
-
-      if (isOwnMessage) {
+      if (message.isOwn) {
         options.push({
           label: "Delete message",
           onSelect: handleDeleteWithConfirm,

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
+import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
