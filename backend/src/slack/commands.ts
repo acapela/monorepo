@@ -5,6 +5,7 @@ import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
+import { parseAndTransformToTipTapJSON } from "~shared/slackMarkdown/parser";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
@@ -59,8 +60,8 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
         } as const)
     );
 
-    const topicMessage = stringifySlackText(body.text);
-    const topicName = truncateTextWithEllipsis(topicMessage, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
+    const topicMessage = parseAndTransformToTipTapJSON(body.text);
+    const topicName = truncateTextWithEllipsis(stringifySlackText(body.text), DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
     const topic = await createTopicForSlackUsers({
       token: context.botToken || body.token,
       teamId: team.id,
