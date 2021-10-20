@@ -11,6 +11,7 @@ const secondaryItem = buildBorderRadiusStyle(6);
 
 export const radius = {
   button: secondaryItem,
+  badge: buildBorderRadiusStyle(3),
   secondaryItem: secondaryItem,
   primaryItem: primaryItem,
   panel: primaryItem,

@@ -38,7 +38,10 @@ export const richEditorContentCss = css`
 
   code,
   pre {
-    ${theme.font.speziaMono}
+    ${theme.font.speziaMono.medium};
+    ${theme.colors.layout.backgroundAccent.withBorder.asBg}
+    ${theme.radius.badge};
+    padding: 0 0.3em;
   }
 
   a {
