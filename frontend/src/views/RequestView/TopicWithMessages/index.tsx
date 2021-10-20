@@ -39,15 +39,6 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
   const scrollerRef = useRef<ScrollHandle>();
 
-  const handleCloseTopic = action((topicSummary: string) => {
-    topic.update({
-      closed_at: new Date().toISOString(),
-      closed_by_user_id: user.id,
-      closing_summary: topicSummary,
-    });
-    trackEvent("Closed Topic", { topicId: topic.id });
-  });
-
   const handleReopenTopic = action(() => {
     topic.update({
       closed_at: null,
@@ -56,8 +47,6 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
     });
     trackEvent("Reopened Topic", { topicId: topic.id });
   });
-
-  const onCloseTopicRequest = isClosed ? undefined : handleCloseTopic;
 
   return (
     <TopicStoreContext>
@@ -72,7 +61,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
         <ScrollableMessages key={topic.id} ref={scrollerRef as never}>
           <AnimateSharedLayout>
-            <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
+            <MessagesFeed messages={messages} />
             {/* TODO: Replace with events */}
             {topic && isClosed && <TopicSummaryMessage topic={topic} />}
           </AnimateSharedLayout>
