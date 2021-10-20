@@ -1,15 +1,8 @@
 import { toPairs } from "lodash";
 import React from "react";
 
-import { MENTION_OBSERVER, MentionType, REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MENTION_TYPE_PICKER_LABELS, MentionType } from "~shared/types/mention";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-
-const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
-  [REQUEST_RESPONSE]: "Request response",
-  [REQUEST_READ]: "Request read confirmation",
-  [REQUEST_ACTION]: "Request action",
-  [MENTION_OBSERVER]: "Add as observer",
-};
 
 interface Props {
   selected?: MentionType;
