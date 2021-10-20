@@ -10,7 +10,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -60,7 +60,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
     message.update({ content });
 
-    const mentionData = getUniqueMentionDataFromContent(content);
+    const mentionData = getUniqueRequestMentionDataFromContent(content);
 
     const unmentionedTasks = message.tasks.all.filter(
       (task) => !mentionData.some((mention) => getIsMentionMatchingTask(mention, task))

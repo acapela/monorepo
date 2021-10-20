@@ -17,7 +17,7 @@ import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType
 import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
-import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { PopPresenceAnimator } from "~ui/animations";
@@ -81,7 +81,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
 
-    for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
+    for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
     }
     for (const attachment of attachments) {

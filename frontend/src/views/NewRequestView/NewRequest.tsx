@@ -15,7 +15,7 @@ import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
-import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
@@ -52,8 +52,8 @@ function useMessageContentExamplePlaceholder(): string {
   return exampleRequestBodyWithTeamMemberNamesMentioned;
 }
 
-function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
-  const optimisticSlug = slugify(topicName);
+async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
+  const optimisticSlug = await slugify(topicName);
 
   return runUntracked(() => {
     if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
@@ -125,18 +125,20 @@ export const NewRequest = observer(function NewRequest() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicName, content]);
 
-  function submit() {
+  async function submit() {
     if (!isValid) {
       return;
     }
 
     markAsSubmittingInProgress();
 
+    const topicNameSlug = await getAvailableSlugForTopicName(db, topicName);
+
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(db, topicName) });
+      const topic = db.topic.create({ name: topicName, slug: topicNameSlug });
       const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
-      for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
+      for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
         db.task.create({ message_id: newMessage.id, user_id: userId, type });
       }
 
