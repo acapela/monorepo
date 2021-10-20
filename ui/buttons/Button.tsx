@@ -3,12 +3,12 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "~shared/component";
+import { PopPresenceAnimator } from "~ui/animations";
 import { disabledCss } from "~ui/disabled";
 import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { theme } from "~ui/theme";
 
-import { PopPresenceAnimator } from "../animations";
 import { ButtonKind, getButtonKindtyles } from "./variants";
 
 export interface ButtonDisabledInfo {
