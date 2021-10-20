@@ -51,7 +51,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   const topicRouteParams = useRouteParams(routes.topic);
 
   // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
-  const isHighlighted = topicRouteParams.slug === topic.slug;
+  const isHighlighted = topicRouteParams.topicSlug === topic.slug;
 
   const unreadMessagesCount = topic.unreadMessages.count;
   const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
@@ -90,14 +90,14 @@ const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   ${theme.transitions.hover()};
 
   &:hover {
-    background-color: hsla(0, 0%, 0%, 0.025);
+    ${theme.colors.layout.backgroundAccent.hover.asBg}
   }
 
   ${(props) =>
     props.isHighlighted &&
     css`
       &&& {
-        background-color: hsla(0, 0%, 0%, 0.05);
+        ${theme.colors.layout.backgroundAccent.active.asBg}
       }
     `}
 `;

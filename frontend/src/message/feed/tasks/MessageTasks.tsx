@@ -18,7 +18,7 @@ interface Props {
   message: MessageEntity;
 }
 
-const COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING = 4;
+const COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING = 3;
 
 const allTasksInMessageFilter = () => true;
 
@@ -52,13 +52,13 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
       <UIDivider />
 
-      {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
-
       <UITasks>
         {displayedTasks.map((task) => (
           <MessageTask key={task.id} task={task} />
         ))}
       </UITasks>
+
+      {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
     </UIHolder>
   );
 })``;
