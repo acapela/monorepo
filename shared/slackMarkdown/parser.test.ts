@@ -156,7 +156,12 @@ describe("transform", () => {
             { attrs: { data: { emoji: "🤣", name: "rolling_on_the_floor_laughing" } }, type: "emoji" },
             { text: " test ", type: "text" },
             {
-              marks: [{ attrs: { href: "https://slack.com/C02D6BU8J6P", target: "_blank" }, type: "link" }],
+              marks: [
+                {
+                  attrs: { href: "https://app.slack.com/client/undefined/C02D6BU8J6P", target: "_blank" },
+                  type: "link",
+                },
+              ],
               text: "@general",
               type: "text",
             },

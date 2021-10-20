@@ -7,6 +7,7 @@ import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
+import { parseAndTransformToTipTapJSON } from "~shared/slackMarkdown/parser";
 import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
@@ -148,7 +149,7 @@ export function setupSlackShortcuts(slackApp: App) {
         topic_name: { value: topicName },
       },
       message_block: {
-        topic_message: { value: topicMessage },
+        topic_message: { value: rawTopicMessage },
       },
       members_block: {
         members_select: { selected_users: members },
@@ -158,7 +159,7 @@ export function setupSlackShortcuts(slackApp: App) {
       },
     } = view.state.values;
 
-    if (!(topicName && topicMessage && members && requestType)) {
+    if (!(topicName && rawTopicMessage && members && requestType)) {
       return ack({
         response_action: "errors",
         errors: { room_block: "Sorry, this isn’t valid input" },
@@ -179,7 +180,9 @@ export function setupSlackShortcuts(slackApp: App) {
       teamId: team.id,
       ownerId: owner.id,
       topicName,
-      topicMessage,
+      topicMessage: parseAndTransformToTipTapJSON(rawTopicMessage, {
+        slackTeamId: body.user.team_id,
+      }),
       slackUserIdsWithRequestType: members.map((id) => ({
         slackUserId: id,
         requestType: requestType.value as MentionType,
