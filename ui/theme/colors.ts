@@ -6,8 +6,8 @@ const white = color("hsl(0, 0%, 100%)", {
 });
 
 const black = color("hsl(0, 0%, 0%)", {
-  hover: color("hsl(0, 0%, 5%)"),
-  active: color("hsl(0, 0%, 10%)"),
+  hover: color("hsl(0, 0%, 25%)"),
+  active: color("hsl(0, 0%, 30%)"),
 });
 
 const primary = color("hsl(310, 100%, 67%)", {
