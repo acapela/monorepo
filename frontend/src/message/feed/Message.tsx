@@ -41,8 +41,6 @@ interface Props extends MotionProps {
 
 export const Message = styledObserver<Props>(
   ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
-    const user = useCurrentUserTokenData();
-
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);

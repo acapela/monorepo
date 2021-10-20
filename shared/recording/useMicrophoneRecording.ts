@@ -7,9 +7,9 @@ async function getAudioStream() {
 }
 
 async function startRecordingAudio(onFinished?: () => void) {
-  const audioStrem = await getAudioStream();
+  const audioStream = await getAudioStream();
 
-  return startRecordingStream(audioStrem, onFinished);
+  return startRecordingStream(audioStream, onFinished);
 }
 
 export function useMicrophoneRecording() {
