@@ -5,7 +5,6 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/message/display/MessageMedia";
