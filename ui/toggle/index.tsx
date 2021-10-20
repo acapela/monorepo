@@ -71,7 +71,7 @@ function getDimensions(toggleSize: ToggleSize) {
   }
 }
 
-const disabledBg = theme.colors.layout.backgroundAccent;
+const disabledBg = theme.colors.action.transparent.active;
 
 const UIToggle = styled.div<{ dimensions: Dimensions }>`
   user-select: none;
