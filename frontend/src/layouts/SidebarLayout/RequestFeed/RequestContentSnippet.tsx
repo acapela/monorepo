@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageText } from "~frontend/message/display/types/TextMessageContent";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { getIsMentionNode } from "~shared/editor/mentions";
 import { theme } from "~ui/theme";
 
@@ -46,14 +47,14 @@ function getContentParagraphWithMatchingNode(
 }
 
 function getFirstContentParagraph(content: JSONContent): JSONContent | null {
-  if (content.type === "paragraph") {
+  if (content.type === "paragraph" && !isRichEditorContentEmpty(content)) {
     return content;
   }
 
   if (!content.content) return null;
 
   for (const child of content.content) {
-    if (child.type === "paragraph") {
+    if (child.type === "paragraph" && !isRichEditorContentEmpty(child)) {
       return child;
     }
 
