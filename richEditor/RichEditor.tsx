@@ -11,6 +11,7 @@ import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
@@ -273,6 +274,12 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
 
     // If editor is not empty - tiptap will manually (or even dom?) put the cursor in a proper place.
   }
+
+  // Let's mimic Notion shortcut for strike
+  useShortcut(["Mod", "Shift", "S"], () => {
+    editor.chain().toggleStrike().run();
+    return true;
+  });
 
   return (
     <UIHolder>
