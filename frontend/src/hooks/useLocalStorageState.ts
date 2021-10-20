@@ -1,27 +1,58 @@
-import { isEqual } from "lodash";
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
-export function useLocalStorageState<S>({
-  key,
-  initialValue,
-}: {
-  key: string;
+import { useDependencyChangeEffect } from "~frontend/../../shared/hooks/useChangeEffect";
+import { createTimeout } from "~frontend/../../shared/time";
+
+interface Input<S> {
+  key?: string;
   initialValue: S;
-}): [S, Dispatch<SetStateAction<S>>, () => void] {
-  const [value, setValue] = useState<S>(() => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : initialValue;
-  });
+  persistDebounce?: number;
+}
 
-  const clear = useCallback(() => localStorage.removeItem(key), [key]);
+function readLocalStorageJSON<S>(key: string) {
+  const storedValue = localStorage.getItem(key);
 
-  useEffect(() => {
-    if (isEqual(value, initialValue)) {
-      clear();
-    } else {
-      localStorage.setItem(key, JSON.stringify(value));
+  if (storedValue === null) {
+    return null;
+  }
+
+  return JSON.parse(storedValue) as S;
+}
+
+function setLocalStorageJSON<S>(key: string, value: S) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function usePersistedState<S>({ key, initialValue, persistDebounce }: Input<S>) {
+  function getInitialValue() {
+    if (typeof localStorage === "undefined" || !key) {
+      return initialValue;
     }
-  }, [value, key, clear, initialValue]);
 
-  return [value, setValue, clear];
+    return readLocalStorageJSON<S>(key) ?? initialValue;
+  }
+
+  const [value, setValue] = useState<S>(getInitialValue);
+
+  const clear = useCallback(() => {
+    if (!key) return;
+
+    localStorage.removeItem(key);
+  }, [key]);
+
+  useDependencyChangeEffect(() => {
+    function persist() {
+      if (!key) return;
+      setLocalStorageJSON(key, value);
+    }
+
+    if (!persistDebounce) {
+      persist();
+      return;
+    }
+
+    return createTimeout(persist, persistDebounce);
+  }, [value, key, clear, initialValue, persistDebounce]);
+
+  return [value, setValue, clear] as const;
 }

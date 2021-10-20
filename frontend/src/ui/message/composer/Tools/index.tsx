@@ -13,27 +13,29 @@ import { AudioRecordingButton } from "./AudioRecordingButton";
 
 interface RecorderProps {
   className?: string;
-  onRecordingReady: (files: File) => void;
-  onFilesPicked: (files: File[]) => void;
+  onRecordingReady?: (files: File) => void;
+  onFilesPicked?: (files: File[]) => void;
 }
 
 export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked }: RecorderProps) => {
   return (
     <UIHolder className={className}>
-      <AudioRecordingButton onRecordingReady={onRecordingReady} />
-      <IconButton
-        tooltip="Upload files..."
-        icon={<IconPaperclip />}
-        onClick={async () => {
-          const files = await pickUserFiles();
+      {onRecordingReady && <AudioRecordingButton onRecordingReady={onRecordingReady} />}
+      {onFilesPicked && (
+        <IconButton
+          tooltip="Upload files..."
+          icon={<IconPaperclip />}
+          onClick={async () => {
+            const files = await pickUserFiles();
 
-          console.log({ files });
+            console.log({ files });
 
-          if (!files?.length) return;
+            if (!files?.length) return;
 
-          onFilesPicked(files);
-        }}
-      />
+            onFilesPicked(files);
+          }}
+        />
+      )}
     </UIHolder>
   );
 })``;

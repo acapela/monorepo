@@ -3,19 +3,16 @@ import { isEqual } from "lodash";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useMemo, useRef } from "react";
-import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
 import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/ui/message/composer/Tools";
-import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
@@ -27,6 +24,7 @@ import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
+import { useMessageEditorManager } from "./useMessageEditorManager";
 
 interface Props {
   topic: TopicEntity;
@@ -47,15 +45,16 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const editorRef = useRef<Editor>(null);
 
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
-    onUploadFinish: (attachment) => attachmentsList.push(attachment),
-  });
-
-  const [content, setContent] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + topic.id,
-    initialValue: getEmptyRichContent(),
-  });
+  const {
+    attachments,
+    content,
+    setContent,
+    focusEditor,
+    removeAttachmentById,
+    uploadAttachments,
+    uploadingAttachments,
+    attachmentsList,
+  } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-topic:" + topic.id });
 
   const topicContext = useTopicStoreContext();
 
@@ -63,10 +62,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
   const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);
-
-  function focusEditor() {
-    editorRef.current?.chain().focus("end").run();
-  }
 
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
@@ -155,9 +150,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           onEditorReady={focusEditor}
           customEditFieldStyles={messageEditorSpacing}
           onAttachmentRemoveRequest={(attachmentId) => {
-            attachmentsList.filter((existingAttachment) => {
-              return existingAttachment.uuid !== attachmentId;
-            });
+            removeAttachmentById(attachmentId);
           }}
         />
         <UIRequestControls>

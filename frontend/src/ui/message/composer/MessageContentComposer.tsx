@@ -13,7 +13,7 @@ import { UploadingAttachmentPreview } from "./UploadingAttachmentPreview";
 interface Props {
   autofocusKey?: string;
   content: RichEditorNode;
-  onContentChange: (content: RichEditorNode) => void;
+  onContentChange?: (content: RichEditorNode) => void;
   uploadingAttachments?: EditorUploadingAttachmentInfo[];
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
@@ -22,6 +22,7 @@ interface Props {
   isDisabled?: boolean;
   onEditorReady?: (editor: Editor) => void;
   customEditFieldStyles?: StylesPart;
+  placeholder?: string;
 }
 
 export const MessageContentEditor = namedForwardRef<Editor, Props>(function MessageContentEditor(
@@ -37,6 +38,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
     isDisabled,
     onEditorReady,
     customEditFieldStyles,
+    placeholder = "Your feedback on this topic…",
   },
   ref
 ) {
@@ -47,7 +49,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
       value={content}
       onChange={onContentChange}
       onFilesSelected={onFilesSelected}
-      placeholder="Your feedback on this topic…"
+      placeholder={placeholder}
       autofocusKey={autofocusKey}
       isDisabled={isDisabled}
       additionalTopContent={additionalContent}

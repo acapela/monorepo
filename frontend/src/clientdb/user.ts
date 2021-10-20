@@ -5,6 +5,7 @@ import { EntityByDefinition } from "~clientdb";
 import { UserFragment } from "~gql";
 
 import { taskEntity } from "./task";
+import { teamMemberEntity } from "./teamMember";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -39,12 +40,20 @@ export const userEntity = defineEntity<UserFragment>({
     // teamScopeCondition: (teamId) => ({ team_memberships: { team_id: { _eq: teamId } } }),
   }),
 }).addConnections((user, { getEntity, getContextValue }) => {
-  return {
+  const connections = {
     tasks: getEntity(taskEntity).query({ user_id: user.id }),
     get isCurrentUser() {
       return user.id === getContextValue(userIdContext);
     },
+    get teamMembership() {
+      return getEntity(teamMemberEntity).findByUniqueIndex("user_id", user.id);
+    },
+    get isMemberOfCurrentTeam() {
+      return connections.teamMembership?.isMemberOfCurrentTeam ?? false;
+    },
   };
+
+  return connections;
 });
 
 export type UserEntity = EntityByDefinition<typeof userEntity>;

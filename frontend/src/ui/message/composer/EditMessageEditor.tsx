@@ -7,7 +7,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
+import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -42,7 +42,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+  const [content, setContent] = usePersistedState<RichEditorNode>({
     key: "message-draft-for-message" + message.id,
     initialValue: message.content,
   });
