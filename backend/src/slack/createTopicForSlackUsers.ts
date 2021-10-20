@@ -2,6 +2,8 @@ import { sendInviteNotification } from "~backend/src/inviteUser";
 import { slackClient } from "~backend/src/slack/app";
 import { findUserBySlackId } from "~backend/src/slack/utils";
 import { Account, User, db } from "~db";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { RichEditorNode } from "~richEditor/content/types";
 import { slugify } from "~shared/slugify";
 import { MentionType } from "~shared/types/mention";
 
@@ -104,7 +106,7 @@ export async function createTopicForSlackUsers({
   teamId: string;
   ownerId: string;
   topicName: string;
-  topicMessage: string;
+  topicMessage: RichEditorNode;
   slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
 }) {
   const usersWithRequestType = await findOrCreateUsers({
@@ -125,11 +127,8 @@ export async function createTopicForSlackUsers({
         create: {
           type: "TEXT",
           user_id: ownerId,
-          content: {
-            type: "doc",
-            content: [{ type: "paragraph", content: [{ type: "text", text: topicMessage }] }],
-          },
-          content_text: topicMessage,
+          content: topicMessage,
+          content_text: convertMessageContentToPlainText(topicMessage),
           task: {
             createMany: {
               data: usersWithRequestType.map((item) => ({
