@@ -94,7 +94,7 @@ export const RequestContentSnippet = observer(({ topic }: Props) => {
   }
 
   return (
-    <UIHolder>
+    <UIHolder data-no-tooltips>
       <MessageText content={contentSnippet} />
     </UIHolder>
   );
