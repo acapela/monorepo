@@ -1,24 +1,22 @@
+import { Editor } from "@tiptap/react";
 import { observer } from "mobx-react";
-import React from "react";
-import { useList } from "react-use";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
-import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
+import { useMessageEditorManager } from "~frontend/views/RequestView/TopicWithMessages/useMessageEditorManager";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { RichEditorNode } from "~richEditor/content/types";
 import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
-import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
 
-import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
+import { MessageTools } from "./Tools";
 
 interface Props {
   message: MessageEntity;
@@ -26,36 +24,21 @@ interface Props {
   onSaved?: () => void;
 }
 
-const isMentioningTask = ({ userId, type }: EditorMentionData, task: TaskEntity) =>
+const getIsMentionMatchingTask = ({ userId, type }: EditorMentionData, task: TaskEntity) =>
   task.user_id === userId && task.type === type;
 
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
   const db = useDb();
+  const editorRef = useRef<Editor>(null);
 
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
-    message.attachments.all.map((messageAttachment) => ({
-      mimeType: messageAttachment.mime_type,
-      uuid: messageAttachment.id,
-    }))
-  );
-  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
-    onUploadFinish: (attachment) => attachmentsList.push(attachment),
-  });
+  const { content, setContent, uploadAttachments, uploadingAttachments, attachments, removeAttachmentById } =
+    useMessageEditorManager({
+      editorRef,
+      persistanceKey: "message-draft-for-message" + message.id,
+      initialValue: message.content,
+    });
 
-  const [content, setContent] = usePersistedState<RichEditorNode>({
-    key: "message-draft-for-message" + message.id,
-    initialValue: message.content,
-  });
-
-  useShortcut("Escape", onCancelRequest);
-  useShortcut("Enter", () => {
-    handleSubmit();
-
-    // Don't pass enter to editor as it would insert new line
-    return true;
-  });
-
-  async function handleSubmit() {
+  function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => !message.attachments.findById(attachmentNow.uuid));
 
     for (const { uuid } of attachmentsToAdd) {
@@ -76,14 +59,14 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     const mentionData = getUniqueMentionDataFromContent(content);
 
     const unmentionedTasks = message.tasks.all.filter(
-      (task) => !mentionData.some((mention) => isMentioningTask(mention, task))
+      (task) => !mentionData.some((mention) => getIsMentionMatchingTask(mention, task))
     );
     for (const task of unmentionedTasks) {
       db.task.removeById(task.id);
     }
 
     const newlyMentionedTasks = mentionData.filter(
-      (node) => message.tasks.query((task) => isMentioningTask(node, task)).all.length == 0
+      (node) => message.tasks.query((task) => getIsMentionMatchingTask(node, task)).all.length == 0
     );
     for (const newMention of newlyMentionedTasks) {
       const { userId, type } = newMention;
@@ -108,27 +91,39 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
         onFilesSelected={uploadAttachments}
         uploadingAttachments={uploadingAttachments}
         attachments={attachments}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
+        onAttachmentRemoveRequest={removeAttachmentById}
         autofocusKey={message.id}
       />
-      <UIButtons gap={8} justifyContent="end">
-        <Button kind="secondary" onClick={onCancelRequest}>
-          Cancel
-        </Button>
-        <Button kind="primary" isDisabled={!getCanSubmit()} onClick={handleSubmit}>
-          Save
-        </Button>
-      </UIButtons>
+      <UIActions>
+        <MessageTools onFilesPicked={uploadAttachments} />
+        <UIButtons>
+          <Button kind="secondary" onClick={onCancelRequest} shortcut={"Esc"}>
+            Cancel
+          </Button>
+          <Button kind="primary" isDisabled={!getCanSubmit()} onClick={handleSubmit} shortcut={["Mod", "Enter"]}>
+            Save
+          </Button>
+        </UIButtons>
+      </UIActions>
     </UIHolder>
   );
 });
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  ${theme.spacing.horizontalActionsSection.asGap};
+`;
 
-const UIButtons = styled(HStack)<{}>`
-  margin-top: 8px;
+const UIActions = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  ${theme.spacing.horizontalActionsSection.asGap};
+`;
+
+const UIButtons = styled.div`
+  display: flex;
+  align-items: center;
+  ${theme.spacing.horizontalActions.asGap};
 `;

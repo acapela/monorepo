@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/core";
 import { isEqual } from "lodash";
 import { RefObject, useMemo } from "react";
 import { useList } from "react-use";
@@ -10,10 +11,15 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 
 interface UseMessageEditorManagerInput {
   editorRef: RefObject<Editor>;
+  initialValue?: JSONContent;
   persistanceKey?: string;
 }
 
-export function useMessageEditorManager({ editorRef, persistanceKey }: UseMessageEditorManagerInput) {
+export function useMessageEditorManager({
+  editorRef,
+  persistanceKey,
+  initialValue = getEmptyRichContent(),
+}: UseMessageEditorManagerInput) {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
@@ -21,7 +27,7 @@ export function useMessageEditorManager({ editorRef, persistanceKey }: UseMessag
 
   const [content, setContent] = usePersistedState<RichEditorNode>({
     key: persistanceKey,
-    initialValue: getEmptyRichContent(),
+    initialValue,
   });
 
   const hasTypedMessageContent = useMemo(() => !isEqual(content, getEmptyRichContent()), [content]);

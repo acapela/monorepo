@@ -61,8 +61,6 @@ export const Message = styledObserver<Props>(
     const [isActive, setIsActive] = useState(false);
     const holderRef = useRef<HTMLDivElement>(null);
 
-    const isOwnMessage = user?.id === message.user?.id;
-
     useClickAway(holderRef, () => {
       setIsActive(false);
     });
@@ -85,7 +83,7 @@ export const Message = styledObserver<Props>(
     const getMessageActionsOptions = () => {
       const options: PopoverMenuOption[] = [];
 
-      if (onCloseTopicRequest) {
+      if (message.type === "TEXT" && onCloseTopicRequest) {
         options.push({
           label: "Close with message",
           onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
@@ -93,11 +91,11 @@ export const Message = styledObserver<Props>(
         });
       }
 
-      if (isOwnMessage) {
+      if (message.isOwn && message.type === "TEXT") {
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
       }
 
-      if (isOwnMessage) {
+      if (message.isOwn) {
         options.push({
           label: "Delete message",
           onSelect: handleDeleteWithConfirm,
