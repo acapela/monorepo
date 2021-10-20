@@ -80,7 +80,6 @@ export const NewRequest = observer(function NewRequest() {
     content,
     setContent,
     attachments,
-    attachmentsList,
     removeAttachmentById,
     uploadingAttachments,
     uploadAttachments,
@@ -107,7 +106,7 @@ export const NewRequest = observer(function NewRequest() {
     return true;
   });
 
-  const [topicName, setTopicName, clearTopicName] = usePersistedState<string>({
+  const [topicName, setTopicName] = usePersistedState<string>({
     key: "topic-name-draft-for-new-request",
     initialValue: "",
   });

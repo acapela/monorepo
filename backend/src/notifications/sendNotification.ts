@@ -1,7 +1,7 @@
 import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
-import { TeamMember, User, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { User, db } from "~db";
+import { assertDefined } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { Sentry } from "~shared/sentry";
 

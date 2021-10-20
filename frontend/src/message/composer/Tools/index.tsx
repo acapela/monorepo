@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { pickUserFiles } from "~shared/files";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconFile, IconPaperclip } from "~ui/icons";
+import { IconPaperclip } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { AudioRecordingButton } from "./AudioRecordingButton";
@@ -27,8 +27,6 @@ export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked
           icon={<IconPaperclip />}
           onClick={async () => {
             const files = await pickUserFiles();
-
-            console.log({ files });
 
             if (!files?.length) return;
 

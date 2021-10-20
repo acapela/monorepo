@@ -9,8 +9,6 @@ async function getAudioStream() {
 async function startRecordingAudio(onFinished?: () => void) {
   const audioStrem = await getAudioStream();
 
-  console.log({ audioStrem });
-
   return startRecordingStream(audioStrem, onFinished);
 }
 
@@ -21,7 +19,6 @@ export function useMicrophoneRecording() {
     if (recording) return;
 
     const newRecording = await startRecordingAudio(() => {
-      console.log("done");
       setRecording(null);
     });
     setRecording(newRecording);

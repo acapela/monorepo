@@ -46,8 +46,6 @@ export const RecordingInProgressManager = styledObserver<RecorderControlsProps>(
             onClick={async () => {
               const resultFile = await recording.finish();
 
-              console.log({ resultFile });
-
               onFinished(resultFile);
             }}
           >
@@ -81,10 +79,4 @@ const UIControls = styled(HStack)<{}>`
 
 const UIElapsedTime = styled.span<{}>`
   min-width: 48px;
-`;
-
-const UICornerOfScreen = styled.div<{}>`
-  position: fixed;
-  bottom: 32px;
-  left: 32px;
 `;

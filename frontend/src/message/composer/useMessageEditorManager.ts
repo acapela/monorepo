@@ -1,5 +1,4 @@
 import { JSONContent } from "@tiptap/core";
-import { isEqual } from "lodash";
 import { RefObject, useMemo } from "react";
 import { useList } from "react-use";
 
