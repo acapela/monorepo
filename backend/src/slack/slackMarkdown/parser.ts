@@ -2,6 +2,9 @@ import { isArray, isString, map } from "lodash";
 import markdown from "simple-markdown";
 import emojis from "unicode-emoji-json";
 
+import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
+import { EditorMentionData } from "~shared/types/editor";
+
 const emojiNameToEmoji = Object.assign({}, ...map(emojis, (v, k) => ({ [v.slug]: k })));
 
 // The rules have been imported from
@@ -278,10 +281,7 @@ const typeMap = new Map([
 export type TransformContext = {
   slackTeamId?: string;
   mentionedUsersBySlackId?: {
-    [slackId: string]: {
-      userId: string;
-      type: string;
-    };
+    [slackId: string]: EditorMentionData;
   };
 };
 
@@ -326,7 +326,7 @@ function transformNode(node: markdown.SingleASTNode, context: TransformContext =
     case "slackUser":
       if (context.mentionedUsersBySlackId && context.mentionedUsersBySlackId[node.id]) {
         return {
-          type: "mention",
+          type: MENTION_TYPE_KEY,
           attrs: {
             data: context.mentionedUsersBySlackId[node.id],
           },
