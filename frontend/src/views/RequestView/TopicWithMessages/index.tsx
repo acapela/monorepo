@@ -7,8 +7,8 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PopAnimatedButton } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -70,7 +70,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
           </UIParticipants>
         </UIHead>
 
-        <ScrollableMessages ref={scrollerRef as never}>
+        <ScrollableMessages key={topic.id} ref={scrollerRef as never}>
           <AnimateSharedLayout>
             <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
             {/* TODO: Replace with events */}

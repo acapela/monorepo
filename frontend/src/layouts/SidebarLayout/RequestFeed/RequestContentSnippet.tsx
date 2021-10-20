@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { MessageText } from "~frontend/message/display/types/TextMessageContent";
 import { getIsMentionNode } from "~shared/editor/mentions";
 import { theme } from "~ui/theme";
 

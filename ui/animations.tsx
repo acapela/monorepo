@@ -11,6 +11,7 @@ export function getSpringTransitionWithDuration(duration = 0.4): Transition {
 }
 
 export const POP_PRESENCE_STYLES: PresenceStyles = { opacity: [0, 1], y: [3, 0], scale: [0.95, 1] };
+export const FADE_PRESENCE_STYLES: PresenceStyles = { opacity: [0, 1] };
 
 export const PopPresenceAnimator = namedForwardRef<HTMLDivElement, HTMLMotionProps<"div">>(function PopPresenceAnimator(
   props,
@@ -18,3 +19,9 @@ export const PopPresenceAnimator = namedForwardRef<HTMLDivElement, HTMLMotionPro
 ) {
   return <PresenceAnimator ref={ref} {...props} presenceStyles={POP_PRESENCE_STYLES} />;
 });
+
+export const FadePresenceAnimator = namedForwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
+  function PopPresenceAnimator(props, ref) {
+    return <PresenceAnimator ref={ref} {...props} presenceStyles={FADE_PRESENCE_STYLES} />;
+  }
+);

@@ -63,7 +63,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
 
 type ThenType<T> = T extends Promise<infer I> ? I : never;
 
-type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
+export type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
 const reactContext = createContext<ClientDb | null>(null);
 

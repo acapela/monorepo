@@ -8,6 +8,8 @@ import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaul
 import { createHasuraSyncSetupFromFragment } from "~frontend/clientdb/utils/sync";
 import { TeamMemberFragment } from "~gql";
 
+import { teamIdContext } from "./utils/context";
+
 const teamMemberFragment = gql`
   fragment TeamMember on team_member {
     id
@@ -33,11 +35,14 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
     updateColumns: ["notify_email", "notify_slack"],
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
-}).addConnections((teamMember, { getEntity }) => ({
+}).addConnections((teamMember, { getEntity, getContextValue }) => ({
   get user() {
     return getEntity(userEntity).findById(teamMember.user_id);
   },
   get teamMemberSlack() {
     return getEntity(teamMemberSlackEntity).findByUniqueIndex("team_member_id", teamMember.id);
+  },
+  get isMemberOfCurrentTeam() {
+    return teamMember.team_id === getContextValue(teamIdContext);
   },
 }));
