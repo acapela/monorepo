@@ -1,4 +1,9 @@
-import { cleanupAst, parseSlackMarkdown, transformToTipTapJSON } from "~shared/slackMarkdown/parser";
+import {
+  cleanupAst,
+  parseAndTransformToTipTapJSON,
+  parseSlackMarkdown,
+  transformToTipTapJSON,
+} from "~shared/slackMarkdown/parser";
 
 const advancedMessage = `hello <https://www.google.com/> :rolling_on_the_floor_laughing: test <#C02D6BU8J6P|general>
 >  I have a dream
@@ -134,9 +139,10 @@ describe("transform", () => {
       type: "doc",
     });
   });
+
   it("advanced transform", async () => {
-    const parsed = parseSlackMarkdown(advancedMessage);
-    expect(transformToTipTapJSON(parsed)).toStrictEqual({
+    const transformed = parseAndTransformToTipTapJSON(advancedMessage);
+    expect(transformed).toStrictEqual({
       content: [
         {
           content: [
