@@ -9,7 +9,6 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { parseAndTransformToTipTapJSON } from "./slackMarkdown/parser";
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
@@ -167,6 +166,9 @@ export function setupSlackShortcuts(slackApp: App) {
     }
 
     const token = context.botToken || body.token;
+
+    assert(body.user.team_id, "must have slack team id");
+
     const [team, owner] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
       findUserBySlackId(token, body.user.id),
@@ -179,10 +181,9 @@ export function setupSlackShortcuts(slackApp: App) {
       token,
       teamId: team.id,
       ownerId: owner.id,
+      slackTeamId: body.user.team_id,
       topicName,
-      topicMessage: parseAndTransformToTipTapJSON(rawTopicMessage, {
-        slackTeamId: body.user.team_id,
-      }),
+      rawTopicMessage,
       slackUserIdsWithRequestType: members.map((id) => ({
         slackUserId: id,
         requestType: requestType.value as MentionType,

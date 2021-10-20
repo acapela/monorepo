@@ -277,6 +277,12 @@ const typeMap = new Map([
 
 export type TransformContext = {
   slackTeamId?: string;
+  mentionedUsersBySlackId?: {
+    [slackId: string]: {
+      userId: string;
+      type: string;
+    };
+  };
 };
 
 function transformNode(node: markdown.SingleASTNode, context: TransformContext = {}) {
@@ -318,10 +324,15 @@ function transformNode(node: markdown.SingleASTNode, context: TransformContext =
         ],
       };
     case "slackUser":
-      return createLink(
-        `https://app.slack.com/client/${context.slackTeamId}/${node.id}`,
-        `@${textToString(node.content) || node.id}`
-      );
+      if (context.mentionedUsersBySlackId && context.mentionedUsersBySlackId[node.id]) {
+        return {
+          type: "mention",
+          attrs: {
+            data: context.mentionedUsersBySlackId[node.id],
+          },
+        };
+      }
+      return createBoldText(`@${textToString(node.content) || node.id}`);
     case "slackChannel":
     case "slackUserGroup":
       return createLink(

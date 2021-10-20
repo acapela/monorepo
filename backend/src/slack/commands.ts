@@ -2,14 +2,11 @@ import * as SlackBolt from "@slack/bolt";
 
 import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
 import { db } from "~db";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { parseAndTransformToTipTapJSON } from "./slackMarkdown/parser";
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 /**
@@ -41,19 +38,12 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
         } as const)
     );
 
-    const topicMessage = parseAndTransformToTipTapJSON(body.text, {
-      slackTeamId: command.team_id,
-    });
-    const topicName = truncateTextWithEllipsis(
-      convertMessageContentToPlainText(topicMessage),
-      DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH
-    );
     const topic = await createTopicForSlackUsers({
       token: context.botToken || body.token,
+      slackTeamId: command.team_id,
       teamId: team.id,
       ownerId: user.id,
-      topicName,
-      topicMessage,
+      rawTopicMessage: body.text,
       slackUserIdsWithRequestType,
     });
     const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
@@ -62,6 +52,6 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       response_type: "in_channel",
       text: `<@${command.user_id}> has created a new request using Acapela!\n${topicURL}`,
     });
-    trackBackendUserEvent(user.id, "Created Topic", { origin: "slack-command", topicName });
+    trackBackendUserEvent(user.id, "Created Topic", { origin: "slack-command", topicName: topic.name });
   });
 }
