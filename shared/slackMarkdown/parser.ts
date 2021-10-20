@@ -1,12 +1,13 @@
 import { isArray, isString, map } from "lodash";
 import markdown from "simple-markdown";
 import emojis from "unicode-emoji-json";
+
+const emojiNameToEmoji = Object.assign({}, ...map(emojis, (v, k) => ({ [v.slug]: k })));
+
 // The rules have been imported from
 // https://github.com/Sorunome/slack-markdown/blob/be564c166edd7887fcc44b6ebd12723bb3fe149f/index.js
 // Copyright 2021 Sorunome
 // Apache License 2.0
-
-const emojiNameToEmoji = Object.assign({}, ...map(emojis, (v, k) => ({ [v.slug]: k })));
 
 const rules = {
   emoji: {
@@ -315,7 +316,7 @@ function transformNode(node: markdown.SingleASTNode) {
     case "slackChannel":
     case "slackUserGroup":
       //todo: correct linking
-      return createLink(`https://slack.com/${node.id}`, `@${textToString(node.content)}`);
+      return createLink(`https://slack.com/${node.id}`, `@${textToString(node.content) || node.id}`);
     case "slackAtHere":
       return createBoldText("@here");
     case "slackAtChannel":
@@ -323,6 +324,7 @@ function transformNode(node: markdown.SingleASTNode) {
     case "slackAtEveryone":
       return createBoldText("@everyone");
     case "slackDate":
+      //todo: not sure if we need this
       return createBoldText(`@${node.name}`);
   }
   if (typeMap.has(node.type)) {
@@ -366,4 +368,8 @@ export function transformToTipTapJSON(ast: markdown.SingleASTNode[]) {
     type: "doc",
     content: detectedAndTransformParagraphs(ast),
   };
+}
+
+export function parseAndTransformToTipTapJSON(text: string) {
+  return transformToTipTapJSON(parseSlackMarkdown(text));
 }
