@@ -8,4 +8,9 @@ module.exports = {
     "^.+\\.[tj]s$": "ts-jest",
   },
   transformIgnorePatterns: [`node_modules/(?!${esModules})`],
+  globals: {
+    "ts-jest": {
+      isolatedModules: true,
+    },
+  },
 };
