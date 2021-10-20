@@ -33,6 +33,9 @@ export function TooltipsRenderer() {
       const tooltipInfo = getClosestElementTooltipInfo(target);
 
       if (!tooltipInfo) return;
+
+      if (tooltipInfo.element.matches("[data-no-tooltips] *")) return;
+
       setCurrentTooltipAnchor(tooltipInfo.element);
     },
     { capture: true }
