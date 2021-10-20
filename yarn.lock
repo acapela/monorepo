@@ -17217,6 +17217,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"slack-block-builder@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "slack-block-builder@npm:2.2.0"
+  checksum: 3ca96c3179abefa8c9cbee45ffdf03ce496c6c60db2266c9dbd5211860b93783966e56728f8958ee285b2fddcaed9a4c85214a6f5bcb21e59caa04cccb4f797d
+  languageName: node
+  linkType: hard
+
 "slash@npm:^3.0.0":
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
@@ -19718,6 +19725,7 @@ __metadata:
     mime-types: ^2.1.32
     pg: ^8.7.1
     pino-pretty: ^7.0.1
+    slack-block-builder: ^2.2.0
     supertest: ^6.1.6
     ts-jest: ^27.0.5
     ts-node: ^10.2.1
