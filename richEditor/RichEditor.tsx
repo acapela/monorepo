@@ -1,3 +1,4 @@
+import Placeholder from "@tiptap/extension-placeholder";
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
@@ -111,7 +112,19 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   },
   ref
 ) {
-  const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
+  const placeholderPlugin = useMemo(
+    () =>
+      Placeholder.configure({
+        placeholder,
+      }),
+    [placeholder]
+  );
+
+  const finalExtensions = useMemo(
+    () => [...richEditorExtensions, placeholderPlugin, ...extensions],
+    [extensions, placeholderPlugin]
+  );
+
   const editor = useConst(
     () =>
       new Editor({
