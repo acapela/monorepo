@@ -82,6 +82,8 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
         <Shortcut
           shortcut={shortcut}
           callback={() => {
+            if (isDisabled) return;
+
             onClick?.();
             return true;
           }}

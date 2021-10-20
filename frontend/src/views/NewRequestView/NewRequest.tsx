@@ -186,6 +186,7 @@ export const NewRequest = observer(function NewRequest() {
             kind="primary"
             tooltip="Create Request"
             onClick={submit}
+            shortcut={["Meta", "Enter"]}
           >
             Create Request
           </Button>
