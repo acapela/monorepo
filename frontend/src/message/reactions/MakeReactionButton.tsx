@@ -33,7 +33,7 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
       message_id: message.id,
     });
 
-    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji.emoji });
+    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji });
   });
 
   return (
