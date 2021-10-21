@@ -68,12 +68,12 @@ function devWarnIfCurrentlyRenderingButNotObserver() {
     return;
   }
 
+  // Log actual component so it is easy to find it in codebase
+  console.info(currentlyRenderingFunction);
   // Some component is rendering and it is not observer! (We know it because if it was observer, mobxSettings.allowStateReads would be true)
   throw new Error(
     `Using mobx state inside component that is not observer (check console to see what component to wrap in observer(Component))`
   );
-  // Log actual component so it is easy to find it in codebase
-  console.info(currentlyRenderingFunction);
 }
 
 /**

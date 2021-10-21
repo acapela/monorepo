@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+import { styledObserver } from "~shared/component";
 import { TranscriptData } from "~shared/types/transcript";
 import { theme } from "~ui/theme";
 
@@ -12,7 +13,12 @@ interface Props {
   className?: string;
 }
 
-export const Transcript = styled(function Transcript({ transcript, time, onTimeChangeRequest, className }: Props) {
+export const Transcript = styledObserver(function Transcript({
+  transcript,
+  time,
+  onTimeChangeRequest,
+  className,
+}: Props) {
   return (
     <UIHolder className={className}>
       {transcript.map((speakerPart) => {
