@@ -73,7 +73,7 @@ export const RequestView = observer(({ topicSlug }: Props) => {
 
   return (
     <UIHolder>
-      <TopicWithMessages topic={topic} />
+      <TopicWithMessages key={topic.id} topic={topic} />
     </UIHolder>
   );
 });

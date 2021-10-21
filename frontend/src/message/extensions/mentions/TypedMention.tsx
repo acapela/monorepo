@@ -81,6 +81,7 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
       )}
       <UIMention
         ref={anchorRef}
+        type={data.type}
         onClick={handleOpenMentionTypePicker}
         data-tooltip={MENTION_TYPE_LABELS[data.type] + (isEditable ? " (click to change)" : "")}
         isEditable={isEditable}
@@ -91,10 +92,30 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
   );
 });
 
-const UIMention = styled.span<{ isEditable: boolean }>`
+function getMentionFontColor(mentionType: MentionType) {
+  switch (mentionType) {
+    case "request-action":
+      return theme.colors.tags.action.asColor;
+    case "request-response":
+      return theme.colors.tags.feedback.asColor;
+    case "request-read":
+      return theme.colors.tags.read.asColor;
+    case "observer":
+      return theme.colors.tags.observe.asColor;
+    default:
+      return theme.colors.tags.primary.asColor;
+  }
+}
+
+const UIMention = styled.span<{ isEditable: boolean; type: MentionType }>`
   cursor: default;
 
-  ${theme.colors.tags.primary.asColor};
+  ${theme.font.bold}
+
+  ${(props) =>
+    css`
+      ${getMentionFontColor(props.type)}
+    `}
 
   ${(props) =>
     props.isEditable &&

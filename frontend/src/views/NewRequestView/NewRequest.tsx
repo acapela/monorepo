@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { FadePresenceAnimator } from "~frontend/../../ui/animations";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
@@ -20,6 +19,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
+import { FadePresenceAnimator, PopPresenceAnimator } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
@@ -107,7 +107,7 @@ export const NewRequest = observer(function NewRequest() {
     return true;
   });
 
-  const [topicName, setTopicName] = usePersistedState<string>({
+  const [topicName, setTopicName, clearTopicName] = usePersistedState<string>({
     key: "topic-name-draft-for-new-request",
     initialValue: "",
   });
@@ -151,6 +151,7 @@ export const NewRequest = observer(function NewRequest() {
     });
 
     clearPersistedContent();
+    clearTopicName();
   }
 
   return (
@@ -183,19 +184,21 @@ export const NewRequest = observer(function NewRequest() {
             {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
           </AnimatePresence>
         </UIEditableParts>
-        <UIActions>
-          <MessageTools onFilesPicked={uploadAttachments} />
+        {hasTypedInAnything && (
+          <UIActions>
+            <MessageTools onFilesPicked={uploadAttachments} />
 
-          <Button
-            isDisabled={!isValid && { reason: nextStepPromptLabel }}
-            kind="primary"
-            tooltip="Create Request"
-            onClick={submit}
-            shortcut={["Meta", "Enter"]}
-          >
-            Create Request
-          </Button>
-        </UIActions>
+            <Button
+              isDisabled={!isValid && { reason: nextStepPromptLabel }}
+              kind="primary"
+              tooltip="Create Request"
+              onClick={submit}
+              shortcut={["Meta", "Enter"]}
+            >
+              Create Request
+            </Button>
+          </UIActions>
+        )}
       </UIContentHolder>
     </UIHolder>
   );
@@ -231,7 +234,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
 
 const UIEditableParts = styled.div`
   width: 100%;
-  min-height: 150px;
+  min-height: 130px;
 `;
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
@@ -255,9 +258,9 @@ const UINextStepPrompt = styled(FadePresenceAnimator)<{}>`
   margin-top: 20px;
 `;
 
-const UIActions = styled.div<{}>`
+const UIActions = styled(PopPresenceAnimator)<{}>`
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
 
   ${theme.spacing.horizontalActionsSection.asGap}

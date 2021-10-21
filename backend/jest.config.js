@@ -3,4 +3,9 @@ module.exports = {
   testEnvironment: "node",
   testMatch: ["**/(*.)+(spec|test).ts?(x)"],
   setupFilesAfterEnv: ["<rootDir>/src/testSupport/setupTests.ts"],
+  globals: {
+    "ts-jest": {
+      isolatedModules: true,
+    },
+  },
 };

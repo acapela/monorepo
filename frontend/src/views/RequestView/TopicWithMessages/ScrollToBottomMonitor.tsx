@@ -1,7 +1,10 @@
+import { runInAction } from "mobx";
+import { observer } from "mobx-react";
 import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
+import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { useElementEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 
@@ -21,7 +24,10 @@ const SCROLL_BOTTOM_TOLERANCE = 10;
  *
  * It's useful for cases like messages feed.
  */
-export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
+const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
+  const topicContext = useTopicStoreContext();
+  const firstUnreadMessageElement = topicContext?.firstUnreadMessageElement;
+
   const monitorRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = useRef(true);
   const didAutoScroll = useRef(false);
@@ -32,6 +38,8 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
     useCallback(() => {
       const parent = parentRef.current;
       if (parent && !didAutoScroll.current) {
+        // We need to distinguish programmatically-triggered scroll events from user-triggered ones
+        // to retain a user's intention whether to stay scrolled to the bottom
         isScrolledToBottom.current =
           parent.scrollTop >= parent.scrollHeight - parent.clientHeight - SCROLL_BOTTOM_TOLERANCE;
       }
@@ -46,8 +54,6 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
         return;
       }
 
-      // We need to distinguish programmatically-triggered scroll events from user-triggered ones
-      // to retain a user's intention whether to stay scrolled to the bottom
       if (behavior === "auto") {
         parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
       } else {
@@ -58,11 +64,20 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
   );
 
   const tryAutoScroll = useCallback(() => {
-    if (!preventAutoScroll && isScrolledToBottom.current) {
-      didAutoScroll.current = true;
-      scrollToBottom("auto");
-    }
-  }, [preventAutoScroll, scrollToBottom]);
+    runInAction(() => {
+      if (!preventAutoScroll && isScrolledToBottom.current) {
+        didAutoScroll.current = true;
+        if (firstUnreadMessageElement) {
+          firstUnreadMessageElement.scrollIntoView();
+          isScrolledToBottom.current = false;
+
+          if (topicContext) {
+            topicContext.firstUnreadMessageElement = null;
+          }
+        } else scrollToBottom("auto");
+      }
+    });
+  }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext]);
 
   useImperativeHandle(ref, () => ({ scrollToBottom }));
 
@@ -91,6 +106,8 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
 
   return <UIContentSizeCaptureFlyer ref={monitorRef} />;
 });
+
+export const ScrollToBottomMonitor = observer(_ScrollToBottomMonitor);
 
 const UIContentSizeCaptureFlyer = styled.div<{}>`
   position: absolute;

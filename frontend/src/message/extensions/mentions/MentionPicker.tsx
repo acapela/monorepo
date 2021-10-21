@@ -68,7 +68,6 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
 
   return (
     <MentionTypePicker
-      selected="request-read"
       onSelect={(mentionType) => {
         onSelect({ userId: selectedUser.id, type: mentionType });
       }}

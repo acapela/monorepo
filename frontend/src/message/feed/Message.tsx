@@ -1,7 +1,7 @@
 import { MotionProps } from "framer-motion";
 import { action } from "mobx";
 import React, { useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -16,12 +16,11 @@ import { ReplyingToMessage } from "~frontend/message/reply/ReplyingToMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
 import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
+import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
@@ -39,6 +38,7 @@ interface Props extends MotionProps {
 
 export const Message = styledObserver<Props>(
   ({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
+    const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
@@ -96,8 +96,25 @@ export const Message = styledObserver<Props>(
     };
     const messageActionsOptions = getMessageActionsOptions();
 
+    useIsomorphicLayoutEffect(
+      action(() => {
+        const { topic, isUnread } = message;
+        if (!isUnread || topic?.messages.last?.id === message.id || !rootRef.current || !topicContext) {
+          return;
+        }
+        const isOldestUnread = !topic?.unreadMessages.query(
+          (otherMessage) => new Date(otherMessage.created_at) < new Date(message.created_at)
+        ).hasItems;
+        if (!isOldestUnread) {
+          return;
+        }
+        topicContext.firstUnreadMessageElement = rootRef.current;
+      }),
+      []
+    );
+
     return (
-      <UIHolder id={message.id}>
+      <UIHolder id={message.id} ref={rootRef}>
         <MakeReactionButton message={message} />
         <MessageLikeContent
           className={className}
@@ -105,7 +122,7 @@ export const Message = styledObserver<Props>(
             shouldShowTools && (
               <UITools>
                 <MakeReactionButton message={message} />
-                <ReplyButton messageId={message.id} />
+                {!message.topic?.isClosed && <ReplyButton messageId={message.id} />}
                 {messageActionsOptions.length > 0 && (
                   <PopoverMenuTrigger
                     onOpen={() => setIsActive(true)}

@@ -4071,6 +4071,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jest@npm:^27.0.2":
+  version: 27.0.2
+  resolution: "@types/jest@npm:27.0.2"
+  dependencies:
+    jest-diff: ^27.0.0
+    pretty-format: ^27.0.0
+  checksum: 814ad5f5d2f277849f47e52906da4b745758e555630fc8cb46a071bde648eefeffb1b35710c530a8cea7fc4ea7c1d813812c120484bf7902ab6c5e473cdd49c9
+  languageName: node
+  linkType: hard
+
 "@types/js-cookie@npm:^2.2.6":
   version: 2.2.7
   resolution: "@types/js-cookie@npm:2.2.7"
@@ -4432,6 +4442,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 691c7abda8f5b16d26f6b9940f75e6a9831f12d5ca070e62391454c26fd1a3d0dbe64e0199655773e0389e35e7c7984fa8a06c4561d3164562cd167f60c759e6
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:>=16.0.0":
+  version: 17.0.30
+  resolution: "@types/react@npm:17.0.30"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: e3aaac1b8fda6e3622b75db0bd7d8dc412c2f2b77a00afdd32cae8c71fb0b1ca6926ab1fbe1c536dd51d96c0ba372738993837a8df1637637aaab7b86e421b7f
   languageName: node
   linkType: hard
 
@@ -12934,6 +12955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.memoize@npm:4.x":
+  version: 4.1.2
+  resolution: "lodash.memoize@npm:4.1.2"
+  checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -17194,6 +17222,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"simple-markdown@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "simple-markdown@npm:0.7.3"
+  dependencies:
+    "@types/react": ">=16.0.0"
+  checksum: 165941899fddfaa7c398410f8ce6941109bc86fbc9abb17f8b6be7a9ac8ae36c0af643a3e0adcba60053a9f1eaecdd4016d46d79eef39b8ae04982d2bd52bbc9
+  languageName: node
+  linkType: hard
+
 "simple-output@npm:^2.1.1":
   version: 2.2.1
   resolution: "simple-output@npm:2.2.1"
@@ -17228,6 +17265,13 @@ __metadata:
   version: 1.0.5
   resolution: "sisteransi@npm:1.0.5"
   checksum: aba6438f46d2bfcef94cf112c835ab395172c75f67453fe05c340c770d3c402363018ae1ab4172a1026a90c47eaccf3af7b6ff6fa749a680c2929bd7fa2b37a4
+  languageName: node
+  linkType: hard
+
+"slack-block-builder@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "slack-block-builder@npm:2.2.0"
+  checksum: 3ca96c3179abefa8c9cbee45ffdf03ce496c6c60db2266c9dbd5211860b93783966e56728f8958ee285b2fddcaed9a4c85214a6f5bcb21e59caa04cccb4f797d
   languageName: node
   linkType: hard
 
@@ -18489,6 +18533,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-jest@npm:^27.0.7":
+  version: 27.0.7
+  resolution: "ts-jest@npm:27.0.7"
+  dependencies:
+    bs-logger: 0.x
+    fast-json-stable-stringify: 2.x
+    jest-util: ^27.0.0
+    json5: 2.x
+    lodash.memoize: 4.x
+    make-error: 1.x
+    semver: 7.x
+    yargs-parser: 20.x
+  peerDependencies:
+    "@babel/core": ">=7.0.0-beta.0 <8"
+    "@types/jest": ^27.0.0
+    babel-jest: ">=27.0.0 <28"
+    jest: ^27.0.0
+    typescript: ">=3.8 <5.0"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@types/jest":
+      optional: true
+    babel-jest:
+      optional: true
+  bin:
+    ts-jest: cli.js
+  checksum: 3711361cb5ae54aac547b00f8ad118ec88333c391af4bff0420497e9faa296eace4e8272c627ecbf4be675af9f68c437e4c2ccc5693c6d744796ec7da6dda131
+  languageName: node
+  linkType: hard
+
 "ts-loader@npm:^7.0.0":
   version: 7.0.5
   resolution: "ts-loader@npm:7.0.5"
@@ -19701,6 +19776,7 @@ __metadata:
     mime-types: ^2.1.32
     pg: ^8.7.1
     pino-pretty: ^7.0.1
+    slack-block-builder: ^2.2.0
     supertest: ^6.1.6
     ts-jest: ^27.0.5
     ts-node: ^10.2.1
@@ -19894,6 +19970,7 @@ __metadata:
     "@types/analytics-node": ^3.1.6
     "@types/color": ^3.0.2
     "@types/is-hotkey": ^0.1.5
+    "@types/jest": ^27.0.2
     "@types/jsonwebtoken": ^8.5.5
     "@types/pino": ^6.3.11
     analytics-node: ^4.0.1
@@ -19902,6 +19979,8 @@ __metadata:
     jest: ^27.2.5
     jsonwebtoken: ^8.5.1
     pino: ^6.13.3
+    simple-markdown: ^0.7.3
+    ts-jest: ^27.0.7
     unicode-emoji-json: ^0.3.0
   peerDependencies:
     date-fns: "*"
