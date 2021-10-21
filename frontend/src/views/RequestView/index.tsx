@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { PageMeta } from "~frontend/utils/PageMeta";
 import { routes } from "~shared/routes";
 
 import { TopicWithMessages } from "./TopicWithMessages";
@@ -73,6 +74,7 @@ export const RequestView = observer(({ topicSlug }: Props) => {
 
   return (
     <UIHolder>
+      <PageMeta title={topic.name} />
       <TopicWithMessages key={topic.id} topic={topic} />
     </UIHolder>
   );

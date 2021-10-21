@@ -6,16 +6,20 @@ import React, { useEffect, useState } from "react";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { DEFAULT_REDIRECT_URL } from "~frontend/config";
 import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { PageMeta } from "~frontend/utils/PageMeta";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
 
   return (
-    <FocusedActionLayout title="Log in to start using Acapela">
-      {!isAuthenticated && <LoginOptionsView />}
-      {isRedirecting && <div>Redirecting...</div>}
-    </FocusedActionLayout>
+    <>
+      <PageMeta title="Login" />
+      <FocusedActionLayout title="Log in to start using Acapela">
+        {!isAuthenticated && <LoginOptionsView />}
+        {isRedirecting && <div>Redirecting...</div>}
+      </FocusedActionLayout>
+    </>
   );
 }
 
