@@ -224,7 +224,6 @@ const UIContentHolder = styled(motion.div)<{ isEmpty: boolean }>`
   flex-direction: column;
   ${theme.spacing.horizontalActionsSection.asGap};
 
-  /* width: 900px; */
   ${(props) => {
     if (props.isEmpty) {
       return css`
