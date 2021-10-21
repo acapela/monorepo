@@ -4,14 +4,14 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { Button, PopAnimatedButton } from "~ui/buttons/Button";
+import { PopPresenceAnimator } from "~ui/animations";
+import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -149,12 +149,4 @@ const UIFooterContainer = styled(PopPresenceAnimator)`
 const UIFooter = styled.div`
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
-`;
-
-const UICloseTopicFooter = styled.div<{}>`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
 `;
