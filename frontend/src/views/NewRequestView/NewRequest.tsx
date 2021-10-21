@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { sampleSize } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
@@ -156,8 +156,12 @@ export const NewRequest = observer(function NewRequest() {
 
   return (
     <UIHolder>
-      <UIContentHolder isEmpty={!hasTypedInAnything}>
-        {!hasTypedInAnything && <UIFlyingCreateARequestLabel />}
+      <UIContentHolder isEmpty={!hasTypedInAnything} layout>
+        {!hasTypedInAnything && (
+          <FadePresenceAnimator initial={{ opacity: 0 }} animate={{ opacity: [0, 1] }} transition={{ delay: 0.25 }}>
+            <UIFlyingCreateARequestLabel />
+          </FadePresenceAnimator>
+        )}
         <UIEditableParts>
           <UITopicNameInput
             autoFocus
@@ -214,7 +218,7 @@ const UIHolder = styled.div<{}>`
   justify-content: center;
 `;
 
-const UIContentHolder = styled.div<{ isEmpty: boolean }>`
+const UIContentHolder = styled(motion.div)<{ isEmpty: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -241,7 +245,7 @@ const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
   position: absolute;
   /* Aligning prompt absolutely from very center of screen */
   left: -140px;
-  top: -72px;
+  top: -60px;
 
   @media only screen and (max-width: 900px) {
     display: none;

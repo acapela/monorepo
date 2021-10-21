@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { useLastValue } from "~shared/hooks/useLastValue";
@@ -19,7 +20,11 @@ function isNumberBetween(input: number, min: number, max: number) {
   return input >= min && input < max;
 }
 
-export function TranscriptSpeakerPart({ part, time, onTimeChangeRequest }: Props) {
+export const TranscriptSpeakerPart = observer(function TranscriptSpeakerPart({
+  part,
+  time,
+  onTimeChangeRequest,
+}: Props) {
   const { words } = part;
 
   /**
@@ -114,7 +119,7 @@ export function TranscriptSpeakerPart({ part, time, onTimeChangeRequest }: Props
       })}
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;
