@@ -17,6 +17,11 @@ const EMOJI_IN_ROW_COUNT = 10;
 const PICKER_WIDTH = EMOJI_SIZE * EMOJI_IN_ROW_COUNT;
 const PICKER_HEIGHT = EMOJI_SIZE * 7;
 
+/**
+ * We use virtualized list which is a bit limiting in ways how we can render content.
+ *
+ * Each row has the same height, and we have 2 kinds of rows. Emoji row and header row (eg for category name)
+ */
 type HeaderRow = {
   type: "header";
   label: string;
@@ -31,7 +36,7 @@ type VirtualizedRow = HeaderRow | EmojiRow;
 
 function convertEmojiListToVirtualizedRows(emojiList: string[]): VirtualizedRow[] {
   const rows: VirtualizedRow[] = [];
-  const emojiRows = chunk(emojiList, 10);
+  const emojiRows = chunk(emojiList, EMOJI_IN_ROW_COUNT);
 
   for (const emojiRow of emojiRows) {
     rows.push({ type: "emoji-row", emojiInRow: emojiRow });
@@ -40,14 +45,17 @@ function convertEmojiListToVirtualizedRows(emojiList: string[]): VirtualizedRow[
   return rows;
 }
 
+// Create virtualized rows with category headers
 function convertEmojiMapToVirtualizedRows(): VirtualizedRow[] {
   const rows: VirtualizedRow[] = [];
 
   for (const categoryName of typedKeys(emojiByCategories)) {
     const categoryEmojiList = emojiByCategories[categoryName];
 
+    // For each category start with category header
     rows.push({ type: "header", label: categoryName });
 
+    // Divide category emojis into rows
     const emojiRows = convertEmojiListToVirtualizedRows(categoryEmojiList);
     rows.push(...emojiRows);
   }
@@ -55,17 +63,22 @@ function convertEmojiMapToVirtualizedRows(): VirtualizedRow[] {
   return rows;
 }
 
+// It will never change so let's compute at module level
 const emojiVirtualizedRows = convertEmojiMapToVirtualizedRows();
 
 export interface EmojiPickerProps {
   onEmojiPicked?: (emoji: string) => void;
 }
 
+// Used for eg. navigating with keyboard. Position of currently selected emoji 'in grid'
+// Note: 'grid' ignores header rows when computing emoji position (this allows eg. ignoring headers when moving with keyboard)
+
 interface Point {
   x: number;
   y: number;
 }
 
+// Keyboard direction
 type Direction = "up" | "down" | "left" | "right";
 
 export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
@@ -75,8 +88,10 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
   const { frequentlyUsedEmoji, markEmojiAsUsed } = useFrequentlyUsedEmoji();
 
   const resultsToShow = useMemo<VirtualizedRow[]>(() => {
+    // If we're not searching - prepare regular list of all emoji
     if (!searchTerm.trim()) {
       return [
+        // Add requently used rows
         { type: "header", label: "Frequently used" },
         ...convertEmojiListToVirtualizedRows(frequentlyUsedEmoji),
         ...emojiVirtualizedRows,
@@ -90,12 +105,15 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
     return [{ type: "header", label: "Search results" }, ...convertEmojiListToVirtualizedRows(foundEmoji)];
   }, [searchTerm]);
 
+  // To make navigation logic easier - create another list of virtualized rows, but ignoring headers.
+  // This makes emoji x,y coordinates logic a lot simpler
   const emojiOnlyRows = useMemo(() => {
     const emojiRows = resultsToShow.filter((row) => row.type === "emoji-row") as EmojiRow[];
 
     return emojiRows;
   }, [resultsToShow]);
 
+  // When typing in search - reset selected position
   useEffect(() => {
     setSelectedPosition(null);
   }, [searchTerm]);
@@ -106,6 +124,7 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
     return selectedEmoji;
   }
 
+  // Each time selected position changes - scroll to it to make it visible if needed
   useIsomorphicLayoutEffect(() => {
     if (!selectedPosition) return;
 
@@ -113,6 +132,7 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
 
     if (!emojiRow) return;
 
+    // To scroll accurately - we need now to take index of row including headers
     const realRow = resultsToShow.indexOf(emojiRow);
 
     if (realRow < 0) return;
@@ -120,6 +140,7 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
     listRef.current?.scrollToRow(realRow);
   }, [selectedPosition, emojiOnlyRows]);
 
+  // Will calculate new position of selection basing on current position and direction of movement
   function getNewKeyboardSelectionTarget(direction: Direction): Point {
     // If no position selected - put it on start no matter what
     if (!selectedPosition) {
@@ -185,6 +206,7 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
   function handleChangeSelectionByDirection(direction: Direction) {
     const newPosition = getNewKeyboardSelectionTarget(direction);
 
+    // In case new position is not targeting any emoji - ignore it
     if (!getEmojiAtPosition(newPosition)) {
       return true;
     }
@@ -218,6 +240,7 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
   });
 
   function handleEmojiPicked(emoji: string) {
+    // Increase emoji ranking in frequently used
     markEmojiAsUsed(emoji);
     onEmojiPicked?.(emoji);
   }
