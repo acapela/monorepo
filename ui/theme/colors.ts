@@ -21,6 +21,14 @@ const lightGray = color("#F9FAFC", {
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
+const orange = color("#EE551D");
+
+const teal = color("#31cfcf");
+
+const darkPink = color("#E26E8C");
+
+const darkPurple = color("#301E31");
+
 export const colors = {
   primary,
   text: black,
@@ -63,5 +71,9 @@ export const colors = {
     primary,
     secondary: primary,
     tertiary: primary,
+    action: orange,
+    feedback: darkPink,
+    read: teal,
+    observe: darkPurple,
   },
 };
