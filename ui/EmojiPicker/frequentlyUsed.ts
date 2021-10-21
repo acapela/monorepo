@@ -19,7 +19,9 @@ const frequentlyUsedEmojiManager = createLocalStorageValueManager("frequently-us
 function getOrderedFrequentlyUsedEmoji(useageMap: EmojiUseageMap) {
   const entries = Object.entries(useageMap);
 
-  return sortBy(entries, ([, useCount]) => useCount).map(([emoji]) => emoji);
+  return sortBy(entries, ([, useCount]) => -useCount)
+    .map(([emoji]) => emoji)
+    .slice(0, 10);
 }
 
 export function useFrequentlyUsedEmoji() {
