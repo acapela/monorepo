@@ -9,7 +9,7 @@ import { MessageEntity } from "~frontend/clientdb/message";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconButton } from "~ui/buttons/IconButton";
-import { EmojiData, EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
+import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 
@@ -20,17 +20,17 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
   const [isPicking, { set: open, unset: close }] = useBoolean(false);
 
-  const handleEmojiSelect = action((emoji: EmojiData) => {
+  const handleEmojiSelect = action((emoji: string) => {
     close();
 
     const hasUserAlreadyReacted = message.reactions.query(
-      (reaction) => reaction.emoji === emoji.emoji && reaction.isOwn
+      (reaction) => reaction.emoji === emoji && reaction.isOwn
     ).hasItems;
 
     if (hasUserAlreadyReacted) return;
 
     db.messageReaction.create({
-      emoji: emoji.emoji,
+      emoji: emoji,
       message_id: message.id,
     });
 
@@ -42,7 +42,7 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
       <IconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
-          <Popover anchorRef={buttonRef} placement="bottom-end">
+          <Popover anchorRef={buttonRef} placement="bottom-end" enableScreenCover>
             <EmojiPickerWindow onCloseRequest={close} onEmojiPicked={handleEmojiSelect} />
           </Popover>
         )}

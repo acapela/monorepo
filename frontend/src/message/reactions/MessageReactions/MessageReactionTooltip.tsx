@@ -45,4 +45,5 @@ const UIReacted = styled.span<{}>``;
 const UIEmojiName = styled.div<{}>`
   word-break: break-all;
   font-size: 1.5em;
+  font-family: initial !important;
 `;

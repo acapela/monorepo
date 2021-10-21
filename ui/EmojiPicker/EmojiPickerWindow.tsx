@@ -4,12 +4,11 @@ import styled from "styled-components";
 
 import { namedLazy } from "~shared/namedLazy";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
 
 import type { EmojiPickerProps } from "./EmojiPickerWindowInner";
-
-export type { EmojiData } from "./EmojiPickerWindowInner";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
 export const EmojiPickerWindowLazy = namedLazy(() => import("./EmojiPickerWindowInner"), "EmojiPickerWindowInner");
@@ -24,6 +23,10 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
   useClickAway(holderRef, () => {
+    onCloseRequest?.();
+  });
+
+  useShortcut("Esc", () => {
     onCloseRequest?.();
   });
 

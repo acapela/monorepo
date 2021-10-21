@@ -26,7 +26,7 @@ export function EmojiButton({ onEmojiSelected }: Props) {
             <EmojiPickerWindow
               onCloseRequest={close}
               onEmojiPicked={(emoji) => {
-                onEmojiSelected(emoji.emoji);
+                onEmojiSelected(emoji);
                 close();
               }}
             />

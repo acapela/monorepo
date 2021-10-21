@@ -1,16 +1,15 @@
-import { Index } from "flexsearch";
-import { chunk, memoize } from "lodash";
-import { useMemo, useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { chunk } from "lodash";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 import { List } from "react-virtualized";
-import styled from "styled-components";
-import emojiByCategory from "unicode-emoji-json/data-by-group.json";
+import styled, { css } from "styled-components";
 
 import { typedKeys } from "~shared/object";
-import { TextInput } from "~ui/forms/TextInput";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
-export type EmojiData = typeof emojiByCategory["Smileys & Emotion"][0];
+import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "./emojiList";
+import { useFrequentlyUsedEmoji } from "./frequentlyUsed";
 
 const EMOJI_SIZE = 30;
 const EMOJI_IN_ROW_COUNT = 10;
@@ -18,17 +17,19 @@ const EMOJI_IN_ROW_COUNT = 10;
 const PICKER_WIDTH = EMOJI_SIZE * EMOJI_IN_ROW_COUNT;
 const PICKER_HEIGHT = EMOJI_SIZE * 7;
 
-type VirtualizedRow =
-  | {
-      type: "header";
-      label: string;
-    }
-  | {
-      type: "emoji-row";
-      emojiInRow: EmojiData[];
-    };
+type HeaderRow = {
+  type: "header";
+  label: string;
+};
 
-function convertEmojiListToVirtualizedRows(emojiList: EmojiData[]): VirtualizedRow[] {
+type EmojiRow = {
+  type: "emoji-row";
+  emojiInRow: string[];
+};
+
+type VirtualizedRow = HeaderRow | EmojiRow;
+
+function convertEmojiListToVirtualizedRows(emojiList: string[]): VirtualizedRow[] {
   const rows: VirtualizedRow[] = [];
   const emojiRows = chunk(emojiList, 10);
 
@@ -42,8 +43,8 @@ function convertEmojiListToVirtualizedRows(emojiList: EmojiData[]): VirtualizedR
 function convertEmojiMapToVirtualizedRows(): VirtualizedRow[] {
   const rows: VirtualizedRow[] = [];
 
-  for (const categoryName of typedKeys(emojiByCategory)) {
-    const categoryEmojiList = emojiByCategory[categoryName] as EmojiData[];
+  for (const categoryName of typedKeys(emojiByCategories)) {
+    const categoryEmojiList = emojiByCategories[categoryName];
 
     rows.push({ type: "header", label: categoryName });
 
@@ -54,67 +55,172 @@ function convertEmojiMapToVirtualizedRows(): VirtualizedRow[] {
   return rows;
 }
 
-function getAllEmojiList() {
-  const emojiList: EmojiData[] = [];
-
-  for (const categoryName of typedKeys(emojiByCategory)) {
-    const categoryEmojiList = emojiByCategory[categoryName] as EmojiData[];
-
-    emojiList.push(...categoryEmojiList);
-  }
-
-  return emojiList;
-}
-
-function getEmojiSearchData(emoji: EmojiData): string {
-  return [emoji.name, emoji.slug].join(" ");
-}
-
-const getEmojiSearchIndex = memoize(() => {
-  const allEmoji = getAllEmojiList();
-  const emojiSlugMap = new Map<string, EmojiData>();
-
-  const index = new Index({
-    preset: "match",
-    // Will find "hello", when looking for "he"
-    tokenize: "full",
-    // Will normalize custom characters.
-    charset: "lating:advanced",
-    language: "en",
-  });
-
-  allEmoji.forEach((emoji) => {
-    emojiSlugMap.set(emoji.slug, emoji);
-    index.add(emoji.slug, getEmojiSearchData(emoji));
-  });
-
-  function search(input: string) {
-    return index.search(input).map((slug) => emojiSlugMap.get(slug as string)!);
-  }
-
-  return search;
-});
-
 const emojiVirtualizedRows = convertEmojiMapToVirtualizedRows();
 
 export interface EmojiPickerProps {
-  onEmojiPicked?: (emoji: EmojiData) => void;
+  onEmojiPicked?: (emoji: string) => void;
 }
 
-export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+interface Point {
+  x: number;
+  y: number;
+}
 
-  const searchResult = useMemo<VirtualizedRow[] | null>(() => {
-    if (!searchTerm.trim()) return null;
+type Direction = "up" | "down" | "left" | "right";
+
+export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
+  const listRef = useRef<List>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPosition, setSelectedPosition] = useState<Point | null>(null);
+  const { frequentlyUsedEmoji, markEmojiAsUsed } = useFrequentlyUsedEmoji();
+
+  const resultsToShow = useMemo<VirtualizedRow[]>(() => {
+    if (!searchTerm.trim()) {
+      return [
+        { type: "header", label: "Frequently used" },
+        ...convertEmojiListToVirtualizedRows(frequentlyUsedEmoji),
+        ...emojiVirtualizedRows,
+      ];
+    }
 
     const search = getEmojiSearchIndex();
 
     const foundEmoji = search(searchTerm);
 
-    return convertEmojiListToVirtualizedRows(foundEmoji);
+    return [{ type: "header", label: "Search results" }, ...convertEmojiListToVirtualizedRows(foundEmoji)];
   }, [searchTerm]);
 
-  const resultsToShow = searchResult ?? emojiVirtualizedRows;
+  const emojiOnlyRows = useMemo(() => {
+    const emojiRows = resultsToShow.filter((row) => row.type === "emoji-row") as EmojiRow[];
+
+    return emojiRows;
+  }, [resultsToShow]);
+
+  useEffect(() => {
+    setSelectedPosition(null);
+  }, [searchTerm]);
+
+  function getEmojiAtPosition(position: Point): string | null {
+    const selectedEmoji = emojiOnlyRows[position.y]?.emojiInRow[position.x] ?? null;
+
+    return selectedEmoji;
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    if (!selectedPosition) return;
+
+    const emojiRow = emojiOnlyRows[selectedPosition.y];
+
+    if (!emojiRow) return;
+
+    const realRow = resultsToShow.indexOf(emojiRow);
+
+    if (realRow < 0) return;
+
+    listRef.current?.scrollToRow(realRow);
+  }, [selectedPosition, emojiOnlyRows]);
+
+  function getNewKeyboardSelectionTarget(direction: Direction): Point {
+    // If no position selected - put it on start no matter what
+    if (!selectedPosition) {
+      return { x: 0, y: 0 };
+    }
+
+    const { x, y } = selectedPosition;
+    const maxRow = emojiOnlyRows.length - 1;
+    const maxColumn = EMOJI_IN_ROW_COUNT - 1;
+
+    if (direction === "up") {
+      const targetNextY = y - 1;
+      // If pressed up on first row - put selection to first column
+      if (targetNextY < 0) {
+        return { x: 0, y: 0 };
+      }
+
+      // Go one row up
+      return { x, y: targetNextY };
+    }
+
+    if (direction === "down") {
+      let targetNextY = y + 1;
+      // If down on last row
+      if (targetNextY > maxRow) {
+        // Go to last column
+        targetNextY = maxRow;
+      }
+
+      // Go to next row
+      return { x, y: targetNextY };
+    }
+
+    if (direction === "left") {
+      // Ignore if on start of the list
+      if (x === 0 && y === 0) return selectedPosition;
+
+      // Go to end of previous row
+      if (x === 0) {
+        return { y: y - 1, x: maxColumn };
+      }
+
+      // Go to previous column in same row
+      return { x: x - 1, y };
+    }
+
+    if (direction === "right") {
+      // If in the end - do nothing
+      if (x === maxColumn && y === maxRow) return selectedPosition;
+
+      // Go to start of next row
+      if (x === maxColumn) {
+        return { y: y + 1, x: 0 };
+      }
+
+      // Go to next column
+      return { x: x + 1, y };
+    }
+
+    throw new Error("Incorrect direction");
+  }
+
+  function handleChangeSelectionByDirection(direction: Direction) {
+    const newPosition = getNewKeyboardSelectionTarget(direction);
+
+    if (!getEmojiAtPosition(newPosition)) {
+      return true;
+    }
+
+    setSelectedPosition(newPosition);
+
+    return true;
+  }
+
+  useShortcut("ArrowDown", () => {
+    return handleChangeSelectionByDirection("down");
+  });
+
+  useShortcut("ArrowUp", () => {
+    return handleChangeSelectionByDirection("up");
+  });
+
+  useShortcut("ArrowLeft", () => {
+    return handleChangeSelectionByDirection("left");
+  });
+
+  useShortcut("ArrowRight", () => {
+    return handleChangeSelectionByDirection("right");
+  });
+
+  useShortcut("Enter", () => {
+    if (!selectedPosition) return;
+    const selectedEmoji = getEmojiAtPosition(selectedPosition);
+    if (!selectedEmoji) return;
+    onEmojiPicked?.(selectedEmoji);
+  });
+
+  function handleEmojiPicked(emoji: string) {
+    markEmojiAsUsed(emoji);
+    onEmojiPicked?.(emoji);
+  }
 
   return (
     <UIHolder>
@@ -130,30 +236,48 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
       </UISearch>
       <UIEmojiList>
         <List
+          ref={listRef}
           rowCount={resultsToShow.length}
           rowHeight={EMOJI_SIZE}
           height={PICKER_HEIGHT}
           width={PICKER_WIDTH}
           rowRenderer={(row) => {
-            const { index, style } = row;
+            const { index, style, key } = row;
+
+            // Get row this emoji is part of (including headers rows)
             const rowData = resultsToShow[index];
 
             if (rowData.type === "header") {
               return <UIHeader style={style}>{rowData.label}</UIHeader>;
             }
 
+            // Get which emoji-only row is it in (excluding headers)
+            const emojiRowIndex = emojiOnlyRows.indexOf(rowData);
+
             return (
-              <UIEmojiRow style={style}>
-                {rowData.emojiInRow.map((emoji) => {
+              <UIEmojiRow style={style} key={key}>
+                {rowData.emojiInRow.map((emoji, columnIndex) => {
+                  /**
+                   * Note - we decide if emoji is selected by x,y cords, not by emoji itself. It is because it is possible
+                   * that same emoji appears twice (eg as frequently used and on the list)
+                   */
+                  const isSelected =
+                    !!selectedPosition && selectedPosition.x === columnIndex && selectedPosition.y === emojiRowIndex;
+
                   return (
                     <UIEmojiButton
-                      key={emoji.slug}
-                      data-tooltip={`:${emoji.slug}:`}
+                      tabIndex={0}
+                      onMouseEnter={() => {
+                        setSelectedPosition({ x: columnIndex, y: emojiRowIndex });
+                      }}
+                      title={getEmojiSlug(emoji) ?? undefined}
+                      key={emoji}
+                      isSelected={isSelected}
                       onClick={() => {
-                        onEmojiPicked?.(emoji);
+                        handleEmojiPicked(emoji);
                       }}
                     >
-                      {emoji.emoji}
+                      {emoji}
                     </UIEmojiButton>
                   );
                 })}
@@ -196,11 +320,19 @@ const UIEmojiRow = styled.div`
   display: flex;
 `;
 
-const UIEmojiButton = styled.button`
+const UIEmojiButton = styled.button<{ isSelected: boolean }>`
   height: ${EMOJI_SIZE}px;
   width: ${EMOJI_SIZE}px;
-  ${theme.colors.panels.popover.interactive};
+  ${theme.colors.panels.popover.asBgWithReadableText};
   font-size: ${EMOJI_SIZE * 0.6}px;
   ${theme.radius.button};
   ${theme.transitions.hover()};
+  font-family: initial !important;
+
+  ${(props) =>
+    props.isSelected &&
+    css`
+      ${theme.colors.panels.popover.active.asBg};
+      transition: 0.05s all;
+    `};
 `;
