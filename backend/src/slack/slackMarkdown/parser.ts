@@ -1,4 +1,4 @@
-import { isArray, isString, map } from "lodash";
+import { isArray, isString } from "lodash";
 import markdown from "simple-markdown";
 
 import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
