@@ -1,4 +1,3 @@
-import { EmojiData } from "emoji-mart";
 import { AnimatePresence } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
@@ -7,7 +6,6 @@ import { useRef } from "react";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconButton } from "~ui/buttons/IconButton";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
@@ -21,26 +19,21 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
   const [isPicking, { set: open, unset: close }] = useBoolean(false);
 
-  const handleEmojiSelect = action((emoji: EmojiData) => {
-    if (!isBaseEmoji(emoji)) {
-      console.warn("Custom emojis are not supported");
-      return;
-    }
-
+  const handleEmojiSelect = action((emoji: string) => {
     close();
 
     const hasUserAlreadyReacted = message.reactions.query(
-      (reaction) => reaction.emoji === emoji.native && reaction.isOwn
+      (reaction) => reaction.emoji === emoji && reaction.isOwn
     ).hasItems;
 
     if (hasUserAlreadyReacted) return;
 
     db.messageReaction.create({
-      emoji: emoji.native,
+      emoji: emoji,
       message_id: message.id,
     });
 
-    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji.native });
+    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji });
   });
 
   return (
@@ -48,8 +41,8 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
       <IconButton ref={buttonRef} tooltip="Add reaction" onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
-          <Popover anchorRef={buttonRef} placement="bottom-end">
-            <EmojiPickerWindow onCloseRequest={close} onSelect={handleEmojiSelect} />
+          <Popover anchorRef={buttonRef} placement="bottom-end" enableScreenCover>
+            <EmojiPickerWindow onCloseRequest={close} onEmojiPicked={handleEmojiSelect} />
           </Popover>
         )}
       </AnimatePresence>

@@ -70,4 +70,5 @@ const UIReactionButton = styled.button<{ isSelected: boolean }>`
 
 const UIEmoji = styled.span`
   font-size: 1.25em;
+  font-family: initial !important;
 `;

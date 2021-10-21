@@ -25,13 +25,8 @@ export function EmojiButton({ onEmojiSelected }: Props) {
           <Popover anchorRef={buttonRef} placement="top" enableScreenCover>
             <EmojiPickerWindow
               onCloseRequest={close}
-              onSelect={(emoji) => {
-                if (!isBaseEmoji(emoji)) {
-                  console.warn("Custom emojis are not supported");
-                  return;
-                }
-
-                onEmojiSelected(emoji.native);
+              onEmojiPicked={(emoji) => {
+                onEmojiSelected(emoji);
                 close();
               }}
             />

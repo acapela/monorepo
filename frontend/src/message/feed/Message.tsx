@@ -16,12 +16,11 @@ import { ReplyingToMessage } from "~frontend/message/reply/ReplyingToMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
 import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
+import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
@@ -33,13 +32,12 @@ import { MessageTasks } from "./tasks/MessageTasks";
 interface Props extends MotionProps {
   message: MessageEntity;
   isBundledWithPreviousMessage?: boolean;
-  onCloseTopicRequest?: (summary: string) => void;
   isReadonly?: boolean;
   className?: string;
 }
 
 export const Message = styledObserver<Props>(
-  ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
+  ({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
     const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
@@ -83,14 +81,6 @@ export const Message = styledObserver<Props>(
 
       if (message.isOwn && message.type === "TEXT") {
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
-      }
-
-      if (message.type === "TEXT" && onCloseTopicRequest) {
-        options.push({
-          label: "Close with message",
-          onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
-          icon: <IconCheck />,
-        });
       }
 
       if (message.isOwn) {

@@ -1,11 +1,12 @@
-import { isArray, isString, map } from "lodash";
+import { isArray, isString } from "lodash";
 import markdown from "simple-markdown";
-import emojis from "unicode-emoji-json";
 
 import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
+import emojis from "~shared/emoji/slugs.json";
+import { swapPlainObjectKeysWithValues } from "~shared/object";
 import { EditorMentionData } from "~shared/types/editor";
 
-const emojiNameToEmoji = Object.assign({}, ...map(emojis, (v, k) => ({ [v.slug]: k })));
+const emojiNameToEmoji: Record<string, string> = swapPlainObjectKeysWithValues(emojis);
 
 // The rules have been imported from
 // https://github.com/Sorunome/slack-markdown/blob/be564c166edd7887fcc44b6ebd12723bb3fe149f/index.js
