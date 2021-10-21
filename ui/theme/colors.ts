@@ -69,8 +69,6 @@ export const colors = {
   },
   tags: {
     primary,
-    secondary: primary,
-    tertiary: primary,
     action: orange,
     feedback: darkPink,
     read: teal,
