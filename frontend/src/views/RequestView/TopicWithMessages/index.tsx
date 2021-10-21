@@ -10,7 +10,8 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { PopAnimatedButton } from "~ui/buttons/Button";
+import { PopPresenceAnimator } from "~ui/animations";
+import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -22,6 +23,10 @@ import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
   const user = useAssertCurrentUser();
   const messages = topic.messages.all;
+
+  function handleCloseRequest() {
+    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: user.id });
+  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
@@ -56,6 +61,14 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
           <UIParticipants>
             <AvatarList users={topic.participants.all} maxVisibleCount={5} />
             {/* TODO: Include invite button */}
+            <Button
+              kind="secondary"
+              tooltip={isClosed ? "Reopen Request" : "Close request for all participants"}
+              onClick={() => (isClosed ? handleReopenTopic() : handleCloseRequest())}
+            >
+              {!isClosed && <>Close Request</>}
+              {isClosed && <>Reopen Request</>}
+            </Button>
           </UIParticipants>
         </UIHead>
 
@@ -67,9 +80,9 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
           </AnimateSharedLayout>
         </ScrollableMessages>
 
-        <UIFooterContainer>
-          <UIFooter>
-            {!isClosed && (
+        {!isClosed && (
+          <UIFooterContainer>
+            <UIFooter>
               <CreateNewMessageEditor
                 topic={topic}
                 onMessageSent={() => {
@@ -86,21 +99,9 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
                   }
                 }}
               />
-            )}
-            {isClosed && (
-              <UICloseTopicFooter>
-                <PopAnimatedButton
-                  shortcut={["Mod", "O"]}
-                  kind="secondary"
-                  tooltip="Reopen Request"
-                  onClick={handleReopenTopic}
-                >
-                  Reopen request
-                </PopAnimatedButton>
-              </UICloseTopicFooter>
-            )}
-          </UIFooter>
-        </UIFooterContainer>
+            </UIFooter>
+          </UIFooterContainer>
+        )}
       </UIHolder>
     </TopicStoreContext>
   );
@@ -136,7 +137,7 @@ const UIParticipants = styled.div`
   ${theme.typo.pageTitle};
 `;
 
-const UIFooterContainer = styled.div`
+const UIFooterContainer = styled(PopPresenceAnimator)`
   width: 100%;
   margin-top: auto;
   padding-top: 20px;
@@ -148,12 +149,4 @@ const UIFooterContainer = styled.div`
 const UIFooter = styled.div`
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
-`;
-
-const UICloseTopicFooter = styled.div<{}>`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
 `;
