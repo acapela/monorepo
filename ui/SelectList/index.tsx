@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -14,7 +15,13 @@ interface Props<T> {
   className?: string;
 }
 
-export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected, noItemsPlaceholder }: Props<T>) {
+export const SelectList = observer(function SelectList<T>({
+  items,
+  keyGetter,
+  renderItem,
+  onItemSelected,
+  noItemsPlaceholder,
+}: Props<T>) {
   const { activeItem, setActiveItem } = useListWithNavigation(items, { enableKeyboard: true });
 
   const activeKey = activeItem ? keyGetter(activeItem) : null;
@@ -54,7 +61,7 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected, no
       })}
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

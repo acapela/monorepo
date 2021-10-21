@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { observer } from "mobx-react";
 import { memo } from "react";
 import styled, { css } from "styled-components";
 
@@ -14,36 +15,32 @@ interface Props {
   onClick: (word: TranscriptWordType) => void;
 }
 
-export const TranscriptWord = memo(function TranscriptWord({
-  word,
-  isActive,
-  onClick,
-  isFirstActive,
-  isLastActive,
-}: Props) {
-  const { text } = word;
+export const TranscriptWord = memo(
+  observer(function TranscriptWord({ word, isActive, onClick, isFirstActive, isLastActive }: Props) {
+    const { text } = word;
 
-  function formatWord() {
-    return text.trim() + " ";
-  }
+    function formatWord() {
+      return text.trim() + " ";
+    }
 
-  return (
-    <UIHolder onClick={() => onClick(word)}>
-      <UIWord data-tooltip={formatMsTimeToPlaybackTime(word.start_time)}>{formatWord()}</UIWord>
-      <AnimatePresence>
-        {isActive && (
-          <UIActiveWordHighlight
-            initial={{ opacity: 0, x: -5, scaleY: 0.6 }}
-            animate={{ opacity: 1, transition: { duration: 0.2 }, x: 0, scaleY: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1 }, x: 5 }}
-            isFirstActive={isFirstActive}
-            isLastActive={isLastActive}
-          />
-        )}
-      </AnimatePresence>
-    </UIHolder>
-  );
-});
+    return (
+      <UIHolder onClick={() => onClick(word)}>
+        <UIWord data-tooltip={formatMsTimeToPlaybackTime(word.start_time)}>{formatWord()}</UIWord>
+        <AnimatePresence>
+          {isActive && (
+            <UIActiveWordHighlight
+              initial={{ opacity: 0, x: -5, scaleY: 0.6 }}
+              animate={{ opacity: 1, transition: { duration: 0.2 }, x: 0, scaleY: 1 }}
+              exit={{ opacity: 0, transition: { duration: 1 }, x: 5 }}
+              isFirstActive={isFirstActive}
+              isLastActive={isLastActive}
+            />
+          )}
+        </AnimatePresence>
+      </UIHolder>
+    );
+  })
+);
 
 const UIHolder = styled.div`
   position: relative;
