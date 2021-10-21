@@ -1,6 +1,5 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { configure } from "mobx";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
 import { createClientDb } from "~clientdb";
@@ -24,14 +23,7 @@ import { topicEntity } from "./topic";
 import { transcriptionEntity } from "./transcription";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
-
-if (isDev()) {
-  configure({
-    observableRequiresReaction: true,
-    computedRequiresReaction: true,
-    enforceActions: "always",
-  });
-}
+import { setupDevIncorrectMobxUseageWarnings } from "./utils/devIncorrectUsageWarnings";
 
 export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
@@ -66,6 +58,10 @@ type ThenType<T> = T extends Promise<infer I> ? I : never;
 export type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
 const reactContext = createContext<ClientDb | null>(null);
+
+if (isDev()) {
+  setupDevIncorrectMobxUseageWarnings();
+}
 
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
