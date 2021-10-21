@@ -115,7 +115,6 @@ export const Message = styledObserver<Props>(
 
     return (
       <UIHolder id={message.id} ref={rootRef}>
-        <MakeReactionButton message={message} />
         <MessageLikeContent
           className={className}
           tools={
