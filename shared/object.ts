@@ -68,3 +68,16 @@ export function removeUndefinedFromObject<T>(input: T): WithoutUndefined<T> {
 
   return clone as WithoutUndefined<T>;
 }
+
+type Keyable = string | number | symbol;
+
+export function swapPlainObjectKeysWithValues<K extends Keyable, V extends Keyable>(input: Record<K, V>): Record<V, K> {
+  const result: Record<V, K> = {} as Record<V, K>;
+
+  for (const key in input) {
+    const value = input[key];
+    result[value] = key;
+  }
+
+  return result;
+}
