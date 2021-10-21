@@ -72,7 +72,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
           </UIParticipants>
         </UIHead>
 
-        <ScrollableMessages key={topic.id} ref={scrollerRef as never}>
+        <ScrollableMessages ref={scrollerRef as never}>
           <AnimateSharedLayout>
             <MessagesFeed messages={messages} />
             {/* TODO: Replace with events */}

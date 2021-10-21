@@ -1,7 +1,7 @@
 import { MotionProps } from "framer-motion";
 import { action } from "mobx";
 import React, { useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -40,6 +40,7 @@ interface Props extends MotionProps {
 
 export const Message = styledObserver<Props>(
   ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
+    const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
@@ -105,8 +106,25 @@ export const Message = styledObserver<Props>(
     };
     const messageActionsOptions = getMessageActionsOptions();
 
+    useIsomorphicLayoutEffect(
+      action(() => {
+        const { topic, isUnread } = message;
+        if (!isUnread || topic?.messages.last?.id === message.id || !rootRef.current || !topicContext) {
+          return;
+        }
+        const isOldestUnread = !topic?.unreadMessages.query(
+          (otherMessage) => new Date(otherMessage.created_at) < new Date(message.created_at)
+        ).hasItems;
+        if (!isOldestUnread) {
+          return;
+        }
+        topicContext.firstUnreadMessageElement = rootRef.current;
+      }),
+      []
+    );
+
     return (
-      <UIHolder id={message.id}>
+      <UIHolder id={message.id} ref={rootRef}>
         <MessageLikeContent
           className={className}
           tools={
