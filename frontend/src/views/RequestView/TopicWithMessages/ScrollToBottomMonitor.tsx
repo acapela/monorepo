@@ -7,7 +7,6 @@ import styled from "styled-components";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { useElementEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
-import { select } from "~shared/sharedState";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
@@ -27,7 +26,7 @@ const SCROLL_BOTTOM_TOLERANCE = 10;
  */
 const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
   const topicContext = useTopicStoreContext();
-  const firstUnreadMessageElement = select(() => topicContext?.firstUnreadMessageElement);
+  const firstUnreadMessageElement = topicContext?.firstUnreadMessageElement;
 
   const monitorRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = useRef(true);
