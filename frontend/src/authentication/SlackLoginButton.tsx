@@ -2,6 +2,7 @@ import { signIn } from "next-auth/react";
 import React, { ReactNode } from "react";
 
 import { Button } from "~ui/buttons/Button";
+import { SlackLogo } from "~ui/icons/logos/SlackLogo";
 
 export const SlackLoginButton = ({
   className,
@@ -15,7 +16,7 @@ export const SlackLoginButton = ({
   }
 
   return (
-    <Button kind="secondary" className={className} onClick={() => handleLogin()} isLoading={false}>
+    <Button kind="secondary" className={className} onClick={() => handleLogin()} isLoading={false} icon={<SlackLogo />}>
       {children || "Log in with Slack"}
     </Button>
   );
