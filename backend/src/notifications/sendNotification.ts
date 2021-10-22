@@ -1,9 +1,10 @@
+import * as Sentry from "@sentry/node";
+
 import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
 import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { Sentry } from "~shared/sentry";
 
 async function trySendSlackNotification(teamId: string, user: User, text: string) {
   const [token, slackUserId] = await Promise.all([fetchTeamBotToken(teamId), findSlackUserId(teamId, user)]);

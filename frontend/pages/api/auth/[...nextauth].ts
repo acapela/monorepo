@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
@@ -10,7 +11,6 @@ import { assert } from "~shared/assert";
 import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
-import { Sentry } from "~shared/sentry";
 import { Maybe } from "~shared/types";
 
 // Fail quickly in case of missing env variables
