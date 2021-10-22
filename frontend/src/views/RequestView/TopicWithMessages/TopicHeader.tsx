@@ -9,7 +9,7 @@ import { UserEntity } from "~frontend/clientdb/user";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconMoreHoriz } from "~ui/icons";
+import { IconCheck, IconEdit, IconLock, IconMoreHoriz, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
@@ -68,14 +68,17 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
             {
               label: "Rename",
               onSelect: () => handleTopicRename(),
+              icon: <IconEdit />,
             },
             {
               label: topic.isClosed ? "Reopen" : "Close",
               onSelect: () => (topic.isClosed ? handleReopenTopic() : handleCloseRequest()),
+              icon: topic.isClosed ? <IconUndo /> : <IconCheck />,
             },
             {
               label: topic.isArchived ? "Unarchive" : topic.isClosed ? "Archive" : "Close and Archive",
               onSelect: () => (topic.isArchived ? handleTopicUnarchive() : handleTopicArchive()),
+              icon: topic.isArchived ? <IconUnlock /> : <IconLock />,
             },
           ]}
         >
