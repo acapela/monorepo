@@ -1,8 +1,7 @@
 import "focus-visible";
 
 // Polyfill for :focus-visible pseudo-selector.
-import * as Sentry from "@sentry/nextjs";
-import { ErrorBoundary } from "@sentry/nextjs";
+import * as Sentry from "@sentry/react";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
@@ -29,10 +28,9 @@ import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
-if (["staging", "production"].includes(stage)) {
+if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
   Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     environment: stage,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
@@ -67,7 +65,7 @@ export default function App({
   const sessionFromServer = useConst(() => session);
 
   return (
-    <ErrorBoundary
+    <Sentry.ErrorBoundary
       fallback={
         <UIErrorBox>
           <h1>It's not you, it's us!</h1>
@@ -98,7 +96,7 @@ export default function App({
           </ApolloProvider>
         </MotionConfig>
       </RequiredSessionProvider>
-    </ErrorBoundary>
+    </Sentry.ErrorBoundary>
   );
 }
 

@@ -1,4 +1,4 @@
-import { ErrorBoundary } from "@sentry/nextjs";
+import { ErrorBoundary } from "@sentry/react";
 import { JSONContent } from "@tiptap/core";
 import styled from "styled-components";
 
