@@ -1,4 +1,4 @@
-import { ErrorBoundary } from "@sentry/nextjs";
+import { ErrorBoundary } from "@sentry/react";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 

@@ -10,10 +10,9 @@ const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
 
 const stage = process.env.STAGE;
-if (["staging", "production"].includes(stage)) {
+if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
     environment: stage,
   });
 } else {

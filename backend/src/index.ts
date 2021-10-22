@@ -8,10 +8,9 @@ import { isDev } from "~shared/dev";
 
 import { getDevPublicTunnel } from "./localtunnel";
 
-if (["staging", "production"].includes(process.env.STAGE)) {
+if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
     environment: process.env.STAGE,
   });
 }
