@@ -57,6 +57,8 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
     topic.update({ archived_at: null });
   });
 
+  const hasPendingTasks = topic.tasks.query({ isDone: false }).hasItems;
+
   return (
     <UIHolder>
       <UITitle>{topic.name}</UITitle>
@@ -82,7 +84,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
             },
           ]}
         >
-          <IconButton kind="secondary" icon={<IconMoreHoriz />} />
+          <IconButton kind={hasPendingTasks ? "secondary" : "primary"} icon={<IconMoreHoriz />} />
         </PopoverMenuTrigger>
       </UITopicTools>
     </UIHolder>
