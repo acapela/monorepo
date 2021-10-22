@@ -33,54 +33,9 @@ export type AnalyticsEventsMap = {
   // can be ignored for now
   "Trial Ended": { teamName: string };
 
-  // General events
-
-  "Toggled Notifications Center": { isOpen: boolean };
-  "Clicked Notification Link": void;
-  "Marked Notification As Read": void;
-  "Marked Notification As Unread": void;
-  "Opened Search Bar": void;
-  "Used Search Bar": { searchTerm: string };
-
   // Calendar related events
 
   "Selected Calendar Date": { newDate: Date };
-
-  // Space related events
-
-  "Created Space": { spaceName: string };
-  // current user or when current user adds someone else
-  "Joined Space": { spaceId: string; userId: string };
-  "Left Space": { spaceId: string; userId: string };
-  "Deleted Space": { spaceId: string };
-  "Renamed Space": { spaceId: string; newSpaceName: string; oldSpaceName: string };
-
-  // Room related events
-
-  "Toggled Closed Rooms": { isShowingClosedRooms: boolean };
-  // current user or when current user adds someone else
-  "Created Room": {
-    origin: "create-modal" | "calendar" | "slack-command" | "slack-shortcut" | "slack-message-action";
-    roomId: string;
-    roomName: string;
-    roomDeadline: Date;
-    spaceId: string;
-    numberOfInitialMembers: number;
-    isRecurring: boolean;
-  };
-  "Joined Room": { roomId: string; userId: string };
-  "Left Room": { roomId: string; userId: string };
-  "Invited To Room": { roomId: string; userEmail: string };
-  "Deleted Room Invitation": { roomId: string; invitationId: string };
-  "Updated Room Deadline": { roomId: string; newDeadline: Date; oldDeadline: Date };
-  "Reopened Room": { roomId: string };
-  "Closed Room": { roomId: string; hasRoomOpenTopics: boolean };
-  "Deleted Room": { roomId: string };
-  "Renamed Room": { roomId: string; newRoomName: string; oldRoomName: string };
-  "Made Room Public": { roomId: string };
-  "Made Room Private": { roomId: string };
-  "Made Room Recurring": { roomId: string; intervalInDays: number };
-  "Made Room Non-recurring": { roomId: string };
 
   // Topic related events
 
