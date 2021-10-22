@@ -10,6 +10,7 @@ export function LoginOptionsView({ signupEmail }: LoginOptionsViewProps) {
   return (
     <>
       <GoogleLoginButton signupEmail={signupEmail} />
+      &nbsp;
       <SlackLoginButton />
       &nbsp;
     </>
