@@ -25,8 +25,6 @@ const darkYellow = color("#FFB700");
 
 const blue = color("#0099FF");
 
-const purple = color("#8855FF");
-
 export const colors = {
   primary,
   text: black,
