@@ -1,6 +1,7 @@
 process.env.APP = "frontend";
 process.env.NEXT_PUBLIC_STAGE = process.env.STAGE;
 process.env.NEXT_PUBLIC_SENTRY_RELEASE = process.env.SENTRY_RELEASE;
+process.env.NEXT_PUBLIC_SENTRY_DSN = process.env.SENTRY_DSN;
 process.env.NEXT_PUBLIC_BUILD_DATE = process.env.BUILD_DATE || "unknown";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
@@ -82,7 +83,7 @@ const envVariables = (nextConfig = {}) => {
       // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be available. (this follows official docs)
       const allEnvVariableNames = Object.keys(allEnvVariablesMap);
       const clientSideEnvVarNames = allEnvVariableNames.filter(
-        (varName) => varName === "SENTRY_DSN" || varName.startsWith("NEXT_PUBLIC_")
+        (varName) => varName === varName.startsWith("NEXT_PUBLIC_")
       );
 
       // Populate node process env variables from parsed file so webpack plugin will 'see' those vars.
