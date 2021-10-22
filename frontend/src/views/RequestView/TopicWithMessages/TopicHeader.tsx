@@ -1,12 +1,16 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import React from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { UserEntity } from "~frontend/clientdb/user";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { Button } from "~ui/buttons/Button";
+import { openUIPrompt } from "~frontend/utils/prompt";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconMoreHoriz } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
@@ -22,6 +26,10 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
   }
 
   const handleReopenTopic = action(() => {
+    if (topic.isArchived) {
+      handleTopicUnarchive();
+    }
+
     topic.update({
       closed_at: null,
       closed_by_user_id: null,
@@ -30,20 +38,49 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
     trackEvent("Reopened Topic", { topicId: topic.id });
   });
 
+  const handleTopicRename = action(async () => {
+    const name = await openUIPrompt({ title: "Rename", initialValue: topic.name });
+
+    if (name && name.trim()?.length > 0 && topic.name !== name) {
+      topic.update({ name });
+    }
+  });
+
+  const handleTopicArchive = action(async () => {
+    if (!topic.isClosed) {
+      handleCloseRequest();
+    }
+    topic.update({ archived_at: new Date().toISOString() });
+  });
+
+  const handleTopicUnarchive = action(async () => {
+    topic.update({ archived_at: null });
+  });
+
   return (
     <UIHolder>
       <UITitle>{topic.name}</UITitle>
       <UITopicTools>
         <AvatarList users={topic.participants.all} maxVisibleCount={5} />
         {/* TODO: Include invite button */}
-        <Button
-          kind="secondary"
-          tooltip={topic.isClosed ? "Reopen Request" : "Close request for all participants"}
-          onClick={() => (topic.isClosed ? handleReopenTopic() : handleCloseRequest())}
+        <PopoverMenuTrigger
+          options={[
+            {
+              label: "Rename",
+              onSelect: () => handleTopicRename(),
+            },
+            {
+              label: topic.isClosed ? "Reopen" : "Close",
+              onSelect: () => (topic.isClosed ? handleReopenTopic() : handleCloseRequest()),
+            },
+            {
+              label: topic.isArchived ? "Unarchive" : topic.isClosed ? "Archive" : "Close and Archive",
+              onSelect: () => (topic.isArchived ? handleTopicUnarchive() : handleTopicArchive()),
+            },
+          ]}
         >
-          {!topic.isClosed && <>Close Request</>}
-          {topic.isClosed && <>Reopen Request</>}
-        </Button>
+          <IconButton kind="secondary" icon={<IconMoreHoriz />} />
+        </PopoverMenuTrigger>
       </UITopicTools>
     </UIHolder>
   );
