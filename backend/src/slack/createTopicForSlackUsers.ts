@@ -4,9 +4,8 @@ import { parseAndTransformToTipTapJSON } from "~backend/src/slack/slackMarkdown/
 import { findUserBySlackId } from "~backend/src/slack/utils";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
+import { MENTION_TYPE_KEY, getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 
@@ -55,7 +54,7 @@ type UserWithRequest = { userId: string; requestType: MentionType; slackUserId: 
 
 type SlackUserIdWithRequestType = { slackUserId: string; requestType: MentionType };
 
-export async function findOrCreateUsers({
+export async function findOrInviteUsers({
   slackToken,
   teamId,
   invitingUserId,
@@ -75,7 +74,6 @@ export async function findOrCreateUsers({
   );
   const userIds = usersForSlackIds
     .filter((item) => item.user)
-
     .map(
       (item) =>
         ({
@@ -105,6 +103,48 @@ export async function findOrCreateUsers({
   return [...userIds, ...newUserIds];
 }
 
+function transformMessage(rawMessage: string, slackTeamId: string, usersWithRequestType: UserWithRequest[]) {
+  const mentionedUsersBySlackId = Object.fromEntries(
+    usersWithRequestType.map((u) => [
+      u.slackUserId,
+      {
+        type: u.requestType,
+        userId: u.userId,
+      },
+    ])
+  );
+
+  const messageContent = parseAndTransformToTipTapJSON(rawMessage, {
+    slackTeamId,
+    mentionedUsersBySlackId,
+  });
+  const alreadyMentionedUsers = new Set(
+    getUniqueRequestMentionDataFromContent(messageContent).map((mentionData) => mentionData.userId)
+  );
+  const extraMentionNodes = usersWithRequestType
+    .filter(({ userId }) => !alreadyMentionedUsers.has(userId))
+    .flatMap(({ userId, requestType }) => {
+      const data: EditorMentionData = { userId, type: requestType };
+      return [
+        { type: MENTION_TYPE_KEY, attrs: { data } },
+        { type: "text", text: " " },
+      ];
+    });
+  if (extraMentionNodes.length) {
+    messageContent.content.push(
+      {
+        type: "paragraph",
+        content: [],
+      },
+      {
+        type: "paragraph",
+        content: extraMentionNodes,
+      }
+    );
+  }
+  return messageContent;
+}
+
 export async function createTopicForSlackUsers({
   token,
   teamId,
@@ -118,58 +158,32 @@ export async function createTopicForSlackUsers({
   teamId: string;
   ownerId: string;
   slackTeamId: string;
-  topicName?: string;
+  topicName: string;
   rawTopicMessage: string;
   slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
 }) {
-  const usersWithRequestType = await findOrCreateUsers({
+  const usersWithRequestType = await findOrInviteUsers({
     slackToken: token,
     teamId,
     invitingUserId: ownerId,
     slackUserIdsWithRequestType,
   });
 
-  const mentionedUsersBySlackId = Object.assign(
-    {},
-    ...usersWithRequestType.map((u) => ({
-      [u.slackUserId]: {
-        type: u.requestType,
-        userId: u.userId,
-      },
-    }))
-  );
-
-  const topicMessage = parseAndTransformToTipTapJSON(rawTopicMessage, {
-    slackTeamId,
-    mentionedUsersBySlackId,
-  });
-  topicMessage.content.push({
-    type: "paragraph",
-    content: usersWithRequestType.flatMap(({ userId, requestType }) => {
-      const data: EditorMentionData = { userId, type: requestType };
-      return [
-        { type: MENTION_TYPE_KEY, attrs: { data } },
-        { type: "text", text: " " },
-      ];
-    }),
-  });
-  const topicMessagePlainText = convertMessageContentToPlainText(topicMessage);
-  const finalTopicName =
-    topicName || truncateTextWithEllipsis(topicMessagePlainText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
-
+  const messageContent = transformMessage(rawTopicMessage, slackTeamId, usersWithRequestType);
+  const messageContentText = convertMessageContentToPlainText(messageContent);
   return await db.topic.create({
     data: {
       team_id: teamId,
-      name: finalTopicName,
-      slug: await slugify(finalTopicName),
+      name: topicName,
+      slug: await slugify(topicName),
       index: "a",
       owner_id: ownerId,
       message: {
         create: {
           type: "TEXT",
           user_id: ownerId,
-          content: topicMessage,
-          content_text: topicMessagePlainText,
+          content: messageContent,
+          content_text: messageContentText,
           task: {
             createMany: {
               data: usersWithRequestType.map((item) => ({
