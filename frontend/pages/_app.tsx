@@ -28,9 +28,9 @@ import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
-if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+if (process.env.SENTRY_DSN) {
   Sentry.init({
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    dsn: process.env.SENTRY_DSN,
     environment: stage,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
