@@ -10,6 +10,7 @@ import { getUnfinishedTopicTaskWithEarliestDueDate } from "./utils";
 
 interface Props {
   topics: TopicEntity[];
+  showArchived?: boolean;
 }
 
 function isTopicUrgent(topic: TopicEntity) {
@@ -40,24 +41,27 @@ function prepareTopicsGroups(topics: TopicEntity[]) {
   const [urgentTopics, notUrgentTopics] = groupByFilter(topics, isTopicUrgent);
   const [newTopics, notNewTopics] = groupByFilter(notUrgentTopics, (topic) => topic.isNew);
   const [openTopics, closedTopics] = groupByFilter(notNewTopics, (topic) => !topic.isClosed);
+  const [recentlyClosed, archived] = groupByFilter(closedTopics, (topic) => !topic.isArchived);
 
   return {
     urgentTopics,
     newTopics,
     openTopics,
-    closedTopics,
+    recentlyClosed,
+    archived,
   };
 }
 
-export const RequestFeedGroups = observer(({ topics }: Props) => {
-  const { urgentTopics, newTopics, openTopics, closedTopics } = prepareTopicsGroups(topics);
+export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
+  const { urgentTopics, newTopics, openTopics, recentlyClosed, archived } = prepareTopicsGroups(topics);
 
   return (
     <UIHolder>
       {!!urgentTopics.length && <RequestsGroup topics={urgentTopics} groupName="Requires Attention" />}
       {!!newTopics.length && <RequestsGroup topics={newTopics} groupName="New" />}
       {!!openTopics.length && <RequestsGroup topics={openTopics} groupName="Open" />}
-      {!!closedTopics.length && <RequestsGroup topics={closedTopics} groupName="Closed" />}
+      {!!recentlyClosed.length && <RequestsGroup topics={recentlyClosed} groupName="Closed" />}
+      {showArchived && !!archived.length && <RequestsGroup topics={archived} groupName="Archived" />}
     </UIHolder>
   );
 });
