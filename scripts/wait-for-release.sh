@@ -14,6 +14,11 @@ if [ -z "${2:-}" ]; then
 fi
 version=$2
 
+if [[ "$stage" == "staging" ]]; then
+  echo "not waiting for release on $stage"
+  exit
+fi
+
 endpoint="app-staging.acape.la"
 if [[ "$stage" == "production" ]]; then
     endpoint="app.acape.la"
