@@ -23,8 +23,6 @@ const lightGray = color("#F9FAFC", {
 
 const darkYellow = color("#FFB700");
 
-const teal = color("#5BC6D8");
-
 const blue = color("#0099FF");
 
 const purple = color("#8855FF");
@@ -72,6 +70,6 @@ export const colors = {
     action: primary,
     feedback: darkYellow,
     read: blue,
-    observe: black,
+    observe: black.opacity(0.5),
   },
 };
