@@ -1,11 +1,14 @@
-import { test as rootTest } from "@playwright/test";
+import { Page, test as rootTest } from "@playwright/test";
 import { get } from "lodash";
 
 import { domain } from "./constants";
 import type { TestUser, setupDatabase } from "./db";
-import { isSentryStoreURL } from "./utils";
+import { createNetworkListener, isSentryStoreURL } from "./utils";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
+
+const wrapPageKeys = <K extends keyof Page>(keys: K[]) => keys;
+const INTERCEPT_PAGE_KEYS = wrapPageKeys(["click", "fill", "waitForSelector"]);
 
 export const test = rootTest.extend<{
   db: Await<ReturnType<typeof setupDatabase>>["data"];
@@ -16,7 +19,25 @@ export const test = rootTest.extend<{
       (url) => isSentryStoreURL(url),
       (route) => route.abort()
     );
-    await use(page);
+
+    const networkListener = await createNetworkListener(page);
+
+    await use(
+      new Proxy(page, {
+        get(target, key, receiver) {
+          if (INTERCEPT_PAGE_KEYS.includes(key as never)) {
+            const typedKey = key as typeof INTERCEPT_PAGE_KEYS[number];
+            const fn = target[typedKey];
+            return async (...args: Parameters<typeof fn>) => {
+              await networkListener.waitForIdle();
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              return (fn as any).apply(receiver, args);
+            };
+          }
+          return (target as never)[key];
+        },
+      })
+    );
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async db({ page }, use) {
