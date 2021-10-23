@@ -2,7 +2,7 @@ import "focus-visible";
 
 // Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/react";
-import { AnimatePresence, MotionConfig } from "framer-motion";
+import { AnimateSharedLayout, MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
 import { AppContext, AppProps } from "next/app";
@@ -19,11 +19,11 @@ import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import { ErrorView } from "~frontend/views/ErrorView";
 import { useConst } from "~shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
@@ -66,35 +66,28 @@ export default function App({
 
   return (
     <Sentry.ErrorBoundary
-      fallback={
-        <UIErrorBox>
-          <h1>It's not you, it's us!</h1>
-          <p>An error occurred. We will look into it.</p>
-        </UIErrorBox>
-      }
+      fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
     >
       <BuiltInStyles />
       <CommonMetadata />
       <RequiredSessionProvider session={sessionFromServer}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
-            <AppThemeProvider theme={theme}>
-              <CurrentTeamProvider>
-                <ClientDbProvider>
-                  <AnalyticsManager />
-                  <PromiseUIRenderer />
-                  <TooltipsRenderer />
-                  <ToastsRenderer />
-                  <AnimatePresence>
-                    <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                      {renderWithPageLayout(Component, pageProps)}
-                    </PresenceAnimator>
-                  </AnimatePresence>
-                </ClientDbProvider>
-              </CurrentTeamProvider>
-            </AppThemeProvider>
-          </ApolloProvider>
-        </MotionConfig>
+        <AnimateSharedLayout type="crossfade">
+          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+            <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
+              <AppThemeProvider theme={theme}>
+                <CurrentTeamProvider>
+                  <ClientDbProvider>
+                    <AnalyticsManager />
+                    <PromiseUIRenderer />
+                    <TooltipsRenderer />
+                    <ToastsRenderer />
+                    {renderWithPageLayout(Component, pageProps)}
+                  </ClientDbProvider>
+                </CurrentTeamProvider>
+              </AppThemeProvider>
+            </ApolloProvider>
+          </MotionConfig>
+        </AnimateSharedLayout>
       </RequiredSessionProvider>
     </Sentry.ErrorBoundary>
   );
