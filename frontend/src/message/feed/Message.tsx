@@ -34,10 +34,11 @@ interface Props extends MotionProps {
   isBundledWithPreviousMessage?: boolean;
   isReadonly?: boolean;
   className?: string;
+  contentLayoutId?: string;
 }
 
 export const Message = styledObserver<Props>(
-  ({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
+  ({ message, className, isReadonly, isBundledWithPreviousMessage = false, contentLayoutId }) => {
     const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
@@ -145,7 +146,7 @@ export const Message = styledObserver<Props>(
             {!isInEditMode && (
               <UIMessageContent>
                 {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
-                <MessageText content={message.content} />
+                <MessageText content={message.content} animationLayoutId={contentLayoutId} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />
                 <MessageReactions message={message} />

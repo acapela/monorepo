@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
 
+import { layoutAnimations } from "~frontend/animations/layout";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { niceFormatDate } from "~shared/dates/format";
 import { theme } from "~ui/theme";
@@ -61,12 +62,14 @@ export const MessagesFeed = observer(({ messages, isReadonly }: Props) => {
   return (
     <UIHolder ref={holderRef}>
       {messages.map((message, index) => {
+        const isFirstMessage = index === 0;
         const previousMessage = messages[index - 1] ?? null;
 
         return (
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
             <Message
+              contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
               isReadonly={isReadonly}
               message={message}
               key={message.id}

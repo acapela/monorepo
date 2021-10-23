@@ -1,10 +1,10 @@
-import { AnimateSharedLayout } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
@@ -57,7 +57,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
     <TopicStoreContext>
       <UIHolder>
         <UIHead>
-          <UITitle>{topic.name}</UITitle>
+          <UITitle layoutId={layoutAnimations.newTopic.title(topic.id)}>{topic.name}</UITitle>
           <UIParticipants>
             <AvatarList users={topic.participants.all} maxVisibleCount={5} />
             {/* TODO: Include invite button */}
@@ -73,11 +73,9 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         </UIHead>
 
         <ScrollableMessages ref={scrollerRef as never}>
-          <AnimateSharedLayout>
-            <MessagesFeed messages={messages} />
-            {/* TODO: Replace with events */}
-            {topic && isClosed && <TopicSummaryMessage topic={topic} />}
-          </AnimateSharedLayout>
+          <MessagesFeed messages={messages} />
+          {/* TODO: Replace with events */}
+          {topic && isClosed && <TopicSummaryMessage topic={topic} />}
         </ScrollableMessages>
 
         {!isClosed && (
@@ -125,7 +123,7 @@ const UIHead = styled.div`
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
 
-const UITitle = styled.h3`
+const UITitle = styled(PageLayoutAnimator)`
   ${theme.typo.pageTitle};
 `;
 
