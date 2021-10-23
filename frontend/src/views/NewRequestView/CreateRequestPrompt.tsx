@@ -1,16 +1,17 @@
+import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
 import { CurvedArrow } from "~ui/icons/CurvedArrow";
 import { theme } from "~ui/theme";
 
-interface Props {
+interface Props extends HTMLMotionProps<"div"> {
   className?: string;
 }
 
-export const CreateRequestPrompt = styled(function CreateTopicPrompt({ className }: Props) {
+export const CreateRequestPrompt = styled(function CreateTopicPrompt(props: Props) {
   return (
-    <UIHolder className={className}>
+    <UIHolder {...props}>
       <UICreateATopicLabel>Create a Request</UICreateATopicLabel>
       <UICurvedArrowHolder>
         <CurvedArrow />
@@ -19,7 +20,7 @@ export const CreateRequestPrompt = styled(function CreateTopicPrompt({ className
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled(motion.div)<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
