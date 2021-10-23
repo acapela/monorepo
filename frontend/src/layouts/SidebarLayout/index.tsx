@@ -12,11 +12,7 @@ interface Props {
 }
 
 export const SidebarLayout = observer(({ children }: Props) => {
-  const canRender = useAppRedirects();
-
-  if (!canRender) {
-    return null;
-  }
+  useAppRedirects();
 
   return (
     <UIHolder>
