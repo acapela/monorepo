@@ -3,30 +3,23 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
-import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PopPresenceAnimator } from "~ui/animations";
-import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
+import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
   const user = useAssertCurrentUser();
   const messages = topic.messages.all;
-
-  function handleCloseRequest() {
-    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: user.id });
-  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
@@ -44,33 +37,10 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
   const scrollerRef = useRef<ScrollHandle>();
 
-  const handleReopenTopic = action(() => {
-    topic.update({
-      closed_at: null,
-      closed_by_user_id: null,
-      closing_summary: null,
-    });
-    trackEvent("Reopened Topic", { topicId: topic.id });
-  });
-
   return (
     <TopicStoreContext>
       <UIHolder>
-        <UIHead>
-          <UITitle layoutId={layoutAnimations.newTopic.title(topic.id)}>{topic.name}</UITitle>
-          <UIParticipants>
-            <AvatarList users={topic.participants.all} maxVisibleCount={5} />
-            {/* TODO: Include invite button */}
-            <Button
-              kind="secondary"
-              tooltip={isClosed ? "Reopen Request" : "Close request for all participants"}
-              onClick={() => (isClosed ? handleReopenTopic() : handleCloseRequest())}
-            >
-              {!isClosed && <>Close Request</>}
-              {isClosed && <>Reopen Request</>}
-            </Button>
-          </UIParticipants>
-        </UIHead>
+        <TopicHeader topic={topic} user={user} />
 
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed messages={messages} />
@@ -111,28 +81,6 @@ const UIHolder = styled.div`
   align-items: center;
   min-height: 0;
   flex-grow: 1;
-`;
-
-const UIHead = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
-`;
-
-const UITitle = styled(PageLayoutAnimator)`
-  ${theme.typo.pageTitle};
-`;
-
-const UIParticipants = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  ${theme.spacing.horizontalActions.asGap}
-  ${theme.typo.pageTitle};
 `;
 
 const UIFooterContainer = styled(PopPresenceAnimator)`

@@ -118,8 +118,12 @@ jobs:
           cd backend/
           ./start-ci.sh
           cd -
+      - uses: actions/cache@v2
+        with:
+          path: frontend/.next
+          key: ${{ runner.os }}-next-${{ github.sha }}
       - name: Build frontend
-        run: CI_BUILD=1 yarn run frontend:build
+        run: yarn run frontend:build
       - name: Start frontend
         run: |
           cd frontend/
@@ -159,6 +163,11 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+        if: steps.semrel.outputs.version != ''
+      - uses: actions/cache@v2
+        with:
+          path: frontend/.next
+          key: ${{ runner.os }}-next-${{ github.sha }}
         if: steps.semrel.outputs.version != ''
       - run: yarn
         if: steps.semrel.outputs.version != ''

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { theme } from "~ui/theme";
 
 import { FieldWithLabel } from "./FieldWithLabel";
 
@@ -27,19 +28,28 @@ export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(funct
   const shouldPushLabel = assertedValue.length > 0;
 
   return (
-    <FieldWithLabel
-      onClick={() => {
-        inputRef.current?.focus();
-      }}
-      pushLabel={shouldPushLabel}
-      icon={icon}
-      hasError={!!errorMessage}
-      label={placeholder}
-    >
-      <TextInputElem ref={inputRef} {...regularProps} onChange={combineCallbacks(props.onChange, handleChangeText)} />
-    </FieldWithLabel>
+    <UIHolder>
+      <FieldWithLabel
+        onClick={() => {
+          inputRef.current?.focus();
+        }}
+        pushLabel={shouldPushLabel}
+        icon={icon}
+        hasError={!!errorMessage}
+        label={placeholder}
+      >
+        <TextInputElem ref={inputRef} {...regularProps} onChange={combineCallbacks(props.onChange, handleChangeText)} />
+      </FieldWithLabel>
+      <UIErrorMessage>{errorMessage}</UIErrorMessage>
+    </UIHolder>
   );
 });
+
+const UIHolder = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
 
 const TextInputElem = styled(motion.input)<{}>`
   padding: 16px 16px 16px 0;
@@ -48,4 +58,10 @@ const TextInputElem = styled(motion.input)<{}>`
   box-sizing: border-box;
   outline: none;
   background: transparent;
+`;
+
+const UIErrorMessage = styled.div<{}>`
+  height: 1rem;
+  ${theme.typo.label}
+  ${theme.colors.status.danger.asColor}
 `;

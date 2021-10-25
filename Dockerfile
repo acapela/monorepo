@@ -16,8 +16,6 @@ ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
 
 COPY ./ ./
 
-RUN yarn frontend:build
-
 ENV BACKEND_PORT=1337
 EXPOSE 1337
 

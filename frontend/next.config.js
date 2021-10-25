@@ -39,6 +39,20 @@ const createTsPackagesPlugin = () => {
   ]);
 };
 
+function tryGetDotEnvVars(filePath) {
+  if (fs.existsSync(filePath)) {
+    if (fs.statSync(filePath).isFile()) {
+      const envFileRawContent = fs.readFileSync(filePath);
+      return dotenv.parse(envFileRawContent);
+    } else {
+      console.warn(`.env file path provided in next.config.js is not a file.`);
+    }
+  } else {
+    console.warn(`Not able to load .env file path provided in next.config.js envVariables plugin`);
+  }
+  return {};
+}
+
 /**
  * This plugin allows passing variables from .env file into server/client runtime using process.env.VAR_NAME.
  *
@@ -60,23 +74,7 @@ const envVariables = (nextConfig = {}) => {
       }
       // This function is called twice, once for server side and once for client side webpack.
       const isServer = options.isServer;
-      const envFilePath = options.config.envFilePath;
-
-      if (!fs.existsSync(envFilePath)) {
-        console.warn(`Not able to load .env file path provided in next.config.js envVariables plugin`);
-        return config;
-      }
-
-      const fileStats = fs.statSync(envFilePath);
-
-      if (!fileStats.isFile()) {
-        console.warn(`.env file path provided in next.config.js is not a file.`);
-        return config;
-      }
-
-      // Read and parse .env file from provided path
-      const envFileRawContent = fs.readFileSync(envFilePath);
-      const allEnvVariablesMap = dotenv.parse(envFileRawContent);
+      const allEnvVariablesMap = { ...tryGetDotEnvVars(options.config.envFilePath), ...process.env };
 
       // Prepare list of var names.
       // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be available. (this follows official docs)
