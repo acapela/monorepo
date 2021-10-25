@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { Block, KnownBlock } from "@slack/bolt";
+import { pick } from "lodash";
 
 import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
@@ -21,29 +22,23 @@ async function trySendSlackNotification(teamId: string, user: User, payload: str
   });
 }
 
+type NotificationMessage = {
+  email: {
+    subject: string;
+    html: string;
+  };
+  slack: string | (KnownBlock | Block)[];
+};
+
 /*
   NOTE: Don't await in crucial business logic flows.
   This method interacts with 3rd party providers over network.
   There's a higher risk of timeout and errors present.
 */
-export async function sendNotificationPerPreference(
-  user: User,
-  teamId: string,
-  message: {
-    email: {
-      subject: string;
-      html: string;
-    };
-    slack: string | (KnownBlock | Block)[];
-  }
-): Promise<unknown> {
-  const teamMember = assertDefined(
-    await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
-    "missing team_member"
-  );
-  return Promise.all([
-    teamMember.notify_slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
-    teamMember.notify_email
+const sendNotification = async (user: User, teamId: string, message: Partial<NotificationMessage>): Promise<unknown> =>
+  Promise.all([
+    message.slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
+    message.email
       ? sendEmail({
           from: DEFAULT_NOTIFICATION_EMAIL,
           subject: message.email.subject,
@@ -52,4 +47,22 @@ export async function sendNotificationPerPreference(
         })
       : undefined,
   ]).catch((error) => Sentry.captureException(error));
+
+export async function sendNotificationIgnoringPreference(user: User, teamId: string, message: NotificationMessage) {
+  return sendNotification(user, teamId, message);
+}
+
+export async function sendNotificationPerPreference(user: User, teamId: string, message: NotificationMessage) {
+  const teamMember = assertDefined(
+    await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
+    "missing team_member"
+  );
+  const notificationChannels: (keyof NotificationMessage)[] = [];
+  if (teamMember.notify_email) {
+    notificationChannels.push("email");
+  }
+  if (teamMember.notify_slack) {
+    notificationChannels.push("slack");
+  }
+  return sendNotification(user, teamId, pick(message, ...notificationChannels));
 }

@@ -1,5 +1,8 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
+import {
+  sendNotificationIgnoringPreference,
+  sendNotificationPerPreference,
+} from "~backend/src/notifications/sendNotification";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
@@ -16,7 +19,7 @@ async function sendNewUserInviteNotification(user: User, team: Team, inviter: Us
     })
   )}`;
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
-  await sendNotificationPerPreference(user, team.id, {
+  await sendNotificationIgnoringPreference(user, team.id, {
     email: {
       subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
       html: [
