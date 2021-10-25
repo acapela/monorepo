@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { createLengthValidator } from "~frontend/../../shared/validation/inputValidation";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { UserEntity } from "~frontend/clientdb/user";
@@ -39,11 +40,13 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
   });
 
   const handleTopicRename = action(async () => {
-    const name = await openUIPrompt({ title: "Rename", initialValue: topic.name });
+    const name = await openUIPrompt({
+      title: "Rename",
+      initialValue: topic.name,
+      validateInput: createLengthValidator("Topic name", 3),
+    });
 
-    if (name && name.trim()?.length > 0 && topic.name !== name) {
-      topic.update({ name });
-    }
+    topic.update({ name: name ?? undefined });
   });
 
   const handleTopicArchive = action(async () => {

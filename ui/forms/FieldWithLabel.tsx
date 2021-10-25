@@ -21,14 +21,14 @@ export interface Props {
   cursorType?: CursorType;
 }
 export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input" },
+  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
   forwardedRef
 ) {
   const id = useId();
 
   return (
     <AnimateSharedLayout>
-      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType}>
+      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -55,7 +55,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
   );
 });
 
-const UIHolder = styled.div<{ cursorType: CursorType }>`
+const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -65,7 +65,14 @@ const UIHolder = styled.div<{ cursorType: CursorType }>`
   width: 100%;
 
   ${theme.colors.layout.background.asBg};
-  border: 1px solid ${theme.colors.layout.background.border};
+  ${(props) =>
+    props.hasError
+      ? css`
+          border: 1px solid ${theme.colors.status.danger.value};
+        `
+      : css`
+          border: 1px solid ${theme.colors.layout.background.border};
+        `}
   box-sizing: border-box;
   ${theme.radius.secondaryItem};
 
