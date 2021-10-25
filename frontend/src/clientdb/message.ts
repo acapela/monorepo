@@ -68,6 +68,13 @@ export const messageEntity = defineEntity<MessageFragment>({
 
   const tasks = getEntity(taskEntity).query({ message_id: message.id });
 
+  const lastUnreadInTheSameTopic = currentUserId
+    ? getEntity(lastSeenMessageEntity).query({
+        topic_id: message.topic_id,
+        user_id: currentUserId,
+      })
+    : null;
+
   const connections = {
     get topic() {
       return getEntity(topicEntity).findById(message.topic_id);
@@ -87,36 +94,17 @@ export const messageEntity = defineEntity<MessageFragment>({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return max(tasks.all.map((task) => task.lastActivityDate))!;
     },
-    // Last activity performed by current user
-    get lastOwnActivityDate(): Date | null {
-      const messageOwnUpdateDate = connections.isOwn ? new Date(message.updated_at) : null;
-
-      if (!tasks.hasItems) {
-        return messageOwnUpdateDate;
-      }
-
-      const ownTasks = tasks.query({ isAssignedToSelf: true }).all;
-
-      if (!ownTasks.length) {
-        return messageOwnUpdateDate;
-      }
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return max(ownTasks.map((task) => task.lastOwnActivityDate))!;
-    },
     get isUnread() {
       if (!currentUserId || message.user_id == currentUserId) return false;
 
-      const lastUnreadInTheSameTopic = getEntity(lastSeenMessageEntity).query({
-        topic_id: message.topic_id,
-        user_id: currentUserId,
-      }).first;
+      const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
 
-      if (!lastUnreadInTheSameTopic) return true;
+      if (!lastUnreadMessage) return true;
 
       // This very message is last unread one
-      if (lastUnreadInTheSameTopic.id === message.id) return true;
+      if (lastUnreadMessage.id === message.id) return true;
 
-      return new Date(message.updated_at) >= lastUnreadInTheSameTopic.getUpdatedAt();
+      return new Date(message.updated_at) >= lastUnreadMessage.getUpdatedAt();
     },
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
