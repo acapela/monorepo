@@ -235,10 +235,6 @@ const UIHolder = styled.div<{}>`
   justify-content: center;
 `;
 
-const UIContentWrapper = styled.div`
-  position: relative;
-`;
-
 const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   position: relative;
   display: flex;

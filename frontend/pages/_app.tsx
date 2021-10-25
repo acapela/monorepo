@@ -8,7 +8,7 @@ import { Session } from "next-auth";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import styled, { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
@@ -155,12 +155,3 @@ App.getInitialProps = async (context: AppContext) => {
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };
-
-const UIErrorBox = styled.div<{}>`
-  position: absolute;
-  top: 10%;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  text-align: center;
-`;

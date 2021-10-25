@@ -1,4 +1,4 @@
-import { Editor, EditorContent, EditorOptions, Extensions, JSONContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, EditorOptions, Extensions, JSONContent } from "@tiptap/react";
 import React, { DependencyList, useEffect, useMemo, useState } from "react";
 import { useUpdate } from "react-use";
 
