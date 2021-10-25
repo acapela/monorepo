@@ -4,7 +4,7 @@ import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 import { PresenceAnimator, PresenceStyles } from "./PresenceAnimator";
 
-export const POP_ANIMATION_CONFIG: Transition = { type: "spring", bounce: 0, duration: 0.2 };
+export const POP_ANIMATION_CONFIG: Transition = { type: "spring", bounce: 0, duration: 0.3 };
 
 export function getSpringTransitionWithDuration(duration = 0.4): Transition {
   return { type: "spring", bounce: 0, duration };

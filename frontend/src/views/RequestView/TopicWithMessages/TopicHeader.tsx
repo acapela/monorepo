@@ -3,12 +3,13 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { createLengthValidator } from "~frontend/../../shared/validation/inputValidation";
 import { trackEvent } from "~frontend/analytics/tracking";
+import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { UserEntity } from "~frontend/clientdb/user";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCheck, IconEdit, IconLock, IconMoreHoriz, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -64,6 +65,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
 
   return (
     <UIHolder>
+      <UITitle layoutId={layoutAnimations.newTopic.title(topic.id)}>{topic.name}</UITitle>
       <UITitle>{topic.name}</UITitle>
       <UITopicTools>
         <AvatarList users={topic.participants.all} maxVisibleCount={5} />
@@ -104,7 +106,7 @@ const UIHolder = styled.div`
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
 
-const UITitle = styled.h3`
+const UITitle = styled(PageLayoutAnimator)`
   ${theme.typo.pageTitle};
 `;
 

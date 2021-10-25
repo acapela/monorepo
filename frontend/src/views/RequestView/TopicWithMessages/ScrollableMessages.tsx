@@ -37,6 +37,7 @@ const UIHolder = styled.div<{}>`
   flex-direction: column;
   width: 100%;
   align-items: center;
+  flex-grow: 1;
 `;
 
 const UIInner = styled.div<{}>`

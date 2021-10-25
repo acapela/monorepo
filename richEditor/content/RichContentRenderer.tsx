@@ -1,5 +1,8 @@
-import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
-import React, { useMemo } from "react";
+import { Editor, EditorContent, EditorOptions, Extensions, JSONContent } from "@tiptap/react";
+import React, { DependencyList, useEffect, useMemo, useState } from "react";
+import { useUpdate } from "react-use";
+
+import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 
 import { richEditorExtensions } from "../preset";
 
@@ -14,6 +17,46 @@ export interface RichEditorProps {
   content: JSONContent;
   extensions?: Extensions;
 }
+
+/**
+ * Works exactly like tiptap useEditor hook, except on client side - will render editor on first render.
+ *
+ * Default one is 'hard-safe' against server side rendering and on first render always returns null (even if already on client side).
+ *
+ * This makes it impossible to create layout animations that requires no gaps between element existance to animate between positions.
+ */
+export const useClientEditor = (options: Partial<EditorOptions> = {}, deps: DependencyList = []) => {
+  const forceUpdate = useUpdate();
+  const [editor, setEditor] = useState<Editor | null>(() => {
+    if (typeof document === "undefined") return null;
+
+    return new Editor(options);
+  });
+
+  useDependencyChangeEffect(() => {
+    const instance = new Editor(options);
+
+    setEditor(instance);
+  }, deps);
+
+  useEffect(() => {
+    if (!editor) return;
+
+    editor.on("transaction", () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          forceUpdate();
+        });
+      });
+    });
+
+    return () => {
+      editor.destroy();
+    };
+  }, [editor]);
+
+  return editor;
+};
 
 /**
  * This component renders JSON content.
@@ -32,7 +75,7 @@ export interface RichEditorProps {
  */
 export const RichContentRenderer = ({ content = getEmptyRichContent(), extensions = [] }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
-  const editor = useEditor(
+  const editor = useClientEditor(
     {
       extensions: finalExtensions,
       content,

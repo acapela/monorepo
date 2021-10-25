@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
@@ -15,11 +16,12 @@ import { useMessageEditorManager } from "~frontend/message/composer/useMessageEd
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
-import { FadePresenceAnimator, PopPresenceAnimator } from "~ui/animations";
+import { getUUID } from "~shared/uuid";
+import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
@@ -74,7 +76,8 @@ export const NewRequest = observer(function NewRequest() {
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
   const router = useRouter();
-  const [isSubmitting, { set: markAsSubmittingInProgress }] = useBoolean(false);
+
+  const newTopicId = useConst(() => getUUID());
 
   const {
     content,
@@ -98,10 +101,6 @@ export const NewRequest = observer(function NewRequest() {
 
   // Submitting can be done from the editor or from the topic input box
   const sendShortcutDescription = useShortcut(["Meta", "Enter"], () => {
-    if (isSubmitting) {
-      return true;
-    }
-
     submit();
     // Captures and prevents the event from getting to the editor
     return true;
@@ -131,12 +130,10 @@ export const NewRequest = observer(function NewRequest() {
       return;
     }
 
-    markAsSubmittingInProgress();
-
     const topicNameSlug = await getAvailableSlugForTopicName(db, topicName);
 
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: topicNameSlug });
+      const topic = db.topic.create({ id: newTopicId, name: topicName, slug: topicNameSlug });
       const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
       for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
@@ -156,53 +153,73 @@ export const NewRequest = observer(function NewRequest() {
 
   return (
     <UIHolder>
-      <UIContentHolder isEmpty={!hasTypedInAnything} layout>
-        {!hasTypedInAnything && (
-          <FadePresenceAnimator initial={{ opacity: 0 }} animate={{ opacity: [0, 1] }} transition={{ delay: 0.25 }}>
-            <UIFlyingCreateARequestLabel />
-          </FadePresenceAnimator>
-        )}
-        <UIEditableParts>
-          <UITopicNameInput
-            autoFocus
-            disabled={isSubmitting}
-            value={topicName}
-            onChangeText={setTopicName}
-            placeholder={"Add topic"}
-            onKeyPress={onEnterPressed(focusEditor)}
+      <UIContentHolder isEmpty={!hasTypedInAnything}>
+        <div>
+          <UIFlyingCreateARequestLabel
+            layout="position"
+            layoutId="UIFlyingCreateARequestLabel"
+            animate={{
+              opacity: hasTypedInAnything ? 0 : 1,
+              x: hasTypedInAnything ? -50 : 0,
+              y: hasTypedInAnything ? -50 : 0,
+            }}
+            transition={POP_ANIMATION_CONFIG}
           />
-          <MessageContentEditor
-            ref={editorRef}
-            isDisabled={isSubmitting}
-            placeholder={messageContentExample}
-            content={content}
-            onContentChange={setContent}
-            attachments={attachments}
-            onAttachmentRemoveRequest={removeAttachmentById}
-            onFilesSelected={uploadAttachments}
-            uploadingAttachments={uploadingAttachments}
-          />
+        </div>
 
-          <AnimatePresence>
-            {hasAnyTextContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
-            {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+        <UIEditableParts isEmpty={!hasTypedInAnything}>
+          <PageLayoutAnimator layoutId={layoutAnimations.newTopic.title(newTopicId)}>
+            <UITopicNameInput
+              autoFocus
+              value={topicName}
+              onChangeText={setTopicName}
+              placeholder={"Add topic"}
+              onKeyPress={onEnterPressed(focusEditor)}
+            />
+          </PageLayoutAnimator>
+
+          <PageLayoutAnimator layoutId={layoutAnimations.newTopic.message(newTopicId)}>
+            <MessageContentEditor
+              ref={editorRef}
+              placeholder={messageContentExample}
+              content={content}
+              onContentChange={setContent}
+              attachments={attachments}
+              onAttachmentRemoveRequest={removeAttachmentById}
+              onFilesSelected={uploadAttachments}
+              uploadingAttachments={uploadingAttachments}
+            />
+          </PageLayoutAnimator>
+
+          <AnimatePresence exitBeforeEnter>
+            <UINextStepPrompt
+              key={nextStepPromptLabel}
+              layoutId="UINextStepPrompt"
+              layout="position"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: hasAnyTextContent ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+            >
+              {nextStepPromptLabel}
+            </UINextStepPrompt>
           </AnimatePresence>
         </UIEditableParts>
-        {hasTypedInAnything && (
-          <UIActions>
-            <MessageTools onFilesPicked={uploadAttachments} />
+        <UIActions
+          animate={{ opacity: hasTypedInAnything ? 1 : 0 }}
+          layoutId={layoutAnimations.newTopic.messageTools(newTopicId)}
+        >
+          <MessageTools onFilesPicked={uploadAttachments} />
 
-            <Button
-              isDisabled={!isValid && { reason: nextStepPromptLabel }}
-              kind="primary"
-              tooltip="Create Request"
-              onClick={submit}
-              shortcut={["Meta", "Enter"]}
-            >
-              Create Request
-            </Button>
-          </UIActions>
-        )}
+          <Button
+            isDisabled={!isValid && { reason: nextStepPromptLabel }}
+            kind="primary"
+            tooltip="Create Request"
+            onClick={submit}
+            shortcut={["Meta", "Enter"]}
+          >
+            Create Request
+          </Button>
+        </UIActions>
       </UIContentHolder>
     </UIHolder>
   );
@@ -218,10 +235,11 @@ const UIHolder = styled.div<{}>`
   justify-content: center;
 `;
 
-const UIContentHolder = styled(motion.div)<{ isEmpty: boolean }>`
+const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
+  will-change: transform;
   ${theme.spacing.horizontalActionsSection.asGap};
 
   ${(props) => {
@@ -236,16 +254,25 @@ const UIContentHolder = styled(motion.div)<{ isEmpty: boolean }>`
   }}
 `;
 
-const UIEditableParts = styled.div`
+const UIEditableParts = styled.div<{ isEmpty: boolean }>`
   width: 100%;
-  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+
+  ${theme.spacing.horizontalActionsSection.asGap}
+
+  ${(props) =>
+    !props.isEmpty &&
+    css`
+      min-height: 160px;
+    `}
 `;
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
   position: absolute;
   /* Aligning prompt absolutely from very center of screen */
   left: -140px;
-  top: -60px;
+  top: -50px;
 
   @media only screen and (max-width: 900px) {
     display: none;
@@ -254,18 +281,21 @@ const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
 
 const UITopicNameInput = styled(TransparentTextInput)<{}>`
   ${theme.typo.pageTitle};
+  padding: 0;
 `;
 
-const UINextStepPrompt = styled(FadePresenceAnimator)<{}>`
+const UINextStepPrompt = styled(motion.div)<{}>`
   ${theme.typo.label};
   ${theme.colors.text.opacity(0.4).asColor};
   margin-top: 20px;
 `;
 
-const UIActions = styled(PopPresenceAnimator)<{}>`
+const UIActions = styled(PageLayoutAnimator)<{}>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+
+  will-change: transform, opacity;
 
   ${theme.spacing.horizontalActionsSection.asGap}
 `;

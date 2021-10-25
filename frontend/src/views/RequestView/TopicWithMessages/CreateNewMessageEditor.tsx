@@ -5,6 +5,7 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
@@ -20,7 +21,6 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
-import { PopPresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
@@ -155,7 +155,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
             removeAttachmentById(attachmentId);
           }}
         />
-        <UIRequestControls>
+        <UIRequestControls layoutId={layoutAnimations.newTopic.messageTools(topic.id)}>
           <MessageTools
             onRecordingReady={
               hasAnyTextContent
@@ -207,7 +207,7 @@ const UIEditorContainer = styled.div<{}>`
 
   ${theme.spacing.horizontalActionsSection.asGap}
 `;
-const UIRequestControls = styled(PopPresenceAnimator)<{}>`
+const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -110,7 +110,7 @@ function getMentionFontColor(mentionType: MentionType) {
 const UIMention = styled.span<{ isEditable: boolean; type: MentionType }>`
   cursor: default;
 
-  ${theme.font.bold}
+  ${theme.font.medium}
 
   ${(props) =>
     css`

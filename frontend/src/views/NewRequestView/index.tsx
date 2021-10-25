@@ -3,7 +3,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { DropFileContext } from "~richEditor/DropFileContext";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 import { NewRequest } from "./NewRequest";
 
@@ -11,9 +10,7 @@ export const NewRequestView = observer(function NewRequestView() {
   return (
     <>
       <UIDropFileHolder>
-        <ClientSideOnly>
-          <NewRequest />
-        </ClientSideOnly>
+        <NewRequest />
       </UIDropFileHolder>
     </>
   );

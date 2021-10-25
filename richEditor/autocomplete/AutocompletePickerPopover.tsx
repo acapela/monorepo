@@ -2,7 +2,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { SuggestionProps } from "@tiptap/suggestion";
 import { ComponentType, useRef, useState } from "react";
 
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 import { useComparingEffect } from "~shared/hooks/useComparingEffect";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
@@ -11,6 +11,7 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 
 import { AutocompletePickerProps } from "./component";
+import { waitForElementPossitionToSettle } from "./utils";
 
 interface Props<D> {
   baseProps: SuggestionProps;
@@ -19,28 +20,39 @@ interface Props<D> {
 
 export function AutocompletePickerPopoverBase<D>({ baseProps, PickerComponent }: Props<D>) {
   const anchorRef = useValueRef(baseProps.decorationNode as HTMLElement);
-  const editorRef = useRef<HTMLElement>(baseProps.editor.view.dom as HTMLElement);
+  const editorElement = baseProps.editor.view.dom as HTMLElement;
+  const editorRef = useRef<HTMLElement>(editorElement);
+  const [isCancelled, setIsCancelled] = useState(false);
 
-  const [isOpen, { set: open, unset: hide }] = useBoolean(true);
-  const [popoverDelayedOpenTimerRef, setPopoverDelayedOpenTimerRef] = useState<null | number>(null);
+  const [isPositionSettled, setIsPositionSettled] = useState(true);
 
   // If the editor resizes at any point, close all popovers until resize is done
   // This prevents the popover to be left floating on the wrong place
-  useResizeCallback(editorRef, () => {
-    // Cancels any open timers. Happens if resize is still not done
-    if (popoverDelayedOpenTimerRef) {
-      clearTimeout(popoverDelayedOpenTimerRef);
-    }
-
-    hide();
-
-    // Wait 100ms until we can check if the resize is done
-    const timeoutCancel = window.setTimeout(() => open(), 100);
-    setPopoverDelayedOpenTimerRef(timeoutCancel);
+  useResizeCallback(editorRef, async () => {
+    setIsPositionSettled(false);
   });
 
+  useAsyncEffect(
+    async (isCancelled) => {
+      if (isPositionSettled) return;
+
+      const [settlePromise, cancelWaiting] = waitForElementPossitionToSettle(editorElement);
+
+      settlePromise.then(() => {
+        if (isCancelled()) return;
+
+        setIsPositionSettled(true);
+      });
+
+      return () => {
+        cancelWaiting();
+      };
+    },
+    [isPositionSettled, editorElement]
+  );
+
   useComparingEffect((queryNow, queryBefore) => {
-    if (isOpen) {
+    if (!isCancelled) {
       return;
     }
 
@@ -50,16 +62,18 @@ export function AutocompletePickerPopoverBase<D>({ baseProps, PickerComponent }:
     }
 
     // We started typing something new, re-show the popover.
-    open();
+    setIsCancelled(false);
   }, baseProps.query);
 
   useShortcut("Escape", () => {
-    hide();
+    setIsCancelled(true);
   });
+
+  const canShow = !isCancelled && isPositionSettled;
 
   return (
     <NodeViewWrapper className="picker">
-      {isOpen && (
+      {canShow && (
         <Popover anchorRef={anchorRef} placement="top-start">
           <PopPresenceAnimator>
             <PickerComponent

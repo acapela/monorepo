@@ -1,4 +1,3 @@
-import { AnimateSharedLayout } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
@@ -44,11 +43,9 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         <TopicHeader topic={topic} user={user} />
 
         <ScrollableMessages ref={scrollerRef as never}>
-          <AnimateSharedLayout>
-            <MessagesFeed messages={messages} />
-            {/* TODO: Replace with events */}
-            {topic && isClosed && <TopicSummaryMessage topic={topic} />}
-          </AnimateSharedLayout>
+          <MessagesFeed messages={messages} />
+          {/* TODO: Replace with events */}
+          {topic && isClosed && <TopicSummaryMessage topic={topic} />}
         </ScrollableMessages>
 
         {!isClosed && (
