@@ -1,12 +1,9 @@
 import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
 import { maxBy } from "lodash";
-import { action } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
-import { niceFormatTime } from "~shared/dates/format";
-import { createDebugLogger } from "~shared/dev";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
@@ -14,12 +11,9 @@ import { messageEntity } from "./message";
 import { taskEntity } from "./task";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
-import { conditionalMemoize } from "./utils/conditionalMemoize";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
-
-const debug = createDebugLogger("topic", false);
 
 const topicFragment = gql`
   fragment Topic on topic {
@@ -119,25 +113,6 @@ export const topicEntity = defineEntity<TopicFragment>({
         return message.isUnread;
       });
 
-    /**
-     * For calculating if topic 'is new' we only once calculate last seen message date, and not refresh it until page is reloaded.
-     *
-     * This is to avoid bad UX when 'new' message disappears from 'new' as soon as you click it.
-     *
-     * Exception is if new message appears. Then we calculate it again
-     */
-    const initialLastSeenMessageDate = conditionalMemoize(
-      action(() => {
-        // We'll 'cache' result only for one message. If this function returns same message, it will memoize - otherwise it will re-calculate
-        return connections.lastSeenMessageByCurrentUserInfo;
-      }),
-      action((lastSeenMessageInfo) => {
-        if (!lastSeenMessageInfo) return null;
-
-        return new Date(lastSeenMessageInfo.seen_at);
-      })
-    );
-
     const connections = {
       get owner() {
         return getEntity(userEntity).findById(topic.owner_id);
@@ -162,8 +137,10 @@ export const topicEntity = defineEntity<TopicFragment>({
             user_id: currentUserId,
             topic_id: topic.id,
           }).hasItems
-        )
+        ) {
           return true;
+        }
+
         // TODO: optimize
         return messages.query((message) => isUserMentioned(message.content, currentUserId)).hasItems;
       },
@@ -185,56 +162,6 @@ export const topicEntity = defineEntity<TopicFragment>({
         const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
 
         return messageWithLatestActivity.lastActivityDate;
-      },
-      get lastOwnActivityDate() {
-        const topicOwnUpdateDate = connections.isOwn ? new Date(topic.updated_at) : null;
-
-        if (topic.closed_at && topic.closed_by_user_id === currentUserId) {
-          return new Date(topic.closed_at);
-        }
-
-        if (!messages.hasItems) {
-          return topicOwnUpdateDate;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastOwnActivityDate);
-
-        if (!messageWithLatestActivity) {
-          return null;
-        }
-
-        return messageWithLatestActivity.lastOwnActivityDate;
-      },
-      get isNew() {
-        const lastOwnActivityDate = connections.lastOwnActivityDate;
-        const lastActiviyDate = connections.lastActivityDate;
-
-        debug(topic.name);
-        debug("own", lastOwnActivityDate && niceFormatTime(lastOwnActivityDate));
-        debug("all", lastActiviyDate && niceFormatTime(lastActiviyDate));
-
-        // If user performed some activity and this is last activity - it is not new
-        // UX: if you see something new, you open it - it is still in 'new' as we intentionally dont update 'last message seen at' after entity is loaded
-        // but if you reply or perform any explicit action - it is new activity so topic goes away from 'new'
-        if (lastOwnActivityDate && lastOwnActivityDate >= lastActiviyDate) return false;
-
-        const lastSeenMessageDate = initialLastSeenMessageDate();
-
-        debug(
-          "lastSeenMessageDate",
-          lastSeenMessageDate &&
-            lastSeenMessageDate.toLocaleTimeString(undefined, {
-              timeStyle: "long",
-            })
-        );
-        debug("lastActiviyDate", lastActiviyDate.toLocaleTimeString(undefined, { timeStyle: "long" }));
-
-        if (!lastSeenMessageDate) {
-          return true;
-        }
-
-        return lastActiviyDate > lastSeenMessageDate;
       },
       get isArchived() {
         return !!topic.archived_at;

@@ -78,20 +78,6 @@ export const taskEntity = defineEntity<TaskFragment>({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return max([new Date(task.done_at), new Date(task.created_at)])!;
     },
-    get lastOwnActivityDate() {
-      if (connections.isAssignedToSelf) {
-        if (task.done_at) {
-          return new Date(task.done_at);
-        }
-      }
-
-      if (connections.isSelfCreated) {
-        return new Date(task.created_at);
-      }
-
-      return null;
-    },
-
     get isAssignedToSelf() {
       return task.user_id === getContextValue(userIdContext);
     },
@@ -101,7 +87,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return createdByUserId === getContextValue(userIdContext);
     },
     get isDone() {
-      return Boolean(task.done_at);
+      return !!task.done_at;
     },
   };
 
