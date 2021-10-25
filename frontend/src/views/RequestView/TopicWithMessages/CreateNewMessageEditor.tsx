@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -62,6 +62,15 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
+
+  useEffect(
+    action(() => {
+      if (topicContext) {
+        topicContext.editorRef = editorRef;
+      }
+    }),
+    []
+  );
 
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
