@@ -67,7 +67,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
     <UIHolder>
       <UITitle layoutId={layoutAnimations.newTopic.title(topic.id)}>{topic.name}</UITitle>
       <UITopicTools>
-        <AvatarList users={topic.participants.all} maxVisibleCount={5} />
+        <AvatarList users={topic.members} maxVisibleCount={5} />
         {/* TODO: Include invite button */}
         <PopoverMenuTrigger
           options={[

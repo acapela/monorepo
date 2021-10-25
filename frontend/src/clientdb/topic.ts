@@ -1,15 +1,15 @@
-import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
 import { maxBy } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
+import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
+import { isNotNullish } from "~shared/nullish";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { taskEntity } from "./task";
-import { userEntity } from "./user";
+import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -83,17 +83,6 @@ export const topicEntity = defineEntity<TopicFragment>({
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
-    const isUserMentioned = (content: JSONContent, userId: string) =>
-      getMentionNodesFromContent(content).some((mentionNode) => mentionNode.attrs.data.userId === userId);
-
-    const participants = getEntity(userEntity).query((user) => {
-      if (topic.owner_id === user.id) return true;
-
-      if (getEntity(messageEntity).query({ user_id: user.id, topic_id: topic.id }).hasItems) return true;
-
-      return messages.query((message) => isUserMentioned(message.content, user.id)).hasItems;
-    });
-
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
       // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
       user_id: currentUserId ?? "no-user",
@@ -118,31 +107,22 @@ export const topicEntity = defineEntity<TopicFragment>({
         return getEntity(userEntity).findById(topic.owner_id);
       },
       messages,
+      get members(): UserEntity[] {
+        return [
+          connections.owner,
+          ...getEntity(topicMemberEntity)
+            .query({ topic_id: topic.id })
+            .all.map((topicMember) => topicMember.user),
+        ].filter(isNotNullish);
+      },
       get tasks() {
         const tasks = getEntity(taskEntity).query({
           message_id: () => messages.all.map((message) => message.id),
         });
         return tasks;
       },
-      get participants() {
-        return participants;
-      },
-      get isCurrentUserParticipating() {
-        if (!currentUserId) return false;
-
-        if (topic.owner_id === currentUserId) return true;
-
-        if (
-          getEntity(messageEntity).query({
-            user_id: currentUserId,
-            topic_id: topic.id,
-          }).hasItems
-        ) {
-          return true;
-        }
-
-        // TODO: optimize
-        return messages.query((message) => isUserMentioned(message.content, currentUserId)).hasItems;
+      get isCurrentUserMember() {
+        return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
@@ -179,7 +159,7 @@ export const topicEntity = defineEntity<TopicFragment>({
     return connections;
   })
   .addAccessValidation((topic) => {
-    return topic.isCurrentUserParticipating;
+    return topic.isCurrentUserMember;
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;
