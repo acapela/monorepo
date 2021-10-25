@@ -50,9 +50,12 @@ export async function sendNotificationPerPreference(user: User, teamId: string, 
     await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
     "missing team_member"
   );
-  return sendNotification(
-    user,
-    teamId,
-    pick(message, ...(teamMember.notify_email ? ["email"] : []), ...(teamMember.notify_slack ? ["slack"] : []))
-  );
+  const notificationChannels: (keyof NotificationMessage)[] = [];
+  if (teamMember.notify_email) {
+    notificationChannels.push("email");
+  }
+  if (teamMember.notify_slack) {
+    notificationChannels.push("slack");
+  }
+  return sendNotification(user, teamId, pick(message, ...notificationChannels));
 }
