@@ -1,5 +1,6 @@
 import { Express } from "express";
 
+import { setupSlackActionHandlers } from "./actions";
 import { slackApp, slackReceiver } from "./app";
 import { setupSlackCommands } from "./commands";
 import { setupSlackShortcuts } from "./shortcuts";
@@ -9,4 +10,5 @@ export function setupSlack(app: Express) {
 
   setupSlackShortcuts(slackApp);
   setupSlackCommands(slackApp);
+  setupSlackActionHandlers(slackApp);
 }
