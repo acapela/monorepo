@@ -1,6 +1,10 @@
-import { Topic } from "~db";
+import { Topic, db } from "~db";
+import { assert } from "~shared/assert";
+import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
+import { sendNotificationPerPreference } from "../notifications/sendNotification";
+import { notifyOwnerOfTopicClosure } from "../slack/blocks/topicClosed";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
@@ -12,12 +16,29 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     }
 
     const ownerId = event.item.owner_id;
-    const assignedByUserId = event.userId;
-    const hasNewOwner = ownerId !== event.itemBefore.owner_id;
-    const shouldNotifyAssignee = ownerId && hasNewOwner && assignedByUserId && assignedByUserId !== ownerId;
+    const userIdThatClosedTopic = event.item.closed_by_user_id;
 
-    if (shouldNotifyAssignee) {
-      // TODO??
+    const isClosedByOwner = ownerId === userIdThatClosedTopic;
+    if (wasJustClosed && !isClosedByOwner) {
+      const topicOwner = await db.user.findFirst({ where: { id: ownerId } });
+      const topicCloser = await db.user.findFirst({ where: { id: userIdThatClosedTopic as string } });
+
+      assert(topicOwner, `[Closing Topic][id=${event.item.id}] Owner ${ownerId} not found.`);
+      assert(topicCloser, `[Closing Topic][id=${event.item.id}] Topic closer ${userIdThatClosedTopic} not found.`);
+      const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: event.item.slug })}`;
+
+      sendNotificationPerPreference(topicOwner, event.item.team_id, {
+        email: {
+          subject: `${event.item.name} was closed by ${topicCloser.name}`,
+          html: `Click <a href="${topicURL}">here</a> to see topic`,
+        },
+        slack: notifyOwnerOfTopicClosure({
+          closedBy: topicCloser.name,
+          topicId: event.item.id,
+          topicName: event.item.name,
+          topicURL,
+        }),
+      });
     }
   }
 }
