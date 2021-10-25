@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { TeamEntity } from "~frontend/clientdb/team";
@@ -20,7 +21,7 @@ type Props = {
   team: TeamEntity;
 };
 
-export function AddSlackInstallationButton({
+export const AddSlackInstallationButton = observer(function AddSlackInstallationButton({
   teamId,
   tooltip,
   withBot,
@@ -59,7 +60,7 @@ export function AddSlackInstallationButton({
       Add Slack integration
     </UISlackButton>
   );
-}
+});
 
 function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
   const [deleteSlackInstallation, { loading: isDeletingSlackInstallation }] = useMutation<
@@ -110,7 +111,7 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
   );
 }
 
-export function SlackInstallationButton({ team }: Props) {
+export const SlackInstallationButton = observer(function SlackInstallationButton({ team }: Props) {
   if (!team.hasSlackInstallation) {
     return (
       <AddSlackInstallationButton
@@ -126,6 +127,6 @@ export function SlackInstallationButton({ team }: Props) {
   }
 
   return <RemoveSlackInstallationButton teamId={team.id} />;
-}
+});
 
 const UISlackButton = styled(Button)``;
