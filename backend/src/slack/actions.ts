@@ -1,17 +1,92 @@
-import { App } from "@slack/bolt";
+import assert from "assert";
+
+import { App, BlockButtonAction } from "@slack/bolt";
+
+import { db } from "~db";
+import { Sentry } from "~shared/sentry";
 
 import { SlackActionIds } from "./blocks";
+import { findUserBySlackId } from "./utils";
 
 export function setupSlackActionHandlers(slackApp: App) {
-  slackApp.action(SlackActionIds.ReOpenTopic, async (options) => {
-    console.log("CLOSE");
+  slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
+    const topicId = action.value;
 
-    await options.ack();
+    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+    const topic = await db.topic.findFirst({ where: { id: topicId } });
+
+    assert(user, "[setupSlackActionHandlers=SlackActionIds.ReOpenTopic] Unable to find user(slack-id=${body.user.id}");
+
+    if (!topic) {
+      await ack();
+      await say(`Whoops! Seems that this request doesn't exist anymore.`);
+      return;
+    }
+
+    if (topic.owner_id !== user.id) {
+      Sentry.captureMessage(
+        "[setupSlackActionHandlers=SlackActionIds.ReOpenTopic] Possible invariant/security violation. " +
+          `Attempting to reopoen topic(id=${topicId}) that is not owned by user (id=${user?.id}).`
+      );
+    }
+
+    if (!topic?.closed_at) {
+      await ack();
+      await say(`Whoops! Seems that *${topic.name}* has been already reopened.`);
+      return;
+    }
+
+    await db.topic.update({
+      where: { id: topicId },
+      data: {
+        closed_at: null,
+        closed_by_user_id: null,
+        closing_summary: null,
+        archived_at: null,
+      },
+    });
+
+    await ack();
+    await say(`*${topic.name}* has been reopened.`);
   });
 
-  slackApp.action(SlackActionIds.ArchiveTopic, async (options) => {
-    console.log("Archive");
+  slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
+    const topicId = action.value;
 
-    await options.ack();
+    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+    const topic = await db.topic.findFirst({ where: { id: topicId } });
+
+    assert(user, "[setupSlackActionHandlers=SlackActionIds.ArchiveTopic] Unable to find user(slack-id=${body.user.id}");
+
+    if (!topic) {
+      await ack();
+      await say(`Whoops! Seems that this request doesn't exist anymore.`);
+      return;
+    }
+
+    if (topic.archived_at) {
+      await ack();
+      await say(`Whoops! Seems that *${topic.name}* has been already archived.`);
+      return;
+    }
+
+    const shouldAlsoClose = !topic.closed_at;
+
+    const now = new Date().toISOString();
+    await db.topic.update({
+      where: { id: topicId },
+      data: {
+        archived_at: now,
+        ...(shouldAlsoClose
+          ? {
+              closed_at: now,
+              closed_by_user_id: user.id,
+            }
+          : {}),
+      },
+    });
+
+    await ack();
+    await say(`*${topic.name}* has been archived.`);
   });
 }
