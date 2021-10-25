@@ -3,3 +3,4 @@ export * from "./entity";
 export * from "./db/adapter";
 export * from "./context";
 export * from "./sync";
+export { createEntityCache } from "./utils/entityCache";

@@ -1,8 +1,6 @@
-import { IComputedValue } from "mobx";
-
 import { Entity } from "~clientdb/entity/entity";
 
-import { computedMaybeArray } from "./computedArray";
+import { LazyComputed, lazyComputed } from "./lazyComputed";
 
 /**
  * Creates 'smart' entity cache that keeps result for given entity as no value it's getter uses.
@@ -10,7 +8,7 @@ import { computedMaybeArray } from "./computedArray";
  * It is also cached as long as it is in use by any 'observer'.
  */
 export function createEntityCache<Data, Connections, Result>(getter: (entity: Entity<Data, Connections>) => Result) {
-  const cacheMap = new WeakMap<Entity<Data, Connections>, IComputedValue<Result>>();
+  const cacheMap = new WeakMap<Entity<Data, Connections>, LazyComputed<Result>>();
 
   function getCached(entity: Entity<Data, Connections>): Result {
     const cachedValue = cacheMap.get(entity);
@@ -19,7 +17,7 @@ export function createEntityCache<Data, Connections, Result>(getter: (entity: En
       return cachedValue.get();
     }
 
-    const newCachedValue = computedMaybeArray(
+    const newCachedValue = lazyComputed(
       () => {
         return getter(entity);
       },
