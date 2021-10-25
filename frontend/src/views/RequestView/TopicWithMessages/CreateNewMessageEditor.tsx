@@ -63,6 +63,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     action(() => {
       if (topicContext) {
