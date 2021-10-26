@@ -125,7 +125,7 @@ const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) =
 })``;
 
 const UIHolder = styled.div<{}>`
-  padding: 20px 0px;
+  padding-top: 20px;
 `;
 
 const UIHead = styled.div<{}>`
