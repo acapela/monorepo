@@ -1,16 +1,4 @@
-import React from "react";
+import TopicOrNewRequestPage from "./topic/[topicSlug]";
 
-import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
-import { PageMeta } from "~frontend/utils/PageMeta";
-import { NewRequestView } from "~frontend/views/NewRequestView";
-
-export default function NewRequestPage(): JSX.Element {
-  return (
-    <>
-      <PageMeta title="New Request" />
-      <SidebarLayout>
-        <NewRequestView />
-      </SidebarLayout>
-    </>
-  );
-}
+// Reuse reference to same component to avoid full re-mount (including sidebar) when navigating topic<>new-topic page
+export default TopicOrNewRequestPage;
