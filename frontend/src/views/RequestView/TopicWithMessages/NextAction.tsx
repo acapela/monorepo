@@ -11,15 +11,12 @@ import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 import { TextButton } from "~ui/buttons/TextButton";
 import { IconAcapelaWave } from "~ui/icons";
+import { CircleLabel } from "~ui/icons/CircleLabel";
 import { theme } from "~ui/theme";
 
 const NextActionMessage = ({ children }: { children: React.ReactNode | React.ReactNodeArray }) => (
   <UIHolder>
-    <UICircleAlign>
-      <UICircle>
-        <IconAcapelaWave />
-      </UICircle>
-    </UICircleAlign>
+    <UIAcapelaLogo label={<IconAcapelaWave />} />
     <UIText>{children}</UIText>
   </UIHolder>
 );
@@ -93,25 +90,13 @@ const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   white-space: pre;
+  padding: 20px 0;
+  ${theme.spacing.horizontalActions.asGap}
 `;
 
-const UICircleAlign = styled.div<{}>`
-  margin-right: 10px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const UICircle = styled.div<{}>`
-  ${theme.radius.circle};
-  width: 20px;
+const UIAcapelaLogo = styled(CircleLabel)<{}>`
   height: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  ${theme.colors.action.primary.asBg};
+  width: 20px;
 `;
 
 const UIText = styled.div<{}>`

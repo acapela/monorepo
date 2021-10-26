@@ -49,7 +49,7 @@ export const TopicSummaryMessage = styledObserver<Props>((props) => {
       {!closedByUser && (
         <UIHolder className={className}>
           <UIHead>
-            <UICheckCircle label={<IconAcapelaWave />} />
+            <UIAcapelaCircle label={<IconAcapelaWave />} />
             <div>
               Hurray! <UIBold>{topic.name}</UIBold> has been completed by everyone and has been <UIBold>Closed</UIBold>.
             </div>
@@ -64,7 +64,7 @@ export const TopicSummaryMessage = styledObserver<Props>((props) => {
       {topic.isArchived && (
         <UIHolder className={className}>
           <UIHead>
-            <UICheckCircle label={<IconAcapelaWave />} />
+            <UIAcapelaCircle label={<IconAcapelaWave />} />
             <div>
               <UIBold>{topic.name}</UIBold> is archived.
             </div>
@@ -105,7 +105,7 @@ const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) =
   return (
     <UIHolder className={className}>
       <UIHead>
-        <UICheckCircle label={<IconAcapelaWave />} />
+        <UIAcapelaCircle label={<IconAcapelaWave />} />
 
         <div>
           <UIBold>{topic.name}</UIBold> will be{" "}
@@ -125,7 +125,7 @@ const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) =
 })``;
 
 const UIHolder = styled.div<{}>`
-  padding: 20px 0;
+  padding: 20px 0px;
 `;
 
 const UIHead = styled.div<{}>`
@@ -139,7 +139,7 @@ const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
   ${theme.typo.content.secondary};
 `;
 
-const UICheckCircle = styled(CircleLabel)<{}>`
+const UIAcapelaCircle = styled(CircleLabel)<{}>`
   height: 20px;
   width: 20px;
 `;
