@@ -3,8 +3,8 @@ import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
+import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
-import { createClosureMessage } from "../slack/blocks/topicClosed";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
@@ -21,24 +21,26 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     const isClosedByOwner = ownerId === userIdThatClosedTopic;
     if (wasJustClosed && !isClosedByOwner) {
       const topicOwner = await db.user.findFirst({ where: { id: ownerId } });
-      const topicCloser = await db.user.findFirst({ where: { id: userIdThatClosedTopic as string } });
+      const topicCloser = userIdThatClosedTopic
+        ? await db.user.findFirst({ where: { id: userIdThatClosedTopic as string } })
+        : null;
 
       assert(topicOwner, `[Closing Topic][id=${event.item.id}] Owner ${ownerId} not found.`);
-      assert(topicCloser, `[Closing Topic][id=${event.item.id}] Topic closer ${userIdThatClosedTopic} not found.`);
+
       const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: event.item.slug })}`;
 
-      sendNotificationPerPreference(topicOwner, event.item.team_id, {
-        email: {
-          subject: `${event.item.name} was closed by ${topicCloser.name}`,
-          html: `Click <a href="${topicURL}">here</a> to see topic`,
-        },
-        slack: createClosureMessage({
-          closedBy: topicCloser.name,
+      const topicName = event.item.name;
+
+      sendNotificationPerPreference(
+        topicOwner,
+        event.item.team_id,
+        createClosureNotificationMessage({
+          closedBy: topicCloser?.name,
           topicId: event.item.id,
-          topicName: event.item.name,
+          topicName,
           topicURL,
-        }),
-      });
+        })
+      );
     }
   }
 }

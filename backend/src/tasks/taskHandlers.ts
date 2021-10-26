@@ -25,10 +25,14 @@ export async function markAllOpenTasksAsDone(topic: Topic) {
 }
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
-  if (event.type !== "create") {
-    return;
+  if (event.type === "create") {
+    onTaskCreation(event.item);
+  } else {
+    onTaskUpdate(event.item);
   }
-  const task = event.item;
+}
+
+async function onTaskCreation(task: Task) {
   const [fromUser, toUser, topic] = await Promise.all([
     db.user.findFirst({ where: { message: { some: { id: task.message_id } } } }),
     db.user.findUnique({ where: { id: task.user_id } }),
@@ -53,4 +57,31 @@ export async function handleTaskChanges(event: HasuraEvent<Task>) {
     },
     slack: `${slackFrom} has asked for your *${taskLabel}* in <${topicURL}|${topic.name}>`,
   });
+}
+
+async function onTaskUpdate(task: Task) {
+  const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
+
+  assert(topic, "must have topic");
+
+  const amountOfOpenTasksLeft = await db.task.count({
+    where: {
+      message: { topic_id: { equals: topic.id } },
+      done_at: {
+        equals: null,
+      },
+    },
+  });
+
+  if (amountOfOpenTasksLeft === 0) {
+    // close topic
+    await db.topic.update({
+      where: {
+        id: topic.id,
+      },
+      data: {
+        closed_at: new Date().toISOString(),
+      },
+    });
+  }
 }

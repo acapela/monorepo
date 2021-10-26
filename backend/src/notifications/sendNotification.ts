@@ -22,7 +22,7 @@ async function trySendSlackNotification(teamId: string, user: User, payload: str
   });
 }
 
-type NotificationMessage = {
+export type NotificationMessage = {
   email: {
     subject: string;
     html: string;
