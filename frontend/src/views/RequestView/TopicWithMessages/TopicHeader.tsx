@@ -25,6 +25,7 @@ interface Props {
 export const TopicHeader = observer(function TopicHeader({ topic, user }: Props) {
   function handleCloseRequest() {
     topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: user.id });
+    trackEvent("Closed Topic", { topicId: topic.id });
   }
 
   const handleReopenTopic = action(() => {
@@ -47,6 +48,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
     });
 
     topic.update({ name: name ?? undefined });
+    trackEvent("Renamed Topic", { topicId: topic.id });
   });
 
   const handleTopicArchive = action(async () => {
@@ -54,10 +56,12 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
       handleCloseRequest();
     }
     topic.update({ archived_at: new Date().toISOString() });
+    trackEvent("Archived Topic", { topicId: topic.id });
   });
 
   const handleTopicUnarchive = action(async () => {
     topic.update({ archived_at: null });
+    trackEvent("Reopened Topic", { topicId: topic.id });
   });
 
   const hasPendingTasks = topic.tasks.query({ isDone: false }).hasItems;

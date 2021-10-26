@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React, { useMemo } from "react";
 import styled, { css } from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
@@ -43,7 +44,10 @@ export const MessageTask = observer(({ task }: Props) => {
         {
           key: "complete",
           label: "Mark as Complete",
-          onSelect: () => task.update({ done_at: new Date().toISOString() }),
+          onSelect: () => {
+            task.update({ done_at: new Date().toISOString() });
+            trackEvent("Mark Task As Done", { taskType: task.type as RequestType, topicId: task.topic?.id ?? "" });
+          },
         },
       ];
     }
