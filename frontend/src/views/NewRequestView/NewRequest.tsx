@@ -100,7 +100,7 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   // Submitting can be done from the editor or from the topic input box
-  const sendShortcutDescription = useShortcut(["Meta", "Enter"], () => {
+  const sendShortcutDescription = useShortcut(["Mod", "Enter"], () => {
     submit();
     // Captures and prevents the event from getting to the editor
     return true;
@@ -216,7 +216,7 @@ export const NewRequest = observer(function NewRequest() {
             kind="primary"
             tooltip="Create Request"
             onClick={submit}
-            shortcut={["Meta", "Enter"]}
+            shortcut={["Mod", "Enter"]}
           >
             Create Request
           </Button>
