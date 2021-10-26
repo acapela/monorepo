@@ -10,11 +10,9 @@ export const ResendInviteButton = ({ user, teamId }: { user: UserEntity; teamId:
   const [inviteUser, { loading, called }] = useInviteUser();
 
   const handleClick = async () => {
-    if (user.email) {
-      await inviteUser({ variables: { input: { email: user.email, team_id: teamId } } });
-      addToast({ type: "success", title: `Team invitation was sent` });
-      trackEvent("Resent Team Invitation", { teamId, userEmail: user.email });
-    }
+    await inviteUser({ variables: { input: { email: user.email, team_id: teamId } } });
+    addToast({ type: "success", title: `Team invitation was sent` });
+    trackEvent("Resent Team Invitation", { teamId, userEmail: user.email });
   };
 
   return (
