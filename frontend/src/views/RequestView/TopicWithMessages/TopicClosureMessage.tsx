@@ -24,7 +24,7 @@ const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" 
 
 // Temporary, to be deleted
 // Parts of this will be copied over to make the event system work
-export const TopicSummaryMessage = styledObserver<Props>((props) => {
+export const TopicClosureMessage = styledObserver<Props>((props) => {
   const { topic, className } = props;
   const { closedByUser, closed_at } = topic;
 
