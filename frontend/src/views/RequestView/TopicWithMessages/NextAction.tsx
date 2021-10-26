@@ -26,6 +26,12 @@ const NextActionMessage = ({ children }: { children: React.ReactNode | React.Rea
 
 const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE, REQUEST_READ];
 
+/**
+ * Shows the most urgent task requested from the current user. Urgency is determined based on due date and request type.
+ * Examples:
+ * "Please respond to @Gregor's message"
+ * "Please take action on @Omar's message before today 9PM"
+ */
 const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const [nextTask] = sortBy(tasks, (task) => [
     task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
@@ -77,9 +83,9 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
 export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
-  const selfAssignedOpenTasks = openTasks.query({ isAssignedToSelf: true }).all;
-  if (selfAssignedOpenTasks.length > 0) {
-    return <NextActionTask tasks={selfAssignedOpenTasks} />;
+  const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
+  if (openTasksAssignedToSelf.length > 0) {
+    return <NextActionTask tasks={openTasksAssignedToSelf} />;
   }
 
   if (!openTasks.hasItems && topic.isOwn) {
