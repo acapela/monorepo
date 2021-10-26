@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
+import { useDebouncedValue } from "~frontend/../../shared/hooks/useDebouncedValue";
 import { UserMenu } from "~frontend/layouts/UserMenu";
 import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
@@ -13,10 +14,15 @@ import { theme } from "~ui/theme";
 import { RequestFeed } from "./RequestFeed";
 import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
+const DEBOUNCE_SEARCH = true;
+
 export const SidebarContent = observer(function SidebarContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const isInSearchMode = searchTerm.trim().length > 0;
+
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, { timeFactory: () => 30 });
+  const finalSearchTerm = DEBOUNCE_SEARCH ? debouncedSearchTerm : searchTerm;
+  const isInSearchMode = finalSearchTerm.trim().length > 0;
 
   return (
     <UIHolder>
@@ -48,7 +54,7 @@ export const SidebarContent = observer(function SidebarContent() {
 
       <UIRequestFeed>
         {!isInSearchMode && <RequestFeed />}
-        {isInSearchMode && <RequestSearchResults searchTerm={searchTerm} />}
+        {isInSearchMode && <RequestSearchResults searchTerm={finalSearchTerm} />}
       </UIRequestFeed>
     </UIHolder>
   );
