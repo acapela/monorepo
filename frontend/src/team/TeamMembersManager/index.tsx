@@ -46,7 +46,9 @@ export const TeamMembersManager = observer(({ team }: Props) => {
                   <CloseIconButton
                     isDisabled={!isCurrentUserTeamOwner}
                     onClick={() => handleRemoveTeamMember(user.id)}
-                    tooltip={isCurrentUserTeamOwner ? undefined : "Only team owner can delete members"}
+                    tooltip={
+                      isCurrentUserTeamOwner ? "Remove user from your team" : "Only team owner can delete members"
+                    }
                   />
                 )}
               </UIActionsHolder>

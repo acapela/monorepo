@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { assert } from "~shared/assert";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -42,6 +43,7 @@ export const TaskDueDateSetter = observer(({ message, children }: Props) => {
   const handleSubmit = async (date: Date | null) => {
     closeCalendar();
     message.tasks.all.forEach((task) => task.update({ due_at: date?.toISOString() ?? null }));
+    trackEvent("Added Due Date", { topicId: message.topic_id, messageId: message.id });
   };
 
   const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();

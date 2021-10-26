@@ -1,5 +1,6 @@
 import React from "react";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { UserEntity } from "~frontend/clientdb/user";
 import { useInviteUser } from "~frontend/team/useInviteUser";
 import { Button } from "~ui/buttons/Button";
@@ -9,8 +10,11 @@ export const ResendInviteButton = ({ user, teamId }: { user: UserEntity; teamId:
   const [inviteUser, { loading, called }] = useInviteUser();
 
   const handleClick = async () => {
-    await inviteUser({ variables: { input: { email: user.email, team_id: teamId } } });
-    addToast({ type: "success", title: `Team invitation was sent` });
+    if (user.email) {
+      await inviteUser({ variables: { input: { email: user.email, team_id: teamId } } });
+      addToast({ type: "success", title: `Team invitation was sent` });
+      trackEvent("Resent Team Invitation", { teamId, userEmail: user.email });
+    }
   };
 
   return (
