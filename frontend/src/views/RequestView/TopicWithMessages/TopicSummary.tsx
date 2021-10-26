@@ -133,7 +133,6 @@ const UIHead = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   ${theme.spacing.horizontalActions.asGap}
-  ${theme.font.medium}
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
@@ -151,5 +150,5 @@ const UIArchiveTooltip = styled.span<{}>`
 `;
 
 const UIBold = styled.span<{}>`
-  ${theme.font.black}
+  ${theme.font.semibold}
 `;
