@@ -55,7 +55,6 @@ insert_permissions:
     - archived_at
     - closed_at
     - closed_by_user_id
-    - closing_summary
     - id
     - index
     - name
@@ -70,7 +69,6 @@ select_permissions:
     - archived_at
     - closed_at
     - closed_by_user_id
-    - closing_summary
     - created_at
     - id
     - index
@@ -92,7 +90,6 @@ update_permissions:
     - archived_at
     - closed_at
     - closed_by_user_id
-    - closing_summary
     - index
     - name
     - owner_id
@@ -120,12 +117,11 @@ event_triggers:
       columns: "*"
     update:
       columns:
-      - closing_summary
       - index
       - name
       - slug
-      - closed_at
       - archived_at
+      - closed_at
       - updated_at
       - closed_by_user_id
       - id
