@@ -10,6 +10,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
+import { db } from "~db";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
@@ -65,31 +66,33 @@ export default function App({
   const sessionFromServer = useConst(() => session);
 
   return (
-    <Sentry.ErrorBoundary
-      fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
-    >
+    <>
       <BuiltInStyles />
       <CommonMetadata />
-      <RequiredSessionProvider session={sessionFromServer}>
-        <AnimateSharedLayout type="crossfade">
-          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-            <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
-              <AppThemeProvider theme={theme}>
-                <CurrentTeamProvider>
-                  <ClientDbProvider>
-                    <AnalyticsManager />
-                    <PromiseUIRenderer />
-                    <TooltipsRenderer />
-                    <ToastsRenderer />
-                    {renderWithPageLayout(Component, pageProps)}
-                  </ClientDbProvider>
-                </CurrentTeamProvider>
-              </AppThemeProvider>
-            </ApolloProvider>
-          </MotionConfig>
-        </AnimateSharedLayout>
-      </RequiredSessionProvider>
-    </Sentry.ErrorBoundary>
+      <Sentry.ErrorBoundary
+        fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
+      >
+        <RequiredSessionProvider session={sessionFromServer}>
+          <AnimateSharedLayout type="crossfade">
+            <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+              <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
+                <AppThemeProvider theme={theme}>
+                  <CurrentTeamProvider>
+                    <ClientDbProvider>
+                      <AnalyticsManager />
+                      <PromiseUIRenderer />
+                      <TooltipsRenderer />
+                      <ToastsRenderer />
+                      {renderWithPageLayout(Component, pageProps)}
+                    </ClientDbProvider>
+                  </CurrentTeamProvider>
+                </AppThemeProvider>
+              </ApolloProvider>
+            </MotionConfig>
+          </AnimateSharedLayout>
+        </RequiredSessionProvider>
+      </Sentry.ErrorBoundary>
+    </>
   );
 }
 
@@ -150,8 +153,10 @@ App.getInitialProps = async (context: AppContext) => {
     return;
   }
 
+  const session = await getUserFromRequest(context.ctx.req);
+
   return {
-    session: await getUserFromRequest(context.ctx.req),
+    session,
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };

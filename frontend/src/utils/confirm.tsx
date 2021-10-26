@@ -17,9 +17,6 @@ type PromptResult = boolean;
 
 export const openConfirmPrompt = createPromiseUI<PromptInput, PromptResult>(
   ({ title, confirmLabel = "Confirm", cancelLabel = "Cancel", description }, resolve) => {
-    useShortcut("Escape", () => resolve(false));
-    useShortcut("Enter", () => resolve(true));
-
     return (
       <Modal
         head={{
@@ -29,8 +26,12 @@ export const openConfirmPrompt = createPromiseUI<PromptInput, PromptResult>(
         onCloseRequest={() => resolve(false)}
       >
         <UIContentWrapper>
-          <Button onClick={() => resolve(false)}>{cancelLabel}</Button>
-          <Button onClick={() => resolve(true)}>{confirmLabel}</Button>
+          <Button shortcut="Esc" onClick={() => resolve(false)}>
+            {cancelLabel}
+          </Button>
+          <Button shortcut="Enter" kind="primary" onClick={() => resolve(true)}>
+            {confirmLabel}
+          </Button>
         </UIContentWrapper>
       </Modal>
     );
