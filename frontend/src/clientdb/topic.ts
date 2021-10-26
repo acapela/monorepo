@@ -22,7 +22,6 @@ const topicFragment = gql`
     updated_at
     created_at
     closed_by_user_id
-    closing_summary
     archived_at
     owner_id
     index
@@ -45,7 +44,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       archived_at: null,
       closed_at: null,
       closed_by_user_id: null,
-      closing_summary: null,
       team_id: getContextValue(teamIdContext) ?? undefined,
       owner_id: getContextValue(userIdContext) ?? undefined,
       index: "0",
@@ -61,20 +59,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       "index",
       "closed_at",
       "closed_by_user_id",
-      "closing_summary",
       "owner_id",
       "team_id",
     ],
-    updateColumns: [
-      "archived_at",
-      "closed_at",
-      "closed_by_user_id",
-      "closing_summary",
-      "index",
-      "name",
-      "owner_id",
-      "slug",
-    ],
+    updateColumns: ["archived_at", "closed_at", "closed_by_user_id", "index", "name", "owner_id", "slug"],
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
   search: { fields: { name: true } },

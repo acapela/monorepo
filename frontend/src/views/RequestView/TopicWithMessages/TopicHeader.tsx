@@ -35,7 +35,6 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
     topic.update({
       closed_at: null,
       closed_by_user_id: null,
-      closing_summary: null,
     });
     trackEvent("Reopened Topic", { topicId: topic.id });
   });

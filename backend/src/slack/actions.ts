@@ -41,7 +41,6 @@ export function setupSlackActionHandlers(slackApp: App) {
       data: {
         closed_at: null,
         closed_by_user_id: null,
-        closing_summary: null,
         archived_at: null,
       },
     });
