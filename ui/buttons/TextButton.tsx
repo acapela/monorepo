@@ -30,7 +30,7 @@ export const TextButton = styledForwardRef<HTMLButtonElement, ButtonProps>(funct
 const kindStyles = {
   primary: css`
     ${theme.typo.content};
-    color: ${theme.colors.action.primary};
+    ${theme.colors.action.primary.asColor};
     text-decoration: underline;
     ${theme.transitions.hover("color")};
 
