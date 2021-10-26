@@ -1,1 +1,14 @@
-[]
+- name: auto-archive-topics
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: '*/10 * * * *'
+  include_in_metadata: true
+  payload:
+    handler: auto-archive-topics
+  retry_conf:
+    num_retries: 1
+    timeout_seconds: 60
+    tolerance_seconds: 21600
+    retry_interval_seconds: 10
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
