@@ -13,16 +13,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - run: yarn run lint
 
   frontend:
@@ -33,16 +24,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
@@ -62,16 +44,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
@@ -91,16 +64,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - run: npx playwright install
       - name: Setup dotenv
         run: cp .env.sample .env
@@ -143,9 +107,7 @@ jobs:
     needs: [lint, frontend, backend, e2e]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
+      - uses: ./.github/actions/node-and-yarn
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
@@ -153,13 +115,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-file: package.json
       - run: rm -f .npmrc
-        if: steps.semrel.outputs.version != ''
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
         if: steps.semrel.outputs.version != ''
       - uses: actions/cache@v2
         with:
