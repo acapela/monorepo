@@ -38,17 +38,20 @@ export const teamEntity = defineEntity<TeamFragment>({
     insertColumns: ["id", "slug", "name"],
     updateColumns: [],
   }),
-}).addConnections((team, { getEntity, getContextValue }) => ({
-  get hasSlackInstallation() {
-    return getEntity(teamSlackInstallationEntity).query({ team_id: team.id }).count > 0;
-  },
-  get isOwnedByCurrentUser() {
-    return team.owner_id === getContextValue(userIdContext);
-  },
-  get isCurrentUserCurrentTeam() {
-    return team.id === getContextValue(teamIdContext);
-  },
-  members: getEntity(teamMemberEntity).query({ team_id: team.id }),
-}));
+}).addConnections((team, { getEntity, getContextValue }) => {
+  const slackInstallations = getEntity(teamSlackInstallationEntity).query({ team_id: team.id });
+  return {
+    get hasSlackInstallation() {
+      return slackInstallations.hasItems;
+    },
+    get isOwnedByCurrentUser() {
+      return team.owner_id === getContextValue(userIdContext);
+    },
+    get isCurrentUserCurrentTeam() {
+      return team.id === getContextValue(teamIdContext);
+    },
+    members: getEntity(teamMemberEntity).query({ team_id: team.id }),
+  };
+});
 
 export type TeamEntity = EntityByDefinition<typeof teamEntity>;

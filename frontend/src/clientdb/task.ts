@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import { max } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TaskFragment } from "~gql";
@@ -56,6 +55,9 @@ export const taskEntity = defineEntity<TaskFragment>({
 
       return message.topic;
     },
+    get hasDueDate() {
+      return !!task.due_at;
+    },
     get assignedUser() {
       if (!task.user_id) {
         return null;
@@ -65,18 +67,6 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get creatingUser() {
       return connections.message?.user ?? null;
-    },
-    get lastActivityDate() {
-      if (!task.done_at) {
-        return new Date(task.created_at);
-      }
-
-      // Note - we cannot base on 'updated_at' because 'seen_at' is set automatically when you see the topic
-      // as updating seen_at is update, it will also push 'updated_at' on server side.
-
-      // Product wise - we can consider 'activity' as explicit action on the task
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return max([new Date(task.done_at), new Date(task.created_at)])!;
     },
     get isAssignedToSelf() {
       return task.user_id === getContextValue(userIdContext);
