@@ -1,10 +1,10 @@
-import { addDays } from "date-fns";
+import { addBusinessDays } from "date-fns";
 
 import { db } from "~db";
 
 export async function autoArchiveTopics() {
   const now = new Date();
-  const oneDayAgo = addDays(now, -1);
+  const oneDayAgo = addBusinessDays(now, -1);
   return db.topic.updateMany({
     where: {
       closed_at: {
