@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.1.2",
+    "@sentry/webpack-plugin": "^1.18.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.1",
     "@types/dom-mediacapture-record": "^1.0.10",

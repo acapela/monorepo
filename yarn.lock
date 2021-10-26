@@ -2863,7 +2863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:^1.68.0":
+"@sentry/cli@npm:^1.68.0, @sentry/cli@npm:^1.70.1":
   version: 1.70.1
   resolution: "@sentry/cli@npm:1.70.1"
   dependencies:
@@ -3096,6 +3096,15 @@ __metadata:
   dependencies:
     "@sentry/cli": ^1.68.0
   checksum: 1916e1bb5c43a4a440c237a8739280c62974a248daa95c5b9b9c264a4a5a8fe887a7cdc79ffa484fef43b393361bb329cd41468d59ed13cfdbbed8b6818b5544
+  languageName: node
+  linkType: hard
+
+"@sentry/webpack-plugin@npm:^1.18.3":
+  version: 1.18.3
+  resolution: "@sentry/webpack-plugin@npm:1.18.3"
+  dependencies:
+    "@sentry/cli": ^1.70.1
+  checksum: 99323bd145463bf20f4ce3712cc0938a5c2eb1af23c3167ca5fe8a0331d50753a54dbb9e5ac81c6bdb576c819532f4ff23c0f31b5fc6b5f0d23f55342c9fd6cc
   languageName: node
   linkType: hard
 
@@ -19956,6 +19965,7 @@ __metadata:
     "@segment/snippet": ^4.15.3
     "@sentry/node": ^6.13.2
     "@sentry/react": ^6.13.3
+    "@sentry/webpack-plugin": ^1.18.3
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.1.1
     "@types/dom-mediacapture-record": ^1.0.10
