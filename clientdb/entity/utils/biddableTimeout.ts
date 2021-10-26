@@ -1,13 +1,11 @@
-import { createTimeout } from "~shared/time";
-
 export function createBiddableTimeout(time: number, endCallback: () => void) {
-  let currentBidTimeout: () => void;
+  let currentBidTimeout: ReturnType<typeof setTimeout>;
   function bid() {
     if (currentBidTimeout) {
-      currentBidTimeout();
+      clearTimeout(currentBidTimeout);
     }
 
-    currentBidTimeout = createTimeout(endCallback, time);
+    currentBidTimeout = setTimeout(endCallback, time);
   }
 
   return bid;

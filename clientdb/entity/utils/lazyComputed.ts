@@ -50,6 +50,9 @@ export function lazyComputed<T>(
   onBecomeUnobserved(computedHook, () => {
     observersCount--;
 
+    // It stopped being observed because consumer reaction is not running anymore - schedule disposal after 'keep alive' time.
+    scheduleDisposal();
+
     // Other consumers are still observing
     if (observersCount) return;
 
@@ -59,9 +62,6 @@ export function lazyComputed<T>(
       setTimeout(dispose, 0);
       return;
     }
-
-    // It stopped being observed because consumer reaction is not running anymore - schedule disposal after 'keep alive' time.
-    scheduleDisposal();
   });
 
   function informObserversAboutUpdate() {
@@ -149,7 +149,6 @@ export function lazyComputed<T>(
       // If value is outdated - recompute it now (on demand - in lazy way)
       recomputeValueIfNeeded();
 
-      scheduleDisposal();
       // We need to be able to force consumer of this value to re-run, thus we read from computed hook that we'll update if value gets outdated
       computedHook.get();
       return latestValue;
