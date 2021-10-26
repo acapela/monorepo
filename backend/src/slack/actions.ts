@@ -15,7 +15,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
-    assert(user, "[setupSlackActionHandlers=SlackActionIds.ReOpenTopic] Unable to find user(slack-id=${body.user.id}");
+    assert(user, "Unable to find user(slack-id=${body.user.id}");
 
     if (!topic) {
       await ack();
@@ -25,7 +25,7 @@ export function setupSlackActionHandlers(slackApp: App) {
 
     if (topic.owner_id !== user.id) {
       Sentry.captureMessage(
-        "[setupSlackActionHandlers=SlackActionIds.ReOpenTopic] Possible invariant/security violation. " +
+        "Possible invariant/security violation. " +
           `Attempting to reopoen topic(id=${topicId}) that is not owned by user (id=${user?.id}).`
       );
     }
@@ -56,7 +56,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
-    assert(user, "[setupSlackActionHandlers=SlackActionIds.ArchiveTopic] Unable to find user(slack-id=${body.user.id}");
+    assert(user, "Unable to find user(slack-id=${body.user.id}");
 
     if (!topic) {
       await ack();

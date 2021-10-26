@@ -9,13 +9,13 @@ interface Props {
   topicURL: string;
 }
 
-export function notifyOwnerOfTopicClosure({ closedBy, topicName, topicId, topicURL }: Props): (KnownBlock | Block)[] {
+export function createClosureMessage({ closedBy, topicName, topicId, topicURL }: Props): (KnownBlock | Block)[] {
   return [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*<${topicURL}|${topicName}>* was closed by *${closedBy}*`,
+        text: `*${closedBy}* closed *<${topicURL}|${topicName}>*`,
       },
     },
     {
