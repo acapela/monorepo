@@ -5,7 +5,6 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
 import { niceFormatDate } from "~shared/dates/format";
-import { Badge } from "~ui/Badge";
 import { theme } from "~ui/theme";
 
 type Props = {
@@ -43,13 +42,4 @@ const UIHolder = styled.div<{}>`
 
 const UIHead = styled.div<{}>`
   font-weight: bold;
-`;
-
-const UISummary = styled.div<{}>`
-  margin-top: 16px;
-
-  ${Badge} {
-    display: inline-flex;
-    margin-right: 8px;
-  }
 `;
