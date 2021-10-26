@@ -1,9 +1,12 @@
+import { differenceInHours } from "date-fns";
+import { addBusinessDays } from "date-fns/esm";
 import React from "react";
 import styled from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { styledObserver } from "~shared/component";
+import { relativeFormatDate } from "~shared/dates/format";
 import { TextButton } from "~ui/buttons/TextButton";
 import { IconAcapelaWave } from "~ui/icons";
 import { CircleLabel } from "~ui/icons/CircleLabel";
@@ -83,6 +86,22 @@ const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) =
     topic.update({ archived_at: new Date().toISOString() });
   }
 
+  function getTimeOfArchiveLabel() {
+    const now = new Date();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const closedDate = new Date(topic.closed_at!);
+    const timeOfArchive = addBusinessDays(closedDate, 1);
+
+    const hoursUntilArchive = differenceInHours(timeOfArchive, now);
+
+    // If an old topic has been un-archived or approaching hour of archive
+    if (hoursUntilArchive <= 1) {
+      return "soon";
+    }
+
+    return relativeFormatDate(timeOfArchive);
+  }
+
   return (
     <UIHolder className={className}>
       <UIHead>
@@ -93,7 +112,7 @@ const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) =
           <UIArchiveTooltip data-tooltip="Archived requests are available through the search bar">
             archived
           </UIArchiveTooltip>{" "}
-          automatically in the next weekday. <br /> You could also{" "}
+          automatically {getTimeOfArchiveLabel()}. <br /> You could also{" "}
           <TextAction onClick={handleReopen}>Reopen</TextAction> or{" "}
           <TextAction onClick={handleArchive}>Archive now</TextAction>.
         </div>
