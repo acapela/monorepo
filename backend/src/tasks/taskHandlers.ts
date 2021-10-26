@@ -74,6 +74,7 @@ async function onTaskUpdate(task: Task) {
   });
 
   if (amountOfOpenTasksLeft === 0) {
+    // close topic
     await db.topic.update({
       where: {
         id: topic.id,
