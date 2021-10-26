@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const TopicSummaryMessage = styledObserver<Props>(({ topic, className }) => {
-  const { closedByUser, closed_at, closing_summary } = topic;
+  const { closedByUser, closed_at } = topic;
 
   if (!closedByUser || !closed_at) {
     return null;
@@ -27,12 +27,6 @@ export const TopicSummaryMessage = styledObserver<Props>(({ topic, className }) 
         <UIHead>
           Request was closed by {closedByUser.name} on {niceFormatDate(closedAtDate)} 🎉
         </UIHead>
-        {closing_summary && (
-          <UISummary>
-            <Badge>Summary</Badge>
-            {closing_summary}
-          </UISummary>
-        )}
       </UIHolder>
     </MessageLikeContent>
   );
