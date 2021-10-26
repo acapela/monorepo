@@ -12,6 +12,7 @@ export interface ButtonDisabledInfo {
 export interface ButtonProps extends HTMLMotionProps<"button"> {
   isWide?: boolean;
   kind?: TextButtonKind;
+  inline?: boolean;
   onClick?: () => void;
 }
 
@@ -27,6 +28,16 @@ export const TextButton = styledForwardRef<HTMLButtonElement, ButtonProps>(funct
 })``;
 
 const kindStyles = {
+  primary: css`
+    ${theme.typo.content};
+    color: ${theme.colors.action.primary};
+    text-decoration: underline;
+    ${theme.transitions.hover("color")};
+
+    &:hover {
+      color: ${theme.colors.action.primary.active};
+    }
+  `,
   secondary: css`
     ${theme.typo.label};
     opacity: 0.4;
@@ -43,6 +54,7 @@ type TextButtonKind = keyof typeof kindStyles;
 export const UIButton = styled(motion.button)<{
   kind: TextButtonKind;
   isWide?: boolean;
+  inline?: boolean;
 }>`
   border: none;
   background: transparent;
@@ -59,4 +71,10 @@ export const UIButton = styled(motion.button)<{
     `}
 
   ${(props) => kindStyles[props.kind]}
+
+  ${(props) =>
+    props.inline &&
+    css`
+      padding: 0;
+    `}
 `;

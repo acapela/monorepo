@@ -11,6 +11,7 @@ import { PopPresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
+import { NextAction } from "./NextAction";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicHeader } from "./TopicHeader";
@@ -45,7 +46,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed messages={messages} />
           {/* TODO: Replace with events */}
-          {topic && isClosed && <TopicSummaryMessage topic={topic} />}
+          {isClosed ? <TopicSummaryMessage topic={topic} /> : <NextAction topic={topic} />}
         </ScrollableMessages>
 
         {!isClosed && (

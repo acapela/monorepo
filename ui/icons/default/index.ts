@@ -1,3 +1,4 @@
+export { default as IconAcapelaWave } from "./AcapelaWave";
 export { default as IconActivity } from "./Activity";
 export { default as IconActivity2 } from "./Activity2";
 export { default as IconAirplay } from "./Airplay";
