@@ -4,8 +4,8 @@ import { IObservableArray, computed } from "mobx";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
-import { computedArray } from "./utils/computedArray";
 import { createEntityCache } from "./utils/entityCache";
+import { lazyComputed } from "./utils/lazyComputed";
 
 type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
@@ -98,7 +98,7 @@ export function createEntityQuery<Data, Connections>(
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
-  const passingItems = computedArray(
+  const passingItems = lazyComputed(
     () => {
       const passedItems = getSource().filter(cachedFilter);
 
@@ -117,7 +117,7 @@ export function createEntityQuery<Data, Connections>(
     { name: `${entityName}QueryItems` }
   );
 
-  const hasItemsComputed = computed(
+  const hasItemsComputed = lazyComputed(
     () => {
       return getSource().some(cachedFilter);
     },
