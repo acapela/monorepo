@@ -1,4 +1,5 @@
 import { Block, KnownBlock } from "@slack/bolt";
+import { BlockCollection, Blocks, Elements } from "slack-block-builder";
 
 import { SlackActionIds } from ".";
 
@@ -10,40 +11,11 @@ interface Props {
 }
 
 export function createClosureMessage({ closedBy, topicName, topicId, topicURL }: Props): (KnownBlock | Block)[] {
-  return [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `*${closedBy}* closed *<${topicURL}|${topicName}>*`,
-      },
-    },
-    {
-      type: "actions",
-      elements: [
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            emoji: false,
-            text: "Reopen",
-          },
-          style: "primary",
-          value: topicId,
-          action_id: SlackActionIds.ReOpenTopic,
-        },
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            emoji: false,
-            text: "Archive",
-          },
-          style: "danger",
-          action_id: SlackActionIds.ArchiveTopic,
-          value: topicId,
-        },
-      ],
-    },
-  ];
+  return BlockCollection(
+    Blocks.Section({ text: `*${closedBy}* closed *<${topicURL}|${topicName}>*` }),
+    Blocks.Actions().elements(
+      Elements.Button({ text: "Reopen" }).primary(true).value(topicId).actionId(SlackActionIds.ReOpenTopic),
+      Elements.Button({ text: "Archive" }).value(topicId).actionId(SlackActionIds.ArchiveTopic)
+    )
+  );
 }

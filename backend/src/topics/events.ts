@@ -4,7 +4,7 @@ import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
-import { notifyOwnerOfTopicClosure } from "../slack/blocks/topicClosed";
+import { createClosureMessage } from "../slack/blocks/topicClosed";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
@@ -32,7 +32,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
           subject: `${event.item.name} was closed by ${topicCloser.name}`,
           html: `Click <a href="${topicURL}">here</a> to see topic`,
         },
-        slack: notifyOwnerOfTopicClosure({
+        slack: createClosureMessage({
           closedBy: topicCloser.name,
           topicId: event.item.id,
           topicName: event.item.name,
