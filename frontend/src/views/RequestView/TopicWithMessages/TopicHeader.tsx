@@ -84,6 +84,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
               label: topic.isArchived ? "Unarchive" : topic.isClosed ? "Archive" : "Close and Archive",
               onSelect: () => (topic.isArchived ? handleTopicUnarchive() : handleTopicArchive()),
               icon: topic.isArchived ? <IconUnlock /> : <IconLock />,
+              isDestructive: true,
             },
           ]}
         >

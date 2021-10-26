@@ -1,16 +1,17 @@
 import { JSONContent } from "@tiptap/react";
-import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageText } from "~frontend/message/display/types/TextMessageContent";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { styledObserver } from "~shared/component";
 import { getIsMentionNode } from "~shared/editor/mentions";
 import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicEntity;
+  className?: string;
 }
 
 function getContentParagraphWithMatchingNode(
@@ -80,7 +81,7 @@ function getContentSnippetForUser(content: JSONContent, userId: string) {
   return getFirstContentParagraph(content);
 }
 
-export const RequestContentSnippet = observer(({ topic }: Props) => {
+export const RequestContentSnippet = styledObserver(({ topic, className }: Props) => {
   const user = useAssertCurrentUser();
   const lastMessage = topic.messages.last;
 
@@ -95,11 +96,11 @@ export const RequestContentSnippet = observer(({ topic }: Props) => {
   }
 
   return (
-    <UIHolder data-no-tooltips>
+    <UIHolder data-no-tooltips className={className}>
       <MessageText content={contentSnippet} />
     </UIHolder>
   );
-});
+})``;
 
 const UIHolder = styled.div`
   ${theme.typo.label};

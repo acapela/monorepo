@@ -206,6 +206,7 @@ export const NewRequest = observer(function NewRequest() {
         </UIEditableParts>
         <UIActions
           animate={{ opacity: hasTypedInAnything ? 1 : 0 }}
+          initial={{ opacity: 0 }}
           layoutId={layoutAnimations.newTopic.messageTools(newTopicId)}
         >
           <MessageTools onFilesPicked={uploadAttachments} />

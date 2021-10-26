@@ -1,8 +1,9 @@
 import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
-import { maxBy } from "lodash";
+import { memoize, uniq } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
+import { computedArray } from "~clientdb/entity/utils/computedArray";
 import { TopicFragment } from "~gql";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 
@@ -70,16 +71,28 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
+    const messageIds = computedArray(() => {
+      return messages.all.map((message) => message.id);
+    });
 
-    const isUserMentioned = (content: JSONContent, userId: string) =>
-      getMentionNodesFromContent(content).some((mentionNode) => mentionNode.attrs.data.userId === userId);
+    const getIsUserMentionedInContent = (content: JSONContent, userId: string) =>
+      getMentionedUserIdsInContent(content).includes(userId);
 
     const participants = getEntity(userEntity).query((user) => {
       if (topic.owner_id === user.id) return true;
 
-      if (getEntity(messageEntity).query({ user_id: user.id, topic_id: topic.id }).hasItems) return true;
+      const allMessages = messages.all;
 
-      return messages.query((message) => isUserMentioned(message.content, user.id)).hasItems;
+      if (
+        allMessages.some((message) => {
+          if (message.user_id === user.id) return true;
+
+          if (message.tasks.all.some((task) => task.user_id === user.id)) return true;
+        })
+      )
+        return true;
+
+      return allMessages.some((message) => getIsUserMentionedInContent(message.content, user.id));
     });
 
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
@@ -95,6 +108,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       return unseenMessages.first ?? null;
     }
 
+    const tasks = getEntity(taskEntity).query({
+      message_id: () => messageIds.get(),
+    });
+
     const unreadMessages = getEntity(messageEntity)
       .query({ topic_id: topic.id })
       .query((message) => {
@@ -107,49 +124,19 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       messages,
       get tasks() {
-        const tasks = getEntity(taskEntity).query({
-          message_id: () => messages.all.map((message) => message.id),
-        });
         return tasks;
       },
       get participants() {
         return participants;
       },
       get isCurrentUserParticipating() {
-        if (!currentUserId) return false;
-
-        if (topic.owner_id === currentUserId) return true;
-
-        if (
-          getEntity(messageEntity).query({
-            user_id: currentUserId,
-            topic_id: topic.id,
-          }).hasItems
-        ) {
-          return true;
-        }
-
-        // TODO: optimize
-        return messages.query((message) => isUserMentioned(message.content, currentUserId)).hasItems;
+        return connections.participants.all.some((user) => user.isCurrentUser);
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
       },
       get isClosed() {
         return !!topic.closed_at;
-      },
-      get lastActivityDate() {
-        if (!messages.hasItems) {
-          return new Date(topic.updated_at);
-        }
-        if (topic.closed_at) {
-          return new Date(topic.closed_at);
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
-
-        return messageWithLatestActivity.lastActivityDate;
       },
       get isArchived() {
         return !!topic.archived_at;
@@ -171,3 +158,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;
+
+const getMentionedUserIdsInContent = memoize((content: JSONContent) => {
+  return uniq(getMentionNodesFromContent(content).map((node) => node.attrs.data.userId));
+});

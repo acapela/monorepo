@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import { max } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
@@ -85,15 +84,6 @@ export const messageEntity = defineEntity<MessageFragment>({
     tasks,
     reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
     attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
-    get lastActivityDate(): Date {
-      if (!tasks.hasItems) {
-        return new Date(message.updated_at);
-      }
-
-      // We know we have at least one item as we just did `tasks.hasItems`.
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return max(tasks.all.map((task) => task.lastActivityDate))!;
-    },
     get isUnread() {
       if (!currentUserId || message.user_id == currentUserId) return false;
 

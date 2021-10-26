@@ -9,8 +9,9 @@ import { EntityStore } from "./store";
 import { createPushQueue } from "./utils/pushQueue";
 
 interface UpdatesSyncManager<Data> extends DatabaseUtilities {
-  updateItems(items: Data[]): void;
+  updateItems(items: Data[], isReloadNeeded?: boolean): void;
   lastSyncDate: Date;
+  isFirstSync: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -168,15 +169,19 @@ export function createEntitySyncManager<Data, Connections>(
     return initialDate;
   }
 
+  let isFirstSync = true;
+
   // Start waiting for new 'updates' data.
   function startNextUpdatesSync() {
     const maybeCleanup = syncConfig.pullUpdated?.({
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
-      updateItems(items) {
+      isFirstSync,
+      updateItems(items, isReloadNeeded) {
+        isFirstSync = false;
         firstSyncPromise.resolve();
         // Ignore empty update list (initial one is usually empty)
-        if (!items.length) return;
+        if (!items.length && !isReloadNeeded) return;
 
         maybeCleanup?.();
         runInAction(() => {

@@ -1,6 +1,5 @@
 import { Editor, EditorContent, EditorOptions, Extensions, JSONContent } from "@tiptap/react";
 import React, { DependencyList, useEffect, useMemo, useState } from "react";
-import { useUpdate } from "react-use";
 
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 
@@ -26,7 +25,6 @@ export interface RichEditorProps {
  * This makes it impossible to create layout animations that requires no gaps between element existance to animate between positions.
  */
 export const useClientEditor = (options: Partial<EditorOptions> = {}, deps: DependencyList = []) => {
-  const forceUpdate = useUpdate();
   const [editor, setEditor] = useState<Editor | null>(() => {
     if (typeof document === "undefined") return null;
 
@@ -41,14 +39,6 @@ export const useClientEditor = (options: Partial<EditorOptions> = {}, deps: Depe
 
   useEffect(() => {
     if (!editor) return;
-
-    editor.on("transaction", () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          forceUpdate();
-        });
-      });
-    });
 
     return () => {
       editor.destroy();

@@ -83,7 +83,9 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
             onChangeText={setValue}
             errorMessage={shouldShowValidationError ? validationError : undefined}
           />
-          <Button onClick={handleSubmit}>{submitLabel}</Button>
+          <Button kind="primary" shortcut="Enter" onClick={handleSubmit}>
+            {submitLabel}
+          </Button>
         </UIContentWrapper>
       </Modal>
     );

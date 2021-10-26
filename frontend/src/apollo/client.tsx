@@ -6,6 +6,7 @@ import {
   InMemoryCache,
   split as splitLinks,
 } from "@apollo/client";
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -22,6 +23,8 @@ import { addToast } from "~ui/toasts/data";
 import { createDateParseLink } from "./dateStringParseLink";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
+
+const ENABLE_REQUEST_BATCHING = true;
 
 /**
  * Apollo wants to make sure that it does not lose data, so it emits warnings when there is no merge function for arrays
@@ -95,7 +98,13 @@ onError(({ graphQLErrors = [], networkError }) => {
   }
 });
 
-const httpRawLink = new HttpLink({ uri: getGraphqlUrl() });
+/**
+ * Batch queries with short interval. This is useful if multiple requests are sent quickly (especially during initial loading), as
+ * they might be resolved by hasura and sent in one go, resulting in overall faster response
+ */
+const httpRawLink = ENABLE_REQUEST_BATCHING
+  ? new BatchHttpLink({ uri: getGraphqlUrl(), batchMax: 20 })
+  : new HttpLink({ uri: getGraphqlUrl() });
 const parseDatesLink = createDateParseLink();
 
 const httpLink = parseDatesLink.concat(httpRawLink);

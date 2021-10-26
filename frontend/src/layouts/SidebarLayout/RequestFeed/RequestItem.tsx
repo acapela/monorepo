@@ -7,6 +7,8 @@ import styled, { css } from "styled-components";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRouteParams } from "~frontend/hooks/useRouteParams";
 import { routes } from "~shared/routes";
+import { getFadeInAnimationStyles } from "~ui/animations";
+import { LazyRender } from "~ui/performance/LazyRender";
 import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
@@ -66,7 +68,12 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
             {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
           </HStack>
           <UIFeedItemSubTitle>
-            {!unfinishedTaskWithEarliestDueDate && <RequestContentSnippet topic={topic} />}
+            {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
+            {!unfinishedTaskWithEarliestDueDate && (
+              <LazyRender fallback={<div>&nbsp;</div>}>
+                <RequestContentSnippet topic={topic} />
+              </LazyRender>
+            )}
 
             {unfinishedTaskWithEarliestDueDate && (
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -134,4 +141,8 @@ const UIFeedItemSubTitle = styled.div<{}>`
   overflow: hidden;
   text-overflow: ellipsis;
   flex-grow: 1;
+
+  ${RequestContentSnippet} {
+    ${getFadeInAnimationStyles(0.15)};
+  }
 `;

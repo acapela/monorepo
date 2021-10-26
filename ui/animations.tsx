@@ -1,4 +1,5 @@
 import { HTMLMotionProps, Transition } from "framer-motion";
+import { css, keyframes } from "styled-components";
 
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
@@ -25,3 +26,20 @@ export const FadePresenceAnimator = namedForwardRef<HTMLDivElement, HTMLMotionPr
     return <PresenceAnimator ref={ref} {...props} presenceStyles={FADE_PRESENCE_STYLES} />;
   }
 );
+
+export const fadeInKeyframes = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1
+  }
+`;
+
+export function getFadeInAnimationStyles(time = 0.2) {
+  return css`
+    animation: ${fadeInKeyframes} ${time}s ease-in-out;
+    animation-fill-mode: both;
+    will-change: opacity;
+  `;
+}

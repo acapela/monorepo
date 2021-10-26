@@ -55,29 +55,29 @@ function sortSentTopics(topics: TopicEntity[]) {
 }
 
 function prepareTopicsGroups(topics: TopicEntity[]) {
-  const [receivedTasks, notReceivedTasks] = groupByFilter(topics, hasTopicOpenTasksForCurrentUser);
+  const [archived, notArchived] = groupByFilter(topics, (topic) => topic.isArchived);
+  const [receivedTasks, notReceivedTasks] = groupByFilter(notArchived, hasTopicOpenTasksForCurrentUser);
   const [sentTasks, notSentTasks] = groupByFilter(notReceivedTasks, hasTopicSentTasksByCurrentUser);
   const [openTopics, closedTopics] = groupByFilter(notSentTasks, (topic) => !topic.isClosed);
-  const [recentlyClosed, archived] = groupByFilter(closedTopics, (topic) => !topic.isArchived);
 
   return {
     receivedTasks: sortReceivedTopics(receivedTasks),
     sentTasks: sortSentTopics(sentTasks),
     openTopics,
-    recentlyClosed,
+    closedTopics,
     archived,
   };
 }
 
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
-  const { receivedTasks, sentTasks, openTopics, recentlyClosed, archived } = prepareTopicsGroups(topics);
+  const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = prepareTopicsGroups(topics);
 
   return (
     <UIHolder>
       {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}
       {!!sentTasks.length && <RequestsGroup topics={sentTasks} groupName="Sent" />}
       {!!openTopics.length && <RequestsGroup topics={openTopics} groupName="Open" />}
-      {!!recentlyClosed.length && <RequestsGroup topics={recentlyClosed} groupName="Closed" />}
+      {!!closedTopics.length && <RequestsGroup topics={closedTopics} groupName="Closed" />}
       {showArchived && !!archived.length && <RequestsGroup topics={archived} groupName="Archived" />}
     </UIHolder>
   );

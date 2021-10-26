@@ -1,80 +1,173 @@
-import { IComputedValueOptions, Reaction, observable, runInAction } from "mobx";
+import { IComputedValueOptions, Reaction, observable, onBecomeObserved, onBecomeUnobserved, runInAction } from "mobx";
 
-import { computedMaybeArray } from "./computedArray";
+import { isDev } from "~shared/dev";
 
-type ValueBox<T> = { value: T } | null;
+import { createBiddableTimeout } from "./biddableTimeout";
 
 export type LazyComputed<T> = {
   get(): T;
   dispose(): void;
 };
 
+const SECOND = 1000;
+
+const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
+
 /**
- * This is version of computed optimized both keeping it cached, but also making it lazy. This is not possible with built in computed (a bit suprising, tho).
+ * Normally we keep not used computed alive for KEEP_ALIVE_TIME_AFTER_UNOBSERVED time.
  *
- * Lazy - it is not computed, until requested (including if change happens after it was being observed)
- * Kept alive - it is keeping value cached as long as it's dependencies did not change
+ * Very often, however - we have 'cascade' of computed's one using another. One being disposed instantly causes other one
+ * to not be observed. In such case we don't want to wait KEEP_ALIVE_TIME_AFTER_UNOBSERVED for each 'cascade' level.
  *
- * With built-in mobx computed we have either fully lazy value - re computed from scratch each time it is requested after being non-observed at any point.
- * Or 'kept alive' that is running itself eagerly even if not observed at all.
- *
- * Use case example: we might have 'new messages count' in sidebar, but it might not be observed eg during search if you only show 2/100 topics.
- *
- * Then you remove search term and you'll see all topics again - we dont want to re-compute it.
- *
- * But! If eg in search - we dont want to re-compute values for topics that are hidden (even tho we keep their cache alive)
+ * Thus we'll set this flag to true when disposing lazy computed to avoid waiting if other computed becomes unobserved during cascade.
  */
-export function lazyComputed<T>(getter: () => T, options?: IComputedValueOptions<T>): LazyComputed<T> {
-  // This is the only 'observable' value here. We want to inform observers they need to get computed value again somehow.
-  const needsRecomputationIndex = observable.box({});
-  // Cached value will be kept as normal variable.
-  let cachedValue: ValueBox<T> = null;
+let isDisposalCascadeRunning = false;
 
-  // We use raw Reaction api, as it allows us to have full control of reaction flow.
-  const reaction = new Reaction("memoizedComputed", () => {
-    // We dont yet tell what the reaction will watch, we only tell what should happen if something it watched is out of date.
+/**
+ * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
+ *
+ * - we keep cached version even if it is not observed
+ * - we keep this lazy meaning value is never re-computed if not requested
+ *
+ * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
+ */
+export function lazyComputed<T>(
+  getter: () => T,
+  { name = "LazyComputed", equals }: IComputedValueOptions<T> = {}
+): LazyComputed<T> {
+  let latestValue: T;
+  let needsRecomputing = true;
+  let currentReaction: Reaction | null;
 
-    // In such case - clear cache and inform observers that if they want, they need to request it again
+  const computedHook = observable.box({}, { deep: false });
 
-    runInAction(() => {
-      needsRecomputationIndex.set({});
-      cachedValue = null;
-    });
+  let observersCount = 0;
+
+  onBecomeObserved(computedHook, () => {
+    observersCount++;
   });
 
-  // With this we allow getting either cached or new value and inform reaction we're getting it.
-  function getCachedAndTrack(): T {
-    if (cachedValue) {
-      return cachedValue.value;
+  onBecomeUnobserved(computedHook, () => {
+    observersCount--;
+
+    // Other consumers are still observing
+    if (observersCount) return;
+
+    // It became unobserved as result of other lazyComputed disposing. We don't need to wait for 'keep alive' time
+    if (isDisposalCascadeRunning) {
+      // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
+      setTimeout(dispose, 0);
+      return;
     }
 
-    let result: T;
+    // It stopped being observed because consumer reaction is not running anymore - schedule disposal after 'keep alive' time.
+    scheduleDisposal();
+  });
 
-    reaction.track(() => {
-      const newValue = getter();
-      cachedValue = { value: newValue };
-      result = newValue;
+  function informObserversAboutUpdate() {
+    runInAction(() => {
+      computedHook.set({});
+    });
+  }
+
+  // Will initialize reaction to watch that dependencies changed or re-use previous reaction if the same computed used multiple times
+  function getOrCreateReaction() {
+    if (currentReaction) {
+      return currentReaction;
+    }
+
+    currentReaction = new Reaction(name, () => {
+      // Dependencies it is tracking got outdated.
+
+      // Set flag so on next value request we'll do full re-compute
+      needsRecomputing = true;
+      // Make observers re-run
+      informObserversAboutUpdate();
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return result!;
+    // New reaction - keep track of it to debug memory leaks
+    aliveLazyReactions++;
+
+    return currentReaction;
   }
-
-  const finalLazyComputed = computedMaybeArray(() => {
-    // Use recomputation index so this computed knows cache was cleared
-    needsRecomputationIndex.get();
-    const result = getCachedAndTrack();
-
-    return result;
-  }, options);
 
   function dispose() {
-    reaction.dispose();
+    try {
+      // If other computed values become unobserved as result of this one being disposed - let them know so they instantly dispose in cascade
+      isDisposalCascadeRunning = true;
+
+      // We cannot dispose if it is still observed - it would cause eg. ui to stop to react to updates. Note - this should never happen.
+      if (observersCount) return;
+
+      // It was already disposed
+      if (!currentReaction) return;
+
+      currentReaction.dispose();
+      needsRecomputing = true;
+      currentReaction = null;
+
+      aliveLazyReactions--;
+    } finally {
+      isDisposalCascadeRunning = false;
+    }
   }
 
-  function getMemoized() {
-    return finalLazyComputed.get();
-  }
+  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
+  const scheduleDisposal = createBiddableTimeout(KEEP_ALIVE_TIME_AFTER_UNOBSERVED, dispose);
 
-  return { get: getMemoized, dispose };
+  const recomputeValueIfNeeded = () => {
+    // No dependencies did change since we last computed.
+    if (!needsRecomputing) return;
+
+    let newValue: T;
+    // We need to re-compute
+    getOrCreateReaction().track(() => {
+      // Assign new value so it can be reused. Also we're tracking getting it so reaction knows if dependencies got outdated
+      newValue = getter();
+    });
+
+    // Inform value is up to date
+    needsRecomputing = false;
+
+    if (!equals) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      latestValue = newValue!;
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (equals(latestValue, newValue!)) {
+      return;
+    }
+  };
+  // r.schedule();
+  return {
+    dispose,
+    get() {
+      // This is final 'getter'
+
+      // If value is outdated - recompute it now (on demand - in lazy way)
+      recomputeValueIfNeeded();
+
+      scheduleDisposal();
+      // We need to be able to force consumer of this value to re-run, thus we read from computed hook that we'll update if value gets outdated
+      computedHook.get();
+      return latestValue;
+    },
+  };
+}
+
+/**
+ * Debug utils
+ */
+
+let aliveLazyReactions = 0;
+
+// As those are not auto disposed by mobx - we need to be careful with memory leaks - aliveLazyReactions should always fall to 0 after a while if no more reactions are running
+const DEBUG_MEMORY_LEAKS = true;
+
+if (typeof document !== "undefined" && DEBUG_MEMORY_LEAKS && isDev()) {
+  setInterval(() => {
+    console.info("alive lazy reactions", aliveLazyReactions);
+  }, 250);
 }

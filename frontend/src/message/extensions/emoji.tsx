@@ -1,9 +1,10 @@
-import { BaseEmoji, emojiIndex } from "emoji-mart";
-import React from "react";
+import type { BaseEmoji } from "emoji-mart";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
 
@@ -13,19 +14,30 @@ interface EmojiData {
 }
 
 function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) {
-  const matchingEmoji = (emojiIndex.search(keyword) as BaseEmoji[]) ?? [];
+  const [results, setResults] = useState<BaseEmoji[]>([]);
+
+  useAsyncEffect(
+    async (getIsCancelled) => {
+      const { emojiIndex } = await import("emoji-mart");
+
+      if (getIsCancelled()) return;
+
+      setResults((emojiIndex.search(keyword) as BaseEmoji[]) ?? []);
+    },
+    [keyword]
+  );
 
   if (!keyword) {
     return <StateDescription>Type to search for emojis</StateDescription>;
   }
 
-  if (!matchingEmoji.length) {
+  if (!results.length) {
     return <StateDescription>No emoji found for :{keyword}</StateDescription>;
   }
 
   return (
     <SelectList<BaseEmoji>
-      items={matchingEmoji.slice(0, 5)}
+      items={results.slice(0, 5)}
       keyGetter={(emoji) => emoji.id + emoji.name}
       onItemSelected={(emoji) => {
         onSelect({ emoji: emoji.native, name: emoji.id });

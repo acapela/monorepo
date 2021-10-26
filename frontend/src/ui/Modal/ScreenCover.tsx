@@ -1,11 +1,9 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 import styled from "styled-components";
 
+import { useUnmountPresence } from "~frontend/ui/presence";
 import { handleWithStopPropagation } from "~shared/events";
-import { createLocalStorageValueManager } from "~shared/localStorage";
-import { EndFpsMeasurement, startMeasuringFps } from "~shared/performance";
 import { BodyPortal } from "~ui/BodyPortal";
-import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -14,67 +12,17 @@ interface Props {
   isTransparent?: boolean;
 }
 
-/**
- * Blur animation is pretty heavy and might be laggy on slower machines.
- *
- * We'll measure FPS during the animation and if it's too low, we'll disable it and remember this setting in localStorage.
- */
-const BLUR_ANIMATION_FPS_TO_ENABLE_BLUR_THRESHOLD = 25;
-
 const BACKGROUND_BLUR_SIZE_PX = 8;
 
-const shouldUseBlurPreference = createLocalStorageValueManager<boolean | null>("use-blur-screen-cover", null);
-
 export function ScreenCover({ children, onCloseRequest, isTransparent = true }: Props) {
-  const shouldUseBlurAnimation = shouldUseBlurPreference.useValue();
-
-  const currentFpsMeasurementRef = useRef<EndFpsMeasurement | null>(null);
-
-  function getPresenceStyles(): PresenceStyles {
-    if (isTransparent) {
-      return {};
-    }
-
-    const onlyBackgroundColorAnimation: PresenceStyles = {
-      backgroundColor: [theme.colors.primary.opacity(0).value, theme.colors.primary.opacity(0.7).value],
-    };
-
-    if (shouldUseBlurAnimation === false) {
-      return onlyBackgroundColorAnimation;
-    }
-
-    return {
-      ...onlyBackgroundColorAnimation,
-      backdropFilter: ["blur(0px)", `blur(${BACKGROUND_BLUR_SIZE_PX}px)`],
-    };
-  }
-
-  function handleStartMeasuringAnimation() {
-    if (shouldUseBlurAnimation !== null) return;
-    currentFpsMeasurementRef.current = startMeasuringFps();
-  }
-
-  function handleAnimationEnd() {
-    if (!currentFpsMeasurementRef.current) return;
-
-    const fpsDuringTransition = currentFpsMeasurementRef.current();
-
-    if (fpsDuringTransition < BLUR_ANIMATION_FPS_TO_ENABLE_BLUR_THRESHOLD) {
-      // If animation was laggy, never again animate with blur.
-      shouldUseBlurPreference.set(false);
-    } else {
-      shouldUseBlurPreference.set(true);
-    }
-  }
+  const isMounted = useUnmountPresence(200);
 
   return (
     <BodyPortal>
       <UIBodyCover
-        presenceStyles={getPresenceStyles()}
+        isCovering={isMounted && !isTransparent}
         onClick={handleWithStopPropagation(onCloseRequest)}
         enableBlur={isTransparent}
-        onAnimationStart={handleStartMeasuringAnimation}
-        onAnimationComplete={handleAnimationEnd}
       >
         {children}
       </UIBodyCover>
@@ -82,7 +30,9 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
   );
 }
 
-const UIBodyCover = styled(PresenceAnimator)<{ enableBlur: boolean }>`
+const background = theme.colors.primary;
+
+const UIBodyCover = styled.div<{ enableBlur: boolean; isCovering: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -96,4 +46,7 @@ const UIBodyCover = styled(PresenceAnimator)<{ enableBlur: boolean }>`
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000;
+  backdrop-filter: blur(${(props) => (props.isCovering ? BACKGROUND_BLUR_SIZE_PX : 0)}px);
+  background-color: ${(props) => (props.isCovering ? background.opacity(0.5) : background.opacity(0))};
+  transition: 0.1s all;
 `;

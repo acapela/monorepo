@@ -104,7 +104,7 @@ const UIToolbar = styled.div<{}>`
 `;
 
 const UITitle = styled.h3`
-  ${theme.typo.pageTitle};
+  ${theme.typo.secondaryTitle};
 `;
 
 const UIDescription = styled.h3`
