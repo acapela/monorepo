@@ -56,7 +56,6 @@ async function subscribeToCurrentTeamId(
       `,
     })
     .subscribe((newResult) => {
-      console.log(performance.now(), "useCurrentTeamManager newResult");
       if (!newResult.data) return;
       const newTeamId = newResult.data.user?.current_team?.id ?? null;
 

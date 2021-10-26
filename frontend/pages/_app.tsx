@@ -10,7 +10,6 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
-import { db } from "~db";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
