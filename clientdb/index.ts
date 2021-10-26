@@ -86,6 +86,13 @@ export async function createClientDb<Entities extends EntitiesMap>(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
   );
 
+  // Start sync at once when all persistance data is loaded
+  persistanceLoadedPromise.then(() => {
+    forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
+      client.startSync();
+    });
+  });
+
   const firstSyncPromise = Promise.all(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)
   );
