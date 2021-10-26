@@ -20,7 +20,7 @@ async function fetchCurrentTeamId(apollo: ApolloClient<unknown>, userId: string)
     },
     fetchPolicy: "no-cache",
     query: gql`
-      query CurrentTeam($userId: uuid!) {
+      query CurrentTeamInitial($userId: uuid!) {
         user: user_by_pk(id: $userId) {
           current_team {
             id
