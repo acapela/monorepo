@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { Block, KnownBlock } from "@slack/bolt";
 import { pick } from "lodash";
 
 import { slackClient } from "~backend/src/slack/app";
@@ -7,12 +8,18 @@ import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 
-async function trySendSlackNotification(teamId: string, user: User, text: string) {
+async function trySendSlackNotification(teamId: string, user: User, payload: string | (KnownBlock | Block)[]) {
   const [token, slackUserId] = await Promise.all([fetchTeamBotToken(teamId), findSlackUserId(teamId, user)]);
   if (!token || !slackUserId) {
     return;
   }
-  await slackClient.chat.postMessage({ token, channel: slackUserId, text });
+
+  const textOrBlocks = typeof payload === "string" ? { text: payload } : { blocks: payload };
+  await slackClient.chat.postMessage({
+    token,
+    channel: slackUserId,
+    ...textOrBlocks,
+  });
 }
 
 type NotificationMessage = {
@@ -20,7 +27,7 @@ type NotificationMessage = {
     subject: string;
     html: string;
   };
-  slack: string;
+  slack: string | (KnownBlock | Block)[];
 };
 
 /*

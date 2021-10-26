@@ -17,4 +17,4 @@ export async function sendEmail(email: MailDataRequired, isMultiple?: boolean): 
   }
 }
 
-export const DEFAULT_NOTIFICATION_EMAIL = "hello@acape.la";
+export const DEFAULT_NOTIFICATION_EMAIL = { name: "Acapela", email: "hello@acape.la" };
