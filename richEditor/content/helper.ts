@@ -1,21 +1,27 @@
 import { RichEditorNode, RichEditorNodeWithAttributes } from "~richEditor/content/types";
 
+function getNodesFromContentByTypeInner<AttributesType = unknown>(
+  node: RichEditorNode,
+  type: string,
+  collectArray: RichEditorNodeWithAttributes<AttributesType>[]
+): RichEditorNodeWithAttributes<AttributesType>[] {
+  if (node.type === type) {
+    collectArray.push(node as RichEditorNodeWithAttributes<AttributesType>);
+  }
+
+  if (!node.content) return collectArray;
+
+  for (const childNode of node.content) {
+    getNodesFromContentByTypeInner<AttributesType>(childNode, type, collectArray);
+  }
+  return collectArray;
+}
+
 export function getNodesFromContentByType<AttributesType = unknown>(
   node: RichEditorNode,
   type: string
 ): RichEditorNodeWithAttributes<AttributesType>[] {
-  let nodesOfRequestedType: RichEditorNodeWithAttributes<AttributesType>[] = [];
-
-  if (node.type === type) {
-    nodesOfRequestedType.push(node as RichEditorNodeWithAttributes<AttributesType>);
-  }
-
-  if (!node.content) return nodesOfRequestedType;
-
-  for (const childNode of node.content) {
-    nodesOfRequestedType = nodesOfRequestedType.concat(getNodesFromContentByType<AttributesType>(childNode, type));
-  }
-  return nodesOfRequestedType;
+  return getNodesFromContentByTypeInner(node, type, []);
 }
 
 export function getIsContentNodeOfType<AttributesType = unknown>(
