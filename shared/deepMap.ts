@@ -1,7 +1,9 @@
 import { EqualValueReuser, createEqualValueReuser } from "./createEqualReuser";
+import { devAssignWindowVariable } from "./dev";
 
 const targetSymbol = Symbol("target");
 const equalReuserSymbol = Symbol("equalReuserSymbol");
+const undefinedSymbol = Symbol("undefined");
 
 interface Options {
   /**
@@ -39,6 +41,7 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
     const currentReuser = currentTarget.get(equalReuserSymbol) as EqualValueReuser;
 
     for (let part of path) {
+      if (part === undefined) part = undefinedSymbol;
       if (checkEquality) {
         part = currentReuser(part);
       }
@@ -76,3 +79,5 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
   return { get };
 }
+
+devAssignWindowVariable("f", createDeepMap);

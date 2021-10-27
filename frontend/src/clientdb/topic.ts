@@ -67,7 +67,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
-    const messageIds = cachedComputed(() => {
+    const getMessageIds = cachedComputed(() => {
       return messages.all.map((message) => message.id);
     });
 
@@ -91,7 +91,7 @@ export const topicEntity = defineEntity<TopicFragment>({
     }
 
     const tasks = getEntity(taskEntity).query({
-      message_id: () => messageIds.get(),
+      message_id: () => getMessageIds(),
     });
 
     const unreadMessages = getEntity(messageEntity)
