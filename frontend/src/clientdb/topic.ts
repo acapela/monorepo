@@ -1,11 +1,7 @@
-import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
-import { memoize, uniq } from "lodash";
 
 import { EntityByDefinition, defineEntity, lazyComputed } from "~clientdb";
-import { computedArray } from "~clientdb/entity/utils/computedArray";
 import { TopicFragment } from "~gql";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";

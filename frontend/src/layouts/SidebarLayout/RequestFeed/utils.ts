@@ -1,4 +1,3 @@
-import { createEntityCache } from "~clientdb";
 import { lazyComputedWithArgs } from "~clientdb/entity/utils/lazyComputedWithArgs";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";

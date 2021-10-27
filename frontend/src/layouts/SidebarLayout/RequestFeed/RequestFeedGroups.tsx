@@ -2,7 +2,6 @@ import { min, sortBy } from "lodash";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { createEntityCache } from "~clientdb";
 import { lazyComputedWithArgs } from "~clientdb/entity/utils/lazyComputedWithArgs";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";

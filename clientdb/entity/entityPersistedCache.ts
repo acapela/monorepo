@@ -6,7 +6,7 @@ interface EntityCacheItem<V> {
 }
 
 export function createEntitiesPersistedCache(cacheManager: PersistedKeyValueCache) {
-  function getCached<V, D, C>(
+  function getCached<V, D>(
     cacheKey: string,
     entityKey: string,
     entityName: string,

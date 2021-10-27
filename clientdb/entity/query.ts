@@ -1,5 +1,5 @@
 import { sortBy } from "lodash";
-import { IObservableArray, computed } from "mobx";
+import { IObservableArray } from "mobx";
 
 import { createEqualValueReuser } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
@@ -7,7 +7,6 @@ import { createDeepMap } from "~shared/deepMap";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
-import { createEntityCache } from "./utils/entityCache";
 import { lazyComputed } from "./utils/lazyComputed";
 import { lazyComputedWithArgs } from "./utils/lazyComputedWithArgs";
 

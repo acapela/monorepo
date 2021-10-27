@@ -17,6 +17,7 @@ export type LazyComputed<T> = {
  *
  * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function lazyComputedWithArgs<A extends any[], T>(
   getter: (...args: A) => T,
   options: IComputedValueOptions<T> = {}
