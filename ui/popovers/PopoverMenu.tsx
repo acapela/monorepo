@@ -18,6 +18,7 @@ interface Props {
   onItemSelected?: (item: PopoverMenuOption) => void;
   placement?: PopoverPlacement;
   onCloseRequest?: () => void;
+  isDisabled?: boolean;
 }
 
 export type PopoverMenuOption = {
@@ -29,13 +30,13 @@ export type PopoverMenuOption = {
 } & ({ href: string } | { onSelect: () => void } | { externalURL: string });
 
 export const PopoverMenu = styled<Props>(
-  ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }) => {
+  ({ options, placement = "bottom-start", className, anchorRef, isDisabled, onCloseRequest, onItemSelected }) => {
     const popoverRef = useRef<HTMLDivElement>(null);
     useClickAway(popoverRef, () => onCloseRequest?.());
 
     return (
       <ScreenCover onCloseRequest={onCloseRequest}>
-        <Popover anchorRef={anchorRef} placement={placement}>
+        <Popover anchorRef={anchorRef} placement={placement} isDisabled={isDisabled}>
           <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
             {options.map((option) => {
               const labelNode = (
