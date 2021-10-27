@@ -75,7 +75,10 @@ export const Message = styledObserver<Props>(
       }
     }
 
-    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
+    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly && !message.topic?.isClosed, {
+      onDelay: 0,
+      offDelay: 200,
+    });
 
     const getMessageActionsOptions = () => {
       const options: PopoverMenuOption[] = [];
@@ -122,7 +125,7 @@ export const Message = styledObserver<Props>(
             shouldShowTools && (
               <UITools>
                 <MakeReactionButton message={message} />
-                {!message.topic?.isClosed && <ReplyButton messageId={message.id} />}
+                <ReplyButton messageId={message.id} />
                 {messageActionsOptions.length > 0 && (
                   <PopoverMenuTrigger
                     onOpen={() => setIsActive(true)}
