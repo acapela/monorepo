@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { UserEntity } from "~frontend/clientdb/user";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
@@ -19,24 +18,16 @@ import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
 interface Props {
   topic: TopicEntity;
-  user: UserEntity;
 }
 
-export const TopicHeader = observer(function TopicHeader({ topic, user }: Props) {
-  function handleCloseRequest() {
-    topic.update({ closed_at: new Date().toISOString(), closed_by_user_id: user.id });
+export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
+  function handleCloseTopic() {
+    topic.close();
     trackEvent("Closed Topic", { topicId: topic.id });
   }
 
   const handleReopenTopic = action(() => {
-    if (topic.isArchived) {
-      handleTopicUnarchive();
-    }
-
-    topic.update({
-      closed_at: null,
-      closed_by_user_id: null,
-    });
+    topic.open();
     trackEvent("Reopened Topic", { topicId: topic.id });
   });
 
@@ -53,7 +44,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
 
   const handleTopicArchive = action(async () => {
     if (!topic.isClosed) {
-      handleCloseRequest();
+      handleCloseTopic();
     }
     topic.update({ archived_at: new Date().toISOString() });
     trackEvent("Archived Topic", { topicId: topic.id });
@@ -79,7 +70,7 @@ export const TopicHeader = observer(function TopicHeader({ topic, user }: Props)
             },
             {
               label: topic.isClosed ? "Reopen" : "Close",
-              onSelect: () => (topic.isClosed ? handleReopenTopic() : handleCloseRequest()),
+              onSelect: () => (topic.isClosed ? handleReopenTopic() : handleCloseTopic()),
               icon: topic.isClosed ? <IconUndo /> : <IconCheck />,
             },
             {

@@ -56,14 +56,14 @@ function sortSentTopics(topics: TopicEntity[]) {
 
 function prepareTopicsGroups(topics: TopicEntity[]) {
   const [archived, notArchived] = groupByFilter(topics, (topic) => topic.isArchived);
-  const [receivedTasks, notReceivedTasks] = groupByFilter(notArchived, hasTopicOpenTasksForCurrentUser);
-  const [sentTasks, notSentTasks] = groupByFilter(notReceivedTasks, hasTopicSentTasksByCurrentUser);
-  const [openTopics, closedTopics] = groupByFilter(notSentTasks, (topic) => !topic.isClosed);
+  const [closedTopics, allOpenTopics] = groupByFilter(notArchived, (topic) => topic.isClosed);
+  const [receivedTasks, notReceivedTasks] = groupByFilter(allOpenTopics, hasTopicOpenTasksForCurrentUser);
+  const [sentTasks, remainingUncategorizedOpenTopics] = groupByFilter(notReceivedTasks, hasTopicSentTasksByCurrentUser);
 
   return {
     receivedTasks: sortReceivedTopics(receivedTasks),
     sentTasks: sortSentTopics(sentTasks),
-    openTopics,
+    openTopics: remainingUncategorizedOpenTopics,
     closedTopics,
     archived,
   };

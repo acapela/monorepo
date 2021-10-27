@@ -148,6 +148,20 @@ export const topicEntity = defineEntity<TopicFragment>({
       get lastSeenMessageByCurrentUserInfo() {
         return getLastSeenMessageByCurrentUserInfo();
       },
+
+      close() {
+        const closed_at = new Date().toISOString();
+        const closed_by_user_id = currentUserId;
+
+        return getEntity(topicEntity).query({ id: topic.id }).first?.update({ closed_at, closed_by_user_id });
+      },
+
+      open() {
+        return getEntity(topicEntity)
+          .query({ id: topic.id })
+          .first?.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
+      },
+
       unreadMessages,
     };
 
