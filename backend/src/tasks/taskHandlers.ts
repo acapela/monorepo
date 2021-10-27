@@ -1,5 +1,5 @@
 import { HasuraEvent } from "~backend/src/hasura";
-import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
+import { escapeLink, sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Task, db } from "~db";
 import { assert } from "~shared/assert";
@@ -37,7 +37,7 @@ async function onTaskCreation(task: Task) {
       subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
       html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
     },
-    slack: `${slackFrom} has asked for your *${taskLabel}* in <${topicURL}|${topic.name}>`,
+    slack: `${slackFrom} has asked for your *${taskLabel}* in <${escapeLink(topicURL)}|${topic.name}>`,
   });
 }
 
