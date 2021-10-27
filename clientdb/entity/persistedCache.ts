@@ -1,6 +1,5 @@
-import { AsyncReturnType } from "ink/node_modules/type-fest";
-
 import { PersistanceAdapterInfo } from "~clientdb";
+import { AsyncReturnType } from "~shared/types";
 import { ValueUpdater, updateValue } from "~shared/updateValue";
 
 /**
