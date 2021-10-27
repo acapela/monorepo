@@ -155,7 +155,7 @@ export function cachedComputedWithoutArgs<T>(
 let aliveLazyReactions = 0;
 
 // As those are not auto disposed by mobx - we need to be careful with memory leaks - aliveLazyReactions should always fall to 0 after a while if no more reactions are running
-const DEBUG_MEMORY_LEAKS = true;
+const DEBUG_MEMORY_LEAKS = false;
 
 if (typeof document !== "undefined" && DEBUG_MEMORY_LEAKS && isDev()) {
   setInterval(() => {

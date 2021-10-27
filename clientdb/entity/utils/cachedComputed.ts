@@ -17,10 +17,6 @@ export function cachedComputed<A extends any[], T>(getter: (...args: A) => T, op
   // TODO: cleanup map entries after lazy is disposed
   const map = createDeepMap<LazyComputed<T>>();
   function getComputed(...args: A) {
-    if (args.length === 0) {
-      console.log("args", args);
-    }
-
     return map.get(args, () => cachedComputedWithoutArgs(() => getter(...args), options));
   }
 
