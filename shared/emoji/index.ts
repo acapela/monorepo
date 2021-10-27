@@ -1,10 +1,11 @@
 import { Index } from "flexsearch";
 import { memoize } from "lodash";
 
-import emojiByCategory from "~shared/emoji/categories.json";
-import emojiSearchTags from "~shared/emoji/search.json";
-import emojiSlugByNative from "~shared/emoji/slugs.json";
 import { typedKeys } from "~shared/object";
+
+import emojiByCategory from "./categories.json";
+import emojiSearchTags from "./search.json";
+import emojiSlugByNative from "./slugs.json";
 
 export const emojiByCategories = emojiByCategory;
 

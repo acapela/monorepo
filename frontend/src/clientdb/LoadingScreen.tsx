@@ -41,6 +41,7 @@ const UIHolder = styled(motion.div)<{ isVisible: boolean }>`
   justify-content: center;
   ${theme.spacing.close.multiply(2).asGap};
   opacity: ${(props) => (props.isVisible ? 1 : 0)};
+  pointer-events: ${(props) => (props.isVisible ? "all" : "none")};
   will-change: opacity;
   transition: 0.2s all;
 

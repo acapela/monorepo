@@ -1,4 +1,4 @@
-import { IComputedValueOptions, Reaction, observable, onBecomeObserved, onBecomeUnobserved, runInAction } from "mobx";
+import { IComputedValueOptions, Reaction, createAtom } from "mobx";
 
 import { isDev } from "~shared/dev";
 
@@ -31,7 +31,7 @@ let isDisposalCascadeRunning = false;
  *
  * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
  */
-export function lazyComputed<T>(
+export function cachedComputedWithoutArgs<T>(
   getter: () => T,
   { name = "LazyComputed", equals }: IComputedValueOptions<T> = {}
 ): LazyComputed<T> {
@@ -39,35 +39,25 @@ export function lazyComputed<T>(
   let needsRecomputing = true;
   let currentReaction: Reaction | null;
 
-  const computedHook = observable.box({}, { deep: false });
+  const updateSignal = createAtom(
+    name,
+    () => {
+      aliveLazyReactions++;
+    },
+    handleBecameUnobserved
+  );
 
-  let observersCount = 0;
-
-  onBecomeObserved(computedHook, () => {
-    observersCount++;
-  });
-
-  onBecomeUnobserved(computedHook, () => {
-    observersCount--;
-
-    // It stopped being observed because consumer reaction is not running anymore - schedule disposal after 'keep alive' time.
-    scheduleDisposal();
-
-    // Other consumers are still observing
-    if (observersCount) return;
-
+  function handleBecameUnobserved() {
+    aliveLazyReactions--;
     // It became unobserved as result of other lazyComputed disposing. We don't need to wait for 'keep alive' time
     if (isDisposalCascadeRunning) {
       // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
+
       setTimeout(dispose, 0);
       return;
     }
-  });
 
-  function informObserversAboutUpdate() {
-    runInAction(() => {
-      computedHook.set({});
-    });
+    scheduleDisposal();
   }
 
   // Will initialize reaction to watch that dependencies changed or re-use previous reaction if the same computed used multiple times
@@ -82,11 +72,8 @@ export function lazyComputed<T>(
       // Set flag so on next value request we'll do full re-compute
       needsRecomputing = true;
       // Make observers re-run
-      informObserversAboutUpdate();
+      updateSignal.reportChanged();
     });
-
-    // New reaction - keep track of it to debug memory leaks
-    aliveLazyReactions++;
 
     return currentReaction;
   }
@@ -96,17 +83,16 @@ export function lazyComputed<T>(
       // If other computed values become unobserved as result of this one being disposed - let them know so they instantly dispose in cascade
       isDisposalCascadeRunning = true;
 
-      // We cannot dispose if it is still observed - it would cause eg. ui to stop to react to updates. Note - this should never happen.
-      if (observersCount) return;
-
       // It was already disposed
-      if (!currentReaction) return;
+      if (!currentReaction) {
+        return;
+      }
+
+      needsRecomputing = true;
 
       currentReaction.dispose();
-      needsRecomputing = true;
-      currentReaction = null;
 
-      aliveLazyReactions--;
+      currentReaction = null;
     } finally {
       isDisposalCascadeRunning = false;
     }
@@ -117,7 +103,9 @@ export function lazyComputed<T>(
 
   const recomputeValueIfNeeded = () => {
     // No dependencies did change since we last computed.
-    if (!needsRecomputing) return;
+    if (!needsRecomputing) {
+      return;
+    }
 
     let newValue: T;
     // We need to re-compute
@@ -145,12 +133,16 @@ export function lazyComputed<T>(
     dispose,
     get() {
       // This is final 'getter'
-
       // If value is outdated - recompute it now (on demand - in lazy way)
-      recomputeValueIfNeeded();
 
-      // We need to be able to force consumer of this value to re-run, thus we read from computed hook that we'll update if value gets outdated
-      computedHook.get();
+      const isObserved = updateSignal.reportObserved();
+
+      // ! This value is used, but outside of mobx observers world. Dont initiate reactions to avoid memory leak - simply return value without cache.
+      if (!isObserved) {
+        return getter();
+      }
+
+      recomputeValueIfNeeded();
       return latestValue;
     },
   };
@@ -163,7 +155,7 @@ export function lazyComputed<T>(
 let aliveLazyReactions = 0;
 
 // As those are not auto disposed by mobx - we need to be careful with memory leaks - aliveLazyReactions should always fall to 0 after a while if no more reactions are running
-const DEBUG_MEMORY_LEAKS = true;
+const DEBUG_MEMORY_LEAKS = false;
 
 if (typeof document !== "undefined" && DEBUG_MEMORY_LEAKS && isDev()) {
   setInterval(() => {
