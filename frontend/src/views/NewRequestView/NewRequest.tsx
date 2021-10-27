@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
@@ -20,6 +21,7 @@ import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
+import { RequestType } from "~shared/types/mention";
 import { getUUID } from "~shared/uuid";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
@@ -138,6 +140,7 @@ export const NewRequest = observer(function NewRequest() {
 
       for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
         db.task.create({ message_id: newMessage.id, user_id: userId, type });
+        trackEvent("Created Task", { taskType: type as RequestType, topicId: topic.id, mentionedUserId: userId });
       }
 
       attachments.forEach((attachment) => {
@@ -146,7 +149,7 @@ export const NewRequest = observer(function NewRequest() {
 
       router.push(routes.topic({ topicSlug: topic.slug }));
     });
-
+    trackEvent("Created Topic", { origin: "web-app", topicName });
     clearPersistedContent();
     clearTopicName();
   }

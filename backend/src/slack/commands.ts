@@ -1,10 +1,14 @@
 import * as SlackBolt from "@slack/bolt";
 
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
+
 import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 import { createTopicModalView } from "./views";
 
+const ACAPELA_ROOT_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
+
 export function setupCommands(slackApp: SlackBolt.App) {
-  slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, client, context, body }) => {
+  slackApp.command(ACAPELA_ROOT_COMMAND, async ({ command, ack, client, context, body }) => {
     const user = await findUserBySlackId(context.botToken || body.token, command.user_id);
     if (!user) {
       await ack();
@@ -27,5 +31,9 @@ export function setupCommands(slackApp: SlackBolt.App) {
         },
       })
     );
+    trackBackendUserEvent(user.id, "Used Slack Slash Command", {
+      slackUserName: user.name ?? "",
+      commandName: ACAPELA_ROOT_COMMAND,
+    });
   });
 }

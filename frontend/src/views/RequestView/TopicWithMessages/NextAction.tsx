@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
@@ -59,10 +59,14 @@ const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" 
 const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   const topicContext = useTopicStoreContext();
 
-  const currentUser = useAssertCurrentUser();
-  const closeTopic = ({ isArchived } = { isArchived: false }) => {
-    const now = new Date().toISOString();
-    topic.update({ closed_at: now, closed_by_user_id: currentUser.id, ...(isArchived ? { archived_at: now } : {}) });
+  const closeTopic = ({ isArchived: isAlsoArchiving } = { isArchived: false }) => {
+    topic.close();
+    trackEvent("Closed Topic", { topicId: topic.id });
+
+    if (isAlsoArchiving) {
+      topic.update({ archived_at: new Date().toISOString() });
+      trackEvent("Archived Topic", { topicId: topic.id });
+    }
   };
 
   return (

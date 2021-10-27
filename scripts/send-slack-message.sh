@@ -20,3 +20,7 @@ if [[ "$stage" == "staging" ]]; then
 fi
 
 curl -s -X POST -H "Content-type: application/json" --data "{\"text\":\"$message\"}" "$SLACK_WEBHOOK_URL" > /dev/null
+
+if [[ "$3" == "product" ]]; then
+  curl -s -X POST -H "Content-type: application/json" --data "{\"text\":\"$message\"}" "$SLACK_PRODUCT_WEBHOOK_URL" > /dev/null
+fi

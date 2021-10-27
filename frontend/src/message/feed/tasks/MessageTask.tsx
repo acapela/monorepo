@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React, { useMemo } from "react";
 import styled, { css } from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
@@ -43,23 +44,28 @@ export const MessageTask = observer(({ task }: Props) => {
         {
           key: "complete",
           label: "Mark as Complete",
-          onSelect: () => task.update({ done_at: new Date().toISOString() }),
+          onSelect: () => {
+            task.update({ done_at: new Date().toISOString() });
+            trackEvent("Mark Task As Done", { taskType: task.type as RequestType, topicId: task.topic?.id ?? "" });
+          },
         },
       ];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [task, task.isDone]);
 
+  const isAbleToModifyTaskStatus = task.isAssignedToSelf && !task.topic?.isClosed;
+
   return (
     <UISingleTask key={task.id} data-tooltip={getTooltip()}>
       {task.assignedUser ? <UserAvatar size={30} user={task.assignedUser} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{task.assignedUser?.name}</UIUserNameLabel>
-        <PopoverMenuTrigger isDisabled={!task.isAssignedToSelf} options={taskEditOptions} placement="bottom">
-          <UIStatusLabel isDone={task.isDone} isActionable={task.isAssignedToSelf}>
+        <PopoverMenuTrigger isDisabled={!isAbleToModifyTaskStatus} options={taskEditOptions} placement="bottom">
+          <UIStatusLabel isDone={task.isDone} isActionable={isAbleToModifyTaskStatus}>
             {task.isDone && <UIMark>✓&nbsp;</UIMark>}
             {MENTION_TYPE_LABELS[task.type as RequestType] ?? task.type}
-            {!task.isDone && task.isAssignedToSelf && <UIChevronDown />}
+            {!task.isDone && isAbleToModifyTaskStatus && <UIChevronDown />}
           </UIStatusLabel>
         </PopoverMenuTrigger>
       </UITextInfo>

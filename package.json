@@ -118,6 +118,7 @@
     }
   },
   "dependencies": {
+    "@install-binary/hasura": "^2.0.10",
     "@tiptap/extension-placeholder": "^2.0.0-beta.31",
     "axios": "^0.21.4",
     "date-fns": "^2.24.0",

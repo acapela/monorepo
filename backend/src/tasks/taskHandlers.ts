@@ -1,28 +1,10 @@
 import { HasuraEvent } from "~backend/src/hasura";
 import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
-import { Task, Topic, db } from "~db";
+import { Task, db } from "~db";
 import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
-
-export async function markAllOpenTasksAsDone(topic: Topic) {
-  const nowInTimestamp = new Date().toISOString();
-
-  return await db.task.updateMany({
-    data: {
-      done_at: nowInTimestamp,
-    },
-    where: {
-      AND: {
-        message: {
-          topic_id: { equals: topic.id },
-        },
-        done_at: { equals: null },
-      },
-    },
-  });
-}
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
   if (event.type === "create") {
