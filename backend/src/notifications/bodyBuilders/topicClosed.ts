@@ -19,7 +19,7 @@ export function createSlackClosureMessage({
   // TODO: Waiting for Richard to give feedback on copy
   const sectionText = closedBy
     ? `*${closedBy}* closed *<${topicURL}|${topicName}>*`
-    : `🎉 All participants completed their requests in *<${topicURL}|${topicName}>*. It was closed automatically.`;
+    : `🎉 All requests have been actioned in <${topicURL}|${topicName}>. The topic is now closed. 💪`;
 
   return {
     slack: BlockCollection(
@@ -40,7 +40,7 @@ export function createEmailClosureMessage({
   const subject = closedBy ? `${topicName} was closed by ${closedBy}` : `${topicName} was closed`;
   const html = closedBy
     ? `Click <a href="${topicURL}">here</a> to see topic`
-    : `🎉 All participants completed their requests in <a href="${topicURL}">${topicName}</a>. It was closed automatically.`;
+    : `🎉 All requests have been actioned in  <a href="${topicURL}">${topicName}</a>. The topic is now closed. 💪`;
   return {
     email: {
       subject,
