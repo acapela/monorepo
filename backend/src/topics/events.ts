@@ -5,20 +5,14 @@ import { routes } from "~shared/routes";
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
-import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   if (event.type === "update") {
-    const wasJustClosed = event.item.closed_at && !event.itemBefore.closed_at;
-
-    if (wasJustClosed && event.userId) {
-      await markAllOpenTasksAsDone(event.item);
-    }
-
     const ownerId = event.item.owner_id;
     const userIdThatClosedTopic = event.item.closed_by_user_id;
 
     const isClosedByOwner = ownerId === userIdThatClosedTopic;
+    const wasJustClosed = event.item.closed_at && !event.itemBefore.closed_at;
     if (wasJustClosed && !isClosedByOwner) {
       const topicOwner = await db.user.findFirst({ where: { id: ownerId } });
       const topicCloser = userIdThatClosedTopic
