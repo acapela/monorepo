@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
 import { memoize, uniq } from "lodash";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity, lazyComputed } from "~clientdb";
 import { computedArray } from "~clientdb/entity/utils/computedArray";
 import { TopicFragment } from "~gql";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
@@ -71,28 +71,14 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
-    const messageIds = computedArray(() => {
+    const messageIds = lazyComputed(() => {
       return messages.all.map((message) => message.id);
     });
-
-    const getIsUserMentionedInContent = (content: JSONContent, userId: string) =>
-      getMentionedUserIdsInContent(content).includes(userId);
 
     const participants = getEntity(userEntity).query((user) => {
       if (topic.owner_id === user.id) return true;
 
-      const allMessages = messages.all;
-
-      if (
-        allMessages.some((message) => {
-          if (message.user_id === user.id) return true;
-
-          if (message.tasks.all.some((task) => task.user_id === user.id)) return true;
-        })
-      )
-        return true;
-
-      return allMessages.some((message) => getIsUserMentionedInContent(message.content, user.id));
+      return messages.all.some((message) => message.getIsUserParticipating(user.id));
     });
 
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
@@ -123,12 +109,8 @@ export const topicEntity = defineEntity<TopicFragment>({
         return getEntity(userEntity).findById(topic.owner_id);
       },
       messages,
-      get tasks() {
-        return tasks;
-      },
-      get participants() {
-        return participants;
-      },
+      tasks,
+      participants,
       get isCurrentUserParticipating() {
         return connections.participants.all.some((user) => user.isCurrentUser);
       },
@@ -158,7 +140,3 @@ export const topicEntity = defineEntity<TopicFragment>({
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;
-
-const getMentionedUserIdsInContent = memoize((content: JSONContent) => {
-  return uniq(getMentionNodesFromContent(content).map((node) => node.attrs.data.userId));
-});
