@@ -14,6 +14,7 @@ import { EditorMentionData } from "~shared/types/editor";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconUser } from "~ui/icons";
 import { SelectList } from "~ui/SelectList";
+import { theme } from "~ui/theme";
 
 import { MentionTypePicker } from "./MentionTypePicker";
 
@@ -78,8 +79,9 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
 const UISelectItem = styled.div<{}>`
   display: flex;
   align-items: center;
+  ${theme.spacing.horizontalActions.asGap};
+
   ${UserAvatar} {
     font-size: 1.5rem;
-    margin-right: 8px;
   }
 `;
