@@ -1,25 +1,25 @@
 import { autorun, observable, runInAction } from "mobx";
 
-import { lazyComputed } from "~clientdb/entity/utils/lazyComputed";
+import { cachedComputedWithoutArgs } from "~clientdb/entity/utils/cachedComputedWithoutArgs";
 
 describe("lazyComputed", () => {
   it("returns proper value", () => {
     const getter = jest.fn(() => 42);
-    const value = lazyComputed(getter);
+    const value = cachedComputedWithoutArgs(getter);
 
     expect(value.get()).toBe(42);
   });
 
   it("is not computing value until requested", () => {
     const getter = jest.fn(() => 42);
-    lazyComputed(getter);
+    cachedComputedWithoutArgs(getter);
 
     expect(getter).toBeCalledTimes(0);
   });
 
   it("is will keep value in cache, even if context is not observed", () => {
     const getter = jest.fn(() => 42);
-    const value = lazyComputed(getter);
+    const value = cachedComputedWithoutArgs(getter);
 
     value.get();
 
@@ -33,7 +33,7 @@ describe("lazyComputed", () => {
     const finalValue = observable.box(1);
 
     const getter = jest.fn(() => finalValue.get());
-    const value = lazyComputed(getter);
+    const value = cachedComputedWithoutArgs(getter);
 
     expect(value.get()).toBe(1);
 
@@ -54,7 +54,7 @@ describe("lazyComputed", () => {
     const finalValue = observable.box(1);
 
     const getter = jest.fn(() => finalValue.get());
-    const value = lazyComputed(getter);
+    const value = cachedComputedWithoutArgs(getter);
 
     const watcher = jest.fn(() => {
       return value.get();
@@ -77,7 +77,7 @@ describe("lazyComputed", () => {
     const otherValue = observable.box(1);
 
     const getter = jest.fn(() => finalValue.get());
-    const value = lazyComputed(getter);
+    const value = cachedComputedWithoutArgs(getter);
 
     const watcher = jest.fn(() => {
       return otherValue.get() + value.get();

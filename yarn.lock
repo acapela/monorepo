@@ -1767,6 +1767,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@install-binary/hasura-darwin-arm64@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura-darwin-arm64@npm:2.0.10"
+  checksum: c965f59463d5ad0cc7098a1f1b54c523e6cb2b24515cc3734145939d7ac32cf5fcab3792fe5f456a8043ec91f21fc7ab934c1c5f65aff23e56630bf908f5bf6c
+  languageName: node
+  linkType: hard
+
+"@install-binary/hasura-darwin-x64@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura-darwin-x64@npm:2.0.10"
+  checksum: 42da5b1b9cf001416fbb7721993f0569ca583af7ddc290da74213d2ddb45e2de9cae53a82edeb8d3977774663870900604db3643e9377748909d3100170eebc2
+  languageName: node
+  linkType: hard
+
+"@install-binary/hasura-linux-arm64@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura-linux-arm64@npm:2.0.10"
+  checksum: ec0dd8e55e5cc913f9500ce76261994fdb404be361d3b5437d1c0671a25a78391b0f083fd9f6d7aca1ef294944c2c93e78607e99342203b9088718bd97c93eb0
+  languageName: node
+  linkType: hard
+
+"@install-binary/hasura-linux-x64@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura-linux-x64@npm:2.0.10"
+  checksum: 821ef4c28f0ed52382ff5fc71697dfbcd08606cacb8d2da1f03907e0ec219e6149533b693af2859d4f89990bc55fcfde54d5c08a90310e8bc04084524b3ce6ae
+  languageName: node
+  linkType: hard
+
+"@install-binary/hasura-win32-x64@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura-win32-x64@npm:2.0.10"
+  checksum: 656950fe5d8d443dabb30767ac328ba43c40656357ff4ae7b5dff39837c7a86b2c4f1a8d5a577d17aa2f28c1f0c90d99554b1ff83b8c199420b5829d40c7fcf5
+  languageName: node
+  linkType: hard
+
+"@install-binary/hasura@npm:^2.0.10":
+  version: 2.0.10
+  resolution: "@install-binary/hasura@npm:2.0.10"
+  dependencies:
+    "@install-binary/hasura-darwin-arm64": 2.0.10
+    "@install-binary/hasura-darwin-x64": 2.0.10
+    "@install-binary/hasura-linux-arm64": 2.0.10
+    "@install-binary/hasura-linux-x64": 2.0.10
+    "@install-binary/hasura-win32-x64": 2.0.10
+  dependenciesMeta:
+    "@install-binary/hasura-darwin-arm64":
+      optional: true
+    "@install-binary/hasura-darwin-x64":
+      optional: true
+    "@install-binary/hasura-linux-arm64":
+      optional: true
+    "@install-binary/hasura-linux-x64":
+      optional: true
+    "@install-binary/hasura-win32-x64":
+      optional: true
+  bin:
+    hasura: run.js
+  checksum: 41297f7b52eb6991f17fab616612d4de139017be3a1c20da80b51c55c2b5b6d11598793766d2ba17c9bc2d27de48c7baa8a348479d479852b98317a874f51d40
+  languageName: node
+  linkType: hard
+
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -2863,7 +2924,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:^1.68.0":
+"@sentry/cli@npm:^1.68.0, @sentry/cli@npm:^1.70.1":
   version: 1.70.1
   resolution: "@sentry/cli@npm:1.70.1"
   dependencies:
@@ -3096,6 +3157,15 @@ __metadata:
   dependencies:
     "@sentry/cli": ^1.68.0
   checksum: 1916e1bb5c43a4a440c237a8739280c62974a248daa95c5b9b9c264a4a5a8fe887a7cdc79ffa484fef43b393361bb329cd41468d59ed13cfdbbed8b6818b5544
+  languageName: node
+  linkType: hard
+
+"@sentry/webpack-plugin@npm:^1.18.3":
+  version: 1.18.3
+  resolution: "@sentry/webpack-plugin@npm:1.18.3"
+  dependencies:
+    "@sentry/cli": ^1.70.1
+  checksum: 99323bd145463bf20f4ce3712cc0938a5c2eb1af23c3167ca5fe8a0331d50753a54dbb9e5ac81c6bdb576c819532f4ff23c0f31b5fc6b5f0d23f55342c9fd6cc
   languageName: node
   linkType: hard
 
@@ -19956,6 +20026,7 @@ __metadata:
     "@segment/snippet": ^4.15.3
     "@sentry/node": ^6.13.2
     "@sentry/react": ^6.13.3
+    "@sentry/webpack-plugin": ^1.18.3
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.1.1
     "@types/dom-mediacapture-record": ^1.0.10
@@ -20036,6 +20107,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "~root@workspace:."
   dependencies:
+    "@install-binary/hasura": ^2.0.10
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/express": ^4.17.13
     "@types/jest": ^26.0.24

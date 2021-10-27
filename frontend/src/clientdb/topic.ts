@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
-import { maxBy } from "lodash";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
+import { computedArray } from "~clientdb/entity/utils/computedArray";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
 import { isNotNullish } from "~shared/nullish";
@@ -22,7 +22,6 @@ const topicFragment = gql`
     updated_at
     created_at
     closed_by_user_id
-    closing_summary
     archived_at
     owner_id
     index
@@ -45,7 +44,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       archived_at: null,
       closed_at: null,
       closed_by_user_id: null,
-      closing_summary: null,
       team_id: getContextValue(teamIdContext) ?? undefined,
       owner_id: getContextValue(userIdContext) ?? undefined,
       index: "0",
@@ -61,20 +59,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       "index",
       "closed_at",
       "closed_by_user_id",
-      "closing_summary",
       "owner_id",
       "team_id",
     ],
-    updateColumns: [
-      "archived_at",
-      "closed_at",
-      "closed_by_user_id",
-      "closing_summary",
-      "index",
-      "name",
-      "owner_id",
-      "slug",
-    ],
+    updateColumns: ["archived_at", "closed_at", "closed_by_user_id", "index", "name", "owner_id", "slug"],
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
   search: { fields: { name: true } },
@@ -82,6 +70,9 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
+    const getMessageIds = cachedComputed(() => {
+      return messages.all.map((message) => message.id);
+    });
 
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
       // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
@@ -96,6 +87,14 @@ export const topicEntity = defineEntity<TopicFragment>({
       return unseenMessages.first ?? null;
     }
 
+    function getOwner() {
+      return getEntity(userEntity).findById(topic.owner_id);
+    }
+
+    const tasks = getEntity(taskEntity).query({
+      message_id: () => getMessageIds(),
+    });
+
     const unreadMessages = getEntity(messageEntity)
       .query({ topic_id: topic.id })
       .query((message) => {
@@ -104,22 +103,17 @@ export const topicEntity = defineEntity<TopicFragment>({
 
     const connections = {
       get owner() {
-        return getEntity(userEntity).findById(topic.owner_id);
+        return getOwner();
       },
       messages,
+      tasks,
       get members(): UserEntity[] {
         return [
-          connections.owner,
+          getOwner(),
           ...getEntity(topicMemberEntity)
             .query({ topic_id: topic.id })
             .all.map((topicMember) => topicMember.user),
         ].filter(isNotNullish);
-      },
-      get tasks() {
-        const tasks = getEntity(taskEntity).query({
-          message_id: () => messages.all.map((message) => message.id),
-        });
-        return tasks;
       },
       get isCurrentUserMember() {
         return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
@@ -129,19 +123,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       get isClosed() {
         return !!topic.closed_at;
-      },
-      get lastActivityDate() {
-        if (!messages.hasItems) {
-          return new Date(topic.updated_at);
-        }
-        if (topic.closed_at) {
-          return new Date(topic.closed_at);
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
-
-        return messageWithLatestActivity.lastActivityDate;
       },
       get isArchived() {
         return !!topic.archived_at;
@@ -153,6 +134,20 @@ export const topicEntity = defineEntity<TopicFragment>({
       get lastSeenMessageByCurrentUserInfo() {
         return getLastSeenMessageByCurrentUserInfo();
       },
+
+      close() {
+        const closed_at = new Date().toISOString();
+        const closed_by_user_id = currentUserId;
+
+        return getEntity(topicEntity).query({ id: topic.id }).first?.update({ closed_at, closed_by_user_id });
+      },
+
+      open() {
+        return getEntity(topicEntity)
+          .query({ id: topic.id })
+          .first?.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
+      },
+
       unreadMessages,
     };
 

@@ -21,7 +21,7 @@ type Props = {
   team: TeamEntity;
 };
 
-export function AddSlackInstallationButton({
+export const AddSlackInstallationButton = observer(function AddSlackInstallationButton({
   teamId,
   tooltip,
   withBot,
@@ -60,7 +60,7 @@ export function AddSlackInstallationButton({
       Add Slack integration
     </UISlackButton>
   );
-}
+});
 
 function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
   const [deleteSlackInstallation, { loading: isDeletingSlackInstallation }] = useMutation<

@@ -22,7 +22,7 @@ hasuraEvents.addHandler("topic_updates", ["UPDATE"], handleTopicUpdates);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 // Create plain text version of each message so it can be used by search views.
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageChanges);
-hasuraEvents.addHandler("task_updates", ["INSERT"], handleTaskChanges);
+hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE"], handleTaskChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 

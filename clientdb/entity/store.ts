@@ -1,6 +1,9 @@
+import { memoize } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { MessageOrError, assert } from "~shared/assert";
+import { createEqualValueReuser } from "~shared/createEqualReuser";
+import { createDeepMap } from "~shared/deepMap";
 import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
 
@@ -13,6 +16,7 @@ import {
   EntityQuerySortFunction,
   EntityQuerySortInput,
   createEntityQuery,
+  resolveSortInput,
 } from "./query";
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
@@ -110,6 +114,57 @@ export function createEntityStore<Data, Connections>(
     return item;
   }
 
+  const getSimpleQuery = memoize((input: IndexQueryInput<Data & Connections>) => {
+    return computedArray(() => {
+      let passingResults: Entity<Data, Connections>[] | null = null;
+
+      for (const requiredKey of typedKeys(input)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const requiredValue = input[requiredKey]!;
+
+        const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
+
+        const keyResults = index.find(requiredValue);
+
+        // Nothing passed previous results. We can instantly return as there is no point to 'narrow down' empty result.
+        if (!keyResults.length) {
+          return [];
+        }
+
+        if (passingResults === null) {
+          passingResults = keyResults;
+          continue;
+        }
+
+        if (!passingResults.length) {
+          return passingResults;
+        }
+
+        passingResults = passingResults.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
+      }
+
+      return passingResults ?? [];
+    });
+  });
+
+  const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>({ checkEquality: true });
+
+  function createOrReuseQuery(
+    filter?: EntityFilterInput<Data, Connections>,
+    sort?: EntityQuerySortInput<Data, Connections>
+  ) {
+    const resolvedSort = resolveSortInput(sort) ?? undefined;
+    const query = reuseQueriesMap.get([filter, resolvedSort], () => {
+      const query = createEntityQuery(() => existingItems.get(), { filter, sort: resolvedSort }, store);
+
+      return query;
+    });
+
+    return query;
+  }
+
+  const reuseSimpleQueryInput = createEqualValueReuser();
+
   const store: EntityStore<Data, Connections> = {
     definition,
     events,
@@ -138,39 +193,8 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     simpleQuery(input: IndexQueryInput<Data & Connections>): Entity<Data, Connections>[] {
-      // Reuse the same array in case of same results to avoid waster observers triggers (like re-renders)
-      return computedArray(() => {
-        let passingResults: Entity<Data, Connections>[] | null = null;
-
-        for (const requiredKey of typedKeys(input)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const requiredValue = input[requiredKey]!;
-
-          const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
-
-          const keyResults = index.find(requiredValue);
-
-          // Nothing passed previous results. We can instantly return as there is no point to 'narrow down' empty result.
-          if (!keyResults.length) {
-            return [];
-          }
-
-          if (passingResults === null) {
-            passingResults = keyResults;
-            continue;
-          }
-
-          if (!passingResults.length) {
-            return passingResults;
-          }
-
-          passingResults = passingResults.filter((previouslyPassedResult) =>
-            keyResults.includes(previouslyPassedResult)
-          );
-        }
-
-        return passingResults ?? [];
-      }).get();
+      const reusedInput = reuseSimpleQueryInput(input);
+      return getSimpleQuery(reusedInput as typeof input).get();
     },
     findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,
@@ -216,10 +240,10 @@ export function createEntityStore<Data, Connections>(
       return didRemove;
     },
     query(filter, sort) {
-      return createEntityQuery(() => existingItems.get(), { filter, sort }, store);
+      return createOrReuseQuery(filter, sort);
     },
     sort(sort) {
-      return createEntityQuery(() => existingItems.get(), { sort }, store);
+      return createOrReuseQuery(undefined, sort);
     },
     destroy() {
       queryIndexes.forEach((queryIndex) => {

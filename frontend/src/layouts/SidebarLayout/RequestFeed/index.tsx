@@ -7,10 +7,8 @@ import { RequestFeedGroups } from "./RequestFeedGroups";
 
 export const RequestFeed = observer(() => {
   const db = useDb();
-  const topics = db.topic.sort({
-    sort: (topic) => topic.lastActivityDate,
-    direction: "asc",
-  }).all;
+  // We dont need to sort here as request groups have its own sorting rules.
+  const topics = db.topic.query({ isArchived: false }).all;
 
   return (
     <UIHolder>

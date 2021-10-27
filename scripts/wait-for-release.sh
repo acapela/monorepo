@@ -44,4 +44,4 @@ while [ "$backend_version" != "$version" ] || [ "$frontend_version" != "$version
 done
 
 echo "version $version is deployed on $stage"
-./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint" "$stage"
+./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint" "$stage" "product"

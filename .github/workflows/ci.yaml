@@ -13,16 +13,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - run: yarn run lint
 
   frontend:
@@ -33,21 +24,11 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -63,21 +44,11 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -93,22 +64,12 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn
+      - uses: ./.github/actions/node-and-yarn
       - run: npx playwright install
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -146,9 +107,6 @@ jobs:
     needs: [lint, frontend, backend, e2e]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
@@ -157,12 +115,7 @@ jobs:
           update-file: package.json
       - run: rm -f .npmrc
         if: steps.semrel.outputs.version != ''
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      - uses: ./.github/actions/node-and-yarn
         if: steps.semrel.outputs.version != ''
       - uses: actions/cache@v2
         with:
@@ -174,7 +127,6 @@ jobs:
       - name: Run hasura migrations
         run: |
           cp .env.sample .env
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -207,3 +159,4 @@ jobs:
           KUSTOMIZE_BIN: ./kustomize
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_PRODUCT_WEBHOOK_URL: ${{ secrets.SLACK_PRODUCT_WEBHOOK_URL }}

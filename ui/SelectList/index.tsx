@@ -42,7 +42,7 @@ export const SelectList = observer(function SelectList<T>({
 
   return (
     <UIHolder role="listbox">
-      {!items.length && noItemsPlaceholder}
+      {!items.length && <UINoItems>{noItemsPlaceholder}</UINoItems>}
       {items.map((item) => {
         const key = keyGetter(item);
         const isActive = activeKey === key;
@@ -89,4 +89,8 @@ const UIItem = styled.div<{ isActive: boolean }>`
   ${(props) => props.isActive && theme.colors.panels.popover.active.asBg};
 
   border-radius: 0;
+`;
+
+const UINoItems = styled.div`
+  padding: 15px 0;
 `;

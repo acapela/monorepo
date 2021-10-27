@@ -5,10 +5,13 @@ import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/error
 import { log } from "~shared/logger";
 
 import { HttpStatus } from "../http";
+import { autoArchiveTopics } from "./autoArchiveTopics";
 
 export const router = Router();
 
-const handlers: Record<string, Function> = {};
+const handlers: Record<string, Function> = {
+  "auto-archive-topics": autoArchiveTopics,
+};
 
 interface CronPayload {
   scheduled_time: string;

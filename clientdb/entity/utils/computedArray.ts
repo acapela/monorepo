@@ -29,8 +29,9 @@ function getAreMaybeArraysSwallowEqual<T>(before: T, after: T): boolean {
  * often the same. Using `computedArray` in such cases will not trigger observers to re-run (or re-render) if new results
  * array is the same as previous one.
  */
+
 export function computedArray<T>(factory: () => Array<T>, options?: IComputedValueOptions<T[]>) {
-  return computed(() => factory(), { ...options, equals: getAreArraysSwallowEqual });
+  return computed(factory, { ...options, equals: getAreArraysSwallowEqual });
 }
 
 /**
@@ -39,5 +40,5 @@ export function computedArray<T>(factory: () => Array<T>, options?: IComputedVal
  * If it is, we'll still try to compare it like arrays, if it's not, we do default identity check.
  */
 export function computedMaybeArray<T>(factory: () => T, options?: IComputedValueOptions<T>) {
-  return computed(() => factory(), { ...options, equals: getAreMaybeArraysSwallowEqual });
+  return computed(factory, { ...options, equals: getAreMaybeArraysSwallowEqual });
 }

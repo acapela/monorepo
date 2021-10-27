@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
-
 import { Header } from "./Header";
 import { MonthDays } from "./MonthDays";
 
@@ -16,7 +14,6 @@ export function Calendar({ date, onDateChange }: Props) {
 
   function handleDateChange(newDate: Date) {
     onDateChange(newDate);
-    trackEvent("Selected Calendar Date", { newDate });
   }
 
   return (

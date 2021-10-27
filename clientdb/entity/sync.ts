@@ -9,8 +9,9 @@ import { EntityStore } from "./store";
 import { createPushQueue } from "./utils/pushQueue";
 
 interface UpdatesSyncManager<Data> extends DatabaseUtilities {
-  updateItems(items: Data[]): void;
+  updateItems(items: Data[], isReloadNeeded?: boolean): void;
   lastSyncDate: Date;
+  isFirstSync: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -24,8 +25,10 @@ type SyncCleanup = () => void;
 export interface EntitySyncConfig<Data> {
   initPromise?: () => Promise<void>;
   pullUpdated?: (manager: UpdatesSyncManager<Data>) => SyncCleanup | void;
-  push?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<Data | false>;
-  remove?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<boolean>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  push?: (entityToSync: Entity<Data, any>, utils: DatabaseUtilities) => Promise<Data | false>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  remove?: (entityToSync: Entity<Data, any>, utils: DatabaseUtilities) => Promise<boolean>;
   pullRemoves?: (manager: RemovesSyncManager<Data>) => SyncCleanup | void;
 }
 
@@ -44,7 +47,8 @@ interface EntitySyncManager<Data> {
 
 const pushQueue = createPushQueue();
 
-const awaitingPushOperationsMap = new WeakMap<Entity<unknown, unknown>, Set<Promise<unknown>>>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const awaitingPushOperationsMap = new WeakMap<Entity<any, any>, Set<Promise<unknown>>>();
 
 function addAwaitingOperationToEntity<Data, Connections>(
   entity: Entity<Data, Connections>,
@@ -168,15 +172,19 @@ export function createEntitySyncManager<Data, Connections>(
     return initialDate;
   }
 
+  let isFirstSync = true;
+
   // Start waiting for new 'updates' data.
   function startNextUpdatesSync() {
     const maybeCleanup = syncConfig.pullUpdated?.({
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
-      updateItems(items) {
+      isFirstSync,
+      updateItems(items, isReloadNeeded) {
+        isFirstSync = false;
         firstSyncPromise.resolve();
         // Ignore empty update list (initial one is usually empty)
-        if (!items.length) return;
+        if (!items.length && !isReloadNeeded) return;
 
         maybeCleanup?.();
         runInAction(() => {

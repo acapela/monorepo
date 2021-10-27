@@ -9,7 +9,9 @@ import { PersistanceAdapterInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
+import { createEntitiesPersistedCache } from "./entity/entityPersistedCache";
 import { initializePersistance } from "./entity/initializePersistance";
+import { initializePersistedKeyValueCache } from "./entity/persistedCache";
 
 export * from "./entity/index";
 
@@ -36,9 +38,15 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const persistanceDb = await initializePersistance(definitions, db);
+  const [persistanceDb, persistedCacheManager] = await Promise.all([
+    initializePersistance(definitions, db),
+    initializePersistedKeyValueCache(db),
+  ]);
+
+  const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
 
   const databaseUtilities: DatabaseUtilities = {
+    entityCache: entityPersistedCacheManager,
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
         return client.definition === definition;
@@ -85,6 +93,13 @@ export async function createClientDb<Entities extends EntitiesMap>(
   const persistanceLoadedPromise = Promise.all(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
   );
+
+  // Start sync at once when all persistance data is loaded
+  persistanceLoadedPromise.then(() => {
+    forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
+      client.startSync();
+    });
+  });
 
   const firstSyncPromise = Promise.all(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)

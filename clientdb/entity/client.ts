@@ -23,6 +23,7 @@ export interface EntityClient<Data, Connections> extends EntityStoreFindMethods<
   definition: EntityDefinition<Data, Connections>;
   persistanceLoaded: Promise<void>;
   firstSyncLoaded: Promise<void>;
+  startSync(): Promise<void>;
 }
 
 export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unknown>> = Def extends EntityDefinition<
@@ -36,6 +37,8 @@ interface EntityClientConfig {
   databaseUtilities: DatabaseUtilities;
   persistanceDb: PersistanceDB;
 }
+
+const truePredicate = () => true;
 
 /**
  * Client is 'public api' surface for entity.
@@ -91,7 +94,10 @@ export function createEntityClient<Data, Connections>(
   async function initialize() {
     await persistanceManager.loadPersistedData();
     persistanceManager.startPersistingChanges();
-    syncManager.start();
+  }
+
+  async function startSync() {
+    await syncManager.start();
   }
 
   const hasItemsComputed = computed(() => {
@@ -113,7 +119,7 @@ export function createEntityClient<Data, Connections>(
       return searchEngine.search(term);
     },
     get all() {
-      return client.query(() => true, definition.config.defaultSort).all;
+      return client.query(truePredicate, definition.config.defaultSort).all;
     },
     get hasItems() {
       return hasItemsComputed.get();
@@ -142,6 +148,7 @@ export function createEntityClient<Data, Connections>(
       const newEntity = createEntityWithData(input);
       return store.add(newEntity, source);
     },
+    startSync,
     destroy() {
       persistanceManager.destroy();
       syncManager.cancel();

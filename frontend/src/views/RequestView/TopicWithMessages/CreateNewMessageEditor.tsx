@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -21,6 +21,7 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
+import { RequestType } from "~shared/types/mention";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
@@ -63,6 +64,16 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(
+    action(() => {
+      if (topicContext) {
+        topicContext.editorRef = editorRef;
+      }
+    }),
+    []
+  );
+
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
   }, [isEditingAnyMessage]);
@@ -84,6 +95,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
     for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
+      trackEvent("Created Task", { taskType: type as RequestType, topicId: topic.id, mentionedUserId: userId });
     }
     for (const attachment of attachments) {
       db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });

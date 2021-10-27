@@ -1,9 +1,11 @@
-import { BaseEmoji, emojiIndex } from "emoji-mart";
-import React from "react";
+import type { BaseEmoji } from "emoji-mart";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
 
@@ -13,19 +15,28 @@ interface EmojiData {
 }
 
 function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) {
-  const matchingEmoji = (emojiIndex.search(keyword) as BaseEmoji[]) ?? [];
+  const [results, setResults] = useState<BaseEmoji[]>([]);
 
-  if (!keyword) {
-    return <StateDescription>Type to search for emojis</StateDescription>;
-  }
+  useAsyncEffect(
+    async (getIsCancelled) => {
+      const { emojiIndex } = await import("emoji-mart");
 
-  if (!matchingEmoji.length) {
-    return <StateDescription>No emoji found for :{keyword}</StateDescription>;
-  }
+      if (getIsCancelled()) return;
+
+      setResults((emojiIndex.search(keyword) as BaseEmoji[]) ?? []);
+    },
+    [keyword]
+  );
 
   return (
     <SelectList<BaseEmoji>
-      items={matchingEmoji.slice(0, 5)}
+      items={results.slice(0, 5)}
+      noItemsPlaceholder={
+        <EmptyStatePlaceholder
+          description={keyword.length === 0 ? "Type to search for emojis" : "No emoji found"}
+          noSpacing
+        />
+      }
       keyGetter={(emoji) => emoji.id + emoji.name}
       onItemSelected={(emoji) => {
         onSelect({ emoji: emoji.native, name: emoji.id });
@@ -33,7 +44,7 @@ function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) 
       renderItem={(emoji) => {
         return (
           <UISelectItem>
-            {emoji.native} :{emoji.id}
+            <UIPickerEmoji>{emoji.native}</UIPickerEmoji> :{emoji.id}
           </UISelectItem>
         );
       }}
@@ -54,16 +65,7 @@ export const emojiAutocompleteExtension = createAutocompletePlugin<EmojiData>({
 const UISelectItem = styled.div<{}>`
   display: flex;
   align-items: center;
-`;
-
-const StateDescription = styled.div<{}>`
-  width: 240px;
-  ${theme.typo.label.semibold};
-  padding: 16px;
-  ${theme.colors.layout.backgroundAccent.withBorder.asBg};
-  box-sizing: border-box;
-  ${theme.shadow.modal};
-  ${theme.radius.secondaryItem}
+  ${theme.spacing.horizontalActions.asGap};
 `;
 
 /**
@@ -74,6 +76,12 @@ const EMOJI_SIZE_RATIO = 1.5;
 const UIEmoji = styled.span`
   font-size: ${EMOJI_SIZE_RATIO}em;
   line-height: ${1 / EMOJI_SIZE_RATIO}em;
+  /* Lets make emoji vertically aligned to the rest of the text */
+  vertical-align: middle;
+`;
+
+const UIPickerEmoji = styled.span`
+  font-size: ${EMOJI_SIZE_RATIO}em;
   /* Lets make emoji vertically aligned to the rest of the text */
   vertical-align: middle;
 `;

@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import { action, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
+import { action, computed, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
 import { waitForEntityAllAwaitingPushOperations } from "~clientdb";
 import { assert } from "~shared/assert";
@@ -19,6 +19,7 @@ type EntityMethods<Data, Connections> = {
   getUpdatedAt(): Date;
   remove(source?: EntityChangeSource): void;
   waitForSync(): Promise<void>;
+  definition: EntityDefinition<Data, Connections>;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -69,6 +70,14 @@ export function createEntity<D, C>({
   const connections =
     config.getConnections?.(observableData, {
       ...databaseUtilities,
+      createCache(key, getter) {
+        const id = observableData[config.keyField] as unknown as string;
+        const updatedAt = new Date(observableData[config.updatedAtField] as unknown as string);
+
+        return computed(() => {
+          return databaseUtilities.entityCache.getCached(key, id, config.name, updatedAt, observableData, getter);
+        });
+      },
     }) ?? ({} as C);
 
   // Note: we dont want to add connections as {...data, ...connections}. Connections might have getters so it would simply unwrap them.
@@ -93,6 +102,7 @@ export function createEntity<D, C>({
   }
 
   const entityMethods: EntityMethods<D, C> = {
+    definition,
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
     },
@@ -159,6 +169,8 @@ export function createEntity<D, C>({
     getKey: false,
     getKeyName: false,
     getUpdatedAt: false,
+    definition: false,
+    waitForSync: false,
     remove: action,
     update: action,
   });

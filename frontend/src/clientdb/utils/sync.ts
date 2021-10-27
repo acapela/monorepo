@@ -198,6 +198,7 @@ export function createHasuraSyncSetupFromFragment<T>(
   async function getLostAccessIds(idsToCheck: string[], apollo: ApolloClient<unknown>): Promise<string[] | null> {
     const result = await apollo.query<{ itemsWithAccess: Array<{ id: string }> }, { ids: string[] }>({
       variables: { ids: idsToCheck },
+      fetchPolicy: "no-cache",
       query: gqlTag`
         query Check${upperType}Access($ids: [uuid!]!) {
           itemsWithAccess: ${type}(where: {id: {_in: $ids}}) {
@@ -329,7 +330,7 @@ export function createHasuraSyncSetupFromFragment<T>(
   }
 
   return {
-    pullUpdated({ lastSyncDate, updateItems, getContextValue }) {
+    pullUpdated({ lastSyncDate, updateItems, getContextValue, isFirstSync }) {
       const apollo = getContextValue(apolloContext);
       const teamId = getContextValue(teamIdContext);
 
@@ -337,6 +338,44 @@ export function createHasuraSyncSetupFromFragment<T>(
         if (!teamId) return {};
 
         return teamScopeCondition?.(teamId) ?? {};
+      }
+
+      /**
+       * For first sync use query instead of subscription. Subscription is kinda race-condition with luck.
+       * Hasura performs subscription check every 1s, so we might get response in 0 to 1s + query time itself.
+       *
+       * Also, subscription includes 2 roundtrips of networking.
+       *
+       * TLDR: in practice it resulted in 2-3x faster response.
+       *
+       * Note: instantly after initial query based fetch, we inform clientdb so it'll request next sync, and this time we'll normally use subscription to actually watch for changes
+       */
+      if (isFirstSync) {
+        apollo
+          .query<{ updates: T[] }, { where: Record<string, unknown> }>({
+            fetchPolicy: "no-cache",
+            variables: {
+              where: {
+                updated_at: { _gt: fixLastUpdateDateForHasura(lastSyncDate) },
+                ...getTeamScopeWhere(),
+              },
+            },
+            query: gqlTag`
+              ${fragment}
+              query FirstPull${upperType}Updates($where: ${type}_bool_exp!) {
+                updates: ${type}(where: $where) {
+                  ...${name}
+                }
+              }
+            `,
+          })
+          .then((result) => {
+            const updatedItems = result.data?.updates ?? [];
+
+            updateItems(updatedItems, true);
+          });
+
+        return;
       }
 
       const observer = apollo.subscribe<{ updates: T[] }, { where: Record<string, unknown> }>({

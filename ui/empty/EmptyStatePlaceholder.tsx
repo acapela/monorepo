@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { IconSelection } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -12,13 +11,7 @@ interface Props {
   className?: string;
 }
 
-export function EmptyStatePlaceholder({
-  title,
-  description,
-  noSpacing = false,
-  icon = <IconSelection />,
-  className,
-}: Props) {
+export function EmptyStatePlaceholder({ title, description, noSpacing = false, icon, className }: Props) {
   return (
     <UIHolder noSpacing={noSpacing} className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}

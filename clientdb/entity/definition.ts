@@ -1,4 +1,4 @@
-import { AnnotationsMap } from "mobx";
+import { AnnotationsMap, IComputedValue } from "mobx";
 
 import { Entity } from "~clientdb";
 import { getHash } from "~shared/hash";
@@ -45,7 +45,11 @@ export interface EntityDefinition<Data, Connections> {
   addAccessValidation(accessValidator: EntityAccessValidator<Data, Connections>): EntityDefinition<Data, Connections>;
 }
 
-type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: DatabaseUtilities) => Connections;
+export interface ConnectionsManager<Data> extends DatabaseUtilities {
+  createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
+}
+
+type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;
 
 export function defineEntity<Data, Connections = {}>(
   config: DefineEntityConfig<Data, Connections>

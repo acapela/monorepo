@@ -27,9 +27,7 @@ export function setupShortcuts(slackApp: App) {
       })
     );
 
-    if (user) {
-      trackBackendUserEvent(user.id, "Used Slack Global Shortcut");
-    }
+    trackBackendUserEvent(user.id, "Used Slack Global Shortcut", { slackUserName: user.name ?? "" });
   });
 
   slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client, body, context }) => {
@@ -56,8 +54,6 @@ export function setupShortcuts(slackApp: App) {
       })
     );
 
-    if (user) {
-      trackBackendUserEvent(user.id, "Used Slack Message Action");
-    }
+    trackBackendUserEvent(user.id, "Used Slack Message Action", { slackUserName: user.name ?? "" });
   });
 }

@@ -1,7 +1,6 @@
 import { IncomingMessage } from "http";
 
 import { NextApiRequest } from "next";
-import { Session } from "next-auth";
 
 import { parseJWTWithoutValidation } from "~shared/jwt";
 
@@ -18,7 +17,7 @@ export function getUserFromRequest<SessionData = Empty>(reqInput?: IncomingMessa
     return null;
   }
 
-  const userTokenContent = parseJWTWithoutValidation<Session & SessionData>(sessionToken);
+  const userTokenContent = parseJWTWithoutValidation<SessionData>(sessionToken);
 
   return userTokenContent;
 }
