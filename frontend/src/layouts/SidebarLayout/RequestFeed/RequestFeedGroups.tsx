@@ -2,7 +2,7 @@ import { min, sortBy } from "lodash";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { lazyComputedWithArgs } from "~clientdb/entity/utils/lazyComputedWithArgs";
+import { cachedComputed } from "~clientdb/entity/utils/lazyComputedWithArgs";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { isNotNullish } from "~shared/nullish";
@@ -14,21 +14,21 @@ interface Props {
   showArchived?: boolean;
 }
 
-const hasTopicOpenTasksForCurrentUser = lazyComputedWithArgs(
+const hasTopicOpenTasksForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
     return topic.tasks.query({ isAssignedToSelf: true, isDone: false }).hasItems;
   },
   { name: "hasTopicOpenTasksForCurrentUser" }
 );
 
-const hasTopicSentTasksByCurrentUser = lazyComputedWithArgs(
+const hasTopicSentTasksByCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
     return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems;
   },
   { name: "hasTopicSentTasksByCurrentUser" }
 );
 
-const getNearestTaskDueDateForCurrentUser = lazyComputedWithArgs(
+const getNearestTaskDueDateForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
     const selfTasks = topic.tasks.query({ isAssignedToSelf: true, isDone: false }).all;
 
@@ -43,7 +43,7 @@ const getNearestTaskDueDateForCurrentUser = lazyComputedWithArgs(
   { name: "getNearestTaskDueDateForCurrentUser" }
 );
 
-const getNearestTaskDueDateCreatedByCurrentUser = lazyComputedWithArgs(
+const getNearestTaskDueDateCreatedByCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
     const createdTasks = topic.tasks.query({ isDone: false, isSelfCreated: true }).all;
 

@@ -4,7 +4,7 @@ import { memoize, uniq } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
-import { lazyComputedWithArgs } from "~clientdb";
+import { cachedComputed } from "~clientdb";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
@@ -80,11 +80,11 @@ export const messageEntity = defineEntity<MessageFragment>({
       })
     : null;
 
-  const getTasksForUser = lazyComputedWithArgs((userId: string) => {
+  const getTasksForUser = cachedComputed((userId: string) => {
     return tasks.query({ user_id: userId });
   });
 
-  const getIsUserParticipating = lazyComputedWithArgs((userId: string) => {
+  const getIsUserParticipating = cachedComputed((userId: string) => {
     if (message.user_id === userId) return true;
 
     if (getTasksForUser(userId).hasItems) return true;
@@ -94,7 +94,7 @@ export const messageEntity = defineEntity<MessageFragment>({
     return false;
   });
 
-  const getIsUserMentionedInContent = lazyComputedWithArgs((userId: string) => {
+  const getIsUserMentionedInContent = cachedComputed((userId: string) => {
     return mentionedUserIds.get().includes(userId);
   });
 

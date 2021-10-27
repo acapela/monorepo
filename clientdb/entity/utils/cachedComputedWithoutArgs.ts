@@ -31,7 +31,7 @@ let isDisposalCascadeRunning = false;
  *
  * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
  */
-export function lazyComputed<T>(
+export function cachedComputedWithoutArgs<T>(
   getter: () => T,
   { name = "LazyComputed", equals }: IComputedValueOptions<T> = {}
 ): LazyComputed<T> {

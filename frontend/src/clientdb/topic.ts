@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity, lazyComputed } from "~clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
@@ -67,7 +67,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
-    const messageIds = lazyComputed(() => {
+    const messageIds = cachedComputed(() => {
       return messages.all.map((message) => message.id);
     });
 

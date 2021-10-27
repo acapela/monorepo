@@ -7,8 +7,8 @@ import { createDeepMap } from "~shared/deepMap";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
-import { lazyComputed } from "./utils/lazyComputed";
-import { lazyComputedWithArgs } from "./utils/lazyComputedWithArgs";
+import { cachedComputedWithoutArgs } from "./utils/lazyComputed";
+import { cachedComputed } from "./utils/lazyComputedWithArgs";
 
 type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
@@ -96,14 +96,14 @@ export function createEntityQuery<Data, Connections>(
     return store.simpleQuery(filter).includes(item);
   }
 
-  const cachedFilter = lazyComputedWithArgs(isEntityPassingFilter, {
+  const cachedFilter = cachedComputed(isEntityPassingFilter, {
     name: `${entityName}filter${JSON.stringify(filter)}`,
   });
-  const cachedSortFunction = sortConfig ? lazyComputedWithArgs(sortConfig.sort, { name: `${entityName}sort` }) : null;
+  const cachedSortFunction = sortConfig ? cachedComputed(sortConfig.sort, { name: `${entityName}sort` }) : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
-  const passingItems = lazyComputed(
+  const passingItems = cachedComputedWithoutArgs(
     () => {
       const passedItems = getSource().filter(cachedFilter);
 
@@ -122,7 +122,7 @@ export function createEntityQuery<Data, Connections>(
     { name: `${entityName}QueryItems` }
   );
 
-  const hasItemsComputed = lazyComputed(
+  const hasItemsComputed = cachedComputedWithoutArgs(
     () => {
       return getSource().some(cachedFilter);
     },
@@ -133,9 +133,9 @@ export function createEntityQuery<Data, Connections>(
     return passingItems.get();
   }
 
-  const countComputed = lazyComputed(() => getAll().length, { name: `${entityName}QueryCount` });
-  const firstComputed = lazyComputed(() => getAll()[0] ?? null, { name: `${entityName}firstComputed` });
-  const lastComputed = lazyComputed(
+  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${entityName}QueryCount` });
+  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${entityName}firstComputed` });
+  const lastComputed = cachedComputedWithoutArgs(
     () => {
       const all = getAll();
 
@@ -144,7 +144,7 @@ export function createEntityQuery<Data, Connections>(
     { name: `${entityName}lastComputed` }
   );
 
-  const byIdMapComputed = lazyComputed(
+  const byIdMapComputed = cachedComputedWithoutArgs(
     () => {
       const all = getAll();
 
@@ -159,7 +159,7 @@ export function createEntityQuery<Data, Connections>(
     { name: `${entityName}byIdMapComputed` }
   );
 
-  const getById = lazyComputedWithArgs(
+  const getById = cachedComputed(
     (id: string) => {
       return byIdMapComputed.get()[id] ?? null;
     },
