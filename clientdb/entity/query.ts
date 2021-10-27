@@ -1,11 +1,15 @@
 import { sortBy } from "lodash";
 import { IObservableArray, computed } from "mobx";
 
+import { createEqualValueReuser } from "~shared/createEqualReuser";
+import { createDeepMap } from "~shared/deepMap";
+
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
 import { createEntityCache } from "./utils/entityCache";
 import { lazyComputed } from "./utils/lazyComputed";
+import { lazyComputedWithArgs } from "./utils/lazyComputedWithArgs";
 
 type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
@@ -33,7 +37,7 @@ export type EntityQueryConfig<Data, Connections> = {
   sort?: EntityQuerySortInput<Data, Connections>;
 };
 
-function resolveSortInput<Data, Connections>(
+export function resolveSortInput<Data, Connections>(
   sort?: EntityQuerySortInput<Data, Connections>
 ): EntityQuerySortConfig<Data, Connections> | null {
   if (!sort) return null;
@@ -93,8 +97,10 @@ export function createEntityQuery<Data, Connections>(
     return store.simpleQuery(filter).includes(item);
   }
 
-  const cachedFilter = createEntityCache(isEntityPassingFilter);
-  const cachedSortFunction = sortConfig ? createEntityCache(sortConfig.sort) : null;
+  const cachedFilter = lazyComputedWithArgs(isEntityPassingFilter, {
+    name: `${entityName}filter${JSON.stringify(filter)}`,
+  });
+  const cachedSortFunction = sortConfig ? lazyComputedWithArgs(sortConfig.sort, { name: `${entityName}sort` }) : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
@@ -128,38 +134,78 @@ export function createEntityQuery<Data, Connections>(
     return passingItems.get();
   }
 
+  const countComputed = lazyComputed(() => getAll().length, { name: `${entityName}QueryCount` });
+  const firstComputed = lazyComputed(() => getAll()[0] ?? null, { name: `${entityName}firstComputed` });
+  const lastComputed = lazyComputed(
+    () => {
+      const all = getAll();
+
+      return all[all.length - 1] ?? null;
+    },
+    { name: `${entityName}lastComputed` }
+  );
+
+  const byIdMapComputed = lazyComputed(
+    () => {
+      const all = getAll();
+
+      const record: Record<string, Entity<Data, Connections>> = {};
+
+      for (const item of all) {
+        record[item.getKey()] = item;
+      }
+
+      return record;
+    },
+    { name: `${entityName}byIdMapComputed` }
+  );
+
+  const getById = lazyComputedWithArgs(
+    (id: string) => {
+      return byIdMapComputed.get()[id] ?? null;
+    },
+    { name: `${entityName}getById` }
+  );
+
+  const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>();
+
+  const reuseInput = createEqualValueReuser();
+
+  function createOrReuseQuery(
+    filter?: EntityFilterInput<Data, Connections>,
+    sort?: EntityQuerySortInput<Data, Connections>
+  ) {
+    const resolvedSort = resolveSortInput(sort) ?? undefined;
+    const query = reuseQueriesMap([reuseInput(filter), reuseInput(resolvedSort)], () => {
+      const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
+
+      return query;
+    });
+
+    return query;
+  }
+
   return {
     get hasItems() {
       return hasItemsComputed.get();
     },
     get count() {
-      return computed(() => getAll().length).get();
+      return countComputed.get();
     },
     get all() {
       return getAll();
     },
     get first() {
-      return computed(() => {
-        const all = getAll();
-        return all[0] ?? null;
-      }).get();
+      return firstComputed.get();
     },
     get last() {
-      return computed(() => {
-        const all = getAll();
-        return all[all.length - 1] ?? null;
-      }).get();
+      return lastComputed.get();
     },
     findById(id) {
-      return computed(
-        () => {
-          return passingItems.get().find((item) => item.getKey() === id) ?? null;
-        },
-        { name: `${entityName}FindById${id}` }
-      ).get();
+      return getById(id);
     },
     query(filter, sort) {
-      return createEntityQuery(() => passingItems.get(), { filter, sort }, store);
+      return createOrReuseQuery(filter, sort);
     },
   };
 }

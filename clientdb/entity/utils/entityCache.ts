@@ -7,7 +7,10 @@ import { LazyComputed, lazyComputed } from "./lazyComputed";
  *
  * It is also cached as long as it is in use by any 'observer'.
  */
-export function createEntityCache<Data, Connections, Result>(getter: (entity: Entity<Data, Connections>) => Result) {
+export function createEntityCache<Data, Connections, Result>(
+  getter: (entity: Entity<Data, Connections>) => Result,
+  name?: string
+) {
   const cacheMap = new WeakMap<Entity<Data, Connections>, LazyComputed<Result>>();
 
   function getCached(entity: Entity<Data, Connections>): Result {
@@ -21,7 +24,7 @@ export function createEntityCache<Data, Connections, Result>(getter: (entity: En
       () => {
         return getter(entity);
       },
-      { name: `entityCachedValue` }
+      { name: `${entity.definition.config.name}-${entity.getKey()}-${name}-cached` }
     );
 
     cacheMap.set(entity, newCachedValue);

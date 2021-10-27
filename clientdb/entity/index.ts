@@ -4,3 +4,5 @@ export * from "./db/adapter";
 export * from "./context";
 export * from "./sync";
 export { createEntityCache } from "./utils/entityCache";
+export { lazyComputed } from "./utils/lazyComputed";
+export { lazyComputedWithArgs } from "./utils/lazyComputedWithArgs";
