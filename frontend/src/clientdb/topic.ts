@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
-import { computedArray } from "~clientdb/entity/utils/computedArray";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
 import { isNotNullish } from "~shared/nullish";
@@ -101,6 +100,8 @@ export const topicEntity = defineEntity<TopicFragment>({
         return message.isUnread;
       });
 
+    const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
+
     const connections = {
       get owner() {
         return getOwner();
@@ -108,12 +109,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       messages,
       tasks,
       get members(): UserEntity[] {
-        return [
-          getOwner(),
-          ...getEntity(topicMemberEntity)
-            .query({ topic_id: topic.id })
-            .all.map((topicMember) => topicMember.user),
-        ].filter(isNotNullish);
+        return [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish);
       },
       get isCurrentUserMember() {
         return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
