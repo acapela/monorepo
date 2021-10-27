@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { uniqBy } from "lodash";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
@@ -109,7 +110,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       messages,
       tasks,
       get members(): UserEntity[] {
-        return [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish);
+        return uniqBy(
+          [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish),
+          "id"
+        );
       },
       get isCurrentUserMember() {
         return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
