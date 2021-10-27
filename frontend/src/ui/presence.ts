@@ -1,7 +1,7 @@
 import { usePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import { createTimeout } from "~frontend/../../shared/time";
+import { createTimeout } from "~shared/time";
 
 export function useUnmountPresence(time: number) {
   const [isMounted, setIsMounted] = useState(false);

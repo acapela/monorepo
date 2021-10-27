@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { createEntityCache } from "~clientdb";
+import { lazyComputedWithArgs } from "~clientdb/entity/utils/lazyComputedWithArgs";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { isNotNullish } from "~shared/nullish";
@@ -14,37 +15,49 @@ interface Props {
   showArchived?: boolean;
 }
 
-const hasTopicOpenTasksForCurrentUser = createEntityCache((topic: TopicEntity) => {
-  return topic.tasks.query({ isAssignedToSelf: true, isDone: false }).hasItems;
-});
+const hasTopicOpenTasksForCurrentUser = lazyComputedWithArgs(
+  (topic: TopicEntity) => {
+    return topic.tasks.query({ isAssignedToSelf: true, isDone: false }).hasItems;
+  },
+  { name: "hasTopicOpenTasksForCurrentUser" }
+);
 
-const hasTopicSentTasksByCurrentUser = createEntityCache((topic: TopicEntity) => {
-  return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems;
-});
+const hasTopicSentTasksByCurrentUser = lazyComputedWithArgs(
+  (topic: TopicEntity) => {
+    return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems;
+  },
+  { name: "hasTopicSentTasksByCurrentUser" }
+);
 
-const getNearestTaskDueDateForCurrentUser = createEntityCache((topic: TopicEntity) => {
-  const selfTasks = topic.tasks.query({ isAssignedToSelf: true, isDone: false }).all;
+const getNearestTaskDueDateForCurrentUser = lazyComputedWithArgs(
+  (topic: TopicEntity) => {
+    const selfTasks = topic.tasks.query({ isAssignedToSelf: true, isDone: false }).all;
 
-  if (!selfTasks.length) return null;
+    if (!selfTasks.length) return null;
 
-  const selfDueDates = selfTasks
-    .map((task) => task.due_at)
-    .filter(isNotNullish)
-    .map((dateString) => new Date(dateString));
-  return min(selfDueDates) ?? null;
-});
+    const selfDueDates = selfTasks
+      .map((task) => task.due_at)
+      .filter(isNotNullish)
+      .map((dateString) => new Date(dateString));
+    return min(selfDueDates) ?? null;
+  },
+  { name: "getNearestTaskDueDateForCurrentUser" }
+);
 
-const getNearestTaskDueDateCreatedByCurrentUser = createEntityCache((topic: TopicEntity) => {
-  const createdTasks = topic.tasks.query({ isDone: false, isSelfCreated: true }).all;
+const getNearestTaskDueDateCreatedByCurrentUser = lazyComputedWithArgs(
+  (topic: TopicEntity) => {
+    const createdTasks = topic.tasks.query({ isDone: false, isSelfCreated: true }).all;
 
-  if (!createdTasks.length) return null;
+    if (!createdTasks.length) return null;
 
-  const selfDueDates = createdTasks
-    .map((task) => task.due_at)
-    .filter(isNotNullish)
-    .map((dateString) => new Date(dateString));
-  return min(selfDueDates) ?? null;
-});
+    const selfDueDates = createdTasks
+      .map((task) => task.due_at)
+      .filter(isNotNullish)
+      .map((dateString) => new Date(dateString));
+    return min(selfDueDates) ?? null;
+  },
+  { name: "getNearestTaskDueDateCreatedByCurrentUser" }
+);
 
 function sortReceivedTopics(topics: TopicEntity[]) {
   return sortBy(topics, getNearestTaskDueDateForCurrentUser);
