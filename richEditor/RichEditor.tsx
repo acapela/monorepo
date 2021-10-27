@@ -1,6 +1,5 @@
 import Placeholder from "@tiptap/extension-placeholder";
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
-import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import { useUpdate } from "react-use";
 import styled, { StylesPart } from "styled-components";
@@ -8,6 +7,7 @@ import styled, { StylesPart } from "styled-components";
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
+import { isPlainObjectEqual } from "~shared/isPlainObjectEqual";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
@@ -217,7 +217,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   useEqualDependencyChangeEffect(() => {
     const currentContent = editor?.state.toJSON().doc;
 
-    const didChange = !isEqual(value, currentContent);
+    const didChange = !isPlainObjectEqual(value, currentContent);
 
     if (!didChange) return;
 

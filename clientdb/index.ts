@@ -38,9 +38,10 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const persistanceDb = await initializePersistance(definitions, db);
-
-  const persistedCacheManager = await initializePersistedKeyValueCache(db);
+  const [persistanceDb, persistedCacheManager] = await Promise.all([
+    initializePersistance(definitions, db),
+    initializePersistedKeyValueCache(db),
+  ]);
 
   const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
 
