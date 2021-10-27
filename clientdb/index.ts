@@ -9,7 +9,9 @@ import { PersistanceAdapterInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
+import { createEntitiesPersistedCache } from "./entity/entityPersistedCache";
 import { initializePersistance } from "./entity/initializePersistance";
+import { initializePersistedKeyValueCache } from "./entity/persistedCache";
 
 export * from "./entity/index";
 
@@ -38,7 +40,12 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   const persistanceDb = await initializePersistance(definitions, db);
 
+  const persistedCacheManager = await initializePersistedKeyValueCache(db);
+
+  const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
+
   const databaseUtilities: DatabaseUtilities = {
+    entityCache: entityPersistedCacheManager,
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
         return client.definition === definition;
