@@ -24,7 +24,7 @@ type AnyMap = Map<unknown, unknown>;
  *
  * const foo = createDeepMap<number>();
  *
- * foo([a,b,c,d,e,f], () => {
+ * foo.get([a,b,c,d,e,f], () => {
  *   // will be called only if value does not exist yet
  *   return 42;
  * }); // 42
@@ -33,7 +33,8 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
   const root = new Map<unknown, unknown>();
   const rootReuser = createEqualValueReuser();
   root.set(equalReuserSymbol, rootReuser);
-  function get(path: unknown[], factory: () => V) {
+
+  function getFinalTargetMap(path: unknown[]) {
     let currentTarget = root;
     const currentReuser = currentTarget.get(equalReuserSymbol) as EqualValueReuser;
 
@@ -56,16 +57,22 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
       currentTarget = nestedMap;
     }
 
-    if (currentTarget.has(targetSymbol)) {
-      return currentTarget.get(targetSymbol) as V;
+    return currentTarget;
+  }
+
+  function get(path: unknown[], factory: () => V) {
+    const targetMap = getFinalTargetMap(path);
+
+    if (targetMap.has(targetSymbol)) {
+      return targetMap.get(targetSymbol) as V;
     }
 
     const newResult = factory();
 
-    currentTarget.set(targetSymbol, newResult);
+    targetMap.set(targetSymbol, newResult);
 
     return newResult;
   }
 
-  return get;
+  return { get };
 }
