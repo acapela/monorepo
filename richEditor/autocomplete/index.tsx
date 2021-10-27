@@ -83,6 +83,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
 
       return {
         onStart(props) {
+          if (!props.editor.isEditable) return;
           // eslint-disable-next-line @typescript-eslint/ban-types
           reactRenderer = new ReactRenderer(PickerPopoverComponent as FunctionComponent<{}>, {
             props,
@@ -91,10 +92,10 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
           });
         },
         onUpdate(props) {
-          reactRenderer.updateProps(props);
+          reactRenderer?.updateProps(props);
         },
         onExit() {
-          reactRenderer.destroy();
+          reactRenderer?.destroy();
         },
       };
     },
