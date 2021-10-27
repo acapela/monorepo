@@ -52,6 +52,10 @@ export async function sendNotificationIgnoringPreference(user: User, teamId: str
   return sendNotification(user, teamId, message);
 }
 
+export function escapeLink(input: string) {
+  return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 export async function sendNotificationPerPreference(user: User, teamId: string, message: NotificationMessage) {
   const teamMember = assertDefined(
     await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
