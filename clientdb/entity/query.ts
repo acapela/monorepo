@@ -7,8 +7,8 @@ import { createDeepMap } from "~shared/deepMap";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
-import { cachedComputedWithoutArgs } from "./utils/lazyComputed";
-import { cachedComputed } from "./utils/lazyComputedWithArgs";
+import { cachedComputed } from "./utils/cachedComputed";
+import { cachedComputedWithoutArgs } from "./utils/cachedComputedWithoutArgs";
 
 type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 

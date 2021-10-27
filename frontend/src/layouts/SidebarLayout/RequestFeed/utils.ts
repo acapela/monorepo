@@ -1,4 +1,4 @@
-import { cachedComputed } from "~clientdb/entity/utils/lazyComputedWithArgs";
+import { cachedComputed } from "~clientdb";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 

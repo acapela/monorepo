@@ -2,7 +2,7 @@ import { min, sortBy } from "lodash";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { cachedComputed } from "~clientdb/entity/utils/lazyComputedWithArgs";
+import { cachedComputed } from "~clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { isNotNullish } from "~shared/nullish";
