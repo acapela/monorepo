@@ -41,7 +41,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   return (
     <TopicStoreContext>
       <UIHolder>
-        <TopicHeader topic={topic} user={user} />
+        <TopicHeader topic={topic} />
 
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed messages={messages} />
