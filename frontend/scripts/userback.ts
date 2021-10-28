@@ -1,6 +1,4 @@
-const userbackAccessToken = process.env.NEXT_PUBLIC_USERBACK_ACCESS_TOKEN;
-
-export default function initializeUserbackPlugin(): void {
+export default function initializeUserbackPlugin(userbackAccessToken: string | undefined): void {
   // In dev we don't use it, so let's allow ignoring it.
   if (!userbackAccessToken) return;
 

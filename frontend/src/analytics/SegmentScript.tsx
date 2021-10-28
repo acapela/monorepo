@@ -4,26 +4,19 @@ import { memo } from "react";
 
 import { useConst } from "~shared/hooks/useConst";
 
-const segmentApiKey = process.env.NEXT_PUBLIC_SEGMENT_API_KEY;
-
 const segmentOptions = {
-  apiKey: segmentApiKey,
   // note: the page option only covers SSR tracking.
   // Page.js is used to track other events using `window.analytics.page()`
   page: true,
 };
 
-function getSegmentOptions() {
-  /**
-   * We're cloning the object as under the hood sentry will extend this object every time snippet.min is called.
-   *
-   * After 10-20 rounds it quickly results with options.load having 20mb long string that is JSON.stringified
-   */
-  return { ...segmentOptions };
-}
-
-const SegmentScriptWithSnippet = () => {
-  const snippetHTML = useConst(() => snippet.min(getSegmentOptions()));
+const SegmentScriptWithSnippet = ({ segmentApiKey }: { segmentApiKey: string }) => {
+  const snippetHTML = useConst(() =>
+    snippet.min({
+      apiKey: segmentApiKey,
+      ...segmentOptions,
+    })
+  );
 
   const dangerouslySetInnerHTML = useConst(() => {
     return {
@@ -34,10 +27,10 @@ const SegmentScriptWithSnippet = () => {
   return <Script id="segment-script" dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
 };
 
-export const SegmentScript = memo(() => {
-  if (!segmentOptions.apiKey) {
+export const SegmentScript = memo(({ segmentApiKey }: { segmentApiKey: string | undefined }) => {
+  if (!segmentApiKey) {
     return null;
   }
 
-  return <SegmentScriptWithSnippet />;
+  return <SegmentScriptWithSnippet segmentApiKey={segmentApiKey} />;
 });
