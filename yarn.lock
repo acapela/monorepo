@@ -13128,9 +13128,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.0.0-beta.5":
-  version: 4.0.0-next.26
-  resolution: "next-auth@npm:4.0.0-next.26"
+"next-auth@npm:4.0.0-beta.4":
+  version: 4.0.0-beta.4
+  resolution: "next-auth@npm:4.0.0-beta.4"
   dependencies:
     "@babel/runtime": ^7.14.6
     futoin-hkdf: ^1.3.3
@@ -13146,7 +13146,7 @@ __metadata:
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: 7b782cb71dc6f30c060c8a6e915d39eb75e5077495aef7bb519e489e962eda89b6cbd8a5aca45fc3971d7697e1f0032f6b220b3b74420532a7f94ba8eb15d247
+  checksum: b3f817dc6fa3270acfe8e8b23bc73549d5b90d3cd72aaa72b724eb64c83412160aa22467e16b50a846a24c2c5347bf80a5ad8aaf5abeef8e62ede6213e555fc5
   languageName: node
   linkType: hard
 
@@ -19259,7 +19259,7 @@ __metadata:
     mobx-react: ^7.2.1
     msw: ^0.35.0
     next: ^11.1.2
-    next-auth: ^4.0.0-beta.5
+    next-auth: 4.0.0-beta.4
     next-compose-plugins: ^2.2.1
     next-transpile-modules: ^9.0.0
     next-unused: ^0.0.6
