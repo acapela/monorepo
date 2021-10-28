@@ -1,5 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { getShortcutNiceKeys } from "./describeShortcut";
@@ -31,6 +32,12 @@ const UIHolder = styled.div`
   align-items: center;
   user-select: none;
   gap: 2px;
+
+  ${phone(
+    css`
+      display: none;
+    `
+  )}
 `;
 const UIKey = styled.div`
   ${theme.typo.content.secondary};
