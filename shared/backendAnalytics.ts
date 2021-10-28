@@ -14,11 +14,11 @@ function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
 }
 
 function getAnalyticsSDK() {
-  if (!process.env.NEXT_PUBLIC_SEGMENT_API_KEY) {
+  if (!process.env.SEGMENT_API_KEY) {
     return null;
   }
 
-  return new Analytics(process.env.NEXT_PUBLIC_SEGMENT_API_KEY);
+  return new Analytics(process.env.SEGMENT_API_KEY);
 }
 
 function createAnalyticsSessionForUser(user: User) {

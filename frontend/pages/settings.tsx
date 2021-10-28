@@ -5,13 +5,15 @@ import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { SettingsView } from "~frontend/views/SettingsView";
 
-export default function SettingsPage() {
+import { AppConfig } from "./_app";
+
+export default function SettingsPage(props: { appConfig: AppConfig }) {
   return (
     <>
       <PageMeta title="Settings" />
       <SidebarLayout>
         <UIHolder>
-          <SettingsView />
+          <SettingsView version={props.appConfig.version} buildDate={props.appConfig.buildDate} />
         </UIHolder>
       </SidebarLayout>
     </>
