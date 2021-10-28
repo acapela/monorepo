@@ -21,6 +21,7 @@ import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
 import { topicEntity } from "./topic";
+import { topicEventEntity } from "./topicEvent";
 import { transcriptionEntity } from "./transcription";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
@@ -49,6 +50,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
       messageReaction: messageReactionEntity,
       lastSeenMessage: lastSeenMessageEntity,
       transcription: transcriptionEntity,
+      topicEvent: topicEventEntity,
     }
   );
 

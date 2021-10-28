@@ -37,6 +37,7 @@ import {
   Team_Member_Slack_Bool_Exp,
   Topic_Bool_Exp,
   Topic_Constraint,
+  Topic_Event_Bool_Exp,
   Topic_Insert_Input,
   Topic_Set_Input,
   Transcription_Bool_Exp,
@@ -124,6 +125,7 @@ type WhereTypeMap = {
   user: User_Bool_Exp;
   transcription: Transcription_Bool_Exp;
   team_member_slack: Team_Member_Slack_Bool_Exp;
+  topic_event: Topic_Event_Bool_Exp;
 };
 
 /**
