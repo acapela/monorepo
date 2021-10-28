@@ -1,6 +1,7 @@
 import { StylesPart, css } from "styled-components";
 
-import { phone } from "./responsive";
+import { phone } from "~ui/responsive";
+
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 
 const SECONDARY_TEXT_OPACITY = 0.4;
@@ -27,6 +28,7 @@ type FontVariants = {
   readingLineHeight: Font;
   headerLineHeight: Font;
   resetLineHeight: Font;
+  nowrap: Font;
 
   opacity(opacity: number): Font;
   secondary: Font;
@@ -68,6 +70,11 @@ export function font(parentStyles: StylesPart[] = []): Font {
       get semibold() {
         return withStyles(css`
           font-weight: 600;
+        `);
+      },
+      get nowrap() {
+        return withStyles(css`
+          white-space: nowrap;
         `);
       },
       get medium() {
