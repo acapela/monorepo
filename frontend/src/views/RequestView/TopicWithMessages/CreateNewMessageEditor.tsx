@@ -22,7 +22,6 @@ import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions"
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { RequestType } from "~shared/types/mention";
-import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";

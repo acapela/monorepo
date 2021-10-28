@@ -28,7 +28,7 @@ export const SidebarLayout = observer(({ children }: Props) => {
     return () => {
       router.events.off("routeChangeComplete", closeMobileMenu);
     };
-  }, []);
+  }, [closeMobileMenu]);
 
   useAppRedirects();
 
