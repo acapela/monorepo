@@ -12,8 +12,8 @@ export const SettingsView = observer(function SettingsView({
   version,
   buildDate,
 }: {
-  version: string | null;
-  buildDate: string | null;
+  version: string | undefined;
+  buildDate: string | undefined;
 }) {
   const currentTeam = useAssertCurrentTeam();
 
