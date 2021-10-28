@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
+import { phone } from "~frontend/../../ui/responsive";
 import { Logo } from "~frontend/ui/Logo";
 import { PopPresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
@@ -39,6 +40,7 @@ const UIHolder = styled.div<{}>`
   min-height: 100vh;
   flex-direction: column;
   ${theme.gradients.actionPageBg.asBg};
+  padding: 20px;
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
@@ -53,6 +55,11 @@ const UIWindow = styled(PopPresenceAnimator)<{}>`
   max-width: 700px;
 
   min-width: 420px;
+
+  ${phone(css`
+    min-width: 0;
+    width: 100%;
+  `)}
 `;
 
 const UIHead = styled.div`
