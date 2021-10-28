@@ -1,6 +1,7 @@
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
+import { TopicEventTypes } from "~shared/types/topicEvents";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
@@ -32,6 +33,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
+        type: TopicEventTypes.TopicClosed,
         topic_event_topic_closed: {
           create: {
             closed_by_user_id: event.userId,
@@ -46,6 +48,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
+        type: TopicEventTypes.TopicReopened,
         topic_event_topic_reopened: {
           create: {
             reopened_by_user_id: event.userId,
@@ -60,6 +63,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
+        type: TopicEventTypes.TopicArchived,
         topic_event_topic_archived: {
           create: {
             archived_by_user_id: event.userId,
@@ -74,6 +78,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
+        type: TopicEventTypes.TopicUnarchived,
         topic_event_topic_unarchived: {
           create: {
             unarchived_by_user_id: event.userId,
