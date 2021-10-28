@@ -52,8 +52,12 @@ export async function sendNotificationIgnoringPreference(user: User, teamId: str
   return sendNotification(user, teamId, message);
 }
 
-export function escapeLink(input: string) {
+function escapeStringForSlackLink(input: string) {
   return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+export function createSlackLink(url: string, name: string) {
+  return `<${escapeStringForSlackLink(url)}|${escapeStringForSlackLink(name)}>`;
 }
 
 export async function sendNotificationPerPreference(user: User, teamId: string, message: NotificationMessage) {
