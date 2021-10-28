@@ -6,6 +6,7 @@ import { createClientDb } from "~clientdb";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
+import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
@@ -37,6 +38,7 @@ export function createNewClientDb(userId: string, teamId: string | null, apolloC
     {
       user: userEntity,
       topic: topicEntity,
+      topicMember: topicMemberEntity,
       message: messageEntity,
       attachment: attachmentEntity,
       team: teamEntity,

@@ -1,20 +1,22 @@
-import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
+import { formatRelative, isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
+import { upperFirst } from "lodash";
 import { observer } from "mobx-react";
-import React, { ReactNode, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { assert } from "~shared/assert";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
+import { IconClock } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   message: MessageEntity;
-  children: ReactNode;
 }
 
 const END_OF_WORK_DAY = 17;
@@ -30,7 +32,7 @@ function getNextWorkDayEndOfDay() {
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
-export const TaskDueDateSetter = observer(({ message, children }: Props) => {
+export const TaskDueDateSetter = observer(({ message }: Props) => {
   assert(message.tasks.hasItems, "Attempting to set due date for message that doesn't have tasks");
 
   const ref = useRef<HTMLDivElement>(null);
@@ -69,6 +71,7 @@ export const TaskDueDateSetter = observer(({ message, children }: Props) => {
             onCloseRequest={() => {
               closeMenu();
             }}
+            isDisabled={message.topic?.isClosed ?? false}
             anchorRef={ref}
             options={(
               [
@@ -109,7 +112,15 @@ export const TaskDueDateSetter = observer(({ message, children }: Props) => {
       </AnimatePresence>
 
       <UITriggerHolder ref={ref} onClick={openMenu}>
-        {children}
+        <Button
+          kind="secondary"
+          icon={<IconClock />}
+          iconAtStart
+          isDisabled={message.topic?.isClosed}
+          data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
+        >
+          {currentDueDate ? upperFirst(formatRelative(new Date(currentDueDate), new Date())) : null}
+        </Button>
       </UITriggerHolder>
     </>
   );

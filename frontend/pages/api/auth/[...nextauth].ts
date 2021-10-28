@@ -61,6 +61,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       jwt: true,
     },
     pages: {
+      signIn: "/login",
+      signOut: "/logout",
       error: "/auth/error", // Error code passed in query string as ?error=
     },
     debug: isDev(),

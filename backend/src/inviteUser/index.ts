@@ -1,5 +1,6 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import {
+  createSlackLink,
   sendNotificationIgnoringPreference,
   sendNotificationPerPreference,
 } from "~backend/src/notifications/sendNotification";
@@ -28,7 +29,7 @@ async function sendNewUserInviteNotification(user: User, team: Team, inviter: Us
         `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
       ].join("<br>"),
     },
-    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}" Acapela>`,
+    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}" on Acapela`)}`,
   });
 }
 
@@ -44,7 +45,7 @@ async function sendExistingUserInviteNotification(user: User, team: Team, invite
         `Follow <a href="${inviteURL}">this link</a> and select team "${team.name}" to join the discussion.`,
       ].join("<br>"),
     },
-    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}">`,
+    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}"`)}`,
   });
 }
 

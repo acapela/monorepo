@@ -1,12 +1,15 @@
 import gql from "graphql-tag";
+import { uniqBy } from "lodash";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
+import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
+import { isNotNullish } from "~shared/nullish";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { taskEntity } from "./task";
-import { userEntity } from "./user";
+import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -71,12 +74,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       return messages.all.map((message) => message.id);
     });
 
-    const participants = getEntity(userEntity).query((user) => {
-      if (topic.owner_id === user.id) return true;
-
-      return messages.all.some((message) => message.getIsUserParticipating(user.id));
-    });
-
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
       // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
       user_id: currentUserId ?? "no-user",
@@ -90,6 +87,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       return unseenMessages.first ?? null;
     }
 
+    function getOwner() {
+      return getEntity(userEntity).findById(topic.owner_id);
+    }
+
     const tasks = getEntity(taskEntity).query({
       message_id: () => getMessageIds(),
     });
@@ -100,15 +101,22 @@ export const topicEntity = defineEntity<TopicFragment>({
         return message.isUnread;
       });
 
+    const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
+
     const connections = {
       get owner() {
-        return getEntity(userEntity).findById(topic.owner_id);
+        return getOwner();
       },
       messages,
       tasks,
-      participants,
-      get isCurrentUserParticipating() {
-        return connections.participants.all.some((user) => user.isCurrentUser);
+      get members(): UserEntity[] {
+        return uniqBy(
+          [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish),
+          "id"
+        );
+      },
+      get isCurrentUserMember() {
+        return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
@@ -146,7 +154,7 @@ export const topicEntity = defineEntity<TopicFragment>({
     return connections;
   })
   .addAccessValidation((topic) => {
-    return topic.isCurrentUserParticipating;
+    return topic.isCurrentUserMember;
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;

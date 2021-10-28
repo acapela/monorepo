@@ -1,6 +1,4 @@
-import { formatRelative } from "date-fns";
 import { AnimateSharedLayout } from "framer-motion";
-import { upperFirst } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
@@ -8,8 +6,6 @@ import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
-import { Button } from "~ui/buttons/Button";
-import { IconClock } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { CollapsedTasksButton } from "./CollapsedTasksButton";
@@ -32,23 +28,13 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
     return null;
   }
 
-  const firstTask = tasks[0];
   const displayedTasks = tasks.slice(0, COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
   const collapsedTasks = tasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
 
   return (
     <UIHolder data-test-message-tasks>
       <AnimateSharedLayout>
-        <TaskDueDateSetter message={message}>
-          <Button
-            kind="secondary"
-            icon={<IconClock />}
-            iconAtStart
-            data-tooltip={firstTask.due_at ? "Change due date" : "Add due date"}
-          >
-            {firstTask.due_at ? upperFirst(formatRelative(new Date(firstTask.due_at), new Date())) : null}
-          </Button>
-        </TaskDueDateSetter>
+        <TaskDueDateSetter message={message} />
       </AnimateSharedLayout>
 
       <UIDivider />

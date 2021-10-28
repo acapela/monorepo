@@ -1,7 +1,7 @@
 import { BlockCollection, Blocks, Elements } from "slack-block-builder";
 
 import { SlackActionIds } from "../../slack/blocks";
-import { NotificationMessage } from "../sendNotification";
+import { NotificationMessage, createSlackLink } from "../sendNotification";
 
 interface Props {
   closedBy?: string | null;
@@ -17,9 +17,10 @@ export function createSlackClosureMessage({
   topicURL,
 }: Props): Pick<NotificationMessage, "slack"> {
   // TODO: Waiting for Richard to give feedback on copy
+
   const sectionText = closedBy
-    ? `*${closedBy}* closed *<${topicURL}|${topicName}>*`
-    : `🎉 All requests have been actioned in <${topicURL}|${topicName}>. The topic is now closed. 💪`;
+    ? `*${closedBy}* closed *${createSlackLink(topicURL, topicName)}*`
+    : `🎉 All requests have been actioned in ${createSlackLink(topicURL, topicName)}. The topic is now closed. 💪`;
 
   return {
     slack: BlockCollection(
