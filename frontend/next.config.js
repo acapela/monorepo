@@ -77,14 +77,13 @@ const envVariables = (nextConfig = {}) => {
       const isServer = options.isServer;
       const allEnvVariablesMap = { ...tryGetDotEnvVars(options.config.envFilePath), ...process.env };
 
-      if (process.env.SENTRY_RELEASE && process.env.STAGE && process.env.SENTRY_AUTH_TOKEN) {
+      if (process.env.SENTRY_RELEASE && process.env.SENTRY_AUTH_TOKEN) {
         config.plugins.push(
           new SentryCliPlugin({
             include: ".next",
             org: "acapela",
             project: "acapela",
             release: process.env.SENTRY_RELEASE,
-            deploy: { env: process.env.STAGE },
           })
         );
       }
