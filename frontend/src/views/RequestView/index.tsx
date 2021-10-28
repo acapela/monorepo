@@ -2,12 +2,13 @@ import { autorun } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { routes } from "~shared/routes";
+import { phone } from "~ui/responsive";
 
 import { TopicWithMessages } from "./TopicWithMessages";
 
@@ -85,7 +86,12 @@ const UIHolder = styled.div`
   padding-top: 20px;
   padding-bottom: 20px;
   max-height: 100vh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+
+  ${phone(css`
+    padding-bottom: 10px;
+  `)}
 `;

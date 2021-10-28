@@ -1,5 +1,7 @@
 import { css } from "styled-components";
 
+import { phone } from "~ui/responsive";
+
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 
 type BoxVariants = {
@@ -9,11 +11,15 @@ type BoxVariants = {
 
 export type Box = ThemeTarget<BoxVariants>;
 
-export function box(x: number, y = x): Box {
+export function box(x: number, y = x, mobileX = x, mobileY = y): Box {
   const self: Box = createThemeTarget<BoxVariants>(
     () =>
       css`
         padding: ${y}px ${x}px;
+
+        ${phone(css`
+          padding: ${mobileX}px ${mobileY}px;
+        `)}
       `,
     {
       get horizontalOnly() {

@@ -6,6 +6,7 @@ import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
+import { theme } from "~ui/theme";
 
 import { CollapsedTasksButton } from "./CollapsedTasksButton";
 import { MessageTask } from "./MessageTask";
@@ -38,13 +39,15 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
       <UIDivider />
 
-      <UITasks>
-        {displayedTasks.map((task) => (
-          <MessageTask key={task.id} task={task} />
-        ))}
-      </UITasks>
+      <UITasksPossibleScroller>
+        <UITasks>
+          {displayedTasks.map((task) => (
+            <MessageTask key={task.id} task={task} />
+          ))}
+        </UITasks>
 
-      {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
+        {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
+      </UITasksPossibleScroller>
     </UIHolder>
   );
 })``;
@@ -63,8 +66,15 @@ const UIDivider = styled.div<{}>`
   background-color: rgba(0, 0, 0, 0.05);
 `;
 
+const UITasksPossibleScroller = styled.div`
+  display: flex;
+  flex-direction: row;
+  min-width: 0;
+  overflow-x: auto;
+`;
+
 const UITasks = styled.div<{}>`
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  ${theme.spacing.horizontalActions.asGap}
 `;

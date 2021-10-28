@@ -99,22 +99,18 @@ export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
 const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
-  white-space: pre;
   padding: 20px 0;
   ${theme.spacing.horizontalActions.asGap}
 `;
 
 const UIAcapelaLogo = styled(CircleLabel)<{}>`
-  height: 20px;
-  width: 20px;
+  font-size: 20px;
 `;
 
 const UIText = styled.div<{}>`
-  display: flex;
-  align-items: center;
   ${theme.typo.content};
 `;
 
-const UIUserName = styled.div<{}>`
+const UIUserName = styled.span<{}>`
   ${theme.typo.content.medium};
 `;

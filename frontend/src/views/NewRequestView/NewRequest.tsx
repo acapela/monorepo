@@ -14,6 +14,7 @@ import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
@@ -28,6 +29,7 @@ import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
@@ -229,7 +231,7 @@ export const NewRequest = observer(function NewRequest() {
   );
 });
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled(HorizontalSpacingContainer)<{}>`
   position: relative;
   height: 100%;
   width: 100%;
@@ -237,6 +239,10 @@ const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${phone(css`
+    margin-top: 60px;
+  `)}
 `;
 
 const UIContentHolder = styled.div<{ isEmpty: boolean }>`

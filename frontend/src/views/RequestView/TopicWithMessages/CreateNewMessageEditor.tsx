@@ -217,11 +217,12 @@ const UIEditorContainer = styled.div<{}>`
   align-items: flex-end;
   width: 100%;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.horizontalActionsSection.asGap};
 `;
 const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.horizontalActionsSection.asGap};
+  min-height: 50px;
 `;
