@@ -73,7 +73,11 @@ export const NotificationSettings = observer(() => {
             onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
           />
         ) : (
-          <AddSlackInstallationButton teamId={team.id} tooltip="Connect Slack to receive notifications through it" />
+          <AddSlackInstallationButton
+            label="Link your Slack account"
+            teamId={team.id}
+            tooltip="Connect Slack to receive notifications through it"
+          />
         ))}
     </UIPanel>
   );

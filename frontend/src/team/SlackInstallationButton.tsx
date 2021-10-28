@@ -23,10 +23,12 @@ type Props = {
 
 export const AddSlackInstallationButton = observer(function AddSlackInstallationButton({
   teamId,
+  label,
   tooltip,
   withBot,
 }: {
   teamId: string;
+  label?: string;
   tooltip?: string;
   withBot?: boolean;
 }) {
@@ -57,7 +59,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       tooltip={tooltip}
       isWide
     >
-      Add Slack integration
+      {label ?? "Add Slack integration"}
     </UISlackButton>
   );
 });

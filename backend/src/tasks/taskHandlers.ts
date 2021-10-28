@@ -1,5 +1,6 @@
 import { HasuraEvent } from "~backend/src/hasura";
 import { createSlackLink, sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
+import { tryTopicSlackMessageUpdate } from "~backend/src/slack/LiveTopicMessage";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Task, db } from "~db";
 import { assert } from "~shared/assert";
@@ -52,6 +53,8 @@ async function onTaskUpdate(task: Task) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
   assert(topic, "must have topic");
+
+  await tryTopicSlackMessageUpdate(topic);
 
   const amountOfOpenTasksLeft = await db.task.count({
     where: {

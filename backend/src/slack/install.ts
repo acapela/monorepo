@@ -7,19 +7,10 @@ import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
 import { slackReceiver } from "./app";
+import manifest from "./manifest.json";
 import { Metadata } from "./metadata";
 
-const botScopes = [
-  "channels:read",
-  "commands",
-  "users.profile:read",
-  "users:read",
-  "users:read.email",
-  "im:write",
-  "chat:write",
-];
-
-const userScopes = ["channels:read", "groups:read", "im:read", "mpim:read", "chat:write"];
+export const { bot: botScopes, user: userScopes } = manifest.oauth_config.scopes;
 
 export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, metadata: Metadata) => {
   const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;

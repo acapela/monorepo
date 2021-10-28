@@ -1,0 +1,179 @@
+import Sentry from "@sentry/node";
+import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { Blocks, Modal } from "slack-block-builder";
+
+import { db } from "~db";
+import { assert, assertDefined } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { routes } from "~shared/routes";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { MentionType } from "~shared/types/mention";
+
+import { LiveTopicMessage } from "../LiveTopicMessage";
+import { findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
+import { tryOpenRequestModal } from "./tryOpenRequestModal";
+
+const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
+const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
+const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
+
+export function setupRequestModal(app: App) {
+  app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
+    const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
+    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, triggerId, {
+      channelId,
+      slackUserId,
+      slackTeamId,
+      origin: "slack-command",
+      messageText: body.text,
+    });
+
+    await ack();
+
+    if (user) {
+      trackBackendUserEvent(user.id, "Used Slack Slash Command", {
+        slackUserName: command.user_name,
+        commandName: SLASH_COMMAND,
+      });
+    }
+  });
+
+  app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
+    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, shortcut.trigger_id, {
+      slackUserId: body.user.id,
+      slackTeamId: assertDefined(body.team?.id, "must have slack team"),
+      origin: "slack-shortcut",
+    });
+
+    await ack();
+
+    if (user) {
+      trackBackendUserEvent(user.id, "Used Slack Global Shortcut", { slackUserName: body.user.username });
+    }
+  });
+
+  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context }) => {
+    const { channel, message, trigger_id } = shortcut;
+    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, trigger_id, {
+      channelId: channel.id,
+      slackUserId: body.user.id,
+      slackTeamId: assertDefined(body.team?.id, "must have slack team"),
+      messageText: message.text || "",
+      origin: "slack-message-action",
+    });
+
+    await ack();
+
+    if (user) {
+      trackBackendUserEvent(user.id, "Used Slack Message Action", { slackUserName: body.user.name });
+    }
+  });
+
+  listenToViewWithMetadata(app, "open_request_modal", async ({ ack, context, body, metadata }) => {
+    await tryOpenRequestModal(context.userToken ?? body.token, body.user.id, metadata);
+    await ack();
+  });
+
+  listenToViewWithMetadata(app, "create_request", async ({ ack, view, body, client, context, metadata }) => {
+    const {
+      topic_block: {
+        topic_name: { value: topicName },
+      },
+      members_block: {
+        members_select: { selected_users: members },
+      },
+      request_type_block: {
+        request_type_select: { selected_option: requestType },
+      },
+    } = view.state.values;
+
+    const messageText = metadata.messageText ?? view.state.values.message_block.message_text.value;
+
+    assert(members && requestType && messageText, "missing values");
+
+    if (members.length === 0) {
+      return await ack({
+        response_action: "errors",
+        errors: {
+          members_block: "You need to assign at least one user",
+        },
+      });
+    }
+
+    const token = context.userToken || body.token;
+
+    const slackTeamId = body.user.team_id;
+    assert(slackTeamId, "must have slack team id");
+
+    const [team, owner] = await Promise.all([
+      db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
+      findUserBySlackId(token, body.user.id),
+    ]);
+
+    assert(team, "must have a team");
+    assert(owner, "must have a user");
+
+    const topic = await createTopicForSlackUsers({
+      token,
+      teamId: team.id,
+      ownerId: owner.id,
+      slackTeamId,
+      rawTopicMessage: messageText,
+      topicName: topicName ?? truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
+      slackUserIdsWithRequestType: members.map((id) => ({
+        slackUserId: id,
+        requestType: requestType.value as MentionType,
+      })),
+    });
+
+    if (!topic) {
+      return await ack({
+        response_action: "errors",
+        errors: {
+          request_type_block: "Topic creation failed",
+        },
+      });
+    }
+
+    if (!metadata.channelId) {
+      const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
+      await ack({
+        response_action: "update",
+        view: Modal({ title: "Request created" })
+          .blocks(
+            Blocks.Section({ text: `You can find your request in you sidebar or behind this link:\n${topicURL}` })
+          )
+          .buildToObject(),
+      });
+      return;
+    }
+
+    await ack({ response_action: "clear" });
+
+    const response = await client.chat.postMessage({
+      ...(await LiveTopicMessage(topic)),
+      token,
+      channel: metadata.channelId,
+    });
+
+    if (!response.ok) {
+      assert(response.error, "non-ok response without an error");
+      Sentry.captureException(response.error);
+      return;
+    }
+
+    const { channel, message } = response;
+    assert(channel && message?.ts, "ok response without channel or message_ts");
+    await db.topic_slack_message.create({
+      data: { topic_id: topic.id, slack_channel_id: channel, slack_message_ts: message.ts },
+    });
+
+    if (owner) {
+      trackBackendUserEvent(owner.id, "Created Topic", {
+        origin: metadata.origin,
+        topicName: topic.name,
+      });
+    }
+  });
+}

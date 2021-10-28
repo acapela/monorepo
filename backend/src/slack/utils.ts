@@ -1,9 +1,10 @@
-import { ViewsOpenArguments } from "@slack/web-api";
+import { App, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 
-import { SlackInstallation, slackClient } from "~backend/src/slack/app";
-import { isWebAPIErrorType } from "~backend/src/slack/errors";
 import { User, db } from "~db";
-import { routes } from "~shared/routes";
+import { AnalyticsEventsMap } from "~shared/types/analytics";
+
+import { SlackInstallation, slackClient } from "./app";
+import { isWebAPIErrorType } from "./errors";
 
 export async function fetchTeamBotToken(teamId: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });
@@ -36,7 +37,14 @@ export async function findSlackUserId(teamId: string, user: User): Promise<strin
   }
 }
 
-export async function findUserBySlackId(slackToken: string, slackUserId: string, teamId?: string) {
+export async function fetchTeamMemberBotToken(userId: string, teamId: string) {
+  const teamMemberSlack = await db.team_member_slack.findFirst({
+    where: { team_member: { team_id: teamId, user_id: userId } },
+  });
+  return (teamMemberSlack?.installation_data as unknown as SlackInstallation["user"])?.token;
+}
+
+export async function findUserBySlackId(token: string, slackUserId: string, teamId?: string) {
   const user = await db.user.findFirst({
     where: { team_member: { some: { team_id: teamId, team_member_slack: { slack_user_id: slackUserId } } } },
   });
@@ -44,34 +52,48 @@ export async function findUserBySlackId(slackToken: string, slackUserId: string,
     return user;
   }
 
-  const { profile } = await slackClient.users.profile.get({ token: slackToken, user: slackUserId });
+  const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
   if (!profile) {
     return;
   }
   return await db.user.findFirst({ where: { team_member: { some: { team_id: teamId } }, email: profile.email } });
 }
 
-export const createLinkSlackWithAcapelaView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
-  trigger_id: triggerId,
-  view: {
-    type: "modal",
-    title: { type: "plain_text", text: "We could not find you" },
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: [
-            "We could not find a user with your email on Acapela.",
-            `<${process.env.FRONTEND_URL + routes.settings}|Connect Acapela with Slack> to use this feature.`,
-          ].join(" "),
-        },
-      },
-    ],
-  },
-});
-
 export async function getSlackUserMentionOrLabel(user: User, teamId: string) {
   const invitingUserSlackId = await findSlackUserId(teamId, user);
   return invitingUserSlackId ? `<@${invitingUserSlackId}>` : user.name;
+}
+
+export const SlackActionIds = {
+  ReOpenTopic: "reopen-topic",
+  ArchiveTopic: "archive-topic",
+} as const;
+
+export type CreateRequestOrigin = AnalyticsEventsMap["Created Topic"]["origin"];
+
+export type ViewMetadata = {
+  open_request_modal: {
+    slackUserId: string;
+    slackTeamId: string;
+    origin: CreateRequestOrigin;
+    channelId?: string;
+    messageText?: string;
+  };
+  create_request: { messageText?: string; channelId?: string; origin: CreateRequestOrigin };
+};
+
+export const attachToViewWithMetadata = <Key extends keyof ViewMetadata>(
+  callbackId: Key,
+  metadata: ViewMetadata[Key]
+) => ({
+  callbackId,
+  privateMetaData: JSON.stringify(metadata),
+});
+
+export function listenToViewWithMetadata<Key extends keyof ViewMetadata>(
+  app: App,
+  key: Key,
+  listener: Middleware<SlackViewMiddlewareArgs<SlackViewAction> & { metadata: ViewMetadata[Key] }>
+) {
+  app.view(key, (data) => listener({ ...data, metadata: JSON.parse(data.view.private_metadata) }));
 }

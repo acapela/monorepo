@@ -36,6 +36,7 @@ export type NotificationMessage = {
   There's a higher risk of timeout and errors present.
 */
 const sendNotification = async (user: User, teamId: string, message: Partial<NotificationMessage>): Promise<unknown> =>
+  Promise.resolve() ||
   Promise.all([
     message.slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
     message.email

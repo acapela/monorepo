@@ -29,10 +29,11 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       const slackTeamId = assertDefined(installation.team, "installation must have team").id;
       if (installation.bot) {
         const teamData = _.omit(installation, "user", "metadata");
+        const data = teamData as never;
         await db.team_slack_installation.upsert({
           where: { team_id: teamId },
-          create: { team_id: teamId, data: teamData as never, slack_team_id: slackTeamId },
-          update: {},
+          create: { team_id: teamId, data, slack_team_id: slackTeamId },
+          update: { data },
         });
       }
       if (!userId) {
@@ -42,12 +43,15 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       if (!teamMember) {
         return;
       }
-      await db.team_member_slack.create({
-        data: {
+      const installation_data = installation.user as never;
+      await db.team_member_slack.upsert({
+        where: { team_member_id: teamMember.id },
+        create: {
           team_member_id: teamMember.id,
-          installation_data: installation.user as never,
+          installation_data,
           slack_user_id: installation.user.id,
         },
+        update: { installation_data, slack_user_id: installation.user.id },
       });
     },
     async fetchInstallation(query) {
