@@ -37,7 +37,7 @@
     "http-proxy": "^1.18.1",
     "immer": "^9.0.6",
     "mobx-react": "^7.2.1",
-    "next": "^12.0.1",
+    "next": "^11.1.2",
     "next-auth": "^4.0.0-beta.5",
     "react-popper": "^2.2.5",
     "styled-normalize": "^8.0.7",
@@ -52,7 +52,7 @@
     "~ui": "0.1.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.0.1",
+    "@next/bundle-analyzer": "^11.1.2",
     "@sentry/webpack-plugin": "^1.18.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
