@@ -2,6 +2,7 @@ import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { styledObserver } from "~shared/component";
 import { select } from "~shared/sharedState";
 
@@ -40,7 +41,7 @@ const UIHolder = styled.div<{}>`
   flex-grow: 1;
 `;
 
-const UIInner = styled.div<{}>`
+const UIInner = styled(HorizontalSpacingContainer)<{}>`
   position: relative;
   padding-bottom: 40px;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;

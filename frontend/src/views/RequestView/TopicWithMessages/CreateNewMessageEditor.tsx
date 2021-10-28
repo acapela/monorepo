@@ -22,6 +22,7 @@ import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions"
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { RequestType } from "~shared/types/mention";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
@@ -217,11 +218,12 @@ const UIEditorContainer = styled.div<{}>`
   align-items: flex-end;
   width: 100%;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.horizontalActionsSection.asGap};
 `;
 const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.horizontalActionsSection.asGap};
+  min-height: 50px;
 `;

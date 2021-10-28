@@ -1,13 +1,15 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
+import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { PopPresenceAnimator } from "~ui/animations";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -91,9 +93,15 @@ const UIFooterContainer = styled(PopPresenceAnimator)`
   border-top: 1px solid ${theme.colors.layout.background.border};
   display: flex;
   justify-content: center;
+
+  ${phone(
+    css`
+      padding-top: 10px;
+    `
+  )}
 `;
 
-const UIFooter = styled.div`
+const UIFooter = styled(HorizontalSpacingContainer)`
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;

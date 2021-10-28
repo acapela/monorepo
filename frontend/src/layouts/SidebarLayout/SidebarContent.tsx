@@ -1,14 +1,16 @@
 import { observer } from "mobx-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-import { useDebouncedValue } from "~frontend/../../shared/hooks/useDebouncedValue";
 import { UserMenu } from "~frontend/layouts/UserMenu";
+import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
-import { IconPlus } from "~ui/icons";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconCross, IconPlus } from "~ui/icons";
 import { Shortcut } from "~ui/keyboard/Shortcut";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { RequestFeed } from "./RequestFeed";
@@ -16,7 +18,11 @@ import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
 const DEBOUNCE_SEARCH = true;
 
-export const SidebarContent = observer(function SidebarContent() {
+interface Props {
+  onMobileCloseRequest: () => void;
+}
+
+export const SidebarContent = observer(function SidebarContent({ onMobileCloseRequest }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,7 +33,11 @@ export const SidebarContent = observer(function SidebarContent() {
   return (
     <UIHolder>
       <UIHeader>
-        <UserMenu />
+        <IconButton icon={<IconCross />} onClick={onMobileCloseRequest} />
+        <UIHeaderUser>
+          <UserMenu />
+        </UIHeaderUser>
+
         <Link href={routes.newRequest}>
           <a>
             <Button kind="secondary" icon={<IconPlus />} iconAtStart>
@@ -67,12 +77,35 @@ const UIHolder = styled.div<{}>`
   flex-direction: column;
 `;
 
-const UIHeader = styled.div<{}>`
+const primaryPaddingInSidebar = css`
   padding: 20px;
+  ${phone(
+    css`
+      padding: 15px;
+    `
+  )}
+`;
+
+const UIHeader = styled.div<{}>`
+  ${primaryPaddingInSidebar}
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  ${theme.spacing.horizontalActions.asGap}
+
+  ${IconButton} {
+    display: none;
+    ${phone(
+      css`
+        display: block;
+      `
+    )}
+  }
+`;
+
+const UIHeaderUser = styled.div`
+  flex-grow: 1;
+  display: flex;
 `;
 
 const UIRequestFeed = styled.div<{}>`
@@ -85,7 +118,7 @@ const UISearch = styled.div<{}>`
   border-top-width: 1px;
   border-bottom-width: 1px;
 
-  padding: 20px;
+  ${primaryPaddingInSidebar}
 
   ${theme.typo.content};
 
