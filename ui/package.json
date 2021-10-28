@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@svgr/cli": "^5.5.0",
-    "@types/emoji-mart": "^3.0.6",
-    "@types/react-virtualized": "^9.21.13"
+    "@types/emoji-mart": "^3.0.8",
+    "@types/react-virtualized": "^9.21.14"
   }
 }

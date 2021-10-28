@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@types/flexsearch": "^0.7.1",
-    "babel-jest": "^27.2.5"
+    "babel-jest": "^27.3.1"
   },
   "scripts": {
     "test": "jest",
