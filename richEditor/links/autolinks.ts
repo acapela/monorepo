@@ -14,7 +14,7 @@ export const linkInputRegexWithBrackets =
 // eslint-disable-next-line @typescript-eslint/ban-types
 function markInputRuleKeepTrailingChar(regexp: RegExp, markType: MarkType, getAttributes?: Function): InputRule {
   // version of markInputRule that adds the missing trailing char
-  const standardMarkInputRule = markInputRule(regexp, markType, getAttributes);
+  const standardMarkInputRule = markInputRule({ type: markType, getAttributes, find: regexp });
   return new InputRule(regexp, (state, match, start, end) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tr = (standardMarkInputRule as any).handler(state, match, start, end);

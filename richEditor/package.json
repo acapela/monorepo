@@ -19,6 +19,7 @@
     "prosemirror-model": "1.14.3"
   },
   "devDependencies": {
-    "@types/html-to-text": "^8.0.1"
+    "@types/html-to-text": "^8.0.1",
+    "@types/prosemirror-inputrules": "^1.0.4"
   }
 }
