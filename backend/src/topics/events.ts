@@ -13,6 +13,74 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
 
   if (event.type === "update") {
     notifyTopicUpdates(event, topic);
+    updateTopicEvents(event);
+  }
+}
+
+async function updateTopicEvents(event: HasuraEvent<Topic>) {
+  const topicNow = event.item;
+  const topicBefore = event.itemBefore;
+
+  // Should never be null on event updates
+  assert(topicBefore, "Updated topic didn't contain previous topic data");
+
+  const isOpen = (topic: Topic) => topic.closed_at === null;
+  const isArchived = (topic: Topic) => topic.archived_at !== null;
+
+  const wasJustClosed = !isOpen(topicNow) && isOpen(topicBefore);
+  if (wasJustClosed) {
+    await db.topic_event.create({
+      data: {
+        topic_id: topicNow.id,
+        topic_event_topic_closed: {
+          create: {
+            closed_by_user_id: event.userId,
+          },
+        },
+      },
+    });
+  }
+
+  const wasJustReopened = isOpen(topicNow) && !isOpen(topicBefore);
+  if (wasJustReopened) {
+    await db.topic_event.create({
+      data: {
+        topic_id: topicNow.id,
+        topic_event_topic_reopened: {
+          create: {
+            reopened_by_user_id: event.userId,
+          },
+        },
+      },
+    });
+  }
+
+  const wasJustArchived = isArchived(topicNow) && !isArchived(topicBefore);
+  if (wasJustArchived) {
+    await db.topic_event.create({
+      data: {
+        topic_id: topicNow.id,
+        topic_event_topic_archived: {
+          create: {
+            archived_by_user_id: event.userId,
+          },
+        },
+      },
+    });
+  }
+
+  const wasJustUnarchived = !isArchived(topicNow) && isArchived(topicBefore);
+  if (wasJustUnarchived) {
+    await db.topic_event.create({
+      data: {
+        topic_id: topicNow.id,
+        topic_event_topic_unarchived: {
+          create: {
+            unarchived_by_user_id: event.userId,
+          },
+        },
+      },
+    });
   }
 }
 
@@ -21,7 +89,7 @@ function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
   const userIdThatClosedTopic = topic.closed_by_user_id;
 
   const isClosedByOwner = ownerId === userIdThatClosedTopic;
-  const wasJustClosed = topic.closed_at && !event?.itemBefore?.closed_at;
+  const wasJustClosed = topic.closed_at && event?.itemBefore?.closed_at === null;
 
   if (wasJustClosed && !isClosedByOwner) {
     notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);

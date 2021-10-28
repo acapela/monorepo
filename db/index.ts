@@ -8,6 +8,7 @@ export type {
   message_type as MessageType,
   message_reaction as MessageReaction,
   topic as Topic,
+  topic_event as TopicEvent,
   user as User,
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
