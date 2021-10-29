@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
@@ -77,12 +77,6 @@ const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
 
   ${theme.radius.secondaryItem};
   ${theme.transitions.hover()};
-
-  ${(props) =>
-    props.hasTopSpacing &&
-    css`
-      margin-top: 30px;
-    `}
 
   &:hover {
     ${theme.colors.layout.background.hover.opacity(0.5).asBg};
