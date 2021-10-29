@@ -18,7 +18,7 @@ function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) 
   const [results, setResults] = useState<BaseEmoji[]>([]);
 
   useAsyncEffect(
-    async (getIsCancelled) => {
+    async ({ getIsCancelled }) => {
       const { emojiIndex } = await import("emoji-mart");
 
       if (getIsCancelled()) return;

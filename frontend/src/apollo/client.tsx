@@ -12,10 +12,11 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
-import React, { ReactNode, useMemo } from "react";
+import React, { ReactNode } from "react";
 
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
+import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
 import { Maybe } from "~shared/types";
 import { addToast } from "~ui/toasts/data";
@@ -144,7 +145,7 @@ interface ApolloClientProviderProps {
 }
 
 export const ApolloClientProvider = ({ children, websocketEndpoint }: ApolloClientProviderProps) => {
-  const client = useMemo(() => getApolloClient(websocketEndpoint ?? undefined), [websocketEndpoint]);
+  const client = useConst(() => getApolloClient(websocketEndpoint ?? undefined));
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
