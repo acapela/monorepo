@@ -78,6 +78,8 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       return { success: false };
     }
 
+    email = email.toLowerCase();
+
     let teamMember = await db.team_member.findFirst({
       where: { team_id, user: { email } },
       include: { user: { include: { account: true } } },
