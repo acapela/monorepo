@@ -1,4 +1,4 @@
-import { AnimateSharedLayout, motion } from "framer-motion";
+import { LayoutGroup, motion } from "framer-motion";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
@@ -27,7 +27,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
   const id = useId();
 
   return (
-    <AnimateSharedLayout>
+    <LayoutGroup>
       <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
@@ -51,7 +51,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
         </UIContentHolder>
         {indicateDropdown && <UIDropdownIcon />}
       </UIHolder>
-    </AnimateSharedLayout>
+    </LayoutGroup>
   );
 });
 

@@ -2,7 +2,7 @@ import "focus-visible";
 
 // Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/react";
-import { AnimateSharedLayout, MotionConfig } from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
 import { AppContext, AppProps } from "next/app";
@@ -95,23 +95,21 @@ export default function App({
         fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
       >
         <RequiredSessionProvider session={appConfig.session}>
-          <AnimateSharedLayout type="crossfade">
-            <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-              <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
-                <AppThemeProvider theme={theme}>
-                  <CurrentTeamProvider>
-                    <ClientDbProvider>
-                      <AnalyticsManager segmentAPIKey={appConfig.segmentAPIKey} />
-                      <PromiseUIRenderer />
-                      <TooltipsRenderer />
-                      <ToastsRenderer />
-                      {renderWithPageLayout(Component, { appConfig, ...pageProps })}
-                    </ClientDbProvider>
-                  </CurrentTeamProvider>
-                </AppThemeProvider>
-              </ApolloProvider>
-            </MotionConfig>
-          </AnimateSharedLayout>
+          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+            <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
+              <AppThemeProvider theme={theme}>
+                <CurrentTeamProvider>
+                  <ClientDbProvider>
+                    <AnalyticsManager segmentAPIKey={appConfig.segmentAPIKey} />
+                    <PromiseUIRenderer />
+                    <TooltipsRenderer />
+                    <ToastsRenderer />
+                    {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+                  </ClientDbProvider>
+                </CurrentTeamProvider>
+              </AppThemeProvider>
+            </ApolloProvider>
+          </MotionConfig>
         </RequiredSessionProvider>
       </Sentry.ErrorBoundary>
     </>

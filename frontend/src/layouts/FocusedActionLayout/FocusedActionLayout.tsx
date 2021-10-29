@@ -66,7 +66,7 @@ const UIHead = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
   margin-bottom: 50px;
 `;
 

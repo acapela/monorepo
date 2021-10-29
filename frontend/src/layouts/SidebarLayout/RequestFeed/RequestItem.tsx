@@ -89,7 +89,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
 const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   display: flex;
   ${theme.box.item};
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
   ${theme.radius.primaryItem}
 
   align-items: center;

@@ -1,4 +1,4 @@
-import { AnimateSharedLayout } from "framer-motion";
+import { LayoutGroup } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
@@ -33,9 +33,9 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
   return (
     <UIHolder data-test-message-tasks>
-      <AnimateSharedLayout>
+      <LayoutGroup>
         <TaskDueDateSetter message={message} />
-      </AnimateSharedLayout>
+      </LayoutGroup>
 
       <UIDivider />
 
@@ -76,5 +76,5 @@ const UITasksPossibleScroller = styled.div`
 const UITasks = styled.div<{}>`
   display: flex;
   flex-direction: row;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
 `;

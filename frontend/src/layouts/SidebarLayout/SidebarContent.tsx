@@ -91,7 +91,7 @@ const UIHeader = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
 
   ${IconButton} {
     display: none;

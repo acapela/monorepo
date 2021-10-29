@@ -118,18 +118,18 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;
 
 const UIActions = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;
 
 const UIButtons = styled.div`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
