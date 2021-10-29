@@ -37,7 +37,7 @@ ENV BUILD_DATE=${BUILD_DATE:-unknown}
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
 
-COPY --from=builder ./app ./app
+COPY --from=builder ./app /
 
 ENV BACKEND_PORT=1337
 EXPOSE 1337
