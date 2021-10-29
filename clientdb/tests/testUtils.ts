@@ -65,6 +65,9 @@ const mockPersistanceAdapter: PersistanceAdapterInfo = {
   adapter: {
     async openDB() {
       return {
+        async close() {
+          //
+        },
         async getTable() {
           return {
             async clearTable() {
