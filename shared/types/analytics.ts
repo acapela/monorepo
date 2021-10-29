@@ -39,7 +39,7 @@ export type AnalyticsEventsMap = {
   // Topic related events
 
   "Created Topic": {
-    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "web-app";
+    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "web-app" | "unknown";
     topicName: string;
   };
   "Reopened Topic": { topicId: string };

@@ -24,7 +24,6 @@ interface Props {
 export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   function handleCloseTopic() {
     topic.close();
-    trackEvent("Closed Topic", { topicId: topic.id });
   }
 
   const handleReopenTopic = action(() => {

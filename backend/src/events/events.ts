@@ -18,7 +18,7 @@ export const router = Router();
 log.info("Initialize hasura event handlers");
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
-hasuraEvents.addHandler("topic_updates", ["UPDATE"], handleTopicUpdates);
+hasuraEvents.addHandler("topic_updates", ["INSERT", "UPDATE"], handleTopicUpdates);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 // Create plain text version of each message so it can be used by search views.
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageChanges);
