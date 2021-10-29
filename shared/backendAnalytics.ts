@@ -2,7 +2,7 @@ import Analytics from "analytics-node";
 
 import { User } from "~db";
 
-import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
+import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
   return {
@@ -51,5 +51,16 @@ export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
 
   if (analytics) {
     analytics.track({ userId, event: eventName, properties: payload });
+  }
+}
+
+export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
+  userId: string,
+  groupId: string,
+  groupProperties?: AnalyticsGroupsMap[N]
+) {
+  const analytics = getAnalyticsSDK();
+  if (analytics) {
+    analytics.group({ userId, groupId, traits: groupProperties });
   }
 }

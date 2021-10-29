@@ -61,7 +61,6 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
 
   const closeTopic = ({ isArchived: isAlsoArchiving } = { isArchived: false }) => {
     topic.close();
-    trackEvent("Closed Topic", { topicId: topic.id });
 
     if (isAlsoArchiving) {
       topic.update({ archived_at: new Date().toISOString() });

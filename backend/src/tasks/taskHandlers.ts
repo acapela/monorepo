@@ -3,8 +3,9 @@ import { createSlackLink, sendNotificationPerPreference } from "~backend/src/not
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Task, db } from "~db";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/mention";
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
   if (event.type === "create") {
@@ -22,6 +23,12 @@ async function onTaskCreation(task: Task) {
   ]);
 
   assert(fromUser && toUser && topic, "must have users and topic");
+
+  trackBackendUserEvent(fromUser.id, "Created Task", {
+    taskType: task.type as RequestType,
+    topicId: topic.id,
+    mentionedUserId: toUser.id,
+  });
 
   if (fromUser.id === toUser.id) {
     // do not notify users about tasks created by themselves

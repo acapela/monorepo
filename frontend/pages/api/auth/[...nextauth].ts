@@ -8,7 +8,7 @@ import SlackProvider from "next-auth/providers/slack";
 import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
-import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { identifyBackendUserTeam, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { Maybe } from "~shared/types";
@@ -82,9 +82,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
             },
           })
-          .then((user) => {
+          .then(async (user) => {
             if (user) {
               trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
+            }
+            if (user?.current_team_id) {
+              const team = await db.team.findFirst({ where: { id: user.current_team_id } });
+              if (team) {
+                identifyBackendUserTeam(user.id, team.id, { teamId: team.id, teamName: team.name });
+              }
             }
           })
           .catch((error) => Sentry.captureException(error));
