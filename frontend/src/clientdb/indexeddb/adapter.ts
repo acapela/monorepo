@@ -1,4 +1,4 @@
-import { deleteDB, openDB } from "idb";
+import { IDBPDatabase, deleteDB, openDB } from "idb";
 
 import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
 
@@ -21,6 +21,8 @@ async function performDbCallbackTryingAgainOnError<T>(databaseName: string, call
   }
 }
 
+const existingConnections = new Map<string, IDBPDatabase<unknown>>();
+
 export function createIndexedDbAdapter(): PersistanceAdapter {
   return {
     async removeDB(name) {
@@ -32,30 +34,45 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
       }
     },
     async openDB({ name, tables, version }) {
-      const db = await performDbCallbackTryingAgainOnError(name, () =>
-        openDB(name, version, {
-          upgrade(database, oldVersion, newVersion) {
-            // Each time new version of database is detected - wipe out entire data and re-create it
-            console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
-            for (const existingStore of database.objectStoreNames) {
-              database.deleteObjectStore(existingStore);
-            }
+      async function getOrReuseDb() {
+        const existingConnection = existingConnections.get(name);
 
-            for (const entity of tables) {
-              database.createObjectStore(entity.name, { keyPath: entity.keyField });
-            }
-          },
-          blocked() {
-            console.error("Creating db blocked");
-          },
-          blocking() {
-            console.error("Creating db blocking");
-          },
-          terminated() {
-            console.error("Creating db terminated");
-          },
-        })
-      );
+        if (existingConnection && existingConnection.version !== version) {
+          existingConnection.close();
+          existingConnections.delete(name);
+        }
+
+        if (existingConnection && existingConnection.version == version) {
+          return existingConnection;
+        }
+
+        return await performDbCallbackTryingAgainOnError(name, () =>
+          openDB(name, version, {
+            upgrade(database, oldVersion, newVersion) {
+              // Each time new version of database is detected - wipe out entire data and re-create it
+              console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
+              for (const existingStore of database.objectStoreNames) {
+                database.deleteObjectStore(existingStore);
+              }
+
+              for (const entity of tables) {
+                database.createObjectStore(entity.name, { keyPath: entity.keyField });
+              }
+            },
+            blocked() {
+              console.error("Creating db blocked");
+            },
+            blocking() {
+              console.error("Creating db blocking");
+            },
+            terminated() {
+              console.error("Creating db terminated");
+            },
+          })
+        );
+      }
+
+      const db = await getOrReuseDb();
 
       const adapter: PersistanceDB = {
         async close() {
