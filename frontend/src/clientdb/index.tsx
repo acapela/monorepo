@@ -86,12 +86,10 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 
       if (teamManager.isLoading) return;
 
-      console.log("waiting");
       // If db is closing and we'll create same one with the same name, but different version, while old one is still opened, it will be blocked by browser. Let's wait for
       // previous effect to finish as it'll call db.destroy()
       await waitForPreviousEffectToResolve();
 
-      console.log("did finish waiting");
       const newDb = await createNewClientDb(userId, teamManager.teamId, apolloClient);
 
       if (getIsCancelled()) {

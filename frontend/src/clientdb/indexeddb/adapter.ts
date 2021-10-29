@@ -13,7 +13,8 @@ import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~cli
  */
 async function performDbCallbackTryingAgainOnError<T>(databaseName: string, callback: () => T) {
   try {
-    return await callback();
+    const result = await callback();
+    return result;
   } catch (error) {
     await deleteDB(databaseName);
 
@@ -46,7 +47,7 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
           return existingConnection;
         }
 
-        return await performDbCallbackTryingAgainOnError(name, () =>
+        const db = await performDbCallbackTryingAgainOnError(name, () =>
           openDB(name, version, {
             upgrade(database, oldVersion, newVersion) {
               // Each time new version of database is detected - wipe out entire data and re-create it
@@ -63,13 +64,26 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
               console.error("Creating db blocked");
             },
             blocking() {
-              console.error("Creating db blocking");
+              /**
+               * This is important! Lack of this callback can 'freeze' opening the app.
+               *
+               * Context: if you have 2 tabs opened with the app, but some of them is having 'older' db version, and you refresh never one
+               * this callback will be called.
+               *
+               * TLDR: this callback = "if I am already opened, but someone else wants to upgrade db version (potentially in different tab!) - call this callback"
+               */
+
+              // If this happens, we indeed want to instantly close the connection and reload the page (it usually means user has 'old' tab opened for a long time!)
+              db.close();
+              window.location.reload();
             },
             terminated() {
               console.error("Creating db terminated");
             },
           })
         );
+
+        return db;
       }
 
       const db = await getOrReuseDb();
