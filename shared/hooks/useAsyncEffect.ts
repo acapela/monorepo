@@ -1,5 +1,4 @@
-import { DependencyList, EffectCallback, useEffect } from "react";
-import { useIsomorphicLayoutEffect, usePrevious } from "react-use";
+import { DependencyList, EffectCallback, useEffect, useRef } from "react";
 
 import { createResolvablePromise } from "~shared/promises";
 
@@ -40,15 +39,17 @@ type AsyncEffect = (input: AsyncEffectInput) => Promise<Cleanup | void>;
  */
 
 export function useAsyncEffect(effect: AsyncEffect, deps?: DependencyList) {
-  const asyncEffect = getEffectCallbackForAsyncEffect(effect, () => previousAsyncEffect ?? null);
-  const previousAsyncEffect = usePrevious(asyncEffect);
-  useEffect(asyncEffect.callback, deps);
-}
+  const currentPromiseRef = useRef<Promise<void> | null>(null);
 
-export function useAsyncLayoutEffect(effect: AsyncEffect, deps?: DependencyList) {
-  const asyncEffect = getEffectCallbackForAsyncEffect(effect, () => previousAsyncEffect ?? null);
-  const previousAsyncEffect = usePrevious(asyncEffect);
-  useIsomorphicLayoutEffect(asyncEffect.callback, deps);
+  useEffect(() => {
+    const currentPromise = currentPromiseRef.current;
+
+    const asyncEffect = getEffectCallbackForAsyncEffect(effect, () => currentPromise);
+
+    currentPromiseRef.current = asyncEffect.resolvePromise;
+
+    return asyncEffect.callback();
+  }, deps);
 }
 
 interface AsyncEffectData {
@@ -58,7 +59,7 @@ interface AsyncEffectData {
 
 function getEffectCallbackForAsyncEffect(
   asyncEffect: AsyncEffect,
-  getPrevious: () => AsyncEffectData | null
+  getPreviousPromise: () => Promise<void> | null
 ): AsyncEffectData {
   const resolvePromise = createResolvablePromise<void>();
   const callback = () => {
@@ -71,7 +72,7 @@ function getEffectCallbackForAsyncEffect(
     const effectResultPromise = asyncEffect({
       getIsCancelled,
       async waitForPreviousEffectToResolve() {
-        return getPrevious()?.resolvePromise;
+        await getPreviousPromise();
       },
     });
 
