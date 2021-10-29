@@ -38,6 +38,18 @@ export interface AppConfig {
   segmentApiKey: string | undefined;
 }
 
+function initSentry(appConfig: AppConfig) {
+  if (!appConfig.sentryDsn) console.info("Sentry is disabled");
+
+  Sentry.init({
+    dsn: appConfig.sentryDsn,
+    environment: appConfig.stage,
+    // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
+    ignoreErrors: ["ResizeObserver loop limit exceeded"],
+    release: appConfig.version,
+  });
+}
+
 const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
@@ -69,22 +81,11 @@ export default function App({
       } as AppConfig)
   );
 
-  // Load Userback integration after initial app render
+  // Load Userback and Sentry integration after initial app render
   useEffect(() => {
     initializeUserbackPlugin(appConfig.userbackAccessToken);
+    initSentry(appConfig);
   }, [appConfig]);
-
-  if (appConfig.sentryDsn) {
-    Sentry.init({
-      dsn: appConfig.sentryDsn,
-      environment: appConfig.stage,
-      // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
-      ignoreErrors: ["ResizeObserver loop limit exceeded"],
-      release: appConfig.version,
-    });
-  } else {
-    console.info("Sentry is disabled");
-  }
 
   return (
     <>
