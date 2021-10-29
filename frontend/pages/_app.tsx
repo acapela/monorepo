@@ -34,15 +34,15 @@ export interface AppConfig {
   version: string | undefined;
   buildDate: string | undefined;
   userbackAccessToken: string | undefined;
-  sentryDsn: string | undefined;
-  segmentApiKey: string | undefined;
+  sentryDSN: string | undefined;
+  segmentAPIKey: string | undefined;
 }
 
 function initSentry(appConfig: AppConfig) {
-  if (!appConfig.sentryDsn) console.info("Sentry is disabled");
+  if (!appConfig.sentryDSN) console.info("Sentry is disabled");
 
   Sentry.init({
-    dsn: appConfig.sentryDsn,
+    dsn: appConfig.sentryDSN,
     environment: appConfig.stage,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
@@ -63,8 +63,8 @@ export default function App({
   version,
   buildDate,
   userbackAccessToken,
-  sentryDsn,
-  segmentApiKey,
+  sentryDSN,
+  segmentAPIKey,
 }: AppProps & AppConfig): JSX.Element {
   // We need to remember this from first render, as getInitialProps is not run on client side navigation
   const appConfig = useConst(
@@ -76,8 +76,8 @@ export default function App({
         version,
         buildDate,
         userbackAccessToken,
-        sentryDsn,
-        segmentApiKey,
+        sentryDSN: sentryDSN,
+        segmentAPIKey: segmentAPIKey,
       } as AppConfig)
   );
 
@@ -101,7 +101,7 @@ export default function App({
                 <AppThemeProvider theme={theme}>
                   <CurrentTeamProvider>
                     <ClientDbProvider>
-                      <AnalyticsManager segmentApiKey={appConfig.segmentApiKey} />
+                      <AnalyticsManager segmentAPIKey={appConfig.segmentAPIKey} />
                       <PromiseUIRenderer />
                       <TooltipsRenderer />
                       <ToastsRenderer />
@@ -185,7 +185,7 @@ App.getInitialProps = async (context: AppContext) => {
     version: process.env.SENTRY_RELEASE || "dev",
     buildDate: process.env.BUILD_DATE || "unknown",
     userbackAccessToken: process.env.USERBACK_ACCESS_TOKEN,
-    sentryDsn: process.env.SENTRY_DSN,
-    segmentApiKey: process.env.SEGMENT_API_KEY,
+    sentryDSN: process.env.SENTRY_DSN,
+    segmentAPIKey: process.env.SEGMENT_API_KEY,
   } as AppConfig;
 };

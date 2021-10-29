@@ -10,10 +10,10 @@ const segmentOptions = {
   page: true,
 };
 
-const SegmentScriptWithSnippet = ({ segmentApiKey }: { segmentApiKey: string }) => {
+const SegmentScriptWithSnippet = ({ segmentAPIKey }: { segmentAPIKey: string }) => {
   const snippetHTML = useConst(() =>
     snippet.min({
-      apiKey: segmentApiKey,
+      apiKey: segmentAPIKey,
       ...segmentOptions,
     })
   );
@@ -27,10 +27,10 @@ const SegmentScriptWithSnippet = ({ segmentApiKey }: { segmentApiKey: string }) 
   return <Script id="segment-script" dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
 };
 
-export const SegmentScript = memo(({ segmentApiKey }: { segmentApiKey: string | undefined }) => {
-  if (!segmentApiKey) {
+export const SegmentScript = memo(({ segmentAPIKey }: { segmentAPIKey: string | undefined }) => {
+  if (!segmentAPIKey) {
     return null;
   }
 
-  return <SegmentScriptWithSnippet segmentApiKey={segmentApiKey} />;
+  return <SegmentScriptWithSnippet segmentAPIKey={segmentAPIKey} />;
 });

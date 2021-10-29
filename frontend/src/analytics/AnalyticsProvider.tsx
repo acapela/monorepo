@@ -10,7 +10,7 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { SegmentScript } from "./SegmentScript";
 import { identifyUser, identifyUserGroup } from "./tracking";
 
-export const AnalyticsManager = observer(({ segmentApiKey }: { segmentApiKey: string | undefined }) => {
+export const AnalyticsManager = observer(({ segmentAPIKey }: { segmentAPIKey: string | undefined }) => {
   const db = useNullableDb();
   const userToken = useCurrentUserTokenData();
   const team = useCurrentTeam();
@@ -20,7 +20,7 @@ export const AnalyticsManager = observer(({ segmentApiKey }: { segmentApiKey: st
 
   function tryToInitialize() {
     if (!window.analytics) {
-      if (segmentApiKey) {
+      if (segmentAPIKey) {
         console.warn(`Segment API key is provided but analytics is not initialized in the window.`);
       }
 
@@ -50,7 +50,7 @@ export const AnalyticsManager = observer(({ segmentApiKey }: { segmentApiKey: st
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>
       <ErrorBoundary fallback={<></>}>
-        <SegmentScript segmentApiKey={segmentApiKey} />
+        <SegmentScript segmentAPIKey={segmentAPIKey} />
       </ErrorBoundary>
     </ClientSideOnly>
   );
