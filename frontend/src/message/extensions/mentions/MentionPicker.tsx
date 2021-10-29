@@ -79,7 +79,7 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
 const UISelectItem = styled.div<{}>`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 
   ${UserAvatar} {
     font-size: 1.5rem;

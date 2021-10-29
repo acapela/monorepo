@@ -168,13 +168,13 @@ const UIHolder = styled.div<{}>``;
 
 const UITools = styled.div<{}>`
   display: flex;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIMessageBody = styled.div<{}>`

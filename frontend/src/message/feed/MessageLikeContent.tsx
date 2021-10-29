@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { useDebouncedValue } from "~frontend/../../shared/hooks/useDebouncedValue";
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -38,7 +39,11 @@ export const MessageLikeContent = styledObserver<Props>(
           </MessageMetaDataWrapper>
           {tools && (
             <AnimatePresence>
-              {isHovered && <UIFlyingTools presenceStyles={{ opacity: [0, 1] }}>{tools}</UIFlyingTools>}
+              {isHovered && (
+                <UIFlyingTools layoutId="message-tools-flying" layout="position" presenceStyles={{ opacity: [0, 1] }}>
+                  {tools}
+                </UIFlyingTools>
+              )}
             </AnimatePresence>
           )}
         </UIContentContainer>
@@ -49,8 +54,14 @@ export const MessageLikeContent = styledObserver<Props>(
 
 const UIFlyingTools = styled(PresenceAnimator)<{}>`
   position: absolute;
-  top: 0;
+  bottom: 100%;
   right: 0;
+  margin-bottom: -3px;
+  will-change: transform, opacity;
+  ${theme.colors.layout.backgroundAccent.withBorder.asBgWithReadableText};
+  ${theme.shadow.popover};
+  ${theme.box.buttonsGroup};
+  ${theme.radius.panel};
 `;
 
 const UIContentContainer = styled.div<{}>`

@@ -69,5 +69,5 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
 
 const UIHolder = styled.div`
   display: flex;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;

@@ -248,7 +248,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
   will-change: transform;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 
   ${(props) => {
     if (props.isEmpty) {
@@ -267,7 +267,7 @@ const UIEditableParts = styled.div<{ isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap}
 
   ${(props) =>
     !props.isEmpty &&
@@ -305,5 +305,5 @@ const UIActions = styled(PageLayoutAnimator)<{}>`
 
   will-change: transform, opacity;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap}
 `;

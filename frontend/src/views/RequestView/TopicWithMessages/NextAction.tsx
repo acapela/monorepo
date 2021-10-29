@@ -99,7 +99,7 @@ const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   padding: 20px 0;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
 `;
 
 const UIAcapelaLogo = styled(CircleLabel)<{}>`

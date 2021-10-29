@@ -32,7 +32,7 @@
     "@sentry/react": "^6.13.3",
     "express-http-proxy": "^1.6.2",
     "focus-visible": "^5.2.0",
-    "framer-motion": "^4.1.17",
+    "framer-motion": "^5.0.0",
     "http-proxy": "^1.18.1",
     "immer": "^9.0.6",
     "mobx-react": "^7.2.0",

@@ -43,5 +43,5 @@ export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked
 const UIHolder = styled.div`
   display: flex;
   flex-direction: row;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;

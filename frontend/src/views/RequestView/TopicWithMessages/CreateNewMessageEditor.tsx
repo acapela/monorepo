@@ -205,7 +205,7 @@ const messageEditorSpacing = css`
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.regular.asGap};
+  ${theme.spacing.sections.asGap};
 `;
 
 const UIEditorContainer = styled.div<{}>`
@@ -215,12 +215,12 @@ const UIEditorContainer = styled.div<{}>`
   align-items: flex-end;
   width: 100%;
 
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;
 const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
   min-height: 50px;
 `;
