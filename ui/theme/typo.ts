@@ -12,8 +12,8 @@ const textTitle = content.bold;
 
 export const typo = {
   content: readable.size(14),
-  pageTitle: header.size(24).bold,
-  secondaryTitle: header.size(18).bold,
+  pageTitle: header.size(24, 18).bold,
+  secondaryTitle: header.size(18, 15).bold,
   input: {
     placeholder: inter.secondary,
   },

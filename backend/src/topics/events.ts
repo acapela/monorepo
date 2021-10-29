@@ -1,5 +1,6 @@
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { TopicEventTypes } from "~shared/types/topicEvents";
 
@@ -11,6 +12,14 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   const topicId = event.item.id;
   const topic = await db.topic.findUnique({ where: { id: topicId } });
   assert(topic, `Topic id (id=${topicId}) provided by event was not found`);
+
+  if (event.type === "create") {
+    // This is a test event that will duplicate all the other create topic events.
+    // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
+    // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    trackBackendUserEvent(event.userId!, "Created Topic", { origin: "unknown", topicName: event.item.name });
+  }
 
   if (event.type === "update") {
     notifyTopicUpdates(event, topic);
@@ -95,6 +104,11 @@ function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
 
   const isClosedByOwner = ownerId === userIdThatClosedTopic;
   const wasJustClosed = topic.closed_at && event?.itemBefore?.closed_at === null;
+
+  if (wasJustClosed) {
+    const topicCloser = userIdThatClosedTopic ?? "web-app";
+    trackBackendUserEvent(topicCloser, "Closed Topic", { topicId: event.item.id });
+  }
 
   if (wasJustClosed && !isClosedByOwner) {
     notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);

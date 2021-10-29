@@ -46,7 +46,7 @@ export const MessageMetaDataWrapper = styledObserver(
 
 const UIHolder = styled.div<{}>`
   display: flex;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIMessageSideInfo = styled.div`
@@ -56,6 +56,7 @@ const UIMessageSideInfo = styled.div`
 const UIMessageBody = styled.div`
   position: relative;
   flex-grow: 1;
+  min-width: 0;
 `;
 
 const UIHead = styled.div<{}>`
@@ -64,7 +65,7 @@ const UIHead = styled.div<{}>`
   margin-top: 5px;
   margin-bottom: 5px;
 
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`

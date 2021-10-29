@@ -76,7 +76,7 @@ export const MessageTask = observer(({ task }: Props) => {
 const UISingleTask = styled.div<{}>`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UITextInfo = styled.div<{}>`
@@ -86,11 +86,11 @@ const UITextInfo = styled.div<{}>`
 `;
 
 const UIUserNameLabel = styled.span<{}>`
-  ${theme.typo.content.semibold.resetLineHeight}
+  ${theme.typo.content.semibold.resetLineHeight.nowrap};
 `;
 
 const UIStatusLabel = styled.span<{ isDone: boolean; isActionable: boolean }>`
-  ${theme.typo.label.medium};
+  ${theme.typo.label.medium.nowrap};
   color: ${(props) => (props.isDone ? theme.colors.primary : theme.colors.text.tertiary)};
   display: flex;
   align-items: center;

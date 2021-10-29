@@ -82,7 +82,7 @@ const UISelectGridContainer = styled.div<{}>`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  ${theme.spacing.regular.asGap};
+  ${theme.spacing.pageSections.asGap};
 
   width: 100%;
 `;

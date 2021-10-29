@@ -1767,50 +1767,50 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-darwin-arm64@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura-darwin-arm64@npm:2.0.10"
-  checksum: c965f59463d5ad0cc7098a1f1b54c523e6cb2b24515cc3734145939d7ac32cf5fcab3792fe5f456a8043ec91f21fc7ab934c1c5f65aff23e56630bf908f5bf6c
+"@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1"
+  checksum: b87c1a0703ed811fc09d86337061b50234cb242010e4157a818b4474396324536fd3acb0a2cce3e8574bc25b2ffeba3e3c381d07e4cd767ce37dbe504a4f4592
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-darwin-x64@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura-darwin-x64@npm:2.0.10"
-  checksum: 42da5b1b9cf001416fbb7721993f0569ca583af7ddc290da74213d2ddb45e2de9cae53a82edeb8d3977774663870900604db3643e9377748909d3100170eebc2
+"@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1"
+  checksum: c7d27cafb98e318fc358be56fa4afd23846a7cbc98efd6f0b26bff9188b5ed063c3b6de90678548c1c38b274bcdf89b5c6e0e3ae2c356c9442665d3b8ba3507d
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-linux-arm64@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura-linux-arm64@npm:2.0.10"
-  checksum: ec0dd8e55e5cc913f9500ce76261994fdb404be361d3b5437d1c0671a25a78391b0f083fd9f6d7aca1ef294944c2c93e78607e99342203b9088718bd97c93eb0
+"@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1"
+  checksum: 88f3343d4a07d757048d18ae5e24e638e77c23a4d30b540027395ade0935273810d87672c9bd70e16c4c0d870d698372e30e628c60674fa1388a8fb57b0ca308
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-linux-x64@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura-linux-x64@npm:2.0.10"
-  checksum: 821ef4c28f0ed52382ff5fc71697dfbcd08606cacb8d2da1f03907e0ec219e6149533b693af2859d4f89990bc55fcfde54d5c08a90310e8bc04084524b3ce6ae
+"@install-binary/hasura-linux-x64@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura-linux-x64@npm:2.1.0-beta.1"
+  checksum: a44a87fe102ddc7c368864b549d1f5eb6064ffff6284568dfd9703a7b0fb2745d0db4811c624e5e2ac852b763e811070c9b9411b47a9d69dd0f4775a383e0beb
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-win32-x64@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura-win32-x64@npm:2.0.10"
-  checksum: 656950fe5d8d443dabb30767ac328ba43c40656357ff4ae7b5dff39837c7a86b2c4f1a8d5a577d17aa2f28c1f0c90d99554b1ff83b8c199420b5829d40c7fcf5
+"@install-binary/hasura-win32-x64@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura-win32-x64@npm:2.1.0-beta.1"
+  checksum: 3a4cc247fa2d2a40d5a0f0287ac897225fbdd1f6a1ce2398116af3c363158a4fea2b860c691b1c95b8862cef88d280530de702d278a7742df1439f8c6a30243c
   languageName: node
   linkType: hard
 
-"@install-binary/hasura@npm:^2.0.10":
-  version: 2.0.10
-  resolution: "@install-binary/hasura@npm:2.0.10"
+"@install-binary/hasura@npm:2.1.0-beta.1":
+  version: 2.1.0-beta.1
+  resolution: "@install-binary/hasura@npm:2.1.0-beta.1"
   dependencies:
-    "@install-binary/hasura-darwin-arm64": 2.0.10
-    "@install-binary/hasura-darwin-x64": 2.0.10
-    "@install-binary/hasura-linux-arm64": 2.0.10
-    "@install-binary/hasura-linux-x64": 2.0.10
-    "@install-binary/hasura-win32-x64": 2.0.10
+    "@install-binary/hasura-darwin-arm64": 2.1.0-beta.1
+    "@install-binary/hasura-darwin-x64": 2.1.0-beta.1
+    "@install-binary/hasura-linux-arm64": 2.1.0-beta.1
+    "@install-binary/hasura-linux-x64": 2.1.0-beta.1
+    "@install-binary/hasura-win32-x64": 2.1.0-beta.1
   dependenciesMeta:
     "@install-binary/hasura-darwin-arm64":
       optional: true
@@ -1824,7 +1824,7 @@ __metadata:
       optional: true
   bin:
     hasura: run.js
-  checksum: 41297f7b52eb6991f17fab616612d4de139017be3a1c20da80b51c55c2b5b6d11598793766d2ba17c9bc2d27de48c7baa8a348479d479852b98317a874f51d40
+  checksum: 73572bc79d6e2bc4702dccd3b18c617755e9be81efc3e51975298df3799214e61859fedc389fe8dfb477612be85934e0ed62b2b2864569cda19897693f250130
   languageName: node
   linkType: hard
 
@@ -9293,15 +9293,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^4.1.17":
-  version: 4.1.17
-  resolution: "framer-motion@npm:4.1.17"
+"framer-motion@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "framer-motion@npm:5.0.0"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
-    framesync: 5.3.0
+    framesync: 6.0.1
     hey-listen: ^1.0.8
-    popmotion: 9.3.6
-    style-value-types: 4.1.4
+    popmotion: 10.0.2
+    style-value-types: 5.0.0
     tslib: ^2.1.0
   peerDependencies:
     react: ">=16.8 || ^17.0.0"
@@ -9309,16 +9309,16 @@ __metadata:
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: f6b5fc8f189e6760353aa5b67515b6576ebaa164d8df73118780a09d1d4a162e54dfeb126a05c6a28727af88f4a80f8b94900ff9510be44dada6496a99273fde
+  checksum: d1758c30425e9f9f27eea3fe9e8233891657856d7361e2f9b26f7552d4f4b17465573e8235f7568841737c52abceb574823f9e8a4987a214bc7c6d56623d57cb
   languageName: node
   linkType: hard
 
-"framesync@npm:5.3.0":
-  version: 5.3.0
-  resolution: "framesync@npm:5.3.0"
+"framesync@npm:6.0.1, framesync@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "framesync@npm:6.0.1"
   dependencies:
     tslib: ^2.1.0
-  checksum: 9ebbb2863e6a1cfd2e9dd1b73af427d23caa03c92dd49ea767ebdd208c3a573bba4a1026f67068d856a21704f79adcdf2f750cc852ff73bc1f0e80edaaecded8
+  checksum: a23ebe8f7e20a32c0b99c2f8175b6f07af3ec6316aad52a2316316a6d011d717af8d2175dcc2827031c59fabb30232ed3e19a720a373caba7f070e1eae436325
   languageName: node
   linkType: hard
 
@@ -15271,15 +15271,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"popmotion@npm:9.3.6":
-  version: 9.3.6
-  resolution: "popmotion@npm:9.3.6"
+"popmotion@npm:10.0.2":
+  version: 10.0.2
+  resolution: "popmotion@npm:10.0.2"
   dependencies:
-    framesync: 5.3.0
+    framesync: ^6.0.1
     hey-listen: ^1.0.8
-    style-value-types: 4.1.4
+    style-value-types: 5.0.0
     tslib: ^2.1.0
-  checksum: 551446ec3763790efde7a3bb8c43189122f9b559985be2efa79842138257c4e331efcff606732a4bd5ac82d9bde1b236258d69a435f4bb5e9fc5908241b5ba3f
+  checksum: 6c793f637a5dd9861edca257eac523c2d6c1d895399e9320562c26c2f2a2d1288af1892925af5bc88e091e0444b4478f352772b7d1a5ba1b972cd889d1560d4a
   languageName: node
   linkType: hard
 
@@ -18107,13 +18107,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-value-types@npm:4.1.4":
-  version: 4.1.4
-  resolution: "style-value-types@npm:4.1.4"
+"style-value-types@npm:5.0.0":
+  version: 5.0.0
+  resolution: "style-value-types@npm:5.0.0"
   dependencies:
     hey-listen: ^1.0.8
     tslib: ^2.1.0
-  checksum: 96189770076a2717bf579f7d73a49953f0c3d633b90fed9b44b8285cbbe7facd19d6d7a0d2802fb493b45995791f62b87983c3d3c24128818a69e593b6d77aed
+  checksum: 16d198302cd102edf9dba94e7752a2364c93b1eaa5cc7c32b42b28eef4af4ccb5149a3f16bc2a256adc02616a2404f4612bd15f3081c1e8ca06132cae78be6c0
   languageName: node
   linkType: hard
 
@@ -20038,7 +20038,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.2.0
     express-http-proxy: ^1.6.2
     focus-visible: ^5.2.0
-    framer-motion: ^4.1.17
+    framer-motion: ^5.0.0
     http-proxy: ^1.18.1
     identity-obj-proxy: ^3.0.0
     immer: ^9.0.6
@@ -20107,7 +20107,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "~root@workspace:."
   dependencies:
-    "@install-binary/hasura": ^2.0.10
+    "@install-binary/hasura": 2.1.0-beta.1
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/express": ^4.17.13
     "@types/jest": ^26.0.24

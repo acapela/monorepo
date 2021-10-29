@@ -21,7 +21,6 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
-import { RequestType } from "~shared/types/mention";
 import { theme } from "~ui/theme";
 
 import { NewMessageButtons } from "./NewMessageButtons";
@@ -95,7 +94,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
     for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
       db.task.create({ message_id: newMessage.id, user_id: userId, type });
-      trackEvent("Created Task", { taskType: type as RequestType, topicId: topic.id, mentionedUserId: userId });
     }
     for (const attachment of attachments) {
       db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
@@ -207,7 +205,7 @@ const messageEditorSpacing = css`
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.regular.asGap};
+  ${theme.spacing.sections.asGap};
 `;
 
 const UIEditorContainer = styled.div<{}>`
@@ -217,11 +215,12 @@ const UIEditorContainer = styled.div<{}>`
   align-items: flex-end;
   width: 100%;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap};
 `;
 const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap};
+  min-height: 50px;
 `;

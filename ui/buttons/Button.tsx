@@ -117,7 +117,7 @@ export const UIButton = styled(motion.button)<{
   ${theme.typo.content.medium.resetLineHeight};
   ${theme.box.button};
   ${theme.radius.secondaryItem};
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 
   a & {
     /* It is possible that button is inside <a> tag without having onClick handler. It means it should also have cursor pointer. */

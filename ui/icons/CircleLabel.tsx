@@ -27,10 +27,11 @@ const UIHolder = styled.div`
 
   height: 1em;
   width: 1em;
+  min-width: 1em;
 `;
 
 // Separating label font-size from UIHolder allows us to resize the CircleLabel based
 // on inherited fontsize
 const UILabel = styled.span`
-  font-size: ${theme.typo.item.subtitle};
+  ${theme.typo.item.subtitle};
 `;

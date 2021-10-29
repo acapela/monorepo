@@ -55,6 +55,7 @@ export const AvatarList = styledObserver(function AvatarList({
 const UIHolder = styled.div<{}>`
   display: flex;
   min-width: 0;
+  font-size: 24px;
 
   ${Avatar}, ${CircleLabel} {
     box-sizing: content-box;

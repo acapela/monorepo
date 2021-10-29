@@ -1,5 +1,6 @@
 import { css } from "styled-components";
 
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 export const richEditorContentCss = css`
@@ -47,6 +48,7 @@ export const richEditorContentCss = css`
   a {
     text-decoration: underline;
     color: ${theme.colors.action.link};
+    word-break: break-all;
   }
 
   blockquote {
@@ -65,6 +67,10 @@ export const richEditorContentCss = css`
     pointer-events: none;
     height: 0;
 
-    ${theme.typo.content.semibold}
+    ${theme.typo.content.medium};
+
+    ${phone(css`
+      white-space: nowrap;
+    `)}
   }
 `;

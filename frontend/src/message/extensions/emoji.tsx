@@ -65,7 +65,7 @@ export const emojiAutocompleteExtension = createAutocompletePlugin<EmojiData>({
 const UISelectItem = styled.div<{}>`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 /**

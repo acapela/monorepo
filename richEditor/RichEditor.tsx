@@ -299,6 +299,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
 const UIEditorHolder = styled.div<{ customEditFieldStyles?: StylesPart }>`
   flex-grow: 1;
   ${(props) => props.customEditFieldStyles};
+  overflow-x: hidden;
   ${richEditorContentCss};
 `;
 

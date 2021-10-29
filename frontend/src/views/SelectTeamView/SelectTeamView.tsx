@@ -75,20 +75,20 @@ export const SelectTeamView = observer(() => {
 const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
 `;
 
 const UITeams = styled.div<{}>`
   margin-bottom: 30px;
   display: flex;
   flex-direction: column;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UITeam = styled.div<{}>`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
 `;
 
 const UITeamInfo = styled.div`

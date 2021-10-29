@@ -25,7 +25,7 @@ export const UserBasicInfo = observer(({ user }: Props) => (
 const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIUserName = styled.div`

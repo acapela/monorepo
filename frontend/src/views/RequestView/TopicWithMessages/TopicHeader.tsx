@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
@@ -23,7 +24,6 @@ interface Props {
 export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   function handleCloseTopic() {
     topic.close();
-    trackEvent("Closed Topic", { topicId: topic.id });
   }
 
   const handleReopenTopic = action(() => {
@@ -88,7 +88,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled(HorizontalSpacingContainer)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -106,6 +106,6 @@ const UITopicTools = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
   ${theme.typo.pageTitle};
 `;

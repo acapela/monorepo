@@ -12,6 +12,9 @@ export const buttonKindMap = {
   transparent: css`
     ${theme.colors.action.transparent.interactive}
   `,
+  backgroundAccent: css`
+    ${theme.colors.layout.backgroundAccent.interactive};
+  `,
 };
 
 export type ButtonKind = keyof typeof buttonKindMap;
