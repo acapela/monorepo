@@ -85,6 +85,8 @@ export async function createClientDb<Entities extends EntitiesMap>(
   }) as EntitiesClientsMap<Entities>;
 
   function destroy() {
+    // ! close indexeddb connection so in case new clientdb is created for same name - it will be able to connect.
+    persistanceDb.close();
     forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
       client.destroy();
     });

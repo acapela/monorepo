@@ -1,11 +1,17 @@
-import { DependencyList, EffectCallback, useEffect } from "react";
-import { useIsomorphicLayoutEffect } from "react-use";
+import { DependencyList, EffectCallback, useEffect, useRef } from "react";
+
+import { createResolvablePromise } from "~shared/promises";
 
 type GetIsCancelled = () => boolean;
 
 type Cleanup = () => void;
 
-type AsyncEffect = (getIsCancelled: GetIsCancelled) => Promise<Cleanup | void>;
+interface AsyncEffectInput {
+  getIsCancelled: GetIsCancelled;
+  waitForPreviousEffectToResolve(): Promise<void>;
+}
+
+type AsyncEffect = (input: AsyncEffectInput) => Promise<Cleanup | void>;
 
 /**
  * This module allows creating async effects in hooks.
@@ -33,31 +39,61 @@ type AsyncEffect = (getIsCancelled: GetIsCancelled) => Promise<Cleanup | void>;
  */
 
 export function useAsyncEffect(effect: AsyncEffect, deps?: DependencyList) {
-  useEffect(getEffectCallbackForAsyncEffect(effect), deps);
+  const currentPromiseRef = useRef<Promise<void> | null>(null);
+
+  useEffect(() => {
+    const currentPromise = currentPromiseRef.current;
+
+    const asyncEffect = getEffectCallbackForAsyncEffect(effect, () => currentPromise);
+
+    currentPromiseRef.current = asyncEffect.resolvePromise;
+
+    return asyncEffect.callback();
+  }, deps);
 }
 
-export function useAsyncLayoutEffect(effect: AsyncEffect, deps?: DependencyList) {
-  useIsomorphicLayoutEffect(getEffectCallbackForAsyncEffect(effect), deps);
+interface AsyncEffectData {
+  callback: EffectCallback;
+  resolvePromise: Promise<void>;
 }
 
-function getEffectCallbackForAsyncEffect(asyncEffect: AsyncEffect): EffectCallback {
-  return () => {
+function getEffectCallbackForAsyncEffect(
+  asyncEffect: AsyncEffect,
+  getPreviousPromise: () => Promise<void> | null
+): AsyncEffectData {
+  const resolvePromise = createResolvablePromise<void>();
+  const callback = () => {
     let isCancelled = false;
 
     function getIsCancelled() {
       return isCancelled;
     }
 
-    const effectResultPromise = asyncEffect(getIsCancelled);
+    const effectResultPromise = asyncEffect({
+      getIsCancelled,
+      async waitForPreviousEffectToResolve() {
+        await getPreviousPromise();
+      },
+    });
 
     return () => {
       isCancelled = true;
 
       effectResultPromise.then((maybeCleanup) => {
-        if (!maybeCleanup) return;
+        if (!maybeCleanup) {
+          resolvePromise.resolve();
+          return;
+        }
 
         maybeCleanup();
+
+        resolvePromise.resolve();
       });
     };
+  };
+
+  return {
+    callback,
+    resolvePromise: resolvePromise.promise,
   };
 }
