@@ -83,7 +83,7 @@ function useCurrentTeamManager() {
   }
 
   useAsyncEffect(
-    async (getIsCancelled) => {
+    async ({ getIsCancelled }) => {
       setCurrentTeamId(null);
 
       if (!userId) return;

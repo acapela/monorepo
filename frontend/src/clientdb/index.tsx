@@ -1,6 +1,6 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useState } from "react";
 
 import { createClientDb } from "~clientdb";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
@@ -10,6 +10,7 @@ import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 
 import { attachmentEntity } from "./attachment";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
@@ -75,34 +76,38 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const userId = token?.id ?? null;
   const apolloClient = useApolloClient();
 
-  useEffect(() => {
-    setDb(null);
-    setCanRender(false);
+  useAsyncEffect(
+    async ({ getIsCancelled, waitForPreviousEffectToResolve }) => {
+      setDb(null);
+      setCanRender(false);
 
-    if (!userId || !apolloClient) {
-      setCanRender(true);
-      return;
-    }
+      if (!userId || !apolloClient) {
+        setCanRender(true);
+        return;
+      }
 
-    if (teamManager.isLoading) return;
+      if (teamManager.isLoading) return;
 
-    const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamManager.teamId, apolloClient);
+      // If db is closing and we'll create same one with the same name, but different version, while old one is still opened, it will be blocked by browser. Let's wait for
+      // previous effect to finish as it'll call db.destroy()
+      await waitForPreviousEffectToResolve();
 
-    let isCancelled = false;
+      const newDb = await createNewClientDb(userId, teamManager.teamId, apolloClient);
 
-    newDbPromise.then((newDb) => {
-      if (isCancelled) return;
+      if (getIsCancelled()) {
+        newDb.destroy();
+        return;
+      }
+
       setDb(newDb);
       setCanRender(true);
-    });
 
-    return () => {
-      isCancelled = true;
-      newDbPromise.then((newDb) => {
+      return () => {
         newDb.destroy();
-      });
-    };
-  }, [userId, teamManager.isLoading, teamManager.teamId, apolloClient]);
+      };
+    },
+    [userId, teamManager.isLoading, teamManager.teamId, apolloClient]
+  );
 
   // In dev, make currently used db usable via console
   if (isDev() && db) {

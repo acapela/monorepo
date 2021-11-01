@@ -1,11 +1,13 @@
 import { differenceInDays, differenceInHours, differenceInMinutes, isBefore, isToday, startOfDay } from "date-fns";
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import React from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRouteParams } from "~frontend/hooks/useRouteParams";
+import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { routes } from "~shared/routes";
 import { getFadeInAnimationStyles } from "~ui/animations";
 import { LazyRender } from "~ui/performance/LazyRender";
@@ -13,6 +15,7 @@ import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
 import { RequestContentSnippet } from "./RequestContentSnippet";
+import { RequestMessagePreview } from "./RequestMessagePreview";
 import { RequestParticipants } from "./RequestParticipants";
 import { getUnfinishedTopicTaskWithEarliestDueDate } from "./utils";
 
@@ -51,6 +54,8 @@ const getRelativeDueTimeLabel = (rawDate: string) => {
 
 export const RequestItem = observer(function RequestItem({ topic }: Props) {
   const topicRouteParams = useRouteParams(routes.topic);
+  const elementRef = useRef<HTMLAnchorElement>(null);
+  const isHovered = useIsElementOrChildHovered(elementRef);
 
   // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
   const isHighlighted = topicRouteParams.topicSlug === topic.slug;
@@ -59,30 +64,36 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
 
   return (
-    <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
-      <UIFeedItem isHighlighted={isHighlighted}>
-        <RequestParticipants topic={topic} />
-        <UIFeedItemLabels>
-          <HStack alignItems="center">
-            <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
-            {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
-          </HStack>
-          <UIFeedItemSubTitle>
-            {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
-            {!unfinishedTaskWithEarliestDueDate && (
-              <LazyRender fallback={<div>&nbsp;</div>}>
-                <RequestContentSnippet topic={topic} />
-              </LazyRender>
-            )}
+    <>
+      <AnimatePresence>
+        {isHovered && !isHighlighted && <RequestMessagePreview anchorRef={elementRef} topic={topic} />}
+      </AnimatePresence>
 
-            {unfinishedTaskWithEarliestDueDate && (
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.due_at!)}</>
-            )}
-          </UIFeedItemSubTitle>
-        </UIFeedItemLabels>
-      </UIFeedItem>
-    </Link>
+      <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
+        <UIFeedItem isHighlighted={isHighlighted} ref={elementRef}>
+          <RequestParticipants topic={topic} />
+          <UIFeedItemLabels>
+            <HStack alignItems="center">
+              <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+              {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
+            </HStack>
+            <UIFeedItemSubTitle>
+              {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
+              {!unfinishedTaskWithEarliestDueDate && (
+                <LazyRender fallback={<div>&nbsp;</div>}>
+                  <RequestContentSnippet topic={topic} />
+                </LazyRender>
+              )}
+
+              {unfinishedTaskWithEarliestDueDate && (
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.due_at!)}</>
+              )}
+            </UIFeedItemSubTitle>
+          </UIFeedItemLabels>
+        </UIFeedItem>
+      </Link>
+    </>
   );
 });
 

@@ -24,6 +24,7 @@ export interface PersistanceDbOpenInput {
 }
 
 export interface PersistanceDB {
+  close(): Promise<void>;
   getTable<Data>(name: string): Promise<PersistanceTableAdapter<Data>>;
 }
 

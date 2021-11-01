@@ -13,10 +13,21 @@ async function createRequest(page: Page, mentionType: string, userName: string) 
   await page.click('button:has-text("Create Request")');
 }
 
-test("create a new read request", async ({ page, auth, db }) => {
+test("create a new read request and update it to a response request", async ({ page, auth, db }) => {
   await auth.login(db.user2);
-  await createRequest(page, "Request read", db.user2.name);
+  const userName = db.user2.name;
+  await createRequest(page, "Request read", userName);
   await page.waitForSelector("text=Read Confirmation");
+  expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
+
+  await page.hover(`p:has-text("@${userName}")`);
+  await page.click("[aria-haspopup]");
+  await page.click("text=Edit message");
+  await page.click(`p >> text=@${userName}`);
+  await page.click("text=Request response");
+  await page.click("text=Save");
+
+  await page.waitForSelector("text=Response");
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 });
 
