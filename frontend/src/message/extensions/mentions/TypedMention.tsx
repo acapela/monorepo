@@ -71,7 +71,8 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
               selected={data.type}
               onSelect={(mentionType: MentionType) => {
                 editor.commands.setContent(
-                  updateContentMentionTypesForUser(editor.getJSON() as never, data.userId, mentionType)
+                  updateContentMentionTypesForUser(editor.getJSON() as never, data.userId, mentionType),
+                  true
                 );
                 closeMentionTypePicker();
               }}
