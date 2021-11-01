@@ -50,7 +50,18 @@
         "users:read.email",
         "chat:write"
       ],
-      "user": ["channels:read", "chat:write", "groups:read", "im:read", "mpim:read"]
+      "user": [
+        "channels:read",
+        "chat:write",
+        "groups:read",
+        "im:read",
+        "im:write",
+        "mpim:read",
+        "mpim:write",
+        "users.profile:read",
+        "users:read",
+        "users:read.email"
+      ]
     }
   },
   "settings": {
