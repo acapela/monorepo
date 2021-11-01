@@ -1,6 +1,8 @@
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { isEqualForPick } from "~shared/object";
 import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
@@ -82,12 +84,18 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
   }
 }
 
-function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
+async function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
   const ownerId = topic.owner_id;
   const userIdThatClosedTopic = topic.closed_by_user_id;
 
   const isClosedByOwner = ownerId === userIdThatClosedTopic;
   const wasJustClosed = topic.closed_at && event?.itemBefore?.closed_at === null;
+
+  assert(event.itemBefore, "Updated topic didn't contain previous topic data");
+
+  if (!isEqualForPick(event.item, event.itemBefore, ["name", "closed_at"])) {
+    await tryUpdateTopicSlackMessage(topic);
+  }
 
   if (wasJustClosed) {
     const topicCloser = userIdThatClosedTopic ?? "web-app";
@@ -107,18 +115,14 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
 
   assert(topicOwner, `[Closing Topic][id=${topic.id}] Owner ${ownerId} not found.`);
 
-  const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
-
-  const topicName = topic.name;
-
   sendNotificationPerPreference(
     topicOwner,
     topic.team_id,
     createClosureNotificationMessage({
       closedBy: topicCloser?.name,
       topicId: topic.id,
-      topicName,
-      topicURL,
+      topicName: topic.name,
+      topicURL: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
     })
   );
 }

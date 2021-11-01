@@ -14,6 +14,7 @@
 - "!include public_topic_event.yaml"
 - "!include public_topic_event_topic.yaml"
 - "!include public_topic_member.yaml"
+- "!include public_topic_slack_message.yaml"
 - "!include public_transcription.yaml"
 - "!include public_transcription_status.yaml"
 - "!include public_user.yaml"

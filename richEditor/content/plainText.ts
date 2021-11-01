@@ -22,6 +22,10 @@ export function recursiveConvertMessageContentToPlainText(
     plainTextParts.push(content.text);
   }
 
+  if (content.type == "emoji") {
+    plainTextParts.push(content.attrs?.data?.emoji ?? "");
+  }
+
   if (content.content) {
     for (const childNode of content.content) {
       recursiveConvertMessageContentToPlainText(childNode, false, plainTextParts);

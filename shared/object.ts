@@ -1,3 +1,7 @@
+import { pick } from "lodash";
+
+import { isPlainObjectEqual } from "~shared/isPlainObjectEqual";
+
 import { generateId } from "./id";
 
 export type AnyObject = Record<keyof unknown, unknown>;
@@ -80,4 +84,8 @@ export function swapPlainObjectKeysWithValues<K extends Keyable, V extends Keyab
   }
 
   return result;
+}
+
+export function isEqualForPick<O extends object, K extends keyof O>(obj1: O, obj2: O, fields: K[]) {
+  return isPlainObjectEqual(pick(obj1, fields), pick(obj2, fields));
 }

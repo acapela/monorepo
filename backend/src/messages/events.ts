@@ -1,7 +1,9 @@
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Message, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
+import { assert } from "~shared/assert";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { log } from "~shared/logger";
 
@@ -33,8 +35,22 @@ async function addTopicMembers(message: Message) {
   });
 }
 
+async function maybeUpdateSlackMessage(message: Message) {
+  const olderMessagesCount = await db.message.count({
+    where: { topic_id: message.topic_id, created_at: { lt: message.created_at } },
+  });
+  const isFirstMessage = olderMessagesCount == 0;
+  if (!isFirstMessage) {
+    return;
+  }
+  const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
+  assert(topic, "must have topic");
+  await tryUpdateTopicSlackMessage(topic);
+}
+
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
   if (event.type === "delete") return;
 
-  await Promise.all([prepareMessagePlainTextData(event.item), addTopicMembers(event.item)]);
+  const message = event.item;
+  await Promise.all([prepareMessagePlainTextData(message), addTopicMembers(message), maybeUpdateSlackMessage(message)]);
 }

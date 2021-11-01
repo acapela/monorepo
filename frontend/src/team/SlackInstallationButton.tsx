@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
@@ -9,6 +9,8 @@ import {
   DeleteSlackInstallationMutationVariables,
   GetSlackInstallationUrlQuery,
   GetSlackInstallationUrlQueryVariables,
+  TeamSlackInstallationSubscription,
+  TeamSlackInstallationSubscriptionVariables,
 } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
@@ -23,10 +25,12 @@ type Props = {
 
 export const AddSlackInstallationButton = observer(function AddSlackInstallationButton({
   teamId,
+  label,
   tooltip,
   withBot,
 }: {
   teamId: string;
+  label?: string;
   tooltip?: string;
   withBot?: boolean;
 }) {
@@ -57,7 +61,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       tooltip={tooltip}
       isWide
     >
-      Add Slack integration
+      {label ?? "Add Slack integration"}
     </UISlackButton>
   );
 });
@@ -112,7 +116,20 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
 }
 
 export const SlackInstallationButton = observer(function SlackInstallationButton({ team }: Props) {
-  if (!team.hasSlackInstallation) {
+  const { data } = useSubscription<TeamSlackInstallationSubscription, TeamSlackInstallationSubscriptionVariables>(
+    gql`
+      subscription TeamSlackInstallation($teamId: uuid!) {
+        teamSlack: team_slack_installation_by_pk(team_id: $teamId) {
+          id
+        }
+      }
+    `,
+    { variables: { teamId: team.id } }
+  );
+  if (!data) {
+    return null;
+  }
+  if (!data.teamSlack) {
     return (
       <AddSlackInstallationButton
         teamId={team.id}
