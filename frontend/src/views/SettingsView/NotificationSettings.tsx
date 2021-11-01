@@ -1,3 +1,5 @@
+import { gql, useQuery } from "@apollo/client";
+import { noop } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -6,6 +8,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
+import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
@@ -50,6 +53,17 @@ export const NotificationSettings = observer(() => {
   const team = useCurrentTeam();
   const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).all[0];
 
+  const { data, loading: isLoadingSlackUser } = useQuery<SlackUserQuery, SlackUserQueryVariables>(
+    gql`
+      query SlackUser($teamId: uuid!) {
+        slack_user(team_id: $teamId) {
+          slackUserId: slack_user_id
+        }
+      }
+    `,
+    team && !teamMember.teamMemberSlack ? { variables: { teamId: team.id } } : { skip: true }
+  );
+
   if (!team || !teamMember) {
     return null;
   }
@@ -65,8 +79,18 @@ export const NotificationSettings = observer(() => {
         onChange={(isChecked) => teamMember.update({ notify_email: isChecked })}
       />
       {team.hasSlackInstallation &&
-        (teamMember.teamMemberSlack ? (
+        (isLoadingSlackUser ? (
           <LabeledToggle
+            key="slack"
+            title="Slack"
+            description="Looking for a slack user with your email address..."
+            isSet={false}
+            onChange={noop}
+            isDisabled
+          />
+        ) : teamMember.teamMemberSlack || data?.slack_user?.slackUserId ? (
+          <LabeledToggle
+            key="slack"
             title="Slack"
             description={getNotificationChannelDescription("slack")}
             isSet={teamMember.notify_slack}
