@@ -5,7 +5,6 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { assert } from "~shared/assert";
-import { isNotNullish } from "~shared/nullish";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { theme } from "~ui/theme";
 
