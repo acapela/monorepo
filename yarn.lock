@@ -3301,13 +3301,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/types@npm:^1.2.1":
-  version: 1.10.0
-  resolution: "@slack/types@npm:1.10.0"
-  checksum: 9dcf254ad4882146de7ed2db948e7ee56614c3aca47a1df7cbbf4faebe6f2672a704239c0c259b4825be140bd8bb97d994241f35dc432b9ca722333828dac666
-  languageName: node
-  linkType: hard
-
 "@slack/types@npm:^2.0.0, @slack/types@npm:^2.2.0":
   version: 2.2.0
   resolution: "@slack/types@npm:2.2.0"
@@ -3331,17 +3324,6 @@ __metadata:
     p-queue: ^6.6.1
     p-retry: ^4.0.0
   checksum: e06bd8d84fa5a9acc623cbcefce32696ca19405dd348aba1863b42ecae466decc14b6d0fa911f1abcdb3ae2906a4bb927b0614a07052d1220103611ad24b4c6b
-  languageName: node
-  linkType: hard
-
-"@slack/webhook@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@slack/webhook@npm:6.0.0"
-  dependencies:
-    "@slack/types": ^1.2.1
-    "@types/node": ">=12.0.0"
-    axios: ^0.21.1
-  checksum: dfd84a8c994e9fc15a437f9049f89de89a25d395015cb89ccdf7f2aabc5387c3f15956796adfd0e2e490ddafbf234e8710a96437f7cc0d8fcc15e48ebf667af8
   languageName: node
   linkType: hard
 
@@ -4423,6 +4405,13 @@ __metadata:
   version: 1.0.3
   resolution: "@types/promise.allsettled@npm:1.0.3"
   checksum: 19cee762f8d9ec09937f2eaa5e6fc3b05a3421627535e09cfd10b05d961c8e9347d9cba45fdcad4960143d020e267be670e8eebcd9da128dbc306ea90be62c91
+  languageName: node
+  linkType: hard
+
+"@types/prompts@npm:^2.0.14":
+  version: 2.4.0
+  resolution: "@types/prompts@npm:2.4.0"
+  checksum: ec75655f07fbc3cb2df60a3e3bdd13bfda0554a16f5541285c4b1cc0610756838a2863dccfc911cbb1385492054c07210512164e3dbef272ec638d631783b278
   languageName: node
   linkType: hard
 
@@ -15986,6 +15975,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prompts@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "prompts@npm:2.4.2"
+  dependencies:
+    kleur: ^3.0.3
+    sisteransi: ^1.0.5
+  checksum: d8fd1fe63820be2412c13bfc5d0a01909acc1f0367e32396962e737cb2fc52d004f3302475d5ce7d18a1e8a79985f93ff04ee03007d091029c3f9104bffc007d
+  languageName: node
+  linkType: hard
+
 "prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
@@ -19942,15 +19941,16 @@ __metadata:
     "@sentry/node": ^6.13.2
     "@slack/bolt": ^3.6.0
     "@slack/web-api": ^6.4.0
-    "@slack/webhook": ^6.0.0
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.12
     "@types/express": 4.17.13
     "@types/jest": 26.0.24
     "@types/localtunnel": ^2.0.1
     "@types/mime-types": ^2.1.1
+    "@types/prompts": ^2.0.14
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.1
+    clipboardy: ^2.3.0
     cookie-parser: ^1.4.5
     cors: ^2.8.5
     express-async-errors: ^3.1.1
@@ -19961,6 +19961,7 @@ __metadata:
     mime-types: ^2.1.32
     pg: ^8.7.1
     pino-pretty: ^7.0.1
+    prompts: ^2.4.2
     slack-block-builder: ^2.2.0
     supertest: ^6.1.6
     ts-jest: ^27.0.5

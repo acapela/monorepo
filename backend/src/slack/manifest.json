@@ -1,0 +1,66 @@
+{
+  "_metadata": {
+    "major_version": 1,
+    "minor_version": 1
+  },
+  "display_information": {
+    "name": "Acapela",
+    "description": "End your meetings before they start.",
+    "background_color": "#000000",
+    "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Acapela",
+      "always_online": true
+    },
+    "shortcuts": [
+      {
+        "name": "Create a request",
+        "type": "global",
+        "callback_id": "global_acapela",
+        "description": "Creates a new request"
+      },
+      {
+        "name": "Turn into request",
+        "type": "message",
+        "callback_id": "message_acapela",
+        "description": "Creates a new request from this message"
+      }
+    ],
+    "slash_commands": [
+      {
+        "command": "/acapela",
+        "url": "https://app.acape.la/api/backend/slack/commands",
+        "description": "Create a new request",
+        "usage_hint": "[message] @people",
+        "should_escape": true
+      }
+    ]
+  },
+  "oauth_config": {
+    "redirect_urls": ["https://app.acape.la/api/backend/slack/oauth_redirect", "https://app.acape.la"],
+    "scopes": {
+      "bot": [
+        "channels:read",
+        "commands",
+        "im:write",
+        "users.profile:read",
+        "users:read",
+        "users:read.email",
+        "chat:write"
+      ],
+      "user": ["channels:read", "chat:write", "groups:read", "im:read", "mpim:read"]
+    }
+  },
+  "settings": {
+    "interactivity": {
+      "is_enabled": true,
+      "request_url": "https://app.acape.la/api/backend/slack/events",
+      "message_menu_options_url": "https://app.acape.la/api/backend/slack/options"
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  }
+}

@@ -1,6 +1,8 @@
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { isEqualForPick } from "~shared/object";
 import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
@@ -17,37 +19,39 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   }
 
   if (event.type === "update") {
-    const ownerId = event.item.owner_id;
-    const userIdThatClosedTopic = event.item.closed_by_user_id;
+    const topicBefore = event.itemBefore;
+    const topic = event.item;
+
+    if (!isEqualForPick(topic, topicBefore, ["name", "closed_at"])) {
+      await tryUpdateTopicSlackMessage(topic);
+    }
+
+    const ownerId = topic.owner_id;
+    const userIdThatClosedTopic = topic.closed_by_user_id;
 
     const isClosedByOwner = ownerId === userIdThatClosedTopic;
-    const wasJustClosed = event.item.closed_at && !event.itemBefore.closed_at;
+    const wasJustClosed = topic.closed_at && !topicBefore.closed_at;
 
     if (wasJustClosed) {
       const topicCloser = userIdThatClosedTopic ?? "web-app";
-      trackBackendUserEvent(topicCloser, "Closed Topic", { topicId: event.item.id });
+      trackBackendUserEvent(topicCloser, "Closed Topic", { topicId: topic.id });
     }
-
     if (wasJustClosed && !isClosedByOwner) {
       const topicOwner = await db.user.findFirst({ where: { id: ownerId } });
       const topicCloser = userIdThatClosedTopic
         ? await db.user.findFirst({ where: { id: userIdThatClosedTopic as string } })
         : null;
 
-      assert(topicOwner, `[Closing Topic][id=${event.item.id}] Owner ${ownerId} not found.`);
-
-      const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: event.item.slug })}`;
-
-      const topicName = event.item.name;
+      assert(topicOwner, `[Closing Topic][id=${topic.id}] Owner ${ownerId} not found.`);
 
       sendNotificationPerPreference(
         topicOwner,
-        event.item.team_id,
+        topic.team_id,
         createClosureNotificationMessage({
           closedBy: topicCloser?.name,
-          topicId: event.item.id,
-          topicName,
-          topicURL,
+          topicId: topic.id,
+          topicName: topic.name,
+          topicURL: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
         })
       );
     }
