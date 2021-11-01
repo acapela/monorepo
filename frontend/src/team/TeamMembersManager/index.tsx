@@ -11,7 +11,7 @@ import { theme } from "~ui/theme";
 
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
-import { UserBasicInfo } from "./UserBasicInfo";
+import { TeamMemberBasicInfo } from "./TeamMemberBasicInfo";
 
 interface Props {
   team: TeamEntity;
@@ -21,8 +21,6 @@ export const TeamMembersManager = observer(({ team }: Props) => {
   const currentUser = useAssertCurrentUser();
 
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
-
-  const teamUsers = team.members.all.map((teamMember) => teamMember.user).filter(isNotNullish) ?? [];
 
   const handleRemoveTeamMember = (userId: string) => {
     const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
@@ -34,18 +32,19 @@ export const TeamMembersManager = observer(({ team }: Props) => {
   return (
     <UIPanel>
       <InviteMemberForm team={team} />
-      {teamUsers.length > 0 && (
+      {team.members.hasItems && (
         <UISelectGridContainer>
-          {teamUsers.map((user) => (
-            <UIItemHolder key={user.id}>
-              <UserBasicInfo user={user} />
+          {team.members.all.map((teamMember) => (
+            <UIItemHolder key={teamMember.id}>
+              <TeamMemberBasicInfo teamMember={teamMember} />
 
               <UIActionsHolder>
-                {!user.has_account && <ResendInviteButton user={user} teamId={team.id} />}
+                {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+                {!teamMember.user?.has_account && <ResendInviteButton user={teamMember.user!} teamId={team.id} />}
                 {isCurrentUserTeamOwner && (
                   <CloseIconButton
                     isDisabled={false}
-                    onClick={() => handleRemoveTeamMember(user.id)}
+                    onClick={() => teamMember.user && handleRemoveTeamMember(teamMember.user.id)}
                     tooltip="Remove user from your team"
                   />
                 )}
