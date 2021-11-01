@@ -96,7 +96,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     await ack();
   });
 
-  slackApp.action(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
+  slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
     await ack();
 
     const token = assertToken(context);
@@ -114,10 +114,7 @@ export function setupSlackActionHandlers(slackApp: App) {
         view: Modal({ title: "Nothing happened really" })
           .blocks(
             Blocks.Section({
-              text: `You pressed "${
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (action as any).text.text
-              }" but that button does not seem to belong to you. So nothing happened really.`,
+              text: `You pressed "${action.text.text}" but that button does not seem to belong to you. So nothing happened really.`,
             }),
             user
               ? Blocks.Section({
