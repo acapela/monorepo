@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "~shared/component";
@@ -31,6 +31,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, Props>(function Ci
     tooltip,
     isDisabled = false,
     iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
+    ...props
   }: Props,
   ref
 ) {
@@ -44,6 +45,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, Props>(function Ci
       isDisabled={isDisabled}
       disabled={isDisabled}
       iconSizeRatio={iconSizeRatio}
+      {...props}
     >
       {icon}
     </UIButton>
