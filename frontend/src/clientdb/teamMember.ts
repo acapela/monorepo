@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
 import { userEntity } from "~frontend/clientdb/user";
 import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
@@ -18,6 +18,7 @@ const teamMemberFragment = gql`
     notify_email
     notify_slack
     updated_at
+    has_joined
   }
 `;
 
@@ -46,3 +47,5 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
     return teamMember.team_id === getContextValue(teamIdContext);
   },
 }));
+
+export type TeamMemberEntity = EntityByDefinition<typeof teamMemberEntity>;
