@@ -7,7 +7,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
-import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
 import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
@@ -88,20 +87,16 @@ export const NotificationSettings = observer(() => {
             onChange={noop}
             isDisabled
           />
-        ) : teamMember.teamMemberSlack || data?.slack_user?.slackUserId ? (
-          <LabeledToggle
-            key="slack"
-            title="Slack"
-            description={getNotificationChannelDescription("slack")}
-            isSet={teamMember.notify_slack}
-            onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
-          />
         ) : (
-          <AddSlackInstallationButton
-            label="Link your Slack account"
-            teamId={team.id}
-            tooltip="Connect Slack to receive notifications through it"
-          />
+          (teamMember.teamMemberSlack || data?.slack_user?.slackUserId) && (
+            <LabeledToggle
+              key="slack"
+              title="Slack"
+              description={getNotificationChannelDescription("slack")}
+              isSet={teamMember.notify_slack}
+              onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
+            />
+          )
         ))}
     </UIPanel>
   );

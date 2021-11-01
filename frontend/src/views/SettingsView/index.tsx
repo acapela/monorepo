@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { SlackSettings } from "~frontend/views/SettingsView/SlackSettings";
 import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
@@ -22,6 +23,7 @@ export const SettingsView = observer(function SettingsView({
       <UIHolder>
         <UIHeader>Settings</UIHeader>
         <NotificationSettings />
+        <SlackSettings />
         <TeamManagerSettingsPanel team={currentTeam} />
 
         {version && (
