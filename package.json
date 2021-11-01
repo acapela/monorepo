@@ -72,7 +72,7 @@
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json}": "prettier --write",
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --max-warnings=0 --fix",
       "prettier --write"
     ]
   },
