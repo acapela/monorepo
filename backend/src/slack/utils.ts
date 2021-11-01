@@ -1,6 +1,7 @@
-import { App, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
+import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 
 import { User, db } from "~db";
+import { assertDefined } from "~shared/assert";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 
 import { SlackInstallation, slackClient } from "./app";
@@ -13,6 +14,8 @@ export async function fetchTeamBotToken(teamId: string) {
   }
   return (slackInstallation.data as unknown as SlackInstallation)?.bot?.token;
 }
+
+export const assertToken = (c: Context) => assertDefined(c.userToken ?? c.botToken, "must have at least one token");
 
 // finds a slack user either through the team_member's slack installation or by email
 export async function findSlackUserId(teamId: string, user: User): Promise<string | undefined> {

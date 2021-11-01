@@ -9,13 +9,13 @@ import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
 import { Sentry } from "~shared/sentry";
 
-import { SlackActionIds, findUserBySlackId } from "./utils";
+import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
     const topicId = action.value;
 
-    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+    const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
     assert(user, "Unable to find user(slack-id=${body.user.id}");
@@ -55,7 +55,7 @@ export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
     const topicId = action.value;
 
-    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+    const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
     assert(user, "Unable to find user(slack-id=${body.user.id}");
@@ -92,10 +92,14 @@ export function setupSlackActionHandlers(slackApp: App) {
     await say(`*${topic.name}* has been archived.`);
   });
 
+  slackApp.action("members_select", async ({ ack }) => {
+    await ack();
+  });
+
   slackApp.action(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
     await ack();
 
-    const token = context.userToken ?? body.token;
+    const token = assertToken(context);
     const taskId = (action as { value: string }).value;
     const [user, task] = await Promise.all([
       findUserBySlackId(token, body.user.id),

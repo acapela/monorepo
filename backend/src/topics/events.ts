@@ -1,4 +1,4 @@
-import { tryTopicSlackMessageUpdate } from "~backend/src/slack/LiveTopicMessage";
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -23,7 +23,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     const topic = event.item;
 
     if (!isEqualForPick(topic, topicBefore, ["name", "closed_at"])) {
-      await tryTopicSlackMessageUpdate(topic);
+      await tryUpdateTopicSlackMessage(topic);
     }
 
     const ownerId = topic.owner_id;

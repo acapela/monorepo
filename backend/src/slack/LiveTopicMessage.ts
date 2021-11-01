@@ -77,7 +77,7 @@ export async function LiveTopicMessage(topic: Topic) {
     .buildToObject();
 }
 
-export async function tryTopicSlackMessageUpdate(topic: Topic) {
+export async function tryUpdateTopicSlackMessage(topic: Topic) {
   const topicSlackMessage = await db.topic_slack_message.findUnique({ where: { topic_id: topic.id } });
   if (!topicSlackMessage) {
     return;

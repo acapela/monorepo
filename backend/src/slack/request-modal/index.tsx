@@ -10,7 +10,7 @@ import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../LiveTopicMessage";
-import { findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { tryOpenRequestModal } from "./tryOpenRequestModal";
 
@@ -21,7 +21,7 @@ const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" 
 export function setupRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
-    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, triggerId, {
+    const { user } = await tryOpenRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
       slackTeamId,
@@ -40,7 +40,7 @@ export function setupRequestModal(app: App) {
   });
 
   app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
-    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, shortcut.trigger_id, {
+    const { user } = await tryOpenRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
@@ -55,7 +55,7 @@ export function setupRequestModal(app: App) {
 
   app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context }) => {
     const { channel, message, trigger_id } = shortcut;
-    const { user } = await tryOpenRequestModal(context.userToken ?? body.token, trigger_id, {
+    const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
@@ -71,8 +71,9 @@ export function setupRequestModal(app: App) {
   });
 
   listenToViewWithMetadata(app, "open_request_modal", async ({ ack, context, body, metadata }) => {
-    await tryOpenRequestModal(context.userToken ?? body.token, body.user.id, metadata);
     await ack();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await tryOpenRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
   listenToViewWithMetadata(app, "create_request", async ({ ack, view, body, client, context, metadata }) => {
@@ -101,7 +102,7 @@ export function setupRequestModal(app: App) {
       });
     }
 
-    const token = context.userToken || body.token;
+    const token = assertToken(context);
 
     const slackTeamId = body.user.team_id;
     assert(slackTeamId, "must have slack team id");
