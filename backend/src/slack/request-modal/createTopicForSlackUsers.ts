@@ -1,13 +1,14 @@
 import { sendInviteNotification } from "~backend/src/inviteUser";
-import { slackClient } from "~backend/src/slack/app";
-import { parseAndTransformToTipTapJSON } from "~backend/src/slack/slackMarkdown/parser";
-import { findUserBySlackId } from "~backend/src/slack/utils";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { MENTION_TYPE_KEY, getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
 import { EditorMentionData } from "~shared/types/editor";
-import { MentionType } from "~shared/types/mention";
+import { MentionType, REQUEST_TYPES, RequestType } from "~shared/types/mention";
+
+import { slackClient } from "../app";
+import { parseAndTransformToTipTapJSON } from "../slackMarkdown/parser";
+import { findUserBySlackId } from "../utils";
 
 async function createAndInviteMissingUsers(
   slackToken: string,
@@ -50,25 +51,25 @@ async function createAndInviteMissingUsers(
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
 }
 
-type UserWithRequest = { userId: string; requestType: MentionType; slackUserId: string };
+type UserWithMaybeMentionType = { userId: string; mentionType?: MentionType; slackUserId: string };
 
-type SlackUserIdWithRequestType = { slackUserId: string; requestType: MentionType };
+type SlackUserIdWithRequestType = { slackUserId: string; mentionType?: MentionType };
 
 export async function findOrInviteUsers({
   slackToken,
   teamId,
   invitingUserId,
-  slackUserIdsWithRequestType,
+  slackUserIdsWithMentionType,
 }: {
   slackToken: string;
   teamId: string;
   invitingUserId: string;
-  slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
-}): Promise<UserWithRequest[]> {
+  slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
+}): Promise<UserWithMaybeMentionType[]> {
   const usersForSlackIds = await Promise.all(
-    slackUserIdsWithRequestType.map(async ({ slackUserId, requestType }) => ({
+    slackUserIdsWithMentionType.map(async ({ slackUserId, mentionType }) => ({
       slackUserId,
-      requestType,
+      mentionType: mentionType,
       user: await findUserBySlackId(slackToken, slackUserId, teamId),
     }))
   );
@@ -79,7 +80,7 @@ export async function findOrInviteUsers({
         ({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           userId: item.user!.id,
-          requestType: item.requestType,
+          mentionType: item.mentionType,
           slackUserId: item.slackUserId,
         } as const)
     );
@@ -96,19 +97,23 @@ export async function findOrInviteUsers({
       ({
         userId: row.userId,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        requestType: slackUserIdsWithRequestType.find((item) => item.slackUserId == row.slackUserId)!.requestType,
+        mentionType: slackUserIdsWithMentionType.find((item) => item.slackUserId == row.slackUserId)!.mentionType,
         slackUserId: row.slackUserId,
       } as const)
   );
   return [...userIds, ...newUserIds];
 }
 
-function transformMessage(rawMessage: string, slackTeamId: string, usersWithRequestType: UserWithRequest[]) {
+function transformMessage(
+  rawMessage: string,
+  slackTeamId: string,
+  usersWithRequestType: (UserWithMaybeMentionType & { mentionType: MentionType })[]
+) {
   const mentionedUsersBySlackId = Object.fromEntries(
     usersWithRequestType.map((u) => [
       u.slackUserId,
       {
-        type: u.requestType,
+        type: u.mentionType,
         userId: u.userId,
       },
     ])
@@ -123,8 +128,8 @@ function transformMessage(rawMessage: string, slackTeamId: string, usersWithRequ
   );
   const extraMentionNodes = usersWithRequestType
     .filter(({ userId }) => !alreadyMentionedUsers.has(userId))
-    .flatMap(({ userId, requestType }) => {
-      const data: EditorMentionData = { userId, type: requestType };
+    .flatMap(({ userId, mentionType }) => {
+      const data: EditorMentionData = { userId, type: mentionType };
       return [
         { type: MENTION_TYPE_KEY, attrs: { data } },
         { type: "text", text: " " },
@@ -152,7 +157,7 @@ export async function createTopicForSlackUsers({
   slackTeamId,
   topicName,
   rawTopicMessage,
-  slackUserIdsWithRequestType,
+  slackUserIdsWithMentionType,
 }: {
   token: string;
   teamId: string;
@@ -160,17 +165,22 @@ export async function createTopicForSlackUsers({
   slackTeamId: string;
   topicName: string;
   rawTopicMessage: string;
-  slackUserIdsWithRequestType: SlackUserIdWithRequestType[];
+  slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
 }) {
-  const usersWithRequestType = await findOrInviteUsers({
+  const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
     teamId,
     invitingUserId: ownerId,
-    slackUserIdsWithRequestType,
+    slackUserIdsWithMentionType,
   });
 
-  const messageContent = transformMessage(rawTopicMessage, slackTeamId, usersWithRequestType);
+  const messageContent = transformMessage(
+    rawTopicMessage,
+    slackTeamId,
+    usersWithMentionType.filter((u) => u.mentionType) as never
+  );
   const messageContentText = convertMessageContentToPlainText(messageContent);
+  const userIds = new Set(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
   return await db.topic.create({
     data: {
       team_id: teamId,
@@ -178,6 +188,7 @@ export async function createTopicForSlackUsers({
       slug: await slugify(topicName),
       index: "a",
       owner_id: ownerId,
+      topic_member: { createMany: { data: Array.from(userIds).map((user_id) => ({ user_id })) } },
       message: {
         create: {
           type: "TEXT",
@@ -186,10 +197,12 @@ export async function createTopicForSlackUsers({
           content_text: messageContentText,
           task: {
             createMany: {
-              data: usersWithRequestType.map((item) => ({
-                type: item.requestType,
-                user_id: item.userId,
-              })),
+              data: usersWithMentionType
+                .filter((item) => REQUEST_TYPES.includes(item.mentionType as RequestType))
+                .map((item) => ({
+                  type: item.mentionType,
+                  user_id: item.userId,
+                })),
             },
           },
         },

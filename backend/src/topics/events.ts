@@ -1,3 +1,5 @@
+import Sentry from "@sentry/node";
+
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
@@ -10,10 +12,6 @@ import { createClosureNotificationMessage } from "../notifications/bodyBuilders/
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
-  const topicId = event.item.id;
-  const topic = await db.topic.findUnique({ where: { id: topicId } });
-  assert(topic, `Topic id (id=${topicId}) provided by event was not found`);
-
   if (event.type === "create") {
     // This is a test event that will duplicate all the other create topic events.
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
@@ -23,7 +21,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   }
 
   if (event.type === "update") {
-    notifyTopicUpdates(event, topic);
+    notifyTopicUpdates(event);
     updateTopicEvents(event);
   }
 }
@@ -84,7 +82,8 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
   }
 }
 
-async function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
+async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
+  const topic = event.item;
   const ownerId = topic.owner_id;
   const userIdThatClosedTopic = topic.closed_by_user_id;
 
@@ -93,8 +92,8 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
 
   assert(event.itemBefore, "Updated topic didn't contain previous topic data");
 
-  if (!isEqualForPick(event.item, event.itemBefore, ["name", "closed_at"])) {
-    await tryUpdateTopicSlackMessage(topic);
+  if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
+    tryUpdateTopicSlackMessage(topic).catch(Sentry.captureException);
   }
 
   if (wasJustClosed) {

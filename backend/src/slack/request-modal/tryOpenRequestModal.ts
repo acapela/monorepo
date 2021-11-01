@@ -52,6 +52,13 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
     : [];
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
+      metadata.channelId
+        ? Blocks.Section({
+            text:
+              `${Md.bold("Note:")} Every user in this channel will be granted access to this request. ` +
+              "If they do not have an Acapela account yet, they will be invited to join.",
+          })
+        : undefined,
       Blocks.Input({ blockId: "request_type_block", label: "Request Type" }).element(
         Elements.StaticSelect({ actionId: "request_type_select" })
           .initialOption(Bits.Option({ value: REQUEST_READ, text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] }))

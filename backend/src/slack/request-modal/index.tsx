@@ -2,6 +2,7 @@ import Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { Blocks, Modal } from "slack-block-builder";
 
+import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -115,6 +116,20 @@ export function setupRequestModal(app: App) {
     assert(team, "must have a team");
     assert(owner, "must have a user");
 
+    const slackUserIdsWithMentionType: { slackUserId: string; mentionType?: MentionType }[] = members.map((id) => ({
+      slackUserId: id,
+      mentionType: requestType.value as MentionType,
+    }));
+
+    const channelId = metadata.channelId;
+
+    if (channelId) {
+      const response = await slackClient.conversations.members({ token, channel: channelId });
+      if (response.members) {
+        slackUserIdsWithMentionType.push(...response.members.map((id) => ({ slackUserId: id })));
+      }
+    }
+
     const topic = await createTopicForSlackUsers({
       token,
       teamId: team.id,
@@ -122,10 +137,7 @@ export function setupRequestModal(app: App) {
       slackTeamId,
       rawTopicMessage: messageText,
       topicName: topicName ?? truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
-      slackUserIdsWithRequestType: members.map((id) => ({
-        slackUserId: id,
-        requestType: requestType.value as MentionType,
-      })),
+      slackUserIdsWithMentionType,
     });
 
     if (!topic) {
@@ -137,7 +149,7 @@ export function setupRequestModal(app: App) {
       });
     }
 
-    if (!metadata.channelId) {
+    if (!channelId) {
       const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
       await ack({
         response_action: "update",
@@ -155,7 +167,7 @@ export function setupRequestModal(app: App) {
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic)),
       token,
-      channel: metadata.channelId,
+      channel: channelId,
     });
 
     if (!response.ok) {
