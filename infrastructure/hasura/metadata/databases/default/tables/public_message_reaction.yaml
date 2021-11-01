@@ -14,8 +14,10 @@ insert_permissions:
     check:
       message:
         topic:
-          team:
-            memberships:
+          _or:
+          - owner_id:
+              _eq: X-Hasura-User-Id
+          - members:
               user_id:
                 _eq: X-Hasura-User-Id
     columns:
