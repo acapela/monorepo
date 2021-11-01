@@ -1,0 +1,28 @@
+table:
+  name: topic_event
+  schema: public
+object_relationships:
+- name: topic
+  using:
+    foreign_key_constraint_on: topic_id
+- name: topic_event_topic
+  using:
+    foreign_key_constraint_on:
+      column: topic_event_id
+      table:
+        name: topic_event_topic
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - id
+    - topic_id
+    - updated_at
+    - actor_id
+    filter:
+      topic:
+        members:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
