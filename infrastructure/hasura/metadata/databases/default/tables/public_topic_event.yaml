@@ -19,7 +19,7 @@ select_permissions:
     - id
     - topic_id
     - updated_at
-    - user_id
+    - actor_id
     filter:
       topic:
         members:

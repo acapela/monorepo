@@ -2,7 +2,6 @@ import { Topic, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { TopicEventTypes } from "~shared/types/topicEvents";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
@@ -34,63 +33,48 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
   // Should never be null on event updates
   assert(topicBefore, "Updated topic didn't contain previous topic data");
 
-  const isOpen = (topic: Topic) => topic.closed_at === null;
-  const isArchived = (topic: Topic) => topic.archived_at !== null;
-
-  const wasJustClosed = !isOpen(topicNow) && isOpen(topicBefore);
-  if (wasJustClosed) {
+  const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
+  if (isOpenStatusChanged) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        type: TopicEventTypes.TopicClosed,
-        topic_event_topic_closed: {
+        actor_id: event.userId,
+        topic_event_topic: {
           create: {
-            closed_by_user_id: event.userId,
+            from_closed_at: topicBefore.closed_at,
+            to_closed_at: topicNow.closed_at,
           },
         },
       },
     });
   }
 
-  const wasJustReopened = isOpen(topicNow) && !isOpen(topicBefore);
-  if (wasJustReopened) {
+  const isArchivedStatusChanged = topicNow.archived_at !== topicBefore.archived_at;
+  if (isArchivedStatusChanged) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        type: TopicEventTypes.TopicReopened,
-        topic_event_topic_reopened: {
+        actor_id: event.userId,
+        topic_event_topic: {
           create: {
-            reopened_by_user_id: event.userId,
+            from_archived_at: topicBefore.archived_at,
+            to_archived_at: topicNow.archived_at,
           },
         },
       },
     });
   }
 
-  const wasJustArchived = isArchived(topicNow) && !isArchived(topicBefore);
-  if (wasJustArchived) {
+  const isNameChanged = topicNow.name !== topicBefore.name;
+  if (isNameChanged) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        type: TopicEventTypes.TopicArchived,
-        topic_event_topic_archived: {
+        actor_id: event.userId,
+        topic_event_topic: {
           create: {
-            archived_by_user_id: event.userId,
-          },
-        },
-      },
-    });
-  }
-
-  const wasJustUnarchived = !isArchived(topicNow) && isArchived(topicBefore);
-  if (wasJustUnarchived) {
-    await db.topic_event.create({
-      data: {
-        topic_id: topicNow.id,
-        type: TopicEventTypes.TopicUnarchived,
-        topic_event_topic_unarchived: {
-          create: {
-            unarchived_by_user_id: event.userId,
+            from_name: topicBefore.name,
+            to_name: topicNow.name,
           },
         },
       },

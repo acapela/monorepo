@@ -11,25 +11,9 @@ const topicEventFragment = gql`
   fragment TopicEvent on topic_event {
     id
     topic_id
+    actor_id
     created_at
     updated_at
-    type
-
-    topic_closed {
-      closed_by_user_id
-    }
-
-    topic_reopened {
-      reopened_by_user_id
-    }
-
-    topic_archived {
-      archived_by_user_id
-    }
-
-    topic_unarchived {
-      unarchived_by_user_id
-    }
   }
 `;
 
