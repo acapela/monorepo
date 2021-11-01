@@ -85,10 +85,12 @@ select_permissions:
     - team_id
     - updated_at
     filter:
-      team:
-        memberships:
+      _or:
+      - members:
           user_id:
             _eq: X-Hasura-User-Id
+      - owner_id:
+          _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -102,18 +104,18 @@ update_permissions:
     - owner_id
     - slug
     filter:
-      team:
-        memberships:
+      _or:
+      - members:
           user_id:
             _eq: X-Hasura-User-Id
+      - owner_id:
+          _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
     filter:
-      team:
-        memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
+      owner_id:
+        _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
