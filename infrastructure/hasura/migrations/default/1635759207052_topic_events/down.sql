@@ -1,4 +1,33 @@
 
+alter table "public"."topic_event" rename column "actor_id" to "user_id";
+
+DROP TABLE "public"."topic_event_topic";
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP table "public"."topic_event_topic_unarchived";
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP table "public"."topic_event_topic_reopened";
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP table "public"."topic_event_topic_closed";
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP table "public"."topic_event_topic_archived";
+
+alter table "public"."topic_event" alter column "type" drop not null;
+alter table "public"."topic_event" add column "type" text;
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."topic_event" add column "user_id" uuid
+--  null;
+
+
 -- Could not auto-generate a down migration.
 -- Please write an appropriate down migration for the SQL below:
 -- alter table "public"."topic_event" add column "type" text

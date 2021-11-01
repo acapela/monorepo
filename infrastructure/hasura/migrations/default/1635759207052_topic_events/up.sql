@@ -1,4 +1,5 @@
 
+
 CREATE TABLE "public"."topic_event" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "topic_id" uuid NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "updated_at" timestamptz NOT NULL DEFAULT now(), PRIMARY KEY ("id") , FOREIGN KEY ("topic_id") REFERENCES "public"."topic"("id") ON UPDATE restrict ON DELETE restrict, UNIQUE ("id"));
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -76,3 +77,20 @@ alter table "public"."topic_event_topic_unarchived" drop constraint "topic_event
 
 alter table "public"."topic_event" add column "type" text
  not null;
+
+alter table "public"."topic_event" add column "user_id" uuid
+ null;
+
+alter table "public"."topic_event" drop column "type" cascade;
+
+DROP table "public"."topic_event_topic_archived";
+
+DROP table "public"."topic_event_topic_closed";
+
+DROP table "public"."topic_event_topic_reopened";
+
+DROP table "public"."topic_event_topic_unarchived";
+
+CREATE TABLE "public"."topic_event_topic" ("topic_event_id" uuid NOT NULL, "from_closed_at" timestamptz, "to_closed_at" timestamptz, "from_name" text, "to_name" text, "from_archived_at" timestamptz, "to_archived_at" timestamptz, PRIMARY KEY ("topic_event_id") , FOREIGN KEY ("topic_event_id") REFERENCES "public"."topic_event"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("topic_event_id"));
+
+alter table "public"."topic_event" rename column "user_id" to "actor_id";
