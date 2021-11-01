@@ -1,5 +1,5 @@
 table:
-  name: topic_event_topic_archived
+  name: topic_event_topic
   schema: public
 object_relationships:
 - name: topic_event
@@ -7,7 +7,14 @@ object_relationships:
     foreign_key_constraint_on: topic_event_id
 select_permissions:
 - permission:
-    columns: []
+    columns:
+    - topic_event_id
+    - from_closed_at
+    - to_closed_at
+    - from_name
+    - to_name
+    - from_archived_at
+    - to_archived_at
     filter:
       topic_event:
         topic:
