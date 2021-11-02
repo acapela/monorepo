@@ -93,7 +93,7 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
   assert(event.itemBefore, "Updated topic didn't contain previous topic data");
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
-    tryUpdateTopicSlackMessage(topic).catch(Sentry.captureException);
+    tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
   }
 
   if (wasJustClosed) {
