@@ -23,7 +23,7 @@ const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE
  * "Please respond to @Gregor's message"
  * "Please take action on @Omar's message before today 9PM"
  */
-const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
+const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const [nextTask] = sortBy(tasks, (task) => [
     task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
     REQUEST_TYPE_PRIORITIES.indexOf(task.type as never),
@@ -115,15 +115,19 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
 export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
+  if (topic.isArchived) {
+    return null;
+  }
+
   if (topic.isClosed && !topic.isArchived) {
     return <NextActionArchivePrompt topic={topic} />;
   }
   const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
   if (openTasksAssignedToSelf.length > 0) {
-    return <NextActionTask tasks={openTasksAssignedToSelf} />;
+    return <NextActionOpenTaskUser tasks={openTasksAssignedToSelf} />;
   }
 
-  if (!openTasks.hasItems && topic.isOwn) {
+  if (!openTasks.hasItems && !topic.isClosed && topic.isOwn) {
     return <NextActionOwner topic={topic} />;
   }
 

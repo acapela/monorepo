@@ -47,7 +47,7 @@ const ArchivedTopicEvent: TopicEventRenderer = {
     return topic_event_topic.from_archived_at === null && topic_event_topic.to_archived_at !== null;
   },
   render() {
-    return <>Reopened the request</>;
+    return <>Archived the request</>;
   },
 };
 
