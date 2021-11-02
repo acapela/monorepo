@@ -54,7 +54,11 @@ async function onTaskUpdate(task: Task) {
 
   assert(topic, "must have topic");
 
-  await tryUpdateTopicSlackMessage(topic);
+  try {
+    await tryUpdateTopicSlackMessage(topic);
+  } catch (e) {
+    console.error(e);
+  }
 
   const amountOfOpenTasksLeft = await db.task.count({
     where: {
