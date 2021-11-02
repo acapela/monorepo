@@ -32,6 +32,7 @@ select_permissions:
 - permission:
     columns:
     - created_at
+    - has_joined
     - id
     - notify_email
     - notify_slack

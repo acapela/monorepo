@@ -8,7 +8,7 @@ import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
 import { HttpStatus } from "../http";
-import { parseMetadata } from "./metadata";
+import { parseMetadata } from "./installMetadata";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 

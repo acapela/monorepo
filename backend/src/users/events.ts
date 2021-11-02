@@ -15,5 +15,10 @@ export async function handleUserUpdates(event: HasuraEvent<User>) {
     const team = await db.team.findFirst({ where: { id: userNow.current_team_id } });
     assert(team, "Team does not exist");
     identifyBackendUserTeam(userNow.id, team.id, { teamId: team.id, teamName: team.name });
+
+    await db.team_member.updateMany({
+      where: { user_id: userNow.id, team_id: team.id },
+      data: { has_joined: true },
+    });
   }
 }

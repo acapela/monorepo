@@ -1,16 +1,14 @@
 import { View } from "@slack/types";
-import _ from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
+import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { db } from "~db";
 import { routes } from "~shared/routes";
-import { Maybe } from "~shared/types";
 import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~shared/types/mention";
 
-import { SlackInstallation, slackClient } from "../app";
+import { slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
-import { getSlackInstallURL, userScopes } from "../install";
-import { ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
+import { ViewMetadata, attachToViewWithMetadata, checkHasUserSlackScopes, findUserBySlackId } from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -23,13 +21,7 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
   )
   .buildToObject();
 
-const AuthForTopicModal = async ({
-  teamId,
-  viewData,
-}: {
-  teamId: string;
-  viewData: ViewMetadata["open_request_modal"];
-}) =>
+const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =>
   Modal({
     title: "Authorization missing!",
     submit: "Try again",
@@ -37,10 +29,12 @@ const AuthForTopicModal = async ({
   })
     .blocks(
       Blocks.Section({
-        text: `⚠️ Before we can start a request, you need to <${await getSlackInstallURL(
-          { withBot: false },
-          { teamId }
-        )}|authorize Acapela to work with Slack>.`,
+        text:
+          "⚠️ Before we can start a request, you need to authorize Acapela to work with Slack. " +
+          `Head over to ${createSlackLink(
+            process.env.FRONTEND_URL + routes.settings,
+            "your Acapela settings"
+          )} to link it.`,
       }),
       viewData.messageText
         ? [Blocks.Divider(), Blocks.Section().text("Your Request Message:\n" + Md.blockquote(viewData.messageText))]
@@ -55,6 +49,13 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
     : [];
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
+      metadata.channelId
+        ? Blocks.Section({
+            text:
+              `${Md.bold("Note:")} Every user in this channel will be granted access to this request. ` +
+              "If they do not have an Acapela account yet, they will be invited to join.",
+          })
+        : undefined,
       Blocks.Input({ blockId: "request_type_block", label: "Request Type" }).element(
         Elements.StaticSelect({ actionId: "request_type_select" })
           .initialOption(Bits.Option({ value: REQUEST_READ, text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] }))
@@ -105,19 +106,13 @@ async function checkHasChannelAccess(token: string, channelId: string) {
   }
 }
 
-async function checkHasUserSlackScopes(slackUserId: string) {
-  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
-  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
-  return _.intersection(installationData?.scopes ?? [], userScopes).length === userScopes.length;
-}
-
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
   const { channelId, slackUserId, slackTeamId, messageText, origin } = data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
 
   const [user, team] = await Promise.all([
     findUserBySlackId(token, slackUserId),
-    db.team_slack_installation.findFirst({ where: { slack_team_id: slackTeamId } }),
+    db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
   ]);
   if (!team) {
     await openView(MissingTeamModal);
@@ -130,7 +125,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
   ]);
 
   if (!user || !hasChannelAccess || !hasSlackScopes) {
-    await openView(await AuthForTopicModal({ teamId: team.id, viewData: data }));
+    await openView(await AuthForTopicModal(data));
     return { user };
   }
 

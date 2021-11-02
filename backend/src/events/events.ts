@@ -8,6 +8,7 @@ import { handleTaskChanges } from "~backend/src/tasks/taskHandlers";
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
+import { handleUserUpdates } from "~backend/src/users/events";
 import { log } from "~shared/logger";
 
 import { hasuraEvents } from "./eventHandlers";
@@ -24,6 +25,7 @@ hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdate
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageChanges);
 hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE"], handleTaskChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
+hasuraEvents.addHandler("user_updates", ["UPDATE"], handleUserUpdates);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
