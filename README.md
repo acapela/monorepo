@@ -1,4 +1,4 @@
-# Acapela
+# Acapelat
 
 - [Getting started](#getting-started)
   - [Dependencies](#dependencies)
