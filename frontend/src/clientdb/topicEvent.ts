@@ -44,9 +44,10 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
 }).addConnections((topicEvent, { getEntity }) => {
-  const actor = topicEvent.actor_id ? getEntity(userEntity).findById(topicEvent.actor_id) : null;
   return {
-    actor,
+    get actor() {
+      return topicEvent.actor_id ? getEntity(userEntity).findById(topicEvent.actor_id) : null;
+    },
     get topic() {
       return getEntity(topicEntity).findById(topicEvent.topic_id);
     },
