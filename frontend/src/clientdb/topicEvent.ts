@@ -1,8 +1,9 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicEventFragment } from "~gql";
 
+import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
@@ -14,6 +15,17 @@ const topicEventFragment = gql`
     actor_id
     created_at
     updated_at
+
+    topic_event_topic {
+      from_closed_at
+      to_closed_at
+
+      from_archived_at
+      to_archived_at
+
+      from_name
+      to_name
+    }
   }
 `;
 
@@ -22,6 +34,7 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<TopicEventFragment>(topicEventFragment),
+  defaultSort: (event) => new Date(event.created_at).getTime(),
   getDefaultValues: () => ({
     __typename: "topic_event",
     ...getGenericDefaultData(),
@@ -29,4 +42,11 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
+}).addConnections((topicEvent, { getEntity }) => {
+  const actor = topicEvent.actor_id ? getEntity(userEntity).findById(topicEvent.actor_id) : null;
+  return {
+    actor,
+  };
 });
+
+export type TopicEventEntity = EntityByDefinition<typeof topicEventEntity>;
