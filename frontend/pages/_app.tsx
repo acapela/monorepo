@@ -7,6 +7,7 @@ import { NextPageContext } from "next";
 import { Session } from "next-auth";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
@@ -86,6 +87,26 @@ export default function App({
     initializeUserbackPlugin(appConfig.userbackAccessToken);
     initSentry(appConfig);
   }, [appConfig]);
+
+  const { route } = useRouter();
+  const isNextAuthErrorPage = route === "/auth/error";
+
+  if (isNextAuthErrorPage) {
+    return (
+      <>
+        <BuiltInStyles />
+        <CommonMetadata />
+        <RequiredSessionProvider isNextAuthErrorPage={isNextAuthErrorPage} session={appConfig.session}>
+          <AppThemeProvider theme={theme}>
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
+            {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+          </AppThemeProvider>
+        </RequiredSessionProvider>
+      </>
+    );
+  }
 
   return (
     <>
