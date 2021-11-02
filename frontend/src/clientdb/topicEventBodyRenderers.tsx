@@ -10,12 +10,26 @@ interface TopicEventRenderer {
   render(event?: TopicEventEntity): ReactNode;
 }
 
-const ClosedTopicEvent: TopicEventRenderer = {
-  isMatch({ topic_event_topic }: TopicEventEntity) {
-    return topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
+const UserClosedTopicEvent: TopicEventRenderer = {
+  isMatch({ actor_id, topic_event_topic }: TopicEventEntity) {
+    return actor_id !== null && topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
   },
   render() {
     return <>Closed the request</>;
+  },
+};
+
+const AutomaticClosedTopicEvent: TopicEventRenderer = {
+  isMatch({ actor_id, topic_event_topic }: TopicEventEntity) {
+    return actor_id === null && topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
+  },
+  render(event: TopicEventEntity) {
+    return (
+      <>
+        Hurray! <UIBold>{event.topic?.name ?? "This Request"}</UIBold> has been completed by everyone and has been{" "}
+        <UIBold>Closed</UIBold>.
+      </>
+    );
   },
 };
 
@@ -61,7 +75,8 @@ const RenamedTopicEvent: TopicEventRenderer = {
 };
 
 const topicEventRenderers = {
-  ClosedTopicEvent,
+  UserClosedTopicEvent,
+  AutomaticClosedTopicEvent,
   ReopenedTopicEvent,
   ArchivedTopicEvent,
   UnarchivedTopicEvent,

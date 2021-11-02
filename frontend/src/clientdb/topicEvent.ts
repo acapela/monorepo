@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicEventFragment } from "~gql";
 
+import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -46,6 +47,9 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   const actor = topicEvent.actor_id ? getEntity(userEntity).findById(topicEvent.actor_id) : null;
   return {
     actor,
+    get topic() {
+      return getEntity(topicEntity).findById(topicEvent.topic_id);
+    },
   };
 });
 
