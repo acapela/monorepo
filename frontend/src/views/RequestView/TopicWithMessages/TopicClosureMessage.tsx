@@ -4,7 +4,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { styledObserver } from "~shared/component";
 import { relativeFormatDate } from "~shared/dates/format";
 import { TextButton } from "~ui/buttons/TextButton";
@@ -25,56 +24,13 @@ const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" 
 // Temporary, to be deleted
 // Parts of this will be copied over to make the event system work
 export const TopicClosureMessage = styledObserver<Props>((props) => {
-  const { topic, className } = props;
-  const { closedByUser, closed_at } = topic;
+  const { topic } = props;
 
   if (!topic.isClosed) {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const closedAtDate = new Date(closed_at!);
-
-  return (
-    <>
-      {closedByUser && (
-        <UIHolder className={className}>
-          <UIHead>
-            <UserAvatar user={closedByUser} size={20} />
-            <div>Closed the request</div>
-            <UISideTimeLabel date={closedAtDate} />
-          </UIHead>
-        </UIHolder>
-      )}
-      {!closedByUser && (
-        <UIHolder className={className}>
-          <UIHead>
-            <UIAcapelaCircle label={<IconAcapelaWave />} />
-            <div>
-              Hurray! <UIBold>{topic.name}</UIBold> has been completed by everyone and has been <UIBold>Closed</UIBold>.
-            </div>
-            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-            <UISideTimeLabel date={new Date(topic.closed_at!)} />
-          </UIHead>
-        </UIHolder>
-      )}
-
-      {!topic.isArchived && <TopicArchiveNotice {...props} />}
-
-      {topic.isArchived && (
-        <UIHolder className={className}>
-          <UIHead>
-            <UIAcapelaCircle label={<IconAcapelaWave />} />
-            <div>
-              <UIBold>{topic.name}</UIBold> is archived.
-            </div>
-            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-            <UISideTimeLabel date={new Date(topic.archived_at!)} />
-          </UIHead>
-        </UIHolder>
-      )}
-    </>
-  );
+  return <>{!topic.isArchived && <TopicArchiveNotice {...props} />}</>;
 })``;
 
 const TopicArchiveNotice = styledObserver<Props>(({ topic, className }: Props) => {
