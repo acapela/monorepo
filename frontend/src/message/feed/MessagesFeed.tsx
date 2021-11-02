@@ -1,18 +1,21 @@
-import { differenceInMinutes } from "date-fns";
-import { isSameDay } from "date-fns";
+import { differenceInMinutes, isSameDay } from "date-fns";
+import { sortBy } from "lodash";
 import { observer } from "mobx-react";
-import { Fragment, useRef } from "react";
+import React, { Fragment, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { layoutAnimations } from "~frontend/animations/layout";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { niceFormatDate } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
 import { Message } from "./Message";
+import { TopicEventFeedItem } from "./TopicEvent";
 
 interface Props {
   messages: MessageEntity[];
+  events: TopicEventEntity[];
   isReadonly?: boolean;
 }
 
@@ -41,7 +44,11 @@ function shouldBundleCurrentMessageWithPrevious(
   return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
-export const MessagesFeed = observer(({ messages, isReadonly }: Props) => {
+function isMessage(thing: MessageEntity | TopicEventEntity | null): thing is MessageEntity {
+  return (thing as MessageEntity)?.type !== undefined;
+}
+
+export const MessagesFeed = observer(({ messages, events, isReadonly }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
 
   function renderMessageHeader(message: MessageEntity, previousMessage: MessageEntity | null) {
@@ -59,24 +66,36 @@ export const MessagesFeed = observer(({ messages, isReadonly }: Props) => {
     return <DateHeader date={currentDate} />;
   }
 
+  const feedItems: Array<MessageEntity | TopicEventEntity> = useMemo(
+    () => sortBy([...messages, ...events], ["created_at"]),
+    [messages, events]
+  );
+
   return (
     <UIHolder ref={holderRef}>
-      {messages.map((message, index) => {
-        const isFirstMessage = index === 0;
-        const previousMessage = messages[index - 1] ?? null;
+      {feedItems.map((feedItem, index) => {
+        if (isMessage(feedItem)) {
+          const message = feedItem;
+          const isFirstMessage = index === 0;
+          const previousItem = feedItems[index - 1] ?? null;
+          const previousMessage = isMessage(previousItem) ? previousItem : null;
 
-        return (
-          <Fragment key={message.id}>
-            {renderMessageHeader(message, previousMessage)}
-            <Message
-              contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
-              isReadonly={isReadonly}
-              message={message}
-              key={message.id}
-              isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
-            />
-          </Fragment>
-        );
+          return (
+            <Fragment key={message.id}>
+              {renderMessageHeader(message, previousMessage)}
+              <Message
+                contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
+                isReadonly={isReadonly}
+                message={message}
+                key={message.id}
+                isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
+              />
+            </Fragment>
+          );
+        } else {
+          const event = feedItem;
+          return <TopicEventFeedItem key={event.id} topicEvent={event} />;
+        }
       })}
     </UIHolder>
   );
@@ -94,4 +113,8 @@ const UIHolder = styled.div<{}>`
 const UIDateHeader = styled.div<{}>`
   font-size: ${theme.typo.content.secondary.center};
   margin-top: 30px;
+`;
+
+const UIBold = styled.span<{}>`
+  ${theme.font.semibold}
 `;
