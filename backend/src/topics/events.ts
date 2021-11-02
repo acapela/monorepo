@@ -4,6 +4,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isEqualForPick } from "~shared/object";
 import { routes } from "~shared/routes";
+import { Sentry } from "~shared/sentry";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
@@ -94,7 +95,11 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>, topic: Topic) {
   assert(event.itemBefore, "Updated topic didn't contain previous topic data");
 
   if (!isEqualForPick(event.item, event.itemBefore, ["name", "closed_at"])) {
-    await tryUpdateTopicSlackMessage(topic);
+    try {
+      await tryUpdateTopicSlackMessage(topic);
+    } catch (e) {
+      Sentry.captureException(e);
+    }
   }
 
   if (wasJustClosed) {

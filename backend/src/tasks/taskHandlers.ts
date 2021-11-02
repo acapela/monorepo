@@ -6,6 +6,7 @@ import { Task, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
+import { Sentry } from "~shared/sentry";
 import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/mention";
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
@@ -57,7 +58,7 @@ async function onTaskUpdate(task: Task) {
   try {
     await tryUpdateTopicSlackMessage(topic);
   } catch (e) {
-    console.error(e);
+    Sentry.captureException(e);
   }
 
   const amountOfOpenTasksLeft = await db.task.count({
