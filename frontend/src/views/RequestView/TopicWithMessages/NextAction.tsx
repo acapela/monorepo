@@ -1,4 +1,4 @@
-import { formatRelative } from "date-fns";
+import { addBusinessDays, differenceInHours, formatRelative } from "date-fns";
 import { sortBy } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
@@ -8,6 +8,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { relativeFormatDate } from "~shared/dates/format";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 import { TextButton } from "~ui/buttons/TextButton";
 import { IconAcapelaWave } from "~ui/icons";
@@ -80,9 +81,50 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   );
 });
 
+const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => {
+  function handleReopen() {
+    topic.update({ closed_at: null, closed_by_user_id: null });
+  }
+
+  function handleArchive() {
+    topic.update({ archived_at: new Date().toISOString() });
+  }
+
+  function getTimeOfArchiveLabel() {
+    const now = new Date();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const closedDate = new Date(topic.closed_at!);
+    const timeOfArchive = addBusinessDays(closedDate, 1);
+
+    const hoursUntilArchive = differenceInHours(timeOfArchive, now);
+
+    // If an old topic has been un-archived or approaching hour of archive
+    if (hoursUntilArchive <= 1) {
+      return "soon";
+    }
+
+    return relativeFormatDate(timeOfArchive);
+  }
+
+  return (
+    <NextActionMessage>
+      <UIBold>{topic.name}</UIBold> will be{" "}
+      <UIArchiveTooltip data-tooltip="Archived requests are available through the search bar">
+        archived
+      </UIArchiveTooltip>{" "}
+      automatically {getTimeOfArchiveLabel()}. <br /> You could also{" "}
+      <TextAction onClick={handleReopen}>Reopen</TextAction> or{" "}
+      <TextAction onClick={handleArchive}>Archive now</TextAction>.
+    </NextActionMessage>
+  );
+});
+
 export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
+  if (topic.isClosed && !topic.isArchived) {
+    return <NextActionArchivePrompt topic={topic} />;
+  }
   const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
   if (openTasksAssignedToSelf.length > 0) {
     return <NextActionTask tasks={openTasksAssignedToSelf} />;
@@ -97,9 +139,10 @@ export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
 
 const UIHolder = styled.div<{}>`
   display: flex;
-  align-items: center;
-  padding: 20px 0;
-  ${theme.spacing.actions.asGap}
+  align-items: flex-start;
+  margin-top: 20px;
+  padding: 0 5px;
+  gap: 15px;
 `;
 
 const UIAcapelaLogo = styled(CircleLabel)<{}>`
@@ -108,8 +151,18 @@ const UIAcapelaLogo = styled(CircleLabel)<{}>`
 
 const UIText = styled.div<{}>`
   ${theme.typo.content};
+  line-height: 20px;
 `;
 
 const UIUserName = styled.span<{}>`
   ${theme.typo.content.medium};
+`;
+
+const UIBold = styled.span<{}>`
+  ${theme.font.semibold}
+`;
+
+const UIArchiveTooltip = styled.span<{}>`
+  text-decoration: underline;
+  cursor: default;
 `;
