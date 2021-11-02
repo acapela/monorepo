@@ -92,7 +92,7 @@ This automatically creates migrations. [You can squash the migrations, using the
 
 Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
-1. Run `yarn backend clone-slack-manifest`
+1. Run `yarn shared clone-slack-manifest`
 2. go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
 3. make sure to give it a unique name and command name
 4. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_STATE_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. The slash command needs to be unique within our workspace

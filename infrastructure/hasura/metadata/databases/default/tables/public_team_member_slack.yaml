@@ -5,6 +5,12 @@ object_relationships:
 - name: team_member
   using:
     foreign_key_constraint_on: team_member_id
+computed_fields:
+- definition:
+    function:
+      name: team_member_slack_scopes
+      schema: public
+  name: slack_scopes
 select_permissions:
 - permission:
     columns:
@@ -13,10 +19,10 @@ select_permissions:
     - slack_user_id
     - team_member_id
     - updated_at
+    computed_fields:
+    - slack_scopes
     filter:
       team_member:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+        user_id:
+          _eq: X-Hasura-User-Id
   role: user

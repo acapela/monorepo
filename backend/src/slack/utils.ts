@@ -1,10 +1,7 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
-import _ from "lodash";
 
-import { userScopes } from "~backend/src/slack/install";
 import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
-import { Maybe } from "~shared/types";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 
 import { SlackInstallation, slackClient } from "./app";
@@ -102,10 +99,4 @@ export function listenToViewWithMetadata<Key extends keyof ViewMetadata>(
   listener: Middleware<SlackViewMiddlewareArgs<SlackViewAction> & { metadata: ViewMetadata[Key] }>
 ) {
   app.view(key, (data) => listener({ ...data, metadata: JSON.parse(data.view.private_metadata) }));
-}
-
-export async function checkHasUserSlackScopes(slackUserId: string) {
-  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
-  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
-  return _.intersection(installationData?.scopes ?? [], userScopes).length === userScopes.length;
 }

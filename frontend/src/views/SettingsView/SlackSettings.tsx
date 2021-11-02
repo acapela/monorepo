@@ -1,3 +1,4 @@
+import { toJS } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -6,27 +7,30 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
-import { SlackUserQuery } from "~gql";
+import { checkHasAllSlackUserScopes } from "~shared/slack";
 import { theme } from "~ui/theme";
 
-export const SlackSettings = observer(({ slackUser }: { slackUser: SlackUserQuery["slackUser"] }) => {
+export const SlackSettings = observer(() => {
   const currentUser = useAssertCurrentUser();
 
   const db = useDb();
   const team = useCurrentTeam();
-  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).all[0];
+  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
 
-  const hasMissingScopes = teamMember.teamMemberSlack && !slackUser?.hasAllScopes;
+  const userScopes = toJS(teamMember?.teamMemberSlack?.slack_scopes) ?? [];
+  const hasMissingScopes = !checkHasAllSlackUserScopes(userScopes ?? []);
 
-  if (!team?.hasSlackInstallation || !teamMember || !slackUser || (teamMember.teamMemberSlack && !hasMissingScopes)) {
+  if (!team?.hasSlackInstallation || (teamMember?.teamMemberSlack && !hasMissingScopes)) {
     return null;
   }
+
+  const needsRelinking = userScopes.length > 0 && hasMissingScopes;
 
   return (
     <UIPanel>
       <UITitle>Slack</UITitle>
 
-      {hasMissingScopes && (
+      {needsRelinking && (
         <UIParagraph>
           <UINote>Note:</UINote> You have linked your Slack account before but the permissions have changed. To use
           Acapela in Slack, please re-link your account below.
@@ -53,10 +57,7 @@ export const SlackSettings = observer(({ slackUser }: { slackUser: SlackUserQuer
         </li>
       </UIList>
 
-      <AddSlackInstallationButton
-        label={(hasMissingScopes ? "Re-" : "") + "Link your Slack account"}
-        teamId={team.id}
-      />
+      <AddSlackInstallationButton label={(needsRelinking ? "Re-" : "") + "Link your Slack account"} teamId={team.id} />
     </UIPanel>
   );
 });
