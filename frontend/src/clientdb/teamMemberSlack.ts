@@ -12,6 +12,7 @@ const teamMemberSlackFragment = gql`
     team_member_id
     slack_user_id
     updated_at
+    slack_scopes
   }
 `;
 

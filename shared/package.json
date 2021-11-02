@@ -25,11 +25,16 @@
     "@types/jest": "^27.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/pino": "^6.3.11",
+    "@types/prompts": "^2.0.14",
+    "clipboardy": "^2.3.0",
     "jest": "^27.2.5",
-    "ts-jest": "^27.0.7"
+    "prompts": "^2.4.2",
+    "ts-jest": "^27.0.7",
+    "ts-node-dev": "^1.1.8"
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "clone-slack-manifest": "ts-node-dev --transpile-only -- ./slack/clone-manifest-cli.ts"
   }
 }

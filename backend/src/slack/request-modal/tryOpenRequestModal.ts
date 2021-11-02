@@ -4,11 +4,13 @@ import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { db } from "~db";
 import { routes } from "~shared/routes";
+import { checkHasAllSlackUserScopes } from "~shared/slack";
+import { Maybe } from "~shared/types";
 import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~shared/types/mention";
 
-import { slackClient } from "../app";
+import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
-import { ViewMetadata, attachToViewWithMetadata, checkHasUserSlackScopes, findUserBySlackId } from "../utils";
+import { ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -106,6 +108,12 @@ async function checkHasChannelAccess(token: string, channelId: string) {
   }
 }
 
+async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
+  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
+  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
+  return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
+}
+
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
   const { channelId, slackUserId, slackTeamId, messageText, origin } = data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
@@ -121,7 +129,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
 
   const [hasChannelAccess, hasSlackScopes] = await Promise.all([
     !channelId || checkHasChannelAccess(token, channelId),
-    checkHasUserSlackScopes(slackUserId),
+    checkHasTeamMemberAllSlackUserScopes(slackUserId),
   ]);
 
   if (!user || !hasChannelAccess || !hasSlackScopes) {

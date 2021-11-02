@@ -19947,10 +19947,8 @@ __metadata:
     "@types/jest": 26.0.24
     "@types/localtunnel": ^2.0.1
     "@types/mime-types": ^2.1.1
-    "@types/prompts": ^2.0.14
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.1
-    clipboardy: ^2.3.0
     cookie-parser: ^1.4.5
     cors: ^2.8.5
     express-async-errors: ^3.1.1
@@ -19961,7 +19959,6 @@ __metadata:
     mime-types: ^2.1.32
     pg: ^8.7.1
     pino-pretty: ^7.0.1
-    prompts: ^2.4.2
     slack-block-builder: ^2.2.0
     supertest: ^6.1.6
     ts-jest: ^27.0.5
@@ -20161,14 +20158,18 @@ __metadata:
     "@types/jest": ^27.0.2
     "@types/jsonwebtoken": ^8.5.5
     "@types/pino": ^6.3.11
+    "@types/prompts": ^2.0.14
     analytics-node: ^4.0.1
+    clipboardy: ^2.3.0
     color: ^3.1.3
     is-hotkey: ^0.2.0
     jest: ^27.2.5
     jsonwebtoken: ^8.5.1
     pino: ^6.13.3
+    prompts: ^2.4.2
     simple-markdown: ^0.7.3
     ts-jest: ^27.0.7
+    ts-node-dev: ^1.1.8
     unicode-emoji-json: ^0.3.0
   peerDependencies:
     date-fns: "*"
