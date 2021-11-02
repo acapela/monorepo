@@ -1,10 +1,13 @@
+import { sortBy } from "lodash";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
@@ -41,13 +44,18 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
   const scrollerRef = useRef<ScrollHandle>();
 
+  const feedItems: Array<MessageEntity | TopicEventEntity> = useMemo(
+    () => sortBy([...messages, ...events], ["created_at"]),
+    [messages, events]
+  );
+
   return (
     <TopicStoreContext>
       <UIHolder>
         <TopicHeader topic={topic} />
 
         <ScrollableMessages ref={scrollerRef as never}>
-          <MessagesFeed messages={messages} events={events} />
+          <MessagesFeed feedItems={feedItems} />
           {/* TODO: Replace with events */}
           {isClosed ? <TopicClosureMessage topic={topic} /> : <NextAction topic={topic} />}
         </ScrollableMessages>

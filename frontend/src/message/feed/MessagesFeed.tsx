@@ -1,7 +1,6 @@
 import { differenceInMinutes, isSameDay } from "date-fns";
-import { sortBy } from "lodash";
 import { observer } from "mobx-react";
-import React, { Fragment, useMemo, useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import styled from "styled-components";
 
 import { layoutAnimations } from "~frontend/animations/layout";
@@ -14,8 +13,7 @@ import { Message } from "./Message";
 import { TopicEventFeedItem } from "./TopicEvent";
 
 interface Props {
-  messages: MessageEntity[];
-  events: TopicEventEntity[];
+  feedItems: Array<MessageEntity | TopicEventEntity>;
   isReadonly?: boolean;
 }
 
@@ -48,7 +46,7 @@ function isMessage(thing: MessageEntity | TopicEventEntity | null): thing is Mes
   return (thing as MessageEntity)?.type !== undefined;
 }
 
-export const MessagesFeed = observer(({ messages, events, isReadonly }: Props) => {
+export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
 
   function renderMessageHeader(message: MessageEntity, previousMessage: MessageEntity | null) {
@@ -65,11 +63,6 @@ export const MessagesFeed = observer(({ messages, events, isReadonly }: Props) =
 
     return <DateHeader date={currentDate} />;
   }
-
-  const feedItems: Array<MessageEntity | TopicEventEntity> = useMemo(
-    () => sortBy([...messages, ...events], ["created_at"]),
-    [messages, events]
-  );
 
   return (
     <UIHolder ref={holderRef}>
@@ -113,8 +106,4 @@ const UIHolder = styled.div<{}>`
 const UIDateHeader = styled.div<{}>`
   font-size: ${theme.typo.content.secondary.center};
   margin-top: 30px;
-`;
-
-const UIBold = styled.span<{}>`
-  ${theme.font.semibold}
 `;
