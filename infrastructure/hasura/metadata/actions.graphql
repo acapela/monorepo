@@ -68,4 +68,5 @@ type InviteUserOutput {
 
 type SlackUserOutput {
   slack_user_id: String
+  has_all_scopes: Boolean!
 }

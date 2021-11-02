@@ -1,7 +1,8 @@
-import { findSlackUserId } from "~backend/src/slack/utils";
+import { checkHasUserSlackScopes, findSlackUserId } from "~backend/src/slack/utils";
 import { db } from "~db";
 import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput, SlackUserOutput } from "~gql";
 import { assert } from "~shared/assert";
+import { Maybe } from "~shared/types";
 
 import { ActionHandler } from "../actions/actionHandlers";
 import { UnprocessableEntityError } from "../errors/errorTypes";
@@ -29,10 +30,19 @@ export const slackUser: ActionHandler<{ team_id: string }, SlackUserOutput> = {
   actionName: "slack_user",
 
   async handle(userId, { team_id }) {
-    if (!userId) {
-      return { slack_user_id: null };
+    let slackUserId: Maybe<string>;
+    let hasAllScopes = false;
+    if (userId) {
+      const user = await db.user.findUnique({ where: { id: userId } });
+      if (user) {
+        slackUserId = await findSlackUserId(team_id, user);
+      }
     }
-    const user = await db.user.findUnique({ where: { id: userId } });
-    return { slack_user_id: user ? (await findSlackUserId(team_id, user)) ?? null : null };
+
+    if (slackUserId) {
+      hasAllScopes = await checkHasUserSlackScopes(slackUserId);
+    }
+
+    return { slack_user_id: slackUserId, has_all_scopes: hasAllScopes };
   },
 };
