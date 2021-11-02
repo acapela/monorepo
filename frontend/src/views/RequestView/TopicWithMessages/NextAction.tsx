@@ -11,16 +11,9 @@ import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { relativeFormatDate } from "~shared/dates/format";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 import { TextButton } from "~ui/buttons/TextButton";
-import { IconAcapelaWave } from "~ui/icons";
-import { CircleLabel } from "~ui/icons/CircleLabel";
 import { theme } from "~ui/theme";
 
-const NextActionMessage = ({ children }: { children: React.ReactNode | React.ReactNodeArray }) => (
-  <UIHolder>
-    <UIAcapelaLogo label={<IconAcapelaWave />} />
-    <UIText>{children}</UIText>
-  </UIHolder>
-);
+import { TopicEventTemplate } from "./TopicEventTemplate";
 
 const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE, REQUEST_READ];
 
@@ -38,7 +31,7 @@ const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const dueDate = nextTask.due_at && new Date(nextTask.due_at);
   const now = new Date();
   return (
-    <NextActionMessage>
+    <TopicEventTemplate>
       Please{" "}
       {
         { [REQUEST_ACTION]: "take action on", [REQUEST_RESPONSE]: "respond to", [REQUEST_READ]: "read" }[
@@ -49,7 +42,7 @@ const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
       <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s message
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
-    </NextActionMessage>
+    </TopicEventTemplate>
   );
 });
 
@@ -70,14 +63,14 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   };
 
   return (
-    <NextActionMessage>
+    <TopicEventTemplate>
       Please{" "}
       <TextAction onClick={() => topicContext?.editorRef?.current?.chain().focus("end").run()}>
         further the conversation
       </TextAction>
       , <TextAction onClick={() => closeTopic()}>close</TextAction> or{" "}
       <TextAction onClick={() => closeTopic({ isArchived: true })}>close & archive</TextAction> the topic
-    </NextActionMessage>
+    </TopicEventTemplate>
   );
 });
 
@@ -107,7 +100,7 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
   }
 
   return (
-    <NextActionMessage>
+    <TopicEventTemplate>
       <UIBold>{topic.name}</UIBold> will be{" "}
       <UIArchiveTooltip data-tooltip="Archived requests are available through the search bar">
         archived
@@ -115,7 +108,7 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
       automatically {getTimeOfArchiveLabel()}. <br /> You could also{" "}
       <TextAction onClick={handleReopen}>Reopen</TextAction> or{" "}
       <TextAction onClick={handleArchive}>Archive now</TextAction>.
-    </NextActionMessage>
+    </TopicEventTemplate>
   );
 });
 
@@ -136,23 +129,6 @@ export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
 
   return null;
 });
-
-const UIHolder = styled.div<{}>`
-  display: flex;
-  align-items: flex-start;
-  margin-top: 20px;
-  padding: 0 5px;
-  gap: 15px;
-`;
-
-const UIAcapelaLogo = styled(CircleLabel)<{}>`
-  font-size: 20px;
-`;
-
-const UIText = styled.div<{}>`
-  ${theme.typo.content};
-  line-height: 20px;
-`;
 
 const UIUserName = styled.span<{}>`
   ${theme.typo.content.medium};

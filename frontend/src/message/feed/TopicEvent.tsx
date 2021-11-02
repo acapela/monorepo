@@ -1,14 +1,9 @@
 import React from "react";
-import styled from "styled-components";
 
 import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { renderTopicEventBody } from "~frontend/clientdb/topicEventBodyRenderers";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { TopicEventTemplate } from "~frontend/views/RequestView/TopicWithMessages/TopicEventTemplate";
 import { styledObserver } from "~shared/component";
-import { IconAcapelaWave } from "~ui/icons";
-import { CircleLabel } from "~ui/icons/CircleLabel";
-import { theme } from "~ui/theme";
-import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
 interface Props {
   topicEvent: TopicEventEntity;
@@ -23,33 +18,8 @@ export const TopicEventFeedItem = styledObserver(function TopicEvent({ topicEven
   }
 
   return (
-    <UIHolder className={className}>
-      <UIHead>
-        {topicEvent.actor && <UserAvatar user={topicEvent.actor} size={20} />}
-        {!topicEvent.actor && <UIAcapelaCircle label={<IconAcapelaWave />} />}
-        <div>{eventBody}</div>
-        <UISideTimeLabel date={new Date(topicEvent.created_at)} />
-      </UIHead>
-    </UIHolder>
+    <TopicEventTemplate className={className} date={new Date(topicEvent.created_at)} user={topicEvent.actor}>
+      {eventBody}
+    </TopicEventTemplate>
   );
 })``;
-
-const UIHolder = styled.div<{}>`
-  padding-top: 20px;
-`;
-
-const UIHead = styled.div<{}>`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  ${theme.spacing.actions.asGap}
-`;
-
-const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.typo.content.secondary};
-`;
-
-const UIAcapelaCircle = styled(CircleLabel)<{}>`
-  height: 20px;
-  width: 20px;
-`;
