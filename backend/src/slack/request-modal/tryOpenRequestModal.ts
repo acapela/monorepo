@@ -1,17 +1,14 @@
 import { View } from "@slack/types";
-import _ from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { db } from "~db";
 import { routes } from "~shared/routes";
-import { Maybe } from "~shared/types";
 import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~shared/types/mention";
 
-import { SlackInstallation, slackClient } from "../app";
+import { slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
-import { userScopes } from "../install";
-import { ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
+import { ViewMetadata, attachToViewWithMetadata, checkHasUserSlackScopes, findUserBySlackId } from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -107,12 +104,6 @@ async function checkHasChannelAccess(token: string, channelId: string) {
       throw error;
     }
   }
-}
-
-async function checkHasUserSlackScopes(slackUserId: string) {
-  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
-  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
-  return _.intersection(installationData?.scopes ?? [], userScopes).length === userScopes.length;
 }
 
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
