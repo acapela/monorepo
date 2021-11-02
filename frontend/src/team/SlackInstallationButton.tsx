@@ -58,8 +58,8 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       }}
       icon={<SlackLogo />}
       iconAtStart
-      tooltip={tooltip}
       isWide
+      tooltip={tooltip}
     >
       {label ?? "Add Slack integration"}
     </UISlackButton>
@@ -127,7 +127,11 @@ export const SlackInstallationButton = observer(function SlackInstallationButton
     { variables: { teamId: team.id } }
   );
   if (!data) {
-    return null;
+    return (
+      <UISlackButton icon={<SlackLogo />} iconAtStart isWide disabled>
+        Loading...
+      </UISlackButton>
+    );
   }
   if (!data.teamSlack) {
     return (
