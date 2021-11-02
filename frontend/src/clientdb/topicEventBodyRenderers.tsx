@@ -14,8 +14,12 @@ const UserClosedTopicEvent: TopicEventRenderer = {
   isMatch({ actor_id, topic_event_topic }: TopicEventEntity) {
     return actor_id !== null && topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
   },
-  render() {
-    return <>Closed the request</>;
+  render(event: TopicEventEntity) {
+    return (
+      <>
+        <UIBold>{event.actor?.name}</UIBold> closed the request
+      </>
+    );
   },
 };
 
@@ -37,8 +41,12 @@ const ReopenedTopicEvent: TopicEventRenderer = {
   isMatch({ topic_event_topic }: TopicEventEntity) {
     return topic_event_topic.from_closed_at !== null && topic_event_topic.to_closed_at === null;
   },
-  render() {
-    return <>Reopened the request</>;
+  render(event: TopicEventEntity) {
+    return (
+      <>
+        <UIBold>{event.actor?.name}</UIBold> reopened the request
+      </>
+    );
   },
 };
 
@@ -46,8 +54,12 @@ const ArchivedTopicEvent: TopicEventRenderer = {
   isMatch({ topic_event_topic }: TopicEventEntity) {
     return topic_event_topic.from_archived_at === null && topic_event_topic.to_archived_at !== null;
   },
-  render() {
-    return <>Archived the request</>;
+  render(event: TopicEventEntity) {
+    return (
+      <>
+        <UIBold>{event.actor?.name}</UIBold> archived the request
+      </>
+    );
   },
 };
 
@@ -55,8 +67,12 @@ const UnarchivedTopicEvent: TopicEventRenderer = {
   isMatch({ topic_event_topic }: TopicEventEntity) {
     return topic_event_topic.from_archived_at !== null && topic_event_topic.to_archived_at === null;
   },
-  render() {
-    return <>Unarchived the request</>;
+  render(event: TopicEventEntity) {
+    return (
+      <>
+        <UIBold>{event.actor?.name}</UIBold> unarchived the request
+      </>
+    );
   },
 };
 
@@ -64,11 +80,11 @@ const RenamedTopicEvent: TopicEventRenderer = {
   isMatch({ topic_event_topic }: TopicEventEntity) {
     return topic_event_topic.from_name !== null && topic_event_topic.to_name !== null;
   },
-  render({ topic_event_topic }: TopicEventEntity): ReactNode {
+  render({ actor, topic_event_topic }: TopicEventEntity): ReactNode {
     const { from_name, to_name } = topic_event_topic;
     return (
       <>
-        Renamed request from <UIBold>{from_name}</UIBold> to <UIBold>{to_name}</UIBold>{" "}
+        <UIBold>{actor?.name}</UIBold> renamed request from <UIBold>{from_name}</UIBold> to <UIBold>{to_name}</UIBold>{" "}
       </>
     );
   },
