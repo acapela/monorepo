@@ -63,7 +63,13 @@ export const CreateTeamView = observer(() => {
           )
         }
       >
-        <Button onClick={handleCreateNewTeam} isWide kind="primary" isDisabled={name.trim().length < 3}>
+        <Button
+          onClick={handleCreateNewTeam}
+          isWide
+          kind="primary"
+          isDisabled={name.trim().length < 3}
+          shortcut={["Enter"]}
+        >
           Create new team
         </Button>
       </ActionWithAlternative>
