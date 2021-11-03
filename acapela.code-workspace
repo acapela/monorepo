@@ -35,6 +35,9 @@
     },
     {
       "path": "./ui"
+    },
+    {
+      "path": "e2e"
     }
   ],
   "settings": {

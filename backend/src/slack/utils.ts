@@ -82,7 +82,12 @@ export type ViewMetadata = {
     channelId?: string;
     messageText?: string;
   };
-  create_request: { messageText?: string; channelId?: string; origin: CreateRequestOrigin };
+  create_request: {
+    requestToSlackUserIds?: string[];
+    messageText?: string;
+    channelId?: string;
+    origin: CreateRequestOrigin;
+  };
 };
 
 export const attachToViewWithMetadata = <Key extends keyof ViewMetadata>(

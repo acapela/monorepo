@@ -33,12 +33,12 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
     <TopicEventTemplate>
       Please{" "}
       {
-        { [REQUEST_ACTION]: "take action on", [REQUEST_RESPONSE]: "respond to", [REQUEST_READ]: "read" }[
+        { [REQUEST_ACTION]: "complete", [REQUEST_RESPONSE]: "respond to", [REQUEST_READ]: "read and confirm" }[
           nextTask.type as never
         ]
       }
       &nbsp;
-      <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s message
+      <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s task
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
     </TopicEventTemplate>
@@ -65,10 +65,10 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
     <TopicEventTemplate>
       Please{" "}
       <TextAction onClick={() => topicContext?.editorRef?.current?.chain().focus("end").run()}>
-        further the conversation
+        continue the conversation
       </TextAction>
-      , <TextAction onClick={() => closeTopic()}>close</TextAction> or{" "}
-      <TextAction onClick={() => closeTopic({ isArchived: true })}>close & archive</TextAction> the topic
+      , <TextAction onClick={() => closeTopic()}>Close</TextAction> or{" "}
+      <TextAction onClick={() => closeTopic({ isArchived: true })}>Close & Archive</TextAction> the topic
     </TopicEventTemplate>
   );
 });

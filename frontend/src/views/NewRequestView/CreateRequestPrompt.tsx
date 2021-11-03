@@ -12,7 +12,7 @@ interface Props extends HTMLMotionProps<"div"> {
 export const CreateRequestPrompt = styled(function CreateTopicPrompt(props: Props) {
   return (
     <UIHolder {...props}>
-      <UICreateATopicLabel>Create a Request</UICreateATopicLabel>
+      <UICreateATopicLabel>Make a Request</UICreateATopicLabel>
       <UICurvedArrowHolder>
         <CurvedArrow />
       </UICurvedArrowHolder>
