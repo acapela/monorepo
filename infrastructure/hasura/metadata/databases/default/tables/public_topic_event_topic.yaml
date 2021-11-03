@@ -16,9 +16,14 @@ select_permissions:
     - from_archived_at
     - to_archived_at
     filter:
-      topic_event:
-        topic:
-          members:
-            user_id:
+      _or:
+      - topic_event:
+          topic:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      - topic_event:
+          topic:
+            owner_id:
               _eq: X-Hasura-User-Id
   role: user

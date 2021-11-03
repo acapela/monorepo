@@ -21,8 +21,12 @@ select_permissions:
     - updated_at
     - actor_id
     filter:
-      topic:
-        members:
-          user_id:
+      _or:
+      - topic:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
+      - topic:
+          owner_id:
             _eq: X-Hasura-User-Id
   role: user
