@@ -98,6 +98,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
+          name: e2e-test-logs
+          path: |
+            frontend/frontend.log
+            backend/backend.log
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
           name: test-artifacts
           path: e2e/test-results/
 
