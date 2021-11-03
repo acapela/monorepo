@@ -16,7 +16,7 @@ import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
-import { NextAction } from "./NextAction";
+import { NextAction } from "./events/NextAction";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicHeader } from "./TopicHeader";
