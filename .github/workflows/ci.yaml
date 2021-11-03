@@ -90,7 +90,6 @@ jobs:
           cd frontend/
           ./start-ci.sh
           cd -
-      - uses: mxschmitt/action-tmate@v3
       - name: Test Connection
         run: |
           sleep 5
