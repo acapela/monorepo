@@ -1,8 +1,10 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicEventFragment } from "~gql";
 
+import { topicEntity } from "./topic";
+import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
@@ -39,4 +41,15 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
+}).addConnections((topicEvent, { getEntity }) => {
+  return {
+    get actor() {
+      return topicEvent.actor_id ? getEntity(userEntity).findById(topicEvent.actor_id) : null;
+    },
+    get topic() {
+      return getEntity(topicEntity).findById(topicEvent.topic_id);
+    },
+  };
 });
+
+export type TopicEventEntity = EntityByDefinition<typeof topicEventEntity>;

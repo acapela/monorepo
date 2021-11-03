@@ -6,13 +6,14 @@ import styled from "styled-components";
 
 import { layoutAnimations } from "~frontend/animations/layout";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { niceFormatDate } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
 import { Message } from "./Message";
 
 interface Props {
-  messages: MessageEntity[];
+  feedItems: Array<MessageEntity | TopicEventEntity>;
   isReadonly?: boolean;
 }
 
@@ -41,42 +42,51 @@ function shouldBundleCurrentMessageWithPrevious(
   return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
-export const MessagesFeed = observer(({ messages, isReadonly }: Props) => {
-  const holderRef = useRef<HTMLDivElement>(null);
+function isMessage(thing: MessageEntity | TopicEventEntity | null): thing is MessageEntity {
+  return (thing as MessageEntity)?.type !== undefined;
+}
 
-  function renderMessageHeader(message: MessageEntity, previousMessage: MessageEntity | null) {
-    if (!previousMessage) {
-      return <DateHeader date={new Date(message.created_at)} />;
-    }
-
-    const currentDate = new Date(message.created_at);
-    const previousDate = new Date(previousMessage.created_at);
-
-    if (isSameDay(currentDate, previousDate)) {
-      return null;
-    }
-
-    return <DateHeader date={currentDate} />;
+function renderMessageHeader(message: MessageEntity, previousMessage: MessageEntity | null) {
+  if (!previousMessage) {
+    return <DateHeader date={new Date(message.created_at)} />;
   }
+
+  const currentDate = new Date(message.created_at);
+  const previousDate = new Date(previousMessage.created_at);
+
+  if (isSameDay(currentDate, previousDate)) {
+    return null;
+  }
+
+  return <DateHeader date={currentDate} />;
+}
+
+export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
+  const holderRef = useRef<HTMLDivElement>(null);
 
   return (
     <UIHolder ref={holderRef}>
-      {messages.map((message, index) => {
-        const isFirstMessage = index === 0;
-        const previousMessage = messages[index - 1] ?? null;
+      {feedItems.map((feedItem, index) => {
+        if (isMessage(feedItem)) {
+          const message = feedItem;
+          const isFirstMessage = index === 0;
+          const previousItem = feedItems[index - 1] ?? null;
+          const previousMessage = isMessage(previousItem) ? previousItem : null;
 
-        return (
-          <Fragment key={message.id}>
-            {renderMessageHeader(message, previousMessage)}
-            <Message
-              contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
-              isReadonly={isReadonly}
-              message={message}
-              key={message.id}
-              isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
-            />
-          </Fragment>
-        );
+          return (
+            <Fragment key={message.id}>
+              {renderMessageHeader(message, previousMessage)}
+              <Message
+                contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
+                isReadonly={isReadonly}
+                message={message}
+                key={message.id}
+                isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
+              />
+            </Fragment>
+          );
+        }
+        return null;
       })}
     </UIHolder>
   );
