@@ -75,16 +75,18 @@ update_permissions:
 event_triggers:
 - definition:
     enable_manual: false
+    insert:
+      columns: "*"
     update:
       columns:
-      - id
       - avatar_url
-      - current_team_id
-      - name
-      - updated_at
-      - email_verified
-      - created_at
       - email
+      - name
+      - created_at
+      - email_verified
+      - updated_at
+      - current_team_id
+      - id
   headers:
   - name: Authorization
     value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
