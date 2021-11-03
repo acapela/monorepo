@@ -30,6 +30,7 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   name: "topic_event",
   updatedAtField: "updated_at",
   keyField: "id",
+  defaultSort: (event) => new Date(event.created_at).getTime(),
   keys: getFragmentKeys<TopicEventFragment>(topicEventFragment),
   getDefaultValues: () => ({
     __typename: "topic_event",

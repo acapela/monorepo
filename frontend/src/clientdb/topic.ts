@@ -9,6 +9,7 @@ import { isNotNullish } from "~shared/nullish";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { taskEntity } from "./task";
+import { topicEventEntity } from "./topicEvent";
 import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
@@ -103,6 +104,8 @@ export const topicEntity = defineEntity<TopicFragment>({
 
     const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
 
+    const events = getEntity(topicEventEntity).query({ topic_id: topic.id });
+
     const connections = {
       get owner() {
         return getOwner();
@@ -149,6 +152,8 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
 
       unreadMessages,
+
+      events,
     };
 
     return connections;
