@@ -1,4 +1,5 @@
 import { View } from "@slack/types";
+import { uniq } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -82,7 +83,9 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to" }).accessory(
-        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(slackUserIds)
+        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(
+          uniq(slackUserIds.concat(metadata.requestToSlackUserIds ?? []))
+        )
       ),
       messageText
         ? Blocks.Section({
@@ -146,7 +149,15 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  await openView(TopicModal({ messageText, channelId, origin }));
+  let requestToSlackUserIds: string[] = [];
+  if (channelId) {
+    const response = await slackClient.conversations.members({ token, channel: channelId });
+    if (response.ok && response.members?.length == 1) {
+      requestToSlackUserIds = response.members;
+    }
+  }
+
+  await openView(TopicModal({ requestToSlackUserIds, messageText, channelId, origin }));
 
   return { user };
 }
