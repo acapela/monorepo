@@ -23,6 +23,7 @@ import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
   const user = useAssertCurrentUser();
   const messages = topic.messages.all;
+  const events = topic.events.all;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
@@ -48,6 +49,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed messages={messages} />
           {/* TODO: Replace with events */}
+          {JSON.stringify(events)}
           {isClosed ? <TopicClosureMessage topic={topic} /> : <NextAction topic={topic} />}
         </ScrollableMessages>
 
