@@ -86,7 +86,7 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
             </Fragment>
           );
         }
-        return null;
+        return JSON.stringify(feedItem);
       })}
     </UIHolder>
   );
