@@ -14,6 +14,15 @@ const topicEventFragment = gql`
     actor_id
     created_at
     updated_at
+
+    topic_event_topic {
+      from_closed_at
+      to_closed_at
+      from_archived_at
+      to_archived_at
+      from_name
+      to_name
+    }
   }
 `;
 
