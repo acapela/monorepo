@@ -46,11 +46,7 @@ async function maybeUpdateSlackMessage(message: Message) {
   }
   const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
   assert(topic, "must have topic");
-  try {
-    await tryUpdateTopicSlackMessage(topic);
-  } catch (e) {
-    Sentry.captureException(e);
-  }
+  tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {

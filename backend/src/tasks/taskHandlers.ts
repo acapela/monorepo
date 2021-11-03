@@ -55,11 +55,7 @@ async function onTaskUpdate(task: Task) {
 
   assert(topic, "must have topic");
 
-  try {
-    await tryUpdateTopicSlackMessage(topic);
-  } catch (e) {
-    Sentry.captureException(e);
-  }
+  tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
 
   const amountOfOpenTasksLeft = await db.task.count({
     where: {
