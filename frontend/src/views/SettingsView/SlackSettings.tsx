@@ -31,10 +31,10 @@ export const SlackSettings = observer(() => {
       <UITitle>Slack</UITitle>
 
       {needsRelinking && (
-        <UIParagraph>
-          <UINote>Note:</UINote> You have linked your Slack account before but the permissions have changed. To use
-          Acapela in Slack, please re-link your account below.
-        </UIParagraph>
+        <UINoteParagraph>
+          Note: You have linked your Slack account before but the permissions have changed. To use Acapela in Slack,
+          please re-link your account below.
+        </UINoteParagraph>
       )}
 
       <UIParagraph>With Slack linked to your Acapela you get these extra features:</UIParagraph>
@@ -78,12 +78,12 @@ const UITitle = styled.h3<{}>`
   ${theme.typo.secondaryTitle};
 `;
 
-const UIParagraph = styled.p<{}>`
-  ${theme.typo.content.medium}
+const UINoteParagraph = styled.span<{}>`
+  ${theme.typo.content.medium.bold};
 `;
 
-const UINote = styled.span<{}>`
-  ${theme.typo.content.medium.semibold};
+const UIParagraph = styled.p<{}>`
+  ${theme.typo.content.medium}
 `;
 
 const UIList = styled.ul<{}>`
