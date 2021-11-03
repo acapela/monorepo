@@ -61,7 +61,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       isWide
       tooltip={tooltip}
     >
-      {label ?? "Add Slack integration"}
+      {label ?? "Add Acapela to your Slack workspace"}
     </UISlackButton>
   );
 });
@@ -108,9 +108,9 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
       onClick={handleClickDisableSlack}
       icon={<IconMinus />}
       iconAtStart
-      tooltip="Disable notifications through slack"
+      tooltip="Disable notifications and remove /acapela command on Slack"
     >
-      Remove Slack integration
+      Remove Acapela from your Slack workspace
     </UISlackButton>
   );
 }
@@ -137,7 +137,7 @@ export const SlackInstallationButton = observer(function SlackInstallationButton
     return (
       <AddSlackInstallationButton
         teamId={team.id}
-        tooltip="Enable your team to receive notifications through Slack"
+        tooltip="Enable your team to receive notifications and use /acapela command on Slack"
         withBot
       />
     );
