@@ -38,7 +38,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
     isDisabled,
     onEditorReady,
     customEditFieldStyles,
-    placeholder = "Your feedback on this topic…",
+    placeholder = "Reply…",
   },
   ref
 ) {

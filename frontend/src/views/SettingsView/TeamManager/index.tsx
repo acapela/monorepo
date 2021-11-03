@@ -15,7 +15,7 @@ export const TeamManagerSettingsPanel = observer(({ team }: Props) => {
     <UIPanel>
       <UIHeader>
         <UITitle>
-          {team.name} <span>Team</span>
+          {team.name} <span>team</span>
         </UITitle>
       </UIHeader>
       <SlackInstallationButton team={team} />

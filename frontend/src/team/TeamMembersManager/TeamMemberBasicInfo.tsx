@@ -7,9 +7,12 @@ import { Avatar } from "~frontend/ui/users/Avatar";
 import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
+import { useCurrentTeam } from "../CurrentTeam";
+
 type Props = { teamMember: TeamMemberEntity };
 
 export const TeamMemberBasicInfo = observer(({ teamMember }: Props) => {
+  const currentTeam = useCurrentTeam();
   const { user } = teamMember;
   if (!user) {
     return null;
@@ -22,6 +25,7 @@ export const TeamMemberBasicInfo = observer(({ teamMember }: Props) => {
         <HStack gap={10}>
           <UIEmail>{user.email}</UIEmail>
           {!(user.has_account && teamMember.has_joined) && <UIIndicator>(Invite pending)</UIIndicator>}
+          {user.id === currentTeam?.owner_id && <UIIndicator>Owner</UIIndicator>}
         </HStack>
       </div>
     </UIHolder>

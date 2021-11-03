@@ -6,11 +6,11 @@ import { basePath } from "~e2e/helper/constants";
 async function createRequest(page: Page, mentionType: string, userName: string) {
   await page.goto(basePath);
   await page.click("text=New Request");
-  await page.fill(`[placeholder="Add topic"]`, "a new test request");
+  await page.fill(`[placeholder="e.g. Feedback for new website copy"]`, "a new test request");
   await page.fill('[contenteditable="true"]', "What is happening @u");
   await page.click(`[role="option"]:has-text("${userName}")`);
   await page.click("text=" + mentionType);
-  await page.click('button:has-text("Create Request")');
+  await page.click('button:has-text("Send request")');
 }
 
 test("create a new read request and update it to a response request", async ({ page, auth, db }) => {

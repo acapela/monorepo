@@ -25,7 +25,7 @@ hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdate
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageChanges);
 hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE"], handleTaskChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
-hasuraEvents.addHandler("user_updates", ["UPDATE"], handleUserUpdates);
+hasuraEvents.addHandler("user_updates", ["INSERT", "UPDATE"], handleUserUpdates);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {

@@ -44,14 +44,14 @@ function useMessageContentExamplePlaceholder(): string {
     const otherTeamMembers = db.user.query({ isMemberOfCurrentTeam: true, isCurrentUser: false }).all;
 
     if (!otherTeamMembers.length) {
-      return `I would like you to...`;
+      return `@Name Could you give me feedback on this Figma file?`;
     }
 
     const exampleUsers = sampleSize(otherTeamMembers, 2);
 
     const sampleMentionText = exampleUsers.map((user) => `@${user.name || "???"} `);
 
-    return `${sampleMentionText.join(" ")} I would like you to...`;
+    return `${sampleMentionText.join(" ")} Could you give me feedback on this Figma file?`;
   }, [db]);
 
   return exampleRequestBodyWithTeamMemberNamesMentioned;
@@ -103,7 +103,7 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   // Submitting can be done from the editor or from the topic input box
-  const sendShortcutDescription = useShortcut(["Mod", "Enter"], () => {
+  useShortcut(["Mod", "Enter"], () => {
     submit();
     // Captures and prevents the event from getting to the editor
     return true;
@@ -118,13 +118,13 @@ export const NewRequest = observer(function NewRequest() {
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
     if (topicName.length === 0) {
-      return [false, "Please add a topic name before creating request"];
+      return [false, "Add a title to your request"];
     }
     const mentionNodes = getNodesFromContentByType(content, "mention");
     if (mentionNodes.length < 1) {
-      return [false, "You should mention at least one teammate before creating request"];
+      return [false, "Mention team members using @Name to make your request more actionable."];
     }
-    return [true, `Hit ${sendShortcutDescription} to create request`];
+    return [true, ""];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicName, content]);
 
@@ -176,7 +176,7 @@ export const NewRequest = observer(function NewRequest() {
               autoFocus
               value={topicName}
               onChangeText={setTopicName}
-              placeholder={"Add topic"}
+              placeholder={"e.g. Feedback for new website copy"}
               onKeyPress={onEnterPressed(focusEditor)}
             />
           </PageLayoutAnimator>
@@ -217,11 +217,11 @@ export const NewRequest = observer(function NewRequest() {
           <Button
             isDisabled={!isValid && { reason: nextStepPromptLabel }}
             kind="primary"
-            tooltip="Create Request"
+            tooltip="Send request"
             onClick={submit}
             shortcut={["Mod", "Enter"]}
           >
-            Create Request
+            Send request
           </Button>
         </UIActions>
       </UIContentHolder>

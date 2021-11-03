@@ -38,9 +38,9 @@ export const InviteMemberForm = observer(({ team }: Props) => {
 
   return (
     <UIHolder>
-      <TextInput placeholder="Enter email" value={email} onChangeText={setEmail} />
+      <TextInput placeholder="user@company.com" value={email} onChangeText={setEmail} />
       <Button iconAtStart icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
-        Add Member
+        Send invite
       </Button>
     </UIHolder>
   );

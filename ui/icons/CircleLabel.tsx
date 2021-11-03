@@ -18,7 +18,7 @@ export const CircleLabel = styled(function CircleLabel({ className, label }: Pro
 })``;
 
 const UIHolder = styled.div`
-  ${theme.colors.primary.asBgWithReadableText};
+  ${theme.colors.secondary.asBgWithReadableText};
   ${theme.radius.circle};
 
   display: flex;

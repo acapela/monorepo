@@ -1,4 +1,5 @@
 import { View } from "@slack/types";
+import { uniq } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -25,18 +26,22 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
 
 const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =>
   Modal({
-    title: "Authorization missing!",
+    title: "Please authorize Acapela",
     submit: "Try again",
     ...attachToViewWithMetadata("open_request_modal", viewData),
   })
     .blocks(
       Blocks.Section({
-        text:
-          "⚠️ Before we can start a request, you need to authorize Acapela to work with Slack. " +
-          `Head over to ${createSlackLink(
-            process.env.FRONTEND_URL + routes.settings,
-            "your Acapela settings"
-          )} to link it.`,
+        text: [
+          "It's not you, it's us! We added some new functionality to our Acapela Slack app which requires authorizing the app.",
+          "This is a normal step of the process when permissions change.",
+        ].join(" "),
+      }),
+      Blocks.Section({
+        text: `Head over to ${createSlackLink(
+          process.env.FRONTEND_URL + routes.settings,
+          "your Acapela settings"
+        )} to authorize it.`,
       }),
       viewData.messageText
         ? [Blocks.Divider(), Blocks.Section().text("Your Request Message:\n" + Md.blockquote(viewData.messageText))]
@@ -78,7 +83,9 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to" }).accessory(
-        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(slackUserIds)
+        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(
+          uniq(slackUserIds.concat(metadata.requestToSlackUserIds ?? []))
+        )
       ),
       messageText
         ? Blocks.Section({
@@ -89,7 +96,12 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           ),
       Blocks.Input({ blockId: "topic_block", label: "Topic Title" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
-        .optional(true)
+        .optional(true),
+      metadata.channelId
+        ? undefined
+        : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
+            .element(Elements.ChannelSelect({ actionId: "channel_select" }))
+            .optional(true)
     )
     .submit("Create")
     .buildToObject();
@@ -137,7 +149,15 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  await openView(TopicModal({ messageText, channelId, origin }));
+  let requestToSlackUserIds: string[] = [];
+  if (channelId) {
+    const response = await slackClient.conversations.members({ token, channel: channelId });
+    if (response.ok && response.members?.length == 1) {
+      requestToSlackUserIds = response.members;
+    }
+  }
+
+  await openView(TopicModal({ requestToSlackUserIds, messageText, channelId, origin }));
 
   return { user };
 }
