@@ -38,8 +38,10 @@ export const TeamMembersManager = observer(({ team }: Props) => {
               <TeamMemberBasicInfo teamMember={teamMember} />
 
               <UIActionsHolder>
-                {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-                {!teamMember.user?.has_account && <ResendInviteButton user={teamMember.user!} teamId={team.id} />}
+                {!(teamMember.user?.has_account && teamMember.has_joined) && (
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  <ResendInviteButton user={teamMember.user!} teamId={team.id} />
+                )}
                 {isCurrentUserTeamOwner && (
                   <CloseIconButton
                     isDisabled={false}
