@@ -10,7 +10,7 @@ import { niceFormatDate } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
 import { Message } from "./Message";
-import { TopicEventFeedItem } from "./TopicEvent";
+import { TopicEventFeedItem } from "./TopicEventFeedItem";
 
 interface Props {
   feedItems: Array<MessageEntity | TopicEventEntity>;

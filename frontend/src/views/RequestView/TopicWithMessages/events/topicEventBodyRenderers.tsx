@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
+import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { theme } from "~ui/theme";
-
-import { TopicEventEntity } from "./topicEvent";
 
 interface TopicEventRenderer {
   isMatch(event: TopicEventEntity): boolean;
