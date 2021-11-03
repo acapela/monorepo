@@ -16,17 +16,22 @@ const primary = color("hsl(310, 100%, 67%)", {
   readableText: white,
 });
 
-const lightGray = color("#F9FAFC", {
+const secondary = color("hsl(34, 100%, 68%)", {
+  hover: color("hsl(34°, 100%, 63%)"),
+  active: color("hsl(34°, 100%, 46 %)"),
+  readableText: black,
+});
+
+const lightGray = color("hsl(220, 33%, 98%)", {
   hover: color("hsla(0, 0%, 0%, 0.03)"),
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
-const darkYellow = color("#FFB700");
-
-const blue = color("#0099FF");
+const blue = color("hsl(204, 100%, 50%)");
 
 export const colors = {
   primary,
+  secondary,
   text: black,
   action: {
     // Used for buttons
@@ -66,7 +71,7 @@ export const colors = {
   tags: {
     primary,
     action: primary,
-    feedback: darkYellow,
+    feedback: secondary,
     read: blue,
     observe: black.opacity(0.5),
   },
