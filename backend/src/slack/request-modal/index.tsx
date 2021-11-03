@@ -1,5 +1,6 @@
 import Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { find } from "lodash";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { slackClient } from "~backend/src/slack/app";
@@ -122,8 +123,11 @@ export function setupRequestModal(app: App) {
 
     if (channelId) {
       const response = await slackClient.conversations.members({ token, channel: channelId });
-      if (response.members) {
-        slackUserIdsWithMentionType.push(...response.members.map((id) => ({ slackUserId: id })));
+      for (const member of response.members || []) {
+        // if a channel member was already mentioned, don't add them twice
+        if (!find(slackUserIdsWithMentionType, ["slackUserId", member])) {
+          slackUserIdsWithMentionType.push({ slackUserId: member });
+        }
       }
     }
 
