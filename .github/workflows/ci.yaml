@@ -90,6 +90,7 @@ jobs:
           cd frontend/
           ./start-ci.sh
           cd -
+      - uses: mxschmitt/action-tmate@v3
       - name: Test Connection
         run: |
           curl -v localhost:3000/healthz
