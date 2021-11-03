@@ -1,7 +1,7 @@
 import { differenceInMinutes } from "date-fns";
 import { isSameDay } from "date-fns";
 import { observer } from "mobx-react";
-import { Fragment, useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import styled from "styled-components";
 
 import { layoutAnimations } from "~frontend/animations/layout";
@@ -10,6 +10,7 @@ import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { niceFormatDate } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
+import { TopicEventFeedItem } from "./events/TopicEventFeedItem";
 import { Message } from "./Message";
 
 interface Props {
@@ -86,7 +87,8 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
             </Fragment>
           );
         }
-        return JSON.stringify(feedItem);
+        const event = feedItem;
+        return <TopicEventFeedItem key={event.id} topicEvent={event} />;
       })}
     </UIHolder>
   );
