@@ -1,4 +1,4 @@
-import { formatRelative } from "date-fns";
+import { addBusinessDays, differenceInHours, formatRelative } from "date-fns";
 import { sortBy } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
@@ -7,19 +7,12 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { TopicEventTemplate } from "~frontend/message/feed/events/TopicEventTemplate";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { relativeFormatDate } from "~shared/dates/format";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 import { TextButton } from "~ui/buttons/TextButton";
-import { IconAcapelaWave } from "~ui/icons";
-import { CircleLabel } from "~ui/icons/CircleLabel";
 import { theme } from "~ui/theme";
-
-const NextActionMessage = ({ children }: { children: React.ReactNode | React.ReactNodeArray }) => (
-  <UIHolder>
-    <UIAcapelaLogo label={<IconAcapelaWave />} />
-    <UIText>{children}</UIText>
-  </UIHolder>
-);
 
 const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE, REQUEST_READ];
 
@@ -29,7 +22,7 @@ const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE
  * "Please respond to @Gregor's message"
  * "Please take action on @Omar's message before today 9PM"
  */
-const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
+const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const [nextTask] = sortBy(tasks, (task) => [
     task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
     REQUEST_TYPE_PRIORITIES.indexOf(task.type as never),
@@ -37,7 +30,7 @@ const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const dueDate = nextTask.due_at && new Date(nextTask.due_at);
   const now = new Date();
   return (
-    <NextActionMessage>
+    <TopicEventTemplate>
       Please{" "}
       {
         { [REQUEST_ACTION]: "take action on", [REQUEST_RESPONSE]: "respond to", [REQUEST_READ]: "read" }[
@@ -48,7 +41,7 @@ const NextActionTask = observer(({ tasks }: { tasks: TaskEntity[] }) => {
       <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s message
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
-    </NextActionMessage>
+    </TopicEventTemplate>
   );
 });
 
@@ -69,47 +62,86 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   };
 
   return (
-    <NextActionMessage>
+    <TopicEventTemplate>
       Please{" "}
       <TextAction onClick={() => topicContext?.editorRef?.current?.chain().focus("end").run()}>
         further the conversation
       </TextAction>
       , <TextAction onClick={() => closeTopic()}>close</TextAction> or{" "}
       <TextAction onClick={() => closeTopic({ isArchived: true })}>close & archive</TextAction> the topic
-    </NextActionMessage>
+    </TopicEventTemplate>
+  );
+});
+
+const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => {
+  function handleReopen() {
+    topic.update({ closed_at: null, closed_by_user_id: null });
+  }
+
+  function handleArchive() {
+    topic.update({ archived_at: new Date().toISOString() });
+  }
+
+  function getTimeOfArchiveLabel() {
+    const now = new Date();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const closedDate = new Date(topic.closed_at!);
+    const timeOfArchive = addBusinessDays(closedDate, 1);
+
+    const hoursUntilArchive = differenceInHours(timeOfArchive, now);
+
+    // If an old topic has been un-archived or approaching hour of archive
+    if (hoursUntilArchive <= 1) {
+      return "soon";
+    }
+
+    return relativeFormatDate(timeOfArchive);
+  }
+
+  return (
+    <TopicEventTemplate>
+      <UIBold>{topic.name}</UIBold> will be{" "}
+      <UIArchiveTooltip data-tooltip="Archived requests are available through the search bar">
+        archived
+      </UIArchiveTooltip>{" "}
+      automatically {getTimeOfArchiveLabel()}. <br /> You could also{" "}
+      <TextAction onClick={handleReopen}>Reopen</TextAction> or{" "}
+      <TextAction onClick={handleArchive}>Archive now</TextAction>.
+    </TopicEventTemplate>
   );
 });
 
 export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
-  const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
-  if (openTasksAssignedToSelf.length > 0) {
-    return <NextActionTask tasks={openTasksAssignedToSelf} />;
+  if (topic.isArchived) {
+    return null;
   }
 
-  if (!openTasks.hasItems && topic.isOwn) {
+  if (topic.isClosed && !topic.isArchived) {
+    return <NextActionArchivePrompt topic={topic} />;
+  }
+  const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
+  if (openTasksAssignedToSelf.length > 0) {
+    return <NextActionOpenTaskUser tasks={openTasksAssignedToSelf} />;
+  }
+
+  if (!openTasks.hasItems && !topic.isClosed && topic.isOwn) {
     return <NextActionOwner topic={topic} />;
   }
 
   return null;
 });
 
-const UIHolder = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  padding: 20px 0;
-  ${theme.spacing.actions.asGap}
-`;
-
-const UIAcapelaLogo = styled(CircleLabel)<{}>`
-  font-size: 20px;
-`;
-
-const UIText = styled.div<{}>`
-  ${theme.typo.content};
-`;
-
 const UIUserName = styled.span<{}>`
   ${theme.typo.content.medium};
+`;
+
+const UIBold = styled.span<{}>`
+  ${theme.font.semibold}
+`;
+
+const UIArchiveTooltip = styled.span<{}>`
+  text-decoration: underline;
+  cursor: default;
 `;
