@@ -92,6 +92,7 @@ jobs:
           cd -
       - name: Test Connection
         run: |
+          sleep 5
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
       - run: yarn e2e test
