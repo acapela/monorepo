@@ -39,7 +39,7 @@ export type AnalyticsEventsMap = {
   // Topic related events
 
   "Created Topic": {
-    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "web-app" | "unknown";
+    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
     topicName: string;
   };
   "Reopened Topic": { topicId: string };
@@ -67,6 +67,7 @@ export type AnalyticsEventsMap = {
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
+  "Used Slack Home Tab New Request": { slackUserName: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

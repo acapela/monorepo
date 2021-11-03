@@ -10,6 +10,11 @@
     "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
   },
   "features": {
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": true
+    },
     "bot_user": {
       "display_name": "Acapela",
       "always_online": true
@@ -72,6 +77,10 @@
     },
     "org_deploy_enabled": false,
     "socket_mode_enabled": false,
-    "token_rotation_enabled": false
+    "token_rotation_enabled": false,
+    "event_subscriptions": {
+      "request_url": "https://app.acape.la/api/backend/slack/events",
+      "bot_events": ["app_home_opened"]
+    }
   }
 }

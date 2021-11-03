@@ -104,9 +104,11 @@ export function setupRequestModal(app: App) {
     const slackTeamId = body.user.team_id;
     assert(slackTeamId, "must have slack team id");
 
+    const ownerSlackUserId = body.user.id;
+
     const [team, owner] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
-      findUserBySlackId(token, body.user.id),
+      findUserBySlackId(token, ownerSlackUserId),
     ]);
 
     assert(team, "must have a team");
@@ -130,6 +132,7 @@ export function setupRequestModal(app: App) {
       token,
       teamId: team.id,
       ownerId: owner.id,
+      ownerSlackUserId,
       slackTeamId,
       rawTopicMessage: messageText,
       topicName,
