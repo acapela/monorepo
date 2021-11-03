@@ -90,15 +90,12 @@ export function setupRequestModal(app: App) {
       },
     } = view.state.values;
 
-    const messageText = metadata.messageText ?? view.state.values.message_block.message_text.value;
-
-    assert(members && requestType && messageText, "missing values");
-
-    if (members.length === 0) {
+    const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
+    if (!(members && requestType && messageText && members.length > 0)) {
       return await ack({
         response_action: "errors",
         errors: {
-          members_block: "You need to assign at least one user",
+          members_block: "You need to assign at least one user.",
         },
       });
     }
@@ -121,7 +118,7 @@ export function setupRequestModal(app: App) {
       mentionType: requestType.value as MentionType,
     }));
 
-    const channelId = metadata.channelId;
+    const channelId = metadata.channelId ?? view.state.values.channel_block.channel_select.selected_channel;
 
     if (channelId) {
       const response = await slackClient.conversations.members({ token, channel: channelId });
