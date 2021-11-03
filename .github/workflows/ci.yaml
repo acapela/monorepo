@@ -95,6 +95,10 @@ jobs:
           sleep 5
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
+      - run: |
+          echo "this causes the OOM"
+          curl -v localhost:3000 || true
+          cat frontend/frontend.log
       - run: yarn e2e test
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
