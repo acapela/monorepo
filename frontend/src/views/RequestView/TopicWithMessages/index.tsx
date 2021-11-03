@@ -16,7 +16,7 @@ import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
-import { NextAction } from "./NextAction";
+import { NextSuggestedAction } from "./NextSuggestedAction";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicHeader } from "./TopicHeader";
@@ -84,7 +84,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed feedItems={feedItems} />
-          <NextAction topic={topic} />
+          <NextSuggestedAction topic={topic} />
         </ScrollableMessages>
 
         {!isClosed && (

@@ -111,7 +111,7 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
   );
 });
 
-export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
+export const NextSuggestedAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
   if (topic.isArchived) {
