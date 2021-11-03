@@ -7,7 +7,6 @@ import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../LiveTopicMessage";
@@ -133,7 +132,7 @@ export function setupRequestModal(app: App) {
       ownerId: owner.id,
       slackTeamId,
       rawTopicMessage: messageText,
-      topicName: topicName ?? truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
+      topicName,
       slackUserIdsWithMentionType,
     });
 
