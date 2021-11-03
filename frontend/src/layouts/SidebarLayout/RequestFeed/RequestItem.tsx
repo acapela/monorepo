@@ -140,7 +140,7 @@ const UIBubble = styled.div`
   justify-content: center;
   align-items: center;
   ${theme.font.size(8).bold.resetLineHeight}
-  background-color: rgba(0, 0, 0, 0.05);
+  ${theme.colors.secondary.asBgWithReadableText};
 `;
 
 const UIFeedItemSubTitle = styled.div<{}>`
