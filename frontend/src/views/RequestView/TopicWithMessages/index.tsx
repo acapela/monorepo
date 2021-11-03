@@ -16,9 +16,9 @@ import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
-import { NextSuggestedAction } from "./NextSuggestedAction";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
+import { SuggestedAction } from "./SuggestedAction";
 import { TopicHeader } from "./TopicHeader";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
@@ -84,7 +84,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed feedItems={feedItems} />
-          <NextSuggestedAction topic={topic} />
+          <SuggestedAction topic={topic} />
         </ScrollableMessages>
 
         {!isClosed && (

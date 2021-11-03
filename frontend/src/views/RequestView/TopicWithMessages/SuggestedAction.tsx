@@ -22,7 +22,7 @@ const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE
  * "Please respond to @Gregor's message"
  * "Please take action on @Omar's message before today 9PM"
  */
-const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
+const SuggestedActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const [nextTask] = sortBy(tasks, (task) => [
     task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
     REQUEST_TYPE_PRIORITIES.indexOf(task.type as never),
@@ -49,7 +49,7 @@ const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" 
   <TextButton {...props} kind="primary" inline />
 );
 
-const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
+const SuggestedActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   const topicContext = useTopicStoreContext();
 
   const closeTopic = ({ isArchived: isAlsoArchiving } = { isArchived: false }) => {
@@ -73,7 +73,7 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   );
 });
 
-const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => {
+const SuggestedActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => {
   function handleReopen() {
     topic.update({ closed_at: null, closed_by_user_id: null });
   }
@@ -111,7 +111,7 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
   );
 });
 
-export const NextSuggestedAction = observer(({ topic }: { topic: TopicEntity }) => {
+export const SuggestedAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
   if (topic.isArchived) {
@@ -119,15 +119,15 @@ export const NextSuggestedAction = observer(({ topic }: { topic: TopicEntity }) 
   }
 
   if (topic.isClosed && !topic.isArchived) {
-    return <NextActionArchivePrompt topic={topic} />;
+    return <SuggestedActionArchivePrompt topic={topic} />;
   }
   const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
   if (openTasksAssignedToSelf.length > 0) {
-    return <NextActionOpenTaskUser tasks={openTasksAssignedToSelf} />;
+    return <SuggestedActionOpenTaskUser tasks={openTasksAssignedToSelf} />;
   }
 
   if (!openTasks.hasItems && !topic.isClosed && topic.isOwn) {
-    return <NextActionOwner topic={topic} />;
+    return <SuggestedActionOwner topic={topic} />;
   }
 
   return null;
