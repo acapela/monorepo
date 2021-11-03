@@ -11,7 +11,7 @@ import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
-const getNotificationChannelDescription = (channel: string) => `Requests will be sent via ${channel}.`;
+const getNotificationChannelDescription = (channel: string) => `Receive personal notifications via ${channel}.`;
 
 const LabeledToggle = ({
   title,
