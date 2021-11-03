@@ -41,7 +41,7 @@ export const TopicClosureMessage = styledObserver<Props>((props) => {
         <UIHolder className={className}>
           <UIHead>
             <UserAvatar user={closedByUser} size={20} />
-            <div>Closed the request</div>
+            <div>closed the request</div>
             <UISideTimeLabel date={closedAtDate} />
           </UIHead>
         </UIHolder>
@@ -51,7 +51,7 @@ export const TopicClosureMessage = styledObserver<Props>((props) => {
           <UIHead>
             <UIAcapelaCircle label={<IconAcapelaWave />} />
             <div>
-              Hurray! <UIBold>{topic.name}</UIBold> has been completed by everyone and has been <UIBold>Closed</UIBold>.
+              Hurray! <UIBold>{topic.name}</UIBold> has been completed and <UIBold>closed</UIBold>.
             </div>
             {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
             <UISideTimeLabel date={new Date(topic.closed_at!)} />

@@ -124,7 +124,7 @@ export const NewRequest = observer(function NewRequest() {
     if (mentionNodes.length < 1) {
       return [false, "Mention team members using @Name to make your request more actionable."];
     }
-    return [true, `Hit ${sendShortcutDescription} to create request`];
+    return [true, `Hit ${sendShortcutDescription} to send the request`];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicName, content]);
 

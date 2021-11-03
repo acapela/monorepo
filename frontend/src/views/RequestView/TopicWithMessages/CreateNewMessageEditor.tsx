@@ -164,6 +164,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           onAttachmentRemoveRequest={(attachmentId) => {
             removeAttachmentById(attachmentId);
           }}
+          placeholder={`Reply to ${topic.name}`}
         />
         <UIRequestControls layoutId={layoutAnimations.newTopic.messageTools(topic.id)}>
           <MessageTools
