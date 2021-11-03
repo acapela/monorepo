@@ -19,7 +19,6 @@ import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { NextAction } from "./NextAction";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
-import { TopicClosureMessage } from "./TopicClosureMessage";
 import { TopicHeader } from "./TopicHeader";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
@@ -85,8 +84,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
         <ScrollableMessages ref={scrollerRef as never}>
           <MessagesFeed feedItems={feedItems} />
-          {/* TODO: Replace with events */}
-          {isClosed ? <TopicClosureMessage topic={topic} /> : <NextAction topic={topic} />}
+          <NextAction topic={topic} />
         </ScrollableMessages>
 
         {!isClosed && (
