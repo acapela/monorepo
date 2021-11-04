@@ -1,5 +1,4 @@
 import { EqualValueReuser, createEqualValueReuser } from "./createEqualReuser";
-import { devAssignWindowVariable } from "./dev";
 
 const targetSymbol = Symbol("target");
 const equalReuserSymbol = Symbol("equalReuserSymbol");
@@ -79,5 +78,3 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
   return { get };
 }
-
-devAssignWindowVariable("f", createDeepMap);

@@ -10,6 +10,7 @@ import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
+import { isClient } from "~shared/document";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 
 import { attachmentEntity } from "./attachment";
@@ -64,7 +65,7 @@ export type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
 const reactContext = createContext<ClientDb | null>(null);
 
-if (isDev()) {
+if (isDev() && isClient) {
   setupDevIncorrectMobxUseageWarnings();
 }
 

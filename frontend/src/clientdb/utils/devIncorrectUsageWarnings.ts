@@ -2,6 +2,7 @@ import { configure, _getGlobalState as getMobxSettingsObject } from "mobx";
 import React from "react";
 
 import { isDev } from "~shared/dev";
+import { isServer } from "~shared/isServer";
 
 /**
  * Note: This is probably the most hacky part of the entire codebase, but it is only used in dev.
@@ -9,7 +10,7 @@ import { isDev } from "~shared/dev";
  * This will setup warnings for access to mobx store, but only if reading from mobx in components that are not observers.
  */
 export function setupDevIncorrectMobxUseageWarnings() {
-  if (!isDev()) return;
+  if (!isDev() || isServer) return;
 
   /**
    * Mobx does not by default allow 'conditional' warnings. You either always warn (which we dont want, eg. reading state inside effect or outside of react is fully ok).
