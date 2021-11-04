@@ -16,6 +16,7 @@ import React, { ReactNode } from "react";
 
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
+import { isClient } from "~shared/document";
 import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
 import { Maybe } from "~shared/types";
@@ -86,18 +87,20 @@ function formatGraphqlErrorMessage(error: GraphQLError) {
   return `Failed to finish the operation`;
 }
 
-// Log any GraphQL errors or network error that occurred
-onError(({ graphQLErrors = [], networkError }) => {
-  for (const graphqlError of graphQLErrors) {
-    const message = formatGraphqlErrorMessage(graphqlError);
+if (isClient) {
+  // Log any GraphQL errors or network error that occurred
+  onError(({ graphQLErrors = [], networkError }) => {
+    for (const graphqlError of graphQLErrors) {
+      const message = formatGraphqlErrorMessage(graphqlError);
 
-    addToast({ type: "error", title: message, timeout: 4000 });
-  }
+      addToast({ type: "error", title: message, timeout: 4000 });
+    }
 
-  if (networkError) {
-    addToast({ type: "error", title: "Network error", timeout: 4000 });
-  }
-});
+    if (networkError) {
+      addToast({ type: "error", title: "Network error", timeout: 4000 });
+    }
+  });
+}
 
 /**
  * Batch queries with short interval. This is useful if multiple requests are sent quickly (especially during initial loading), as
