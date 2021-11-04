@@ -41,8 +41,10 @@ const config = {
 };
 
 async function start() {
-  console.info("Starting server...");
+  console.info("starting server...");
   console.info(config);
+  console.info("preparing next app...");
+  await nextApp.prepare();
 
   const app = express();
   const server = http.createServer(app);
@@ -93,7 +95,7 @@ async function start() {
 
   const port = process.env.FRONTEND_PORT || 3000;
   server.listen(port, () => {
-    console.info(`Server started ${port} prod=${production}`);
+    console.info(`server started ${port} prod=${production}`);
   });
 }
 
