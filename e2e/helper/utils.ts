@@ -1,1 +1,1 @@
-export const isSentryStoreURL = (url: URL) => url.host.endsWith("sentry.io") && url.pathname.includes("/store");
+export const isSentryStoreURL = (url: URL) => url.pathname.endsWith("/sentry-tunnel");
