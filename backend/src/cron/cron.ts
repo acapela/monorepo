@@ -6,11 +6,13 @@ import { log } from "~shared/logger";
 
 import { HttpStatus } from "../http";
 import { autoArchiveTopics } from "./autoArchiveTopics";
+import { autoCloseTopics } from "./autoCloseTopics";
 
 export const router = Router();
 
 const handlers: Record<string, Function> = {
   "auto-archive-topics": autoArchiveTopics,
+  "auto-close-topics": autoCloseTopics,
 };
 
 interface CronPayload {

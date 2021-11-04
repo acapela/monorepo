@@ -65,14 +65,24 @@ async function onTaskUpdate(task: Task) {
     },
   });
 
+  // HACK: This is  workaround until prisma supports `PG Generated Columns`
+  // `all_tasks_done_at` should be one
   if (amountOfOpenTasksLeft === 0) {
-    // close topic
     await db.topic.update({
       where: {
         id: topic.id,
       },
       data: {
-        closed_at: new Date().toISOString(),
+        all_tasks_done_at: task.done_at,
+      },
+    });
+  } else {
+    await db.topic.update({
+      where: {
+        id: topic.id,
+      },
+      data: {
+        all_tasks_done_at: null,
       },
     });
   }
