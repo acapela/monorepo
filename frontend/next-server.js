@@ -9,12 +9,12 @@ const path = require("path");
 const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
 
-dotenv.config({
-  path: process.env.NODE_ENV === "production" ? process.cwd() : path.resolve(__dirname, "..", ".env"),
-});
-
 const stage = process.env.STAGE;
 const isStagingOrProduction = ["staging", "production"].includes(stage);
+
+dotenv.config({
+  path: isStagingOrProduction ? process.cwd() : path.resolve(__dirname, "..", ".env"),
+});
 
 if (isStagingOrProduction && process.env.SENTRY_DSN) {
   Sentry.init({
