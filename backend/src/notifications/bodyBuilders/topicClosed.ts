@@ -19,7 +19,7 @@ export function createSlackClosureMessage({
 }: Props): Pick<NotificationMessage, "slack"> {
   const sectionText = closedBy
     ? `*${closedBy}* closed *${createSlackLink(topicURL, topicName)}*`
-    : `🎉 All requests have been actioned in ${createSlackLink(topicURL, topicName)}. The topic is now closed. 💪`;
+    : `🎉 All conversations completed in <a href="${topicURL}">${topicName}</a>. The topic is now closed. 💪`;
 
   return {
     slack: BlockCollection(
@@ -40,7 +40,7 @@ export function createEmailClosureMessage({
   const subject = closedBy ? `${topicName} was closed by ${closedBy}` : `${topicName} was closed`;
   const html = closedBy
     ? `Click <a href="${topicURL}">here</a> to see topic`
-    : `🎉 All requests have been actioned in  <a href="${topicURL}">${topicName}</a>. The topic is now closed. 💪`;
+    : `🎉 All conversations completed in <a href="${topicURL}">${topicName}</a>. The topic is now closed. 💪`;
   return {
     email: {
       subject,

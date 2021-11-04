@@ -5,14 +5,14 @@ import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/error
 import { log } from "~shared/logger";
 
 import { HttpStatus } from "../http";
-import { autoArchiveTopics } from "./autoArchiveTopics";
-import { autoCloseTopics } from "./autoCloseTopics";
+import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";
+import { delayedTopicRequestsDoneNotifications } from "./delayedTopicRequestsDoneNotifications";
 
 export const router = Router();
 
 const handlers: Record<string, Function> = {
-  "auto-archive-topics": autoArchiveTopics,
-  "auto-close-topics": autoCloseTopics,
+  "auto-archive-or-close-topics": autoArchiveOrCloseTopics,
+  "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
 };
 
 interface CronPayload {
