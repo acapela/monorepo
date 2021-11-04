@@ -16,6 +16,8 @@ export function namedLazy<T, K extends keyof PickByValue<T, AnyComponent>>(
   const loadOnce = memoize(moduleFactory);
 
   function preload() {
+    if (typeof window === "undefined") return;
+
     return new Promise<void>((resolve) => {
       onDocumentReady(async () => {
         await loadOnce();
