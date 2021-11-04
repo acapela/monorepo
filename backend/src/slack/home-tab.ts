@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
 import { formatRelative } from "date-fns";
-import { sortBy } from "lodash";
+import { minBy } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -19,45 +19,49 @@ const TOPICS_PER_CATEGORY = 10;
 
 type TopicWhereInput = Prisma.topicWhereInput;
 
-type TopicWithUserAndOpenTask = Topic & { user: User; message: (Message & { task: Task[] })[] };
+type TopicWithOpenTask = Topic & { user: User; message: (Message & { user: User; task: Task[] })[] };
+
 type TopicRowsWithCount = {
-  rows: TopicWithUserAndOpenTask[];
+  rows: TopicWithOpenTask[];
   count: number;
 };
 
-async function findAndCountTopics(
-  userId: string,
-  args: Prisma.topicFindManyArgs & { where: TopicWhereInput }
-): Promise<TopicRowsWithCount> {
-  const where: TopicWhereInput = {
-    AND: [
-      { archived_at: null, OR: [{ owner_id: userId }, { topic_member: { some: { user_id: userId } } }] },
-      args.where,
-    ],
+async function findAndCountTopics(userId: string, where: TopicWhereInput): Promise<TopicRowsWithCount> {
+  const globalWhere: TopicWhereInput = {
+    AND: [{ archived_at: null, OR: [{ owner_id: userId }, { topic_member: { some: { user_id: userId } } }] }, where],
   };
-
+  const whereOpenUserTask: Prisma.taskWhereInput = { user_id: userId, done_at: null };
   const [rows, count] = await Promise.all([
     db.topic.findMany({
-      ...args,
-      where,
+      where: globalWhere,
+      orderBy: { created_at: "desc" },
       take: TOPICS_PER_CATEGORY,
-      include: { user: true, message: { include: { task: { where: { user_id: userId, done_at: null } } } } },
+      include: {
+        user: true,
+        message: {
+          where: { task: { some: whereOpenUserTask } },
+          include: { user: true, task: { where: whereOpenUserTask } },
+        },
+      },
     }),
-    db.topic.count({ where }),
+    db.topic.count({ where: globalWhere }),
   ]);
   return { rows, count };
 }
 
-function RequestItem(topic: TopicWithUserAndOpenTask) {
-  const [mostUrgentTask] = sortBy(
-    topic.message.flatMap((message) => message.task.flatMap((task) => task)),
-    (task) => task.due_at
-  );
+function RequestItem(topic: TopicWithOpenTask) {
+  // TODO this will need to be updated in the year 3k
+  const mostUrgentMessage = minBy(topic.message, (message) => message.task?.[0]?.due_at ?? new Date(3000, 0));
+  const mostUrgentTask = mostUrgentMessage?.task[0];
   return [
     Blocks.Section({
-      text:
+      text: [
         createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
-        (mostUrgentTask?.due_at ? "\n" + Md.italic("Due " + formatRelative(mostUrgentTask.due_at, new Date())) : ""),
+          (mostUrgentTask?.due_at ? " - " + Md.italic("due " + formatRelative(mostUrgentTask.due_at, new Date())) : ""),
+        mostUrgentMessage?.content_text
+          ? Md.bold(mostUrgentMessage.user.name + ":") + " " + mostUrgentMessage?.content_text
+          : "",
+      ].join("\n"),
     }).accessory(
       mostUrgentTask
         ? Elements.Button({
@@ -70,9 +74,12 @@ function RequestItem(topic: TopicWithUserAndOpenTask) {
   ];
 }
 
+const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
+
 const RequestsList = (title: string, topics: TopicRowsWithCount) => {
   const extraRequestsCount = topics.count - topics.rows.length;
   return [
+    ...Padding,
     Blocks.Header({ text: title }),
     ...(topics.count == 0
       ? [Blocks.Section({ text: Md.italic("No requests here") })]
@@ -107,7 +114,7 @@ const MissingAuthHomeTab = HomeTab()
       text: `To use Acapela from Slack please link the two over in ${createSlackLink(
         process.env.FRONTEND_URL + routes.settings,
         "your Acapela settings"
-      )}`,
+      )}.`,
     })
   )
   .buildToObject();
@@ -128,24 +135,16 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
   const whereHasOpenSentTask: TopicWhereInput = {
     message: { some: { user_id: user.id, task: { some: { user_id: { not: user.id }, done_at: null } } } },
   };
-  const [received, sent, open, closed] = await Promise.all([
-    findAndCountTopics(user.id, {
-      where: { AND: [whereIsOpen, whereHasOpenTask] },
-      orderBy: { created_at: "desc" },
-    }),
-    findAndCountTopics(user.id, {
-      where: { AND: [whereIsOpen, { NOT: whereHasOpenTask }, whereHasOpenSentTask] },
-      orderBy: { created_at: "desc" },
-    }),
-    findAndCountTopics(user.id, {
-      where: { AND: [whereIsOpen, { NOT: [whereHasOpenTask, whereHasOpenSentTask] }] },
-      orderBy: { created_at: "desc" },
-    }),
-    findAndCountTopics(user.id, {
-      where: { NOT: whereIsOpen },
-      orderBy: { created_at: "desc" },
-    }),
-  ]);
+  const [received, sent, open, closed] = await Promise.all(
+    (
+      [
+        { AND: [whereIsOpen, whereHasOpenTask] },
+        { AND: [whereIsOpen, { NOT: whereHasOpenTask }, whereHasOpenSentTask] },
+        { AND: [whereIsOpen, { NOT: [whereHasOpenTask, whereHasOpenSentTask] }] },
+        { NOT: whereIsOpen },
+      ] as TopicWhereInput[]
+    ).map((where) => findAndCountTopics(user.id, where))
+  );
 
   await publishView(
     HomeTab()
