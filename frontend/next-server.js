@@ -94,7 +94,7 @@ async function start() {
 
   app.all("*", (req, res) => handle(req, res));
 
-  app.use(Sentry.Handlers.errorHandler());
+  if (isStagingOrProduction) app.use(Sentry.Handlers.errorHandler());
 
   const port = process.env.FRONTEND_PORT || 3000;
   server.listen(port, () => {
