@@ -1,4 +1,4 @@
-import { MotionProps } from "framer-motion";
+import { MotionProps, motion, useAnimation } from "framer-motion";
 import { action } from "mobx";
 import React, { useRef, useState } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
@@ -19,7 +19,7 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { assert } from "~shared/assert";
 import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { select } from "~shared/sharedState";
+import { select, useAutorun } from "~shared/sharedState";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -39,7 +39,6 @@ interface Props extends MotionProps {
 
 export const Message = styledObserver<Props>(
   ({ message, className, isReadonly, isBundledWithPreviousMessage = false, contentLayoutId }) => {
-    const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
@@ -75,6 +74,8 @@ export const Message = styledObserver<Props>(
       }
     }
 
+    const animateControls = useAnimation();
+
     const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly && !message.topic?.isClosed, {
       onDelay: 0,
       offDelay: 200,
@@ -103,7 +104,7 @@ export const Message = styledObserver<Props>(
     useIsomorphicLayoutEffect(
       action(() => {
         const { topic, isUnread } = message;
-        if (!isUnread || topic?.messages.last?.id === message.id || !rootRef.current || !topicContext) {
+        if (!isUnread || topic?.messages.last?.id === message.id || !topicContext) {
           return;
         }
         const isOldestUnread = !topic?.unreadMessages.query(
@@ -112,13 +113,35 @@ export const Message = styledObserver<Props>(
         if (!isOldestUnread) {
           return;
         }
-        topicContext.firstUnreadMessageElement = rootRef.current;
+        topicContext.scrolledMessageId = message.id;
       }),
       []
     );
 
+    useAutorun(() => {
+      if (topicContext?.scrolledMessageId == message.id) {
+        animateControls.start(
+          {
+            translateX: [0, 5, 0],
+          },
+          { delay: 0.5, duration: 0.3 }
+        );
+      }
+    });
+
     return (
-      <UIHolder id={message.id} ref={rootRef}>
+      <UIHolder
+        id={message.id}
+        animate={animateControls}
+        onClick={() => {
+          animateControls.start(
+            {
+              translateX: [0, 5, 0],
+            },
+            { delay: 0.5, duration: 0.3 }
+          );
+        }}
+      >
         <MessageLikeContent
           className={className}
           tools={
@@ -164,7 +187,7 @@ export const Message = styledObserver<Props>(
   }
 )``;
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled(motion.div)<{}>``;
 
 const UITools = styled.div<{}>`
   display: flex;

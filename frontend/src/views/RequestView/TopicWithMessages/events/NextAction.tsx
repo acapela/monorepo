@@ -1,5 +1,6 @@
 import { addBusinessDays, differenceInHours, formatRelative } from "date-fns";
 import { sortBy } from "lodash";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -17,6 +18,10 @@ import { TopicEventTemplate } from "./TopicEventTemplate";
 
 const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE, REQUEST_READ];
 
+const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" | "inline">) => (
+  <TextButton {...props} kind="primary" inline />
+);
+
 /**
  * Shows the most urgent task requested from the current user. Urgency is determined based on due date and request type.
  * Examples:
@@ -24,6 +29,7 @@ const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE
  * "Please take action on @Omar's message before today 9PM"
  */
 const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
+  const topicContext = useTopicStoreContext();
   const [nextTask] = sortBy(tasks, (task) => [
     task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
     REQUEST_TYPE_PRIORITIES.indexOf(task.type as never),
@@ -39,16 +45,21 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
         ]
       }
       &nbsp;
-      <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s task
+      <UIUserName>{nextTask.message?.user.name}</UIUserName>'s task from{" "}
+      <TextAction
+        onClick={action(() => {
+          if (topicContext && nextTask.message) {
+            topicContext.scrolledMessageId = nextTask.message.id;
+          }
+        })}
+      >
+        this message
+      </TextAction>
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
     </TopicEventTemplate>
   );
 });
-
-const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" | "inline">) => (
-  <TextButton {...props} kind="primary" inline />
-);
 
 const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
   const topicContext = useTopicStoreContext();

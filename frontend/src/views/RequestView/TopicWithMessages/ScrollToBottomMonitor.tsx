@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { useElementEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
+import { useAutorun } from "~shared/sharedState";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
@@ -26,7 +27,6 @@ const SCROLL_BOTTOM_TOLERANCE = 10;
  */
 const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
   const topicContext = useTopicStoreContext();
-  const firstUnreadMessageElement = topicContext?.firstUnreadMessageElement;
 
   const monitorRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = useRef(true);
@@ -67,22 +67,32 @@ const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRe
     runInAction(() => {
       if (!preventAutoScroll && isScrolledToBottom.current) {
         didAutoScroll.current = true;
-        if (firstUnreadMessageElement) {
-          firstUnreadMessageElement.scrollIntoView();
+        if (topicContext?.scrolledMessageId) {
+          document.getElementById(topicContext.scrolledMessageId)?.scrollIntoView();
           isScrolledToBottom.current = false;
-
-          if (topicContext) {
-            topicContext.firstUnreadMessageElement = null;
-          }
         } else scrollToBottom("auto");
+
+        setTimeout(() => {
+          runInAction(() => {
+            if (topicContext) {
+              topicContext.scrolledMessageId = null;
+            }
+          });
+        });
       }
     });
-  }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext]);
+  }, [preventAutoScroll, scrollToBottom, topicContext]);
 
   useImperativeHandle(ref, () => ({ scrollToBottom }));
 
   useResizeCallback(monitorRef, () => tryAutoScroll());
   useResizeCallback(parentRef, () => tryAutoScroll());
+
+  useAutorun(() => {
+    if (topicContext?.scrolledMessageId) {
+      tryAutoScroll();
+    }
+  });
 
   // On mount try to scroll down without animation
   useIsomorphicLayoutEffect(() => {
