@@ -15,6 +15,8 @@ import { RequestType } from "~shared/types/mention";
 
 import { REQUEST_TYPE_EMOJIS, SlackActionIds, findUserBySlackId } from "./utils";
 
+const TOPICS_PER_CATEGORY = 10;
+
 type TopicWhereInput = Prisma.topicWhereInput;
 
 type TopicWithUserAndOpenTask = Topic & { user: User; message: (Message & { task: Task[] })[] };
@@ -33,11 +35,12 @@ async function findAndCountTopics(
       args.where,
     ],
   };
+
   const [rows, count] = await Promise.all([
     db.topic.findMany({
       ...args,
       where,
-      take: 5,
+      take: TOPICS_PER_CATEGORY,
       include: { user: true, message: { include: { task: { where: { user_id: userId, done_at: null } } } } },
     }),
     db.topic.count({ where }),
