@@ -8,16 +8,19 @@ const dotenv = require("dotenv");
 const path = require("path");
 const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const production = process.env.NODE_ENV === "production";
 dotenv.config({ path: production ? process.cwd() : path.resolve(__dirname, "..", ".env") });
 
 const stage = process.env.STAGE;
+let sentryProjectId = "";
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: stage,
   });
+  sentryProjectId = process.env.SENTRY_DSN.split("/").pop();
 } else {
   console.info(`Sentry disabled for ${stage}`);
 }
@@ -42,6 +45,8 @@ const config = {
 
 async function start() {
   console.info("starting server...");
+  console.info(`sentry project id: ${sentryProjectId}`);
+  const sentryAPIEndpoint = `https://sentry.io/api/${sentryProjectId}/envelope/`;
   console.info(config);
   console.info("preparing next app...");
   await nextApp.prepare();
@@ -74,6 +79,31 @@ async function start() {
         ...hasuraVersionRes.data,
       },
     });
+  });
+
+  app.post("/sentry-tunnel", async (req, res) => {
+    try {
+      const buffers = [];
+      for await (const chunk of req) buffers.push(chunk);
+      const envelope = Buffer.concat(buffers);
+      const header = JSON.parse(envelope.toString().split("\n")[0]);
+
+      // check if dsn is matching
+      if (header.dsn !== process.env.SENTRY_DSN) {
+        res.status(400).send({ error: "invalid dsn" });
+        return;
+      }
+
+      // proxy envelope to sentry
+      const response = await fetch(sentryAPIEndpoint, {
+        method: "POST",
+        body: envelope,
+      });
+      res.status(response.status).send(await response.json());
+    } catch (e) {
+      Sentry.captureException(e);
+      res.status(400).send({ error: "invalid request" });
+    }
   });
 
   app.use(
