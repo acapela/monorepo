@@ -96,7 +96,7 @@ export default function App({
       <>
         <BuiltInStyles />
         <CommonMetadata />
-        <RequiredSessionProvider isNextAuthErrorPage={isNextAuthErrorPage} session={appConfig.session}>
+        <RequiredSessionProvider dontRequireSession={isNextAuthErrorPage} session={appConfig.session}>
           <AppThemeProvider theme={theme}>
             <PromiseUIRenderer />
             <TooltipsRenderer />
