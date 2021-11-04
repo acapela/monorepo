@@ -17,8 +17,6 @@ export function createSlackClosureMessage({
   topicId,
   topicURL,
 }: Props): Pick<NotificationMessage, "slack"> {
-  // TODO: Waiting for Richard to give feedback on copy
-
   const sectionText = closedBy
     ? `*${closedBy}* closed *${createSlackLink(topicURL, topicName)}*`
     : `🎉 All requests have been actioned in ${createSlackLink(topicURL, topicName)}. The topic is now closed. 💪`;
