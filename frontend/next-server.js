@@ -9,11 +9,14 @@ const path = require("path");
 const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
 
-const production = process.env.NODE_ENV === "production";
-dotenv.config({ path: production ? process.cwd() : path.resolve(__dirname, "..", ".env") });
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? process.cwd() : path.resolve(__dirname, "..", ".env"),
+});
 
 const stage = process.env.STAGE;
-if (process.env.SENTRY_DSN) {
+const isStagingOrProduction = ["staging", "production"].includes(stage);
+
+if (isStagingOrProduction && process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: stage,
@@ -56,7 +59,8 @@ async function start() {
     wsProxy.ws(req, socket, head);
   });
 
-  app.use(Sentry.Handlers.requestHandler());
+  if (isStagingOrProduction) app.use(Sentry.Handlers.requestHandler());
+
   app.get("/healthz", async (req, res) => {
     const [backendRes, hasuraRes, hasuraVersionRes] = await Promise.all([
       axios.get(`${config.apiEndpoint}/healthz`),
@@ -65,6 +69,7 @@ async function start() {
     ]);
     res.send({
       status: "ok",
+      stage,
       version: process.env.SENTRY_RELEASE || "dev",
       backend: backendRes.data,
       hasura: {
@@ -93,7 +98,7 @@ async function start() {
 
   const port = process.env.FRONTEND_PORT || 3000;
   server.listen(port, () => {
-    console.info(`Server started ${port} prod=${production}`);
+    console.info(`Server started ${port} prod=${isStagingOrProduction}`);
   });
 }
 
