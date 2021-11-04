@@ -6,6 +6,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { log } from "~shared/logger";
+import { Sentry } from "~shared/sentry";
 
 import { HasuraEvent } from "../hasura";
 
@@ -45,7 +46,7 @@ async function maybeUpdateSlackMessage(message: Message) {
   }
   const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
   assert(topic, "must have topic");
-  await tryUpdateTopicSlackMessage(topic);
+  tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
