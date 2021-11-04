@@ -25,6 +25,17 @@ async function onTaskCreation(task: Task) {
 
   assert(fromUser && toUser && topic, "must have users and topic");
 
+  if (topic.all_tasks_done_at !== null) {
+    await db.topic.update({
+      where: {
+        id: topic.id,
+      },
+      data: {
+        all_tasks_done_at: null,
+      },
+    });
+  }
+
   trackBackendUserEvent(fromUser.id, "Created Task", {
     taskType: task.type as RequestType,
     topicId: topic.id,
@@ -76,7 +87,7 @@ async function onTaskUpdate(task: Task) {
         all_tasks_done_at: task.done_at,
       },
     });
-  } else {
+  } else if (topic.all_tasks_done_at !== null) {
     await db.topic.update({
       where: {
         id: topic.id,
