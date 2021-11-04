@@ -1,9 +1,11 @@
 import { addMinutes } from "date-fns";
 
 import { db } from "~db";
+import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
 
 import { createAllRequestsDoneNotificationMessage } from "../notifications/bodyBuilders/allRequestsDone";
+import { sendNotificationPerPreference } from "../notifications/sendNotification";
 
 export async function delayedTopicRequestsDoneNotifications() {
   const now = new Date();
@@ -26,7 +28,16 @@ export async function delayedTopicRequestsDoneNotifications() {
   });
 
   for (const topic of topicsToNotify) {
+    const topicOwner = await db.user.findFirst({ where: { id: topic.owner_id } });
+
+    assert(topicOwner, `Owner ${topic.owner_id} not found.`);
+
     const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
-    createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL });
+
+    sendNotificationPerPreference(
+      topicOwner,
+      topic.team_id,
+      createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL })
+    );
   }
 }
