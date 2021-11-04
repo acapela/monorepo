@@ -1,4 +1,0 @@
-singleQuote: false
-printWidth: 120
-plugins:
-  - "./node_modules/prettier-plugin-import-sort"

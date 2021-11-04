@@ -1,14 +1,18 @@
 import { sendInviteNotification } from "~backend/src/inviteUser";
+import { updateHomeView } from "~backend/src/slack/home-tab";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { assertDefined } from "~shared/assert";
 import { MENTION_TYPE_KEY, getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { Maybe } from "~shared/types";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType, REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { parseAndTransformToTipTapJSON } from "../slackMarkdown/parser";
-import { findUserBySlackId } from "../utils";
+import { fetchTeamBotToken, findUserBySlackId } from "../utils";
 
 async function createAndInviteMissingUsers(
   slackToken: string,
@@ -154,6 +158,7 @@ export async function createTopicForSlackUsers({
   token,
   teamId,
   ownerId,
+  ownerSlackUserId,
   slackTeamId,
   topicName,
   rawTopicMessage,
@@ -162,8 +167,9 @@ export async function createTopicForSlackUsers({
   token: string;
   teamId: string;
   ownerId: string;
+  ownerSlackUserId: string;
   slackTeamId: string;
-  topicName: string;
+  topicName: Maybe<string>;
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
 }) {
@@ -181,7 +187,8 @@ export async function createTopicForSlackUsers({
   );
   const messageContentText = convertMessageContentToPlainText(messageContent);
   const userIds = new Set(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
-  return await db.topic.create({
+  topicName = topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
+  const topic = await db.topic.create({
     data: {
       team_id: teamId,
       name: topicName,
@@ -209,4 +216,9 @@ export async function createTopicForSlackUsers({
       },
     },
   });
+
+  const botToken = assertDefined(await fetchTeamBotToken(teamId), "must have bot token");
+  await updateHomeView(botToken, ownerSlackUserId);
+
+  return topic;
 }

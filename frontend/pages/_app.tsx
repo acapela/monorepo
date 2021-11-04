@@ -48,6 +48,7 @@ function initSentry(appConfig: AppConfig) {
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
     release: appConfig.version,
+    tunnel: "/sentry-tunnel",
   });
 }
 
@@ -96,7 +97,7 @@ export default function App({
       <>
         <BuiltInStyles />
         <CommonMetadata />
-        <RequiredSessionProvider isNextAuthErrorPage={isNextAuthErrorPage} session={appConfig.session}>
+        <RequiredSessionProvider dontRequireSession={isNextAuthErrorPage} session={appConfig.session}>
           <AppThemeProvider theme={theme}>
             <PromiseUIRenderer />
             <TooltipsRenderer />

@@ -4,14 +4,32 @@ import { App, BlockButtonAction } from "@slack/bolt";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
-import { slackClient } from "~backend/src/slack/app";
-import { getSlackInstallURL } from "~backend/src/slack/install";
+import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
+import { assertDefined } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { Sentry } from "~shared/sentry";
 
+import { slackClient } from "./app";
+import { getSlackInstallURL } from "./install";
+import { tryOpenRequestModal } from "./request-modal/tryOpenRequestModal";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 
 export function setupSlackActionHandlers(slackApp: App) {
+  slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
+    const { user } = await tryOpenRequestModal(assertToken(context), body.trigger_id, {
+      slackUserId: body.user.id,
+      slackTeamId: assertDefined(body.team?.id, "must have slack team"),
+      origin: "slack-home-tab",
+    });
+
+    await ack();
+
+    if (user) {
+      trackBackendUserEvent(user.id, "Used Slack Home Tab New Request", { slackUserName: body.user.name });
+    }
+  });
+
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
     const topicId = action.value;
 
@@ -106,6 +124,7 @@ export function setupSlackActionHandlers(slackApp: App) {
       db.task.findUnique({ where: { id: taskId }, include: { message: { include: { topic: true } }, user: true } }),
     ]);
     assert(task, "missing task");
+
     if (user?.id !== task.user_id) {
       await slackClient.views.open({
         token,
@@ -133,5 +152,9 @@ export function setupSlackActionHandlers(slackApp: App) {
       return;
     }
     await db.task.update({ where: { id: taskId }, data: { done_at: task.done_at ? null : new Date().toISOString() } });
+
+    if (body.view?.type == "home") {
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    }
   });
 }

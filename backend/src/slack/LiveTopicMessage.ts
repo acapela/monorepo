@@ -3,24 +3,17 @@ import { Blocks, Elements, Md, Message } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
-import { fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "~backend/src/slack/utils";
+import {
+  REQUEST_TYPE_EMOJIS,
+  fetchTeamBotToken,
+  fetchTeamMemberBotToken,
+  findSlackUserId,
+} from "~backend/src/slack/utils";
 import { Topic, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert, assertDefined } from "~shared/assert";
 import { routes } from "~shared/routes";
-import {
-  MENTION_TYPE_LABELS,
-  REQUEST_ACTION,
-  REQUEST_READ,
-  REQUEST_RESPONSE,
-  RequestType,
-} from "~shared/types/mention";
-
-const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
-  [REQUEST_ACTION]: "🎬",
-  [REQUEST_RESPONSE]: "✍️",
-  [REQUEST_READ]: "👀",
-};
+import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 export async function LiveTopicMessage(topic: Topic) {
   const message = await db.message.findFirst({

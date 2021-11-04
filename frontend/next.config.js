@@ -116,8 +116,6 @@ const envVariables = (nextConfig = {}) => {
   });
 };
 
-const isBuildForCI = Boolean(process.env.CI_BUILD);
-
 module.exports = withPlugins(
   [
     //
@@ -142,7 +140,7 @@ module.exports = withPlugins(
       // !! WARN !!
       // Setting this to true will dangerously allow production builds to successfully complete even if
       // your project has type errors.
-      ignoreBuildErrors: isBuildForCI, // in CI we have a separate job for typechecking
+      ignoreBuildErrors: true, // in CI we have a separate job for typechecking
     },
     eslint: {
       // !! WARN !!

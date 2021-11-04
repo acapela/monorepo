@@ -8,9 +8,9 @@ import prompts from "prompts";
 import manifest from "./manifest.json";
 
 const DEFAULT_DOMAIN = "https://app.acape.la";
-const replaceDomain = (url: string, domain: string) => url.replace(DEFAULT_DOMAIN, domain);
 
 function cloneManifestIntoClipboard({ name, domain }: { name: string; domain: string }) {
+  const replaceDomain = (url: string) => url.replace(DEFAULT_DOMAIN, domain);
   clipboard.writeSync(
     JSON.stringify(
       merge(manifest, {
@@ -20,18 +20,19 @@ function cloneManifestIntoClipboard({ name, domain }: { name: string; domain: st
           slash_commands: [
             {
               command: "/" + name.toLowerCase(),
-              url: replaceDomain(manifest.features.slash_commands[0].url, domain),
+              url: replaceDomain(manifest.features.slash_commands[0].url),
             },
           ],
         },
         oauth_config: {
-          redirect_urls: manifest.oauth_config.redirect_urls.map((url) => replaceDomain(url, domain)),
+          redirect_urls: manifest.oauth_config.redirect_urls.map((url) => replaceDomain(url)),
         },
         settings: {
           interactivity: {
-            request_url: replaceDomain(manifest.settings.interactivity.request_url, domain),
-            message_menu_options_url: replaceDomain(manifest.settings.interactivity.message_menu_options_url, domain),
+            request_url: replaceDomain(manifest.settings.interactivity.request_url),
+            message_menu_options_url: replaceDomain(manifest.settings.interactivity.message_menu_options_url),
           },
+          event_subscriptions: { request_url: replaceDomain(manifest.settings.event_subscriptions.request_url) },
         },
       } as typeof manifest),
       null,

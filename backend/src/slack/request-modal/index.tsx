@@ -1,5 +1,6 @@
 import Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { find } from "lodash";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { slackClient } from "~backend/src/slack/app";
@@ -7,7 +8,6 @@ import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../LiveTopicMessage";
@@ -105,9 +105,11 @@ export function setupRequestModal(app: App) {
     const slackTeamId = body.user.team_id;
     assert(slackTeamId, "must have slack team id");
 
+    const ownerSlackUserId = body.user.id;
+
     const [team, owner] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
-      findUserBySlackId(token, body.user.id),
+      findUserBySlackId(token, ownerSlackUserId),
     ]);
 
     assert(team, "must have a team");
@@ -122,8 +124,11 @@ export function setupRequestModal(app: App) {
 
     if (channelId) {
       const response = await slackClient.conversations.members({ token, channel: channelId });
-      if (response.members) {
-        slackUserIdsWithMentionType.push(...response.members.map((id) => ({ slackUserId: id })));
+      for (const member of response.members || []) {
+        // if a channel member was already mentioned, don't add them twice
+        if (!find(slackUserIdsWithMentionType, ["slackUserId", member])) {
+          slackUserIdsWithMentionType.push({ slackUserId: member });
+        }
       }
     }
 
@@ -131,9 +136,10 @@ export function setupRequestModal(app: App) {
       token,
       teamId: team.id,
       ownerId: owner.id,
+      ownerSlackUserId,
       slackTeamId,
       rawTopicMessage: messageText,
-      topicName: topicName ?? truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
+      topicName,
       slackUserIdsWithMentionType,
     });
 

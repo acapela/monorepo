@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const stage = process.env.STAGE;
 const isStagingOrProduction = ["staging", "production"].includes(stage);
@@ -15,6 +16,8 @@ const isStagingOrProduction = ["staging", "production"].includes(stage);
 dotenv.config({
   path: isStagingOrProduction ? process.cwd() : path.resolve(__dirname, "..", ".env"),
 });
+
+const sentryProjectId = process.env.SENTRY_DSN ? process.env.SENTRY_DSN.split("/").pop() : "";
 
 if (isStagingOrProduction && process.env.SENTRY_DSN) {
   Sentry.init({
@@ -44,8 +47,12 @@ const config = {
 };
 
 async function start() {
-  console.info("Starting server...");
+  console.info("starting server...");
+  console.info(`sentry project id: ${sentryProjectId}`);
+  const sentryAPIEndpoint = `https://sentry.io/api/${sentryProjectId}/envelope/`;
   console.info(config);
+  console.info("preparing next app...");
+  await nextApp.prepare();
 
   const app = express();
   const server = http.createServer(app);
@@ -79,6 +86,31 @@ async function start() {
     });
   });
 
+  app.post("/sentry-tunnel", async (req, res) => {
+    try {
+      const buffers = [];
+      for await (const chunk of req) buffers.push(chunk);
+      const envelope = Buffer.concat(buffers);
+      const header = JSON.parse(envelope.toString().split("\n")[0]);
+
+      // check if dsn is matching
+      if (header.dsn !== process.env.SENTRY_DSN) {
+        res.status(400).send({ error: "invalid dsn" });
+        return;
+      }
+
+      // proxy envelope to sentry
+      const response = await fetch(sentryAPIEndpoint, {
+        method: "POST",
+        body: envelope,
+      });
+      res.status(response.status).send(await response.json());
+    } catch (e) {
+      Sentry.captureException(e);
+      res.status(400).send({ error: "invalid request" });
+    }
+  });
+
   app.use(
     "/graphql/?*",
     expressProxy(config.hasuraEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/v1/graphql/") })
@@ -98,7 +130,7 @@ async function start() {
 
   const port = process.env.FRONTEND_PORT || 3000;
   server.listen(port, () => {
-    console.info(`Server started ${port} prod=${isStagingOrProduction}`);
+    console.info(`server started ${port} prod=${isStagingOrProduction}`);
   });
 }
 

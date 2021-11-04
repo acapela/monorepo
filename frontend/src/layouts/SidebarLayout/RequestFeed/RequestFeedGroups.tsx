@@ -23,7 +23,7 @@ const hasTopicOpenTasksForCurrentUser = cachedComputed(
 
 const hasTopicSentTasksByCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
-    return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems;
+    return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems || topic.isOwn;
   },
   { name: "hasTopicSentTasksByCurrentUser" }
 );
