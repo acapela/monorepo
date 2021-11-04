@@ -3,6 +3,7 @@ import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } fr
 import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
+import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
@@ -68,6 +69,7 @@ export async function getSlackUserMentionOrLabel(user: User, teamId: string) {
 }
 
 export const SlackActionIds = {
+  CreateTopic: "create-topic",
   ReOpenTopic: "reopen-topic",
   ArchiveTopic: "archive-topic",
 } as const;
@@ -105,3 +107,9 @@ export function listenToViewWithMetadata<Key extends keyof ViewMetadata>(
 ) {
   app.view(key, (data) => listener({ ...data, metadata: JSON.parse(data.view.private_metadata) }));
 }
+
+export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
+  [REQUEST_ACTION]: "🎬",
+  [REQUEST_RESPONSE]: "✍️",
+  [REQUEST_READ]: "👀",
+};
