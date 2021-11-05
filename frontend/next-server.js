@@ -65,8 +65,6 @@ async function start() {
     wsProxy.ws(req, socket, head);
   });
 
-  if (isStagingOrProduction) app.use(Sentry.Handlers.requestHandler());
-
   app.get("/healthz", async (req, res) => {
     const [backendRes, hasuraRes, hasuraVersionRes] = await Promise.all([
       axios.get(`${config.apiEndpoint}/healthz`),
@@ -122,7 +120,11 @@ async function start() {
 
   app.all("*", (req, res) => handle(req, res));
 
-  if (isStagingOrProduction) app.use(Sentry.Handlers.errorHandler());
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  app.use((err, req, res, next) => {
+    Sentry.captureException(err);
+    res.status(500).send({ error: "internal server error" });
+  });
 
   const port = process.env.FRONTEND_PORT || 3000;
   server.listen(port, () => {
