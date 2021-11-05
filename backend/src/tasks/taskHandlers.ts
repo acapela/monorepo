@@ -11,9 +11,9 @@ import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/men
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
   if (event.type === "create") {
-    onTaskCreation(event.item);
-  } else {
-    onTaskUpdate(event.item);
+    return onTaskCreation(event.item);
+  } else if (event.type === "update") {
+    return onTaskUpdate(event.item, event.itemBefore, event.userId || "");
   }
 }
 
@@ -62,10 +62,18 @@ async function onTaskCreation(task: Task) {
   });
 }
 
-async function onTaskUpdate(task: Task) {
+async function onTaskUpdate(task: Task, taskBefore: Task, userId: string) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
   assert(topic, "must have topic");
+
+  if (task.done_at && task.done_at !== taskBefore.done_at) {
+    trackBackendUserEvent(userId, "Mark Task As Done", {
+      taskType: task.type as RequestType,
+      topicId: topic.id,
+      origin: "unknown",
+    });
+  }
 
   tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
 
