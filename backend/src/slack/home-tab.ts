@@ -7,14 +7,14 @@ import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
-import { Message, Task, Topic, User, db } from "~db";
+import { Message, Task, TeamMember, Topic, User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 import { RequestType } from "~shared/types/mention";
 
-import { REQUEST_TYPE_EMOJIS, SlackActionIds, findUserBySlackId } from "./utils";
+import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "./utils";
 
 const TOPICS_PER_CATEGORY = 10;
 
@@ -27,11 +27,21 @@ type TopicRowsWithCount = {
   count: number;
 };
 
-async function findAndCountTopics(userId: string, where: TopicWhereInput): Promise<TopicRowsWithCount> {
+async function findAndCountTopics(
+  { user_id, team_id }: TeamMember,
+  where: TopicWhereInput
+): Promise<TopicRowsWithCount> {
   const globalWhere: TopicWhereInput = {
-    AND: [{ archived_at: null, OR: [{ owner_id: userId }, { topic_member: { some: { user_id: userId } } }] }, where],
+    AND: [
+      {
+        archived_at: null,
+        team_id,
+        OR: [{ owner_id: user_id }, { topic_member: { some: { user_id } } }],
+      },
+      where,
+    ],
   };
-  const whereOpenUserTask: Prisma.taskWhereInput = { user_id: userId, done_at: null };
+  const whereOpenUserTask: Prisma.taskWhereInput = { user_id, done_at: null };
   const [rows, count] = await Promise.all([
     db.topic.findMany({
       where: globalWhere,
@@ -123,18 +133,20 @@ const MissingAuthHomeTab = HomeTab()
 export async function updateHomeView(botToken: string, slackUserId: string) {
   const publishView = (view: View) => slackClient.views.publish({ token: botToken, user_id: slackUserId, view });
 
-  const user = await findUserBySlackId(botToken, slackUserId);
-  if (!user) {
+  const teamMember = await db.team_member.findFirst({ where: { team_member_slack: { slack_user_id: slackUserId } } });
+  if (!teamMember) {
     await publishView(MissingAuthHomeTab);
     return;
   }
 
   const whereIsOpen: TopicWhereInput = { closed_at: null };
   const whereHasOpenTask: TopicWhereInput = {
-    message: { some: { task: { some: { user_id: user.id, done_at: null } } } },
+    message: { some: { task: { some: { user_id: teamMember.user_id, done_at: null } } } },
   };
   const whereHasOpenSentTask: TopicWhereInput = {
-    message: { some: { user_id: user.id, task: { some: { user_id: { not: user.id }, done_at: null } } } },
+    message: {
+      some: { user_id: teamMember.user_id, task: { some: { user_id: { not: teamMember.user_id }, done_at: null } } },
+    },
   };
   const [received, sent, open, closed] = await Promise.all(
     (
@@ -144,7 +156,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
         { AND: [whereIsOpen, { NOT: [whereHasOpenTask, whereHasOpenSentTask] }] },
         { NOT: whereIsOpen },
       ] as TopicWhereInput[]
-    ).map((where) => findAndCountTopics(user.id, where))
+    ).map((where) => findAndCountTopics(teamMember, where))
   );
 
   await publishView(
@@ -162,7 +174,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
           Elements.Button({ text: "Open web app" })
             .url(process.env.FRONTEND_URL)
             .actionId(SlackActionIds.TrackEvent)
-            .value(backendUserEventToJSON(user.id, "Open from Slack Home Tab"))
+            .value(backendUserEventToJSON(teamMember.user_id, "Open from Slack Home Tab"))
         ),
         RequestsList("🔥 Received", received),
         RequestsList("📤 Sent", sent),
