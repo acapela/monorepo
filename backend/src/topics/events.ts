@@ -21,8 +21,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   }
 
   if (event.type === "update") {
-    notifyTopicUpdates(event);
-    updateTopicEvents(event);
+    await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
   }
 }
 
@@ -102,7 +101,7 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
   }
 
   if (wasJustClosed && !isClosedByOwner) {
-    notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);
+    return notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);
   }
 }
 
@@ -114,7 +113,7 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
 
   assert(topicOwner, `[Closing Topic][id=${topic.id}] Owner ${ownerId} not found.`);
 
-  sendNotificationPerPreference(
+  return sendNotificationPerPreference(
     topicOwner,
     topic.team_id,
     createClosureNotificationMessage({
