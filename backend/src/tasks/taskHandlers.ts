@@ -32,6 +32,7 @@ async function onTaskCreation(task: Task) {
       },
       data: {
         all_tasks_done_at: null,
+        last_task_done_by: null,
       },
     });
   }
