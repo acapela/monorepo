@@ -3,6 +3,7 @@ import router from "next/router";
 import React, { ReactNode, useEffect } from "react";
 import styled, { css } from "styled-components";
 
+import { LoadingScreen } from "~frontend/clientdb/LoadingScreen";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { useWindowEvent } from "~shared/domEvents";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -30,10 +31,14 @@ export const SidebarLayout = observer(({ children }: Props) => {
     };
   }, [closeMobileMenu]);
 
-  useAppRedirects();
+  const willRedirect = useAppRedirects();
 
   // Close mobile menu if user rotates the screen
   useWindowEvent("orientationchange", closeMobileMenu);
+
+  if (willRedirect) {
+    return <LoadingScreen loadingNotice="Setting up Acapela..." />;
+  }
 
   return (
     <UIHolder>
