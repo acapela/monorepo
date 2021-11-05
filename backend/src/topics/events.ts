@@ -1,6 +1,5 @@
 import Sentry from "@sentry/node";
 import { updatedDiff } from "deep-object-diff";
-import { toPairs } from "lodash";
 
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
@@ -16,7 +15,9 @@ import { sendNotificationPerPreference } from "../notifications/sendNotification
 function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
   const topicId = event.item.id;
   const changes = updatedDiff(event.itemBefore || {}, event.item || {}) as Topic;
-  for (const [key, value] of toPairs(changes)) {
+  let key: keyof Topic;
+  for (key in changes) {
+    const value = changes[key];
     switch (key) {
       case "closed_by_user_id":
         trackBackendUserEvent(userId, value ? "Closed Topic" : "Reopened Topic", { topicId });
