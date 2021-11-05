@@ -85,6 +85,7 @@ async function onTaskUpdate(task: Task) {
       },
       data: {
         all_tasks_done_at: task.done_at,
+        last_task_done_by: task.user_id,
       },
     });
   } else if (topic.all_tasks_done_at !== null) {
@@ -94,6 +95,7 @@ async function onTaskUpdate(task: Task) {
       },
       data: {
         all_tasks_done_at: null,
+        last_task_done_by: null,
       },
     });
   }

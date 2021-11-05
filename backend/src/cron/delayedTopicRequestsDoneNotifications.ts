@@ -32,6 +32,11 @@ export async function delayedTopicRequestsDoneNotifications() {
 
     assert(topicOwner, `Owner ${topic.owner_id} not found.`);
 
+    // Don't notify owner if they complete their own task
+    if (topic.last_task_done_by === topicOwner.id) {
+      continue;
+    }
+
     const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
 
     sendNotificationPerPreference(
