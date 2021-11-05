@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
@@ -28,7 +27,6 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
 
   const handleReopenTopic = action(() => {
     topic.open();
-    trackEvent("Reopened Topic", { topicId: topic.id });
   });
 
   const handleTopicRename = action(async () => {
@@ -39,7 +37,6 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
     });
 
     topic.update({ name: name ?? undefined });
-    trackEvent("Renamed Topic", { topicId: topic.id });
   });
 
   const handleTopicArchive = action(async () => {
@@ -47,12 +44,10 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
       handleCloseTopic();
     }
     topic.update({ archived_at: new Date().toISOString() });
-    trackEvent("Archived Topic", { topicId: topic.id });
   });
 
   const handleTopicUnarchive = action(async () => {
     topic.update({ archived_at: null });
-    trackEvent("Reopened Topic", { topicId: topic.id });
   });
 
   return (

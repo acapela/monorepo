@@ -1,4 +1,6 @@
 import Sentry from "@sentry/node";
+import { updatedDiff } from "deep-object-diff";
+import { toPairs } from "lodash";
 
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
@@ -11,16 +13,35 @@ import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
 
+function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
+  const topicId = event.item.id;
+  const changes = updatedDiff(event.itemBefore || {}, event.item || {}) as Topic;
+  for (const [key, value] of toPairs(changes)) {
+    switch (key) {
+      case "closed_by_user_id":
+        trackBackendUserEvent(userId, value ? "Closed Topic" : "Reopened Topic", { topicId });
+        break;
+      case "archived_at":
+        trackBackendUserEvent(userId, value ? "Archived Topic" : "Unarchived Topic", { topicId });
+        break;
+      case "name":
+        trackBackendUserEvent(userId, "Renamed Topic", { topicId });
+        break;
+    }
+  }
+}
+
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const userId = event.userId!;
   if (event.type === "create") {
     // This is a test event that will duplicate all the other create topic events.
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
     // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    trackBackendUserEvent(event.userId!, "Created Topic", { origin: "unknown", topicName: event.item.name });
-  }
 
-  if (event.type === "update") {
+    return trackBackendUserEvent(userId, "Created Topic", { origin: "unknown", topicName: event.item.name });
+  } else if (event.type === "update") {
+    trackTopicChanges(userId, event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
   }
 }

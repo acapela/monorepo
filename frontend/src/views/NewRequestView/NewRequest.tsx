@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
@@ -149,7 +148,6 @@ export const NewRequest = observer(function NewRequest() {
 
       router.push(routes.topic({ topicSlug: topic.slug }));
     });
-    trackEvent("Created Topic", { origin: "web-app", topicName });
     clearPersistedContent();
     clearTopicName();
   }
