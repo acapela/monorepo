@@ -64,7 +64,7 @@ export type AnalyticsEventsMap = {
   "Mark Task As Done": {
     taskType: RequestType;
     topicId: string;
-    origin: "webapp" | "slack-home" | "slack-live-message";
+    origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
   };
   "Added Due Date": { topicId: string; messageId: string };
 
