@@ -3,6 +3,7 @@ import { createSlackLink, sendNotificationIgnoringPreference } from "~backend/sr
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 import { routes } from "~shared/routes";
@@ -81,7 +82,8 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       include: { user: { include: { account: true } } },
     });
 
-    if (!teamMember) {
+    const firstInvite = !teamMember;
+    if (firstInvite) {
       teamMember = await db.team_member.create({
         data: {
           user: {
@@ -103,6 +105,12 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     }
 
     assert(teamMember, "teamMember must have been created");
+
+    if (invitingUserId) {
+      trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, inviteEmail: email });
+    } else {
+      trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, userEmail: email });
+    }
 
     await sendInviteNotification(teamMember.user, team_id, invitingUserId);
 
