@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
@@ -37,9 +36,6 @@ export const CreateTeamView = observer(() => {
       }
 
       await teamManager.changeTeamId(newTeam.id);
-
-      trackEvent("Account Created", { teamName: name });
-      trackEvent("Trial Started", { teamName: name });
 
       router.push(routes.teamSlack);
     });
