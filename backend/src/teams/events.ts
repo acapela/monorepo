@@ -24,7 +24,7 @@ export async function handleTeamUpdates({ userId, item: team }: HasuraEvent<Team
     return;
   }
 
-  log.info("Adding creator as participant to room", {
+  log.info("Adding team owner as participant to team", {
     roomId: team.id,
     ownerId,
   });
@@ -32,6 +32,8 @@ export async function handleTeamUpdates({ userId, item: team }: HasuraEvent<Team
     data: {
       team_id: teamId,
       user_id: ownerId,
+      // we assume that the owner of a team also has joined the team
+      has_joined: true,
     },
   });
 }
