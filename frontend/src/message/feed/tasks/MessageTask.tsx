@@ -74,6 +74,7 @@ export const MessageTask = observer(({ task }: Props) => {
 });
 
 const UISingleTask = styled.div<{}>`
+  overflow-y: hidden;
   display: flex;
   align-items: center;
   ${theme.spacing.actions.asGap};
