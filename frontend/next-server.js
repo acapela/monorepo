@@ -8,7 +8,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 const Sentry = require("@sentry/node");
 const httpProxy = require("http-proxy");
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const stage = process.env.STAGE;
 const isStagingOrProduction = ["staging", "production"].includes(stage);
@@ -100,11 +99,8 @@ async function start() {
       }
 
       // proxy envelope to sentry
-      const response = await fetch(sentryAPIEndpoint, {
-        method: "POST",
-        body: envelope,
-      });
-      res.status(response.status).send(await response.json());
+      const response = await axios.post(sentryAPIEndpoint, envelope);
+      res.status(response.status).send(await response.data);
     } catch (e) {
       Sentry.captureException(e);
       res.status(400).send({ error: "invalid request" });
