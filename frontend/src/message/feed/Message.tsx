@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/message/display/MessageMedia";
@@ -71,7 +70,6 @@ export const Message = styledObserver<Props>(
 
       if (didConfirm) {
         message.remove();
-        trackEvent("Deleted Message", { messageId: message.id });
       }
     }
 
