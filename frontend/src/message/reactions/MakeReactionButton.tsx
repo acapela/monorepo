@@ -3,7 +3,6 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -32,8 +31,6 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
       emoji: emoji,
       message_id: message.id,
     });
-
-    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji });
   });
 
   return (

@@ -1,5 +1,5 @@
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
-import { Message, db } from "~db";
+import { Message, MessageReaction, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -78,4 +78,15 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
 
   const message = event.item;
   await Promise.all([prepareMessagePlainTextData(message), addTopicMembers(message), maybeUpdateSlackMessage(message)]);
+}
+
+export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
+  if (event.type === "create") {
+    const userId = event.userId || event.item.user_id;
+    assert(userId, "cannot find user_id for message reaction");
+    trackBackendUserEvent(userId, "Reacted To Message", {
+      messageId: event.item.message_id,
+      reactionEmoji: event.item.emoji,
+    });
+  }
 }
