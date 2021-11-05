@@ -60,7 +60,11 @@ export type AnalyticsEventsMap = {
   // Mention and task related events
 
   "Created Task": { taskType: RequestType; topicId: string; mentionedUserId: string };
-  "Mark Task As Done": { taskType: RequestType; topicId: string };
+  "Mark Task As Done": {
+    taskType: RequestType;
+    topicId: string;
+    origin: "webapp" | "slack-home" | "slack-live-message";
+  };
   "Added Due Date": { topicId: string; messageId: string };
 
   // Slack
@@ -68,6 +72,7 @@ export type AnalyticsEventsMap = {
   "Used Slack Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
   "Used Slack Home Tab New Request": { slackUserName: string };
+  "Open from Slack Home Tab": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

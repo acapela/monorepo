@@ -72,6 +72,7 @@ export const SlackActionIds = {
   CreateTopic: "create-topic",
   ReOpenTopic: "reopen-topic",
   ArchiveTopic: "archive-topic",
+  TrackEvent: "track-event",
 } as const;
 
 export type CreateRequestOrigin = AnalyticsEventsMap["Created Topic"]["origin"];
