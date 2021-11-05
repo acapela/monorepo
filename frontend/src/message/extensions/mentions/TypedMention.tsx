@@ -65,6 +65,7 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
           placement="top-start"
           onClickOutside={closeMentionTypePicker}
           isDisabled={!isEditable}
+          enableScreenCover
         >
           <PopPresenceAnimator>
             <MentionTypePicker
