@@ -9,6 +9,7 @@ import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
 import { Message, Task, Topic, User, db } from "~db";
 import { assertDefined } from "~shared/assert";
+import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 import { RequestType } from "~shared/types/mention";
@@ -158,7 +159,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
         }),
         Blocks.Actions().elements(
           Elements.Button({ text: "+ New Request", actionId: SlackActionIds.CreateTopic }).primary(true),
-          Elements.Button({ text: "Open web app" }).url(process.env.FRONTEND_URL)
+          Elements.Button({ text: "Open web app" })
+            .url(process.env.FRONTEND_URL)
+            .actionId(SlackActionIds.TrackEvent)
+            .value(backendUserEventToJSON(user.id, "Open from Slack Home Tab"))
         ),
         RequestsList("🔥 Received", received),
         RequestsList("📤 Sent", sent),

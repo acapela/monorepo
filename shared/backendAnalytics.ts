@@ -54,6 +54,12 @@ export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
   }
 }
 
+export const backendUserEventToJSON = <N extends keyof AnalyticsEventsMap>(
+  userId: string,
+  eventName: N,
+  payload?: AnalyticsEventsMap[N]
+) => JSON.stringify([userId, eventName, payload]);
+
 export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
   userId: string,
   groupId: string,

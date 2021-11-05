@@ -9,6 +9,7 @@ import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { Sentry } from "~shared/sentry";
+import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { getSlackInstallURL } from "./install";
@@ -114,6 +115,11 @@ export function setupSlackActionHandlers(slackApp: App) {
     await ack();
   });
 
+  slackApp.action<BlockButtonAction>(SlackActionIds.TrackEvent, async ({ ack, payload }) => {
+    await ack();
+    trackBackendUserEvent(...(JSON.parse(payload.value) as [never, never]));
+  });
+
   slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
     await ack();
 
@@ -153,8 +159,17 @@ export function setupSlackActionHandlers(slackApp: App) {
     }
     await db.task.update({ where: { id: taskId }, data: { done_at: task.done_at ? null : new Date().toISOString() } });
 
-    if (body.view?.type == "home") {
+    const isCalledFromSlackHome = body.view?.type == "home";
+    if (isCalledFromSlackHome) {
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    }
+
+    if (user) {
+      trackBackendUserEvent(user.id, "Mark Task As Done", {
+        taskType: task.type as RequestType,
+        topicId: task.message.topic_id,
+        origin: isCalledFromSlackHome ? "slack-home" : "slack-live-message",
+      });
     }
   });
 }

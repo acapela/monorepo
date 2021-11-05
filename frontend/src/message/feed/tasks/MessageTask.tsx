@@ -46,7 +46,11 @@ export const MessageTask = observer(({ task }: Props) => {
           label: "Mark as Complete",
           onSelect: () => {
             task.update({ done_at: new Date().toISOString() });
-            trackEvent("Mark Task As Done", { taskType: task.type as RequestType, topicId: task.topic?.id ?? "" });
+            trackEvent("Mark Task As Done", {
+              taskType: task.type as RequestType,
+              topicId: task.topic?.id ?? "",
+              origin: "webapp",
+            });
           },
         },
       ];
