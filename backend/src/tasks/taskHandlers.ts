@@ -26,6 +26,18 @@ async function onTaskCreation(task: Task) {
 
   assert(fromUser && toUser && topic, "must have users and topic");
 
+  if (topic.all_tasks_done_at !== null) {
+    await db.topic.update({
+      where: {
+        id: topic.id,
+      },
+      data: {
+        all_tasks_done_at: null,
+        last_task_done_by: null,
+      },
+    });
+  }
+
   trackBackendUserEvent(fromUser.id, "Created Task", {
     taskType: task.type as RequestType,
     topicId: topic.id,
@@ -66,14 +78,26 @@ async function onTaskUpdate(task: Task) {
     },
   });
 
+  // HACK: This is  workaround until prisma supports `PG Generated Columns`
+  // `all_tasks_done_at` should be one
   if (amountOfOpenTasksLeft === 0) {
-    // close topic
     await db.topic.update({
       where: {
         id: topic.id,
       },
       data: {
-        closed_at: new Date().toISOString(),
+        all_tasks_done_at: task.done_at,
+        last_task_done_by: task.user_id,
+      },
+    });
+  } else if (topic.all_tasks_done_at !== null) {
+    await db.topic.update({
+      where: {
+        id: topic.id,
+      },
+      data: {
+        all_tasks_done_at: null,
+        last_task_done_by: null,
       },
     });
   }
