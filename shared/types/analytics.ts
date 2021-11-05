@@ -48,6 +48,7 @@ export type AnalyticsEventsMap = {
   "Deleted Topic": { topicId: string };
   // we are not tracking automatic archives
   "Archived Topic": { topicId: string };
+  "Unarchived Topic": { topicId: string };
   "Renamed Topic": { topicId: string };
 
   // Message related events

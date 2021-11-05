@@ -7596,6 +7596,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deep-object-diff@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "deep-object-diff@npm:1.1.0"
+  checksum: 4e7c1b7cd214312f4b94de62be765899f887c9e95cf6320b1d4df6bb7b861db0dff6b180fa1947a0db2eb56c902d64c20e285d49b316da2bfafed1a44ed3c232
+  languageName: node
+  linkType: hard
+
 "deepmerge@npm:^4.2.2":
   version: 4.2.2
   resolution: "deepmerge@npm:4.2.2"
@@ -19835,6 +19842,7 @@ __metadata:
     "@types/uuid": ^8.3.1
     cookie-parser: ^1.4.5
     cors: ^2.8.5
+    deep-object-diff: ^1.1.0
     express-async-errors: ^3.1.1
     googleapis: ^81.0.0
     helmet: ^4.6.0
