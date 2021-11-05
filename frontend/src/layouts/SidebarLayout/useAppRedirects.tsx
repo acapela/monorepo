@@ -1,5 +1,6 @@
 import { signOut } from "next-auth/react";
 import router from "next/router";
+import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
@@ -13,6 +14,7 @@ import { routes } from "~shared/routes";
  * eg. if there is no team - will force redirect to create new team flow.
  */
 export function useAppRedirects() {
+  const [willRedirect, setWillRedirect] = useState(false);
   const userTokenData = useCurrentUserTokenData();
 
   const db = useNullableDb();
@@ -22,12 +24,14 @@ export function useAppRedirects() {
 
   useIsomorphicLayoutEffect(() => {
     if (isUserWithoutAccount) {
+      setWillRedirect(false);
       signOut();
       return;
     }
 
     if (!userTokenData || !user) {
       router.push(routes.login);
+      setWillRedirect(true);
       return;
     }
 
@@ -37,7 +41,10 @@ export function useAppRedirects() {
 
     if (!teamInfo.teamId) {
       router.push(routes.teamSelect);
+      setWillRedirect(true);
       return;
     }
   }, [isUserWithoutAccount, userTokenData, user, teamInfo]);
+
+  return willRedirect;
 }

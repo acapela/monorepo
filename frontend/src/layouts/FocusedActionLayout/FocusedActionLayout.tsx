@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { phone } from "~frontend/../../ui/responsive";
 import { Logo } from "~frontend/ui/Logo";
 import { PopPresenceAnimator } from "~ui/animations";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 interface Props {
