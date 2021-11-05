@@ -44,10 +44,9 @@ select_permissions:
     filter:
       message:
         topic:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -57,12 +56,11 @@ update_permissions:
     - due_at
     - seen_at
     filter:
-      _or:
-      - user_id:
-          _eq: X-Hasura-User-Id
-      - message:
-          user_id:
-            _eq: X-Hasura-User-Id
+      message:
+        topic:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
