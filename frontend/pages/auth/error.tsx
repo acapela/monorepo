@@ -18,7 +18,8 @@ const errors: {
     ),
   },
   OAuthAccountNotLinked: {
-    title: "An account with your email address is already exists.",
+    title:
+      "An account with your email address already exists. If you were invited into Acapela, please use the link from the invitation message to signup.",
     description: () => (
       <>
         <p>Please try again and use a different login provider.</p>
