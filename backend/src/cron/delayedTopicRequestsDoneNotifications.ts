@@ -21,7 +21,7 @@ export async function delayedTopicRequestsDoneNotifications() {
         equals: null,
       },
       all_tasks_done_at: {
-        gte: thirtyMinutesAgo,
+        gt: thirtyMinutesAgo,
         lte: fifteenMinutesAgo,
       },
     },
