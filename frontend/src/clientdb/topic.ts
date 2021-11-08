@@ -160,6 +160,36 @@ export const topicEntity = defineEntity<TopicFragment>({
   })
   .addAccessValidation((topic) => {
     return topic.isCurrentUserMember;
+  })
+  .addEventHandlers({
+    itemUpdated: (topicNow, topicBefore, { getEntity }) => {
+      const isNameChanged = topicNow.name !== topicBefore.name;
+      if (isNameChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_name: topicBefore.name,
+          topic_to_name: topicNow.name,
+        });
+      }
+
+      const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
+      if (isOpenStatusChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_closed_at: topicBefore.closed_at,
+          topic_to_closed_at: topicNow.closed_at,
+        });
+      }
+
+      const isArchivedStatusChanged = topicNow.archived_at !== topicBefore.archived_at;
+      if (isArchivedStatusChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_archived_at: topicBefore.archived_at,
+          topic_to_archived_at: topicNow.archived_at,
+        });
+      }
+    },
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;

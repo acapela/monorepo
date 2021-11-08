@@ -6,6 +6,7 @@ import { TopicEventFragment } from "~gql";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
+import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -17,16 +18,14 @@ const topicEventFragment = gql`
     created_at
     updated_at
 
-    topic_event_topic {
-      from_closed_at
-      to_closed_at
+    topic_from_closed_at
+    topic_to_closed_at
 
-      from_archived_at
-      to_archived_at
+    topic_from_archived_at
+    topic_to_archived_at
 
-      from_name
-      to_name
-    }
+    topic_from_name
+    topic_to_name
   }
 `;
 
@@ -36,11 +35,29 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   keyField: "id",
   keys: getFragmentKeys<TopicEventFragment>(topicEventFragment),
   defaultSort: (event) => new Date(event.created_at).getTime(),
-  getDefaultValues: () => ({
+  getDefaultValues: ({ getContextValue }) => ({
     __typename: "topic_event",
+    actor_id: getContextValue(userIdContext) ?? undefined,
+    topic_from_closed_at: null,
+    topic_to_closed_at: null,
+    topic_from_archived_at: null,
+    topic_to_archived_at: null,
+    topic_from_name: null,
+    topic_to_name: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
+    insertColumns: [
+      "id",
+      "topic_id",
+      "actor_id",
+      "topic_from_closed_at",
+      "topic_to_closed_at",
+      "topic_from_archived_at",
+      "topic_to_archived_at",
+      "topic_from_name",
+      "topic_to_name",
+    ],
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
 }).addConnections((topicEvent, { getEntity }) => {
