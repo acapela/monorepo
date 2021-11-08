@@ -34,8 +34,10 @@ async function createAndInviteMissingUsers(
         if (!name || !email) {
           return;
         }
-        const user = await transaction.user.create({
-          data: { name, email, avatar_url: profile?.image_original },
+        const user = await transaction.user.upsert({
+          where: { email },
+          create: { name, email, avatar_url: profile?.image_original },
+          update: {},
           include: { account: true },
         });
         await transaction.team_member.create({
