@@ -72,6 +72,7 @@ const UITasksPossibleScroller = styled.div`
   flex-direction: row;
   min-width: 0;
   overflow-x: auto;
+  ${theme.spacing.actions.asGap}
 `;
 
 const UITasks = styled.div<{}>`
