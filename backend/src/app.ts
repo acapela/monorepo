@@ -10,6 +10,7 @@ import express, { Application, json } from "express";
 import securityMiddleware from "helmet";
 
 import { initializeSecrets } from "~config";
+import { db } from "~db";
 import { log } from "~shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
@@ -78,8 +79,11 @@ function setupGracefulShutdown(server: Server) {
     healthChecks: {
       verbatim: true,
       "/healthz": async function () {
+        await db.$connect();
+        await db.$executeRaw`SELECT 1;`;
         return {
           version: process.env.SENTRY_RELEASE || "dev",
+          db: true,
         };
       },
     },
