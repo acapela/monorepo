@@ -34,7 +34,14 @@ interface DefineEntityConfig<Data, Connections> {
   accessValidator?: EntityAccessValidator<Data, Connections>;
   getConnections?: EntityDefinitionGetConnections<Data, Connections>;
   search?: EntitySearchConfig<Data>;
+  events?: EntityUserEvents<Data, Connections>;
 }
+
+type EntityUserEvents<Data, Connections> = {
+  itemAdded?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
+  itemUpdated?: (entity: Entity<Data, Connections>, dataBefore: Data, utilities: DatabaseUtilities) => void;
+  itemRemoved?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
+};
 
 export interface EntityDefinition<Data, Connections> {
   config: DefineEntityConfig<Data, Connections>;
@@ -43,6 +50,7 @@ export interface EntityDefinition<Data, Connections> {
     getConnections: EntityDefinitionGetConnections<Data, AddedConnections>
   ): EntityDefinition<Data, AddedConnections>;
   addAccessValidation(accessValidator: EntityAccessValidator<Data, Connections>): EntityDefinition<Data, Connections>;
+  addEventHandlers(events: EntityUserEvents<Data, Connections>): EntityDefinition<Data, Connections>;
 }
 
 export interface ConnectionsManager<Data> extends DatabaseUtilities {
@@ -70,6 +78,9 @@ export function defineEntity<Data, Connections = {}>(
     },
     addAccessValidation(validator) {
       return defineEntity({ ...config, accessValidator: validator });
+    },
+    addEventHandlers(events) {
+      return defineEntity({ ...config, events });
     },
   };
 }
