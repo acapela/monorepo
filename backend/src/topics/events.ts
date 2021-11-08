@@ -12,7 +12,8 @@ import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
 
-function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
+function trackTopicChanges(event: HasuraEvent<Topic>) {
+  if (!event.userId) return;
   const topicId = event.item.id;
   const changes = updatedDiff(event.itemBefore || {}, event.item || {}) as Topic;
   let key: keyof Topic;
@@ -20,13 +21,13 @@ function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
     const value = changes[key];
     switch (key) {
       case "closed_by_user_id":
-        trackBackendUserEvent(userId, value ? "Closed Request" : "Reopened Request", { topicId });
+        trackBackendUserEvent(event.userId, value ? "Closed Request" : "Reopened Request", { topicId });
         break;
       case "archived_at":
-        trackBackendUserEvent(userId, value ? "Archived Request" : "Unarchived Request", { topicId });
+        trackBackendUserEvent(event.userId, value ? "Archived Request" : "Unarchived Request", { topicId });
         break;
       case "name":
-        trackBackendUserEvent(userId, "Renamed Request", { topicId });
+        trackBackendUserEvent(event.userId, "Renamed Request", { topicId });
         break;
     }
   }
@@ -34,15 +35,14 @@ function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const userId = event.userId!;
   if (event.type === "create") {
     // This is a test event that will duplicate all the other create topic events.
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
     // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
-
-    return trackBackendUserEvent(userId, "Created Request", { origin: "unknown", topicName: event.item.name });
+    if (!event.userId) return;
+    return trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
   } else if (event.type === "update") {
-    trackTopicChanges(userId, event);
+    trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
   }
 }
