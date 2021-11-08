@@ -6,6 +6,7 @@ import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
@@ -27,6 +28,12 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     async storeInstallation(installation) {
       const { teamId, userId } = parseMetadata(installation);
       const slackTeamId = assertDefined(installation.team, "installation must have team").id;
+      const otherTeamWithSameSlack = await db.team.findFirst({
+        where: { NOT: { id: teamId }, team_slack_installation: { slack_team_id: slackTeamId } },
+      });
+      if (otherTeamWithSameSlack) {
+        throw new Error(SLACK_WORKSPACE_ALREADY_USED_ERROR);
+      }
       if (installation.bot) {
         const teamData = _.omit(installation, "user", "metadata");
         const data = teamData as never;
@@ -86,6 +93,19 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         const { redirectURL } = parseMetadata(installation);
         res.writeHead(HttpStatus.FOUND, { Location: redirectURL || "/" }).end();
       },
+      failure(error, options, req, res) {
+        const { redirectURL } = parseMetadata({ metadata: options.metadata });
+        const isAlreadyUsedError = Boolean(error.stack?.includes(SLACK_WORKSPACE_ALREADY_USED_ERROR));
+        if (!isAlreadyUsedError) {
+          Sentry.captureException(error);
+        }
+        const redirectURLObject = new URL(redirectURL ?? "/");
+        redirectURLObject.searchParams.set(
+          SLACK_INSTALL_ERROR_KEY,
+          isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unkown"
+        );
+        res.writeHead(HttpStatus.FOUND, { Location: redirectURLObject.toString() }).end();
+      },
     },
   },
 };
@@ -99,6 +119,7 @@ export const slackApp = new SlackBolt.App({
   ...sharedOptions,
   receiver: slackReceiver,
   developerMode: isDev(),
+  socketMode: false,
 });
 
 slackApp.error(async (error) => {
