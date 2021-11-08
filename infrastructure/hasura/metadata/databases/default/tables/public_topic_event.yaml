@@ -5,21 +5,43 @@ object_relationships:
 - name: topic
   using:
     foreign_key_constraint_on: topic_id
-- name: topic_event_topic
-  using:
-    foreign_key_constraint_on:
-      column: topic_event_id
-      table:
-        name: topic_event_topic
-        schema: public
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      _or:
+      - topic:
+          owner_id:
+            _eq: X-Hasura-User-Id
+      - topic:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
+    columns:
+    - actor_id
+    - id
+    - topic_from_archived_at
+    - topic_from_closed_at
+    - topic_from_name
+    - topic_id
+    - topic_to_archived_at
+    - topic_to_closed_at
+    - topic_to_name
+  role: user
 select_permissions:
 - permission:
     columns:
+    - topic_from_name
+    - topic_to_name
     - created_at
-    - id
-    - topic_id
+    - topic_from_archived_at
+    - topic_from_closed_at
+    - topic_to_archived_at
+    - topic_to_closed_at
     - updated_at
     - actor_id
+    - id
+    - topic_id
     filter:
       _or:
       - topic:
