@@ -44,12 +44,8 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        topic_event_topic: {
-          create: {
-            from_closed_at: topicBefore.closed_at,
-            to_closed_at: topicNow.closed_at,
-          },
-        },
+        topic_from_closed_at: topicBefore.closed_at,
+        topic_to_closed_at: topicNow.closed_at,
       },
     });
   }
@@ -59,12 +55,8 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        topic_event_topic: {
-          create: {
-            from_archived_at: topicBefore.archived_at,
-            to_archived_at: topicNow.archived_at,
-          },
-        },
+        topic_from_archived_at: topicBefore.archived_at,
+        topic_to_archived_at: topicNow.archived_at,
       },
     });
   }
