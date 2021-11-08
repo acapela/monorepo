@@ -20,13 +20,13 @@ function trackTopicChanges(userId: string, event: HasuraEvent<Topic>) {
     const value = changes[key];
     switch (key) {
       case "closed_by_user_id":
-        trackBackendUserEvent(userId, value ? "Closed Topic" : "Reopened Topic", { topicId });
+        trackBackendUserEvent(userId, value ? "Closed Request" : "Reopened Request", { topicId });
         break;
       case "archived_at":
-        trackBackendUserEvent(userId, value ? "Archived Topic" : "Unarchived Topic", { topicId });
+        trackBackendUserEvent(userId, value ? "Archived Request" : "Unarchived Request", { topicId });
         break;
       case "name":
-        trackBackendUserEvent(userId, "Renamed Topic", { topicId });
+        trackBackendUserEvent(userId, "Renamed Request", { topicId });
         break;
     }
   }
@@ -40,7 +40,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
     // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
 
-    return trackBackendUserEvent(userId, "Created Topic", { origin: "unknown", topicName: event.item.name });
+    return trackBackendUserEvent(userId, "Created Request", { origin: "unknown", topicName: event.item.name });
   } else if (event.type === "update") {
     trackTopicChanges(userId, event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
@@ -115,11 +115,6 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
     tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
-  }
-
-  if (wasJustClosed) {
-    const topicCloser = userIdThatClosedTopic ?? "web-app";
-    trackBackendUserEvent(topicCloser, "Closed Topic", { topicId: event.item.id });
   }
 
   if (wasJustClosed && !isClosedByOwner) {

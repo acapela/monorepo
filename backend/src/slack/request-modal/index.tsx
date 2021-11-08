@@ -186,7 +186,7 @@ export function setupRequestModal(app: App) {
     });
 
     if (owner) {
-      trackBackendUserEvent(owner.id, "Created Topic", {
+      trackBackendUserEvent(owner.id, "Created Request", {
         origin: metadata.origin,
         topicName: topic.name,
       });

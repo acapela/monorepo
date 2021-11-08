@@ -75,7 +75,7 @@ export const SlackActionIds = {
   TrackEvent: "track-event",
 } as const;
 
-export type CreateRequestOrigin = AnalyticsEventsMap["Created Topic"]["origin"];
+export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];
 
 export type ViewMetadata = {
   open_request_modal: {
