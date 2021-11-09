@@ -1,11 +1,10 @@
 import { Request, Response, Router } from "express";
-import { get } from "lodash";
 
+import { getUserIdFromRequest } from "~backend/src/utils";
 import { db } from "~db";
-import { verifyJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 
-import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
+import { BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";
 
 export const router = Router();
@@ -18,22 +17,8 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   if (!attachmentId) {
     throw new BadRequestError("attachment id missing");
   }
-  const jwtToken = req.cookies["next-auth.session-token"];
-  if (!jwtToken) {
-    throw new BadRequestError("session token missing");
-  }
 
-  let session;
-  try {
-    session = verifyJWT(jwtToken);
-  } catch (e) {
-    throw new AuthenticationError();
-  }
-
-  const userId = get(session, "id");
-  if (!userId) {
-    throw new BadRequestError("user id missing");
-  }
+  const userId = getUserIdFromRequest(req);
 
   const attachment = await db.attachment.findFirst({
     where: {
