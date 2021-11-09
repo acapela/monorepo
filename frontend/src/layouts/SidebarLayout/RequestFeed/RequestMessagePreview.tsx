@@ -31,7 +31,7 @@ export const RequestMessagePreview = styledObserver(function RequestMessagePrevi
 
   return (
     <Popover anchorRef={anchorRef}>
-      <UIHolder currentUserId={currentUser.id}>
+      <UIHolder $currentUserId={currentUser.id}>
         <UIHint>
           <strong>{getMentionTypeLabel(lastCurrentUserTask.type as MentionType)}</strong> task from{" "}
           <strong>{messageToPreview.user.name}</strong>:
@@ -68,7 +68,7 @@ const wiggleAnimation = keyframes`
   }
 `;
 
-const UIHolder = styled(PopPresenceAnimator)<{ currentUserId: string }>`
+const UIHolder = styled(PopPresenceAnimator)<{ $currentUserId: string }>`
   ${theme.colors.layout.background.asBgWithReadableText};
 
   ${theme.radius.panel};
@@ -83,7 +83,7 @@ const UIHolder = styled(PopPresenceAnimator)<{ currentUserId: string }>`
 
   ${(props) => {
     return css`
-      & ${getStyledMentionForUserSelector(props.currentUserId)} {
+      & ${getStyledMentionForUserSelector(props.$currentUserId)} {
         display: inline-block;
         animation: ${wiggleAnimation} 1.5s both infinite;
       }

@@ -10,15 +10,16 @@ interface Props {
   children: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
+  hideLogo?: boolean;
 }
 
-export function FocusedActionLayout({ children, title, description }: Props) {
+export function FocusedActionLayout({ children, title, description, hideLogo }: Props) {
   const hasTypo = !!title || !!description;
   return (
     <UIHolder>
       <UIWindow>
         <UIHead>
-          <UILogo />
+          {!hideLogo && <UILogo />}
           {hasTypo && (
             <UITypo>
               {title && <UITitle>{title}</UITitle>}
@@ -84,6 +85,7 @@ const UITitle = styled.div`
 
 const UIDescription = styled.div`
   ${theme.typo.content.medium.secondary};
+  max-width: 40ch;
 `;
 
 const UILogo = styled(Logo)<{}>`

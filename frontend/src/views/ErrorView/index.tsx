@@ -9,20 +9,23 @@ import { Button } from "~ui/buttons/Button";
 interface Props {
   title?: ReactNode;
   description: ReactNode;
+  children?: ReactNode;
 }
 
-export function ErrorView({ title = "Something went wrong", description }: Props) {
+export function ErrorView({ title = "Something went wrong", description, children }: Props) {
   return (
-    <FocusedActionLayout title={title} description={description}>
+    <FocusedActionLayout hideLogo title={title} description={description}>
       <UIActions>
-        <Button
-          kind="primary"
-          onClick={() => {
-            router.push(routes.home);
-          }}
-        >
-          Go back to homepage
-        </Button>
+        {children || (
+          <Button
+            kind="primary"
+            onClick={() => {
+              router.push(routes.home);
+            }}
+          >
+            Go back to homepage
+          </Button>
+        )}
       </UIActions>
     </FocusedActionLayout>
   );

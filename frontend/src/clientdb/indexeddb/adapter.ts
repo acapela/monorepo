@@ -1,6 +1,7 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb";
 
 import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
+import { wait } from "~shared/time";
 
 /**
  * This is IndexedDB adapter for clientdb that allows persisting all the data locally.
@@ -34,7 +35,7 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
         return false;
       }
     },
-    async openDB({ name, tables, version }) {
+    async openDB({ name, tables, version, onTerminated }) {
       async function getOrReuseDb() {
         const existingConnection = existingConnections.get(name);
 
@@ -78,6 +79,7 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
               window.location.reload();
             },
             terminated() {
+              onTerminated?.();
               console.error("Creating db terminated");
             },
           })
@@ -90,20 +92,41 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
 
       const adapter: PersistanceDB = {
         async close() {
-          return db.close();
+          db.close();
         },
         async getTable<Data>(name: string) {
-          async function getTransaction() {
-            return await db.transaction([name], "readwrite").objectStore(name);
-          }
+          // Reusing write session instead of creating new one for each request reduced time of initial persistance (900 items) from ~10s to ~0.1s
+          // This was quite serious bug, as if you refreshed the page in the mid of this persistance, you could leave local database in very inconstant state
+          // that is impossible to recover from in easy way.
+          const getWriteSession = createTickMemoize(async function getTransaction(clean) {
+            const transaction = await db.transaction([name], "readwrite", { durability: "relaxed" });
+
+            // IDB transactions are made 'complete' when JS yields to event loop. We're not able (AFAIK) to be so quick to clean it quickly enough
+            // eg. setTimeout(clean, 0) will often be too late.
+            // Thus we artifically keep it alive for a moment (note that it will already be cleared from memoize)
+            // Not doing that risks reusing transaction that already 'yielded' and was auto-commited leading to error
+            async function keepAlive() {
+              await wait(5000);
+              transaction.removeEventListener("complete", keepAlive);
+            }
+
+            transaction.addEventListener("complete", keepAlive);
+
+            transaction.done.then(clean);
+
+            const store = transaction.objectStore(name);
+
+            return [store, transaction] as const;
+          });
+
           const tableAdapter: PersistanceTableAdapter<Data> = {
             async fetchItem(key) {
-              const tr = await getTransaction();
-              return tr.get(key);
+              const [store] = await getWriteSession();
+              return store.get(key);
             },
             async updateItem(key, input) {
-              const tr = await getTransaction();
-              const existingItem: Data | null = await tr.get(key);
+              const [store] = await getWriteSession();
+              const existingItem: Data | null = await store.get(key);
 
               if (existingItem === null) {
                 return false;
@@ -111,29 +134,30 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
 
               const updateData: Data = { ...existingItem, ...input };
 
-              await tr.put(updateData);
+              await store.put(updateData);
 
               return true;
             },
 
             async clearTable() {
-              const tr = await getTransaction();
-              await tr.clear();
+              const [store] = await getWriteSession();
+              await store.clear();
               return true;
             },
             async fetchAllItems() {
-              const tr = await getTransaction();
-              return tr.getAll();
+              const [store] = await getWriteSession();
+              return store.getAll();
             },
             async removeItem(itemId) {
-              const tr = await getTransaction();
-              await tr.delete(itemId);
+              const [store] = await getWriteSession();
+              await store.delete(itemId);
               return true;
             },
-            async saveItem(itemId, data) {
-              const tr = await getTransaction();
+            async saveItem(data) {
+              const [store] = await getWriteSession();
 
-              await tr.put(data);
+              await store.put(data);
+
               return true;
             },
           };
@@ -145,4 +169,30 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
       return adapter;
     },
   };
+}
+
+function createTickMemoize<R>(getter: (clean: () => void) => R, cleanup?: (value: R) => void) {
+  let valueBox: { value: R } | null = null;
+
+  function cleanValue() {
+    valueBox = null;
+  }
+
+  function getMemoized() {
+    if (valueBox) {
+      return valueBox.value;
+    }
+
+    const newValue = getter(cleanValue);
+    valueBox = { value: newValue };
+
+    setTimeout(() => {
+      valueBox = null;
+      cleanup?.(newValue);
+    }, 0);
+
+    return newValue;
+  }
+
+  return getMemoized;
 }

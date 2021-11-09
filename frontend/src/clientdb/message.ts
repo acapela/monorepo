@@ -3,8 +3,7 @@ import gql from "graphql-tag";
 import { memoize, uniq } from "lodash";
 import { observable } from "mobx";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { cachedComputed } from "~clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
