@@ -83,12 +83,14 @@ export type ViewMetadata = {
     slackTeamId: string;
     origin: CreateRequestOrigin;
     channelId?: string;
+    messageTs?: string;
     messageText?: string;
   };
   create_request: {
     requestToSlackUserIds?: string[];
     messageText?: string;
     channelId?: string;
+    messageTs?: string;
     origin: CreateRequestOrigin;
   };
 };
