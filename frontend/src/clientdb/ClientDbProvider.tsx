@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { logout } from "~frontend/auth/logout";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
@@ -79,13 +80,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   // If db is ready we track initial successful app load event on the backend
   useEffect(() => {
     if (db && userId) {
-      fetch("/api/backend/v1/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-        }),
-      });
+      trackEvent("Opened App");
     }
   }, [db, userId]);
 
