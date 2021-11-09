@@ -1,5 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { getHash } from "~shared/hash";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { createTimeout } from "~shared/time";
 
@@ -7,6 +10,12 @@ interface Input<S> {
   key?: string;
   initialValue: S;
   persistDebounce?: number;
+}
+
+function useTeamMemberHash() {
+  const currentUser = useAssertCurrentUser();
+  const team = useAssertCurrentTeam();
+  return useMemo(() => getHash(`${currentUser.id}$$${team.id}`), [currentUser, team]);
 }
 
 function readLocalStorageJSON<S>(key: string) {
@@ -24,26 +33,28 @@ function setLocalStorageJSON<S>(key: string, value: S) {
 }
 
 export function usePersistedState<S>({ key, initialValue, persistDebounce }: Input<S>) {
+  const userBoundKey = key + useTeamMemberHash();
+
   function getInitialValue() {
-    if (typeof localStorage === "undefined" || !key) {
+    if (typeof localStorage === "undefined" || !userBoundKey) {
       return initialValue;
     }
 
-    return readLocalStorageJSON<S>(key) ?? initialValue;
+    return readLocalStorageJSON<S>(userBoundKey) ?? initialValue;
   }
 
   const [value, setValue] = useState<S>(getInitialValue);
 
   const clear = useCallback(() => {
-    if (!key) return;
+    if (!userBoundKey) return;
 
-    localStorage.removeItem(key);
-  }, [key]);
+    localStorage.removeItem(userBoundKey);
+  }, [userBoundKey]);
 
   useDependencyChangeEffect(() => {
     function persist() {
-      if (!key) return;
-      setLocalStorageJSON(key, value);
+      if (!userBoundKey) return;
+      setLocalStorageJSON(userBoundKey, value);
     }
 
     if (!persistDebounce) {
@@ -52,7 +63,7 @@ export function usePersistedState<S>({ key, initialValue, persistDebounce }: Inp
     }
 
     return createTimeout(persist, persistDebounce);
-  }, [value, key, clear, initialValue, persistDebounce]);
+  }, [value, userBoundKey, clear, initialValue, persistDebounce]);
 
   return [value, setValue, clear] as const;
 }
