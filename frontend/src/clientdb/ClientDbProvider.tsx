@@ -1,15 +1,13 @@
 import { useApolloClient } from "@apollo/client";
-import axios from "axios";
-import { useEffect } from "emoji-mart/node_modules/@types/react";
 import { AnimatePresence } from "framer-motion";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { logout } from "~frontend/auth/logout";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { ErrorView } from "~frontend/views/ErrorView";
-import { assert, assertDefined } from "~shared/assert";
+import { assert } from "~shared/assert";
 import { devAssignWindowVariable } from "~shared/dev";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 import { Button } from "~ui/buttons/Button";
@@ -17,8 +15,6 @@ import { theme } from "~ui/theme";
 
 import { ClientDb, createNewClientDb, forceClientDbReload } from "./createNewClientDb";
 import { LoadingScreen } from "./LoadingScreen";
-
-const backendUrl = assertDefined(process.env.BACKEND_HOST, "process.env.BACKEND_HOST is not defined");
 
 const reactContext = createContext<ClientDb | null>(null);
 
@@ -83,8 +79,12 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   // If db is ready we track initial successful app load event on the backend
   useEffect(() => {
     if (db && userId) {
-      axios.post(`${backendUrl}/v1/setup`, {
-        userId,
+      fetch("/api/backend/v1/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+        }),
       });
     }
   }, [db, userId]);
