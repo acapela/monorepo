@@ -1,6 +1,7 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb";
 
 import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
+import { wait } from "~shared/time";
 
 /**
  * This is IndexedDB adapter for clientdb that allows persisting all the data locally.
@@ -98,7 +99,18 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
           // This was quite serious bug, as if you refreshed the page in the mid of this persistance, you could leave local database in very inconstant state
           // that is impossible to recover from in easy way.
           const getWriteSession = createTickMemoize(async function getTransaction(clean) {
-            const transaction = await db.transaction([name], "readwrite");
+            const transaction = await db.transaction([name], "readwrite", { durability: "relaxed" });
+
+            // IDB transactions are made 'complete' when JS yields to event loop. We're not able (AFAIK) to be so quick to clean it quickly enough
+            // eg. setTimeout(clean, 0) will often be too late.
+            // Thus we artifically keep it alive for a moment (note that it will already be cleared from memoize)
+            // Not doing that risks reusing transaction that already 'yielded' and was auto-commited leading to error
+            async function keepAlive() {
+              await wait(5000);
+              transaction.removeEventListener("complete", keepAlive);
+            }
+
+            transaction.addEventListener("complete", keepAlive);
 
             transaction.done.then(clean);
 
