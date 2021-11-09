@@ -21,6 +21,7 @@ import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { setupSlack } from "./slack/setup";
+import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
@@ -55,6 +56,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", calendarRoutes);
   app.use("/api", cronRoutes);
   app.use("/api", waitlistRoutes);
+  app.use("/api", tracking);
   app.use(attachmentsRoutes);
 }
 
