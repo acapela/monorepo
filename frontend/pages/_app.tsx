@@ -11,7 +11,6 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
-import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
@@ -36,7 +35,6 @@ export interface AppConfig {
   buildDate: string | undefined;
   userbackAccessToken: string | undefined;
   sentryDSN: string | undefined;
-  segmentAPIKey: string | undefined;
 }
 
 function initSentry(appConfig: AppConfig) {
@@ -66,7 +64,6 @@ export default function App({
   buildDate,
   userbackAccessToken,
   sentryDSN,
-  segmentAPIKey,
 }: AppProps & AppConfig): JSX.Element {
   // We need to remember this from first render, as getInitialProps is not run on client side navigation
   const appConfig = useConst(
@@ -78,8 +75,7 @@ export default function App({
         version,
         buildDate,
         userbackAccessToken,
-        sentryDSN: sentryDSN,
-        segmentAPIKey: segmentAPIKey,
+        sentryDSN,
       } as AppConfig)
   );
 
@@ -122,7 +118,6 @@ export default function App({
               <AppThemeProvider theme={theme}>
                 <CurrentTeamProvider>
                   <ClientDbProvider>
-                    <AnalyticsManager segmentAPIKey={appConfig.segmentAPIKey} />
                     <PromiseUIRenderer />
                     <TooltipsRenderer />
                     <ToastsRenderer />

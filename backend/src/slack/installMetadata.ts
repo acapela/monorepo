@@ -1,5 +1,3 @@
-import * as SlackBolt from "@slack/bolt";
-
 export type InstallMetadata = { teamId: string; redirectURL?: string; userId?: string };
 
 /**
@@ -9,7 +7,7 @@ export type InstallMetadata = { teamId: string; redirectURL?: string; userId?: s
  * - redirecting the user back to where they came from
  */
 
-export function parseMetadata({ metadata }: SlackBolt.Installation): InstallMetadata {
+export function parseMetadata({ metadata }: { metadata?: string }): InstallMetadata {
   if (!metadata) {
     throw new Error("Missing metadata");
   }

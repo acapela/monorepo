@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { assert } from "~shared/assert";
@@ -25,7 +24,6 @@ export const TeamMembersManager = observer(({ team }: Props) => {
     const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
     assert(teamMember, "did not find teamMember");
     teamMember.remove();
-    trackEvent("Account Removed User", { teamId: team.id, userId });
   };
 
   return (

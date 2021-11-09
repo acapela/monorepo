@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useInviteUser } from "~frontend/team/useInviteUser";
 import { isNotNullish } from "~shared/nullish";
@@ -31,7 +30,6 @@ export const InviteMemberForm = observer(({ team }: Props) => {
   const handleSubmit = () => {
     inviteUser({ variables: { input: { email, team_id: team.id } } });
     setEmail("");
-    trackEvent("Invite Sent", { inviteEmail: email, teamId: team.id });
   };
 
   useShortcut("Enter", handleSubmit, { isEnabled: isEmailAcceptable });

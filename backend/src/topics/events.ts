@@ -1,4 +1,5 @@
 import Sentry from "@sentry/node";
+import { updatedDiff } from "deep-object-diff";
 
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { Topic, db } from "~db";
@@ -11,18 +12,38 @@ import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
 
+function trackTopicChanges(event: HasuraEvent<Topic>) {
+  if (!event.userId) return;
+  const topicId = event.item.id;
+  const changes = updatedDiff(event.itemBefore || {}, event.item || {}) as Topic;
+  let key: keyof Topic;
+  for (key in changes) {
+    const value = changes[key];
+    switch (key) {
+      case "closed_by_user_id":
+        trackBackendUserEvent(event.userId, value ? "Closed Request" : "Reopened Request", { topicId });
+        break;
+      case "archived_at":
+        trackBackendUserEvent(event.userId, value ? "Archived Request" : "Unarchived Request", { topicId });
+        break;
+      case "name":
+        trackBackendUserEvent(event.userId, "Renamed Request", { topicId });
+        break;
+    }
+  }
+}
+
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (event.type === "create") {
     // This is a test event that will duplicate all the other create topic events.
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
     // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    trackBackendUserEvent(event.userId!, "Created Topic", { origin: "unknown", topicName: event.item.name });
-  }
-
-  if (event.type === "update") {
-    notifyTopicUpdates(event);
-    updateTopicEvents(event);
+    if (!event.userId) return;
+    return trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
+  } else if (event.type === "update") {
+    trackTopicChanges(event);
+    await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
   }
 }
 
@@ -96,13 +117,8 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
     tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
   }
 
-  if (wasJustClosed) {
-    const topicCloser = userIdThatClosedTopic ?? "web-app";
-    trackBackendUserEvent(topicCloser, "Closed Topic", { topicId: event.item.id });
-  }
-
   if (wasJustClosed && !isClosedByOwner) {
-    notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);
+    return notifyOwnerOfTopicClosure(ownerId, userIdThatClosedTopic as string, topic);
   }
 }
 
@@ -114,7 +130,7 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
 
   assert(topicOwner, `[Closing Topic][id=${topic.id}] Owner ${ownerId} not found.`);
 
-  sendNotificationPerPreference(
+  return sendNotificationPerPreference(
     topicOwner,
     topic.team_id,
     createClosureNotificationMessage({

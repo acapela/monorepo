@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
@@ -58,7 +57,6 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
 
     if (isAlsoArchiving) {
       topic.update({ archived_at: new Date().toISOString() });
-      trackEvent("Archived Topic", { topicId: topic.id });
     }
   };
 

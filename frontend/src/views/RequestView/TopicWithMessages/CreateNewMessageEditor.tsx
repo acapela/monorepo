@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -100,12 +99,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     }
 
     setContent(getEmptyRichContent());
-
-    trackEvent("Sent Message", {
-      messageType: type,
-      isReply: !!topicContext?.currentlyReplyingToMessageId,
-      hasAttachments: attachments.length > 0,
-    });
 
     handleStopReplyingToMessage();
 

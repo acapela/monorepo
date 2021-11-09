@@ -1,5 +1,7 @@
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { observer } from "mobx-react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import styled from "styled-components";
 
 import { TeamEntity } from "~frontend/clientdb/team";
@@ -14,6 +16,7 @@ import {
 } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 import { Button } from "~ui/buttons/Button";
 import { IconMinus } from "~ui/icons";
 import { SlackLogo } from "~ui/icons/logos/SlackLogo";
@@ -47,6 +50,27 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       variables: { input: { team_id: teamId, with_bot: !!withBot, redirectURL: isServer ? "" : location.href } },
     }
   );
+
+  const router = useRouter();
+  useEffect(() => {
+    // This shows an error toast if something went wrong during slack installation for the team.
+    // Since the URL query part that holds the error is only ever added from the server, we do not need to listen to
+    // further route changes.
+    const query = { ...router.query };
+    const slackInstallError = query[SLACK_INSTALL_ERROR_KEY];
+    if (slackInstallError) {
+      delete query[SLACK_INSTALL_ERROR_KEY];
+      addToast({
+        type: "error",
+        title:
+          slackInstallError == SLACK_WORKSPACE_ALREADY_USED_ERROR
+            ? "The Slack workspace you chose is already used for a different Acapela team."
+            : "An unknown error occured while trying to link your Slack workspace. We are looking into it!",
+        timeout: 3000,
+      });
+      router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+    }
+  }, [router]);
 
   return (
     <UISlackButton

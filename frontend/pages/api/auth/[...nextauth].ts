@@ -8,7 +8,7 @@ import SlackProvider from "next-auth/providers/slack";
 import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
-import { identifyBackendUserTeam, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { identifyBackendUserTeam, trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { Maybe } from "~shared/types";
@@ -128,6 +128,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           where: { id: user.id },
           data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
         });
+      },
+      signOut({ token }) {
+        trackBackendUserEvent(token.id as string, "Signed Out");
       },
     },
 

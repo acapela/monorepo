@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
@@ -77,8 +76,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       const { userId, type } = newMention;
       db.task.create({ message_id: message.id, user_id: userId, type });
     }
-
-    trackEvent("Edited Message", { messageId: message.id });
 
     clearPersistedContent();
     onSaved?.();

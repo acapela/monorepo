@@ -1,4 +1,4 @@
-import { isArray, isString } from "lodash";
+import { compact, isArray, isString } from "lodash";
 import markdown from "simple-markdown";
 
 import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
@@ -223,6 +223,10 @@ export function cleanupAst(ast: markdown.SingleASTNode[]): markdown.SingleASTNod
         i++;
       }
       currentAstEl = mergedNode;
+      if (!currentAstEl.content.length) {
+        // empty text node
+        continue;
+      }
     }
     outAst.push(currentAstEl);
   }
@@ -352,7 +356,7 @@ function transformNode(node: markdown.SingleASTNode, context: TransformContext =
   }
   if (typeMap.has(node.type)) {
     return {
-      text: textToString(node.content),
+      text: textToString(node.content) || " ",
       type: "text",
       marks: [
         {
@@ -383,10 +387,12 @@ function detectedAndTransformParagraphs(
   if (buffer.length !== 0) {
     paragraphs.push(buffer);
   }
-  return paragraphs.map((p) => ({
-    type: "paragraph",
-    content: p.map((n) => transformNode(n, context)),
-  }));
+  return paragraphs
+    .map((p) => ({
+      type: "paragraph",
+      content: compact(p.map((n) => transformNode(n, context))),
+    }))
+    .filter((p) => p.content.length);
 }
 
 export function transformToTipTapJSON(ast: markdown.SingleASTNode[], context: TransformContext = {}) {

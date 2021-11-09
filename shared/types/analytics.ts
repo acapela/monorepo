@@ -38,17 +38,18 @@ export type AnalyticsEventsMap = {
 
   // Topic related events
 
-  "Created Topic": {
+  "Created Request": {
     origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
     topicName: string;
   };
-  "Reopened Topic": { topicId: string };
-  "Closed Topic": { topicId: string };
+  "Reopened Request": { topicId: string };
+  "Closed Request": { topicId: string };
   // TODO: implement once we add delete functionality back
-  "Deleted Topic": { topicId: string };
+  "Deleted Request": { topicId: string };
   // we are not tracking automatic archives
-  "Archived Topic": { topicId: string };
-  "Renamed Topic": { topicId: string };
+  "Archived Request": { topicId: string };
+  "Unarchived Request": { topicId: string };
+  "Renamed Request": { topicId: string };
 
   // Message related events
 
@@ -63,9 +64,11 @@ export type AnalyticsEventsMap = {
   "Mark Task As Done": {
     taskType: RequestType;
     topicId: string;
-    origin: "webapp" | "slack-home" | "slack-live-message";
+    origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
   };
   "Added Due Date": { topicId: string; messageId: string };
+
+  "App Opened": void;
 
   // Slack
   "Used Slack Global Shortcut": { slackUserName: string };
