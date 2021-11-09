@@ -1,7 +1,6 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb";
 
 import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
-import { wait } from "~shared/time";
 
 /**
  * This is IndexedDB adapter for clientdb that allows persisting all the data locally.
@@ -95,37 +94,21 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
           db.close();
         },
         async getTable<Data>(name: string) {
-          // Reusing write session instead of creating new one for each request reduced time of initial persistance (900 items) from ~10s to ~0.1s
-          // This was quite serious bug, as if you refreshed the page in the mid of this persistance, you could leave local database in very inconstant state
-          // that is impossible to recover from in easy way.
-          const getWriteSession = createTickMemoize(async function getTransaction(clean) {
+          async function getStoreWriteSession() {
             const transaction = await db.transaction([name], "readwrite", { durability: "relaxed" });
-
-            // IDB transactions are made 'complete' when JS yields to event loop. We're not able (AFAIK) to be so quick to clean it quickly enough
-            // eg. setTimeout(clean, 0) will often be too late.
-            // Thus we artifically keep it alive for a moment (note that it will already be cleared from memoize)
-            // Not doing that risks reusing transaction that already 'yielded' and was auto-commited leading to error
-            async function keepAlive() {
-              await wait(5000);
-              transaction.removeEventListener("complete", keepAlive);
-            }
-
-            transaction.addEventListener("complete", keepAlive);
-
-            transaction.done.then(clean);
 
             const store = transaction.objectStore(name);
 
-            return [store, transaction] as const;
-          });
+            return store;
+          }
 
           const tableAdapter: PersistanceTableAdapter<Data> = {
             async fetchItem(key) {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
               return store.get(key);
             },
             async updateItem(key, input) {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
               const existingItem: Data | null = await store.get(key);
 
               if (existingItem === null) {
@@ -140,23 +123,40 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
             },
 
             async clearTable() {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
               await store.clear();
               return true;
             },
             async fetchAllItems() {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
               return store.getAll();
             },
             async removeItem(itemId) {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
               await store.delete(itemId);
               return true;
             },
+            async removeItems(itemIds) {
+              const store = await getStoreWriteSession();
+              for (const itemId of itemIds) {
+                await store.delete(itemId);
+              }
+
+              return true;
+            },
             async saveItem(data) {
-              const [store] = await getWriteSession();
+              const store = await getStoreWriteSession();
 
               await store.put(data);
+
+              return true;
+            },
+            async saveItems(itemsData) {
+              const store = await getStoreWriteSession();
+
+              for (const data of itemsData) {
+                await store.put(data);
+              }
 
               return true;
             },
@@ -169,30 +169,4 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
       return adapter;
     },
   };
-}
-
-function createTickMemoize<R>(getter: (clean: () => void) => R, cleanup?: (value: R) => void) {
-  let valueBox: { value: R } | null = null;
-
-  function cleanValue() {
-    valueBox = null;
-  }
-
-  function getMemoized() {
-    if (valueBox) {
-      return valueBox.value;
-    }
-
-    const newValue = getter(cleanValue);
-    valueBox = { value: newValue };
-
-    setTimeout(() => {
-      valueBox = null;
-      cleanup?.(newValue);
-    }, 0);
-
-    return newValue;
-  }
-
-  return getMemoized;
 }
