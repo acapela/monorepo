@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import { RefObject, useMemo } from "react";
 import { useList } from "react-use";
 
-import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
+import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
