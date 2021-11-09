@@ -20,6 +20,7 @@ import { router as calendarRoutes } from "./calendar/calendar";
 import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
+import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
 import { setupSlack } from "./slack/setup";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
@@ -48,13 +49,17 @@ function setupMiddleware(app: Application): void {
 }
 
 function setupRoutes(app: Application): void {
-  app.use("/api", authenticationRoutes);
-  app.use("/api", eventRoutes);
-  app.use("/api", actionRoutes);
-  app.use("/api", transcriptionRoutes);
-  app.use("/api", calendarRoutes);
-  app.use("/api", cronRoutes);
-  app.use("/api", waitlistRoutes);
+  app.use(
+    "/api",
+    authenticationRoutes,
+    eventRoutes,
+    actionRoutes,
+    recoverLoginRoutes,
+    transcriptionRoutes,
+    calendarRoutes,
+    cronRoutes,
+    waitlistRoutes
+  );
   app.use(attachmentsRoutes);
 }
 

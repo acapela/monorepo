@@ -4,18 +4,13 @@ import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { createJWT, signJWT } from "~shared/jwt";
 import { log } from "~shared/logger";
 import { routes } from "~shared/routes";
 
+import { getInviteURL } from "./utils";
+
 async function sendNewUserInviteNotification(user: User, team: Team, inviter: User) {
-  const inviteURL = `${process.env.FRONTEND_URL}${routes.invite}?${new URLSearchParams(
-    Object.entries({
-      jwt: signJWT(createJWT({ userId: user.id })),
-      teamId: team.id,
-      invitingUserId: inviter.id,
-    })
-  )}`;
+  const inviteURL = getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
   await sendNotificationIgnoringPreference(user, team.id, {
     email: {

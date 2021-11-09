@@ -40,7 +40,7 @@ export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(funct
       >
         <TextInputElem ref={inputRef} {...regularProps} onChange={combineCallbacks(props.onChange, handleChangeText)} />
       </FieldWithLabel>
-      <UIErrorMessage>{errorMessage}</UIErrorMessage>
+      {errorMessage && <UIErrorMessage>{errorMessage}</UIErrorMessage>}
     </UIHolder>
   );
 });
