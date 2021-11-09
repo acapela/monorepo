@@ -18,6 +18,7 @@ export * from "./entity/index";
 interface ClientDbConfig {
   db: PersistanceAdapterInfo;
   contexts?: DbContextInstance<unknown>[];
+  onDestroyRequest?: () => void;
 }
 
 type EntitiesClientsMap<Entities extends EntitiesMap> = {
@@ -31,17 +32,15 @@ type ClientDbExtra = {
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
 export async function createClientDb<Entities extends EntitiesMap>(
-  { db, contexts }: ClientDbConfig,
+  { db, contexts, onDestroyRequest }: ClientDbConfig,
   definitionsMap: Entities
 ): Promise<ClientDb<Entities>> {
   const definitions = Object.values(definitionsMap);
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const [persistanceDb, persistedCacheManager] = await Promise.all([
-    initializePersistance(definitions, db),
-    initializePersistedKeyValueCache(db),
-  ]);
+  const [persistanceDb, cacheTable] = await initializePersistance(definitions, db, onDestroyRequest);
+  const persistedCacheManager = await initializePersistedKeyValueCache(cacheTable);
 
   const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
 
@@ -109,7 +108,9 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   await Promise.all([persistanceLoadedPromise, firstSyncPromise]);
 
-  mapValues(entityClients, (client: EntityClient<unknown, unknown>) => client.persistanceLoaded);
+  const clientDbMethods: ClientDbExtra = {
+    destroy,
+  };
 
-  return { ...entityClients, destroy };
+  return { ...entityClients, ...clientDbMethods };
 }

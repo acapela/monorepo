@@ -71,7 +71,7 @@ export function createEntityPersistanceManager<Data, Connections>(
 
     // Persist all changes locally
     const cancelAdded = store.events.on("itemAdded", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
+      persistanceTable.saveItem(entity.getData());
     });
 
     const cancelRemoved = store.events.on("itemRemoved", (entity) => {
@@ -79,7 +79,7 @@ export function createEntityPersistanceManager<Data, Connections>(
     });
 
     const cancelUpdated = store.events.on("itemUpdated", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
+      persistanceTable.saveItem(entity.getData());
     });
 
     return () => {

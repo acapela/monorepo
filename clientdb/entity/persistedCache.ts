@@ -1,25 +1,6 @@
-import { PersistanceAdapterInfo } from "~clientdb";
+import { PersistanceTableAdapter } from "~clientdb";
 import { AsyncReturnType } from "~shared/types";
 import { ValueUpdater, updateValue } from "~shared/updateValue";
-
-/**
- * Note: it turned out not to be needed, as we started using flexsearch which indexes items really quickly.
- * I'm leaving this code in case we'll need it later. (which is likely)
- */
-
-/**
- * To avoid conflicts with other IndexedDb we always add clientdb string to database name.
- */
-const CACHE_DB_NAME = "clientdb-cache";
-const CACHE_DB_TABLE = "cache";
-
-function getStorageDatabaseName(suffix?: string) {
-  if (!suffix) {
-    return CACHE_DB_NAME;
-  }
-
-  return `${CACHE_DB_NAME}-${suffix}`;
-}
 
 interface CacheItem<V> {
   key: string;
@@ -29,20 +10,13 @@ interface CacheItem<V> {
 /**
  * Will setup persistance storage database, and if needed wipe out existing data on schema change.
  */
-export async function initializePersistedKeyValueCache({ adapter, nameSuffix }: PersistanceAdapterInfo) {
-  const databaseName = getStorageDatabaseName(nameSuffix);
-  const cacheDatabase = await adapter.openDB({
-    name: databaseName,
-    version: 1,
-    tables: [{ keyField: "key", name: CACHE_DB_TABLE }],
-  });
-  const cacheTable = await cacheDatabase.getTable<CacheItem<unknown>>(CACHE_DB_TABLE);
-
+export async function initializePersistedKeyValueCache(_cacheTable: PersistanceTableAdapter<unknown>) {
+  const cacheTable = _cacheTable as PersistanceTableAdapter<CacheItem<unknown>>;
   const allItems = await cacheTable.fetchAllItems();
 
   const cacheMap = new Map<string, unknown>();
 
-  allItems.forEach((item) => {
+  allItems.forEach((item: CacheItem<unknown>) => {
     cacheMap.set(item.key, item.value);
   });
 
@@ -56,7 +30,7 @@ export async function initializePersistedKeyValueCache({ adapter, nameSuffix }: 
 
   function set<V>(key: string, value: V): Promise<boolean> {
     cacheMap.set(key, value);
-    return cacheTable.saveItem(key, { key, value });
+    return cacheTable.saveItem({ key, value });
   }
 
   function update<V>(key: string, valueUpdated: ValueUpdater<V>) {
