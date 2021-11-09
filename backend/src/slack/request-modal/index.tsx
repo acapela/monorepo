@@ -58,6 +58,7 @@ export function setupRequestModal(app: App) {
     const { channel, message, trigger_id } = shortcut;
     const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
+      messageTs: message.ts,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       messageText: message.text || "",
@@ -171,6 +172,7 @@ export function setupRequestModal(app: App) {
       ...(await LiveTopicMessage(topic)),
       token,
       channel: channelId,
+      thread_ts: metadata.messageTs,
     });
 
     if (!response.ok) {

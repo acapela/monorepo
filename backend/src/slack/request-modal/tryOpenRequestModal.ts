@@ -127,7 +127,7 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
 }
 
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
-  const { channelId, slackUserId, slackTeamId, messageText, origin } = data;
+  const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin } = data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
 
   const [user, team] = await Promise.all([
@@ -157,7 +157,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     }
   }
 
-  await openView(TopicModal({ requestToSlackUserIds, messageText, channelId, origin }));
+  await openView(TopicModal({ requestToSlackUserIds, messageText, channelId, messageTs, origin }));
 
   return { user };
 }
