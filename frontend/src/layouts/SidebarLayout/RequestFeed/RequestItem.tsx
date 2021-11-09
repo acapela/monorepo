@@ -23,9 +23,8 @@ interface Props {
   topic: TopicEntity;
 }
 
-const getRelativeDueTimeLabel = (rawDate: string) => {
+const getRelativeDueTimeLabel = (dueDate: Date) => {
   const now = new Date();
-  const dueDate = new Date(rawDate);
   const dayOfDueDate = startOfDay(dueDate);
   const today = startOfDay(now);
 
@@ -87,7 +86,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
 
               {unfinishedTaskWithEarliestDueDate && (
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.due_at!)}</>
+                <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.dueDate!)}</>
               )}
             </UIFeedItemSubTitle>
           </UIFeedItemLabels>

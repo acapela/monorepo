@@ -46,7 +46,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
     message.dueDate = date;
   };
 
-  const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();
+  const calendarInitialValue = currentDueDate ?? getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -117,7 +117,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
           isDisabled={message.topic?.isClosed}
           data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
         >
-          {currentDueDate ? upperFirst(formatRelative(new Date(currentDueDate), new Date())) : null}
+          {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : null}
         </Button>
       </UITriggerHolder>
     </>
