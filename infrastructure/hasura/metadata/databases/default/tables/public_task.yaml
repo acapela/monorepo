@@ -25,7 +25,6 @@ insert_permissions:
               _eq: X-Hasura-User-Id
     columns:
     - done_at
-    - due_at
     - id
     - message_id
     - message_task_due_date_id
@@ -38,7 +37,6 @@ select_permissions:
     columns:
     - created_at
     - done_at
-    - due_at
     - id
     - message_id
     - message_task_due_date_id
@@ -58,7 +56,6 @@ update_permissions:
     check: null
     columns:
     - done_at
-    - due_at
     - message_task_due_date_id
     - seen_at
     filter:
