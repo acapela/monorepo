@@ -11,6 +11,7 @@ import { handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserUpdates } from "~backend/src/users/events";
 import { log } from "~shared/logger";
 
+import { handleTaskDueDateChanges } from "../tasks/messageTaskDueDateHandler";
 import { hasuraEvents } from "./eventHandlers";
 import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
@@ -25,6 +26,7 @@ hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdate
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageChanges);
 hasuraEvents.addHandler("message_reaction_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageReactionChanges);
 hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE"], handleTaskChanges);
+hasuraEvents.addHandler("message_task_due_date_updates", ["INSERT", "UPDATE"], handleTaskDueDateChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addHandler("user_updates", ["INSERT", "UPDATE"], handleUserUpdates);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);

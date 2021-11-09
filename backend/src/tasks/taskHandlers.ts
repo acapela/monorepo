@@ -75,13 +75,6 @@ async function onTaskUpdate(task: Task, taskBefore: Task, userId: string) {
     });
   }
 
-  if (task.due_at && task.due_at !== taskBefore.due_at) {
-    trackBackendUserEvent(userId, "Added Due Date", {
-      topicId: topic.id,
-      messageId: task.message_id,
-    });
-  }
-
   tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
 
   const amountOfOpenTasksLeft = await db.task.count({
