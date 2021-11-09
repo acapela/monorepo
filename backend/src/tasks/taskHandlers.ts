@@ -68,7 +68,7 @@ async function onTaskUpdate(task: Task, taskBefore: Task, userId: string) {
   assert(topic, "must have topic");
 
   if (task.done_at && task.done_at !== taskBefore.done_at) {
-    trackBackendUserEvent(userId, "Mark Task As Done", {
+    trackBackendUserEvent(userId, "Marked Task As Done", {
       taskType: task.type as RequestType,
       topicId: topic.id,
       origin: "unknown",
