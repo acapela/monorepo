@@ -1,33 +1,54 @@
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
 import styled, { keyframes } from "styled-components";
 
 import { Logo } from "~frontend/ui/Logo";
 import { useUnmountPresence } from "~frontend/ui/presence";
+import { useWait } from "~shared/hooks/useWait";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
 
 interface Props {
   loadingNotice?: string;
+  longLoadingFallback?: {
+    timeout: number;
+    fallbackNode: ReactNode;
+    hint?: string;
+  };
 }
 
-export function LoadingScreen({ loadingNotice }: Props) {
+export function LoadingScreen({ loadingNotice, longLoadingFallback }: Props) {
+  const isTakingTooLong = useWait(longLoadingFallback?.timeout ?? 5000, !!longLoadingFallback);
+
   const isMounted = useUnmountPresence(200);
 
   const shouldShowNoticeInstantly = !!loadingNotice;
 
-  const loadingNoticeToShow = loadingNotice ?? "Acapela is loading...";
+  function getNoticeToShow() {
+    if (isTakingTooLong && longLoadingFallback?.hint) {
+      return longLoadingFallback.hint;
+    }
+
+    return loadingNotice ?? "Acapela is loading...";
+  }
+
+  const loadingNoticeToShow = getNoticeToShow();
 
   return (
     <BodyPortal>
       <UIHolder $isVisible={isMounted}>
-        <Logo />
-        <UILoadingLabel
-          presenceStyles={{ opacity: [0, 0.6] }}
-          transition={{ delay: shouldShowNoticeInstantly ? 0 : 1, duration: 1 }}
-        >
-          {loadingNoticeToShow}
-        </UILoadingLabel>
+        <UIMain layout="position">
+          <Logo />
+          <UILoadingLabel
+            presenceStyles={{ opacity: [0, 0.6] }}
+            transition={{ delay: shouldShowNoticeInstantly ? 0 : 1, duration: 1 }}
+          >
+            {loadingNoticeToShow}
+          </UILoadingLabel>
+        </UIMain>
+
+        {isTakingTooLong && longLoadingFallback?.fallbackNode}
       </UIHolder>
     </BodyPortal>
   );
@@ -69,4 +90,12 @@ const UIHolder = styled(motion.div)<{ $isVisible: boolean }>`
 
 const UILoadingLabel = styled(PresenceAnimator)`
   ${theme.typo.label.medium};
+`;
+
+const UIMain = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 30px;
 `;
