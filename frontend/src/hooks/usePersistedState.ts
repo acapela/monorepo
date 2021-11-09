@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
+import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { getHash } from "~shared/hash";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { createTimeout } from "~shared/time";
@@ -13,9 +13,16 @@ interface Input<S> {
 }
 
 function useTeamMemberHash() {
-  const currentUser = useAssertCurrentUser();
-  const team = useAssertCurrentTeam();
-  return useMemo(() => getHash(`${currentUser.id}$$${team.id}`), [currentUser, team]);
+  const user = useCurrentUserTokenData();
+  const team = useCurrentTeam();
+
+  return useMemo(() => {
+    if (!user || !team) {
+      return "";
+    }
+
+    return getHash(`${user.id}$$${team.id}`);
+  }, [user, team]);
 }
 
 function readLocalStorageJSON<S>(key: string) {

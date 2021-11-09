@@ -9,7 +9,7 @@ import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
-import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
+import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
