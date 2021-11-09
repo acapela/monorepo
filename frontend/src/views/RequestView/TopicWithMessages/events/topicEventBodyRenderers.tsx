@@ -10,8 +10,8 @@ interface TopicEventRenderer {
 }
 
 const UserClosedTopicEvent: TopicEventRenderer = {
-  isMatch({ actor_id, topic_event_topic }: TopicEventEntity) {
-    return actor_id !== null && topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
+  isMatch({ actor_id, topic_from_closed_at, topic_to_closed_at }: TopicEventEntity) {
+    return actor_id !== null && topic_from_closed_at === null && topic_to_closed_at !== null;
   },
   render(event: TopicEventEntity) {
     return (
@@ -23,8 +23,8 @@ const UserClosedTopicEvent: TopicEventRenderer = {
 };
 
 const AutomaticClosedTopicEvent: TopicEventRenderer = {
-  isMatch({ actor_id, topic_event_topic }: TopicEventEntity) {
-    return actor_id === null && topic_event_topic.from_closed_at === null && topic_event_topic.to_closed_at !== null;
+  isMatch({ actor_id, topic_from_closed_at, topic_to_closed_at }: TopicEventEntity) {
+    return actor_id === null && topic_from_closed_at === null && topic_to_closed_at !== null;
   },
   render(event: TopicEventEntity) {
     return (
@@ -37,8 +37,8 @@ const AutomaticClosedTopicEvent: TopicEventRenderer = {
 };
 
 const ReopenedTopicEvent: TopicEventRenderer = {
-  isMatch({ topic_event_topic }: TopicEventEntity) {
-    return topic_event_topic.from_closed_at !== null && topic_event_topic.to_closed_at === null;
+  isMatch({ topic_from_closed_at, topic_to_closed_at }: TopicEventEntity) {
+    return topic_from_closed_at !== null && topic_to_closed_at === null;
   },
   render(event: TopicEventEntity) {
     return (
@@ -50,8 +50,8 @@ const ReopenedTopicEvent: TopicEventRenderer = {
 };
 
 const ArchivedTopicEvent: TopicEventRenderer = {
-  isMatch({ topic_event_topic }: TopicEventEntity) {
-    return topic_event_topic.from_archived_at === null && topic_event_topic.to_archived_at !== null;
+  isMatch({ topic_from_archived_at, topic_to_archived_at }: TopicEventEntity) {
+    return topic_from_archived_at === null && topic_to_archived_at !== null;
   },
   render(event: TopicEventEntity) {
     return (
@@ -63,8 +63,8 @@ const ArchivedTopicEvent: TopicEventRenderer = {
 };
 
 const UnarchivedTopicEvent: TopicEventRenderer = {
-  isMatch({ topic_event_topic }: TopicEventEntity) {
-    return topic_event_topic.from_archived_at !== null && topic_event_topic.to_archived_at === null;
+  isMatch({ topic_from_archived_at, topic_to_archived_at }: TopicEventEntity) {
+    return topic_from_archived_at !== null && topic_to_archived_at === null;
   },
   render(event: TopicEventEntity) {
     return (
@@ -76,14 +76,14 @@ const UnarchivedTopicEvent: TopicEventRenderer = {
 };
 
 const RenamedTopicEvent: TopicEventRenderer = {
-  isMatch({ topic_event_topic }: TopicEventEntity) {
-    return topic_event_topic.from_name !== null && topic_event_topic.to_name !== null;
+  isMatch({ topic_from_name, topic_to_name }: TopicEventEntity) {
+    return topic_from_name !== null && topic_to_name !== null;
   },
-  render({ actor, topic_event_topic }: TopicEventEntity): ReactNode {
-    const { from_name, to_name } = topic_event_topic;
+  render({ actor, topic_from_name, topic_to_name }: TopicEventEntity): ReactNode {
     return (
       <>
-        <UIBold>{actor?.name}</UIBold> renamed request from <UIBold>{from_name}</UIBold> to <UIBold>{to_name}</UIBold>{" "}
+        <UIBold>{actor?.name}</UIBold> renamed request from <UIBold>{topic_from_name}</UIBold> to{" "}
+        <UIBold>{topic_to_name}</UIBold>{" "}
       </>
     );
   },

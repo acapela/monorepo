@@ -48,6 +48,12 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
 }
 
 async function updateTopicEvents(event: HasuraEvent<Topic>) {
+  // All user-originated events are handled in the frontend
+  const isUpdateOriginatedFromSystem = !event.userId;
+  if (!isUpdateOriginatedFromSystem) {
+    return;
+  }
+
   const topicNow = event.item;
   const topicBefore = event.itemBefore;
 
@@ -59,13 +65,8 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        actor_id: event.userId,
-        topic_event_topic: {
-          create: {
-            from_closed_at: topicBefore.closed_at,
-            to_closed_at: topicNow.closed_at,
-          },
-        },
+        topic_from_closed_at: topicBefore.closed_at,
+        topic_to_closed_at: topicNow.closed_at,
       },
     });
   }
@@ -75,29 +76,8 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
     await db.topic_event.create({
       data: {
         topic_id: topicNow.id,
-        actor_id: event.userId,
-        topic_event_topic: {
-          create: {
-            from_archived_at: topicBefore.archived_at,
-            to_archived_at: topicNow.archived_at,
-          },
-        },
-      },
-    });
-  }
-
-  const isNameChanged = topicNow.name !== topicBefore.name;
-  if (isNameChanged) {
-    await db.topic_event.create({
-      data: {
-        topic_id: topicNow.id,
-        actor_id: event.userId,
-        topic_event_topic: {
-          create: {
-            from_name: topicBefore.name,
-            to_name: topicNow.name,
-          },
-        },
+        topic_from_archived_at: topicBefore.archived_at,
+        topic_to_archived_at: topicNow.archived_at,
       },
     });
   }

@@ -38,6 +38,7 @@ import {
   Topic_Bool_Exp,
   Topic_Constraint,
   Topic_Event_Bool_Exp,
+  Topic_Event_Insert_Input,
   Topic_Insert_Input,
   Topic_Set_Input,
   Transcription_Bool_Exp,
@@ -98,6 +99,7 @@ type InsertTypeMap = {
   message: Message_Insert_Input;
   message_reaction: Message_Reaction_Insert_Input;
   attachment: Attachment_Insert_Input;
+  topic_event: Topic_Event_Insert_Input;
   last_seen_message: Last_Seen_Message_Insert_Input;
 };
 
