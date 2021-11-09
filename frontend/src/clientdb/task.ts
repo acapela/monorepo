@@ -4,12 +4,14 @@ import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
+import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
+// TODO: remove due_at
 const taskFragment = gql`
   fragment Task on task {
     id
@@ -21,6 +23,7 @@ const taskFragment = gql`
     type
     updated_at
     due_at
+    message_task_due_date_id
   }
 `;
 
@@ -34,13 +37,14 @@ export const taskEntity = defineEntity<TaskFragment>({
       done_at: null,
       seen_at: null,
       due_at: null,
+      message_task_due_date_id: null,
       ...getGenericDefaultData(),
     };
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
-    insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
-    updateColumns: ["done_at", "due_at", "seen_at"],
+    insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id", "message_task_due_date_id"],
+    updateColumns: ["done_at", "due_at", "seen_at", "message_task_due_date_id"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((task, { getEntity, getContextValue }) => {
@@ -78,6 +82,12 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get isDone() {
       return !!task.done_at;
+    },
+    get dueDate() {
+      if (!task.message_task_due_date_id) {
+        return null;
+      }
+      return getEntity(messageTaskDueDateEntity).findById(task.message_task_due_date_id) ?? null;
     },
   };
 
