@@ -1,16 +1,20 @@
 table:
-  name: task
+  name: message_task_due_date
   schema: public
 object_relationships:
 - name: message
   using:
     foreign_key_constraint_on: message_id
-- name: message_task_due_date
+array_relationships:
+- name: tasks
   using:
-    foreign_key_constraint_on: message_task_due_date_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+    manual_configuration:
+      column_mapping:
+        id: message_task_due_date_id
+      insertion_order: null
+      remote_table:
+        name: task
+        schema: public
 insert_permissions:
 - permission:
     backend_only: false
@@ -24,28 +28,20 @@ insert_permissions:
             user_id:
               _eq: X-Hasura-User-Id
     columns:
-    - done_at
-    - due_at
+    - created_at
+    - due_date
     - id
     - message_id
-    - message_task_due_date_id
-    - seen_at
-    - type
-    - user_id
+    - updated_at
   role: user
 select_permissions:
 - permission:
     columns:
     - created_at
-    - done_at
-    - due_at
+    - due_date
+    - updated_at
     - id
     - message_id
-    - message_task_due_date_id
-    - seen_at
-    - type
-    - updated_at
-    - user_id
     filter:
       message:
         topic:
@@ -57,10 +53,7 @@ update_permissions:
 - permission:
     check: null
     columns:
-    - done_at
-    - due_at
-    - message_task_due_date_id
-    - seen_at
+    - due_date
     filter:
       message:
         topic:
@@ -75,21 +68,3 @@ delete_permissions:
         user_id:
           _eq: X-Hasura-User-Id
   role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
-      columns: "*"
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: task_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 5
-    timeout_sec: 30
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
