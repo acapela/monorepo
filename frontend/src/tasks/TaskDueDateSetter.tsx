@@ -36,14 +36,14 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const currentDueDate = message.tasks.first?.due_at;
+  const currentDueDate = message.dueDate;
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
   const handleSubmit = async (date: Date | null) => {
     closeCalendar();
-    message.tasks.all.forEach((task) => task.update({ due_at: date?.toISOString() ?? null }));
+    message.dueDate = date;
   };
 
   const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();
