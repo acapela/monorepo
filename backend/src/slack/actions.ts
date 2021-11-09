@@ -165,7 +165,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     }
 
     if (user) {
-      trackBackendUserEvent(user.id, "Mark Task As Done", {
+      trackBackendUserEvent(user.id, "Marked Task As Done", {
         taskType: task.type as RequestType,
         topicId: task.message.topic_id,
         origin: isCalledFromSlackHome ? "slack-home" : "slack-live-message",
