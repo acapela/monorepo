@@ -22,6 +22,7 @@ import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middle
 import { router as eventRoutes } from "./events/events";
 import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
 import { setupSlack } from "./slack/setup";
+import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
@@ -58,7 +59,8 @@ function setupRoutes(app: Application): void {
     transcriptionRoutes,
     calendarRoutes,
     cronRoutes,
-    waitlistRoutes
+    waitlistRoutes,
+    tracking
   );
   app.use(attachmentsRoutes);
 }

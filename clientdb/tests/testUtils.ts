@@ -82,7 +82,13 @@ export const mockPersistanceAdapter: PersistanceAdapterInfo = {
             async removeItem() {
               return true;
             },
+            async removeItems() {
+              return true;
+            },
             async saveItem() {
+              return true;
+            },
+            async saveItems() {
               return true;
             },
             async updateItem() {
