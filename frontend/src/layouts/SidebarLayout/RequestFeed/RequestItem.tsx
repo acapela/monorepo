@@ -70,7 +70,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
       </AnimatePresence>
 
       <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
-        <UIFeedItem isHighlighted={isHighlighted} ref={elementRef}>
+        <UIFeedItem $isHighlighted={isHighlighted} ref={elementRef}>
           <RequestParticipants topic={topic} />
           <UIFeedItemLabels>
             <HStack alignItems="center">
@@ -97,7 +97,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   );
 });
 
-const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
+const UIFeedItem = styled.a<{ $isHighlighted?: boolean }>`
   display: flex;
   ${theme.box.item};
   ${theme.spacing.actions.asGap};
@@ -112,7 +112,7 @@ const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   }
 
   ${(props) =>
-    props.isHighlighted &&
+    props.$isHighlighted &&
     css`
       &&& {
         ${theme.colors.layout.backgroundAccent.active.asBg}
@@ -131,7 +131,7 @@ const UIFeedItemTitle = styled.h6`
   ${theme.typo.content.semibold.resetLineHeight};
 `;
 
-const UIBubble = styled.div`
+const UIBubble = styled.div<{}>`
   ${theme.radius.circle}
   margin-left: 6px;
   width: 16px;
