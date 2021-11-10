@@ -127,6 +127,10 @@ export async function handleTopicMemberChanges(event: HasuraEvent<TopicMember>) 
     return;
   }
 
+  /**
+   * We need to bump all the timestamps of topic related entities for which access depends on topic membership.
+   * Otherwise ClientDb users will have missing data for entities older than their membership.
+   */
   const updated_at = new Date().toISOString();
   const { topic_id } = event.item;
   await db.$transaction([
