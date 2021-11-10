@@ -7,17 +7,7 @@ export const richEditorContentCss = css`
   .ProseMirror {
     outline: none;
     /* 
-      ProseMirror core styles (tiptap/packages/core/src/style.ts) will get injected async as a script
-      as the Editor loads. This creates a race condition between our global styles and
-      the Prosemirror core styles. 
-      
-      Having this race condition means that the global styles will load first. The content
-      will look a certain way, then the core Prosemirror core styles will be loaded (500ms later),
-      and the content will have a slight movement, e.g. white spaces will appear or disappear and 
-      @ symbols would move up and down.
-      
-      The properties below are directly copied over from tiptap/packages/core/src/style.ts. Having
-      these here prevents this movement to occur.
+     Prevents https://github.com/ueberdosis/tiptap/issues/2143#event-5590927835
      */
     word-wrap: break-word;
     white-space: pre-wrap;
