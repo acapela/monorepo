@@ -194,14 +194,16 @@ export const NewRequest = observer(function NewRequest() {
 
           <AnimatePresence exitBeforeEnter>
             <UINextStepPrompt
-              key={nextStepPromptLabel}
+              // Next step label can be empty so make sure we use some key
+              key={nextStepPromptLabel || "no-step"}
               layoutId="UINextStepPrompt"
               layout="position"
               initial={{ opacity: 0 }}
               animate={{ opacity: hasAnyTextContent ? 1 : 0 }}
               exit={{ opacity: 0 }}
             >
-              {nextStepPromptLabel}
+              {/* Avoid height flicker if there is no next prompt by adding nbsp */}
+              {nextStepPromptLabel}&nbsp;
             </UINextStepPrompt>
           </AnimatePresence>
         </UIEditableParts>
