@@ -45,6 +45,7 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
+    - created_at
     - id
     - name
     - owner_id
