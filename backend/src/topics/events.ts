@@ -2,7 +2,7 @@ import Sentry from "@sentry/node";
 import { updatedDiff } from "deep-object-diff";
 
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
-import { Topic, db } from "~db";
+import { Topic, TopicMember, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isEqualForPick } from "~shared/object";
@@ -120,4 +120,20 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
       topicURL: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
     })
   );
+}
+
+export async function handleTopicMemberChanges(event: HasuraEvent<TopicMember>) {
+  if (event.type !== "create") {
+    return;
+  }
+
+  const updated_at = new Date().toISOString();
+  const { topic_id } = event.item;
+  await db.$transaction([
+    db.topic.update({ where: { id: topic_id }, data: { updated_at } }),
+    db.topic_slack_message.updateMany({ where: { topic_id }, data: { updated_at } }),
+    db.message.updateMany({ where: { topic_id }, data: { updated_at } }),
+    db.message_reaction.updateMany({ where: { message: { topic_id } }, data: { updated_at } }),
+    db.task.updateMany({ where: { message: { topic_id } }, data: { updated_at } }),
+  ]);
 }
