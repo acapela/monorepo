@@ -85,7 +85,11 @@ export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEv
 
 export type AnalyticsGroupsMap = {
   Team: {
-    teamName: string;
-    teamId: string;
+    // reserved traits available here: https://segment.com/docs/connections/spec/group/#traits
+    id: string;
+    name: string;
+    slug: string;
+    plan: "trial" | "free" | "premium";
+    createdAt: string;
   };
 };

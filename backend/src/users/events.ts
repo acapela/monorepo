@@ -15,7 +15,13 @@ export async function handleUserUpdates(event: HasuraEvent<User>) {
     const team = await db.team.findFirst({ where: { id: userNow.current_team_id } });
     assert(team, "Team does not exist");
 
-    identifyBackendUserTeam(userNow.id, team.id, { teamId: team.id, teamName: team.name });
+    identifyBackendUserTeam(userNow.id, team.id, {
+      id: team.id,
+      name: team.name,
+      slug: team.slug,
+      plan: "trial",
+      createdAt: team.created_at,
+    });
     trackBackendUserEvent(userNow.id, "Account Added User", {
       teamId: team.id,
       userEmail: userNow.email,
