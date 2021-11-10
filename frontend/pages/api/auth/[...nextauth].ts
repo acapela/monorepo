@@ -94,7 +94,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                   name: team.name,
                   slug: team.slug,
                   plan: "trial",
-                  createdAt: team.created_at,
+                  createdAt: team.created_at.toISOString(),
                 });
               }
             }
