@@ -45,7 +45,7 @@ function getTaskCompletionCTA(pendingTasks: TaskEntity[]): string {
   }
 
   if (pendingTasks.length > 1) {
-    return "Mark All as Done";
+    return "Mark all as done";
   }
   const taskType = pendingTasks[0].type;
   if (taskType === REQUEST_READ) {
