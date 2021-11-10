@@ -90,6 +90,6 @@ export type AnalyticsGroupsMap = {
     name: string;
     slug: string;
     plan: "trial" | "free" | "premium";
-    createdAt: string;
+    createdAt: Date;
   };
 };
