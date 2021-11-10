@@ -66,7 +66,7 @@ export function ItemsDropdown<I>({
   const maxHeight = windowHeight - menuBoundingBox.top - 20;
 
   return (
-    <UIMenu maxHeight={maxHeight} ref={menuRef}>
+    <UIMenu $maxHeight={maxHeight} ref={menuRef}>
       {items.map((item, i) => {
         const itemKey = keyGetter(item);
         const isSelected = getIsItemSelected(item);
@@ -92,11 +92,11 @@ export function ItemsDropdown<I>({
   );
 }
 
-const UIMenu = styled(PopPresenceAnimator)<{ maxHeight?: number }>`
-  ${({ maxHeight }) =>
-    maxHeight &&
+const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
+  ${({ $maxHeight }) =>
+    $maxHeight &&
     css`
-      max-height: ${maxHeight}px;
+      max-height: ${$maxHeight}px;
     `}
   overflow-y: auto;
   width: 100%;

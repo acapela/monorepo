@@ -21,7 +21,7 @@ export const TextButton = styledForwardRef<HTMLButtonElement, ButtonProps>(funct
   ref
 ) {
   return (
-    <UIButton ref={ref} kind={kind} isWide={isWide} onClick={onClick} {...htmlProps}>
+    <UIButton ref={ref} $kind={kind} $isWide={isWide} onClick={onClick} {...htmlProps}>
       {children}
     </UIButton>
   );
@@ -52,8 +52,8 @@ const kindStyles = {
 type TextButtonKind = keyof typeof kindStyles;
 
 export const UIButton = styled(motion.button)<{
-  kind: TextButtonKind;
-  isWide?: boolean;
+  $kind: TextButtonKind;
+  $isWide?: boolean;
   inline?: boolean;
 }>`
   border: none;
@@ -65,12 +65,12 @@ export const UIButton = styled(motion.button)<{
   cursor: pointer;
 
   ${(props) =>
-    props.isWide &&
+    props.$isWide &&
     css`
       width: 100%;
     `}
 
-  ${(props) => kindStyles[props.kind]}
+  ${(props) => kindStyles[props.$kind]}
 
   ${(props) =>
     props.inline &&
