@@ -20,7 +20,7 @@ export async function handleUserUpdates(event: HasuraEvent<User>) {
       name: team.name,
       slug: team.slug,
       plan: "trial",
-      createdAt: team.created_at.toISOString(),
+      createdAt: team.created_at,
     });
     trackBackendUserEvent(userNow.id, "Account Added User", {
       teamId: team.id,
