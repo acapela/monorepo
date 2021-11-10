@@ -95,11 +95,16 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
         },
         async getTable<Data>(name: string) {
           async function getStoreWriteSession() {
-            const transaction = await db.transaction([name], "readwrite", { durability: "relaxed" });
+            try {
+              const transaction = await db.transaction([name], "readwrite", { durability: "relaxed" });
 
-            const store = transaction.objectStore(name);
+              const store = transaction.objectStore(name);
 
-            return store;
+              return store;
+            } catch (error) {
+              console.error(`Failed to get transaction for table ${name}`);
+              throw error;
+            }
           }
 
           const tableAdapter: PersistanceTableAdapter<Data> = {
