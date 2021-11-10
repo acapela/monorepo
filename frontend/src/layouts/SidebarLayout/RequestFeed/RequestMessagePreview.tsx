@@ -9,15 +9,22 @@ import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
 import { MentionType, getMentionTypeLabel } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
-import { Popover } from "~ui/popovers/Popover";
+import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicEntity;
+  placement?: PopoverPlacement;
+  maxLines?: number;
   anchorRef: RefObject<HTMLElement>;
 }
 
-export const RequestMessagePreview = styledObserver(function RequestMessagePreview({ topic, anchorRef }: Props) {
+export const RequestMessagePreview = styledObserver(function RequestMessagePreview({
+  topic,
+  placement,
+  maxLines = 20,
+  anchorRef,
+}: Props) {
   const currentUser = useAssertCurrentUser();
   const lastCurrentUserTask = topic.tasks.query({ isAssignedToSelf: true, isDone: false }).last;
 
@@ -30,7 +37,7 @@ export const RequestMessagePreview = styledObserver(function RequestMessagePrevi
   if (!messageToPreview.user) return null;
 
   return (
-    <Popover anchorRef={anchorRef}>
+    <Popover anchorRef={anchorRef} placement={placement}>
       <UIHolder $currentUserId={currentUser.id}>
         <UIHint>
           <strong>{getMentionTypeLabel(lastCurrentUserTask.type as MentionType)}</strong> task from{" "}
@@ -38,14 +45,13 @@ export const RequestMessagePreview = styledObserver(function RequestMessagePrevi
         </UIHint>
 
         <MessageLikeContent user={messageToPreview.user} date={new Date(messageToPreview.created_at)}>
-          <UIMessagePreview>
+          <UIMessagePreview $maxLines={maxLines}>
             <MessageText content={messageToPreview.content} />
           </UIMessagePreview>
         </MessageLikeContent>
       </UIHolder>
     </Popover>
   );
-  return null;
 })``;
 
 const WIGGLE_MAX = 1;
@@ -91,10 +97,11 @@ const UIHolder = styled(PopPresenceAnimator)<{ $currentUserId: string }>`
   }}
 `;
 
-const UIMessagePreview = styled.div`
+const UIMessagePreview = styled.div<{ $maxLines: number }>`
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 20;
+  -webkit-line-clamp: ${(props) => props.$maxLines};
+  line-clamp: ${(props) => props.$maxLines};
   overflow: hidden;
 `;
 
