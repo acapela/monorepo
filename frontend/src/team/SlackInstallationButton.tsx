@@ -37,7 +37,10 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
   tooltip?: string;
   withBot?: boolean;
 }) {
-  const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
+  const { data: slackInstallationData, loading } = useQuery<
+    GetSlackInstallationUrlQuery,
+    GetSlackInstallationUrlQueryVariables
+  >(
     gql`
       query GetSlackInstallationURL($input: GetTeamSlackInstallationURLInput!) {
         slackInstallation: get_team_slack_installation_url(input: $input) {
@@ -74,6 +77,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
 
   return (
     <UISlackButton
+      disabled={loading}
       onClick={() => {
         window.location.href = assertDefined(
           slackInstallationData?.slackInstallation,
@@ -85,7 +89,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
       isWide
       tooltip={tooltip}
     >
-      {label ?? "Add Acapela to your Slack workspace"}
+      {loading ? "Loading..." : label ?? "Add Acapela to your Slack workspace"}
     </UISlackButton>
   );
 });
