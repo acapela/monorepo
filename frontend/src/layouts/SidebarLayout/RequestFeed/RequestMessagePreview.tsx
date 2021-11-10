@@ -1,4 +1,4 @@
-import { RefObject } from "emoji-mart/node_modules/@types/react";
+import { RefObject } from "react";
 import styled, { css, keyframes } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
