@@ -57,7 +57,7 @@ export async function findUserBySlackId(token: string, slackUserId: string, team
   }
 
   const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
-  if (!profile) {
+  if (!profile?.email) {
     return;
   }
   return await db.user.findFirst({ where: { team_member: { some: { team_id: teamId } }, email: profile.email } });
