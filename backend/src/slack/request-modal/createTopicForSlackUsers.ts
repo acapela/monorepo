@@ -217,6 +217,7 @@ export async function createTopicForSlackUsers({
         },
       },
     },
+    include: { message: true },
   });
 
   const botToken = assertDefined(await fetchTeamBotToken(teamId), "must have bot token");

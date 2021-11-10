@@ -1,6 +1,7 @@
 import assert from "assert";
 
 import { App, BlockButtonAction } from "@slack/bolt";
+import { formatRelative } from "date-fns";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -118,6 +119,32 @@ export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.TrackEvent, async ({ ack, payload }) => {
     await ack();
     trackBackendUserEvent(...(JSON.parse(payload.value) as [never, never]));
+  });
+
+  slackApp.action<BlockButtonAction>(SlackActionIds.UpdateMessageTaskDueAt, async ({ ack, action, body, respond }) => {
+    await ack();
+    if (!body.state) {
+      return;
+    }
+    const messageId = action.value;
+    const {
+      due_at_date_block: {
+        due_at_date: { selected_date: dueAtDate },
+      },
+      due_at_hour_block: {
+        due_at_hour: { selected_option: dueAtHour },
+      },
+    } = body.state.values;
+    if (!dueAtDate || !dueAtHour) {
+      return;
+    }
+
+    const dueAt = new Date(dueAtDate);
+    dueAt.setHours(parseInt(dueAtHour.value, 10));
+
+    await db.task.updateMany({ where: { message_id: messageId }, data: { due_at: dueAt.toISOString() } });
+
+    await respond({ replace_original: true, text: `Due date was set to ${formatRelative(dueAt, new Date())}` });
   });
 
   slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
