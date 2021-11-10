@@ -1,17 +1,19 @@
 import Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { format } from "date-fns";
 import { find } from "lodash";
-import { Blocks, Modal } from "slack-block-builder";
+import { Bits, Blocks, Elements, Message, Modal } from "slack-block-builder";
 
 import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../LiveTopicMessage";
-import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { tryOpenRequestModal } from "./tryOpenRequestModal";
 
@@ -19,8 +21,12 @@ const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
 
+const hourToOption = (hour: number) => Bits.Option({ value: `${hour}`, text: format(new Date(0, 0, 0, hour), "h a") });
+
 export function setupRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
+    await ack();
+
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
     const { user } = await tryOpenRequestModal(assertToken(context), triggerId, {
       channelId,
@@ -29,8 +35,6 @@ export function setupRequestModal(app: App) {
       origin: "slack-command",
       messageText: body.text,
     });
-
-    await ack();
 
     if (user) {
       trackBackendUserEvent(user.id, "Used Slack Slash Command", {
@@ -41,13 +45,13 @@ export function setupRequestModal(app: App) {
   });
 
   app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
+    await ack();
+
     const { user } = await tryOpenRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
     });
-
-    await ack();
 
     if (user) {
       trackBackendUserEvent(user.id, "Used Slack Global Shortcut", { slackUserName: body.user.username });
@@ -55,6 +59,8 @@ export function setupRequestModal(app: App) {
   });
 
   app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context }) => {
+    await ack();
+
     const { channel, message, trigger_id } = shortcut;
     const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
@@ -64,8 +70,6 @@ export function setupRequestModal(app: App) {
       messageText: message.text || "",
       origin: "slack-message-action",
     });
-
-    await ack();
 
     if (user) {
       trackBackendUserEvent(user.id, "Used Slack Message Action", { slackUserName: body.user.name });
@@ -180,6 +184,33 @@ export function setupRequestModal(app: App) {
       Sentry.captureException(response.error);
       return;
     }
+
+    await client.chat.postEphemeral({
+      token,
+      channel: channelId,
+      thread_ts: metadata.messageTs,
+      user: ownerSlackUserId,
+      blocks: Message()
+        .blocks(
+          Blocks.Section({ text: "Add a due date to let your team know by when you need them to get back to you." }),
+          Blocks.Input({ blockId: "due_at_date_block", label: "Date" }).element(
+            Elements.DatePicker({ actionId: "due_at_date" }).initialDate(getNextWorkDayEndOfDay())
+          ),
+          Blocks.Input({ blockId: "due_at_hour_block", label: "Time" }).element(
+            Elements.StaticSelect({ actionId: "due_at_hour" })
+              .options([...Array(24).keys()].map((hour) => hourToOption(hour)))
+              .initialOption(hourToOption(12))
+          ),
+          Blocks.Actions().elements(
+            Elements.Button({
+              actionId: SlackActionIds.UpdateMessageTaskDueAt,
+              text: "Set Due Date",
+              value: topic.message[0].id,
+            }).primary(true)
+          )
+        )
+        .buildToObject().blocks,
+    });
 
     const { channel, message } = response;
     assert(channel && message?.ts, "ok response without channel or message_ts");

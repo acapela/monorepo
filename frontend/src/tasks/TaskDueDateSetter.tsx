@@ -1,4 +1,4 @@
-import { formatRelative, isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
+import { formatRelative, isFriday } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import { upperFirst } from "lodash";
 import { observer } from "mobx-react";
@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
 import { assert } from "~shared/assert";
+import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { IconClock } from "~ui/icons";
@@ -16,19 +17,6 @@ import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   message: MessageEntity;
-}
-
-const END_OF_WORK_DAY = 17;
-
-function getTodayEndOfDay() {
-  return setHours(startOfToday(), END_OF_WORK_DAY);
-}
-
-function getNextWorkDayEndOfDay() {
-  const today = startOfToday();
-  const nextWorkDay = isFriday(today) ? nextMonday(today) : startOfTomorrow();
-
-  return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
 export const TaskDueDateSetter = observer(({ message }: Props) => {
