@@ -9,12 +9,14 @@ import { Button } from "~ui/buttons/Button";
 interface Props {
   title?: ReactNode;
   description: ReactNode;
+  extraContent?: ReactNode;
   children?: ReactNode;
 }
 
-export function ErrorView({ title = "Something went wrong", description, children }: Props) {
+export function ErrorView({ title = "Something went wrong", description, extraContent, children }: Props) {
   return (
     <FocusedActionLayout hideLogo title={title} description={description}>
+      {extraContent}
       <UIActions>
         {children || (
           <Button
