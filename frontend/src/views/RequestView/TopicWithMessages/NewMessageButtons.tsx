@@ -2,6 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~frontend/../../shared/types/mention";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -20,11 +22,8 @@ type AllowedActionsInfo = {
   primaryAction: AllowedActionName;
 };
 
-function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
-  const pendingTasksQuery = topic.tasks.query({ isDone: false });
-  const hasCurrentUserCompletedAssignedTasks = !pendingTasksQuery.query({ isAssignedToSelf: true }).hasItems;
-
-  if (!hasCurrentUserCompletedAssignedTasks) {
+function getAllowedActions(pendingTasks: TaskEntity[]): AllowedActionsInfo {
+  if (pendingTasks.length > 0) {
     return {
       actions: ["send", "complete"],
       primaryAction: "complete",
@@ -37,8 +36,27 @@ function getAllowedActions(topic: TopicEntity): AllowedActionsInfo {
   };
 }
 
+function getTaskCompletionCTA(pendingTasks: TaskEntity[]): string {
+  if (pendingTasks.length > 1) {
+    return "Mark All as Done";
+  }
+  const taskType = pendingTasks[0].type;
+  if (taskType === REQUEST_READ) {
+    return "Mark as read";
+  }
+  if (taskType === REQUEST_ACTION) {
+    return "Mark as done";
+  }
+  if (taskType === REQUEST_RESPONSE) {
+    return "Mark as replied";
+  }
+  return "";
+}
+
 export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteRequest, canSend }: Props) => {
-  const { actions, primaryAction } = getAllowedActions(topic);
+  const pendingTasks = topic.tasks.query({ isDone: false, isAssignedToSelf: true }).all;
+  const { actions, primaryAction } = getAllowedActions(pendingTasks);
+  const taskCompletionCTA = getTaskCompletionCTA(pendingTasks);
 
   return (
     <UIHolder>
@@ -60,7 +78,7 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
           tooltip="Mark your part as done"
           onClick={onCompleteRequest}
         >
-          Mark as Done
+          {taskCompletionCTA}
         </Button>
       )}
     </UIHolder>
