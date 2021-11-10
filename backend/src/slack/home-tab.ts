@@ -188,7 +188,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
           Elements.Button({ text: "Open web app" })
             .url(process.env.FRONTEND_URL)
             .actionId(SlackActionIds.TrackEvent)
-            .value(backendUserEventToJSON(teamMember.user_id, "Open from Slack Home Tab"))
+            .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
         RequestsList("🔥 Received", received),
         RequestsList("📤 Sent", sent),

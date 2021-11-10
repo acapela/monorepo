@@ -281,6 +281,12 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     return true;
   });
 
+  useEffect(() => {
+    if (!editor) return;
+    // This is temporary fix till https://github.com/ueberdosis/tiptap/issues/2143 is published
+    document.querySelector("style[data-tiptap-style]")?.removeAttribute("data-tiptap-style");
+  }, [editor]);
+
   return (
     <UIHolder>
       <RichEditorContext value={editor}>

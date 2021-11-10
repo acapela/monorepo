@@ -37,8 +37,8 @@ export async function LiveTopicMessage(topic: Topic) {
     .blocks(
       Blocks.Section({ text }),
       Blocks.Divider(),
-      topic.closed_at
-        ? Blocks.Section({ text: "🎉 All requests have been actioned. The topic is now closed. 💪" })
+      topic.closed_at || tasks.length == 0
+        ? Blocks.Section({ text: "🎉 All requests have been actioned. 💪" })
         : [
             Blocks.Section({
               text: Object.entries(groupBy(tasks, (task) => task.type))
@@ -54,17 +54,19 @@ export async function LiveTopicMessage(topic: Topic) {
                 })
                 .join("\n"),
             }),
-            Blocks.Actions().elements(
-              tasks.map((task) =>
-                Elements.Button({
-                  actionId: "toggle_task_done_at:" + task.id,
-                  value: task.id,
-                  text: `${task.done_at ? "✅️" : REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${task.user.name}:  ${
-                    task.done_at ? "Undo" : "Mark as complete"
-                  }`,
-                })
-              )
-            ),
+            tasks.length == 0
+              ? undefined
+              : Blocks.Actions().elements(
+                  tasks.map((task) =>
+                    Elements.Button({
+                      actionId: "toggle_task_done_at:" + task.id,
+                      value: task.id,
+                      text: `${task.done_at ? "✅️" : REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${
+                        task.user.name
+                      }:  ${task.done_at ? "Undo" : "Mark as complete"}`,
+                    })
+                  )
+                ),
           ]
     )
     .buildToObject();

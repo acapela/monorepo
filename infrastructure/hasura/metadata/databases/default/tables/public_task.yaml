@@ -47,9 +47,12 @@ select_permissions:
     filter:
       message:
         topic:
-          members:
-            user_id:
+          _or:
+          - owner_id:
               _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -61,9 +64,12 @@ update_permissions:
     filter:
       message:
         topic:
-          members:
-            user_id:
+          _or:
+          - owner_id:
               _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:

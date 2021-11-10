@@ -6,6 +6,15 @@ import { theme } from "~ui/theme";
 export const richEditorContentCss = css`
   .ProseMirror {
     outline: none;
+    /* 
+     Prevents https://github.com/ueberdosis/tiptap/issues/2143#event-5590927835
+     */
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    white-space: break-spaces;
+    -webkit-font-variant-ligatures: none;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0;
   }
 
   ${theme.font.readingLineHeight};

@@ -89,7 +89,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             if (user?.current_team_id) {
               const team = await db.team.findFirst({ where: { id: user.current_team_id } });
               if (team) {
-                identifyBackendUserTeam(user.id, team.id, { teamId: team.id, teamName: team.name });
+                identifyBackendUserTeam(user.id, team.id, {
+                  id: team.id,
+                  name: team.name,
+                  slug: team.slug,
+                  plan: "trial",
+                  createdAt: team.created_at,
+                });
               }
             }
           })
@@ -141,7 +147,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           httpOnly: true,
           sameSite: "lax",
           path: "/",
-          secure: true,
+          // If this is true in dev, Safari will block this cookie in localhost making it impossible to log in.
+          secure: !isDev(),
         },
       },
     },

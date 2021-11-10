@@ -12,6 +12,7 @@ export type AnalyticsUserProfile = {
 
 /**
  * Map of tracking event types with their required payload.
+ * Use past tense and first letter uppercased for the event type.
  */
 export type AnalyticsEventsMap = {
   // Account related events
@@ -61,21 +62,21 @@ export type AnalyticsEventsMap = {
   // Mention and task related events
 
   "Created Task": { taskType: RequestType; topicId: string; mentionedUserId: string };
-  "Mark Task As Done": {
+  "Marked Task As Done": {
     taskType: RequestType;
     topicId: string;
     origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
   };
   "Added Due Date": { topicId: string; messageId: string };
 
-  "App Opened": void;
+  "Opened App": void;
 
   // Slack
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
   "Used Slack Home Tab New Request": { slackUserName: string };
-  "Open from Slack Home Tab": void;
+  "Opened Webapp From Slack Home Tab": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
@@ -84,7 +85,11 @@ export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEv
 
 export type AnalyticsGroupsMap = {
   Team: {
-    teamName: string;
-    teamId: string;
+    // reserved traits available here: https://segment.com/docs/connections/spec/group/#traits
+    id: string;
+    name: string;
+    slug: string;
+    plan: "trial" | "free" | "premium";
+    createdAt: Date;
   };
 };

@@ -5,7 +5,9 @@ export interface PersistanceTableConfig {
 
 export interface PersistanceTableAdapter<Data> {
   saveItem(input: Data): Promise<boolean>;
+  saveItems(input: Data[]): Promise<boolean>;
   removeItem(key: string): Promise<boolean>;
+  removeItems(key: string[]): Promise<boolean>;
   fetchAllItems(): Promise<Data[]>;
   fetchItem(key: string): Promise<Data | null>;
   updateItem(key: string, input: Partial<Data>): Promise<boolean>;

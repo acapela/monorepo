@@ -18,6 +18,7 @@ const teamFragment = gql`
     slug
     owner_id
     updated_at
+    created_at
   }
 `;
 
