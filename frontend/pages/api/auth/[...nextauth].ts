@@ -141,7 +141,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           httpOnly: true,
           sameSite: "lax",
           path: "/",
-          secure: true,
+          // If this is true in dev, Safari will block this cookie in localhost making it impossible to log in.
+          secure: !isDev(),
         },
       },
     },
