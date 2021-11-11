@@ -57,6 +57,7 @@ function escapeStringForSlackLink(input: string) {
 }
 
 export function createSlackLink(url: string, name: string) {
+  if (url === name) return `<${escapeStringForSlackLink(url)}>`;
   return `<${escapeStringForSlackLink(url)}|${escapeStringForSlackLink(name)}>`;
 }
 
