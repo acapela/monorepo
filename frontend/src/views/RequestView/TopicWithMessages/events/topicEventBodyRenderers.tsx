@@ -84,8 +84,7 @@ const RenamedTopicEvent: TopicEventRenderer = {
   render({ actor, topic_from_name, topic_to_name }: TopicEventEntity): ReactNode {
     return (
       <>
-        <UIBold>{actor?.name}</UIBold> renamed request from <UIBold>{topic_from_name}</UIBold> to{" "}
-        <UIBold>{topic_to_name}</UIBold>{" "}
+        <UIBold>{actor?.name}</UIBold> renamed <UIBold>{topic_from_name}</UIBold> to <UIBold>{topic_to_name}</UIBold>{" "}
       </>
     );
   },
@@ -110,7 +109,8 @@ const AddedDueDateTopicEvent: TopicEventRenderer = {
 
     return (
       <>
-        <UIBold>{actor?.name}</UIBold> changed <UIBold>{message.user.name}</UIBold>'s request due date to{" "}
+        <UIBold>{actor?.name}</UIBold> changed{" "}
+        <UIAnchorLink href={`#${message.id}`}>{message.user.name}'s request</UIAnchorLink> due date to{" "}
         {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         <UIBold>{upperFirst(formatRelative(new Date(message_task_due_date_to_due_at!), new Date()))}</UIBold>
       </>
@@ -138,7 +138,8 @@ const ChangedDueDateTopicEvent: TopicEventRenderer = {
 
     return (
       <>
-        <UIBold>{actor?.name}</UIBold> changed <UIBold>{message.user.name}</UIBold>'s request due date from{" "}
+        <UIBold>{actor?.name}</UIBold> changed{" "}
+        <UIAnchorLink href={`#${message.id}`}>{message.user.name}'s request</UIAnchorLink> due date from{" "}
         {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         <UIBold>{upperFirst(formatRelative(new Date(message_task_due_date_from_due_at!), new Date()))}</UIBold> to{" "}
         {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
@@ -168,7 +169,8 @@ const RemoveDueDateTopicEvent: TopicEventRenderer = {
 
     return (
       <>
-        <UIBold>{actor?.name}</UIBold> removed <UIBold>{message.user.name}</UIBold>'s request due date
+        <UIBold>{actor?.name}</UIBold> removed{" "}
+        <UIAnchorLink href={`#${message.id}`}>{message.user.name}'s request</UIAnchorLink> due date
       </>
     );
   },
@@ -198,4 +200,10 @@ export function renderTopicEventBody(topicEvent: TopicEventEntity): ReactNode | 
 
 const UIBold = styled.span<{}>`
   ${theme.font.semibold}
+`;
+
+const UIAnchorLink = styled.a<{}>`
+  ${theme.typo.content.medium};
+  text-decoration: underline;
+  opacity: 0.8;
 `;

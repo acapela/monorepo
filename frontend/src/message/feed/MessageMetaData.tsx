@@ -11,6 +11,7 @@ interface Props {
   user: UserEntity;
   date: Date;
   children: ReactNode;
+  anchorLink?: string;
   className?: string;
   isNextSameUserMessage?: boolean;
   isHovered?: boolean;
@@ -19,7 +20,7 @@ interface Props {
 const AVATAR_SIZE = 30;
 
 export const MessageMetaDataWrapper = styledObserver(
-  ({ user, date, children, isNextSameUserMessage = false, isHovered = false, className }: Props) => {
+  ({ user, date, children, isNextSameUserMessage = false, isHovered = false, anchorLink, className }: Props) => {
     return (
       <UIHolder className={className}>
         <UIMessageSideInfo>
@@ -33,16 +34,31 @@ export const MessageMetaDataWrapper = styledObserver(
           {!isNextSameUserMessage && (
             <UIHead>
               <UIAuthorName>{user.name || "Guest"}</UIAuthorName>
-              <UIHeaderTimeLabel date={date} />
+              <OptionalAnchorLink anchor={anchorLink}>
+                <UIHeaderTimeLabel date={date} />
+              </OptionalAnchorLink>
             </UIHead>
           )}
-          {isHovered && isNextSameUserMessage && <UISideTimeLabel date={date} />}
+          {isHovered && isNextSameUserMessage && (
+            <OptionalAnchorLink anchor={anchorLink}>
+              <UISideTimeLabel date={date} />
+            </OptionalAnchorLink>
+          )}
           {children}
         </UIMessageBody>
       </UIHolder>
     );
   }
 )``;
+
+const OptionalAnchorLink = ({ children, anchor }: { children: ReactNode; anchor?: string }) => {
+  return (
+    <>
+      {anchor && <a href={anchor}>{children}</a>}
+      {!anchor && children}
+    </>
+  );
+};
 
 const UIHolder = styled.div<{}>`
   display: flex;

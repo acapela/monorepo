@@ -38,7 +38,7 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
         ]
       }
       &nbsp;
-      <UIUserName>@{nextTask.message?.user.name}</UIUserName>'s task
+      <UIAnchorLink href={`#${nextTask.message_id}`}>{nextTask.message?.user.name}'s request</UIAnchorLink>
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
     </TopicEventTemplate>
@@ -132,10 +132,6 @@ export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   return null;
 });
 
-const UIUserName = styled.span<{}>`
-  ${theme.typo.content.medium};
-`;
-
 const UIBold = styled.span<{}>`
   ${theme.font.semibold}
 `;
@@ -143,4 +139,10 @@ const UIBold = styled.span<{}>`
 const UIArchiveTooltip = styled.span<{}>`
   text-decoration: underline;
   cursor: default;
+`;
+
+const UIAnchorLink = styled.a<{}>`
+  ${theme.typo.content.medium};
+  text-decoration: underline;
+  opacity: 0.8;
 `;

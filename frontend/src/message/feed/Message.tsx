@@ -118,6 +118,7 @@ export const Message = styledObserver<Props>(
     return (
       <UIHolder id={message.id} ref={rootRef}>
         <MessageLikeContent
+          anchorLink={`#${message.id}`}
           className={className}
           tools={
             shouldShowTools && (

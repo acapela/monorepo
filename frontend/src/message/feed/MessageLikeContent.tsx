@@ -12,6 +12,7 @@ import { MessageMetaDataWrapper } from "./MessageMetaData";
 
 interface Props {
   user: UserEntity;
+  anchorLink?: string;
   date: Date;
   children: ReactNode;
   showOnlyContent?: boolean;
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export const MessageLikeContent = styledObserver<Props>(
-  ({ user, date, children, tools, className, showOnlyContent = false }) => {
+  ({ user, date, children, tools, className, anchorLink, showOnlyContent = false }) => {
     const holderRef = useRef<HTMLDivElement>(null);
     const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
@@ -33,7 +34,13 @@ export const MessageLikeContent = styledObserver<Props>(
         hasTopSpacing={!showOnlyContent}
       >
         <UIContentContainer>
-          <MessageMetaDataWrapper user={user} date={date} isNextSameUserMessage={showOnlyContent} isHovered={isHovered}>
+          <MessageMetaDataWrapper
+            anchorLink={anchorLink}
+            user={user}
+            date={date}
+            isNextSameUserMessage={showOnlyContent}
+            isHovered={isHovered}
+          >
             {children}
           </MessageMetaDataWrapper>
           {tools && (
