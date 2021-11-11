@@ -9,13 +9,16 @@ import { PersistanceAdapterInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
+import { createEntitiesPersistedCache } from "./entity/entityPersistedCache";
 import { initializePersistance } from "./entity/initializePersistance";
+import { initializePersistedKeyValueCache } from "./entity/persistedCache";
 
 export * from "./entity/index";
 
 interface ClientDbConfig {
   db: PersistanceAdapterInfo;
   contexts?: DbContextInstance<unknown>[];
+  onDestroyRequest?: () => void;
 }
 
 type EntitiesClientsMap<Entities extends EntitiesMap> = {
@@ -29,16 +32,20 @@ type ClientDbExtra = {
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
 export async function createClientDb<Entities extends EntitiesMap>(
-  { db, contexts }: ClientDbConfig,
+  { db, contexts, onDestroyRequest }: ClientDbConfig,
   definitionsMap: Entities
 ): Promise<ClientDb<Entities>> {
   const definitions = Object.values(definitionsMap);
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const persistanceDb = await initializePersistance(definitions, db);
+  const [persistanceDb, cacheTable] = await initializePersistance(definitions, db, onDestroyRequest);
+  const persistedCacheManager = await initializePersistedKeyValueCache(cacheTable);
+
+  const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
 
   const databaseUtilities: DatabaseUtilities = {
+    entityCache: entityPersistedCacheManager,
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
         return client.definition === definition;
@@ -77,6 +84,8 @@ export async function createClientDb<Entities extends EntitiesMap>(
   }) as EntitiesClientsMap<Entities>;
 
   function destroy() {
+    // ! close indexeddb connection so in case new clientdb is created for same name - it will be able to connect.
+    persistanceDb.close();
     forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
       client.destroy();
     });
@@ -99,7 +108,9 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   await Promise.all([persistanceLoadedPromise, firstSyncPromise]);
 
-  mapValues(entityClients, (client: EntityClient<unknown, unknown>) => client.persistanceLoaded);
+  const clientDbMethods: ClientDbExtra = {
+    destroy,
+  };
 
-  return { ...entityClients, destroy };
+  return { ...entityClients, ...clientDbMethods };
 }

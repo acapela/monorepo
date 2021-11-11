@@ -3,27 +3,32 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { SlackSettings } from "~frontend/views/SettingsView/SlackSettings";
 import { theme } from "~ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
 import { TeamManagerSettingsPanel } from "./TeamManager";
 
-const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
-const appBuildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
-
-export const SettingsView = observer(function SettingsView() {
-  const currentTeam = useAssertCurrentTeam();
+export const SettingsView = observer(function SettingsView({
+  version,
+  buildDate,
+}: {
+  version: string | undefined;
+  buildDate: string | undefined;
+}) {
+  const team = useAssertCurrentTeam();
 
   return (
     <>
       <UIHolder>
         <UIHeader>Settings</UIHeader>
         <NotificationSettings />
-        <TeamManagerSettingsPanel team={currentTeam} />
+        <SlackSettings />
+        <TeamManagerSettingsPanel team={team} />
 
-        {appVersion && (
+        {version && (
           <UIVersionInfo>
-            Version: {appVersion} ({appBuildDate})
+            Version: {version} ({buildDate})
           </UIVersionInfo>
         )}
       </UIHolder>

@@ -54,7 +54,7 @@ const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
   ${theme.box.label};
-  ${theme.spacing.horizontalActions.asGap}
+  ${theme.spacing.actions.asGap}
   ${theme.radius.secondaryItem}
   cursor: pointer;
   ${theme.typo.action.regular};

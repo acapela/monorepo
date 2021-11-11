@@ -65,13 +65,15 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
           placement="top-start"
           onClickOutside={closeMentionTypePicker}
           isDisabled={!isEditable}
+          enableScreenCover
         >
           <PopPresenceAnimator>
             <MentionTypePicker
               selected={data.type}
               onSelect={(mentionType: MentionType) => {
                 editor.commands.setContent(
-                  updateContentMentionTypesForUser(editor.getJSON() as never, data.userId, mentionType)
+                  updateContentMentionTypesForUser(editor.getJSON() as never, data.userId, mentionType),
+                  true
                 );
                 closeMentionTypePicker();
               }}
@@ -85,6 +87,7 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
         onClick={handleOpenMentionTypePicker}
         data-tooltip={MENTION_TYPE_LABELS[data.type] + (isEditable ? " (click to change)" : "")}
         isEditable={isEditable}
+        data-mention-user-id={data.userId}
       >
         @{db.user.findById(data.userId)?.name ?? "???"}
       </UIMention>
@@ -109,21 +112,25 @@ function getMentionFontColor(mentionType: MentionType) {
 
 const UIMention = styled.span<{ isEditable: boolean; type: MentionType }>`
   cursor: default;
+  display: inline-block;
 
   ${theme.font.medium}
-
   ${(props) =>
     css`
       ${getMentionFontColor(props.type)}
     `}
-
-  ${(props) =>
+    ${(props) =>
     props.isEditable &&
     css`
       cursor: pointer;
     `}
-
-  svg {
+    svg {
     color: inherit;
   }
 `;
+
+export function getStyledMentionForUserSelector(userId: string) {
+  return css`
+    ${UIMention}${`[data-mention-user-id="${userId}"]`}
+  `;
+}

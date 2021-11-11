@@ -1,23 +1,25 @@
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { Logo } from "~frontend/ui/Logo";
 import { PopPresenceAnimator } from "~ui/animations";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 interface Props {
   children: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
+  hideLogo?: boolean;
 }
 
-export function FocusedActionLayout({ children, title, description }: Props) {
+export function FocusedActionLayout({ children, title, description, hideLogo }: Props) {
   const hasTypo = !!title || !!description;
   return (
     <UIHolder>
       <UIWindow>
         <UIHead>
-          <UILogo />
+          {!hideLogo && <UILogo />}
           {hasTypo && (
             <UITypo>
               {title && <UITitle>{title}</UITitle>}
@@ -39,6 +41,7 @@ const UIHolder = styled.div<{}>`
   min-height: 100vh;
   flex-direction: column;
   ${theme.gradients.actionPageBg.asBg};
+  padding: 20px;
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
@@ -53,13 +56,18 @@ const UIWindow = styled(PopPresenceAnimator)<{}>`
   max-width: 700px;
 
   min-width: 420px;
+
+  ${phone(css`
+    min-width: 0;
+    width: 100%;
+  `)}
 `;
 
 const UIHead = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
   margin-bottom: 50px;
 `;
 
@@ -77,6 +85,7 @@ const UITitle = styled.div`
 
 const UIDescription = styled.div`
   ${theme.typo.content.medium.secondary};
+  max-width: 40ch;
 `;
 
 const UILogo = styled(Logo)<{}>`

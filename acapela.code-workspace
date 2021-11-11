@@ -35,6 +35,9 @@
     },
     {
       "path": "./ui"
+    },
+    {
+      "path": "e2e"
     }
   ],
   "settings": {
@@ -56,13 +59,9 @@
       "db/client/**/*": true,
       ".yarn/**/*": true
     },
-    "prettier.requireConfig": true,
     // Will use auto-imports ~package instead of ../../package if import is from different package
     "typescript.preferences.importModuleSpecifier": "shortest",
     "typescript.suggest.autoImports": true,
-    "[html]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
     "typescript.tsdk": "node_modules/typescript/lib",
     "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
     "colorInfo.languages": [

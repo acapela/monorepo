@@ -1,16 +1,16 @@
-import { JSONContent } from "@tiptap/core";
 import gql from "graphql-tag";
-import { memoize, uniq } from "lodash";
+import { uniqBy } from "lodash";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { computedArray } from "~clientdb/entity/utils/computedArray";
+import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
+import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
+import { isNotNullish } from "~shared/nullish";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { taskEntity } from "./task";
-import { userEntity } from "./user";
+import { topicEventEntity } from "./topicEvent";
+import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -71,28 +71,8 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
-    const messageIds = computedArray(() => {
+    const getMessageIds = cachedComputed(() => {
       return messages.all.map((message) => message.id);
-    });
-
-    const getIsUserMentionedInContent = (content: JSONContent, userId: string) =>
-      getMentionedUserIdsInContent(content).includes(userId);
-
-    const participants = getEntity(userEntity).query((user) => {
-      if (topic.owner_id === user.id) return true;
-
-      const allMessages = messages.all;
-
-      if (
-        allMessages.some((message) => {
-          if (message.user_id === user.id) return true;
-
-          if (message.tasks.all.some((task) => task.user_id === user.id)) return true;
-        })
-      )
-        return true;
-
-      return allMessages.some((message) => getIsUserMentionedInContent(message.content, user.id));
     });
 
     const unseenMessages = getEntity(lastSeenMessageEntity).query({
@@ -108,8 +88,12 @@ export const topicEntity = defineEntity<TopicFragment>({
       return unseenMessages.first ?? null;
     }
 
+    function getOwner() {
+      return getEntity(userEntity).findById(topic.owner_id);
+    }
+
     const tasks = getEntity(taskEntity).query({
-      message_id: () => messageIds.get(),
+      message_id: () => getMessageIds(),
     });
 
     const unreadMessages = getEntity(messageEntity)
@@ -118,19 +102,24 @@ export const topicEntity = defineEntity<TopicFragment>({
         return message.isUnread;
       });
 
+    const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
+
+    const events = getEntity(topicEventEntity).query({ topic_id: topic.id });
+
     const connections = {
       get owner() {
-        return getEntity(userEntity).findById(topic.owner_id);
+        return getOwner();
       },
       messages,
-      get tasks() {
-        return tasks;
+      tasks,
+      get members(): UserEntity[] {
+        return uniqBy(
+          [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish),
+          "id"
+        );
       },
-      get participants() {
-        return participants;
-      },
-      get isCurrentUserParticipating() {
-        return connections.participants.all.some((user) => user.isCurrentUser);
+      get isCurrentUserMember() {
+        return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
       },
       get isOwn() {
         return topic.owner_id === currentUserId;
@@ -148,17 +137,59 @@ export const topicEntity = defineEntity<TopicFragment>({
       get lastSeenMessageByCurrentUserInfo() {
         return getLastSeenMessageByCurrentUserInfo();
       },
+
+      close() {
+        const closed_at = new Date().toISOString();
+        const closed_by_user_id = currentUserId;
+
+        return getEntity(topicEntity).query({ id: topic.id }).first?.update({ closed_at, closed_by_user_id });
+      },
+
+      open() {
+        return getEntity(topicEntity)
+          .query({ id: topic.id })
+          .first?.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
+      },
+
       unreadMessages,
+
+      events,
     };
 
     return connections;
   })
   .addAccessValidation((topic) => {
-    return topic.isCurrentUserParticipating;
+    return topic.isCurrentUserMember;
+  })
+  .addEventHandlers({
+    itemUpdated: (topicNow, topicBefore, { getEntity }) => {
+      const isNameChanged = topicNow.name !== topicBefore.name;
+      if (isNameChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_name: topicBefore.name,
+          topic_to_name: topicNow.name,
+        });
+      }
+
+      const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
+      if (isOpenStatusChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_closed_at: topicBefore.closed_at,
+          topic_to_closed_at: topicNow.closed_at,
+        });
+      }
+
+      const isArchivedStatusChanged = topicNow.archived_at !== topicBefore.archived_at;
+      if (isArchivedStatusChanged) {
+        getEntity(topicEventEntity).create({
+          topic_id: topicNow.id,
+          topic_from_archived_at: topicBefore.archived_at,
+          topic_to_archived_at: topicNow.archived_at,
+        });
+      }
+    },
   });
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;
-
-const getMentionedUserIdsInContent = memoize((content: JSONContent) => {
-  return uniq(getMentionNodesFromContent(content).map((node) => node.attrs.data.userId));
-});

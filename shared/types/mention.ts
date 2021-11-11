@@ -27,3 +27,7 @@ export const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
   [REQUEST_ACTION]: "Request action",
   [MENTION_OBSERVER]: "Add as observer",
 };
+
+export function getMentionTypeLabel(type: MentionType) {
+  return MENTION_TYPE_PICKER_LABELS[type];
+}

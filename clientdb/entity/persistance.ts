@@ -1,4 +1,4 @@
-import { memoize } from "lodash";
+import { memoize, throttle } from "lodash";
 import { runInAction } from "mobx";
 
 import { createResolvablePromise } from "~shared/promises";
@@ -6,6 +6,7 @@ import { createResolvablePromise } from "~shared/promises";
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { EntityStore } from "./store";
+import { createPushQueue } from "./utils/pushQueue";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type EntityPersistanceManager<Data, Connections> = {
@@ -21,6 +22,8 @@ interface PersistanceManagerConfig<Data> {
   persistanceDb: PersistanceDB;
   createNewEntity: (data: Data) => void;
 }
+
+const persistanceExecuteQueue = createPushQueue();
 
 /**
  * Client is 'public api' surface for entity.
@@ -69,23 +72,69 @@ export function createEntityPersistanceManager<Data, Connections>(
 
     if (!persistanceTable) return null;
 
+    /**
+     * We're batching updates in quick interval to save performance.
+     * To ensure proper order of batched operations we keep both 'save' and 'remove' queues.
+     *
+     * As soon as operations of the same type are collected, they're batched, but if operation type changes, it is instantly flushed.
+     */
+
+    const batchSaveQueue = new Set<Data>();
+    const batchRemoveQueue = new Set<string>();
+
+    const flushQueue = () => {
+      if (batchSaveQueue.size && batchRemoveQueue.size) {
+        throw new Error("Incorrect state - both save and remove at once - cannot guarantee proper order");
+      }
+
+      if (batchSaveQueue.size) {
+        const saveItems = Array.from(batchSaveQueue);
+        batchSaveQueue.clear();
+
+        persistanceExecuteQueue.add(() => persistanceTable.saveItems(saveItems));
+      }
+
+      if (batchRemoveQueue.size) {
+        const removeItems = Array.from(batchRemoveQueue);
+
+        batchRemoveQueue.clear();
+
+        persistanceExecuteQueue.add(() => persistanceTable.removeItems(removeItems));
+      }
+    };
+
+    const throttledFlushQueue = throttle(flushQueue, 50, { leading: false, trailing: true });
+
     // Persist all changes locally
     const cancelAdded = store.events.on("itemAdded", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
-    });
-
-    const cancelRemoved = store.events.on("itemRemoved", (entity) => {
-      persistanceTable.removeItem(entity.getKey());
+      if (batchRemoveQueue.size) {
+        flushQueue();
+      }
+      batchSaveQueue.add(entity.getData());
+      throttledFlushQueue();
     });
 
     const cancelUpdated = store.events.on("itemUpdated", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
+      if (batchRemoveQueue.size) {
+        flushQueue();
+      }
+      batchSaveQueue.add(entity.getData());
+      throttledFlushQueue();
+    });
+
+    const cancelRemoved = store.events.on("itemRemoved", (entity) => {
+      if (batchSaveQueue.size) {
+        flushQueue();
+      }
+      batchRemoveQueue.add(entity.getKey());
+      throttledFlushQueue();
     });
 
     return () => {
       cancelAdded();
       cancelRemoved();
       cancelUpdated();
+      throttledFlushQueue.cancel();
     };
   }
 

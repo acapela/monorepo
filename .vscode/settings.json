@@ -51,26 +51,28 @@
     }
   ],
   "cSpell.words": [
-    "Hasura",
-    "Scrollable",
-    "Sonix",
-    "Unprocessable",
-    "Userback",
     "acapela",
     "autoLinks",
     "buildinfo",
     "displayer",
     "gmail",
     "godaddy",
+    "Hasura",
     "healthz",
     "immer",
     "nextauth",
     "pino",
     "preconnect",
     "prefetch",
+    "Scrollable",
     "sendgrid",
     "sonix",
+    "Sonix",
     "spezia",
-    "timestamptz"
+    "timestamptz",
+    "Unarchived",
+    "Uncategorized",
+    "Unprocessable",
+    "Userback"
   ]
 }

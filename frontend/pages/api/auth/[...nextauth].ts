@@ -8,7 +8,7 @@ import SlackProvider from "next-auth/providers/slack";
 import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
-import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { identifyBackendUserTeam, trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { Maybe } from "~shared/types";
@@ -61,6 +61,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       jwt: true,
     },
     pages: {
+      signIn: "/login",
+      signOut: "/logout",
       error: "/auth/error", // Error code passed in query string as ?error=
     },
     debug: isDev(),
@@ -80,9 +82,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
             },
           })
-          .then((user) => {
+          .then(async (user) => {
             if (user) {
               trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
+            }
+            if (user?.current_team_id) {
+              const team = await db.team.findFirst({ where: { id: user.current_team_id } });
+              if (team) {
+                identifyBackendUserTeam(user.id, team.id, {
+                  id: team.id,
+                  name: team.name,
+                  slug: team.slug,
+                  plan: "trial",
+                  createdAt: team.created_at,
+                });
+              }
             }
           })
           .catch((error) => Sentry.captureException(error));
@@ -121,6 +135,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
         });
       },
+      signOut({ token }) {
+        trackBackendUserEvent(token.id as string, "Signed Out");
+      },
     },
 
     cookies: {
@@ -130,7 +147,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           httpOnly: true,
           sameSite: "lax",
           path: "/",
-          secure: true,
+          // If this is true in dev, Safari will block this cookie in localhost making it impossible to log in.
+          secure: !isDev(),
         },
       },
     },

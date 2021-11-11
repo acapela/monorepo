@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/message/display/MessageMedia";
@@ -71,11 +70,13 @@ export const Message = styledObserver<Props>(
 
       if (didConfirm) {
         message.remove();
-        trackEvent("Deleted Message", { messageId: message.id });
       }
     }
 
-    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
+    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly && !message.topic?.isClosed, {
+      onDelay: 0,
+      offDelay: 200,
+    });
 
     const getMessageActionsOptions = () => {
       const options: PopoverMenuOption[] = [];
@@ -117,12 +118,13 @@ export const Message = styledObserver<Props>(
     return (
       <UIHolder id={message.id} ref={rootRef}>
         <MessageLikeContent
+          anchorLink={`#${message.id}`}
           className={className}
           tools={
             shouldShowTools && (
               <UITools>
                 <MakeReactionButton message={message} />
-                {!message.topic?.isClosed && <ReplyButton messageId={message.id} />}
+                <ReplyButton messageId={message.id} />
                 {messageActionsOptions.length > 0 && (
                   <PopoverMenuTrigger
                     onOpen={() => setIsActive(true)}
@@ -165,13 +167,13 @@ const UIHolder = styled.div<{}>``;
 
 const UITools = styled.div<{}>`
   display: flex;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIMessageBody = styled.div<{}>`

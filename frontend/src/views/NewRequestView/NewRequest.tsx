@@ -7,13 +7,13 @@ import { useRouter } from "next/router";
 import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
-import { usePersistedState } from "~frontend/hooks/useLocalStorageState";
+import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
@@ -21,13 +21,13 @@ import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
-import { RequestType } from "~shared/types/mention";
 import { getUUID } from "~shared/uuid";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
@@ -43,14 +43,14 @@ function useMessageContentExamplePlaceholder(): string {
     const otherTeamMembers = db.user.query({ isMemberOfCurrentTeam: true, isCurrentUser: false }).all;
 
     if (!otherTeamMembers.length) {
-      return `I would like you to...`;
+      return `@Name Could you give me feedback on this Figma file?`;
     }
 
     const exampleUsers = sampleSize(otherTeamMembers, 2);
 
     const sampleMentionText = exampleUsers.map((user) => `@${user.name || "???"} `);
 
-    return `${sampleMentionText.join(" ")} I would like you to...`;
+    return `${sampleMentionText.join(" ")} Could you give me feedback on this Figma file?`;
   }, [db]);
 
   return exampleRequestBodyWithTeamMemberNamesMentioned;
@@ -102,7 +102,7 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   // Submitting can be done from the editor or from the topic input box
-  const sendShortcutDescription = useShortcut(["Mod", "Enter"], () => {
+  useShortcut(["Mod", "Enter"], () => {
     submit();
     // Captures and prevents the event from getting to the editor
     return true;
@@ -117,13 +117,13 @@ export const NewRequest = observer(function NewRequest() {
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
     if (topicName.length === 0) {
-      return [false, "Please add a topic name before creating request"];
+      return [false, "Add a title to your request"];
     }
     const mentionNodes = getNodesFromContentByType(content, "mention");
     if (mentionNodes.length < 1) {
-      return [false, "You should mention at least one teammate before creating request"];
+      return [false, "Mention team members using @Name to make your request more actionable."];
     }
-    return [true, `Hit ${sendShortcutDescription} to create request`];
+    return [true, ""];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicName, content]);
 
@@ -140,7 +140,6 @@ export const NewRequest = observer(function NewRequest() {
 
       for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
         db.task.create({ message_id: newMessage.id, user_id: userId, type });
-        trackEvent("Created Task", { taskType: type as RequestType, topicId: topic.id, mentionedUserId: userId });
       }
 
       attachments.forEach((attachment) => {
@@ -149,7 +148,6 @@ export const NewRequest = observer(function NewRequest() {
 
       router.push(routes.topic({ topicSlug: topic.slug }));
     });
-    trackEvent("Created Topic", { origin: "web-app", topicName });
     clearPersistedContent();
     clearTopicName();
   }
@@ -176,7 +174,7 @@ export const NewRequest = observer(function NewRequest() {
               autoFocus
               value={topicName}
               onChangeText={setTopicName}
-              placeholder={"Add topic"}
+              placeholder={"e.g. Feedback for new website copy"}
               onKeyPress={onEnterPressed(focusEditor)}
             />
           </PageLayoutAnimator>
@@ -196,14 +194,16 @@ export const NewRequest = observer(function NewRequest() {
 
           <AnimatePresence exitBeforeEnter>
             <UINextStepPrompt
-              key={nextStepPromptLabel}
+              // Next step label can be empty so make sure we use some key
+              key={nextStepPromptLabel || "no-step"}
               layoutId="UINextStepPrompt"
               layout="position"
               initial={{ opacity: 0 }}
               animate={{ opacity: hasAnyTextContent ? 1 : 0 }}
               exit={{ opacity: 0 }}
             >
-              {nextStepPromptLabel}
+              {/* Avoid height flicker if there is no next prompt by adding nbsp */}
+              {nextStepPromptLabel}&nbsp;
             </UINextStepPrompt>
           </AnimatePresence>
         </UIEditableParts>
@@ -217,11 +217,11 @@ export const NewRequest = observer(function NewRequest() {
           <Button
             isDisabled={!isValid && { reason: nextStepPromptLabel }}
             kind="primary"
-            tooltip="Create Request"
+            tooltip="Send request"
             onClick={submit}
             shortcut={["Mod", "Enter"]}
           >
-            Create Request
+            Send request
           </Button>
         </UIActions>
       </UIContentHolder>
@@ -229,7 +229,7 @@ export const NewRequest = observer(function NewRequest() {
   );
 });
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled(HorizontalSpacingContainer)<{}>`
   position: relative;
   height: 100%;
   width: 100%;
@@ -237,6 +237,10 @@ const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${phone(css`
+    margin-top: 60px;
+  `)}
 `;
 
 const UIContentHolder = styled.div<{ isEmpty: boolean }>`
@@ -244,7 +248,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
   will-change: transform;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 
   ${(props) => {
     if (props.isEmpty) {
@@ -263,7 +267,7 @@ const UIEditableParts = styled.div<{ isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap}
 
   ${(props) =>
     !props.isEmpty &&
@@ -301,5 +305,5 @@ const UIActions = styled(PageLayoutAnimator)<{}>`
 
   will-change: transform, opacity;
 
-  ${theme.spacing.horizontalActionsSection.asGap}
+  ${theme.spacing.actionsSection.asGap}
 `;

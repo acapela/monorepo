@@ -1,52 +1,56 @@
-import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
+import { formatRelative, isFriday } from "date-fns";
 import { AnimatePresence } from "framer-motion";
+import { upperFirst } from "lodash";
 import { observer } from "mobx-react";
-import React, { ReactNode, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
+import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { assert } from "~shared/assert";
+import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
+import { IconClock } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   message: MessageEntity;
-  children: ReactNode;
 }
 
-const END_OF_WORK_DAY = 17;
-
-function getTodayEndOfDay() {
-  return setHours(startOfToday(), END_OF_WORK_DAY);
-}
-
-function getNextWorkDayEndOfDay() {
-  const today = startOfToday();
-  const nextWorkDay = isFriday(today) ? nextMonday(today) : startOfTomorrow();
-
-  return setHours(nextWorkDay, END_OF_WORK_DAY);
-}
-
-export const TaskDueDateSetter = observer(({ message, children }: Props) => {
+export const TaskDueDateSetter = observer(({ message }: Props) => {
   assert(message.tasks.hasItems, "Attempting to set due date for message that doesn't have tasks");
 
   const ref = useRef<HTMLDivElement>(null);
+  const db = useDb();
 
-  const currentDueDate = message.tasks.first?.due_at;
+  const currentDueDate = message.dueDate;
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
-  const handleSubmit = async (date: Date | null) => {
+  const handleSubmit = async (dueDate: Date | null) => {
     closeCalendar();
-    message.tasks.all.forEach((task) => task.update({ due_at: date?.toISOString() ?? null }));
-    trackEvent("Added Due Date", { topicId: message.topic_id, messageId: message.id });
+
+    const previouslyStoredDueDate = db.messageTaskDueDate.query({ message_id: message.id }).first;
+
+    if (!dueDate && previouslyStoredDueDate) {
+      previouslyStoredDueDate.remove();
+    } else if (dueDate && previouslyStoredDueDate) {
+      previouslyStoredDueDate.update({
+        due_at: dueDate.toISOString(),
+      });
+    } else if (dueDate && !previouslyStoredDueDate) {
+      db.messageTaskDueDate.create({
+        message_id: message.id,
+        due_at: dueDate.toISOString(),
+      });
+    }
   };
 
-  const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();
+  const calendarInitialValue = currentDueDate ?? getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -69,6 +73,7 @@ export const TaskDueDateSetter = observer(({ message, children }: Props) => {
             onCloseRequest={() => {
               closeMenu();
             }}
+            isDisabled={message.topic?.isClosed ?? false}
             anchorRef={ref}
             options={(
               [
@@ -109,7 +114,15 @@ export const TaskDueDateSetter = observer(({ message, children }: Props) => {
       </AnimatePresence>
 
       <UITriggerHolder ref={ref} onClick={openMenu}>
-        {children}
+        <Button
+          kind="secondary"
+          icon={<IconClock />}
+          iconAtStart
+          isDisabled={message.topic?.isClosed}
+          data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
+        >
+          {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : null}
+        </Button>
       </UITriggerHolder>
     </>
   );

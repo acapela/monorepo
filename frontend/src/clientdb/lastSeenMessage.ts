@@ -51,4 +51,4 @@ export const lastSeenMessageEntity = defineEntity<LastSeenMessageFragment>({
   };
 });
 
-export type TopicEntity = EntityByDefinition<typeof topicEntity>;
+export type LastSeenMessageEntity = EntityByDefinition<typeof lastSeenMessageEntity>;

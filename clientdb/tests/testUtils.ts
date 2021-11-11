@@ -18,14 +18,14 @@ export interface TestDogEntity extends CommonData {
 
 let id = 0;
 
-function getDefaultCommonData(): CommonData {
+export function getDefaultCommonData(): CommonData {
   return {
     id: `${++id}`,
     updatedAt: new Date(),
   };
 }
 
-function getSyncConfig<T>(): EntitySyncConfig<T> {
+export function getSyncConfig<T>(): EntitySyncConfig<T> {
   return {
     pullUpdated({ updateItems }) {
       updateItems([]);
@@ -33,7 +33,7 @@ function getSyncConfig<T>(): EntitySyncConfig<T> {
   };
 }
 
-const owner = defineEntity<TestOwnerEntity>({
+export const owner = defineEntity<TestOwnerEntity>({
   keyField: "id",
   keys: ["id", "name", "updatedAt"],
   updatedAtField: "updatedAt",
@@ -46,7 +46,7 @@ const owner = defineEntity<TestOwnerEntity>({
   };
 });
 
-const dog = defineEntity<TestDogEntity>({
+export const dog = defineEntity<TestDogEntity>({
   keyField: "id",
   keys: ["id", "name", "updatedAt", "owner_id"],
   updatedAtField: "updatedAt",
@@ -61,10 +61,13 @@ const dog = defineEntity<TestDogEntity>({
   };
 });
 
-const mockPersistanceAdapter: PersistanceAdapterInfo = {
+export const mockPersistanceAdapter: PersistanceAdapterInfo = {
   adapter: {
     async openDB() {
       return {
+        async close() {
+          //
+        },
         async getTable() {
           return {
             async clearTable() {
@@ -79,7 +82,13 @@ const mockPersistanceAdapter: PersistanceAdapterInfo = {
             async removeItem() {
               return true;
             },
+            async removeItems() {
+              return true;
+            },
             async saveItem() {
+              return true;
+            },
+            async saveItems() {
               return true;
             },
             async updateItem() {

@@ -38,6 +38,8 @@ interface EntityClientConfig {
   persistanceDb: PersistanceDB;
 }
 
+const truePredicate = () => true;
+
 /**
  * Client is 'public api' surface for entity.
  *
@@ -48,6 +50,22 @@ export function createEntityClient<Data, Connections>(
   { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
+
+  const cleanupItemAdded = store.events.on("itemAdded", (entity, source) => {
+    if (source === "user") {
+      definition.config.events?.itemAdded?.(entity, databaseUtilities);
+    }
+  });
+  const cleanupItemUpdated = store.events.on("itemUpdated", (entity, dataBefore, source) => {
+    if (source === "user") {
+      definition.config.events?.itemUpdated?.(entity, dataBefore, databaseUtilities);
+    }
+  });
+  const cleanupItemRemoved = store.events.on("itemRemoved", (entity, source) => {
+    if (source === "user") {
+      definition.config.events?.itemRemoved?.(entity, databaseUtilities);
+    }
+  });
 
   const { query, findById, findByUniqueIndex, assertFindById, removeById, assertFindByUniqueIndex, sort } = store;
 
@@ -117,7 +135,7 @@ export function createEntityClient<Data, Connections>(
       return searchEngine.search(term);
     },
     get all() {
-      return client.query(() => true, definition.config.defaultSort).all;
+      return client.query(truePredicate, definition.config.defaultSort).all;
     },
     get hasItems() {
       return hasItemsComputed.get();
@@ -152,6 +170,9 @@ export function createEntityClient<Data, Connections>(
       syncManager.cancel();
       store.destroy();
       searchEngine?.destroy();
+      cleanupItemAdded();
+      cleanupItemUpdated();
+      cleanupItemRemoved();
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,

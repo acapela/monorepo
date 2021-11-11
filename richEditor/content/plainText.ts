@@ -9,11 +9,8 @@ function normalizePlainTextOutput(plainText: string) {
   return plainText.replace(/\n{2,}/, `\n`).trim();
 }
 
-export function recursiveConvertMessageContentToPlainText(
-  content: RichEditorNode,
-  isRoot: boolean,
-  plainTextParts: string[]
-) {
+function recursiveConvertMessageContentToPlainText(content: RichEditorNode): string[] {
+  const plainTextParts: string[] = [];
   if (newLineNodeTypes.includes(content.type)) {
     plainTextParts.push("\n");
   }
@@ -22,20 +19,20 @@ export function recursiveConvertMessageContentToPlainText(
     plainTextParts.push(content.text);
   }
 
-  if (content.content) {
-    for (const childNode of content.content) {
-      recursiveConvertMessageContentToPlainText(childNode, false, plainTextParts);
-    }
+  if (content.type == "emoji") {
+    plainTextParts.push(content.attrs?.data?.emoji ?? "");
   }
 
-  if (isRoot) {
-    const plainText = plainTextParts.join("");
-    return normalizePlainTextOutput(plainText);
+  if (content.content) {
+    plainTextParts.push(
+      ...content.content.flatMap((childNode) => recursiveConvertMessageContentToPlainText(childNode))
+    );
   }
+
+  return plainTextParts;
 }
 
 export function convertMessageContentToPlainText(content: RichEditorNode): string {
-  const result = recursiveConvertMessageContentToPlainText(content, true, []) as string;
-
-  return result;
+  const plainText = recursiveConvertMessageContentToPlainText(content).join("");
+  return normalizePlainTextOutput(plainText);
 }

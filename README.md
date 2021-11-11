@@ -92,96 +92,10 @@ This automatically creates migrations. [You can squash the migrations, using the
 
 Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
-Fortunately you can use this manifest "generator":
-
-1. copy the code below into your favorite browser's JS console
-2. replace `<YOUR-PERSONAL.local.lt-DOMAIN>` with your loca.lt domain (it's the one you see when the backend server starts)
-3. run it, you'll now have the manifest in your clipboard
-4. go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
-5. make sure to give it a unique name and command name
-6. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_STATE_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. The slash command needs to be unique to our workspace
-
-<details>
-<summary>App Manifest Generator</summary>
-
-```javascript
-copy(`{
-    "_metadata": {
-        "major_version": 1,
-        "minor_version": 1
-    },
-    "display_information": {
-        "name": "CHANGE_ME",
-        "description": "End your meetings before they start.",
-        "background_color": "#000000",
-        "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
-    },
-    "features": {
-        "bot_user": {
-            "display_name": "Acapela",
-            "always_online": true
-        },
-        "shortcuts": [
-            {
-                "name": "Turn into request",
-                "type": "global",
-                "callback_id": "global_acapela",
-                "description": "Creates an Acapela request from a message"
-            },
-            {
-                "name": "Create a request",
-                "type": "message",
-                "callback_id": "message_acapela",
-                "description": "Creates a request in Acapela"
-            }
-        ],
-        "slash_commands": [
-            {
-                "command": "/<YOUR_SLASH_COMMAND_HERE>",
-                "url": "<YOUR_DOMAIN_HERE>/api/backend/slack/commands",
-                "description": "Create a new request",
-                "usage_hint": "[message] @people",
-                "should_escape": true
-            }
-        ]
-    },
-    "oauth_config": {
-        "redirect_urls": [
-            "<YOUR_DOMAIN_HERE>/api/backend/slack/oauth_redirect"
-        ],
-        "scopes": {
-            "user": [
-                "groups:read",
-                "im:read",
-                "mpim:read",
-                "chat:write"
-            ],
-            "bot": [
-                "channels:read",
-                "commands",
-                "im:write",
-                "users.profile:read",
-                "users:read",
-                "users:read.email",
-                "chat:write"
-            ]
-        }
-    },
-    "settings": {
-        "interactivity": {
-            "is_enabled": true,
-            "request_url": "<YOUR_DOMAIN_HERE>/api/backend/slack/events",
-            "message_menu_options_url": "<YOUR_DOMAIN_HERE>/api/backend/slack/options"
-        },
-        "org_deploy_enabled": false,
-        "socket_mode_enabled": false,
-        "token_rotation_enabled": false
-    }
-}`.replaceAll("<YOUR_DOMAIN_HERE>", "<YOUR-PERSONAL.local.lt-DOMAIN>")
-);
-```
-
-</details>
+1. Run `yarn shared clone-slack-manifest`
+2. go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
+3. make sure to give it a unique name and command name
+4. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_STATE_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. The slash command needs to be unique within our workspace
 
 ## Commit Message Convention
 

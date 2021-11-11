@@ -33,13 +33,13 @@ export function AutocompletePickerPopoverBase<D>({ baseProps, PickerComponent }:
   });
 
   useAsyncEffect(
-    async (isCancelled) => {
+    async ({ getIsCancelled }) => {
       if (isPositionSettled) return;
 
       const [settlePromise, cancelWaiting] = waitForElementPossitionToSettle(editorElement);
 
       settlePromise.then(() => {
-        if (isCancelled()) return;
+        if (getIsCancelled()) return;
 
         setIsPositionSettled(true);
       });

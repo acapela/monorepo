@@ -45,11 +45,12 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
-    - id
     - name
-    - owner_id
     - slug
+    - created_at
     - updated_at
+    - id
+    - owner_id
     filter:
       _or:
       - owner_id:

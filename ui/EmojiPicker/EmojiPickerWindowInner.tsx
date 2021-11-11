@@ -4,11 +4,11 @@ import { useIsomorphicLayoutEffect } from "react-use";
 import { List } from "react-virtualized";
 import styled, { css } from "styled-components";
 
+import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "~shared/emoji";
 import { typedKeys } from "~shared/object";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
-import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "./emojiList";
 import { useFrequentlyUsedEmoji } from "./frequentlyUsed";
 
 const EMOJI_SIZE = 30;

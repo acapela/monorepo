@@ -73,7 +73,7 @@ function getParticipantsToShow(
 
 // TODO: Extend this component so that it shows multiple participants accordingly
 export const RequestParticipants = observer(function RequestParticipants({ topic }: Props) {
-  const participants = topic.participants.all;
+  const participants = topic.members;
 
   const [participantsToShow, notShownParticipants] = getParticipantsToShow(participants);
 

@@ -2,15 +2,15 @@ import "focus-visible";
 
 // Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/react";
-import { AnimateSharedLayout, MotionConfig } from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import { NextPageContext } from "next";
 import { Session } from "next-auth";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
-import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
@@ -27,22 +27,27 @@ import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
-const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
-if (process.env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: stage,
-    // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
-    ignoreErrors: ["ResizeObserver loop limit exceeded"],
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
-  });
-} else {
-  console.info("Sentry is disabled");
-}
-
-interface AddedProps {
+export interface AppConfig {
   session: Session | null;
   hasuraWebsocketEndpoint: string | null;
+  stage: string | undefined;
+  version: string | undefined;
+  buildDate: string | undefined;
+  userbackAccessToken: string | undefined;
+  sentryDSN: string | undefined;
+}
+
+function initSentry(appConfig: AppConfig) {
+  if (!appConfig.sentryDSN) console.info("Sentry is disabled");
+
+  Sentry.init({
+    dsn: appConfig.sentryDSN,
+    environment: appConfig.stage,
+    // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
+    ignoreErrors: ["ResizeObserver loop limit exceeded"],
+    release: appConfig.version,
+    tunnel: "/sentry-tunnel",
+  });
 }
 
 const BuiltInStyles = createGlobalStyle`
@@ -54,15 +59,51 @@ export default function App({
   pageProps,
   session,
   hasuraWebsocketEndpoint,
-}: AppProps & AddedProps): JSX.Element {
-  // Load Userback integration after initial app render
-  useEffect(() => {
-    initializeUserbackPlugin();
-  }, []);
-
+  stage,
+  version,
+  buildDate,
+  userbackAccessToken,
+  sentryDSN,
+}: AppProps & AppConfig): JSX.Element {
   // We need to remember this from first render, as getInitialProps is not run on client side navigation
-  const hasuraWebsocketEndpointFromServer = useConst(() => hasuraWebsocketEndpoint);
-  const sessionFromServer = useConst(() => session);
+  const appConfig = useConst(
+    () =>
+      ({
+        session,
+        hasuraWebsocketEndpoint,
+        stage,
+        version,
+        buildDate,
+        userbackAccessToken,
+        sentryDSN,
+      } as AppConfig)
+  );
+
+  // Load Userback and Sentry integration after initial app render
+  useEffect(() => {
+    initializeUserbackPlugin(appConfig.userbackAccessToken);
+    initSentry(appConfig);
+  }, [appConfig]);
+
+  const { route } = useRouter();
+  const isNextAuthErrorPage = route === "/auth/error";
+
+  if (isNextAuthErrorPage) {
+    return (
+      <>
+        <BuiltInStyles />
+        <CommonMetadata />
+        <RequiredSessionProvider dontRequireSession={isNextAuthErrorPage} session={appConfig.session}>
+          <AppThemeProvider theme={theme}>
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
+            {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+          </AppThemeProvider>
+        </RequiredSessionProvider>
+      </>
+    );
+  }
 
   return (
     <>
@@ -71,24 +112,21 @@ export default function App({
       <Sentry.ErrorBoundary
         fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
       >
-        <RequiredSessionProvider session={sessionFromServer}>
-          <AnimateSharedLayout type="crossfade">
-            <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-              <ApolloProvider websocketEndpoint={hasuraWebsocketEndpointFromServer}>
-                <AppThemeProvider theme={theme}>
-                  <CurrentTeamProvider>
-                    <ClientDbProvider>
-                      <AnalyticsManager />
-                      <PromiseUIRenderer />
-                      <TooltipsRenderer />
-                      <ToastsRenderer />
-                      {renderWithPageLayout(Component, pageProps)}
-                    </ClientDbProvider>
-                  </CurrentTeamProvider>
-                </AppThemeProvider>
-              </ApolloProvider>
-            </MotionConfig>
-          </AnimateSharedLayout>
+        <RequiredSessionProvider session={appConfig.session}>
+          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+            <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
+              <AppThemeProvider theme={theme}>
+                <CurrentTeamProvider>
+                  <ClientDbProvider>
+                    <PromiseUIRenderer />
+                    <TooltipsRenderer />
+                    <ToastsRenderer />
+                    {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+                  </ClientDbProvider>
+                </CurrentTeamProvider>
+              </AppThemeProvider>
+            </ApolloProvider>
+          </MotionConfig>
         </RequiredSessionProvider>
       </Sentry.ErrorBoundary>
     </>
@@ -154,8 +192,15 @@ App.getInitialProps = async (context: AppContext) => {
 
   const session = await getUserFromRequest(context.ctx.req);
 
+  // this is how we populate environment configurations to the frontend
   return {
     session,
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
-  };
+    stage: process.env.STAGE,
+    version: process.env.SENTRY_RELEASE || "dev",
+    buildDate: process.env.BUILD_DATE || "unknown",
+    userbackAccessToken: process.env.USERBACK_ACCESS_TOKEN,
+    sentryDSN: process.env.SENTRY_DSN,
+    segmentAPIKey: process.env.SEGMENT_API_KEY,
+  } as AppConfig;
 };

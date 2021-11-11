@@ -63,7 +63,7 @@ const requiredEnvVarNamesFrontend = [
   "FRONTEND_URL",
 ] as const;
 
-const optionalEnvVarNames = ["NEXT_PUBLIC_SEGMENT_API_KEY", "NEXT_PUBLIC_USERBACK_ACCESS_TOKEN"] as const;
+const optionalEnvVarNames = ["SEGMENT_API_KEY", "USERBACK_ACCESS_TOKEN"] as const;
 
 // Out of array of variable names, prepare types for process.env
 

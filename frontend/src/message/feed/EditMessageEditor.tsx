@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
@@ -78,8 +77,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       db.task.create({ message_id: message.id, user_id: userId, type });
     }
 
-    trackEvent("Edited Message", { messageId: message.id });
-
     clearPersistedContent();
     onSaved?.();
   }
@@ -118,18 +115,18 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;
 
 const UIActions = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;
 
 const UIButtons = styled.div`
   display: flex;
   align-items: center;
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;

@@ -1,13 +1,17 @@
+import { JSONContent } from "@tiptap/react";
 import gql from "graphql-tag";
+import { memoize, uniq } from "lodash";
 import { observable } from "mobx";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { getMentionNodesFromContent } from "~shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageReactionEntity } from "./messageReaction";
+import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
@@ -62,10 +66,14 @@ export const messageEntity = defineEntity<MessageFragment>({
       },
     },
   },
-}).addConnections((message, { getEntity, getContextValue }) => {
+}).addConnections((message, { getEntity, getContextValue, createCache }) => {
   const currentUserId = getContextValue(userIdContext);
 
   const tasks = getEntity(taskEntity).query({ message_id: message.id });
+
+  const mentionedUserIds = createCache("mentionedUserIds", () => getMentionedUserIdsInContent(message.content));
+
+  const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
 
   const lastUnreadInTheSameTopic = currentUserId
     ? getEntity(lastSeenMessageEntity).query({
@@ -73,6 +81,24 @@ export const messageEntity = defineEntity<MessageFragment>({
         user_id: currentUserId,
       })
     : null;
+
+  const getTasksForUser = cachedComputed((userId: string) => {
+    return tasks.query({ user_id: userId });
+  });
+
+  const getIsUserParticipating = cachedComputed((userId: string) => {
+    if (message.user_id === userId) return true;
+
+    if (getTasksForUser(userId).hasItems) return true;
+
+    if (getIsUserMentionedInContent(userId)) return true;
+
+    return false;
+  });
+
+  const getIsUserMentionedInContent = cachedComputed((userId: string) => {
+    return mentionedUserIds.get().includes(userId);
+  });
 
   const connections = {
     get topic() {
@@ -82,6 +108,7 @@ export const messageEntity = defineEntity<MessageFragment>({
       return getEntity(userEntity).assertFindById(message.user_id);
     },
     tasks,
+    getIsUserParticipating,
     reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
     attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
     get isUnread() {
@@ -104,9 +131,17 @@ export const messageEntity = defineEntity<MessageFragment>({
     get isOwn() {
       return currentUserId === message.user_id;
     },
+
+    get dueDate() {
+      return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
+    },
   };
 
   return connections;
 });
 
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;
+
+const getMentionedUserIdsInContent = memoize((content: JSONContent) => {
+  return uniq(getMentionNodesFromContent(content).map((node) => node.attrs.data.userId));
+});

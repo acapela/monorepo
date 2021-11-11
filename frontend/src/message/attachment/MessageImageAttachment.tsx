@@ -1,4 +1,4 @@
-import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import { AnimatePresence, LayoutGroup } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
@@ -29,7 +29,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
   );
 
   return (
-    <AnimateSharedLayout>
+    <LayoutGroup>
       <UIInlineAttachmentHolder onClick={openFullScreen}>
         <ImageWrapper src={attachmentUrl} className={className} />
       </UIInlineAttachmentHolder>
@@ -45,7 +45,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
           </ScreenCover>
         )}
       </AnimatePresence>
-    </AnimateSharedLayout>
+    </LayoutGroup>
   );
 })``;
 

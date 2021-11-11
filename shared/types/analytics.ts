@@ -1,17 +1,20 @@
 import { Message_Type_Enum } from "~gql";
-import { Maybe } from "~shared/types";
 
 import { RequestType } from "./mention";
 
 export type AnalyticsUserProfile = {
-  id: Maybe<string>;
-  name: Maybe<string>;
-  email: Maybe<string>;
-  avatarUrl?: Maybe<string>;
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  avatar?: string;
 };
+
+type Origin = "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
 
 /**
  * Map of tracking event types with their required payload.
+ * Use past tense and first letter uppercased for the event type.
  */
 export type AnalyticsEventsMap = {
   // Account related events
@@ -38,17 +41,18 @@ export type AnalyticsEventsMap = {
 
   // Topic related events
 
-  "Created Topic": {
-    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "web-app";
+  "Created Request": {
+    origin: Origin;
     topicName: string;
   };
-  "Reopened Topic": { topicId: string };
-  "Closed Topic": { topicId: string };
+  "Reopened Request": { topicId: string };
+  "Closed Request": { topicId: string };
   // TODO: implement once we add delete functionality back
-  "Deleted Topic": { topicId: string };
+  "Deleted Request": { topicId: string };
   // we are not tracking automatic archives
-  "Archived Topic": { topicId: string };
-  "Renamed Topic": { topicId: string };
+  "Archived Request": { topicId: string };
+  "Unarchived Request": { topicId: string };
+  "Renamed Request": { topicId: string };
 
   // Message related events
 
@@ -60,13 +64,21 @@ export type AnalyticsEventsMap = {
   // Mention and task related events
 
   "Created Task": { taskType: RequestType; topicId: string; mentionedUserId: string };
-  "Mark Task As Done": { taskType: RequestType; topicId: string };
-  "Added Due Date": { topicId: string; messageId: string };
+  "Marked Task As Done": {
+    taskType: RequestType;
+    topicId: string;
+    origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
+  };
+  "Added Due Date": { topicId: string; messageId: string; origin: Origin };
+
+  "Opened App": void;
 
   // Slack
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
+  "Used Slack Home Tab New Request": { slackUserName: string };
+  "Opened Webapp From Slack Home Tab": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
@@ -75,7 +87,11 @@ export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEv
 
 export type AnalyticsGroupsMap = {
   Team: {
-    teamName: string;
-    teamId: string;
+    // reserved traits available here: https://segment.com/docs/connections/spec/group/#traits
+    id: string;
+    name: string;
+    slug: string;
+    plan: "trial" | "free" | "premium";
+    createdAt: Date;
   };
 };

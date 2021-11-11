@@ -1,7 +1,5 @@
 process.env.APP = "frontend";
-process.env.NEXT_PUBLIC_STAGE = process.env.STAGE;
-process.env.NEXT_PUBLIC_SENTRY_RELEASE = process.env.SENTRY_RELEASE;
-process.env.NEXT_PUBLIC_BUILD_DATE = process.env.BUILD_DATE || "unknown";
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
 const withBundleAnalyzer = require("@next/bundle-analyzer");
@@ -79,14 +77,13 @@ const envVariables = (nextConfig = {}) => {
       const isServer = options.isServer;
       const allEnvVariablesMap = { ...tryGetDotEnvVars(options.config.envFilePath), ...process.env };
 
-      if (process.env.SENTRY_RELEASE && process.env.STAGE && process.env.SENTRY_AUTH_TOKEN) {
+      if (process.env.SENTRY_RELEASE && process.env.SENTRY_AUTH_TOKEN) {
         config.plugins.push(
           new SentryCliPlugin({
             include: ".next",
             org: "acapela",
             project: "acapela",
             release: process.env.SENTRY_RELEASE,
-            deploy: { env: process.env.STAGE },
           })
         );
       }
@@ -94,9 +91,7 @@ const envVariables = (nextConfig = {}) => {
       // Prepare list of var names.
       // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be available. (this follows official docs)
       const allEnvVariableNames = Object.keys(allEnvVariablesMap);
-      const clientSideEnvVarNames = allEnvVariableNames.filter(
-        (varName) => varName === "SENTRY_DSN" || varName.startsWith("NEXT_PUBLIC_")
-      );
+      const clientSideEnvVarNames = allEnvVariableNames.filter((varName) => varName.startsWith("NEXT_PUBLIC_"));
 
       // Populate node process env variables from parsed file so webpack plugin will 'see' those vars.
       allEnvVariableNames.forEach((varName) => {
@@ -120,8 +115,6 @@ const envVariables = (nextConfig = {}) => {
     },
   });
 };
-
-const isBuildForCI = Boolean(process.env.CI_BUILD);
 
 module.exports = withPlugins(
   [
@@ -147,7 +140,7 @@ module.exports = withPlugins(
       // !! WARN !!
       // Setting this to true will dangerously allow production builds to successfully complete even if
       // your project has type errors.
-      ignoreBuildErrors: isBuildForCI, // in CI we have a separate job for typechecking
+      ignoreBuildErrors: true, // in CI we have a separate job for typechecking
     },
     eslint: {
       // !! WARN !!

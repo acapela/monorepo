@@ -1,4 +1,4 @@
-import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import { AnimatePresence, LayoutGroup } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
@@ -31,7 +31,7 @@ export const MessageAttachment = styledObserver<Props>(
     if (!attachment) return null;
 
     return (
-      <AnimateSharedLayout>
+      <LayoutGroup>
         <UIInlineAttachmentHolder className={className}>
           <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={`/attachments/${attachment.id}`} />
           <AnimatePresence>
@@ -40,7 +40,7 @@ export const MessageAttachment = styledObserver<Props>(
             )}
           </AnimatePresence>
         </UIInlineAttachmentHolder>
-      </AnimateSharedLayout>
+      </LayoutGroup>
     );
   }
 )``;

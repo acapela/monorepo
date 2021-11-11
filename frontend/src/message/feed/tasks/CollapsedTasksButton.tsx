@@ -1,8 +1,8 @@
-import { observer } from "mobx-react";
 import { useRef } from "react";
 import styled from "styled-components";
 
 import { TaskEntity } from "~frontend/clientdb/task";
+import { styledObserver } from "~shared/component";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { PopPresenceAnimator } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
@@ -13,20 +13,21 @@ import { MessageTask } from "./MessageTask";
 
 interface Props {
   tasks: TaskEntity[];
+  className?: string;
 }
 
-export const CollapsedTasksButton = observer(function CollapsedTasks({ tasks }: Props): JSX.Element {
+export const CollapsedTasksButton = styledObserver(function CollapsedTasks({ tasks, className }: Props): JSX.Element {
   const ref = useRef<HTMLButtonElement>(null);
 
   const [isPopoverOpen, { set: openPopover, unset: closePopover }] = useBoolean(false);
 
   return (
     <>
-      <Button ref={ref} kind="secondary" onClick={openPopover}>
+      <Button className={className} ref={ref} kind="secondary" onClick={openPopover}>
         +{tasks.length}
       </Button>
       {isPopoverOpen && (
-        <Popover anchorRef={ref} placement="left" onClickOutside={closePopover}>
+        <Popover anchorRef={ref} placement="left" onClickOutside={closePopover} enableScreenCover>
           <UICollapsedTasks>
             {tasks.map((task) => (
               <MessageTask key={task.id} task={task} />
@@ -36,7 +37,7 @@ export const CollapsedTasksButton = observer(function CollapsedTasks({ tasks }: 
       )}
     </>
   );
-});
+})``;
 
 const background = theme.colors.layout.background;
 

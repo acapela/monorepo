@@ -31,6 +31,13 @@ array_relationships:
       table:
         name: last_seen_message
         schema: public
+- name: members
+  using:
+    foreign_key_constraint_on:
+      column: topic_id
+      table:
+        name: topic_member
+        schema: public
 - name: messages
   using:
     manual_configuration:
@@ -78,10 +85,12 @@ select_permissions:
     - team_id
     - updated_at
     filter:
-      team:
-        memberships:
+      _or:
+      - members:
           user_id:
             _eq: X-Hasura-User-Id
+      - owner_id:
+          _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -95,18 +104,18 @@ update_permissions:
     - owner_id
     - slug
     filter:
-      team:
-        memberships:
+      _or:
+      - members:
           user_id:
             _eq: X-Hasura-User-Id
+      - owner_id:
+          _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
     filter:
-      team:
-        memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
+      owner_id:
+        _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:

@@ -1,17 +1,15 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { assert } from "~shared/assert";
-import { isNotNullish } from "~shared/nullish";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { theme } from "~ui/theme";
 
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
-import { UserBasicInfo } from "./UserBasicInfo";
+import { TeamMemberBasicInfo } from "./TeamMemberBasicInfo";
 
 interface Props {
   team: TeamEntity;
@@ -22,30 +20,30 @@ export const TeamMembersManager = observer(({ team }: Props) => {
 
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
-  const teamUsers = team.members.all.map((teamMember) => teamMember.user).filter(isNotNullish) ?? [];
-
   const handleRemoveTeamMember = (userId: string) => {
     const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
     assert(teamMember, "did not find teamMember");
     teamMember.remove();
-    trackEvent("Account Removed User", { teamId: team.id, userId });
   };
 
   return (
     <UIPanel>
       <InviteMemberForm team={team} />
-      {teamUsers.length > 0 && (
+      {team.members.hasItems && (
         <UISelectGridContainer>
-          {teamUsers.map((user) => (
-            <UIItemHolder key={user.id}>
-              <UserBasicInfo user={user} />
+          {team.members.all.map((teamMember) => (
+            <UIItemHolder key={teamMember.id}>
+              <TeamMemberBasicInfo teamMember={teamMember} />
 
               <UIActionsHolder>
-                {!user.has_account && <ResendInviteButton user={user} teamId={team.id} />}
+                {!(teamMember.user?.has_account && teamMember.has_joined) && (
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  <ResendInviteButton user={teamMember.user!} teamId={team.id} />
+                )}
                 {isCurrentUserTeamOwner && (
                   <CloseIconButton
                     isDisabled={false}
-                    onClick={() => handleRemoveTeamMember(user.id)}
+                    onClick={() => teamMember.user && handleRemoveTeamMember(teamMember.user.id)}
                     tooltip="Remove user from your team"
                   />
                 )}
@@ -82,7 +80,7 @@ const UISelectGridContainer = styled.div<{}>`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  ${theme.spacing.regular.asGap};
+  ${theme.spacing.pageSections.asGap};
 
   width: 100%;
 `;

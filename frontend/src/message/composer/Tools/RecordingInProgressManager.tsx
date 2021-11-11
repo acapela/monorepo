@@ -74,7 +74,7 @@ const UIControls = styled(HStack)<{}>`
   ${theme.colors.panels.secondaryPopover.asBgWithReadableText};
   ${theme.radius.panel};
   ${theme.shadow.modal};
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIElapsedTime = styled.span<{}>`

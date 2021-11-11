@@ -26,8 +26,8 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
         <UISquareContent>
           <UIDayButton
             data-tooltip={isTodayDay && "Today"}
-            isToday={isTodayDay}
-            isSelected={isSelected}
+            $isToday={isTodayDay}
+            $isSelected={isSelected}
             onClick={handleDayClick}
             isDisabled={!isThisDayInCurrentMonth}
           >
@@ -75,7 +75,7 @@ const UISquareContent = styled.div<{}>`
   }
 `;
 
-const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
+const UIDayButton = styled(Button)<{ $isToday: boolean; $isSelected: boolean }>`
   padding: 0;
   flex: 1;
   display: flex;
@@ -90,14 +90,14 @@ const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
         `;
       }
 
-      if (props.isSelected) {
+      if (props.$isSelected) {
         return css`
           ${theme.colors.primary.interactive};
           ${theme.colors.primary.readableText.asColor};
         `;
       }
 
-      if (props.isToday) {
+      if (props.$isToday) {
         return css`
           ${theme.colors.primary.asColor};
         `;

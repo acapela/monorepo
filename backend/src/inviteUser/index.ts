@@ -1,23 +1,16 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import {
-  sendNotificationIgnoringPreference,
-  sendNotificationPerPreference,
-} from "~backend/src/notifications/sendNotification";
+import { createSlackLink, sendNotificationIgnoringPreference } from "~backend/src/notifications/sendNotification";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
-import { createJWT, signJWT } from "~shared/jwt";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 import { routes } from "~shared/routes";
 
+import { getInviteURL } from "./utils";
+
 async function sendNewUserInviteNotification(user: User, team: Team, inviter: User) {
-  const inviteURL = `${process.env.FRONTEND_URL}${routes.invite}?${new URLSearchParams(
-    Object.entries({
-      jwt: signJWT(createJWT({ userId: user.id })),
-      teamId: team.id,
-      invitingUserId: inviter.id,
-    })
-  )}`;
+  const inviteURL = getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
   await sendNotificationIgnoringPreference(user, team.id, {
     email: {
@@ -28,14 +21,14 @@ async function sendNewUserInviteNotification(user: User, team: Team, inviter: Us
         `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
       ].join("<br>"),
     },
-    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}" Acapela>`,
+    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}" on Acapela`)}`,
   });
 }
 
 async function sendExistingUserInviteNotification(user: User, team: Team, inviter: User) {
   const inviteURL = `${process.env.FRONTEND_URL}${routes.teamSelect}`;
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
-  await sendNotificationPerPreference(user, team.id, {
+  await sendNotificationIgnoringPreference(user, team.id, {
     email: {
       subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
       html: [
@@ -44,7 +37,7 @@ async function sendExistingUserInviteNotification(user: User, team: Team, invite
         `Follow <a href="${inviteURL}">this link</a> and select team "${team.name}" to join the discussion.`,
       ].join("<br>"),
     },
-    slack: `${slackFrom} <${inviteURL}|has invited you to join team "${team.name}">`,
+    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}"`)}`,
   });
 }
 
@@ -77,12 +70,15 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       return { success: false };
     }
 
+    email = email.toLowerCase();
+
     let teamMember = await db.team_member.findFirst({
       where: { team_id, user: { email } },
       include: { user: { include: { account: true } } },
     });
 
-    if (!teamMember) {
+    const firstInvite = !teamMember;
+    if (firstInvite) {
       teamMember = await db.team_member.create({
         data: {
           user: {
@@ -104,6 +100,12 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     }
 
     assert(teamMember, "teamMember must have been created");
+
+    if (invitingUserId) {
+      trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, inviteEmail: email });
+    } else {
+      trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, userEmail: email });
+    }
 
     await sendInviteNotification(teamMember.user, team_id, invitingUserId);
 

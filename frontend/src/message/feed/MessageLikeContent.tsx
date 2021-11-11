@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { styledObserver } from "~shared/component";
@@ -12,6 +12,7 @@ import { MessageMetaDataWrapper } from "./MessageMetaData";
 
 interface Props {
   user: UserEntity;
+  anchorLink?: string;
   date: Date;
   children: ReactNode;
   showOnlyContent?: boolean;
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export const MessageLikeContent = styledObserver<Props>(
-  ({ user, date, children, tools, className, showOnlyContent = false }) => {
+  ({ user, date, children, tools, className, anchorLink, showOnlyContent = false }) => {
     const holderRef = useRef<HTMLDivElement>(null);
     const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
@@ -33,12 +34,22 @@ export const MessageLikeContent = styledObserver<Props>(
         hasTopSpacing={!showOnlyContent}
       >
         <UIContentContainer>
-          <MessageMetaDataWrapper user={user} date={date} isNextSameUserMessage={showOnlyContent} isHovered={isHovered}>
+          <MessageMetaDataWrapper
+            anchorLink={anchorLink}
+            user={user}
+            date={date}
+            isNextSameUserMessage={showOnlyContent}
+            isHovered={isHovered}
+          >
             {children}
           </MessageMetaDataWrapper>
           {tools && (
             <AnimatePresence>
-              {isHovered && <UIFlyingTools presenceStyles={{ opacity: [0, 1] }}>{tools}</UIFlyingTools>}
+              {isHovered && (
+                <UIFlyingTools layoutId="message-tools-flying" layout="position" presenceStyles={{ opacity: [0, 1] }}>
+                  {tools}
+                </UIFlyingTools>
+              )}
             </AnimatePresence>
           )}
         </UIContentContainer>
@@ -49,8 +60,14 @@ export const MessageLikeContent = styledObserver<Props>(
 
 const UIFlyingTools = styled(PresenceAnimator)<{}>`
   position: absolute;
-  top: 0;
+  bottom: 100%;
   right: 0;
+  margin-bottom: -3px;
+  will-change: transform, opacity;
+  ${theme.colors.layout.backgroundAccent.withBorder.asBgWithReadableText};
+  ${theme.shadow.popover};
+  ${theme.box.buttonsGroup};
+  ${theme.radius.panel};
 `;
 
 const UIContentContainer = styled.div<{}>`
@@ -67,12 +84,6 @@ const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
 
   ${theme.radius.secondaryItem};
   ${theme.transitions.hover()};
-
-  ${(props) =>
-    props.hasTopSpacing &&
-    css`
-      margin-top: 30px;
-    `}
 
   &:hover {
     ${theme.colors.layout.background.hover.opacity(0.5).asBg};

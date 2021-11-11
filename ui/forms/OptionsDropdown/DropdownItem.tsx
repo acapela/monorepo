@@ -62,7 +62,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
 
   ${theme.transitions.hover()};
   ${background.interactive};
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 
   svg {
     font-size: 1.25em;

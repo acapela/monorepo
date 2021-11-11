@@ -66,12 +66,12 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
   return (
     <UIButton
       ref={ref}
-      isLoading={isLoading}
-      isDisabled={isDisabledBoolean}
+      $isLoading={isLoading}
+      $isDisabled={isDisabledBoolean}
       disabled={isDisabledBoolean}
-      isWide={isWide}
+      $isWide={isWide}
       data-tooltip={getTooltipLabel()}
-      kind={kind}
+      $kind={kind}
       onClick={onClick}
       {...htmlProps}
     >
@@ -103,10 +103,10 @@ const UIIconHolder = styled.div<{}>`
 `;
 
 export const UIButton = styled(motion.button)<{
-  kind: ButtonKind;
-  isLoading?: boolean;
-  isDisabled?: boolean;
-  isWide?: boolean;
+  $kind: ButtonKind;
+  $isLoading?: boolean;
+  $isDisabled?: boolean;
+  $isWide?: boolean;
 }>`
   display: inline-flex;
   align-items: center;
@@ -117,7 +117,7 @@ export const UIButton = styled(motion.button)<{
   ${theme.typo.content.medium.resetLineHeight};
   ${theme.box.button};
   ${theme.radius.secondaryItem};
-  ${theme.spacing.horizontalActions.asGap};
+  ${theme.spacing.actions.asGap};
 
   a & {
     /* It is possible that button is inside <a> tag without having onClick handler. It means it should also have cursor pointer. */
@@ -126,11 +126,11 @@ export const UIButton = styled(motion.button)<{
 
   ${theme.transitions.hover()}
 
-  ${(props) => getButtonKindtyles(props.kind)}
+  ${(props) => getButtonKindtyles(props.$kind)}
 
-  ${(props) => (props.isDisabled || props.isLoading) && disabledCss};
+  ${(props) => (props.$isDisabled || props.$isLoading) && disabledCss};
   ${(props) =>
-    props.isWide &&
+    props.$isWide &&
     css`
       width: 100%;
     `}

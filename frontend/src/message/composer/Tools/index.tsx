@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { pickUserFiles } from "~shared/files";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconPaperclip } from "~ui/icons";
+import { useIsPhone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { AudioRecordingButton } from "./AudioRecordingButton";
@@ -18,9 +19,10 @@ interface RecorderProps {
 }
 
 export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked }: RecorderProps) => {
+  const isPhone = useIsPhone();
   return (
     <UIHolder className={className}>
-      {onRecordingReady && <AudioRecordingButton onRecordingReady={onRecordingReady} />}
+      {!isPhone && onRecordingReady && <AudioRecordingButton onRecordingReady={onRecordingReady} />}
       {onFilesPicked && (
         <IconButton
           tooltip="Upload files..."
@@ -41,5 +43,5 @@ export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked
 const UIHolder = styled.div`
   display: flex;
   flex-direction: row;
-  ${theme.spacing.horizontalActionsSection.asGap};
+  ${theme.spacing.actionsSection.asGap};
 `;

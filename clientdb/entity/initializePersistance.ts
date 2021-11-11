@@ -1,6 +1,6 @@
 import { getHash } from "~shared/hash";
 
-import { PersistanceAdapter, PersistanceAdapterInfo, PersistanceDB, PersistanceTableConfig } from "./db/adapter";
+import { PersistanceAdapter, PersistanceAdapterInfo, PersistanceTableConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 
 /**
@@ -42,29 +42,39 @@ const SYSTEM_DB_VERSION = 1;
 /**
  * Will calculate schema hash for all entity definitions combined.
  */
-function getDefinitionsSchemaHash(definitions: EntityDefinition<unknown, unknown>[]): string {
+function getDatabaseHash(definitions: EntityDefinition<unknown, unknown>[], nameSuffix = ""): string {
   const hashList = definitions.map((definition) => definition.getSchemaHash());
 
-  return getHash(hashList.join(""));
+  return getHash([...hashList, nameSuffix].join(""));
 }
+
+const CACHE_TABLE_NAME = "__cache";
+
+const cacheTableConfig: PersistanceTableConfig = {
+  name: "__cache",
+  keyField: "key",
+};
 
 /**
  * Will create persistance table info from entity definition
  */
 function getTablesConfigFromDefinitions(definitions: EntityDefinition<unknown, unknown>[]): PersistanceTableConfig[] {
-  return definitions.map((definition): PersistanceTableConfig => {
+  const entitiesTables = definitions.map((definition): PersistanceTableConfig => {
     return { name: definition.config.name, keyField: definition.config.keyField };
   });
+
+  return [...entitiesTables, cacheTableConfig];
 }
 
 /**
  * Will open and return 'system' table holding info about all existing databases.
  */
-async function openLocalDatabasesInfoTable({ openDB }: PersistanceAdapter) {
+async function openLocalDatabasesInfoTable({ openDB }: PersistanceAdapter, onTerminated?: () => void) {
   const databasesListDb = await openDB({
     name: DATABASES_DB_NAME,
     version: SYSTEM_DB_VERSION,
     tables: [{ name: DATABASES_DB_TABLE, keyField: "name" as keyof StoragePersistanceDatabaseInfo }],
+    onTerminated,
   });
 
   const databasesListTable = await databasesListDb.getTable<StoragePersistanceDatabaseInfo>(DATABASES_DB_TABLE);
@@ -75,14 +85,17 @@ async function openLocalDatabasesInfoTable({ openDB }: PersistanceAdapter) {
 /**
  * To avoid conflicts with other IndexedDb we always add clientdb string to database name.
  */
-const STORAGE_DATABASE_NAME_BASE = "clientdb-storage";
+const STORAGE_DATABASE_NAME_BASE = "clientdb";
 
-function getStorageDatabaseName(suffix?: string) {
-  if (!suffix) {
-    return STORAGE_DATABASE_NAME_BASE;
-  }
+/*
+ * Bump this anytime we make code changes that require purging previously synced data.
+ * Examples are permission changes (making old data newly available), or syncing logic changes.
+ * This does not include schema changes, as these already trigger a purge.
+ */
+const FORCED_VERSION_CHANGES = 1;
 
-  return `${STORAGE_DATABASE_NAME_BASE}-${suffix}`;
+function getStorageDatabaseName(hash: string) {
+  return `${STORAGE_DATABASE_NAME_BASE}-${FORCED_VERSION_CHANGES}-${hash}`;
 }
 
 /**
@@ -90,64 +103,60 @@ function getStorageDatabaseName(suffix?: string) {
  */
 export async function initializePersistance(
   definitions: EntityDefinition<unknown, unknown>[],
-  { adapter, nameSuffix }: PersistanceAdapterInfo
-): Promise<PersistanceDB> {
-  const databaseName = getStorageDatabaseName(nameSuffix);
-  const allDatabasesInfoSystemTable = await openLocalDatabasesInfoTable(adapter);
-  const existingDatabaseInfo = await allDatabasesInfoSystemTable.fetchItem(databaseName);
+  { adapter, key }: PersistanceAdapterInfo,
+  onTerminated?: () => void
+) {
+  const databaseHash = getDatabaseHash(definitions, key);
+  const databaseName = getStorageDatabaseName(databaseHash);
+
+  const allDatabasesInfoSystemTable = await openLocalDatabasesInfoTable(adapter, onTerminated);
+  const existingDatabases = await allDatabasesInfoSystemTable.fetchAllItems();
+
+  const existingDatabaseInfo = existingDatabases.find((dbInfo) => dbInfo.name === databaseName) ?? null;
 
   const entityTablesInfo = getTablesConfigFromDefinitions(definitions);
 
-  const currentSchemaHash = getDefinitionsSchemaHash(definitions);
   const now = new Date();
 
-  // It is new database, no need to check hashes, just create and register it
-  if (!existingDatabaseInfo) {
-    // Initialize storage with initial version
-    const persistanceDB = await adapter.openDB({ name: databaseName, version: 1, tables: entityTablesInfo });
+  const outdatedDatabases = existingDatabases.filter((existingDb) => {
+    return existingDb.name !== databaseName;
+  });
 
-    // Register metadata about the storage
-    await allDatabasesInfoSystemTable.saveItem(databaseName, {
+  try {
+    await Promise.all(
+      outdatedDatabases.map(async (dbInfo) => {
+        await adapter.removeDB(dbInfo.name);
+        await allDatabasesInfoSystemTable.removeItem(dbInfo.name);
+      })
+    );
+  } catch (error) {
+    // We'll try again on next run. It is not blocking the bootstrap of the app, so we can continue even on error.
+    console.error(`Failed to remove outdated databases`);
+  }
+
+  const persistanceDB = await adapter.openDB({
+    name: databaseName,
+    version: 1,
+    tables: entityTablesInfo,
+    onTerminated,
+  });
+
+  const cacheTable = await persistanceDB.getTable(CACHE_TABLE_NAME);
+
+  if (existingDatabaseInfo) {
+    await allDatabasesInfoSystemTable.updateItem(databaseName, {
+      lastUsedAt: now,
+    });
+  } else {
+    await allDatabasesInfoSystemTable.saveItem({
       name: databaseName,
       version: 1,
       createdAt: now,
       lastUsedAt: now,
-      schemaHash: currentSchemaHash,
+      schemaHash: databaseHash,
       updatedAt: now,
     });
-    return persistanceDB;
   }
 
-  // We have persistance table already. Let's see if schema it has is matching current schema
-
-  const previousHash = existingDatabaseInfo.schemaHash;
-
-  // Schema did change. Let's upgrade version forcing data wipe-out.
-  if (currentSchemaHash !== previousHash) {
-    console.info(`Local db schema changed - creating new version`);
-    const newVersion = existingDatabaseInfo.version + 1;
-    const persistanceDB = await adapter.openDB({ name: databaseName, version: newVersion, tables: entityTablesInfo });
-    // Let's register version change.
-    await allDatabasesInfoSystemTable.updateItem(databaseName, {
-      version: newVersion,
-      schemaHash: currentSchemaHash,
-      updatedAt: now,
-      lastUsedAt: now,
-    });
-    return persistanceDB;
-  }
-
-  // We have persistance database already, and schema did not change. There is no need to make any changes to it
-  // Let's only  mark it as being used. (No need to await it)
-  allDatabasesInfoSystemTable.updateItem(existingDatabaseInfo.name, { lastUsedAt: new Date() });
-
-  // Let's open DB using current version - it means no update migration will be performed and data will be untouched.
-  const persistanceDB = await adapter.openDB({
-    name: databaseName,
-    // We're passing existing version
-    version: existingDatabaseInfo.version,
-    tables: entityTablesInfo,
-  });
-
-  return persistanceDB;
+  return [persistanceDB, cacheTable] as const;
 }

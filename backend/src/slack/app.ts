@@ -6,9 +6,10 @@ import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
 import { HttpStatus } from "../http";
-import { parseMetadata } from "./metadata";
+import { parseMetadata } from "./installMetadata";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
@@ -27,12 +28,19 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     async storeInstallation(installation) {
       const { teamId, userId } = parseMetadata(installation);
       const slackTeamId = assertDefined(installation.team, "installation must have team").id;
+      const otherTeamWithSameSlack = await db.team.findFirst({
+        where: { NOT: { id: teamId }, team_slack_installation: { slack_team_id: slackTeamId } },
+      });
+      if (otherTeamWithSameSlack) {
+        throw new Error(SLACK_WORKSPACE_ALREADY_USED_ERROR);
+      }
       if (installation.bot) {
         const teamData = _.omit(installation, "user", "metadata");
+        const data = teamData as never;
         await db.team_slack_installation.upsert({
           where: { team_id: teamId },
-          create: { team_id: teamId, data: teamData as never, slack_team_id: slackTeamId },
-          update: {},
+          create: { team_id: teamId, data, slack_team_id: slackTeamId },
+          update: { data },
         });
       }
       if (!userId) {
@@ -42,12 +50,15 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       if (!teamMember) {
         return;
       }
-      await db.team_member_slack.create({
-        data: {
+      const installation_data = installation.user as never;
+      await db.team_member_slack.upsert({
+        where: { team_member_id: teamMember.id },
+        create: {
           team_member_id: teamMember.id,
-          installation_data: installation.user as never,
+          installation_data,
           slack_user_id: installation.user.id,
         },
+        update: { installation_data, slack_user_id: installation.user.id },
       });
     },
     async fetchInstallation(query) {
@@ -82,6 +93,19 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         const { redirectURL } = parseMetadata(installation);
         res.writeHead(HttpStatus.FOUND, { Location: redirectURL || "/" }).end();
       },
+      failure(error, options, req, res) {
+        const { redirectURL } = parseMetadata({ metadata: options.metadata });
+        const isAlreadyUsedError = Boolean(error.stack?.includes(SLACK_WORKSPACE_ALREADY_USED_ERROR));
+        if (!isAlreadyUsedError) {
+          Sentry.captureException(error);
+        }
+        const redirectURLObject = new URL(redirectURL ?? "/");
+        redirectURLObject.searchParams.set(
+          SLACK_INSTALL_ERROR_KEY,
+          isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown"
+        );
+        res.writeHead(HttpStatus.FOUND, { Location: redirectURLObject.toString() }).end();
+      },
     },
   },
 };
@@ -95,6 +119,7 @@ export const slackApp = new SlackBolt.App({
   ...sharedOptions,
   receiver: slackReceiver,
   developerMode: isDev(),
+  socketMode: false,
 });
 
 slackApp.error(async (error) => {

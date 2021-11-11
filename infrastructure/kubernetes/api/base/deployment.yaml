@@ -28,11 +28,17 @@ spec:
         env:
         - name: BACKEND_PORT
           value: "8080"
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             port: 8080
             path: /healthz
-          initialDelaySeconds: 20
+          initialDelaySeconds: 10
           timeoutSeconds: 5
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.19.2

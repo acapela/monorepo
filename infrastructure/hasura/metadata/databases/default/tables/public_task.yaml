@@ -22,7 +22,6 @@ insert_permissions:
               _eq: X-Hasura-User-Id
     columns:
     - done_at
-    - due_at
     - id
     - message_id
     - seen_at
@@ -34,7 +33,6 @@ select_permissions:
     columns:
     - created_at
     - done_at
-    - due_at
     - id
     - message_id
     - seen_at
@@ -44,8 +42,10 @@ select_permissions:
     filter:
       message:
         topic:
-          team:
-            memberships:
+          _or:
+          - owner_id:
+              _eq: X-Hasura-User-Id
+          - members:
               user_id:
                 _eq: X-Hasura-User-Id
   role: user
@@ -54,15 +54,16 @@ update_permissions:
     check: null
     columns:
     - done_at
-    - due_at
     - seen_at
     filter:
-      _or:
-      - user_id:
-          _eq: X-Hasura-User-Id
-      - message:
-          user_id:
-            _eq: X-Hasura-User-Id
+      message:
+        topic:
+          _or:
+          - owner_id:
+              _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
