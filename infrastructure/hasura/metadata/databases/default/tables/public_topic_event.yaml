@@ -20,6 +20,9 @@ insert_permissions:
     columns:
     - actor_id
     - id
+    - message_task_due_date_from_due_at
+    - message_task_due_date_message_id
+    - message_task_due_date_to_due_at
     - topic_from_archived_at
     - topic_from_closed_at
     - topic_from_name
@@ -31,17 +34,20 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
-    - topic_from_name
-    - topic_to_name
+    - actor_id
     - created_at
+    - id
+    - message_task_due_date_from_due_at
+    - message_task_due_date_message_id
+    - message_task_due_date_to_due_at
     - topic_from_archived_at
     - topic_from_closed_at
+    - topic_from_name
+    - topic_id
     - topic_to_archived_at
     - topic_to_closed_at
+    - topic_to_name
     - updated_at
-    - actor_id
-    - id
-    - topic_id
     filter:
       _or:
       - topic:

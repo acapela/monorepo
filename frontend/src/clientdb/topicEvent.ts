@@ -26,6 +26,10 @@ const topicEventFragment = gql`
 
     topic_from_name
     topic_to_name
+
+    message_task_due_date_message_id
+    message_task_due_date_from_due_at
+    message_task_due_date_to_due_at
   }
 `;
 
@@ -57,6 +61,8 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
       "topic_to_archived_at",
       "topic_from_name",
       "topic_to_name",
+      "message_task_due_date_from_due_at",
+      "message_task_due_date_to_due_at",
     ],
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
