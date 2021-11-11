@@ -130,12 +130,8 @@ const ChangedDueDateTopicEvent: TopicEventRenderer = {
       message_task_due_date_to_due_at !== null
     );
   },
-  render({
-    actor,
-    message_task_due_date_from_due_at,
-    message_task_due_date_to_due_at,
-    message,
-  }: TopicEventEntity): ReactNode {
+  render(topicEvent: TopicEventEntity): ReactNode {
+    const { actor, message_task_due_date_from_due_at, message_task_due_date_to_due_at, message } = topicEvent;
     if (!message) {
       return null;
     }
@@ -164,7 +160,8 @@ const RemoveDueDateTopicEvent: TopicEventRenderer = {
       message_task_due_date_to_due_at === null
     );
   },
-  render({ actor, message }: TopicEventEntity): ReactNode {
+  render(topicEvent: TopicEventEntity): ReactNode {
+    const { actor, message } = topicEvent;
     if (!message) {
       return null;
     }

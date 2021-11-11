@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { assert } from "~shared/assert";
 import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
@@ -23,15 +24,30 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
   assert(message.tasks.hasItems, "Attempting to set due date for message that doesn't have tasks");
 
   const ref = useRef<HTMLDivElement>(null);
+  const db = useDb();
 
   const currentDueDate = message.dueDate;
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
-  const handleSubmit = async (date: Date | null) => {
+  const handleSubmit = async (dueDate: Date | null) => {
     closeCalendar();
-    message.dueDate = date;
+
+    const previouslyStoredDueDate = db.messageTaskDueDate.query({ message_id: message.id }).first;
+
+    if (!dueDate && previouslyStoredDueDate) {
+      previouslyStoredDueDate.remove();
+    } else if (dueDate && previouslyStoredDueDate) {
+      previouslyStoredDueDate.update({
+        due_at: dueDate.toISOString(),
+      });
+    } else if (dueDate && !previouslyStoredDueDate) {
+      db.messageTaskDueDate.create({
+        message_id: message.id,
+        due_at: dueDate.toISOString(),
+      });
+    }
   };
 
   const calendarInitialValue = currentDueDate ?? getNextWorkDayEndOfDay();

@@ -34,7 +34,7 @@ const getNearestTaskDueDateForCurrentUser = cachedComputed(
 
     if (!selfTasks.length) return null;
 
-    const selfDueDates = selfTasks.map((task) => task.dueDate).filter(isNotNullish);
+    const selfDueDates = selfTasks.map((task) => task.message?.dueDate).filter(isNotNullish);
     return min(selfDueDates) ?? null;
   },
   { name: "getNearestTaskDueDateForCurrentUser" }
@@ -46,7 +46,7 @@ const getNearestTaskDueDateCreatedByCurrentUser = cachedComputed(
 
     if (!createdTasks.length) return null;
 
-    const selfDueDates = createdTasks.map((task) => task.dueDate).filter(isNotNullish);
+    const selfDueDates = createdTasks.map((task) => task.message?.dueDate).filter(isNotNullish);
     return min(selfDueDates) ?? null;
   },
   { name: "getNearestTaskDueDateCreatedByCurrentUser" }
