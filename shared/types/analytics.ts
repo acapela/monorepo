@@ -1,13 +1,13 @@
 import { Message_Type_Enum } from "~gql";
-import { Maybe } from "~shared/types";
 
 import { RequestType } from "./mention";
 
 export type AnalyticsUserProfile = {
-  id: Maybe<string>;
-  name: Maybe<string>;
-  email: Maybe<string>;
-  avatarUrl?: Maybe<string>;
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  avatar?: string;
 };
 
 /**
