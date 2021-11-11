@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "NODE_OPTIONS='--max_old_space_size=4096' next dev",
+    "dev": "NODE_OPTIONS='--inspect' next dev",
     "next:build": "next build",
     "next:start": "next start",
     "next:build:analyze": "ANALYZE=true next build",
