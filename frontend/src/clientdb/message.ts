@@ -132,7 +132,7 @@ export const messageEntity = defineEntity<MessageFragment>({
 
     get dueDate() {
       const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
-      return taskDueDate.first?.due_date ? new Date(taskDueDate.first.due_date) : null;
+      return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
     },
 
     set dueDate(dueDate: Date | null) {
@@ -145,7 +145,7 @@ export const messageEntity = defineEntity<MessageFragment>({
         messageTaskDueDateClient.createOrUpdate({
           id: previouslyStoredDueDate?.id,
           message_id: message.id,
-          due_date: dueDate.toISOString(),
+          due_at: dueDate.toISOString(),
         });
       }
     },

@@ -80,7 +80,7 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get dueDate() {
       const messageTaskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: task.message_id }).first;
-      return messageTaskDueDate ? new Date(messageTaskDueDate.due_date) : null;
+      return messageTaskDueDate ? new Date(messageTaskDueDate.due_at) : null;
     },
   };
 

@@ -11,7 +11,7 @@ const messageTaskDueDateFragment = gql`
   fragment MessageTaskDueDate on message_task_due_date {
     id
     message_id
-    due_date
+    due_at
     created_at
     updated_at
   }
@@ -29,8 +29,8 @@ export const messageTaskDueDateEntity = defineEntity<MessageTaskDueDateFragment>
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<MessageTaskDueDateFragment>(messageTaskDueDateFragment, {
-    insertColumns: ["id", "message_id", "due_date", "created_at", "updated_at"],
-    updateColumns: ["due_date"],
+    insertColumns: ["id", "message_id", "due_at", "created_at", "updated_at"],
+    updateColumns: ["due_at"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 });

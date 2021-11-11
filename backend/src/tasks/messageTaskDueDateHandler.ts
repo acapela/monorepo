@@ -10,7 +10,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
   assert(topic, "must have topic");
   assert(event.userId, "due date can only be changed by users");
 
-  if (event.item.due_date !== event.itemBefore?.due_date) {
+  if (event.item.due_at !== event.itemBefore?.due_at) {
     trackBackendUserEvent(event.userId, "Added Due Date", {
       topicId: topic.id,
       messageId: event.item.message_id,
