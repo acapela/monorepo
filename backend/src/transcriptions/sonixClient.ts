@@ -6,7 +6,7 @@ import { assert, assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 import { SonixTranscriptData } from "~shared/types/transcript";
 
-import { getDevPublicTunnel } from "../localtunnel";
+import { getDevPublicTunnelURL } from "../localtunnel";
 import { SonixCustomData } from "./customData";
 
 interface SonixRequestOptions<Input = Record<string, string>> {
@@ -41,8 +41,7 @@ const SONIX_API_URL = "https://api.sonix.ai/v1";
  */
 async function getPublicBackendUrl() {
   if (isDev()) {
-    const tunnel = await getDevPublicTunnel();
-    return `${tunnel.url}/api`;
+    return `${await getDevPublicTunnelURL()}/api`;
   }
 
   return process.env.BACKEND_API_ENDPOINT;

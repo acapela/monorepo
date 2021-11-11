@@ -6,7 +6,7 @@ import * as Sentry from "@sentry/node";
 import { initializeSecrets } from "~config";
 import { isDev } from "~shared/dev";
 
-import { getDevPublicTunnel } from "./localtunnel";
+import { getDevPublicTunnelURL } from "./localtunnel";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -36,9 +36,9 @@ async function start(): Promise<void> {
   );
 
   if (isDev()) {
-    const publicDevTunnel = await getDevPublicTunnel(3000);
+    const tunnelURL = await getDevPublicTunnelURL(3000);
     log.info("Public dev tunnel set up", {
-      url: `${publicDevTunnel.url}/api/backend`,
+      url: `${tunnelURL}/api/backend`,
     });
   }
 }
