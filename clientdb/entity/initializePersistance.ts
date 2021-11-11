@@ -87,8 +87,15 @@ async function openLocalDatabasesInfoTable({ openDB }: PersistanceAdapter, onTer
  */
 const STORAGE_DATABASE_NAME_BASE = "clientdb";
 
+/*
+ * Bump this anytime we make code changes that require purging previously synced data.
+ * Examples are permission changes (making old data newly available), or syncing logic changes.
+ * This does not include schema changes, as these already trigger a purge.
+ */
+const FORCED_VERSION_CHANGES = 1;
+
 function getStorageDatabaseName(hash: string) {
-  return `${STORAGE_DATABASE_NAME_BASE}-${hash}`;
+  return `${STORAGE_DATABASE_NAME_BASE}-${FORCED_VERSION_CHANGES}-${hash}`;
 }
 
 /**

@@ -9,6 +9,7 @@ export type {
   message_reaction as MessageReaction,
   topic as Topic,
   topic_event as TopicEvent,
+  topic_member as TopicMember,
   user as User,
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
