@@ -1,3 +1,5 @@
+import { formatRelative } from "date-fns";
+import { upperFirst } from "lodash";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -89,6 +91,92 @@ const RenamedTopicEvent: TopicEventRenderer = {
   },
 };
 
+const AddedDueDateTopicEvent: TopicEventRenderer = {
+  isMatch({
+    message_task_due_date_message_id,
+    message_task_due_date_from_due_at,
+    message_task_due_date_to_due_at,
+  }: TopicEventEntity) {
+    return (
+      message_task_due_date_message_id !== null &&
+      message_task_due_date_from_due_at === null &&
+      message_task_due_date_to_due_at !== null
+    );
+  },
+  render({ actor, message_task_due_date_to_due_at, message }: TopicEventEntity): ReactNode {
+    if (!message) {
+      return null;
+    }
+
+    return (
+      <>
+        <UIBold>{actor?.name}</UIBold> changed <UIBold>{message.user.name}</UIBold>'s request due date to{" "}
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+        <UIBold>{upperFirst(formatRelative(new Date(message_task_due_date_to_due_at!), new Date()))}</UIBold>
+      </>
+    );
+  },
+};
+
+const ChangedDueDateTopicEvent: TopicEventRenderer = {
+  isMatch({
+    message_task_due_date_message_id,
+    message_task_due_date_from_due_at,
+    message_task_due_date_to_due_at,
+  }: TopicEventEntity) {
+    return (
+      message_task_due_date_message_id !== null &&
+      message_task_due_date_from_due_at !== null &&
+      message_task_due_date_to_due_at !== null
+    );
+  },
+  render({
+    actor,
+    message_task_due_date_from_due_at,
+    message_task_due_date_to_due_at,
+    message,
+  }: TopicEventEntity): ReactNode {
+    if (!message) {
+      return null;
+    }
+
+    return (
+      <>
+        <UIBold>{actor?.name}</UIBold> changed <UIBold>{message.user.name}</UIBold>'s request due date from{" "}
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+        <UIBold>{upperFirst(formatRelative(new Date(message_task_due_date_from_due_at!), new Date()))}</UIBold> to{" "}
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+        <UIBold>{upperFirst(formatRelative(new Date(message_task_due_date_to_due_at!), new Date()))}</UIBold>
+      </>
+    );
+  },
+};
+
+const RemoveDueDateTopicEvent: TopicEventRenderer = {
+  isMatch({
+    message_task_due_date_message_id,
+    message_task_due_date_from_due_at,
+    message_task_due_date_to_due_at,
+  }: TopicEventEntity) {
+    return (
+      message_task_due_date_message_id !== null &&
+      message_task_due_date_from_due_at !== null &&
+      message_task_due_date_to_due_at === null
+    );
+  },
+  render({ actor, message }: TopicEventEntity): ReactNode {
+    if (!message) {
+      return null;
+    }
+
+    return (
+      <>
+        <UIBold>{actor?.name}</UIBold> removed <UIBold>{message.user.name}</UIBold>'s request due date
+      </>
+    );
+  },
+};
+
 const topicEventRenderers = {
   UserClosedTopicEvent,
   AutomaticClosedTopicEvent,
@@ -96,6 +184,9 @@ const topicEventRenderers = {
   ArchivedTopicEvent,
   UnarchivedTopicEvent,
   RenamedTopicEvent,
+  AddedDueDateTopicEvent,
+  ChangedDueDateTopicEvent,
+  RemoveDueDateTopicEvent,
 } as const;
 
 export function renderTopicEventBody(topicEvent: TopicEventEntity): ReactNode | null {

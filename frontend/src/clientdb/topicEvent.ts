@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicEventFragment } from "~gql";
 
+import { messageEntity } from "./message";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
@@ -61,6 +62,7 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
       "topic_to_archived_at",
       "topic_from_name",
       "topic_to_name",
+      "message_task_due_date_message_id",
       "message_task_due_date_from_due_at",
       "message_task_due_date_to_due_at",
     ],
@@ -73,6 +75,15 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
     },
     get topic() {
       return getEntity(topicEntity).findById(topicEvent.topic_id);
+    },
+    get message() {
+      const messageId = topicEvent.message_task_due_date_message_id;
+
+      if (!messageId) {
+        return null;
+      }
+
+      return getEntity(messageEntity).findById(messageId);
     },
   };
 });
