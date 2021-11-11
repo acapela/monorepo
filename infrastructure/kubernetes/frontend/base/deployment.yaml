@@ -37,13 +37,13 @@ spec:
         env:
         - name: FRONTEND_PORT
           value: "3000"
-        readinessProbe:
+        livenessProbe:
           httpGet:
             port: 3000
             path: /healthz
           initialDelaySeconds: 5
           timeoutSeconds: 5
-        livenessProbe:
+        readinessProbe:
           httpGet:
             port: 3000
             path: /healthz

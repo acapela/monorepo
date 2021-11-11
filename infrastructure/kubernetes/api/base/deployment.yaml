@@ -28,13 +28,13 @@ spec:
         env:
         - name: BACKEND_PORT
           value: "8080"
-        readinessProbe:
+        livenessProbe:
           httpGet:
             port: 8080
             path: /healthz
           initialDelaySeconds: 10
           timeoutSeconds: 5
-        livenessProbe:
+        readinessProbe:
           httpGet:
             port: 8080
             path: /healthz
