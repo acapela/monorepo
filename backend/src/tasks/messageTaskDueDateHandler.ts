@@ -9,7 +9,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
 
   assert(topic, "must have topic");
 
-  // Probably handled by slack, and should be handled where the slack command is captured
+  // Most likely created by slack command. The analytics event should be triggered where the slack command is captured
   if (!event.userId) {
     return;
   }
