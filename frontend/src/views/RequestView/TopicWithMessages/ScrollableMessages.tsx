@@ -39,6 +39,7 @@ const UIHolder = styled.div<{}>`
   width: 100%;
   align-items: center;
   flex-grow: 1;
+  scroll-behavior: smooth;
 `;
 
 const UIInner = styled(HorizontalSpacingContainer)<{}>`
