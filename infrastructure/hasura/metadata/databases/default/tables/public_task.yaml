@@ -5,9 +5,6 @@ object_relationships:
 - name: message
   using:
     foreign_key_constraint_on: message_id
-- name: message_task_due_date
-  using:
-    foreign_key_constraint_on: message_task_due_date_id
 - name: user
   using:
     foreign_key_constraint_on: user_id
@@ -27,7 +24,6 @@ insert_permissions:
     - done_at
     - id
     - message_id
-    - message_task_due_date_id
     - seen_at
     - type
     - user_id
@@ -39,7 +35,6 @@ select_permissions:
     - done_at
     - id
     - message_id
-    - message_task_due_date_id
     - seen_at
     - type
     - updated_at
@@ -59,7 +54,6 @@ update_permissions:
     check: null
     columns:
     - done_at
-    - message_task_due_date_id
     - seen_at
     filter:
       message:

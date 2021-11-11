@@ -21,6 +21,7 @@ export const messageTaskDueDateEntity = defineEntity<MessageTaskDueDateFragment>
   name: "message_task_due_date",
   updatedAtField: "updated_at",
   keyField: "id",
+  uniqueIndexes: ["id", "message_id"],
   keys: getFragmentKeys<MessageTaskDueDateFragment>(messageTaskDueDateFragment),
   defaultSort: (event) => new Date(event.created_at).getTime(),
   getDefaultValues: () => ({

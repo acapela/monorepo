@@ -140,13 +140,13 @@ export const messageEntity = defineEntity<MessageFragment>({
       const previouslyStoredDueDate = messageTaskDueDateClient.query({ message_id: message.id }).first;
 
       if (!dueDate && previouslyStoredDueDate) {
-        messageTaskDueDateClient.removeById(previouslyStoredDueDate.id);
-        tasks.all.forEach((messageTask) => messageTask.update({ message_task_due_date_id: null }));
-      } else if (dueDate && previouslyStoredDueDate) {
-        previouslyStoredDueDate.update({ due_date: dueDate.toISOString() });
-      } else if (dueDate && !previouslyStoredDueDate) {
-        const result = messageTaskDueDateClient.create({ message_id: message.id, due_date: dueDate.toISOString() });
-        tasks.all.forEach((messageTask) => messageTask.update({ message_task_due_date_id: result.id }));
+        previouslyStoredDueDate.remove();
+      } else if (dueDate) {
+        messageTaskDueDateClient.createOrUpdate({
+          id: previouslyStoredDueDate?.id,
+          message_id: message.id,
+          due_date: dueDate.toISOString(),
+        });
       }
     },
   };

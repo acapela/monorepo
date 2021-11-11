@@ -5,16 +5,6 @@ object_relationships:
 - name: message
   using:
     foreign_key_constraint_on: message_id
-array_relationships:
-- name: tasks
-  using:
-    manual_configuration:
-      column_mapping:
-        id: message_task_due_date_id
-      insertion_order: null
-      remote_table:
-        name: task
-        schema: public
 insert_permissions:
 - permission:
     backend_only: false
