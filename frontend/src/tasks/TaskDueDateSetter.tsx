@@ -24,17 +24,17 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const currentDueDate = message.tasks.first?.due_at;
+  const currentDueDate = message.dueDate;
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
   const handleSubmit = async (date: Date | null) => {
     closeCalendar();
-    message.tasks.all.forEach((task) => task.update({ due_at: date?.toISOString() ?? null }));
+    message.dueDate = date;
   };
 
-  const calendarInitialValue = currentDueDate ? new Date(currentDueDate) : getNextWorkDayEndOfDay();
+  const calendarInitialValue = currentDueDate ?? getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -105,7 +105,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
           isDisabled={message.topic?.isClosed}
           data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
         >
-          {currentDueDate ? upperFirst(formatRelative(new Date(currentDueDate), new Date())) : null}
+          {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : null}
         </Button>
       </UITriggerHolder>
     </>

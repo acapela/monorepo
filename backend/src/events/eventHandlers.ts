@@ -2,6 +2,7 @@ import {
   Attachment,
   Message,
   MessageReaction,
+  MessageTaskDueDate,
   Task,
   Team,
   TeamMember,
@@ -16,6 +17,7 @@ import { createHasuraEventsHandler } from "../hasura";
 export const hasuraEvents = createHasuraEventsHandler<{
   message_updates: Message;
   task_updates: Task;
+  message_task_due_date_updates: MessageTaskDueDate;
   message_reaction_updates: MessageReaction;
   team_updates: Team;
   topic_updates: Topic;

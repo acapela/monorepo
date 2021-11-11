@@ -4,6 +4,7 @@ import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
+import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
@@ -20,7 +21,6 @@ const taskFragment = gql`
     seen_at
     type
     updated_at
-    due_at
   }
 `;
 
@@ -33,14 +33,13 @@ export const taskEntity = defineEntity<TaskFragment>({
       __typename: "task",
       done_at: null,
       seen_at: null,
-      due_at: null,
       ...getGenericDefaultData(),
     };
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
-    insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
-    updateColumns: ["done_at", "due_at", "seen_at"],
+    insertColumns: ["done_at", "user_id", "seen_at", "type", "message_id", "id"],
+    updateColumns: ["done_at", "seen_at"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((task, { getEntity, getContextValue }) => {
@@ -56,7 +55,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return message.topic;
     },
     get hasDueDate() {
-      return !!task.due_at;
+      return !!getEntity(messageTaskDueDateEntity).query({ message_id: task.message_id }).first;
     },
     get assignedUser() {
       if (!task.user_id) {
@@ -78,6 +77,10 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get isDone() {
       return !!task.done_at;
+    },
+    get dueDate() {
+      const messageTaskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: task.message_id }).first;
+      return messageTaskDueDate ? new Date(messageTaskDueDate.due_date) : null;
     },
   };
 

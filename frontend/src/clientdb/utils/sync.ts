@@ -21,6 +21,10 @@ import {
   Message_Reaction_Insert_Input,
   Message_Reaction_Set_Input,
   Message_Set_Input,
+  Message_Task_Due_Date_Bool_Exp,
+  Message_Task_Due_Date_Constraint,
+  Message_Task_Due_Date_Insert_Input,
+  Message_Task_Due_Date_Set_Input,
   PullSyncRequestsSubscription,
   PullSyncRequestsSubscriptionVariables,
   Task_Bool_Exp,
@@ -74,6 +78,7 @@ type ConstraintsTypeMap = {
   message_reaction: Message_Reaction_Constraint;
   attachment: Attachment_Constraint;
   last_seen_message: Last_Seen_Message_Constraint;
+  message_task_due_date: Message_Task_Due_Date_Constraint;
 };
 
 type ConstraintsValueMap = {
@@ -89,6 +94,7 @@ const upsertConstraints: ConstraintsValueMap = {
   message_reaction: "message_reaction_id_key",
   attachment: "attachment_id_key",
   last_seen_message: "last_seen_message_pkey",
+  message_task_due_date: "message_task_due_date_pkey",
 };
 
 type InsertTypeMap = {
@@ -101,6 +107,7 @@ type InsertTypeMap = {
   attachment: Attachment_Insert_Input;
   topic_event: Topic_Event_Insert_Input;
   last_seen_message: Last_Seen_Message_Insert_Input;
+  message_task_due_date: Message_Task_Due_Date_Insert_Input;
 };
 
 type UpdateTypeMap = {
@@ -113,6 +120,7 @@ type UpdateTypeMap = {
   attachment: Attachment_Set_Input;
   last_seen_message: Last_Seen_Message_Set_Input;
   user: User_Set_Input;
+  message_task_due_date: Message_Task_Due_Date_Set_Input;
 };
 
 type WhereTypeMap = {
@@ -128,6 +136,7 @@ type WhereTypeMap = {
   transcription: Transcription_Bool_Exp;
   team_member_slack: Team_Member_Slack_Bool_Exp;
   topic_event: Topic_Event_Bool_Exp;
+  message_task_due_date: Message_Task_Due_Date_Bool_Exp;
 };
 
 /**

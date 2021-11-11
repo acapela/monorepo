@@ -7,7 +7,7 @@ import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
-import { Message, Task, TeamMember, Topic, User, db } from "~db";
+import { Message, MessageTaskDueDate, Task, TeamMember, Topic, User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
@@ -20,7 +20,10 @@ const TOPICS_PER_CATEGORY = 10;
 
 type TopicWhereInput = Prisma.topicWhereInput;
 
-type TopicWithOpenTask = Topic & { user: User; message: (Message & { user: User; task: Task[] })[] };
+type TopicWithOpenTask = Topic & {
+  user: User;
+  message: (Message & { user: User; task: Task[]; message_task_due_date: MessageTaskDueDate | null })[];
+};
 
 type TopicRowsWithCount = {
   rows: TopicWithOpenTask[];
@@ -51,7 +54,13 @@ async function findAndCountTopics(
         user: true,
         message: {
           where: { task: { some: whereOpenUserTask } },
-          include: { user: true, task: { where: whereOpenUserTask } },
+          include: {
+            user: true,
+            message_task_due_date: true,
+            task: {
+              where: whereOpenUserTask,
+            },
+          },
         },
       },
     }),
@@ -62,13 +71,18 @@ async function findAndCountTopics(
 
 function RequestItem(topic: TopicWithOpenTask) {
   // TODO this will need to be updated in the year 3k
-  const mostUrgentMessage = minBy(topic.message, (message) => message.task?.[0]?.due_at ?? new Date(3000, 0));
+  const mostUrgentMessage = minBy(
+    topic.message,
+    (message) => (message.task[0] && message.message_task_due_date?.due_date) ?? new Date(3000, 0)
+  );
   const mostUrgentTask = mostUrgentMessage?.task[0];
+  const mostUrgentDueDate = mostUrgentMessage?.message_task_due_date?.due_date;
+
   return [
     Blocks.Section({
       text: [
         createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
-          (mostUrgentTask?.due_at ? " - " + Md.italic("due " + formatRelative(mostUrgentTask.due_at, new Date())) : ""),
+          (mostUrgentDueDate ? " - " + Md.italic("due " + formatRelative(mostUrgentDueDate, new Date())) : ""),
         mostUrgentMessage?.content_text
           ? Md.bold(mostUrgentMessage.user.name + ":") + " " + mostUrgentMessage?.content_text
           : "",

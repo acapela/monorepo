@@ -11,6 +11,7 @@ import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { attachmentEntity } from "./attachment";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageReactionEntity } from "./messageReaction";
+import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
@@ -127,6 +128,26 @@ export const messageEntity = defineEntity<MessageFragment>({
     },
     get isOwn() {
       return currentUserId === message.user_id;
+    },
+
+    get dueDate() {
+      const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
+      return taskDueDate.first?.due_date ? new Date(taskDueDate.first.due_date) : null;
+    },
+
+    set dueDate(dueDate: Date | null) {
+      const messageTaskDueDateClient = getEntity(messageTaskDueDateEntity);
+      const previouslyStoredDueDate = messageTaskDueDateClient.query({ message_id: message.id }).first;
+
+      if (!dueDate && previouslyStoredDueDate) {
+        previouslyStoredDueDate.remove();
+      } else if (dueDate) {
+        messageTaskDueDateClient.createOrUpdate({
+          id: previouslyStoredDueDate?.id,
+          message_id: message.id,
+          due_date: dueDate.toISOString(),
+        });
+      }
     },
   };
 

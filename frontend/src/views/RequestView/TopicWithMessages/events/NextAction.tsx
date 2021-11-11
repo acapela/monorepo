@@ -24,10 +24,10 @@ const REQUEST_TYPE_PRIORITIES: RequestType[] = [REQUEST_ACTION, REQUEST_RESPONSE
  */
 const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => {
   const [nextTask] = sortBy(tasks, (task) => [
-    task.due_at ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
+    task.dueDate ?? "z", // ISO8601 dates are lexicographically sortable, but null values should be at the end
     REQUEST_TYPE_PRIORITIES.indexOf(task.type as never),
   ]);
-  const dueDate = nextTask.due_at && new Date(nextTask.due_at);
+  const dueDate = nextTask.dueDate;
   const now = new Date();
   return (
     <TopicEventTemplate>

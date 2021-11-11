@@ -13,6 +13,7 @@ import { createIndexedDbAdapter } from "./indexeddb/adapter";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { messageReactionEntity } from "./messageReaction";
+import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
@@ -66,6 +67,7 @@ export function createNewClientDb({ userId, teamId, apolloClient, onDestroyReque
       lastSeenMessage: lastSeenMessageEntity,
       transcription: transcriptionEntity,
       topicEvent: topicEventEntity,
+      messageTaskDueDate: messageTaskDueDateEntity,
     }
   );
 
