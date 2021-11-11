@@ -49,6 +49,9 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
     topic_to_archived_at: null,
     topic_from_name: null,
     topic_to_name: null,
+    message_task_due_date_message_id: null,
+    message_task_due_date_from_due_at: null,
+    message_task_due_date_to_due_at: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
