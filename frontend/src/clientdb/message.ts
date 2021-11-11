@@ -141,9 +141,12 @@ export const messageEntity = defineEntity<MessageFragment>({
 
       if (!dueDate && previouslyStoredDueDate) {
         previouslyStoredDueDate.remove();
-      } else if (dueDate) {
-        messageTaskDueDateClient.createOrUpdate({
-          id: previouslyStoredDueDate?.id,
+      } else if (dueDate && previouslyStoredDueDate) {
+        previouslyStoredDueDate.update({
+          due_at: dueDate.toISOString(),
+        });
+      } else if (dueDate && !previouslyStoredDueDate) {
+        messageTaskDueDateClient.create({
           message_id: message.id,
           due_at: dueDate.toISOString(),
         });
