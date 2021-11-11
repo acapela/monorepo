@@ -102,7 +102,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         const redirectURLObject = new URL(redirectURL ?? "/");
         redirectURLObject.searchParams.set(
           SLACK_INSTALL_ERROR_KEY,
-          isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unkown"
+          isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown"
         );
         res.writeHead(HttpStatus.FOUND, { Location: redirectURLObject.toString() }).end();
       },

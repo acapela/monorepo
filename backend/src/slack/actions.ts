@@ -1,7 +1,7 @@
 import assert from "assert";
 
 import { App, BlockButtonAction } from "@slack/bolt";
-import { formatRelative } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -73,21 +73,20 @@ export function setupSlackActionHandlers(slackApp: App) {
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
-    const topicId = action.value;
+    await ack();
 
+    const topicId = action.value;
     const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
     assert(user, "Unable to find user(slack-id=${body.user.id}");
 
     if (!topic) {
-      await ack();
       await say(`Whoops! Seems that this request doesn't exist anymore.`);
       return;
     }
 
     if (topic.archived_at) {
-      await ack();
       await say(`Whoops! Seems that *${topic.name}* has been already archived.`);
       return;
     }
@@ -108,7 +107,6 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    await ack();
     await say(`*${topic.name}* has been archived.`);
   });
 
@@ -121,34 +119,47 @@ export function setupSlackActionHandlers(slackApp: App) {
     trackBackendUserEvent(...(JSON.parse(payload.value) as [never, never]));
   });
 
-  slackApp.action<BlockButtonAction>(SlackActionIds.UpdateMessageTaskDueAt, async ({ ack, action, body, respond }) => {
-    await ack();
-    if (!body.state) {
-      return;
+  slackApp.action<BlockButtonAction>(
+    SlackActionIds.UpdateMessageTaskDueAt,
+    async ({ ack, action, body, client, respond }) => {
+      await ack();
+      if (!body.state) {
+        return;
+      }
+      const messageId = action.value;
+      const {
+        due_at_date_block: {
+          due_at_date: { selected_date: dueAtDate },
+        },
+        due_at_hour_block: {
+          due_at_hour: { selected_option: dueAtHour },
+        },
+      } = body.state.values;
+      if (!dueAtDate || !dueAtHour?.value) {
+        return;
+      }
+
+      const { user: slackUser } = await client.users.info({ user: body.user.id });
+      if (!slackUser?.tz) {
+        return;
+      }
+
+      const dueAtUTC = zonedTimeToUtc(`${dueAtDate} ${dueAtHour.value}:00`, slackUser.tz);
+
+      const data = { due_date: dueAtUTC.toISOString() };
+      await db.message_task_due_date.upsert({
+        where: { message_id: messageId },
+        create: { message_id: messageId, ...data },
+        update: data,
+      });
+
+      const unixTime = dueAtUTC.getTime() / 1000;
+      await respond({
+        replace_original: true,
+        text: `Due date was set to <!date^${unixTime}^{date_long_pretty} {time}|${dueAtUTC.toISOString()}>`,
+      });
     }
-    const messageId = action.value;
-    const {
-      due_at_date_block: {
-        due_at_date: { selected_date: dueAtDate },
-      },
-      due_at_hour_block: {
-        due_at_hour: { selected_option: dueAtHour },
-      },
-    } = body.state.values;
-    if (!dueAtDate || !dueAtHour) {
-      return;
-    }
-
-    const dueAt = new Date(dueAtDate);
-    dueAt.setHours(parseInt(dueAtHour.value, 10));
-
-    await db.message_task_due_date.update({
-      where: { message_id: messageId },
-      data: { due_date: dueAt.toISOString() },
-    });
-
-    await respond({ replace_original: true, text: `Due date was set to ${formatRelative(dueAt, new Date())}` });
-  });
+  );
 
   slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
     await ack();
