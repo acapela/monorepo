@@ -153,6 +153,20 @@ export function setupSlackActionHandlers(slackApp: App) {
         update: data,
       });
 
+      const message = await db.message.findFirst({
+        where: {
+          id: messageId,
+        },
+      });
+
+      assert(message, "updating due date for inexistent message");
+
+      trackBackendUserEvent(message.user_id, "Added Due Date", {
+        topicId: message.topic_id,
+        messageId: messageId,
+        origin: "slack-command",
+      });
+
       const unixTime = dueAtUTC.getTime() / 1000;
       await respond({
         replace_original: true,
