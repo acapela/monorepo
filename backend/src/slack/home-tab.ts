@@ -73,10 +73,10 @@ function RequestItem(topic: TopicWithOpenTask) {
   // TODO this will need to be updated in the year 3k
   const mostUrgentMessage = minBy(
     topic.message,
-    (message) => (message.task[0] && message.message_task_due_date?.due_date) ?? new Date(3000, 0)
+    (message) => (message.task[0] && message.message_task_due_date?.due_at) ?? new Date(3000, 0)
   );
   const mostUrgentTask = mostUrgentMessage?.task[0];
-  const mostUrgentDueDate = mostUrgentMessage?.message_task_due_date?.due_date;
+  const mostUrgentDueDate = mostUrgentMessage?.message_task_due_date?.due_at;
 
   return [
     Blocks.Section({

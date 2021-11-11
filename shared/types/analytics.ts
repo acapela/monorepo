@@ -10,6 +10,8 @@ export type AnalyticsUserProfile = {
   avatar?: string;
 };
 
+type Origin = "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
+
 /**
  * Map of tracking event types with their required payload.
  * Use past tense and first letter uppercased for the event type.
@@ -40,7 +42,7 @@ export type AnalyticsEventsMap = {
   // Topic related events
 
   "Created Request": {
-    origin: "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
+    origin: Origin;
     topicName: string;
   };
   "Reopened Request": { topicId: string };
@@ -67,7 +69,7 @@ export type AnalyticsEventsMap = {
     topicId: string;
     origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
   };
-  "Added Due Date": { topicId: string; messageId: string };
+  "Added Due Date": { topicId: string; messageId: string; origin: Origin };
 
   "Opened App": void;
 

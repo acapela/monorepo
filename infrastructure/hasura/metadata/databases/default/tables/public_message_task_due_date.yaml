@@ -19,7 +19,7 @@ insert_permissions:
               _eq: X-Hasura-User-Id
     columns:
     - created_at
-    - due_date
+    - due_at
     - id
     - message_id
     - updated_at
@@ -28,7 +28,7 @@ select_permissions:
 - permission:
     columns:
     - created_at
-    - due_date
+    - due_at
     - updated_at
     - id
     - message_id
@@ -43,7 +43,7 @@ update_permissions:
 - permission:
     check: null
     columns:
-    - due_date
+    - due_at
     filter:
       message:
         topic:
@@ -66,7 +66,7 @@ event_triggers:
     update:
       columns:
       - created_at
-      - due_date
+      - due_at
       - updated_at
       - id
       - message_id

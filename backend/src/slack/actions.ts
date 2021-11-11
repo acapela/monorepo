@@ -146,11 +146,25 @@ export function setupSlackActionHandlers(slackApp: App) {
 
       const dueAtUTC = zonedTimeToUtc(`${dueAtDate} ${dueAtHour.value}:00`, slackUser.tz);
 
-      const data = { due_date: dueAtUTC.toISOString() };
+      const data = { due_at: dueAtUTC.toISOString() };
       await db.message_task_due_date.upsert({
         where: { message_id: messageId },
         create: { message_id: messageId, ...data },
         update: data,
+      });
+
+      const message = await db.message.findFirst({
+        where: {
+          id: messageId,
+        },
+      });
+
+      assert(message, "updating due date for inexistent message");
+
+      trackBackendUserEvent(message.user_id, "Added Due Date", {
+        topicId: message.topic_id,
+        messageId: messageId,
+        origin: "slack-command",
       });
 
       const unixTime = dueAtUTC.getTime() / 1000;
