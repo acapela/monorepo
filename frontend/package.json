@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "next dev",
+    "dev:inspect": "NODE_OPTIONS='--inspect' next dev",
     "next:build": "next build",
     "next:start": "next start",
     "next:build:analyze": "ANALYZE=true next build",
