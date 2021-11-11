@@ -11,6 +11,8 @@ import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 interface Props {
   parentRef: RefObject<HTMLElement>;
   preventAutoScroll: boolean;
+  onScrollBegin?: () => void;
+  onScrollEnd?: () => void;
 }
 
 export interface ScrollHandle {
@@ -24,88 +26,92 @@ const SCROLL_BOTTOM_TOLERANCE = 10;
  *
  * It's useful for cases like messages feed.
  */
-const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
-  const topicContext = useTopicStoreContext();
-  const firstUnreadMessageElement = topicContext?.firstUnreadMessageElement;
+const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(
+  ({ parentRef, preventAutoScroll, onScrollBegin, onScrollEnd }, ref) => {
+    const topicContext = useTopicStoreContext();
+    const firstUnreadMessageElement = topicContext?.firstUnreadMessageElement;
 
-  const monitorRef = useRef<HTMLDivElement>(null);
-  const isScrolledToBottom = useRef(true);
-  const didAutoScroll = useRef(false);
+    const monitorRef = useRef<HTMLDivElement>(null);
+    const isScrolledToBottom = useRef(true);
+    const didAutoScroll = useRef(false);
 
-  useElementEvent(
-    parentRef,
-    "scroll",
-    useCallback(() => {
-      const parent = parentRef.current;
-      if (parent && !didAutoScroll.current) {
-        // We need to distinguish programmatically-triggered scroll events from user-triggered ones
-        // to retain a user's intention whether to stay scrolled to the bottom
-        isScrolledToBottom.current =
-          parent.scrollTop >= parent.scrollHeight - parent.clientHeight - SCROLL_BOTTOM_TOLERANCE;
-      }
-      didAutoScroll.current = false;
-    }, [parentRef])
-  );
+    useElementEvent(
+      parentRef,
+      "scroll",
+      useCallback(() => {
+        const parent = parentRef.current;
+        if (parent && !didAutoScroll.current) {
+          // We need to distinguish programmatically-triggered scroll events from user-triggered ones
+          // to retain a user's intention whether to stay scrolled to the bottom
+          isScrolledToBottom.current =
+            parent.scrollTop >= parent.scrollHeight - parent.clientHeight - SCROLL_BOTTOM_TOLERANCE;
+        }
+        didAutoScroll.current = false;
+      }, [parentRef])
+    );
 
-  const scrollToBottom = useCallback(
-    (behavior: ScrollBehavior) => {
-      const parentNode = parentRef.current;
-      if (!parentNode) {
-        return;
-      }
+    const scrollToBottom = useCallback(
+      (behavior: ScrollBehavior) => {
+        const parentNode = parentRef.current;
+        if (!parentNode) {
+          return;
+        }
+        onScrollBegin?.();
 
-      if (behavior === "auto") {
-        parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
-      } else {
-        parentNode.scroll({ top: parentNode.scrollHeight - parentNode.clientHeight, behavior });
-      }
-    },
-    [parentRef]
-  );
+        if (behavior === "auto") {
+          parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
+        } else {
+          parentNode.scroll({ top: parentNode.scrollHeight - parentNode.clientHeight, behavior });
+        }
+        onScrollEnd?.();
+      },
+      [parentRef, onScrollBegin, onScrollEnd]
+    );
 
-  const tryAutoScroll = useCallback(() => {
-    runInAction(() => {
-      if (!preventAutoScroll && isScrolledToBottom.current) {
-        didAutoScroll.current = true;
-        if (firstUnreadMessageElement) {
-          firstUnreadMessageElement.scrollIntoView();
-          isScrolledToBottom.current = false;
+    const tryAutoScroll = useCallback(() => {
+      runInAction(() => {
+        if (!preventAutoScroll && isScrolledToBottom.current) {
+          didAutoScroll.current = true;
+          if (firstUnreadMessageElement) {
+            firstUnreadMessageElement.scrollIntoView();
+            isScrolledToBottom.current = false;
 
-          if (topicContext) {
-            topicContext.firstUnreadMessageElement = null;
-          }
-        } else scrollToBottom("auto");
+            if (topicContext) {
+              topicContext.firstUnreadMessageElement = null;
+            }
+          } else scrollToBottom("auto");
+        }
+      });
+    }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext]);
+
+    useImperativeHandle(ref, () => ({ scrollToBottom }));
+
+    useResizeCallback(monitorRef, () => tryAutoScroll());
+    useResizeCallback(parentRef, () => tryAutoScroll());
+
+    // On mount try to scroll down without animation
+    useIsomorphicLayoutEffect(() => {
+      tryAutoScroll();
+    }, []);
+
+    useEffect(() => {
+      if (process.env.NODE_ENV === "development") {
+        const parent = monitorRef.current?.parentElement;
+
+        if (!parent) return;
+
+        if (getComputedStyle(parent).position === "static") {
+          console.warn(
+            `Parent of ScrollToBottomMonitor cannot have 'static' position. Use relative, absolute, fixed etc.`,
+            { parent }
+          );
+        }
       }
     });
-  }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext]);
 
-  useImperativeHandle(ref, () => ({ scrollToBottom }));
-
-  useResizeCallback(monitorRef, () => tryAutoScroll());
-  useResizeCallback(parentRef, () => tryAutoScroll());
-
-  // On mount try to scroll down without animation
-  useIsomorphicLayoutEffect(() => {
-    tryAutoScroll();
-  }, []);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      const parent = monitorRef.current?.parentElement;
-
-      if (!parent) return;
-
-      if (getComputedStyle(parent).position === "static") {
-        console.warn(
-          `Parent of ScrollToBottomMonitor cannot have 'static' position. Use relative, absolute, fixed etc.`,
-          { parent }
-        );
-      }
-    }
-  });
-
-  return <UIContentSizeCaptureFlyer ref={monitorRef} />;
-});
+    return <UIContentSizeCaptureFlyer ref={monitorRef} />;
+  }
+);
 
 export const ScrollToBottomMonitor = observer(_ScrollToBottomMonitor);
 

@@ -1,6 +1,7 @@
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
+import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { styledObserver } from "~shared/component";
@@ -21,10 +22,18 @@ export const ScrollableMessages = styledObserver<Props>(
     const topicContext = useTopicStoreContext();
     const isInEditMode = select(() => !!topicContext?.editedMessageId);
 
+    const [isSmoothScrollingEnabled, { set: setSmoothScrolling, unset: setInstantScrolling }] = useBoolean(true);
+
     return (
-      <UIHolder className={className} ref={holderRef}>
+      <UIHolder className={className} ref={holderRef} $scrollBehavior={isSmoothScrollingEnabled ? "smooth" : "auto"}>
         <UIInner>
-          <ScrollToBottomMonitor ref={ref} parentRef={holderRef} preventAutoScroll={isInEditMode} />
+          <ScrollToBottomMonitor
+            ref={ref}
+            parentRef={holderRef}
+            preventAutoScroll={isInEditMode}
+            onScrollBegin={setInstantScrolling}
+            onScrollEnd={setSmoothScrolling}
+          />
           {children}
         </UIInner>
       </UIHolder>
@@ -32,14 +41,14 @@ export const ScrollableMessages = styledObserver<Props>(
   })
 )``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div<{ $scrollBehavior: string }>`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   width: 100%;
   align-items: center;
   flex-grow: 1;
-  scroll-behavior: smooth;
+  scroll-behavior: ${(props) => props.$scrollBehavior};
 `;
 
 const UIInner = styled(HorizontalSpacingContainer)<{}>`
