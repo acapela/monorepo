@@ -142,7 +142,10 @@ export function setupSlackActionHandlers(slackApp: App) {
     const dueAt = new Date(dueAtDate);
     dueAt.setHours(parseInt(dueAtHour.value, 10));
 
-    await db.task.updateMany({ where: { message_id: messageId }, data: { due_at: dueAt.toISOString() } });
+    await db.message_task_due_date.update({
+      where: { message_id: messageId },
+      data: { due_date: dueAt.toISOString() },
+    });
 
     await respond({ replace_original: true, text: `Due date was set to ${formatRelative(dueAt, new Date())}` });
   });
