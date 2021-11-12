@@ -124,7 +124,7 @@ export const getApolloClient = memoize(
           },
           new WebSocketLink({
             // Try to read hasura endpoint from _app initial props if option is not provided.
-            uri: `${websocketEndpoint ?? readAppInitialPropByName("hasuraWebsocketEndpoint") ?? ""}/v1/graphql`,
+            uri: `${websocketEndpoint ?? readAppInitialPropByName("hasuraWebsocketEndpoint") ?? ""}/graphql`,
             options: {
               reconnect: true,
               lazy: true,
