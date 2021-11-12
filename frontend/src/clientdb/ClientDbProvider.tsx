@@ -1,20 +1,17 @@
 import { useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { logout } from "~frontend/auth/logout";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
+import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
 import { ErrorView } from "~frontend/views/ErrorView";
 import { assert } from "~shared/assert";
 import { devAssignWindowVariable } from "~shared/dev";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
 
-import { ClientDb, createNewClientDb, forceClientDbReload } from "./createNewClientDb";
+import { ClientDb, createNewClientDb } from "./createNewClientDb";
 import { LoadingScreen } from "./LoadingScreen";
 
 const reactContext = createContext<ClientDb | null>(null);
@@ -86,30 +83,6 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 
   devAssignWindowVariable("db", db);
 
-  const recoverOptions = (
-    <UIFallbackHolder>
-      <Button
-        isWide
-        kind="primary"
-        onClick={() => {
-          forceClientDbReload();
-          window.location.reload();
-        }}
-      >
-        Reload
-      </Button>
-      <Button
-        isWide
-        onClick={() => {
-          forceClientDbReload();
-          logout();
-        }}
-      >
-        Log out
-      </Button>
-    </UIFallbackHolder>
-  );
-
   if (error) {
     console.error(error);
     return (
@@ -117,7 +90,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
         title="Failed to load app data"
         description="This might be due to using the app in private mode or disk being out of space."
       >
-        {recoverOptions}
+        <AppRecoveryButtons />
       </ErrorView>
     );
   }
@@ -131,7 +104,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
             longLoadingFallback={{
               timeout: 2500,
               hint: "It takes a bit too long...",
-              fallbackNode: recoverOptions,
+              fallbackNode: <AppRecoveryButtons />,
             }}
           />
         )}
@@ -152,9 +125,3 @@ export function useDb() {
 export function useNullableDb(): null | ClientDb {
   return useContext(reactContext);
 }
-
-const UIFallbackHolder = styled.div`
-  display: flex;
-  ${theme.spacing.actions.asGap};
-  min-width: 280px;
-`;
