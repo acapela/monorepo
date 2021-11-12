@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { isClient } from "~shared/document";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -77,14 +76,12 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
 
   const [participantsToShow, notShownParticipants] = getParticipantsToShow(participants);
 
-  const participantsCount = participantsToShow.length;
-  const participantsLayoutCount = Math.min(participantsCount, MAX_PARTICIPANTS_TO_SHOW);
-
-  if (isClient) Reflect.set(window, "topic", topic);
+  const participantsLayoutCount = Math.min(participants.length, MAX_PARTICIPANTS_TO_SHOW);
 
   if (!participants.length) {
     return null;
   }
+
   const layout = avatarLayoutByCount[participantsLayoutCount];
 
   if (!layout) {
