@@ -1,5 +1,4 @@
-import { isAfter, startOfDay, startOfWeek, subWeeks } from "date-fns";
-import { subBusinessDays } from "date-fns/esm";
+import { isAfter, startOfDay, startOfWeek, subBusinessDays, subWeeks } from "date-fns";
 import { min, sortBy } from "lodash";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
@@ -170,7 +169,6 @@ const UIArchivedToggle = styled.div<{ isShowingArchived: boolean }>`
       : css`
           padding-bottom: 40px;
         `}
-  ${theme.spacing.horizontalActions.asGap}
   ${theme.typo.item.secondaryTitle}
   opacity: 0.6;
   cursor: pointer;
