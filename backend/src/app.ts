@@ -21,6 +21,7 @@ import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
+import { router as sentryTunnel } from "./sentry-tunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
@@ -63,6 +64,7 @@ function setupRoutes(app: Application): void {
     tracking
   );
   app.use(attachmentsRoutes);
+  app.use(sentryTunnel);
 }
 
 function addErrorHandlersToApp(app: Application): void {
