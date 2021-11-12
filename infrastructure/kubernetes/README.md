@@ -2,6 +2,10 @@
 
 The current setup of our Kubernetes infrastructure is a single cluster with two nodes. It can be managed directly via the Google Cloud Platform console.
 
+## Monitoring
+
+We currently use Google Cloud Monitoring: https://console.cloud.google.com/monitoring/uptime
+
 ## Cluster access
 
 1. Make sure you have the [`gcloud`](https://cloud.google.com/sdk/docs/install), [`kubectl`](https://kubernetes.io/docs/tasks/tools/) and [`kustomize`](https://kubectl.docs.kubernetes.io/installation/kustomize/) command line utilities installed.
