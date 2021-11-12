@@ -7,7 +7,9 @@ import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
+import { generateMarkdownFromTipTapJson } from "~backend/src/slack/slackMarkdown/generator";
 import { Message, MessageTaskDueDate, Task, TeamMember, Topic, User, db } from "~db";
+import { RichEditorNode } from "~richEditor/content/types";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
@@ -84,7 +86,9 @@ function RequestItem(topic: TopicWithOpenTask) {
         createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
           (mostUrgentDueDate ? " - " + Md.italic("due " + formatRelative(mostUrgentDueDate, new Date())) : ""),
         mostUrgentMessage?.content_text
-          ? Md.bold(mostUrgentMessage.user.name + ":") + " " + mostUrgentMessage?.content_text
+          ? Md.bold(mostUrgentMessage.user.name + ":") +
+            " " +
+            generateMarkdownFromTipTapJson(mostUrgentMessage?.content as RichEditorNode)
           : "",
       ].join("\n"),
     }).accessory(

@@ -117,7 +117,8 @@ export type GenerateContext = {
   };
 };
 
-export function generateMarkdownFromTipTapJson(root: RichEditorNode, context: GenerateContext = {}): string {
+export function generateMarkdownFromTipTapJson(root: RichEditorNode | null, context: GenerateContext = {}): string {
+  if (!root) return "";
   // don't render if no root doc element
   if (root.type !== "doc") return "";
   return removeEndingNewline(renderNodes(root.content, context));
