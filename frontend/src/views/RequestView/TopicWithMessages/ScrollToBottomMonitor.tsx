@@ -56,33 +56,36 @@ const _ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(
         if (!parentNode) {
           return;
         }
-        onScrollBegin?.();
 
         if (behavior === "auto") {
           parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
         } else {
           parentNode.scroll({ top: parentNode.scrollHeight - parentNode.clientHeight, behavior });
         }
-        onScrollEnd?.();
       },
-      [parentRef, onScrollBegin, onScrollEnd]
+      [parentRef]
     );
 
     const tryAutoScroll = useCallback(() => {
       runInAction(() => {
         if (!preventAutoScroll && isScrolledToBottom.current) {
+          onScrollBegin?.();
           didAutoScroll.current = true;
           if (firstUnreadMessageElement) {
-            firstUnreadMessageElement.scrollIntoView();
+            const scrollToTopOfElement = true;
+            firstUnreadMessageElement.scrollIntoView(scrollToTopOfElement);
             isScrolledToBottom.current = false;
 
             if (topicContext) {
               topicContext.firstUnreadMessageElement = null;
             }
-          } else scrollToBottom("auto");
+          } else {
+            scrollToBottom("auto");
+          }
+          onScrollEnd?.();
         }
       });
-    }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext]);
+    }, [firstUnreadMessageElement, preventAutoScroll, scrollToBottom, topicContext, onScrollBegin, onScrollEnd]);
 
     useImperativeHandle(ref, () => ({ scrollToBottom }));
 
