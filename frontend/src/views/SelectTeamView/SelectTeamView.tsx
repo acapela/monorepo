@@ -47,8 +47,6 @@ export const SelectTeamView = observer(() => {
               <UITeam key={team.id}>
                 <UITeamInfo>
                   <UITeamName>{team.name}</UITeamName>
-                  <UITeamMeta>•</UITeamMeta>
-                  <UITeamMeta>{team.members.count + ` ${team.members.count === 1 ? "member" : "members"}`}</UITeamMeta>
                 </UITeamInfo>
                 {!isCurrentTeam && (
                   <Button kind="primary" onClick={() => handleSelectExistingTeam(team)}>
@@ -100,8 +98,4 @@ const UITeamInfo = styled.div`
 
 const UITeamName = styled.div`
   ${theme.typo.item.title};
-`;
-
-const UITeamMeta = styled.div`
-  ${theme.typo.content.secondary};
 `;
