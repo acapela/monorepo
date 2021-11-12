@@ -18,7 +18,6 @@ import { ClientDbProvider } from "~frontend/clientdb";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
-import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { ErrorView } from "~frontend/views/ErrorView";
 import { useConst } from "~shared/hooks/useConst";
@@ -111,11 +110,7 @@ export default function App({
       <BuiltInStyles />
       <CommonMetadata />
       <Sentry.ErrorBoundary
-        fallback={
-          <ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it.">
-            <AppRecoveryButtons />
-          </ErrorView>
-        }
+        fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
       >
         <RequiredSessionProvider session={appConfig.session}>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>

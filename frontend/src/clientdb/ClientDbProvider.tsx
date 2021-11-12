@@ -89,9 +89,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
       <ErrorView
         title="Failed to load app data"
         description="This might be due to using the app in private mode or disk being out of space."
-      >
-        <AppRecoveryButtons />
-      </ErrorView>
+      />
     );
   }
 
