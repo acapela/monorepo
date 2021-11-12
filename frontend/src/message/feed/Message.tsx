@@ -101,7 +101,7 @@ export const Message = styledObserver<Props>(
     useIsomorphicLayoutEffect(
       action(() => {
         const { topic, isUnread } = message;
-        if (!isUnread || topic?.messages.last?.id === message.id || !rootRef.current || !topicContext) {
+        if (!isUnread || !rootRef.current || !topicContext) {
           return;
         }
         const isOldestUnread = !topic?.unreadMessages.query(
