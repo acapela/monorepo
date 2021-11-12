@@ -3,6 +3,7 @@ import { Blocks, Elements, Md, Message } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
+import { generateMarkdownFromTipTapJson } from "~backend/src/slack/slackMarkdown/generator";
 import {
   REQUEST_TYPE_EMOJIS,
   fetchTeamBotToken,
@@ -10,7 +11,7 @@ import {
   findSlackUserId,
 } from "~backend/src/slack/utils";
 import { Topic, db } from "~db";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { RichEditorNode } from "~richEditor/content/types";
 import { assert, assertDefined } from "~shared/assert";
 import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
@@ -27,7 +28,7 @@ export async function LiveTopicMessage(topic: Topic) {
   const text =
     Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
     "\n" +
-    convertMessageContentToPlainText(message.content as never);
+    generateMarkdownFromTipTapJson(message.content as RichEditorNode);
 
   const tasks = message.task;
   const slackUsers: Record<string, string> = Object.fromEntries(
