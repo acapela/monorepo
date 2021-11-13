@@ -130,7 +130,10 @@ function transformMessage(
     mentionedUsersBySlackId,
   });
   const alreadyMentionedUsers = new Set(
-    getUniqueRequestMentionDataFromContent(messageContent).map((mentionData) => mentionData.userId)
+    getUniqueRequestMentionDataFromContent(messageContent)
+      .filter((d) => "userId" in d)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((mentionData: any) => mentionData.userId)
   );
   const extraMentionNodes = usersWithRequestType
     .filter(({ userId }) => !alreadyMentionedUsers.has(userId))

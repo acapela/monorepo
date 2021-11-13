@@ -6,6 +6,7 @@ import { TeamFragment } from "~gql";
 
 import { teamMemberEntity } from "./teamMember";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
+import { userGroupEntity } from "./userGroup";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
@@ -52,6 +53,7 @@ export const teamEntity = defineEntity<TeamFragment>({
       return team.id === getContextValue(teamIdContext);
     },
     members: getEntity(teamMemberEntity).query({ team_id: team.id }),
+    userGroups: getEntity(userGroupEntity).query({ team_id: team.id }),
   };
 });
 

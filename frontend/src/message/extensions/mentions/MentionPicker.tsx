@@ -1,16 +1,19 @@
+import { JSONContent } from "@tiptap/react";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
+import { UserGroupEntity } from "~frontend/clientdb/userGroup";
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
-import { assert } from "~shared/assert";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { isNotNullish } from "~shared/nullish";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
+import { MentionType } from "~shared/types/mention";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconUser } from "~ui/icons";
 import { SelectList } from "~ui/SelectList";
@@ -18,59 +21,84 @@ import { theme } from "~ui/theme";
 
 import { MentionTypePicker } from "./MentionTypePicker";
 
+type SearchableItem = { terms: string[] } & (
+  | { type: "user"; entity: UserEntity }
+  | { type: "user_group"; entity: UserGroupEntity }
+);
+
+const itemToMention = (item: SearchableItem, type: MentionType): EditorMentionData | EditorMentionData[] =>
+  item.type == "user"
+    ? { userId: item.entity.id, type }
+    : item.entity.members.all.map((member) => ({ type, userId: member.user_id }));
+
 export const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
   const team = useAssertCurrentTeam();
   const teamMemberUsers = team.members.all.map((member) => member.user).filter(isNotNullish);
+  const userGroups = team.userGroups.all;
 
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SearchableItem | null>(null);
 
-  const matchingUsers = useSearch(teamMemberUsers, (user) => [user.email, user.name])(keyword);
+  const searchableItems = useMemo<SearchableItem[]>(
+    () => [
+      ...teamMemberUsers.map((user) => ({ type: "user" as const, entity: user, terms: [user.email, user.name] })),
+      ...userGroups.map((group) => ({ type: "user_group" as const, entity: group, terms: [group.name] })),
+    ],
+    [teamMemberUsers, userGroups]
+  );
+  const matchingItems = useSearch(searchableItems, (item) => item.terms)(keyword);
 
   useEffect(() => {
     // In case user is selected, but then we continue typing (aka searching for different user)
     // return selected user choice
-    setSelectedUserId(null);
+    setSelectedItem(null);
   }, [keyword]);
 
   if (!teamMemberUsers.length) return null;
 
-  // Picker has 2 stages. First we select user, then we select mention type.
+  // Picker has 2 stages. First we select user/group, then we select mention type.
 
-  if (!selectedUserId) {
+  if (!selectedItem) {
     return (
-      <SelectList<UserEntity>
-        items={matchingUsers}
-        noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
-        keyGetter={(user) => user.id}
-        onItemSelected={(user) => {
-          const mentionNodeForSameUser = getMentionNodesFromContent(editor.getJSON() as never).find(
-            (node) => node.attrs.data.userId === user.id
+      <SelectList<SearchableItem>
+        items={matchingItems}
+        noItemsPlaceholder={
+          <EmptyStatePlaceholder description="No users nor groups found" noSpacing icon={<IconUser />} />
+        }
+        keyGetter={({ entity }) => entity.id}
+        onItemSelected={(item) => {
+          const mentionNodeForSameUser = getMentionNodesFromContent(editor.getJSON() as JSONContent).find(
+            ({ attrs: { data } }) =>
+              item.type == "user"
+                ? data.userId === item.entity.id
+                : item.entity.members.all.some((member) => member.user_id === data.userId)
           );
           if (mentionNodeForSameUser) {
-            onSelect({ userId: user.id, type: mentionNodeForSameUser.attrs.data.type });
+            onSelect(itemToMention(item, mentionNodeForSameUser.attrs.data.type));
           } else {
-            setSelectedUserId(user.id);
+            setSelectedItem(item);
           }
         }}
-        renderItem={(user) => {
-          return (
-            <UISelectItem>
-              <UserAvatar user={user} size="inherit" /> {user.name}
-            </UISelectItem>
-          );
-        }}
+        renderItem={(item) => (
+          <UISelectItem>
+            {item.type == "user" ? (
+              <>
+                <UserAvatar user={item.entity} size="inherit" /> {item.entity.name}
+              </>
+            ) : (
+              <>
+                <Avatar name={item.entity.name} size={24} /> {item.entity.name}
+              </>
+            )}
+          </UISelectItem>
+        )}
       />
     );
   }
 
-  const selectedUser = teamMemberUsers.find((teamMember) => teamMember && teamMember.id === selectedUserId);
-
-  assert(selectedUser, "Incorrect user selected");
-
   return (
     <MentionTypePicker
-      onSelect={(mentionType) => {
-        onSelect({ userId: selectedUser.id, type: mentionType });
+      onSelect={(type) => {
+        onSelect(itemToMention(selectedItem, type));
       }}
     />
   );

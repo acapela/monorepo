@@ -62,17 +62,14 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
       editor
         .chain()
         .focus()
-        .insertContentAt(range, [
-          {
-            type: options.type,
-            attrs: { data: props },
-          },
-          // When inserting suggestion, also add a spacebar after it.
-          {
-            type: "text",
-            text: " ",
-          },
-        ])
+        .insertContentAt(
+          range,
+          (Array.isArray(props) ? props : [props]).flatMap((data) => [
+            { type: options.type, attrs: { data } },
+            // When inserting suggestion, also add a space after it.
+            { type: "text", text: " " },
+          ])
+        )
         .run();
     },
     allow: ({ editor, range }) => {
