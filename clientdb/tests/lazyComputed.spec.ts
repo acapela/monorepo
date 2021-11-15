@@ -2,7 +2,7 @@ import { autorun, observable, runInAction } from "mobx";
 
 import { cachedComputedWithoutArgs } from "~clientdb/entity/utils/cachedComputedWithoutArgs";
 
-import { runObserved } from "./testUtils";
+import { runObserved } from "./utils";
 
 describe("lazyComputed", () => {
   it("returns proper value", () => {

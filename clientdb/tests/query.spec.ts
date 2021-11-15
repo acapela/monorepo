@@ -1,4 +1,4 @@
-import { createTestDb, runObserved } from "./testUtils";
+import { createTestDb, runObserved } from "./utils";
 
 describe("clientdb query", () => {
   async function getTestDb() {
