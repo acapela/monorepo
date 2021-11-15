@@ -1,7 +1,7 @@
 :3000
 
 handle_path /graphql {
-    rewrite * /v1/graphql
+	rewrite * /v1/graphql
 	reverse_proxy {$HASURA_HOST}
 }
 
