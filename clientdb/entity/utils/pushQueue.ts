@@ -95,7 +95,24 @@ export function createPushQueue() {
     return flushPromise.promise;
   }
 
+  async function waitForFlush() {
+    const allPromises = Array.from(queue).map((task) => {
+      return taskFlushedPromisesMap.get(task)?.promise;
+    });
+
+    await Promise.all(
+      allPromises.map(async (promise) => {
+        try {
+          await promise;
+        } catch {
+          //
+        }
+      })
+    );
+  }
+
   return {
     add,
+    waitForFlush,
   };
 }

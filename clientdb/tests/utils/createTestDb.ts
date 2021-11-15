@@ -28,26 +28,7 @@ export function createTestDb<M extends EntitiesMap = typeof testEntities>(config
       const entityConfig = entities?.[entityName as keyof M]?.config;
 
       if (entityConfig && syncMock) {
-        entityConfig.sync = syncMock;
-      }
-    });
-  }
-
-  return createClientDb({ db }, entities);
-}
-
-export function createDefaultTestDb(config?: TestDbConfig<typeof testEntities>) {
-  const db = createPersistanceAdapterMock({ tableMocks: config?.persistanceMocks });
-  const entities: EntitiesMap = config?.entities ?? { owner, dog };
-
-  if (config?.syncMocks) {
-    typedKeys(config.syncMocks).forEach((entityName) => {
-      const syncMock = config.syncMocks?.[entityName];
-
-      const entityConfig = entities?.[entityName as keyof typeof testEntities]?.config;
-
-      if (entityConfig && syncMock) {
-        entityConfig.sync = syncMock;
+        entityConfig.sync = { ...entityConfig.sync, ...syncMock };
       }
     });
   }

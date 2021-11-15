@@ -80,6 +80,10 @@ export async function waitForEntityAllAwaitingPushOperations<Data, Connections>(
   await Promise.all(Array.from(awaitingOperations));
 }
 
+export async function waitForAllSyncToFlush() {
+  return pushQueue.waitForFlush();
+}
+
 /**
  * Sync manager sets manages running sync operations and repeating them after previous sync.
  */
