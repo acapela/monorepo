@@ -66,82 +66,114 @@ export const messageEntity = defineEntity<MessageFragment>({
       },
     },
   },
-}).addConnections((message, { getEntity, getContextValue, createCache }) => {
-  const currentUserId = getContextValue(userIdContext);
+})
+  .addConnections((message, { getEntity, getContextValue, createCache }) => {
+    const currentUserId = getContextValue(userIdContext);
 
-  const tasks = getEntity(taskEntity).query({ message_id: message.id });
+    const tasks = getEntity(taskEntity).query({ message_id: message.id });
 
-  const mentionedUserIds = createCache("mentionedUserIds", () => getMentionedUserIdsInContent(message.content));
+    const mentionedUserIds = createCache("mentionedUserIds", () => getMentionedUserIdsInContent(message.content));
 
-  const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
+    const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
 
-  const lastUnreadInTheSameTopic = currentUserId
-    ? getEntity(lastSeenMessageEntity).query({
-        topic_id: message.topic_id,
-        user_id: currentUserId,
-      })
-    : null;
+    const lastUnreadInTheSameTopic = currentUserId
+      ? getEntity(lastSeenMessageEntity).query({
+          topic_id: message.topic_id,
+          user_id: currentUserId,
+        })
+      : null;
 
-  const getTasksForUser = cachedComputed((userId: string) => {
-    return tasks.query({ user_id: userId });
+    const getTasksForUser = cachedComputed((userId: string) => {
+      return tasks.query({ user_id: userId });
+    });
+
+    const getIsUserParticipating = cachedComputed((userId: string) => {
+      if (message.user_id === userId) return true;
+
+      if (getTasksForUser(userId).hasItems) return true;
+
+      if (getIsUserMentionedInContent(userId)) return true;
+
+      return false;
+    });
+
+    const getIsUserMentionedInContent = cachedComputed((userId: string) => {
+      return mentionedUserIds.get().has(userId);
+    });
+
+    const connections = {
+      get topic() {
+        return getEntity(topicEntity).findById(message.topic_id);
+      },
+      get user() {
+        return getEntity(userEntity).assertFindById(message.user_id);
+      },
+      tasks,
+      getIsUserParticipating,
+      reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
+      attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
+      get isUnread() {
+        if (!currentUserId || message.user_id == currentUserId) return false;
+
+        const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
+
+        if (!lastUnreadMessage) return true;
+
+        // This very message is last unread one
+        if (lastUnreadMessage.id === message.id) return true;
+
+        return new Date(message.updated_at) >= lastUnreadMessage.getUpdatedAt();
+      },
+      get repliedToMessage() {
+        if (!message.replied_to_message_id) return null;
+
+        return getEntity(messageEntity).findById(message.replied_to_message_id);
+      },
+      get isOwn() {
+        return currentUserId === message.user_id;
+      },
+
+      get dueDate() {
+        return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
+      },
+    };
+
+    return connections;
+  })
+  .addEventHandlers({
+    itemAdded(message, { getEntity }) {
+      updateMessageTasks(getEntity(taskEntity), message);
+    },
+    itemUpdated(message, messageBefore, { getEntity }) {
+      if (message.content !== messageBefore.content) {
+        updateMessageTasks(getEntity(taskEntity), message, messageBefore.content);
+      }
+    },
   });
-
-  const getIsUserParticipating = cachedComputed((userId: string) => {
-    if (message.user_id === userId) return true;
-
-    if (getTasksForUser(userId).hasItems) return true;
-
-    if (getIsUserMentionedInContent(userId)) return true;
-
-    return false;
-  });
-
-  const getIsUserMentionedInContent = cachedComputed((userId: string) => {
-    return mentionedUserIds.get().has(userId);
-  });
-
-  const connections = {
-    get topic() {
-      return getEntity(topicEntity).findById(message.topic_id);
-    },
-    get user() {
-      return getEntity(userEntity).assertFindById(message.user_id);
-    },
-    tasks,
-    getIsUserParticipating,
-    reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
-    attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
-    get isUnread() {
-      if (!currentUserId || message.user_id == currentUserId) return false;
-
-      const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
-
-      if (!lastUnreadMessage) return true;
-
-      // This very message is last unread one
-      if (lastUnreadMessage.id === message.id) return true;
-
-      return new Date(message.updated_at) >= lastUnreadMessage.getUpdatedAt();
-    },
-    get repliedToMessage() {
-      if (!message.replied_to_message_id) return null;
-
-      return getEntity(messageEntity).findById(message.replied_to_message_id);
-    },
-    get isOwn() {
-      return currentUserId === message.user_id;
-    },
-
-    get dueDate() {
-      return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
-    },
-  };
-
-  return connections;
-});
 
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;
 
 const getMentionedUserIdsInContent = memoize(
   (content: JSONContent) => new Set(getUniqueRequestMentionDataFromContent(content).map((data) => data.userId))
 );
+
+const extractUserIdsWithRequestType = (content: JSONContent) =>
+  Object.fromEntries(getUniqueRequestMentionDataFromContent(content).map(({ userId, type }) => [userId, type]));
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function updateMessageTasks(taskClient: any, message: MessageEntity, contentBefore: JSONContent | null = null) {
+  const oldRequests = contentBefore ? extractUserIdsWithRequestType(contentBefore) : {};
+  const newRequests = extractUserIdsWithRequestType(message.content);
+
+  for (const [userId, type] of Object.entries(oldRequests)) {
+    if (newRequests[userId] !== type) {
+      taskClient.query({ message_id: message.id, user_id: userId, type }).first?.remove();
+    }
+  }
+
+  for (const [userId, type] of Object.entries(newRequests)) {
+    if (oldRequests[userId] !== type) {
+      taskClient.create({ message_id: message.id, user_id: userId, type });
+    }
+  }
+}

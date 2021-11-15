@@ -64,7 +64,8 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
         .focus()
         .insertContentAt(
           range,
-          (Array.isArray(props) ? props : [props]).flatMap((data) => [
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          props.flatMap((data: any) => [
             { type: options.type, attrs: { data } },
             // When inserting suggestion, also add a space after it.
             { type: "text", text: " " },

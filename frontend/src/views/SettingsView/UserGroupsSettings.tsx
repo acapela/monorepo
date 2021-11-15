@@ -1,85 +1,40 @@
 import { AnimatePresence } from "framer-motion";
 import { isEqual } from "lodash";
 import { observer } from "mobx-react";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useList } from "react-use";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
-import { UserEntity } from "~frontend/clientdb/user";
 import { UserGroupEntity } from "~frontend/clientdb/userGroup";
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { useBoolean } from "~shared/hooks/useBoolean";
 import { isNotNullish } from "~shared/nullish";
-import { useSearch } from "~shared/search";
 import { PopPresenceAnimator } from "~ui/animations";
 import { TextButton } from "~ui/buttons/TextButton";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconUser } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
-import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
 
-type UserPickerProps = { alreadyPickedIds: Set<String>; onPick: (user: UserEntity) => void };
-const UserPicker = observer(({ alreadyPickedIds, onPick }: UserPickerProps) => {
-  const team = useAssertCurrentTeam();
-  const [keyword, setKeyword] = useState("");
-  const [isOpen, { set: show, unset: hide }] = useBoolean(false);
+import { UIAt, UIMention, UIMentionInput, UserPicker } from "./UserPicker";
 
-  const anchorRef = useRef(null);
-
-  const users = team.members
-    .query((member) => !alreadyPickedIds.has(member.user_id))
-    .all.map((member) => member.user)
-    .filter(isNotNullish);
-  const foundUsers = useSearch(users, (user) => [user.name])(keyword);
-
-  return (
-    <UIMention>
-      <UIAt $isPlaceholder={!keyword}>@</UIAt>
-      <UIMentionInput
-        ref={anchorRef}
-        type="text"
-        placeholder="User Name"
-        value={keyword}
-        onFocus={show}
-        onBlur={() => {
-          hide();
-          setKeyword("");
-        }}
-        onChange={(event) => {
-          setKeyword(event.target.value.trim());
-        }}
-      />
-      {isOpen && (
-        <Popover anchorRef={anchorRef} placement="top-start" onClickOutside={hide} enableScreenCover>
-          <PopPresenceAnimator>
-            <SelectList<UserEntity>
-              items={foundUsers}
-              noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
-              keyGetter={(user) => user.id}
-              onItemSelected={(item) => {
-                onPick(item);
-                setKeyword("");
-              }}
-              renderItem={(user) => (
-                <UISelectItem>
-                  <UserAvatar user={user} size="inherit" /> {user.name}
-                </UISelectItem>
-              )}
-            />
-          </PopPresenceAnimator>
-        </Popover>
-      )}
-    </UIMention>
-  );
-});
+function useUpdateUserGroupMembers() {
+  const db = useDb();
+  return function updateUserGroupMembers(group: UserGroupEntity, userIds: Set<string>) {
+    const removedMembers = group.members.all.filter((member) => !userIds.has(member.user_id));
+    for (const member of removedMembers) {
+      member.remove();
+    }
+    const newMemberUserIds = Array.from(userIds).filter(
+      (id) => !group || !group.members.all.some((member) => member.user_id == id)
+    );
+    for (const userId of newMemberUserIds) {
+      db.userGroupMember.create({ user_group_id: group.id, user_id: userId });
+    }
+  };
+}
 
 const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
   const db = useDb();
+  const updateUserGroupMembers = useUpdateUserGroupMembers();
 
   const initialName = group?.name ?? "";
   const initialUsers = group?.members.all.map((member) => member.user).filter(isNotNullish) ?? [];
@@ -102,23 +57,12 @@ const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
     <UIForm
       onSubmit={(event) => {
         event.preventDefault();
-        let userGroup = group;
-        if (userGroup) {
-          userGroup.update({ name });
+        if (group) {
+          group.update({ name });
+          updateUserGroupMembers(group, userIds);
         } else {
-          userGroup = db.userGroup.create({ name: name });
-        }
-        const removedMembers = userGroup.members.all.filter((member) => !userIds.has(member.user_id));
-        for (const member of removedMembers) {
-          member.remove();
-        }
-        const newMemberUserIds = Array.from(userIds).filter(
-          (id) => !userGroup || !userGroup.members.all.some((member) => member.user_id == id)
-        );
-        for (const userId of newMemberUserIds) {
-          db.userGroupMember.create({ user_group_id: userGroup.id, user_id: userId });
-        }
-        if (!group) {
+          const group = db.userGroup.create({ name: name });
+          updateUserGroupMembers(group, userIds);
           resetForm();
         }
       }}
@@ -245,33 +189,6 @@ const UIForm = styled.form`
   }
 `;
 
-const UIMention = styled.div<{}>`
-  display: flex;
-  flex-direction: row;
-  white-space: nowrap;
-  ${theme.font.medium.resetLineHeight};
-`;
-
-const UIAt = styled.div<{ $isPlaceholder: boolean }>`
-  display: flex;
-  align-items: center;
-  ${(props) =>
-    props.$isPlaceholder &&
-    css`
-      color: rgb(117, 117, 117);
-    `}
-`;
-
-const UIMentionInput = styled.input`
-  padding: 0;
-  height: fit-content;
-  ${theme.font.medium.resetLineHeight};
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 const UIDivider = styled.div<{}>`
   width: 1px;
   height: 20px;
@@ -292,16 +209,6 @@ const UIMentionButton = styled.button`
   background: none;
   cursor: pointer;
   ${theme.font.medium};
-`;
-
-const UISelectItem = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  ${theme.spacing.actions.asGap};
-
-  ${UserAvatar} {
-    font-size: 1.5rem;
-  }
 `;
 
 const UIButtons = styled.div<{}>`

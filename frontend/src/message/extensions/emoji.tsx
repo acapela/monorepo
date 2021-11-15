@@ -39,7 +39,7 @@ function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) 
       }
       keyGetter={(emoji) => emoji.id + emoji.name}
       onItemSelected={(emoji) => {
-        onSelect({ emoji: emoji.native, name: emoji.id });
+        onSelect([{ emoji: emoji.native, name: emoji.id }]);
       }}
       renderItem={(emoji) => {
         return (

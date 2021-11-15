@@ -26,9 +26,9 @@ type SearchableItem = { terms: string[] } & (
   | { type: "user_group"; entity: UserGroupEntity }
 );
 
-const itemToMention = (item: SearchableItem, type: MentionType): EditorMentionData | EditorMentionData[] =>
+const convertSearchableItemToMentionData = (item: SearchableItem, type: MentionType): EditorMentionData[] =>
   item.type == "user"
-    ? { userId: item.entity.id, type }
+    ? [{ userId: item.entity.id, type }]
     : item.entity.members.all.map((member) => ({ type, userId: member.user_id }));
 
 export const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
@@ -66,25 +66,28 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
         }
         keyGetter={({ entity }) => entity.id}
         onItemSelected={(item) => {
+          const userIds = new Set(
+            item.type == "user" ? [item.entity.id] : item.entity.members.all.map((member) => member.user_id)
+          );
+          // when there is already a mention node for the given user (or one of the users in the group), use that
+          // type for the new mention node
           const mentionNodeForSameUser = getMentionNodesFromContent(editor.getJSON() as JSONContent).find(
-            ({ attrs: { data } }) =>
-              item.type == "user"
-                ? data.userId === item.entity.id
-                : item.entity.members.all.some((member) => member.user_id === data.userId)
+            ({ attrs: { data } }) => userIds.has(data.userId)
           );
           if (mentionNodeForSameUser) {
-            onSelect(itemToMention(item, mentionNodeForSameUser.attrs.data.type));
+            onSelect(convertSearchableItemToMentionData(item, mentionNodeForSameUser.attrs.data.type));
           } else {
             setSelectedItem(item);
           }
         }}
         renderItem={(item) => (
           <UISelectItem>
-            {item.type == "user" ? (
+            {item.type == "user" && (
               <>
                 <UserAvatar user={item.entity} size="inherit" /> {item.entity.name}
               </>
-            ) : (
+            )}
+            {item.type == "user_group" && (
               <>
                 <Avatar name={item.entity.name} size={24} /> {item.entity.name}
               </>
@@ -98,7 +101,7 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
   return (
     <MentionTypePicker
       onSelect={(type) => {
-        onSelect(itemToMention(selectedItem, type));
+        onSelect(convertSearchableItemToMentionData(selectedItem, type));
       }}
     />
   );
