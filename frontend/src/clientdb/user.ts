@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb";
-import { userGroupMemberEntity } from "~frontend/clientdb/userGroup";
 import { UserFragment } from "~gql";
 
 import { taskEntity } from "./task";
@@ -48,9 +47,6 @@ export const userEntity = defineEntity<UserFragment>({
     },
     get teamMembership() {
       return getEntity(teamMemberEntity).findByUniqueIndex("user_id", user.id);
-    },
-    get userGroupMemberships() {
-      return getEntity(userGroupMemberEntity).query({ user_id: user.id });
     },
     get isMemberOfCurrentTeam() {
       return connections.teamMembership?.isMemberOfCurrentTeam ?? false;
