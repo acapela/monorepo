@@ -3,10 +3,12 @@ import { Page, expect } from "@playwright/test";
 import { test } from "~e2e/helper/base-test";
 import { basePath } from "~e2e/helper/constants";
 
-async function createRequest(page: Page, mentionType: string, userName: string) {
+const requestTopicName = "a new test request";
+
+export async function createRequest(page: Page, mentionType: string, userName: string, requestName?: string) {
   await page.goto(basePath);
   await page.click("text=New Request");
-  await page.fill(`[placeholder="e.g. Feedback for new website copy"]`, "a new test request");
+  await page.fill(`[placeholder="e.g. Feedback for new website copy"]`, requestName ?? requestTopicName);
   await page.fill('[contenteditable="true"]', "What is happening @u");
   await page.click(`[role="option"]:has-text("${userName}")`);
   await page.click("text=" + mentionType);
@@ -35,4 +37,20 @@ test("create a new observer request", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   await createRequest(page, "Observer", db.user2.name);
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(0);
+});
+
+test("mark own request as read", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  const mentionedUser = db.user2.name;
+  const requestName = "User 2 completes own task" + Math.random() * 1024;
+  await createRequest(page, "Request read", mentionedUser, requestName);
+
+  await page.waitForSelector("text=Read Confirmation");
+
+  expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
+
+  await page.click('button:has-text("Mark as read")');
+
+  const $taskMention = await page.locator(`[data-test-task-assignee="${db.user2.id}"]`);
+  expect($taskMention).toContainText("✓", { useInnerText: true });
 });

@@ -55,7 +55,7 @@ export const MessageTask = observer(({ task }: Props) => {
   const isAbleToModifyTaskStatus = task.isAssignedToSelf && !task.topic?.isClosed;
 
   return (
-    <UISingleTask key={task.id} data-tooltip={getTooltip()}>
+    <UISingleTask data-test-task-assignee={task.user_id} key={task.id} data-tooltip={getTooltip()}>
       {task.assignedUser ? <UserAvatar size={30} user={task.assignedUser} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{task.assignedUser?.name}</UIUserNameLabel>
