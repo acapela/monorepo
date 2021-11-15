@@ -92,8 +92,8 @@ function setupGracefulShutdown(server: Server) {
         await db.$connect();
         await db.$executeRaw`SELECT 1;`;
         const [hasuraRes, hasuraVersionRes] = await Promise.all([
-          axios.get(`${process.env.HASURA_HOST}/healthz`),
-          axios.get(`${process.env.HASURA_HOST}/v1/version`),
+          axios.get(`${process.env.HASURA_ENDPOINT}/healthz`),
+          axios.get(`${process.env.HASURA_ENDPOINT}/v1/version`),
         ]);
         return {
           version: process.env.SENTRY_RELEASE || "dev",
