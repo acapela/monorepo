@@ -1,4 +1,4 @@
-import isHotkey from "is-hotkey";
+import { HotKey, compareHotkey, parseHotkey } from "is-hotkey";
 import { sortBy } from "lodash";
 
 import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
@@ -69,7 +69,7 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  *   // !!! I'll be first to handle this event. If I'll return true (handled) no other handler will be called!
  * });
  */
-const shortcutHandlersMap = new Map<string, RunningShortcutInfo[]>();
+const shortcutHandlersMap = new Map<string, { hotKey: HotKey; callbacks: RunningShortcutInfo[] }>();
 
 interface RunningShortcutInfo {
   callback: ShortcutCallback;
@@ -83,9 +83,9 @@ onDocumentReady(() => {
   document.body.addEventListener(
     "keydown",
     (event) => {
-      shortcutHandlersMap.forEach((callbacks, shortcut) => {
-        if (!isHotkey(shortcut, event)) {
-          return;
+      for (const [, { hotKey, callbacks }] of shortcutHandlersMap.entries()) {
+        if (!compareHotkey(hotKey, event)) {
+          continue;
         }
 
         const hasAlwaysRunningCallback = callbacks.some((callbackInfo) => {
@@ -103,7 +103,7 @@ onDocumentReady(() => {
 
           // If some of the handlers already returned true, don't allow other handlers to be called.
           if (finallyHandledEvents.has(event)) {
-            return;
+            break;
           }
 
           if (callbackInfo.options?.ignoreIfAlreadyDefined && hasAlwaysRunningCallback) {
@@ -119,7 +119,7 @@ onDocumentReady(() => {
             finallyHandledEvents.add(event);
           }
         }
-      });
+      }
     },
     { capture: true }
   );
@@ -128,7 +128,10 @@ onDocumentReady(() => {
 export function createShortcutListener(keys: ShortcutKeys, info: RunningShortcutInfo) {
   const shortcut = getShortcutDescription(keys);
 
-  const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => []);
+  const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => ({
+    hotKey: parseHotkey(shortcut, { byKey: true }),
+    callbacks: [],
+  }));
 
   /**
    * Important!
@@ -137,9 +140,9 @@ export function createShortcutListener(keys: ShortcutKeys, info: RunningShortcut
    *
    * This is because we want new handlers to be called first instead of default DOM behavior!
    */
-  shortcutHandlers.unshift(info);
+  shortcutHandlers.callbacks.unshift(info);
 
   return () => {
-    removeElementFromArray(shortcutHandlers, info);
+    removeElementFromArray(shortcutHandlers.callbacks, info);
   };
 }
