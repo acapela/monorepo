@@ -95,6 +95,10 @@ export function createEntitySyncManager<Data, Connections>(
   // Watch for all local changes and as a side effect - push them to remote.
   function initializePushSync() {
     async function handleEntityCreatedOrUpdatedByUser(entity: Entity<Data, Connections>) {
+      if (!store.definition.config.sync.push) {
+        return;
+      }
+
       const entityDataFromServer = await store.definition.config.sync.push?.(entity, databaseUtilities);
 
       if (!entityDataFromServer) {
@@ -107,6 +111,8 @@ export function createEntitySyncManager<Data, Connections>(
     }
     const cancelRemoves = store.events.on("itemRemoved", async (entity, source) => {
       if (source !== "user") return;
+
+      if (!config.entitySyncConfig.remove) return;
 
       function restoreEntity() {
         store.add(entity, "sync");

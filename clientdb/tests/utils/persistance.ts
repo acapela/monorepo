@@ -11,7 +11,7 @@ type DefaultTestEntities = {
 
 interface PersistanceAdapterMockConfig<EntitiesMap = DefaultTestEntities> {
   tableMocks?: {
-    [key in keyof EntitiesMap]: TablePersistanceMock<EntitiesMap[key]>;
+    [key in keyof EntitiesMap]?: TablePersistanceMock<EntitiesMap[key]>;
   };
 }
 

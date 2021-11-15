@@ -64,6 +64,8 @@ export const testEntities = {
   owner,
 };
 
+export type DefaultEntitiesMap = typeof testEntities;
+
 export type DefaultTestEntitiesData = {
   owner: TestOwnerEntity;
   dog: TestDogEntity;

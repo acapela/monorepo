@@ -10,10 +10,10 @@ import { EntitySyncConfigMock } from "./sync";
 type TestDbConfig<M extends EntitiesMap = typeof testEntities> = {
   entities?: M;
   syncMocks?: {
-    [key in keyof M]: EntitySyncConfigMock<EntityDataByDefinition<M[key]>>;
+    [key in keyof M]?: EntitySyncConfigMock<EntityDataByDefinition<M[key]>>;
   };
   persistanceMocks?: {
-    [key in keyof M]: TablePersistanceMock<EntityDataByDefinition<M[key]>>;
+    [key in keyof M]?: TablePersistanceMock<EntityDataByDefinition<M[key]>>;
   };
 };
 
