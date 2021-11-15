@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
+import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
 import { UserGroupEntity } from "~frontend/clientdb/userGroup";
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
@@ -32,9 +33,10 @@ const convertSearchableItemToMentionData = (item: SearchableItem, type: MentionT
     : item.entity.members.all.map((member) => ({ type, userId: member.user_id }));
 
 export const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
+  const db = useDb();
   const team = useAssertCurrentTeam();
   const teamMemberUsers = team.members.all.map((member) => member.user).filter(isNotNullish);
-  const userGroups = team.userGroups.all;
+  const userGroups = db.userGroup.query({ team_id: team.id }).all;
 
   const [selectedItem, setSelectedItem] = useState<SearchableItem | null>(null);
 

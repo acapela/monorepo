@@ -134,23 +134,27 @@ const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
   );
 });
 
-export const UserGroupsSettings = observer(({ team }: { team: TeamEntity }) => (
-  <UIPanel>
-    <UITitle>Groups</UITitle>
-    <UIGroupRows>
-      <AnimatePresence>
-        {team.userGroups.all.map((group) => (
-          <PopPresenceAnimator key={group.id}>
-            <UserGroupForm group={group} />
+export const UserGroupsSettings = observer(({ team }: { team: TeamEntity }) => {
+  const db = useDb();
+  const userGroups = db.userGroup.query({ team_id: team.id });
+  return (
+    <UIPanel>
+      <UITitle>Groups</UITitle>
+      <UIGroupRows>
+        <AnimatePresence>
+          {userGroups.all.map((group) => (
+            <PopPresenceAnimator key={group.id}>
+              <UserGroupForm group={group} />
+            </PopPresenceAnimator>
+          ))}
+          <PopPresenceAnimator>
+            <UserGroupForm />
           </PopPresenceAnimator>
-        ))}
-        <PopPresenceAnimator>
-          <UserGroupForm />
-        </PopPresenceAnimator>
-      </AnimatePresence>
-    </UIGroupRows>
-  </UIPanel>
-));
+        </AnimatePresence>
+      </UIGroupRows>
+    </UIPanel>
+  );
+});
 
 const UIPanel = styled.div<{}>`
   display: flex;
