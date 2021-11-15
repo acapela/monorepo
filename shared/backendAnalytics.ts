@@ -10,7 +10,7 @@ function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
     email: user.email,
     name: user.name,
     createdAt: user.created_at,
-    avatar: user.avatar_url ?? undefined,
+    avatar: user.avatar_url,
   };
 }
 
