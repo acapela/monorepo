@@ -5,7 +5,6 @@ handle_path /graphql {
 	reverse_proxy {$HASURA_HOST}
 }
 
-
 handle_path /api/backend/* {
 	rewrite * /api{path}
 	reverse_proxy {$BACKEND_HOST}
@@ -23,6 +22,11 @@ handle_path /attachments/* {
 
 handle /sentry-tunnel {
 	reverse_proxy {$BACKEND_HOST}
+}
+
+handle_path /healthz {
+	rewrite * /api/healthz
+	reverse_proxy {$FRONTEND_HOST}
 }
 
 reverse_proxy {$FRONTEND_HOST}
