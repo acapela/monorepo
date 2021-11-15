@@ -8,13 +8,23 @@ if [ -z "${1:-}" ]; then
 fi
 
 VERSION=$1
-IMAGE_NAME="eu.gcr.io/meetnomoreapp/monorepo"
-IMAGE_NAME_VERSION="$IMAGE_NAME:$VERSION"
 
-echo "building image..."
-docker build --build-arg SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" --build-arg BUILD_ID="$GITHUB_SHA" --build-arg BUILD_DATE="$(date '+%Y-%m-%d')" --build-arg SENTRY_RELEASE=$VERSION -t $IMAGE_NAME_VERSION .
-docker tag "$IMAGE_NAME_VERSION" "$IMAGE_NAME"
+echo "[caddy] building image..."
+CADDY_IMAGE_NAME="eu.gcr.io/meetnomoreapp/caddy"
+CADDY_IMAGE_NAME_VERSION="$CADDY_IMAGE_NAME:$VERSION"
+
+docker build -t "$CADDY_IMAGE_NAME_VERSION" -f ./caddy.dockerfile .
+docker tag "$CADDY_IMAGE_NAME_VERSION" "$CADDY_IMAGE_NAME"
+
+echo "[monorepo] building image..."
+MONOREPO_IMAGE_NAME="eu.gcr.io/meetnomoreapp/monorepo"
+MONOREPO_IMAGE_NAME_VERSION="$MONOREPO_IMAGE_NAME:$VERSION"
+docker build --build-arg SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" --build-arg BUILD_ID="$GITHUB_SHA" --build-arg BUILD_DATE="$(date '+%Y-%m-%d')" --build-arg SENTRY_RELEASE="$VERSION" -t "$MONOREPO_IMAGE_NAME_VERSION" -f ./monorepo.dockerfile .
+docker tag "$MONOREPO_IMAGE_NAME_VERSION" "$MONOREPO_IMAGE_NAME"
 
 echo "pushing to gcr..."
-docker push "$IMAGE_NAME_VERSION"
-docker push "$IMAGE_NAME"
+docker push "$MONOREPO_IMAGE_NAME_VERSION"
+docker push "$MONOREPO_IMAGE_NAME"
+
+docker push "$CADDY_IMAGE_NAME_VERSION"
+docker push "$CADDY_IMAGE_NAME"
