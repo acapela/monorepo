@@ -219,7 +219,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       getUserByEmail: async (email) => toMaybeAdapterUser(email ? await db.user.findFirst({ where: { email } }) : null),
 
       async linkAccount(account) {
-        await db.$transaction([
+        const [, user] = await db.$transaction([
           db.account.create({
             data: {
               user_id: account.userId,
@@ -240,6 +240,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
           }),
         ]);
+        trackFirstBackendUserEvent(user, "Signed Up", { userEmail: user.email });
       },
 
       createSession() {

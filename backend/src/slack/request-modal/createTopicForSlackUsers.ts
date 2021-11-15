@@ -36,7 +36,7 @@ async function createAndInviteMissingUsers(
         }
         const user = await transaction.user.upsert({
           where: { email },
-          create: { name, email, avatar_url: profile?.image_original },
+          create: { name, email, avatar_url: profile?.image_original, current_team_id: teamId },
           update: {},
           include: { account: true },
         });
