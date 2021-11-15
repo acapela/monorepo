@@ -42,8 +42,9 @@ COPY --from=builder /app /app
 ENV BACKEND_PORT=1337
 EXPOSE 1337
 
-ENV FRONTEND_PORT=3000
-EXPOSE 3000
+# frontend port
+ENV PORT=3030
+EXPOSE 3030
 
 ENV NODE_ENV=production
 CMD ["yarn", "run", "start:backend"]
