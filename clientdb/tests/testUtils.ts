@@ -1,3 +1,5 @@
+import { autorun } from "mobx";
+
 import { EntitySyncConfig, PersistanceAdapterInfo } from "~clientdb/entity";
 
 import { createClientDb, defineEntity } from "..";
@@ -106,4 +108,12 @@ export const mockPersistanceAdapter: PersistanceAdapterInfo = {
 
 export function createTestDb() {
   return createClientDb({ db: mockPersistanceAdapter }, { owner, dog });
+}
+
+export function runObserved<T>(callback: () => T) {
+  const dispose = autorun(() => {
+    callback();
+  });
+
+  dispose();
 }

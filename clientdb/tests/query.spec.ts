@@ -1,6 +1,4 @@
-import { runInAction } from "mobx";
-
-import { createTestDb } from "./testUtils";
+import { createTestDb, runObserved } from "./testUtils";
 
 describe("clientdb query", () => {
   async function getTestDb() {
@@ -28,7 +26,7 @@ describe("clientdb query", () => {
     const query = db.owner.query(queryFunction);
 
     // Query fn is only cached as long as being observed.
-    runInAction(() => {
+    runObserved(() => {
       // Query should be lazy
       expect(queryFunction).toBeCalledTimes(0);
 
