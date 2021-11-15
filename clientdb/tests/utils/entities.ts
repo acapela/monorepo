@@ -37,6 +37,11 @@ export const owner = defineEntity<TestOwnerEntity>({
   updatedAtField: "updatedAt",
   name: "owner",
   sync: getSyncConfig<TestOwnerEntity>(),
+  search: {
+    fields: {
+      name: true,
+    },
+  },
   getDefaultValues: getDefaultCommonData,
 }).addConnections((owner, { getEntity }) => {
   return {
