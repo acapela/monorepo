@@ -91,12 +91,11 @@ echo "deploying ${APP_NAME}@${APP_VERSION} to $STAGE"
 
 [[ "${SILENT_MODE}" == "false" ]] && ./scripts/send-slack-message.sh ":rocket: deploying *${APP_NAME}@${APP_VERSION}* to *${STAGE}*" "$STAGE"
 
-image_name=$(cat "${kubernetes_dir}${APP_NAME}/image_name")
-
-echo "updating image $image_name to $APP_VERSION"
-
 cd "$app_dir"
-$kustomize_command edit set image "$image_name:$APP_VERSION"
+while read image_name; do
+  echo "updating image $image_name to $APP_VERSION"
+  $kustomize_command edit set image "$image_name:$APP_VERSION"
+done < ../image_name
 cd -
 
 $kustomize_command build "$app_dir" | kubectl apply $DRY_RUN -f -
