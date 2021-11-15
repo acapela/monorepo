@@ -11,6 +11,7 @@ import { UserGroupEntity } from "~frontend/clientdb/userGroup";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { isNotNullish } from "~shared/nullish";
 import { PopPresenceAnimator } from "~ui/animations";
+import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { theme } from "~ui/theme";
 
@@ -87,40 +88,34 @@ const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
         <UIButtons>
           <AnimatePresence>
             {group && (
-              <PopPresenceAnimator>
-                <TextButton
-                  type="button"
-                  kind="secondary"
-                  inline
-                  onClick={async () => {
-                    if (
-                      await openConfirmPrompt({ title: `Are you sure you want to delete the ${group.name} group?` })
-                    ) {
-                      group.remove();
-                    }
-                  }}
-                >
-                  Delete Group
-                </TextButton>
-              </PopPresenceAnimator>
+              <>
+                {hasChanges && (
+                  <PopPresenceAnimator>
+                    <TextButton type="button" kind="secondary" inline onClick={resetForm}>
+                      Undo Changes
+                    </TextButton>
+                  </PopPresenceAnimator>
+                )}
+                <PopPresenceAnimator>
+                  <Button
+                    type="button"
+                    onClick={async () => {
+                      if (
+                        await openConfirmPrompt({ title: `Are you sure you want to delete the ${group.name} group?` })
+                      ) {
+                        group.remove();
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </PopPresenceAnimator>
+              </>
             )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {group && hasChanges && (
-              <PopPresenceAnimator>
-                <TextButton type="button" kind="secondary" inline onClick={resetForm}>
-                  Undo Changes
-                </TextButton>
-              </PopPresenceAnimator>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
             {(!group || hasChanges) && (
               <PopPresenceAnimator>
-                <TextButton
+                <Button
                   type="submit"
-                  kind="primary"
-                  inline
                   data-tooltip={
                     isNameEmpty || isNameDuplicate
                       ? `Enter a ${isNameDuplicate ? "unique " : ""}group name to save it`
@@ -128,8 +123,8 @@ const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
                   }
                   isDisabled={isNameEmpty || isNameDuplicate}
                 >
-                  {group ? "Save Group" : "Add Group"}
-                </TextButton>
+                  {group ? "Save" : "Create"}
+                </Button>
               </PopPresenceAnimator>
             )}
           </AnimatePresence>
