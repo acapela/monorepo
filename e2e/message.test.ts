@@ -23,7 +23,7 @@ test("create a new read request and update it to a response request", async ({ p
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 
   await page.hover(`p:has-text("@${userName}")`);
-  await page.click("[aria-haspopup]");
+  await page.click('[data-test-id="message-options"]');
   await page.click("text=Edit message");
   await page.click(`p >> text=@${userName}`);
   await page.click("text=Request response");

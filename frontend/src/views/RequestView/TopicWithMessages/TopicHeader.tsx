@@ -6,11 +6,11 @@ import styled from "styled-components";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconCheck, IconEdit, IconLock, IconMoreHoriz, IconUndo, IconUnlock } from "~ui/icons";
+import { IconCheck, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
@@ -76,7 +76,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
             },
           ]}
         >
-          <IconButton kind="secondary" icon={<IconMoreHoriz />} />
+          <OptionsButton data-test-id="topic-options" kind="secondary" />
         </PopoverMenuTrigger>
       </UITopicTools>
     </UIHolder>

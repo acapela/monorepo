@@ -131,7 +131,7 @@ export const Message = styledObserver<Props>(
                     onClose={() => setIsActive(false)}
                     options={messageActionsOptions}
                   >
-                    <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                    <OptionsButton data-test-id="message-options" tooltip={isActive ? undefined : "Show Options"} />
                   </PopoverMenuTrigger>
                 )}
               </UITools>
