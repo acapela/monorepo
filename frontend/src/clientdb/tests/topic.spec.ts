@@ -1,28 +1,33 @@
 import { subDays, subHours } from "date-fns";
 
+import { TeamEntity } from "../team";
+import { TopicEntity } from "../topic";
+import { UserEntity } from "../user";
 import { createTestAppClientDbWithData } from "./testDB";
+import { ClientDb } from "..";
 
 const now = new Date();
 const aDayAgo = subDays(now, 1).toISOString();
 const anHourAgo = subHours(now, 1).toISOString();
 
 describe("clientdb topic", () => {
-  it("creates a new topic", async () => {
-    const [db, { currentUser }] = await createTestAppClientDbWithData();
-    await db.topic.create({
-      owner_id: currentUser.id,
+  let db: ClientDb;
+  let team: TeamEntity;
+  let currentUser: UserEntity;
+  let topic: TopicEntity;
+
+  beforeEach(async () => {
+    const [_db, { currentUser: _currentUser, team: _team }] = await createTestAppClientDbWithData();
+    db = _db;
+    team = _team;
+    currentUser = _currentUser;
+    topic = await db.topic.create({
       name: "Hello World!",
       slug: "hello-world",
     });
   });
 
   it("gets the last seen message info and a list of all unread messages", async () => {
-    const [db, { currentUser }] = await createTestAppClientDbWithData();
-    const topic = await db.topic.create({
-      name: "Hello World!",
-      slug: "hello-world",
-    });
-
     const userThatSendsMessage = db.user.create({
       email: "me@acape.la",
       name: "Acapela user",
@@ -57,5 +62,32 @@ describe("clientdb topic", () => {
 
     expect(topic.lastSeenMessageByCurrentUserInfo).toBe(lastSeen);
     expect(topic.unreadMessages.all).toEqual([unSeenMessage]);
+  });
+
+  it("gets all topic members", async () => {
+    const randomTeamMember = await db.user.create({
+      email: "me@acape.la",
+      name: "Acapela user",
+      id: "other-user",
+      avatar_url: null,
+      has_account: true,
+    });
+    await db.teamMember.create({
+      has_joined: true,
+      team_id: team.id,
+      user_id: randomTeamMember.id,
+      notify_email: false,
+      notify_slack: false,
+    });
+    expect(topic.members).toContain(currentUser);
+    expect(topic.members).not.toContain(randomTeamMember);
+  });
+
+  it("closes a topic", async () => {
+    topic.close();
+
+    expect(topic.closedByUser).toBe(currentUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(new Date(topic.closed_at!)).toBeRecent();
   });
 });
