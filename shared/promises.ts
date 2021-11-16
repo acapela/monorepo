@@ -11,7 +11,7 @@ export interface ResolvablePromise<T> {
   getIsComplete(): boolean;
 }
 
-export function createResolvablePromise<T>(): ResolvablePromise<T> {
+export function createResolvablePromise<T = void>(): ResolvablePromise<T> {
   let resolve: (value: T) => void;
   let reject: (error: unknown) => void;
   let didResolve = false;

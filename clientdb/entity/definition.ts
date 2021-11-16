@@ -59,6 +59,15 @@ export interface ConnectionsManager<Data> extends DatabaseUtilities {
 
 type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type EntityDataByDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
+  infer Data,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
+>
+  ? Data
+  : never;
+
 export function defineEntity<Data, Connections = {}>(
   config: DefineEntityConfig<Data, Connections>
 ): EntityDefinition<Data, Connections> {
