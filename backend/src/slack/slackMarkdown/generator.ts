@@ -22,18 +22,6 @@ function renderLink(url: string, name: string): string {
   return createSlackLink(prefix + slackId, name);
 }
 
-function renderSlackMention(text: string): string {
-  switch (text) {
-    case "@here":
-      return "<!here>";
-    case "@channel":
-      return "<!channel>";
-    case "@everyone":
-      return "<!everyone>";
-  }
-  return Md.bold(text);
-}
-
 function renderTextNode(node: RichEditorNode): string {
   const text = toString(node.text);
   if (!node.marks) return text;
@@ -44,7 +32,7 @@ function renderTextNode(node: RichEditorNode): string {
     case "code":
       return Md.codeInline(text);
     case "bold":
-      return renderSlackMention(text);
+      return Md.bold(text);
     case "italic":
       return Md.italic(text);
     case "strike":
