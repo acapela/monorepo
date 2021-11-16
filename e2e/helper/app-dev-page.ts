@@ -36,6 +36,12 @@ export class AppDevPage {
     // Wait for navigation to open topic page
     await this.page.waitForSelector(`[data-test-id="topic-title"]:has-text("${title}")`);
   }
+
+  async selectTopicOption(optionTitle: string) {
+    await this.page.click('[data-test-id="topic-options"]');
+
+    await this.page.click(`text=${optionTitle}`);
+  }
 }
 
 type Username = string;

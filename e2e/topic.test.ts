@@ -2,7 +2,7 @@ import { test } from "~e2e/helper/base-test";
 
 import { AppDevPage } from "./helper/app-dev-page";
 
-test.only("can close a topic", async ({ page, auth, db }) => {
+test("can close a topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
@@ -12,9 +12,7 @@ test.only("can close a topic", async ({ page, auth, db }) => {
     mentions: [["Request read", userName]],
   });
 
-  await page.click('[data-test-id="topic-options"]');
-
-  await page.click("text=Close");
+  await appPage.selectTopicOption("Close");
 
   await page.waitForSelector("text=closed the request");
 });
@@ -32,9 +30,7 @@ test("can rename a topic", async ({ page, auth, db }) => {
     title: originalTopicName,
   });
 
-  await page.click('[data-test-id="topic-options"]');
-
-  await page.click("text=Rename");
+  await appPage.selectTopicOption("Rename");
 
   await page.waitForSelector("text=Submit");
 
@@ -43,4 +39,22 @@ test("can rename a topic", async ({ page, auth, db }) => {
   await page.click("text=Submit");
 
   await page.waitForSelector(`text=renamed ${originalTopicName} to ${renamedTopicName}`);
+});
+
+test("can archive topic", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  const userName = db.user2.name;
+
+  // Reduces opportunity for requests with same title;
+  const requestTitle = "Unique as possible" + Math.random() * 1024;
+
+  const appPage = new AppDevPage(page);
+  await appPage.makeNewRequest({
+    mentions: [["Request read", userName]],
+    title: requestTitle,
+  });
+
+  await appPage.selectTopicOption("Archive");
+
+  await page.waitForSelector(`text=archived the request`);
 });
