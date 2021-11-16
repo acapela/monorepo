@@ -1,5 +1,6 @@
 import { Message_Type_Enum } from "~gql";
 
+import { Maybe } from "../types";
 import { RequestType } from "./mention";
 
 export type AnalyticsUserProfile = {
@@ -7,7 +8,7 @@ export type AnalyticsUserProfile = {
   name: string;
   email: string;
   createdAt: Date;
-  avatar?: string;
+  avatar?: Maybe<string>;
 };
 
 type Origin = "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";

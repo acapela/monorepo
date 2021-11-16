@@ -39,5 +39,18 @@ services:
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       # Uncomment for debugging
       # HASURA_GRAPHQL_LOG_LEVEL: debug
+  caddy:
+    image: caddy:2.4.6
+    restart: always
+    environment:
+      BACKEND_HOST: http://host.docker.internal:1337
+      FRONTEND_HOST: http://host.docker.internal:3030
+      HASURA_HOST: http://host.docker.internal:8080
+    ports:
+      - "3000:3000"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
+
 volumes:
   db_data:

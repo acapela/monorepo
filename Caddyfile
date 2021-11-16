@@ -1,0 +1,36 @@
+:3000
+
+handle_path /graphql {
+	rewrite * /v1/graphql
+	reverse_proxy {$HASURA_HOST}
+}
+
+handle_path /api/backend/* {
+	rewrite * /api{path}
+	reverse_proxy {$BACKEND_HOST}
+}
+
+handle_path /api/backend/healthz {
+	rewrite * /healthz
+	reverse_proxy {$BACKEND_HOST}
+}
+
+handle_path /attachments/* {
+	rewrite * /attachments{path}
+	reverse_proxy {$BACKEND_HOST}
+}
+
+handle /sentry-tunnel {
+	reverse_proxy {$BACKEND_HOST}
+}
+
+handle_path /healthz {
+	rewrite * /api/healthz
+	reverse_proxy {$FRONTEND_HOST}
+}
+
+reverse_proxy {$FRONTEND_HOST}
+
+log {
+	level ERROR
+}
