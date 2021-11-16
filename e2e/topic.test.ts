@@ -1,25 +1,17 @@
-import { Page } from "playwright-core";
-
 import { test } from "~e2e/helper/base-test";
 
-import { basePath } from "./helper/constants";
-
-// TODO: move elsewhere
-async function createRequest(page: Page, mentionType: string, userName: string, requestName?: string) {
-  await page.goto(basePath);
-  await page.click("text=New Request");
-  await page.fill(`[placeholder="e.g. Feedback for new website copy"]`, requestName ?? requestTopicName);
-  await page.fill('[contenteditable="true"]', "What is happening @u");
-  await page.click(`[role="option"]:has-text("${userName}")`);
-  await page.click("text=" + mentionType);
-  await page.click('button:has-text("Send request")');
-}
+import { AppDevPage } from "./helper/app-dev-page";
 
 test("can close a topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
-  await createRequest(page, "Request read", userName);
+  const appPage = new AppDevPage(page);
+
+  appPage.makeNewRequest({
+    mentions: [["Request read", userName]],
+  });
+
   await page.waitForSelector("text=Read Confirmation");
 
   await page.click('[data-test-id="topic-options"]');
@@ -35,7 +27,13 @@ test("can rename a topic", async ({ page, auth, db }) => {
 
   const originalTopicName = "Does swiss cheese have voting rights? Click here to find out!";
   const renamedTopicName = "TL;DR Not really, it's cheese.";
-  await createRequest(page, "Request read", userName, originalTopicName);
+
+  const appPage = new AppDevPage(page);
+  appPage.makeNewRequest({
+    mentions: [["Request read", userName]],
+    title: originalTopicName,
+  });
+
   await page.waitForSelector("text=Read Confirmation");
 
   await page.click('[data-test-id="topic-options"]');
