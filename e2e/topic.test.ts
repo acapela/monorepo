@@ -2,17 +2,15 @@ import { test } from "~e2e/helper/base-test";
 
 import { AppDevPage } from "./helper/app-dev-page";
 
-test("can close a topic", async ({ page, auth, db }) => {
+test.only("can close a topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
   const appPage = new AppDevPage(page);
 
-  appPage.makeNewRequest({
+  await appPage.makeNewRequest({
     mentions: [["Request read", userName]],
   });
-
-  await page.waitForSelector("text=Read Confirmation");
 
   await page.click('[data-test-id="topic-options"]');
 
@@ -29,12 +27,10 @@ test("can rename a topic", async ({ page, auth, db }) => {
   const renamedTopicName = "TL;DR Not really, it's cheese.";
 
   const appPage = new AppDevPage(page);
-  appPage.makeNewRequest({
+  await appPage.makeNewRequest({
     mentions: [["Request read", userName]],
     title: originalTopicName,
   });
-
-  await page.waitForSelector("text=Read Confirmation");
 
   await page.click('[data-test-id="topic-options"]');
 

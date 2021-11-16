@@ -32,6 +32,9 @@ export class AppDevPage {
     }
 
     await this.page.click('button:has-text("Send request")');
+
+    // Wait for navigation to open topic page
+    await this.page.waitForSelector(`[data-test-id="topic-title"]:has-text("${title}")`);
   }
 }
 

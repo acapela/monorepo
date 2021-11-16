@@ -14,7 +14,6 @@ test("create a new read request and update it to a response request", async ({ p
     mentions: [["Request read", userName]],
   });
 
-  await page.waitForSelector("text=Read Confirmation");
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 
   await page.hover(`p:has-text("@${userName}")`);
@@ -49,8 +48,6 @@ test("mark own request as read", async ({ page, auth, db }) => {
     mentions: [["Request read", mentionedUser]],
     title: requestName,
   });
-
-  await page.waitForSelector("text=Read Confirmation");
 
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 

@@ -52,7 +52,9 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
 
   return (
     <UIHolder>
-      <UITitle layoutId={layoutAnimations.newTopic.title(topic.id)}>{topic.name}</UITitle>
+      <UITitle data-test-id="topic-title" layoutId={layoutAnimations.newTopic.title(topic.id)}>
+        {topic.name}
+      </UITitle>
       <UITopicTools>
         <AvatarList users={topic.members} maxVisibleCount={5} />
         {/* TODO: Include invite button */}
