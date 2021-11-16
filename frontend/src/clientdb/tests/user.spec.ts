@@ -6,6 +6,7 @@ describe("clientdb user", () => {
 
     expect(currentUser.isMemberOfCurrentTeam).toBe(true);
     expect(team.isOwnedByCurrentUser).toBe(true);
+    expect(currentUser.teamMembership?.team_id).toBe(team.id);
 
     db.destroy();
   });
