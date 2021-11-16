@@ -76,10 +76,14 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 
   // If db is ready we track initial successful app load event on the backend
   useEffect(() => {
-    if (db && userId) {
-      trackEvent("Opened App");
+    if (db && userId && teamManager.teamId) {
+      const currentUser = db.user.assertFindById(
+        userId,
+        "Fetching the current user from clientDb failed on initial load"
+      );
+      trackEvent("Opened App", { currentTeamId: teamManager.teamId }, currentUser.getData());
     }
-  }, [db, userId]);
+  }, [db, userId, teamManager.teamId]);
 
   devAssignWindowVariable("db", db);
 

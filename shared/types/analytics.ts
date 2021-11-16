@@ -72,7 +72,7 @@ export type AnalyticsEventsMap = {
   };
   "Added Due Date": { topicId: string; messageId: string; origin: Origin };
 
-  "Opened App": void;
+  "Opened App": { currentTeamId: string };
 
   // Slack
   "Used Slack Global Shortcut": { slackUserName: string };
