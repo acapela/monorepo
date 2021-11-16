@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/react";
+import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { format } from "date-fns";
 import { find } from "lodash";
