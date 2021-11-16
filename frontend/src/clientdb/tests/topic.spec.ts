@@ -90,4 +90,12 @@ describe("clientdb topic", () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(new Date(topic.closed_at!)).toBeRecent();
   });
+
+  it("opens a topic", async () => {
+    topic.close();
+    topic.open();
+
+    expect(topic.closedByUser).toBeNull();
+    expect(topic.closed_at).toBeNull();
+  });
 });
