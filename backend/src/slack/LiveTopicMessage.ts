@@ -1,4 +1,4 @@
-import { groupBy } from "lodash";
+import { groupBy, uniq } from "lodash";
 import { Blocks, Elements, Md, Message } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
@@ -17,18 +17,47 @@ import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 export async function LiveTopicMessage(topic: Topic) {
-  const message = await db.message.findFirst({
-    where: { topic_id: topic.id },
-    orderBy: [{ created_at: "asc" }],
-    include: { task: { include: { user: true } } },
-  });
+  const [message, topicMembers] = await Promise.all([
+    db.message.findFirst({
+      where: { topic_id: topic.id },
+      orderBy: [{ created_at: "asc" }],
+      include: { task: { include: { user: true } } },
+    }),
+    db.topic_member.findMany({
+      where: {
+        topic_id: topic.id,
+      },
+      select: {
+        user_id: true,
+      },
+    }),
+  ]);
+
+  const mentionedSlackIdByUsersId = (
+    await db.team_member_slack.findMany({
+      where: {
+        team_member: {
+          user_id: {
+            in: uniq(topicMembers.map((tm) => tm.user_id)),
+          },
+          team_id: topic.team_id,
+        },
+      },
+      include: {
+        team_member: true,
+      },
+    })
+  ).map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+
   assert(message, "must have a first message");
 
   const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
   const text =
     Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
     "\n" +
-    generateMarkdownFromTipTapJson(message.content as RichEditorNode);
+    generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
+      mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
+    });
 
   const tasks = message.task;
   const slackUsers: Record<string, string> = Object.fromEntries(
