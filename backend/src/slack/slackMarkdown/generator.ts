@@ -79,13 +79,13 @@ function renderNode(node: RichEditorNode | undefined, context: GenerateContext =
       return Md.emoji(get(node.attrs, "data.name"));
     case "blockquote":
       return createBlockquote(renderNodes(node.content, context));
-    case "mention":
-      // eslint-disable-next-line no-case-declarations
+    case "mention": {
       const userId = get(node.attrs, "data.userId");
       if (context.mentionedSlackIdByUsersId && context.mentionedSlackIdByUsersId[userId]) {
         return createSlackLink(`@${context.mentionedSlackIdByUsersId[userId]}`);
       }
       return createSlackLink("@unknown");
+    }
     case "bulletList":
       return renderList(node.content, context);
     case "orderedList":
