@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 
 import { BadRequestError } from "~backend/src/errors/errorTypes";
 import { getUserIdFromRequest } from "~backend/src/utils";
-import { User } from "~db";
+import { UserFragment } from "~gql";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 import { AnalyticsEventName } from "~shared/types/analytics";
@@ -24,7 +24,7 @@ router.post("/v1/track", async (req: Request, res: Response) => {
   }
 
   try {
-    const user = req.body.user as User | undefined;
+    const user = req.body.user as UserFragment | undefined;
     if (user) {
       trackFirstBackendUserEvent(user, eventName, req.body.payload);
     } else {
