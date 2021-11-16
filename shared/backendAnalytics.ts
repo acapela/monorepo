@@ -1,15 +1,16 @@
 import Analytics from "analytics-node";
 
 import { User } from "~db";
+import { UserFragment } from "~gql";
 
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
-function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
+function getAnalyticsProfileFromDbUser(user: User | UserFragment): AnalyticsUserProfile {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    createdAt: user.created_at,
+    createdAt: new Date(user.created_at), // will convert string into Date type if necessary
     avatar: user.avatar_url,
   };
 }
@@ -22,7 +23,7 @@ function getAnalyticsSDK() {
   return new Analytics(process.env.SEGMENT_API_KEY);
 }
 
-function createAnalyticsSessionForUser(user: User) {
+function createAnalyticsSessionForUser(user: User | UserFragment) {
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
@@ -34,7 +35,7 @@ function createAnalyticsSessionForUser(user: User) {
 }
 
 export function trackFirstBackendUserEvent<N extends keyof AnalyticsEventsMap>(
-  user: User,
+  user: User | UserFragment,
   eventName: N,
   payload?: AnalyticsEventsMap[N]
 ) {
