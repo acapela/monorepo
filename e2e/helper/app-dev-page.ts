@@ -39,8 +39,15 @@ export class AppDevPage {
 
   async selectTopicOption(optionTitle: string) {
     await this.page.click('[data-test-id="topic-options"]');
+    await this.page.click(`[data-test-id="popover-menu-item"]:has-text("${optionTitle}")`);
+  }
 
-    await this.page.click(`text=${optionTitle}`);
+  async getSidebarRequestGroup(groupTitle: string) {
+    return this.page.locator(`[data-test-id="sidebar-request-group-${groupTitle.toLowerCase().split(" ").join("-")}"]`);
+  }
+
+  async getSidebarRequestGroups() {
+    return this.page.locator(`[data-test-id="sidebar-all-request-groups"]`);
   }
 }
 

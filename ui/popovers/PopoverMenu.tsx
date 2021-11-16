@@ -47,6 +47,7 @@ export const PopoverMenu = styled<Props>(
               );
               return (
                 <UIMenuItem
+                  data-test-id="popover-menu-item"
                   isDestructive={option.isDestructive ?? false}
                   isDisabled={option.isDisabled ?? false}
                   key={option.key ?? option.label}

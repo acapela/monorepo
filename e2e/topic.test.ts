@@ -1,3 +1,5 @@
+import { expect } from "@playwright/test";
+
 import { test } from "~e2e/helper/base-test";
 
 import { AppDevPage } from "./helper/app-dev-page";
@@ -8,13 +10,21 @@ test("can close a topic", async ({ page, auth, db }) => {
 
   const appPage = new AppDevPage(page);
 
+  const title = "Close me!";
+
   await appPage.makeNewRequest({
     mentions: [["Request read", userName]],
+    title,
   });
 
-  await appPage.selectTopicOption("Close");
+  const sidebarReceivedRequests = await appPage.getSidebarRequestGroup("Received");
+  expect(sidebarReceivedRequests).toContainText(title, { useInnerText: true });
 
+  await appPage.selectTopicOption("Close");
   await page.waitForSelector("text=closed the request");
+
+  const sidebarClosedRequests = await appPage.getSidebarRequestGroup("Closed");
+  expect(sidebarClosedRequests).toContainText(title, { useInnerText: true });
 });
 
 test("can rename a topic", async ({ page, auth, db }) => {
@@ -57,4 +67,8 @@ test("can archive topic", async ({ page, auth, db }) => {
   await appPage.selectTopicOption("Archive");
 
   await page.waitForSelector(`text=archived the request`);
+
+  const sidebarAllRequestGroups = await appPage.getSidebarRequestGroups();
+
+  expect(sidebarAllRequestGroups).not.toContainText(requestTitle, { useInnerText: true });
 });
