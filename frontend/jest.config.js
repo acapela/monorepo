@@ -1,3 +1,5 @@
+const esModules = ["@sindresorhus/fnv1a"].join("|");
+
 module.exports = {
   collectCoverageFrom: ["**/*.{js,jsx,ts,tsx}", "!**/*.d.ts", "!**/node_modules/**"],
   setupFilesAfterEnv: ["<rootDir>/src/testSupport/setupTests.ts"],
@@ -6,7 +8,7 @@ module.exports = {
     "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/../node_modules/babel-jest",
     "^.+\\.css$": "<rootDir>/src/testSupport/cssTransform.ts",
   },
-  transformIgnorePatterns: ["/node_modules/(?!~).+\\.js$", "^.+\\.module\\.(css|sass|scss)$"],
+  transformIgnorePatterns: [`node_modules/(?!${esModules})`, "^.+\\.module\\.(css|sass|scss)$"],
   moduleNameMapper: {
     "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
     "~frontend/(.*)": "<rootDir>/src/$1",
