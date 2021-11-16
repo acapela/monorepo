@@ -3,6 +3,7 @@ import Analytics from "analytics-node";
 import { User } from "~db";
 import { UserFragment } from "~gql";
 
+import { Sentry } from "./sentry";
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User | UserFragment): AnalyticsUserProfile {
@@ -27,10 +28,14 @@ function createAnalyticsSessionForUser(user: User | UserFragment) {
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
-    analytics.identify({
-      userId: user.id,
-      traits: getAnalyticsProfileFromDbUser(user),
-    });
+    try {
+      analytics.identify({
+        userId: user.id,
+        traits: getAnalyticsProfileFromDbUser(user),
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }
 
@@ -52,7 +57,11 @@ export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
-    analytics.track({ userId, event: eventName, properties: payload });
+    try {
+      analytics.track({ userId, event: eventName, properties: payload });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }
 
@@ -69,6 +78,10 @@ export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
 ) {
   const analytics = getAnalyticsSDK();
   if (analytics) {
-    analytics.group({ userId, groupId, traits: groupProperties });
+    try {
+      analytics.group({ userId, groupId, traits: groupProperties });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }
