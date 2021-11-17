@@ -49,6 +49,14 @@ export class AppDevPage {
   async getSidebarRequestGroups() {
     return this.page.locator(`[data-test-id="sidebar-all-request-groups"]`);
   }
+
+  async getSidebarTopicByName(name: string) {
+    return (await this.getSidebarRequestGroups()).locator(`text=${name}`);
+  }
+
+  async writeInSearchBox(keyword: string) {
+    return this.page.fill(`input[placeholder="Search by topic or person..."]`, keyword);
+  }
 }
 
 type Username = string;
