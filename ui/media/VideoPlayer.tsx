@@ -82,6 +82,7 @@ const UIVideoHolder = styled.div`
 const UIVideo = styled.video`
   height: auto;
   width: 100%;
+  max-height: 80vh;
 `;
 
 const UIControlsHolder = styled(PopPresenceAnimator)`
