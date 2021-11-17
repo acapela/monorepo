@@ -39,8 +39,16 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     // This is a test event that will duplicate all the other create topic events.
     // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
     // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
-    if (!event.userId) return;
-    return trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
+    if (event.userId) {
+      trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
+    }
+    // add owner to topic members
+    await db.topic_member.create({
+      data: {
+        user_id: event.item.owner_id,
+        topic_id: event.item.id,
+      },
+    });
   } else if (event.type === "update") {
     trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
