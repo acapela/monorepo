@@ -10,13 +10,13 @@ import styled, { css } from "styled-components";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
+import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
@@ -77,6 +77,7 @@ export const NewRequest = observer(function NewRequest() {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
+  const updateMessageTasks = useUpdateMessageTasks();
   const router = useRouter();
 
   const newTopicId = useConst(() => getUUID());
@@ -138,9 +139,7 @@ export const NewRequest = observer(function NewRequest() {
       const topic = db.topic.create({ id: newTopicId, name: topicName, slug: topicNameSlug });
       const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
-      for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
-        db.task.create({ message_id: newMessage.id, user_id: userId, type });
-      }
+      updateMessageTasks(newMessage);
 
       attachments.forEach((attachment) => {
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });

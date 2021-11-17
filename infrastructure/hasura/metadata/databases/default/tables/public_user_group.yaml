@@ -1,0 +1,55 @@
+table:
+  name: user_group
+  schema: public
+object_relationships:
+- name: team
+  using:
+    foreign_key_constraint_on: team_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+    columns:
+    - name
+    - created_at
+    - updated_at
+    - id
+    - team_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - name
+    - created_at
+    - updated_at
+    - id
+    - team_id
+    filter:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - name
+    filter:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user

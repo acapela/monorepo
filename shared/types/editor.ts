@@ -1,6 +1,6 @@
 import { MentionType } from "./mention";
 
-export interface EditorMentionData {
+export interface EditorMentionData<T = MentionType> {
   userId: string;
-  type: MentionType;
+  type: T;
 }

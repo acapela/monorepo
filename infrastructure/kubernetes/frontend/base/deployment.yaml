@@ -27,11 +27,20 @@ spec:
         env:
         - name: FRONTEND_HOST
           value: "localhost:3030"
+        livenessProbe:
+          httpGet:
+            port: 3000
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             port: 3000
             path: /healthz
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 3
           timeoutSeconds: 5
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
@@ -58,10 +67,13 @@ spec:
             port: 3030
             path: /
           initialDelaySeconds: 5
+          periodSeconds: 5
           timeoutSeconds: 15
         readinessProbe:
           httpGet:
             port: 3030
             path: /
           initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 3
           timeoutSeconds: 15

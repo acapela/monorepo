@@ -1,6 +1,5 @@
-import { expect } from "@playwright/test";
-
 import { test } from "~e2e/helper/base-test";
+import { getUUID } from "~shared/uuid";
 
 import { AppDevPage } from "./helper/app-dev-page";
 
@@ -10,29 +9,27 @@ test("can close a topic", async ({ page, auth, db }) => {
 
   const appPage = new AppDevPage(page);
 
-  const title = "Close me!";
+  const title = "Close me!" + getUUID();
 
   await appPage.makeNewRequest({
     mentions: [["Request read", userName]],
     title,
   });
 
-  const sidebarReceivedRequests = await appPage.getSidebarRequestGroup("Received");
-  expect(sidebarReceivedRequests).toContainText(title, { useInnerText: true });
+  await appPage.waitForRequestInGroup(title, "Received");
 
   await appPage.selectTopicOption("Close");
   await page.waitForSelector("text=closed the request");
 
-  const sidebarClosedRequests = await appPage.getSidebarRequestGroup("Closed");
-  expect(sidebarClosedRequests).toContainText(title, { useInnerText: true });
+  await appPage.waitForRequestInGroup(title, "Closed");
 });
 
 test("can rename a topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
-  const originalTopicName = "Does swiss cheese have voting rights? Click here to find out!";
-  const renamedTopicName = "TL;DR Not really, it's cheese.";
+  const originalTopicName = "Does swiss cheese have voting rights? Click here to find out!" + getUUID();
+  const renamedTopicName = "TL;DR Not really, it's cheese." + getUUID();
 
   const appPage = new AppDevPage(page);
   await appPage.makeNewRequest({
@@ -56,7 +53,7 @@ test("can archive topic", async ({ page, auth, db }) => {
   const userName = db.user2.name;
 
   // Reduces opportunity for requests with same title;
-  const requestTitle = "Unique as possible" + Math.random() * 1024;
+  const requestTitle = "Unique as possible" + getUUID();
 
   const appPage = new AppDevPage(page);
   await appPage.makeNewRequest({
@@ -68,7 +65,8 @@ test("can archive topic", async ({ page, auth, db }) => {
 
   await page.waitForSelector(`text=archived the request`);
 
-  const sidebarAllRequestGroups = await appPage.getSidebarRequestGroups();
-
-  expect(sidebarAllRequestGroups).not.toContainText(requestTitle, { useInnerText: true });
+  // Removed from sidebar
+  await appPage.waitForRequestInSidebar(requestTitle, {
+    state: "detached",
+  });
 });
