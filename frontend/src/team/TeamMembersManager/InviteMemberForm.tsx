@@ -9,7 +9,6 @@ import { isNotNullish } from "~shared/nullish";
 import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
 import { IconPlusSquare } from "~ui/icons";
-import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
   team: TeamEntity;
@@ -32,12 +31,16 @@ export const InviteMemberForm = observer(({ team }: Props) => {
     setEmail("");
   };
 
-  useShortcut("Enter", handleSubmit, { isEnabled: isEmailAcceptable });
-
   return (
     <UIHolder>
       <TextInput placeholder="user@company.com" value={email} onChangeText={setEmail} />
-      <Button iconAtStart icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
+      <Button
+        iconAtStart
+        icon={<IconPlusSquare />}
+        onClick={handleSubmit}
+        isDisabled={!isEmailAcceptable}
+        shortcut={"Enter"}
+      >
         Send invite
       </Button>
     </UIHolder>

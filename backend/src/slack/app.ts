@@ -5,6 +5,7 @@ import _ from "lodash";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
+import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
@@ -42,6 +43,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           create: { team_id: teamId, data, slack_team_id: slackTeamId },
           update: { data },
         });
+        if (userId) {
+          trackBackendUserEvent(userId, "Added Team Slack Integration", { slackTeamId, teamId });
+          identifyBackendUserTeam(userId, teamId, { isSlackInstalled: true });
+        }
       }
       if (!userId) {
         return;
@@ -60,6 +65,8 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         },
         update: { installation_data, slack_user_id: installation.user.id },
       });
+      trackBackendUserEvent(userId, "Added User Slack Integration", { slackTeamId, teamId });
+      identifyBackendUser(userId, { isSlackInstalled: true });
     },
     async fetchInstallation(query) {
       const [teamSlackInstallation, teamMemberSlackInstallation] = await Promise.all([
