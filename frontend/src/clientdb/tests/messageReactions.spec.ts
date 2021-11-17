@@ -26,6 +26,10 @@ describe("clientdb message reactions", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets a message", () => {
     expect(messageReaction.message).toBe(message);
   });

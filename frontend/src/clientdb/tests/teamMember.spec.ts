@@ -17,6 +17,10 @@ describe("clientdb team member", () => {
     currentUser = _currentUser;
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets user", () => {
     expect(teamMember.user).toBe(currentUser);
   });

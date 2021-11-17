@@ -25,6 +25,10 @@ describe("clientdb topic", () => {
     topic = await makeTopic(db);
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the last seen message info and a list of all unread messages", async () => {
     const userThatSendsMessage = await makeUser(db);
 

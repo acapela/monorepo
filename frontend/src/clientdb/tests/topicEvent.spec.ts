@@ -25,6 +25,10 @@ describe("clientdb topic event", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the topic", () => {
     expect(topicEvent.topic).toBe(topic);
   });

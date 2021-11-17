@@ -27,6 +27,10 @@ describe("clientdb message task due date", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the topic", () => {
     expect(messageTaskDueDate.topic).toBe(topic);
   });

@@ -25,6 +25,10 @@ describe("clientdb task", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the parent message", () => {
     expect(task.message).toBe(message);
   });

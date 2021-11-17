@@ -26,6 +26,10 @@ describe("last seen message", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the message", () => {
     expect(lastSeenMessage.message).toBe(message);
   });

@@ -22,6 +22,10 @@ describe("clientdb topic member", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets the topic", () => {
     expect(topicMember.topic).toBe(topic);
   });

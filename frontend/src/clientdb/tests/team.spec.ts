@@ -17,6 +17,10 @@ describe("clientdb team", () => {
     userTeamMembership = teamMembership;
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("checks if has a slack installation", async () => {
     expect(team.hasSlackInstallation).toBeFalsy();
 

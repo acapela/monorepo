@@ -25,6 +25,10 @@ describe("clientdb attachment", () => {
     });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("gets message", () => {
     expect(attachment.message).toBe(message);
   });

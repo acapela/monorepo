@@ -39,6 +39,10 @@ describe("clientdb message", () => {
     message = await makeMessage(db, { topic_id: topic.id });
   });
 
+  afterEach(() => {
+    db.destroy();
+  });
+
   it("links to its parent topic", async () => {
     expect(message.topic).toBe(topic);
   });

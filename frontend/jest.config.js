@@ -5,8 +5,6 @@ module.exports = require("next/jest")()({
   transform: {
     "^.+\\.css$": "<rootDir>/src/testSupport/cssTransform.ts",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/.next/"],
-  transformIgnorePatterns: [`/node_modules/.+`, "^.+\\.module\\.(css|sass|scss)$"],
   moduleNameMapper: {
     "~frontend/(.*)": "<rootDir>/src/$1",
   },
