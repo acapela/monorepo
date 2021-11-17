@@ -70,7 +70,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       return { success: false };
     }
 
-    email = email.toLowerCase();
+    email = email.toLowerCase().trim();
 
     let teamMember = await db.team_member.findFirst({
       where: { team_id, user: { email } },
@@ -101,7 +101,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
 
     assert(teamMember, "teamMember must have been created");
 
-    if (invitingUserId) {
+    if (firstInvite) {
       trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, inviteEmail: email });
     } else {
       trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, userEmail: email });

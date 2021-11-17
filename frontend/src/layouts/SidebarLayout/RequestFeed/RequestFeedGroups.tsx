@@ -124,7 +124,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   }, [archived]);
 
   return (
-    <UIHolder>
+    <UIHolder data-test-id="sidebar-all-request-groups">
       {!isShowingArchived && (
         <>
           {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}

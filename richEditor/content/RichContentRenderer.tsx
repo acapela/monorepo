@@ -1,7 +1,7 @@
 import { Editor, EditorContent, EditorOptions, Extensions, JSONContent } from "@tiptap/react";
-import React, { DependencyList, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 
 import { richEditorExtensions } from "../preset";
 
@@ -17,6 +17,7 @@ export interface RichEditorProps {
   extensions?: Extensions;
 }
 
+//
 /**
  * Works exactly like tiptap useEditor hook, except on client side - will render editor on first render.
  *
@@ -24,18 +25,18 @@ export interface RichEditorProps {
  *
  * This makes it impossible to create layout animations that requires no gaps between element existance to animate between positions.
  */
-export const useClientEditor = (options: Partial<EditorOptions> = {}, deps: DependencyList = []) => {
+export const useClientEditor = (options: Partial<EditorOptions> = {}) => {
   const [editor, setEditor] = useState<Editor | null>(() => {
     if (typeof document === "undefined") return null;
 
     return new Editor(options);
   });
 
-  useDependencyChangeEffect(() => {
+  useEffect(() => {
     const instance = new Editor(options);
 
     setEditor(instance);
-  }, deps);
+  }, []);
 
   useEffect(() => {
     if (!editor) return;
@@ -55,24 +56,19 @@ export const useClientEditor = (options: Partial<EditorOptions> = {}, deps: Depe
  *
  * React-based nodes is the use-case where normal json-to-html rendering will not work as tiptap will only render static
  * placeholder for them.
- *
- * TODO: We can traverse the content to see if any node is react-based and then decide if we want to fallback to regular
- * static html rendering.
- *
- * This is, however, recommended way of rendering content in readonly mode (https://www.tiptap.dev/guide/node-views/#render-javascriptvuereact)
- *
- * TODO: Before thinking about some optimizations here, we can measure performance of this renderer.
  */
 export const RichContentRenderer = ({ content = getEmptyRichContent(), extensions = [] }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
-  const editor = useClientEditor(
-    {
-      extensions: finalExtensions,
-      content,
-      editable: false,
-    },
-    [content]
-  );
+
+  const editor = useClientEditor({
+    extensions: finalExtensions,
+    content,
+    editable: false,
+  });
+
+  useEqualDependencyChangeEffect(() => {
+    editor?.commands.setContent(content);
+  }, [content]);
 
   return <EditorContent editor={editor} />;
 };

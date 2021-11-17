@@ -2,6 +2,8 @@ import { autorun, observable, runInAction } from "mobx";
 
 import { cachedComputedWithoutArgs } from "~clientdb/entity/utils/cachedComputedWithoutArgs";
 
+import { runObserved } from "./utils";
+
 describe("lazyComputed", () => {
   it("returns proper value", () => {
     const getter = jest.fn(() => 42);
@@ -17,16 +19,18 @@ describe("lazyComputed", () => {
     expect(getter).toBeCalledTimes(0);
   });
 
-  it("is will keep value in cache, even if context is not observed", () => {
-    const getter = jest.fn(() => 42);
-    const value = cachedComputedWithoutArgs(getter);
+  it("is will keep value in cache, if is observed", () => {
+    runObserved(() => {
+      const getter = jest.fn(() => 42);
+      const value = cachedComputedWithoutArgs(getter);
 
-    value.get();
+      value.get();
 
-    expect(getter).toBeCalledTimes(1);
+      expect(getter).toBeCalledTimes(1);
 
-    expect(value.get()).toBe(42);
-    expect(getter).toBeCalledTimes(1);
+      expect(value.get()).toBe(42);
+      expect(getter).toBeCalledTimes(1);
+    });
   });
 
   it("will not call getter 2nd time if value changes, but is not requested", () => {

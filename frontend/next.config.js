@@ -149,27 +149,13 @@ module.exports = withPlugins(
       // We have lint errors checked at CI level, so it would be waste of time
       ignoreDuringBuilds: true,
     },
-    webpack5: true,
+    experimental: {
+      // Enables the styled-components SWC transform
+      styledComponents: true,
+    },
 
     generateBuildId: async () => {
       return process.env.BUILD_ID || "dev-build";
-    },
-
-    async rewrites() {
-      return [
-        {
-          source: "/api/backend/:path*",
-          destination: `http://localhost:1337/api/:path*`,
-        },
-        {
-          source: "/graphql",
-          destination: `http://localhost:8080/v1/graphql`,
-        },
-        {
-          source: "/attachments/:path*",
-          destination: `http://localhost:1337/attachments/:path*`,
-        },
-      ];
     },
   }
 );

@@ -1,7 +1,7 @@
 import { createClientDb, defineEntity } from "~clientdb";
 import { DatabaseUtilities } from "~clientdb/entity/entitiesConnections";
 
-import { TestOwnerEntity, getDefaultCommonData, getSyncConfig, mockPersistanceAdapter } from "./testUtils";
+import { TestOwnerEntity, createPersistanceAdapterMock, getDefaultCommonData, getSyncConfig } from "./utils";
 
 const itemAdded = jest.fn();
 const itemUpdated = jest.fn();
@@ -21,7 +21,7 @@ const owner = defineEntity<TestOwnerEntity>({
 });
 
 function createTestDb() {
-  return createClientDb({ db: mockPersistanceAdapter }, { owner });
+  return createClientDb({ db: createPersistanceAdapterMock() }, { owner });
 }
 
 const mockDbUtilities: DatabaseUtilities = {

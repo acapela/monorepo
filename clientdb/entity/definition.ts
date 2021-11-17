@@ -37,7 +37,7 @@ interface DefineEntityConfig<Data, Connections> {
   events?: EntityUserEvents<Data, Connections>;
 }
 
-type EntityUserEvents<Data, Connections> = {
+export type EntityUserEvents<Data, Connections> = {
   itemAdded?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
   itemUpdated?: (entity: Entity<Data, Connections>, dataBefore: Data, utilities: DatabaseUtilities) => void;
   itemRemoved?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
@@ -58,6 +58,15 @@ export interface ConnectionsManager<Data> extends DatabaseUtilities {
 }
 
 type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type EntityDataByDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
+  infer Data,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
+>
+  ? Data
+  : never;
 
 export function defineEntity<Data, Connections = {}>(
   config: DefineEntityConfig<Data, Connections>

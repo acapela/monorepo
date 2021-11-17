@@ -1,4 +1,4 @@
-import { createTestDb } from "./testUtils";
+import { createTestDb } from "./utils";
 
 describe("clientdb misc", () => {
   async function getTestDb() {

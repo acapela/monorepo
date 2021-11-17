@@ -65,7 +65,7 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
   }
 
   return (
-    <UIHolder ref={holderRef}>
+    <UIHolder ref={holderRef} data-messages-feed>
       {feedItems.map((feedItem, index) => {
         if (isMessage(feedItem)) {
           const message = feedItem;
@@ -79,6 +79,7 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
               <Message
                 contentLayoutId={isFirstMessage ? layoutAnimations.newTopic.message(message.topic_id) : undefined}
                 isReadonly={isReadonly}
+                isRemoveDisabled={isFirstMessage}
                 message={message}
                 key={message.id}
                 isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}

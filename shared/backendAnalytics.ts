@@ -1,16 +1,18 @@
 import Analytics from "analytics-node";
 
 import { User } from "~db";
+import { UserFragment } from "~gql";
 
+import { Sentry } from "./sentry";
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
-function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
+function getAnalyticsProfileFromDbUser(user: User | UserFragment): Partial<AnalyticsUserProfile> {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    createdAt: user.created_at,
-    avatar: user.avatar_url ?? undefined,
+    createdAt: new Date(user.created_at), // will convert string into Date type if necessary
+    avatar: user.avatar_url,
   };
 }
 
@@ -22,19 +24,38 @@ function getAnalyticsSDK() {
   return new Analytics(process.env.SEGMENT_API_KEY);
 }
 
-function createAnalyticsSessionForUser(user: User) {
+function createAnalyticsSessionForUser(user: User | UserFragment) {
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
-    analytics.identify({
-      userId: user.id,
-      traits: getAnalyticsProfileFromDbUser(user),
-    });
+    try {
+      analytics.identify({
+        userId: user.id,
+        traits: getAnalyticsProfileFromDbUser(user),
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }
+}
+
+export function identifyBackendUser(userId: string, traits: Partial<AnalyticsUserProfile>) {
+  const analytics = getAnalyticsSDK();
+
+  if (analytics) {
+    try {
+      analytics.identify({
+        userId,
+        traits,
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }
 
 export function trackFirstBackendUserEvent<N extends keyof AnalyticsEventsMap>(
-  user: User,
+  user: User | UserFragment,
   eventName: N,
   payload?: AnalyticsEventsMap[N]
 ) {
@@ -51,7 +72,11 @@ export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
-    analytics.track({ userId, event: eventName, properties: payload });
+    try {
+      analytics.track({ userId, event: eventName, properties: payload });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }
 
@@ -64,10 +89,14 @@ export const backendUserEventToJSON = <N extends keyof AnalyticsEventsMap>(
 export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
   userId: string,
   groupId: string,
-  groupProperties?: AnalyticsGroupsMap[N]
+  groupProperties?: Partial<AnalyticsGroupsMap[N]>
 ) {
   const analytics = getAnalyticsSDK();
   if (analytics) {
-    analytics.group({ userId, groupId, traits: groupProperties });
+    try {
+      analytics.group({ userId, groupId, traits: groupProperties });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 }

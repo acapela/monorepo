@@ -1,4 +1,10 @@
-import TopicOrNewRequestPage from "./topic/[topicSlug]";
+import dynamic from "next/dynamic";
 
-// Reuse reference to same component to avoid full re-mount (including sidebar) when navigating topic<>new-topic page
-export default TopicOrNewRequestPage;
+const TopicOrNewRequestPageDynamic = dynamic(
+  async () => (await import("~frontend/views/TopicOrNewRequestPage")).TopicOrNewRequestPage,
+  { ssr: false }
+);
+
+export default function Foo() {
+  return <TopicOrNewRequestPageDynamic />;
+}

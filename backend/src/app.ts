@@ -5,6 +5,7 @@ import { promisify } from "util";
 
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
+import axios from "axios";
 import cookieParser from "cookie-parser";
 import express, { Application, json } from "express";
 import securityMiddleware from "helmet";
@@ -21,6 +22,7 @@ import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
+import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
@@ -63,6 +65,7 @@ function setupRoutes(app: Application): void {
     tracking
   );
   app.use(attachmentsRoutes);
+  app.use(sentryTunnel);
 }
 
 function addErrorHandlersToApp(app: Application): void {
@@ -88,9 +91,17 @@ function setupGracefulShutdown(server: Server) {
       "/healthz": async function () {
         await db.$connect();
         await db.$executeRaw`SELECT 1;`;
+        const [hasuraRes, hasuraVersionRes] = await Promise.all([
+          axios.get(`${process.env.HASURA_ENDPOINT}/healthz`),
+          axios.get(`${process.env.HASURA_ENDPOINT}/v1/version`),
+        ]);
         return {
           version: process.env.SENTRY_RELEASE || "dev",
           db: true,
+          hasura: {
+            status: hasuraRes.data,
+            ...hasuraVersionRes.data,
+          },
         };
       },
     },

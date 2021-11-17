@@ -30,14 +30,23 @@ import { MessageTasks } from "./tasks/MessageTasks";
 
 interface Props extends MotionProps {
   message: MessageEntity;
+
   isBundledWithPreviousMessage?: boolean;
+  isRemoveDisabled?: boolean;
   isReadonly?: boolean;
   className?: string;
   contentLayoutId?: string;
 }
 
 export const Message = styledObserver<Props>(
-  ({ message, className, isReadonly, isBundledWithPreviousMessage = false, contentLayoutId }) => {
+  ({
+    message,
+    className,
+    isReadonly,
+    isBundledWithPreviousMessage = false,
+    contentLayoutId,
+    isRemoveDisabled = false,
+  }) => {
     const rootRef = useRef<HTMLDivElement>(null);
     const topicContext = useTopicStoreContext();
 
@@ -85,7 +94,7 @@ export const Message = styledObserver<Props>(
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
       }
 
-      if (message.isOwn) {
+      if (message.isOwn && !isRemoveDisabled) {
         options.push({
           label: "Delete message",
           onSelect: handleDeleteWithConfirm,
@@ -101,7 +110,7 @@ export const Message = styledObserver<Props>(
     useIsomorphicLayoutEffect(
       action(() => {
         const { topic, isUnread } = message;
-        if (!isUnread || topic?.messages.last?.id === message.id || !rootRef.current || !topicContext) {
+        if (!isUnread || !rootRef.current || !topicContext) {
           return;
         }
         const isOldestUnread = !topic?.unreadMessages.query(
@@ -131,7 +140,7 @@ export const Message = styledObserver<Props>(
                     onClose={() => setIsActive(false)}
                     options={messageActionsOptions}
                   >
-                    <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                    <OptionsButton data-test-id="message-options" tooltip={isActive ? undefined : "Show Options"} />
                   </PopoverMenuTrigger>
                 )}
               </UITools>

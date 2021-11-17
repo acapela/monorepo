@@ -1,6 +1,6 @@
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
-import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
+import { identifyBackendUserTeam, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 
 import { HasuraEvent } from "../hasura";
 
@@ -15,16 +15,17 @@ export async function handleUserUpdates(event: HasuraEvent<User>) {
     const team = await db.team.findFirst({ where: { id: userNow.current_team_id } });
     assert(team, "Team does not exist");
 
+    trackFirstBackendUserEvent(userNow, "Account Added User", {
+      teamId: team.id,
+      userEmail: userNow.email,
+    });
+
     identifyBackendUserTeam(userNow.id, team.id, {
       id: team.id,
       name: team.name,
       slug: team.slug,
       plan: "trial",
       createdAt: team.created_at,
-    });
-    trackBackendUserEvent(userNow.id, "Account Added User", {
-      teamId: team.id,
-      userEmail: userNow.email,
     });
 
     await db.team_member.updateMany({

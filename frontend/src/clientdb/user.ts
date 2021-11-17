@@ -19,6 +19,7 @@ const userFragment = gql`
     avatar_url
     updated_at
     has_account
+    created_at
   }
 `;
 

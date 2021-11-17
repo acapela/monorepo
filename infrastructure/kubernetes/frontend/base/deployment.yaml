@@ -17,6 +17,31 @@ spec:
     spec:
       serviceAccountName: gsm
       containers:
+      - name: caddy
+        image: eu.gcr.io/meetnomoreapp/caddy:3.105.3
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: frontend-default
+        env:
+        - name: FRONTEND_HOST
+          value: "localhost:3030"
+        livenessProbe:
+          httpGet:
+            port: 3000
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 3
+          timeoutSeconds: 5
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
         command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
@@ -27,25 +52,28 @@ spec:
           allowPrivilegeEscalation: false
           runAsUser: 2 # non-root user
       - name: frontend
-        image: eu.gcr.io/meetnomoreapp/monorepo:2.28.0
+        image: eu.gcr.io/meetnomoreapp/monorepo:3.105.3
         command: ["yarn", "run", "start:frontend"]
-        ports:
-        - containerPort: 3000
         envFrom:
         - configMapRef:
             name: frontend-default
         env:
+        - name: PORT
+          value: "3030"
         - name: FRONTEND_PORT
-          value: "3000"
+          value: "3030"
         livenessProbe:
           httpGet:
-            port: 3000
-            path: /healthz
+            port: 3030
+            path: /
           initialDelaySeconds: 5
-          timeoutSeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 15
         readinessProbe:
           httpGet:
-            port: 3000
-            path: /healthz
+            port: 3030
+            path: /
           initialDelaySeconds: 5
-          timeoutSeconds: 5
+          periodSeconds: 5
+          successThreshold: 3
+          timeoutSeconds: 15

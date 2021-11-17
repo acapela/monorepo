@@ -36,7 +36,7 @@ async function createAndInviteMissingUsers(
         }
         const user = await transaction.user.upsert({
           where: { email },
-          create: { name, email, avatar_url: profile?.image_original },
+          create: { name, email, avatar_url: profile?.image_original, current_team_id: teamId },
           update: {},
           include: { account: true },
         });
@@ -130,7 +130,9 @@ function transformMessage(
     mentionedUsersBySlackId,
   });
   const alreadyMentionedUsers = new Set(
-    getUniqueRequestMentionDataFromContent(messageContent).map((mentionData) => mentionData.userId)
+    getUniqueRequestMentionDataFromContent(messageContent)
+      .filter((d) => "userId" in d)
+      .map((mentionData) => mentionData.userId)
   );
   const extraMentionNodes = usersWithRequestType
     .filter(({ userId }) => !alreadyMentionedUsers.has(userId))

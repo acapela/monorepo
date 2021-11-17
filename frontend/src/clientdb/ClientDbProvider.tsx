@@ -1,20 +1,17 @@
 import { useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { logout } from "~frontend/auth/logout";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
+import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
 import { ErrorView } from "~frontend/views/ErrorView";
 import { assert } from "~shared/assert";
 import { devAssignWindowVariable } from "~shared/dev";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
 
-import { ClientDb, createNewClientDb, forceClientDbReload } from "./createNewClientDb";
+import { ClientDb, createNewClientDb } from "./createNewClientDb";
 import { LoadingScreen } from "./LoadingScreen";
 
 const reactContext = createContext<ClientDb | null>(null);
@@ -79,36 +76,16 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 
   // If db is ready we track initial successful app load event on the backend
   useEffect(() => {
-    if (db && userId) {
-      trackEvent("Opened App");
+    if (db && userId && teamManager.teamId) {
+      const currentUser = db.user.assertFindById(
+        userId,
+        "Fetching the current user from clientDb failed on initial load"
+      );
+      trackEvent("Opened App", { currentTeamId: teamManager.teamId }, currentUser.getData());
     }
-  }, [db, userId]);
+  }, [db, userId, teamManager.teamId]);
 
   devAssignWindowVariable("db", db);
-
-  const recoverOptions = (
-    <UIFallbackHolder>
-      <Button
-        isWide
-        kind="primary"
-        onClick={() => {
-          forceClientDbReload();
-          window.location.reload();
-        }}
-      >
-        Reload
-      </Button>
-      <Button
-        isWide
-        onClick={() => {
-          forceClientDbReload();
-          logout();
-        }}
-      >
-        Log out
-      </Button>
-    </UIFallbackHolder>
-  );
 
   if (error) {
     console.error(error);
@@ -116,9 +93,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
       <ErrorView
         title="Failed to load app data"
         description="This might be due to using the app in private mode or disk being out of space."
-      >
-        {recoverOptions}
-      </ErrorView>
+      />
     );
   }
 
@@ -131,7 +106,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
             longLoadingFallback={{
               timeout: 2500,
               hint: "It takes a bit too long...",
-              fallbackNode: recoverOptions,
+              fallbackNode: <AppRecoveryButtons />,
             }}
           />
         )}
@@ -152,9 +127,3 @@ export function useDb() {
 export function useNullableDb(): null | ClientDb {
   return useContext(reactContext);
 }
-
-const UIFallbackHolder = styled.div`
-  display: flex;
-  ${theme.spacing.actions.asGap};
-  min-width: 280px;
-`;

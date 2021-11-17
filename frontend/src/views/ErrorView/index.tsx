@@ -1,10 +1,8 @@
-import router from "next/router";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { routes } from "~shared/routes";
-import { Button } from "~ui/buttons/Button";
+import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
 
 interface Props {
   title?: ReactNode;
@@ -17,18 +15,7 @@ export function ErrorView({ title = "Something went wrong", description, extraCo
   return (
     <FocusedActionLayout hideLogo title={title} description={description}>
       {extraContent}
-      <UIActions>
-        {children || (
-          <Button
-            kind="primary"
-            onClick={() => {
-              router.push(routes.home);
-            }}
-          >
-            Go back to homepage
-          </Button>
-        )}
-      </UIActions>
+      <UIActions>{children ?? <AppRecoveryButtons />}</UIActions>
     </FocusedActionLayout>
   );
 }

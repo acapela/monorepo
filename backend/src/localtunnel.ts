@@ -1,8 +1,5 @@
 import os from "os";
 
-import localtunnel from "localtunnel";
-import * as ngrok from "ngrok";
-
 import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
@@ -22,6 +19,7 @@ export const getDevPublicTunnelURL = createSelfCleaningCache(
     }
 
     if (process.env.NGROK_AUTH_TOKEN) {
+      const { default: ngrok } = await import("ngrok");
       return await ngrok.connect({
         authtoken: process.env.NGROK_AUTH_TOKEN,
         addr: port,
@@ -30,6 +28,7 @@ export const getDevPublicTunnelURL = createSelfCleaningCache(
       });
     }
 
+    const { default: localtunnel } = await import("localtunnel");
     const tunnel = await localtunnel({
       subdomain: `acapela-dev-${hostname}-${port}`,
       port,

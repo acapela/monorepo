@@ -39,7 +39,7 @@ export interface EntitySearch<Data, Connections> {
   destroy(): void;
 }
 
-const DEV_SHOULD_MEASURE_PERFORMANCE = true;
+const DEV_SHOULD_MEASURE_PERFORMANCE = false;
 
 export function createEntitySearch<Data, Connections>(
   { fields }: EntitySearchConfig<Data>,

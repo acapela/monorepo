@@ -32,5 +32,16 @@ services:
       HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_EVENT_SECRET}
       HASURA_CRON_WEBHOOK_URL: http://172.17.0.1:1337/api/v1/cron
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+  caddy:
+    image: caddy:2.4.6
+    restart: always
+    environment:
+      BACKEND_HOST: http://172.17.0.1:1337
+      FRONTEND_HOST: http://172.17.0.1:3030
+      HASURA_HOST: http://172.17.0.1:8080
+    ports:
+      - "3000:3000"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
 volumes:
   db_data:

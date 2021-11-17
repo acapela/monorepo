@@ -1,4 +1,4 @@
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { updatedDiff } from "deep-object-diff";
 
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";

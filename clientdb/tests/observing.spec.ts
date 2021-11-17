@@ -1,6 +1,6 @@
 import { autorun } from "mobx";
 
-import { createTestDb } from "./testUtils";
+import { createTestDb } from "./utils";
 
 describe("clientdb tracking", () => {
   async function getTestDb() {

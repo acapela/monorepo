@@ -1,4 +1,4 @@
-import { createTestDb } from "./testUtils";
+import { createTestDb } from "./utils";
 
 describe("clientdb query", () => {
   async function getTestDb() {
@@ -27,6 +27,15 @@ describe("clientdb query", () => {
     db.destroy();
   });
 
+  it("performs simple query with multiple allowed values", async () => {
+    const [db, data] = await getTestDb();
+
+    expect(db.owner.query({ name: ["Adam", "No-one"] }).all).toEqual([data.owners.adam]);
+    expect(db.owner.query({ name: ["Adam", "Omar"] }).all).toEqual([data.owners.adam, data.owners.omar]);
+    expect(db.owner.query({ name: [] }).all).toEqual([]);
+    expect(db.owner.query({ name: ["nope", "dope"] }).all).toEqual([]);
+  });
+
   it("narrows down simple query", async () => {
     const [db, data] = await getTestDb();
 
@@ -36,6 +45,18 @@ describe("clientdb query", () => {
     expect(adamsRex.all.length).toBe(1);
     expect(allRex.all.length).toBe(2);
     expect(adamsRex.all[0]).toBe(data.dogs.adams_rex);
+
+    db.destroy();
+  });
+
+  it("finds by unique index", async () => {
+    const [db, data] = await getTestDb();
+
+    expect(db.owner.findByUniqueIndex("name", "Adam")).toBe(data.owners.adam);
+
+    expect(() => {
+      db.owner.assertFindById("name", "nope");
+    }).toThrow();
 
     db.destroy();
   });

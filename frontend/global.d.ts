@@ -11,6 +11,12 @@ declare global {
     };
     analytics: SegmentAnalytics.AnalyticsJS;
   }
+
+  namespace jest {
+    interface Matchers<R> {
+      toBeRecent(): R;
+    }
+  }
 }
 
 // Ensure this is treated as a module.

@@ -6,7 +6,7 @@ import { theme } from "~ui/theme";
 
 import { ButtonKind, getButtonKindtyles } from "./variants";
 
-export interface Props {
+export interface IconButtonProps {
   icon: ReactNode;
   kind?: ButtonKind;
   onClick?: () => void;
@@ -22,7 +22,7 @@ export interface Props {
  */
 const DEFAULT_ICON_SIZE_RATIO = 1;
 
-export const IconButton = styledForwardRef<HTMLButtonElement, Props>(function CircleIconButton(
+export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(function CircleIconButton(
   {
     icon,
     kind = "transparent",
@@ -32,7 +32,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, Props>(function Ci
     isDisabled = false,
     iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
     ...props
-  }: Props,
+  }: IconButtonProps,
   ref
 ) {
   return (

@@ -2,12 +2,14 @@ import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
 import { formatRelative } from "date-fns";
-import { minBy } from "lodash";
+import { flattenDeep, minBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { slackClient } from "~backend/src/slack/app";
-import { Message, MessageTaskDueDate, Task, TeamMember, Topic, User, db } from "~db";
+import { GenerateContext, generateMarkdownFromTipTapJson } from "~backend/src/slack/slackMarkdown/generator";
+import { Message, MessageTaskDueDate, Task, TeamMember, Topic, TopicMember, User, db } from "~db";
+import { RichEditorNode } from "~richEditor/content/types";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
@@ -23,6 +25,7 @@ type TopicWhereInput = Prisma.topicWhereInput;
 type TopicWithOpenTask = Topic & {
   user: User;
   message: (Message & { user: User; task: Task[]; message_task_due_date: MessageTaskDueDate | null })[];
+  topic_member: TopicMember[];
 };
 
 type TopicRowsWithCount = {
@@ -62,6 +65,7 @@ async function findAndCountTopics(
             },
           },
         },
+        topic_member: true,
       },
     }),
     db.topic.count({ where: globalWhere }),
@@ -69,7 +73,7 @@ async function findAndCountTopics(
   return { rows, count };
 }
 
-function RequestItem(topic: TopicWithOpenTask) {
+function RequestItem(topic: TopicWithOpenTask, context: GenerateContext) {
   // TODO this will need to be updated in the year 3k
   const mostUrgentMessage = minBy(
     topic.message,
@@ -84,7 +88,9 @@ function RequestItem(topic: TopicWithOpenTask) {
         createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
           (mostUrgentDueDate ? " - " + Md.italic("due " + formatRelative(mostUrgentDueDate, new Date())) : ""),
         mostUrgentMessage?.content_text
-          ? Md.bold(mostUrgentMessage.user.name + ":") + " " + mostUrgentMessage?.content_text
+          ? Md.bold(mostUrgentMessage.user.name + ":") +
+            " " +
+            generateMarkdownFromTipTapJson(mostUrgentMessage?.content as RichEditorNode, context)
           : "",
       ].join("\n"),
     }).accessory(
@@ -101,7 +107,7 @@ function RequestItem(topic: TopicWithOpenTask) {
 
 const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
 
-const RequestsList = (title: string, topics: TopicRowsWithCount) => {
+const RequestsList = (title: string, topics: TopicRowsWithCount, context: GenerateContext) => {
   const extraRequestsCount = topics.count - topics.rows.length;
   return [
     ...Padding,
@@ -109,7 +115,7 @@ const RequestsList = (title: string, topics: TopicRowsWithCount) => {
     ...(topics.count == 0
       ? [Blocks.Section({ text: Md.italic("No requests here") })]
       : topics.rows.flatMap((topic, i) => [
-          ...RequestItem(topic),
+          ...RequestItem(topic, context),
           i < topics.rows.length - 1 ? Blocks.Divider() : undefined,
         ])),
     ...(extraRequestsCount > 0
@@ -173,6 +179,30 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ).map((where) => findAndCountTopics(teamMember, where))
   );
 
+  const mentionedUserIds = uniq(
+    flattenDeep([received, sent, open, closed].map((e) => e.rows.map((r) => r.topic_member.map((tm) => tm.user_id))))
+  );
+
+  const mentionedSlackIdByUsersId = (
+    await db.team_member_slack.findMany({
+      where: {
+        team_member: {
+          user_id: {
+            in: mentionedUserIds,
+          },
+          team_id: teamMember.team_id,
+        },
+      },
+      include: {
+        team_member: true,
+      },
+    })
+  ).map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+
+  const generatorContext: GenerateContext = {
+    mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
+  };
+
   await publishView(
     HomeTab()
       .blocks(
@@ -190,10 +220,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        RequestsList("🔥 Received", received),
-        RequestsList("📤 Sent", sent),
-        RequestsList("⏳ Open", open),
-        RequestsList("✅ Closed", closed)
+        RequestsList("🔥 Received", received, generatorContext),
+        RequestsList("📤 Sent", sent, generatorContext),
+        RequestsList("⏳ Open", open, generatorContext),
+        RequestsList("✅ Closed", closed, generatorContext)
       )
       .buildToObject()
   );

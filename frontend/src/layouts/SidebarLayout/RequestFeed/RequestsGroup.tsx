@@ -13,7 +13,7 @@ export interface RequestsGroupProps {
 
 export const RequestsGroup = observer(({ topics, groupName }: RequestsGroupProps) => {
   return (
-    <UIHolder>
+    <UIHolder data-test-id={`sidebar-request-group-${groupName.toLowerCase().split(" ").join("-").trim()}`}>
       <UISection>
         <UISectionTitle>{groupName}</UISectionTitle>
         {topics.map((topic) => (

@@ -1,6 +1,4 @@
-import { EntitySyncConfig, PersistanceAdapterInfo } from "~clientdb/entity";
-
-import { createClientDb, defineEntity } from "..";
+import { EntitySyncConfig, defineEntity } from "~clientdb";
 
 interface CommonData {
   id: string;
@@ -25,7 +23,7 @@ export function getDefaultCommonData(): CommonData {
   };
 }
 
-export function getSyncConfig<T>(): EntitySyncConfig<T> {
+function getSyncConfig<T>(): EntitySyncConfig<T> {
   return {
     pullUpdated({ updateItems }) {
       updateItems([]);
@@ -39,6 +37,11 @@ export const owner = defineEntity<TestOwnerEntity>({
   updatedAtField: "updatedAt",
   name: "owner",
   sync: getSyncConfig<TestOwnerEntity>(),
+  search: {
+    fields: {
+      name: true,
+    },
+  },
   getDefaultValues: getDefaultCommonData,
 }).addConnections((owner, { getEntity }) => {
   return {
@@ -61,49 +64,14 @@ export const dog = defineEntity<TestDogEntity>({
   };
 });
 
-export const mockPersistanceAdapter: PersistanceAdapterInfo = {
-  adapter: {
-    async openDB() {
-      return {
-        async close() {
-          //
-        },
-        async getTable() {
-          return {
-            async clearTable() {
-              return true;
-            },
-            async fetchAllItems() {
-              return [];
-            },
-            async fetchItem() {
-              return null;
-            },
-            async removeItem() {
-              return true;
-            },
-            async removeItems() {
-              return true;
-            },
-            async saveItem() {
-              return true;
-            },
-            async saveItems() {
-              return true;
-            },
-            async updateItem() {
-              return true;
-            },
-          };
-        },
-      };
-    },
-    async removeDB() {
-      return true;
-    },
-  },
+export const testEntities = {
+  dog,
+  owner,
 };
 
-export function createTestDb() {
-  return createClientDb({ db: mockPersistanceAdapter }, { owner, dog });
-}
+export type DefaultEntitiesMap = typeof testEntities;
+
+export type DefaultTestEntitiesData = {
+  owner: TestOwnerEntity;
+  dog: TestDogEntity;
+};

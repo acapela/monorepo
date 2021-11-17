@@ -1,6 +1,4 @@
-import { runInAction } from "mobx";
-
-import { createTestDb } from "./testUtils";
+import { createTestDb, runObserved } from "./utils";
 
 describe("clientdb query", () => {
   async function getTestDb() {
@@ -28,7 +26,7 @@ describe("clientdb query", () => {
     const query = db.owner.query(queryFunction);
 
     // Query fn is only cached as long as being observed.
-    runInAction(() => {
+    runObserved(() => {
       // Query should be lazy
       expect(queryFunction).toBeCalledTimes(0);
 
@@ -40,6 +38,43 @@ describe("clientdb query", () => {
 
       expect(queryFunction).toBeCalledTimes(db.owner.all.length);
     });
+
+    db.destroy();
+  });
+
+  it("properly sorts results", async () => {
+    const [db, data] = await getTestDb();
+
+    const {
+      owners: { adam, omar },
+    } = data;
+
+    expect(db.owner.sort({ sort: (owner) => owner.name, direction: "asc" }).all).toEqual([omar, adam]);
+    expect(db.owner.sort({ sort: (owner) => owner.name, direction: "desc" }).all).toEqual([adam, omar]);
+
+    db.destroy();
+  });
+
+  it("properly returns query meta results", async () => {
+    const [db, data] = await getTestDb();
+
+    const {
+      owners: { adam, omar },
+    } = data;
+
+    const allOwnersQuery = db.owner.query(() => true);
+
+    expect(allOwnersQuery.hasItems).toBe(true);
+    expect(allOwnersQuery.first).toBe(adam);
+    expect(allOwnersQuery.last).toBe(omar);
+    expect(allOwnersQuery.count).toBe(2);
+
+    const emptyQuery = db.owner.query(() => false);
+
+    expect(emptyQuery.hasItems).toBe(false);
+    expect(emptyQuery.first).toBe(null);
+    expect(emptyQuery.last).toBe(null);
+    expect(emptyQuery.count).toBe(0);
 
     db.destroy();
   });

@@ -39,6 +39,7 @@ select_permissions:
 - permission:
     columns:
     - avatar_url
+    - created_at
     - email
     - id
     - name

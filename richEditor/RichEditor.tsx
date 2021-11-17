@@ -292,7 +292,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
       <RichEditorContext value={editor}>
         <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
-          <UIEditorHolder customEditFieldStyles={customEditFieldStyles}>
+          <UIEditorHolder customEditFieldStyles={customEditFieldStyles} data-test-richeditor>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
           </UIEditorHolder>
           {additionalBottomContent}

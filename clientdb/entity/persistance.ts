@@ -25,6 +25,8 @@ interface PersistanceManagerConfig<Data> {
 
 const persistanceExecuteQueue = createPushQueue();
 
+export const PERSISTANCE_BATCH_FLUSH_TIMEOUT = 50;
+
 /**
  * Client is 'public api' surface for entity.
  *
@@ -103,7 +105,10 @@ export function createEntityPersistanceManager<Data, Connections>(
       }
     };
 
-    const throttledFlushQueue = throttle(flushQueue, 50, { leading: false, trailing: true });
+    const throttledFlushQueue = throttle(flushQueue, PERSISTANCE_BATCH_FLUSH_TIMEOUT, {
+      leading: false,
+      trailing: true,
+    });
 
     // Persist all changes locally
     const cancelAdded = store.events.on("itemAdded", (entity) => {
