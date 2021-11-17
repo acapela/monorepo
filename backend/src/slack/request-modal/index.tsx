@@ -3,10 +3,10 @@ import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { format } from "date-fns";
 import { find } from "lodash";
 import { Bits, Blocks, Elements, Message, Modal } from "slack-block-builder";
+import { ViewSubmitAction } from "slack/bolt";
 
 import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
-import { ViewSubmitAction } from "~node_modules/@slack/bolt/dist/types/view";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
