@@ -6,7 +6,7 @@ import { UserFragment } from "~gql";
 import { Sentry } from "./sentry";
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
-function getAnalyticsProfileFromDbUser(user: User | UserFragment): AnalyticsUserProfile {
+function getAnalyticsProfileFromDbUser(user: User | UserFragment): Partial<AnalyticsUserProfile> {
   return {
     id: user.id,
     email: user.email,
@@ -32,6 +32,21 @@ function createAnalyticsSessionForUser(user: User | UserFragment) {
       analytics.identify({
         userId: user.id,
         traits: getAnalyticsProfileFromDbUser(user),
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }
+}
+
+export function identifyBackendUser(userId: string, traits: Partial<AnalyticsUserProfile>) {
+  const analytics = getAnalyticsSDK();
+
+  if (analytics) {
+    try {
+      analytics.identify({
+        userId,
+        traits,
       });
     } catch (error) {
       Sentry.captureException(error);
@@ -74,7 +89,7 @@ export const backendUserEventToJSON = <N extends keyof AnalyticsEventsMap>(
 export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
   userId: string,
   groupId: string,
-  groupProperties?: AnalyticsGroupsMap[N]
+  groupProperties?: Partial<AnalyticsGroupsMap[N]>
 ) {
   const analytics = getAnalyticsSDK();
   if (analytics) {

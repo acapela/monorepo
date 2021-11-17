@@ -3,14 +3,6 @@ import { Message_Type_Enum } from "~gql";
 import { Maybe } from "../types";
 import { RequestType } from "./mention";
 
-export type AnalyticsUserProfile = {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: Date;
-  avatar?: Maybe<string>;
-};
-
 type Origin = "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
 
 /**
@@ -75,6 +67,8 @@ export type AnalyticsEventsMap = {
   "Opened App": { currentTeamId: string };
 
   // Slack
+  "Added Team Slack Integration": { slackTeamId: string; teamId: string };
+  "Added User Slack Integration": { slackTeamId: string; teamId: string };
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
@@ -88,11 +82,22 @@ export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEv
 
 export type AnalyticsGroupsMap = {
   Team: {
-    // reserved traits available here: https://segment.com/docs/connections/spec/group/#traits
+    // reserved group traits: https://segment.com/docs/connections/spec/group/#traits
     id: string;
     name: string;
     slug: string;
     plan: "trial" | "free" | "premium";
     createdAt: Date;
+    isSlackInstalled: boolean;
   };
+};
+
+export type AnalyticsUserProfile = {
+  // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  avatar?: Maybe<string>; // url to a publicly hosted avatar
+  isSlackInstalled: boolean;
 };
