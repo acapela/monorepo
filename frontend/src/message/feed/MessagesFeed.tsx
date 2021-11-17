@@ -65,7 +65,7 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
   }
 
   return (
-    <UIHolder ref={holderRef}>
+    <UIHolder ref={holderRef} data-messages-feed>
       {feedItems.map((feedItem, index) => {
         if (isMessage(feedItem)) {
           const message = feedItem;

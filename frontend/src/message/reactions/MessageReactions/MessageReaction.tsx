@@ -35,7 +35,7 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
 
   return (
     <>
-      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={!!isSelectedByCurrentUser}>
+      <UIReactionButton data-reaction ref={buttonRef} onClick={handleClick} isSelected={!!isSelectedByCurrentUser}>
         <UIEmoji>{emoji}</UIEmoji>
         <span>{reactions.length}</span>
       </UIReactionButton>

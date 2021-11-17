@@ -113,7 +113,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
         )}
       </AnimatePresence>
 
-      <UITriggerHolder ref={ref} onClick={openMenu}>
+      <UITriggerHolder ref={ref} onClick={openMenu} data-due-date-picker>
         <Button
           kind="secondary"
           icon={<IconClock />}
