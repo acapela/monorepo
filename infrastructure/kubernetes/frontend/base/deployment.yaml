@@ -33,7 +33,6 @@ spec:
             path: /healthz
           initialDelaySeconds: 10
           periodSeconds: 5
-          successThreshold: 3
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
@@ -69,7 +68,6 @@ spec:
             path: /
           initialDelaySeconds: 5
           periodSeconds: 5
-          successThreshold: 3
           timeoutSeconds: 15
         readinessProbe:
           httpGet:
