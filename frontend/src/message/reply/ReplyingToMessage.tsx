@@ -28,7 +28,7 @@ export const ReplyingToMessage = observer(({ onRemove, message }: Props) => {
   };
 
   return (
-    <UIHolder onClick={handleClick}>
+    <UIHolder onClick={handleClick} data-reply-to={message.id}>
       <UIBorder />
       <UIContent>
         <MessageMetaDataWrapper user={message.user} date={new Date(message.created_at)}>

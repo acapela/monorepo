@@ -60,3 +60,30 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   await appPage.waitForRequestInGroup(requestName, "Sent");
 });
+
+test.only("reply to a message", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  const mentionedUser = db.user2.name;
+  const requestName = "Message" + getUUID();
+
+  const messageContent = "Super content";
+
+  const appPage = new AppDevPage(page);
+  await appPage.makeNewRequest({
+    mentions: [["Request read", mentionedUser]],
+    title: requestName,
+    messageContent,
+  });
+
+  await page.hover(`[data-messages-feed] >> text=${messageContent}`);
+  await page.waitForSelector(`[data-tooltip="Reply"]`);
+  await page.click(`[data-tooltip="Reply"]`);
+  await page.click(`[data-test-richeditor]`);
+
+  const typedContent = "Reply content here";
+  await page.keyboard.type(typedContent);
+
+  await page.click("text=Send");
+
+  expect(await page.$$("[data-reply-to]")).toHaveLength(1);
+});
