@@ -31,7 +31,6 @@ export const MessageMedia = observer(({ message, nonInteractive }: Props) => {
 const UIAttachments = styled.div<{ nonInteractive: boolean }>`
   display: flex;
   gap: 8px;
-  max-height: 200px;
 
   ${(props) =>
     props.nonInteractive &&
