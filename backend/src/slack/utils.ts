@@ -104,12 +104,11 @@ export const attachToViewWithMetadata = <Key extends keyof ViewMetadata>(
   privateMetaData: JSON.stringify(metadata),
 });
 
-export function listenToViewWithMetadata<Key extends keyof ViewMetadata>(
-  app: App,
-  key: Key,
-  listener: Middleware<SlackViewMiddlewareArgs<SlackViewAction> & { metadata: ViewMetadata[Key] }>
-) {
-  app.view(key, (data) => listener({ ...data, metadata: JSON.parse(data.view.private_metadata) }));
+export function listenToViewWithMetadata<
+  ViewActionType extends SlackViewAction = SlackViewAction,
+  Key extends keyof ViewMetadata = keyof ViewMetadata
+>(app: App, key: Key, listener: Middleware<SlackViewMiddlewareArgs<ViewActionType> & { metadata: ViewMetadata[Key] }>) {
+  app.view<ViewActionType>(key, (data) => listener({ ...data, metadata: JSON.parse(data.view.private_metadata) }));
 }
 
 export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
