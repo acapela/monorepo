@@ -1,8 +1,5 @@
 import { addDays } from "date-fns";
 
-import { EntityUserEvents } from "~clientdb/entity/definition";
-import { MessageTaskDueDateFragment } from "~gql";
-
 import { MessageEntity } from "../message";
 import { MessageTaskDueDateEntity } from "../messageTaskDueDate";
 import { TopicEntity } from "../topic";
@@ -17,7 +14,6 @@ describe("clientdb message task due date", () => {
   let topic: TopicEntity;
   let message: MessageEntity;
   let messageTaskDueDate: MessageTaskDueDateEntity;
-  let messageTaskDueDateEvents: EntityUserEvents<MessageTaskDueDateFragment, MessageTaskDueDateEntity>;
 
   beforeEach(async () => {
     const [_db] = await createTestAppClientDbWithData();
@@ -29,17 +25,10 @@ describe("clientdb message task due date", () => {
       message_id: message.id,
       due_at: now,
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    messageTaskDueDateEvents = messageTaskDueDate.definition.config.events!;
   });
 
   it("gets the topic", () => {
     expect(messageTaskDueDate.topic).toBe(topic);
-  });
-
-  it("reacts to event", async () => {
-    expect(messageTaskDueDateEvents.itemAdded).toBeTruthy();
   });
 
   it("creates a new topic event when new due date added", async () => {
