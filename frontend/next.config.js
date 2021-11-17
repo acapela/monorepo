@@ -149,7 +149,10 @@ module.exports = withPlugins(
       // We have lint errors checked at CI level, so it would be waste of time
       ignoreDuringBuilds: true,
     },
-    webpack5: true,
+    experimental: {
+      // Enables the styled-components SWC transform
+      styledComponents: true,
+    },
 
     generateBuildId: async () => {
       return process.env.BUILD_ID || "dev-build";
