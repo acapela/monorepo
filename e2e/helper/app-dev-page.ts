@@ -49,6 +49,21 @@ export class AppDevPage {
   async getSidebarRequestGroups() {
     return this.page.locator(`[data-test-id="sidebar-all-request-groups"]`);
   }
+
+  async waitForRequestInGroup(
+    requestName: string,
+    groupTitle: string,
+    options?: { state?: "detached" | "attached"; strict?: boolean }
+  ) {
+    const groupSelector = `[data-test-id="sidebar-request-group-${groupTitle.toLowerCase().split(" ").join("-")}"]`;
+    return await this.page.waitForSelector(`${groupSelector}:has-text("${requestName}")`, { ...options });
+  }
+
+  async waitForRequestInSidebar(requestName: string, options?: { state?: "detached" | "attached"; strict?: boolean }) {
+    return await this.page.waitForSelector(`[data-test-id="sidebar-all-request-groups"]:has-text("${requestName}")`, {
+      ...options,
+    });
+  }
 }
 
 type Username = string;
