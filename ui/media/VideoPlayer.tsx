@@ -2,7 +2,6 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled from "styled-components";
 
-import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
@@ -29,7 +28,6 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
   ref
 ) {
   const holderRef = useRef<HTMLDivElement>(null);
-  const holderBoundingBox = useBoundingBox(holderRef);
   const videoRef = useSharedRef<HTMLVideoElement | null>(null, [ref]);
   const { time, duration, playbackRate, setPlaybackRate, isPlaying, play, pause, togglePlay, setTime } =
     usePlaybackState(videoRef);
@@ -40,14 +38,12 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
 
   const shouldShowControls = useDebouncedValue(isHovered || !isPlaying, { offDelay: 1000, onDelay: 100 });
 
-  const videoHeight = holderBoundingBox.height;
-
   return (
     <UIHolder ref={holderRef}>
       <UIVideoHolder>
-        <video height={videoHeight} ref={videoRef} src={fileUrl} controls={false}>
+        <UIVideo ref={videoRef} src={fileUrl} controls={false}>
           Sorry, your browser doesn't support embedded videos.
-        </video>
+        </UIVideo>
         <AnimatePresence>
           {shouldShowControls && (
             <UIControlsHolder>
@@ -78,10 +74,14 @@ const UIHolder = styled.div`
 `;
 
 const UIVideoHolder = styled.div`
-  height: 100%;
   position: relative;
   overflow: hidden;
   ${theme.radius.primaryItem};
+`;
+
+const UIVideo = styled.video`
+  height: auto;
+  width: 100%;
 `;
 
 const UIControlsHolder = styled(PopPresenceAnimator)`
