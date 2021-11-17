@@ -118,10 +118,7 @@ export const messageEntity = defineEntity<MessageFragment>({
 
       if (!lastUnreadMessage) return true;
 
-      // This very message is last unread one
-      if (lastUnreadMessage.id === message.id) return true;
-
-      return new Date(message.updated_at) >= lastUnreadMessage.getUpdatedAt();
+      return new Date(message.updated_at) >= new Date(lastUnreadMessage.seen_at);
     },
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;

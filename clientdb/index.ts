@@ -18,6 +18,7 @@ export * from "./entity/index";
 interface ClientDbConfig {
   db: PersistanceAdapterInfo;
   contexts?: DbContextInstance<unknown>[];
+  disableSync?: boolean;
   onDestroyRequest?: () => void;
 }
 
@@ -32,7 +33,7 @@ type ClientDbExtra = {
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
 export async function createClientDb<Entities extends EntitiesMap>(
-  { db, contexts, onDestroyRequest }: ClientDbConfig,
+  { db, contexts, onDestroyRequest, disableSync }: ClientDbConfig,
   definitionsMap: Entities
 ): Promise<ClientDb<Entities>> {
   const definitions = Object.values(definitionsMap);
@@ -95,18 +96,22 @@ export async function createClientDb<Entities extends EntitiesMap>(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
   );
 
-  // Start sync at once when all persistance data is loaded
-  persistanceLoadedPromise.then(() => {
-    forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
-      client.startSync();
+  if (!disableSync) {
+    // Start sync at once when all persistance data is loaded
+    persistanceLoadedPromise.then(() => {
+      forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
+        client.startSync();
+      });
     });
-  });
 
-  const firstSyncPromise = Promise.all(
-    Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)
-  );
+    const firstSyncPromise = Promise.all(
+      Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)
+    );
 
-  await Promise.all([persistanceLoadedPromise, firstSyncPromise]);
+    await Promise.all([persistanceLoadedPromise, firstSyncPromise]);
+  } else {
+    await persistanceLoadedPromise;
+  }
 
   const clientDbMethods: ClientDbExtra = {
     destroy,

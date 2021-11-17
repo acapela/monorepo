@@ -37,6 +37,26 @@ devAssignWindowVariable("reloadClientDb", () => {
   window.location.reload();
 });
 
+export const appClientDbEntities = {
+  user: userEntity,
+  topic: topicEntity,
+  topicMember: topicMemberEntity,
+  message: messageEntity,
+  attachment: attachmentEntity,
+  team: teamEntity,
+  teamMember: teamMemberEntity,
+  teamMemberSlack: teamMemberSlackEntity,
+  teamSlackInstallation: teamSlackInstallationEntity,
+  task: taskEntity,
+  messageReaction: messageReactionEntity,
+  lastSeenMessage: lastSeenMessageEntity,
+  transcription: transcriptionEntity,
+  topicEvent: topicEventEntity,
+  messageTaskDueDate: messageTaskDueDateEntity,
+  userGroup: userGroupEntity,
+  userGroupMember: userGroupMemberEntity,
+};
+
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
   const clientdb = createClientDb(
     {
@@ -47,25 +67,7 @@ export function createNewClientDb({ userId, teamId, apolloClient, onDestroyReque
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
       onDestroyRequest,
     },
-    {
-      user: userEntity,
-      topic: topicEntity,
-      topicMember: topicMemberEntity,
-      message: messageEntity,
-      attachment: attachmentEntity,
-      team: teamEntity,
-      teamMember: teamMemberEntity,
-      teamMemberSlack: teamMemberSlackEntity,
-      teamSlackInstallation: teamSlackInstallationEntity,
-      task: taskEntity,
-      messageReaction: messageReactionEntity,
-      lastSeenMessage: lastSeenMessageEntity,
-      transcription: transcriptionEntity,
-      topicEvent: topicEventEntity,
-      messageTaskDueDate: messageTaskDueDateEntity,
-      userGroup: userGroupEntity,
-      userGroupMember: userGroupMemberEntity,
-    }
+    appClientDbEntities
   );
 
   return clientdb;

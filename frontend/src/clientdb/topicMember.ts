@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { topicEntity } from "~frontend/clientdb/topic";
 import { userEntity } from "~frontend/clientdb/user";
 import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
@@ -38,3 +38,5 @@ export const topicMemberEntity = defineEntity<TopicMemberFragment>({
     return getEntity(userEntity).findById(topicMember.user_id);
   },
 }));
+
+export type TopicMemberEntity = EntityByDefinition<typeof topicMemberEntity>;

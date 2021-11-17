@@ -3198,13 +3198,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/fnv1a@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@sindresorhus/fnv1a@npm:3.0.0"
-  checksum: 60c1b88b5dea1d8604645f003ed819b2d60be80d69f05bc0dd47caa2a508dcf1ad38ed99c8645403e3d1848137d4a8bfd25b0cef4e35bee8ba3f46fc6c5e6e58
-  languageName: node
-  linkType: hard
-
 "@sindresorhus/is@npm:^0.14.0":
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
@@ -21216,7 +21209,6 @@ fsevents@^1.2.7:
   dependencies:
     "@sendgrid/mail": ^7.4.7
     "@sentry/nextjs": ^6.13.2
-    "@sindresorhus/fnv1a": ^3.0.0
     "@sindresorhus/slugify": ^1.1.0
     "@types/analytics-node": ^3.1.6
     "@types/color": ^3.0.2
