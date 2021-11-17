@@ -107,10 +107,10 @@ test("set due dates", async ({ page, auth, db }) => {
   await expect(page.locator("[data-due-date-picker]")).not.toContainText("Today at 5:00 PM");
 });
 
-test.only("add and remove reaction", async ({ page, auth, db }) => {
+test("add and remove reaction", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const mentionedUser = db.user2.name;
-  const requestName = "Message" + getUUID();
+  const requestName = "Message";
 
   const messageContent = "Super content";
 
