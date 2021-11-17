@@ -91,7 +91,8 @@ export const MentionPicker = observer(({ keyword, onSelect, editor }: Autocomple
             )}
             {item.type == "user_group" && (
               <>
-                <Avatar name={item.entity.name} size={24} /> {item.entity.name}
+                <Avatar name={item.entity.name} size={24} /> {item.entity.name}{" "}
+                <UIGroupIndicator>(group)</UIGroupIndicator>
               </>
             )}
           </UISelectItem>
@@ -117,4 +118,8 @@ const UISelectItem = styled.div<{}>`
   ${UserAvatar} {
     font-size: 1.5rem;
   }
+`;
+
+const UIGroupIndicator = styled.div<{}>`
+  ${theme.colors.text.readableText.tertiary.asColor}
 `;

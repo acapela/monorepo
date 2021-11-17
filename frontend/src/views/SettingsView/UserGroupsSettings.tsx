@@ -115,6 +115,7 @@ const UserGroupForm = observer(({ group }: { group?: UserGroupEntity }) => {
             {(!group || hasChanges) && (
               <PopPresenceAnimator>
                 <Button
+                  kind="primary"
                   type="submit"
                   data-tooltip={
                     isNameEmpty || isNameDuplicate

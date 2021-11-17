@@ -39,7 +39,6 @@ export const UserPicker = observer(({ alreadyPickedIds, onPick }: UserPickerProp
         value={keyword}
         onFocus={show}
         onBlur={() => {
-          hide();
           setKeyword("");
         }}
         onChange={(event) => {
