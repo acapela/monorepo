@@ -1,9 +1,8 @@
 import * as Sentry from "@sentry/node";
-import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
 import { find } from "lodash";
 import { Bits, Blocks, Elements, Message, Modal } from "slack-block-builder";
-import { ViewSubmitAction } from "slack/bolt";
 
 import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
