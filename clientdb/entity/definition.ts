@@ -37,7 +37,7 @@ interface DefineEntityConfig<Data, Connections> {
   events?: EntityUserEvents<Data, Connections>;
 }
 
-type EntityUserEvents<Data, Connections> = {
+export type EntityUserEvents<Data, Connections> = {
   itemAdded?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
   itemUpdated?: (entity: Entity<Data, Connections>, dataBefore: Data, utilities: DatabaseUtilities) => void;
   itemRemoved?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
