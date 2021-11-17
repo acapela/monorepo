@@ -98,4 +98,32 @@ describe("clientdb topic", () => {
     expect(topic.closedByUser).toBeNull();
     expect(topic.closed_at).toBeNull();
   });
+
+  it("gets all tasks", async () => {
+    const firstMessage = await db.message.create({
+      topic_id: topic.id,
+      type: "TEXT",
+      content: "",
+    });
+
+    const firstTask = await db.task.create({
+      message_id: firstMessage.id,
+      user_id: currentUser.id,
+      type: "request-read",
+    });
+
+    const secondMessage = await db.message.create({
+      topic_id: topic.id,
+      type: "TEXT",
+      content: "",
+    });
+
+    const secondTask = await db.task.create({
+      message_id: secondMessage.id,
+      user_id: currentUser.id,
+      type: "request-response",
+    });
+
+    expect(topic.tasks.all).toEqual([firstTask, secondTask]);
+  });
 });
