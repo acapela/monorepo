@@ -4,6 +4,7 @@ import { createClientDb } from "~clientdb";
 import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
+import { userGroupEntity, userGroupMemberEntity } from "~frontend/clientdb/userGroup";
 import { devAssignWindowVariable, isDev } from "~shared/dev";
 import { isClient } from "~shared/document";
 
@@ -52,6 +53,8 @@ export const appClientDbEntities = {
   transcription: transcriptionEntity,
   topicEvent: topicEventEntity,
   messageTaskDueDate: messageTaskDueDateEntity,
+  userGroup: userGroupEntity,
+  userGroupMember: userGroupMemberEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {

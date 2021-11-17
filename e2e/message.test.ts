@@ -52,14 +52,11 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 
-  const sidebarReceivedRequests = await appPage.getSidebarRequestGroup("Received");
-  expect(sidebarReceivedRequests).toContainText(requestName, { useInnerText: true });
+  await appPage.waitForRequestInGroup(requestName, "Received");
 
   await page.click('button:has-text("Mark as read")');
 
-  const $taskMention = await page.locator(`[data-test-task-assignee="${db.user2.id}"]`);
-  expect($taskMention).toContainText("✓", { useInnerText: true });
+  await page.waitForSelector(`[data-test-task-assignee="${db.user2.id}"]:has-text("✓")`);
 
-  const sidebarSentRequests = await appPage.getSidebarRequestGroup("Sent");
-  expect(sidebarSentRequests).toContainText(requestName, { useInnerText: true });
+  await appPage.waitForRequestInGroup(requestName, "Sent");
 });

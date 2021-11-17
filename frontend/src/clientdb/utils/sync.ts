@@ -47,6 +47,12 @@ import {
   Topic_Set_Input,
   Transcription_Bool_Exp,
   User_Bool_Exp,
+  User_Group_Bool_Exp,
+  User_Group_Constraint,
+  User_Group_Insert_Input,
+  User_Group_Member_Bool_Exp,
+  User_Group_Member_Insert_Input,
+  User_Group_Set_Input,
   User_Set_Input,
 } from "~gql";
 import { assert } from "~shared/assert";
@@ -79,6 +85,7 @@ type ConstraintsTypeMap = {
   attachment: Attachment_Constraint;
   last_seen_message: Last_Seen_Message_Constraint;
   message_task_due_date: Message_Task_Due_Date_Constraint;
+  user_group: User_Group_Constraint;
 };
 
 type ConstraintsValueMap = {
@@ -95,6 +102,7 @@ const upsertConstraints: ConstraintsValueMap = {
   attachment: "attachment_id_key",
   last_seen_message: "last_seen_message_pkey",
   message_task_due_date: "message_task_due_date_pkey",
+  user_group: "user_group_pkey",
 };
 
 type InsertTypeMap = {
@@ -108,6 +116,8 @@ type InsertTypeMap = {
   topic_event: Topic_Event_Insert_Input;
   last_seen_message: Last_Seen_Message_Insert_Input;
   message_task_due_date: Message_Task_Due_Date_Insert_Input;
+  user_group: User_Group_Insert_Input;
+  user_group_member: User_Group_Member_Insert_Input;
 };
 
 type UpdateTypeMap = {
@@ -121,6 +131,8 @@ type UpdateTypeMap = {
   last_seen_message: Last_Seen_Message_Set_Input;
   user: User_Set_Input;
   message_task_due_date: Message_Task_Due_Date_Set_Input;
+  user_group: User_Group_Set_Input;
+  user_group_member: never;
 };
 
 type WhereTypeMap = {
@@ -137,6 +149,8 @@ type WhereTypeMap = {
   team_member_slack: Team_Member_Slack_Bool_Exp;
   topic_event: Topic_Event_Bool_Exp;
   message_task_due_date: Message_Task_Due_Date_Bool_Exp;
+  user_group: User_Group_Bool_Exp;
+  user_group_member: User_Group_Member_Bool_Exp;
 };
 
 /**

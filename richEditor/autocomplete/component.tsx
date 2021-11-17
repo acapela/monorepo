@@ -12,5 +12,5 @@ export interface AutocompleteNodeProps<D> {
 
 export type AutocompletePickerProps<D> = SuggestionProps & {
   keyword: string;
-  onSelect: (item: D) => void;
+  onSelect: (item: D[]) => void;
 };
