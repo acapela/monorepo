@@ -7,6 +7,7 @@ import styled, { css } from "styled-components";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
@@ -17,7 +18,6 @@ import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType
 import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
@@ -40,6 +40,7 @@ interface SubmitMessageParams {
 export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, onClosePendingTasks }: Props) => {
   const apolloClient = useApolloClient();
   const db = useDb();
+  const updateMessageTasks = useUpdateMessageTasks();
 
   const editorRef = useRef<Editor>(null);
 
@@ -91,9 +92,8 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
 
-    for (const { userId, type } of getUniqueRequestMentionDataFromContent(content)) {
-      db.task.create({ message_id: newMessage.id, user_id: userId, type });
-    }
+    updateMessageTasks(newMessage);
+
     for (const attachment of attachments) {
       db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
     }

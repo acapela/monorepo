@@ -1,12 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import gql from "graphql-tag";
-import { memoize, uniq } from "lodash";
+import { memoize } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
+import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
@@ -97,7 +97,7 @@ export const messageEntity = defineEntity<MessageFragment>({
   });
 
   const getIsUserMentionedInContent = cachedComputed((userId: string) => {
-    return mentionedUserIds.get().includes(userId);
+    return mentionedUserIds.get().has(userId);
   });
 
   const connections = {
@@ -142,6 +142,6 @@ export const messageEntity = defineEntity<MessageFragment>({
 
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;
 
-const getMentionedUserIdsInContent = memoize((content: JSONContent) => {
-  return uniq(getMentionNodesFromContent(content).map((node) => node.attrs.data.userId));
-});
+const getMentionedUserIdsInContent = memoize(
+  (content: JSONContent) => new Set(getUniqueRequestMentionDataFromContent(content).map((data) => data.userId))
+);

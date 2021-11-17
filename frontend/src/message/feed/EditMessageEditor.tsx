@@ -5,12 +5,10 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { TaskEntity } from "~frontend/clientdb/task";
+import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
@@ -20,11 +18,9 @@ interface Props {
   onSaved?: () => void;
 }
 
-const getIsMentionMatchingTask = ({ userId, type }: EditorMentionData, task: TaskEntity) =>
-  task.user_id === userId && task.type === type;
-
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
   const db = useDb();
+  const updateMessageTasks = useUpdateMessageTasks();
   const editorRef = useRef<Editor>(null);
 
   const {
@@ -58,24 +54,10 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       attachment.remove();
     }
 
+    const contentBefore = message.content;
     message.update({ content });
 
-    const mentionData = getUniqueRequestMentionDataFromContent(content);
-
-    const unmentionedTasks = message.tasks.all.filter(
-      (task) => !mentionData.some((mention) => getIsMentionMatchingTask(mention, task))
-    );
-    for (const task of unmentionedTasks) {
-      db.task.removeById(task.id);
-    }
-
-    const newlyMentionedTasks = mentionData.filter(
-      (node) => message.tasks.query((task) => getIsMentionMatchingTask(node, task)).all.length == 0
-    );
-    for (const newMention of newlyMentionedTasks) {
-      const { userId, type } = newMention;
-      db.task.create({ message_id: message.id, user_id: userId, type });
-    }
+    updateMessageTasks(message, contentBefore);
 
     clearPersistedContent();
     onSaved?.();

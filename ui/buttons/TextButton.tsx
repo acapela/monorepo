@@ -14,14 +14,24 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
   kind?: TextButtonKind;
   inline?: boolean;
   onClick?: () => void;
+  isDisabled?: boolean;
 }
 
 export const TextButton = styledForwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { isWide, children, kind = "secondary", onClick, ...htmlProps },
+  { isWide, inline, isDisabled, children, kind = "secondary", onClick, ...htmlProps },
   ref
 ) {
   return (
-    <UIButton ref={ref} $kind={kind} $isWide={isWide} onClick={onClick} {...htmlProps}>
+    <UIButton
+      ref={ref}
+      $kind={kind}
+      $isWide={isWide}
+      $isDisabled={isDisabled}
+      $inline={inline}
+      onClick={onClick}
+      disabled={isDisabled}
+      {...htmlProps}
+    >
       {children}
     </UIButton>
   );
@@ -34,7 +44,7 @@ const kindStyles = {
     text-decoration: underline;
     ${theme.transitions.hover("color")};
 
-    &:hover {
+    &:not([disabled]):hover {
       color: ${theme.colors.action.primary.active};
     }
   `,
@@ -43,7 +53,7 @@ const kindStyles = {
     opacity: 0.4;
     ${theme.transitions.hover("opacity")};
 
-    &:hover {
+    &:not([disabled]):hover {
       opacity: 0.6;
     }
   `,
@@ -54,7 +64,8 @@ type TextButtonKind = keyof typeof kindStyles;
 export const UIButton = styled(motion.button)<{
   $kind: TextButtonKind;
   $isWide?: boolean;
-  inline?: boolean;
+  $isDisabled?: boolean;
+  $inline?: boolean;
 }>`
   border: none;
   background: transparent;
@@ -73,8 +84,15 @@ export const UIButton = styled(motion.button)<{
   ${(props) => kindStyles[props.$kind]}
 
   ${(props) =>
-    props.inline &&
+    props.$inline &&
     css`
       padding: 0;
+    `}
+
+  ${(props) =>
+    props.$isDisabled &&
+    css`
+      cursor: unset;
+      opacity: 0.5;
     `}
 `;

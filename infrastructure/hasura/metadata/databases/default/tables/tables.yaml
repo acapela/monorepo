@@ -18,4 +18,6 @@
 - "!include public_transcription.yaml"
 - "!include public_transcription_status.yaml"
 - "!include public_user.yaml"
+- "!include public_user_group.yaml"
+- "!include public_user_group_member.yaml"
 - "!include public_whitelist.yaml"
