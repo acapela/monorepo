@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 
 import { test } from "~e2e/helper/base-test";
+import { getUUID } from "~shared/uuid";
 
 import { AppDevPage } from "./helper/app-dev-page";
 
@@ -56,7 +57,7 @@ test("can archive topic", async ({ page, auth, db }) => {
   const userName = db.user2.name;
 
   // Reduces opportunity for requests with same title;
-  const requestTitle = "Unique as possible" + Math.random() * 1024;
+  const requestTitle = "Unique as possible" + getUUID();
 
   const appPage = new AppDevPage(page);
   await appPage.makeNewRequest({
