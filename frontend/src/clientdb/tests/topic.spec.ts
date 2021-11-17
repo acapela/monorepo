@@ -103,4 +103,90 @@ describe("clientdb topic", () => {
 
     expect(topic.tasks.all).toEqual([firstTask, secondTask]);
   });
+
+  describe("on topic is updated", () => {
+    it("creates a topic event when topic is renamed", async () => {
+      const previousName = topic.name;
+      const newName = "new name";
+      topic.update({ name: newName });
+
+      const topicEvent = await db.topicEvent.query({ topic_id: topic.id }).last;
+
+      expect(topicEvent?.getData()).toEqual(
+        expect.objectContaining({
+          topic_id: topic.id,
+          topic_from_name: previousName,
+          topic_to_name: newName,
+        })
+      );
+    });
+
+    it("creates a topic event when a topic is closed", async () => {
+      topic.close();
+
+      const closedAt = topic.closed_at;
+
+      const topicEvent = await db.topicEvent.query({ topic_id: topic.id }).last;
+
+      expect(topicEvent?.getData()).toEqual(
+        expect.objectContaining({
+          topic_id: topic.id,
+          topic_from_closed_at: null,
+          topic_to_closed_at: closedAt,
+        })
+      );
+    });
+
+    it("creates a topic event when a topic is re-opened", async () => {
+      topic.close();
+
+      const previousClosedAt = topic.closed_at;
+
+      topic.open();
+
+      const topicEvent = await db.topicEvent.query({ topic_id: topic.id }).last;
+
+      expect(topicEvent?.getData()).toEqual(
+        expect.objectContaining({
+          topic_id: topic.id,
+          topic_from_closed_at: previousClosedAt,
+          topic_to_closed_at: null,
+        })
+      );
+    });
+
+    it("creates a topic event when a topic is archived", async () => {
+      const archived_at = new Date().toISOString();
+
+      topic.update({ archived_at });
+
+      const topicEvent = await db.topicEvent.query({ topic_id: topic.id }).last;
+
+      expect(topicEvent?.getData()).toEqual(
+        expect.objectContaining({
+          topic_id: topic.id,
+          topic_from_archived_at: null,
+          topic_to_archived_at: archived_at,
+        })
+      );
+    });
+
+    it("creates a topic event when a topic is un-archived", async () => {
+      const previousArchivedDate = new Date().toISOString();
+
+      topic.update({ archived_at: previousArchivedDate });
+
+      topic.update({ archived_at: null });
+
+      const topicEvent = await db.topicEvent.query({ topic_id: topic.id }).last;
+
+      expect(topicEvent?.getData()).toEqual(
+        expect.objectContaining({
+          topic_id: topic.id,
+          topic_from_archived_at: previousArchivedDate,
+          topic_to_archived_at: null,
+        })
+      );
+    });
+  });
 });
