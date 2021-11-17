@@ -1,4 +1,4 @@
-import { HasuraEvent } from "~backend/src/hasura";
+import { HasuraEvent, UpdateHasuraEvent } from "~backend/src/hasura";
 import { createSlackLink, sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
@@ -13,7 +13,7 @@ export async function handleTaskChanges(event: HasuraEvent<Task>) {
   if (event.type === "create") {
     return onTaskCreation(event.item);
   } else if (event.type === "update") {
-    return onTaskUpdate(event.item, event.itemBefore, event.userId || "");
+    return onTaskUpdate(event);
   }
 }
 
@@ -62,12 +62,13 @@ async function onTaskCreation(task: Task) {
   });
 }
 
-async function onTaskUpdate(task: Task, taskBefore: Task, userId: string) {
+async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: UpdateHasuraEvent<Task>) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
   assert(topic, "must have topic");
 
-  if (task.done_at && task.done_at !== taskBefore.done_at) {
+  if (userId && task.done_at && task.done_at !== taskBefore.done_at) {
+    // userId is null when the update is not triggered through the frontend
     trackBackendUserEvent(userId, "Marked Task As Done", {
       taskType: task.type as RequestType,
       topicId: topic.id,
