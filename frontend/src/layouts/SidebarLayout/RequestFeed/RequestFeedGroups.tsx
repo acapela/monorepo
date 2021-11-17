@@ -79,7 +79,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = prepareTopicsGroups(topics);
 
   return (
-    <UIHolder>
+    <UIHolder data-test-id="sidebar-all-request-groups">
       {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}
       {!!sentTasks.length && <RequestsGroup topics={sentTasks} groupName="Sent" />}
       {!!openTopics.length && <RequestsGroup topics={openTopics} groupName="Open" />}

@@ -74,6 +74,7 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
       >
         <UIContentWrapper>
           <TextInput
+            data-test-id={`prompt-input-${title.toLowerCase()}`}
             ref={inputRef}
             icon={inputIcon}
             onBlur={showValidationErrors}
