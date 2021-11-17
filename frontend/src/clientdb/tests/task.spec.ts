@@ -3,6 +3,7 @@ import { TaskEntity } from "../task";
 import { TopicEntity } from "../topic";
 import { UserEntity } from "../user";
 import { createTestAppClientDbWithData } from "./testDB";
+import { makeMessage, makeTask, makeTopic, makeUser } from "./utils";
 import { ClientDb } from "..";
 
 describe("clientdb task", () => {
@@ -16,19 +17,11 @@ describe("clientdb task", () => {
     const [_db, { currentUser: _currentUser }] = await createTestAppClientDbWithData();
     db = _db;
     currentUser = _currentUser;
-    topic = await db.topic.create({
-      name: "Hello World!",
-      slug: "hello-world",
-    });
-    message = await db.message.create({
-      topic_id: topic.id,
-      type: "TEXT",
-      content: "",
-    });
-    task = await db.task.create({
+    topic = await makeTopic(db);
+    message = await makeMessage(db, { topic_id: topic.id });
+    task = await makeTask(db, {
       message_id: message.id,
       user_id: currentUser.id,
-      type: "request-read",
     });
   });
 
@@ -51,13 +44,7 @@ describe("clientdb task", () => {
   });
 
   it("gets the user that created the task", async () => {
-    const taskOwner = await db.user.create({
-      email: "me@acape.la",
-      name: "Acapela user",
-      id: "other-user",
-      avatar_url: null,
-      has_account: true,
-    });
+    const taskOwner = await makeUser(db);
 
     // Task owner is the same as parent message owner
     message.update({ user_id: taskOwner.id });
@@ -70,13 +57,7 @@ describe("clientdb task", () => {
   });
 
   it("is not self created when current user is not task owner", async () => {
-    const taskOwner = await db.user.create({
-      email: "me@acape.la",
-      name: "Acapela user",
-      id: "other-user",
-      avatar_url: null,
-      has_account: true,
-    });
+    const taskOwner = await makeUser(db);
 
     // Task owner is the same as parent message owner
     message.update({ user_id: taskOwner.id });

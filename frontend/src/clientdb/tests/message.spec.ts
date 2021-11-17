@@ -4,6 +4,7 @@ import { MessageEntity } from "../message";
 import { TopicEntity } from "../topic";
 import { UserEntity } from "../user";
 import { createTestAppClientDbWithData } from "./testDB";
+import { makeMessage, makeTask, makeTopic, makeUser } from "./utils";
 import { ClientDb } from "..";
 
 function mockMentionMessageContent(userId: string, type = "request-response") {
@@ -34,15 +35,8 @@ describe("clientdb message", () => {
     const [_db, { currentUser: _currentUser }] = await createTestAppClientDbWithData();
     db = _db;
     currentUser = _currentUser;
-    topic = await db.topic.create({
-      name: "Hello World!",
-      slug: "hello-world",
-    });
-    message = await db.message.create({
-      topic_id: topic.id,
-      type: "TEXT",
-      content: "",
-    });
+    topic = await makeTopic(db);
+    message = await makeMessage(db, { topic_id: topic.id });
   });
 
   it("links to its parent topic", async () => {
@@ -54,16 +48,16 @@ describe("clientdb message", () => {
   });
 
   it("returns all the tasks related to that message", async () => {
-    const firstTask = await db.task.create({
+    const firstTask = await makeTask(db, {
       message_id: message.id,
       user_id: currentUser.id,
-      type: "request-read",
     });
 
-    const secondTask = await db.task.create({
+    const otherUser = await makeUser(db);
+
+    const secondTask = await makeTask(db, {
       message_id: message.id,
-      user_id: currentUser.id,
-      type: "request-read",
+      user_id: otherUser.id,
     });
 
     expect(message.tasks.all).toEqual([firstTask, secondTask]);
@@ -75,31 +69,18 @@ describe("clientdb message", () => {
     });
 
     it("has tasks assigned", async () => {
-      const userWithTaskAssigned = await db.user.create({
-        email: "me@acape.la",
-        name: "Acapela user",
-        id: "other-user",
-        avatar_url: null,
-        has_account: true,
-      });
+      const userWithTaskAssigned = await makeUser(db);
 
-      await db.task.create({
+      await makeTask(db, {
         message_id: message.id,
         user_id: userWithTaskAssigned.id,
-        type: "request-read",
       });
 
       expect(message.getIsUserParticipating(userWithTaskAssigned.id)).toBeTruthy();
     });
 
     it("has been mentioned", async () => {
-      const userWithMention = await db.user.create({
-        email: "me@acape.la",
-        name: "Acapela user",
-        id: "other-user",
-        avatar_url: null,
-        has_account: true,
-      });
+      const userWithMention = await makeUser(db);
 
       message.update({ content: mockMentionMessageContent(userWithMention.id, "observer") });
 
@@ -130,13 +111,7 @@ describe("clientdb message", () => {
   describe("is unread when", () => {
     // Change ownership to avoid unread ownership check
     beforeEach(async () => {
-      const otherUser = await db.user.create({
-        email: "me@acape.la",
-        name: "Acapela user",
-        id: "other-user",
-        avatar_url: null,
-        has_account: true,
-      });
+      const otherUser = await makeUser(db);
 
       message.update({ user_id: otherUser.id });
     });

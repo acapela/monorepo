@@ -3,7 +3,7 @@ import { MessageReactionEntity } from "../messageReaction";
 import { TopicEntity } from "../topic";
 import { UserEntity } from "../user";
 import { createTestAppClientDbWithData } from "./testDB";
-import { makeUser } from "./utils";
+import { makeMessage, makeTopic, makeUser } from "./utils";
 import { ClientDb } from "..";
 
 describe("clientdb message reactions", () => {
@@ -17,15 +17,8 @@ describe("clientdb message reactions", () => {
     const [_db, { currentUser: _currentUser }] = await createTestAppClientDbWithData();
     db = _db;
     currentUser = _currentUser;
-    topic = await db.topic.create({
-      name: "Hello World!",
-      slug: "hello-world",
-    });
-    message = await db.message.create({
-      topic_id: topic.id,
-      type: "TEXT",
-      content: "",
-    });
+    topic = await makeTopic(db);
+    message = await makeMessage(db, { topic_id: topic.id });
     messageReaction = await db.messageReaction.create({
       message_id: message.id,
       user_id: currentUser.id,

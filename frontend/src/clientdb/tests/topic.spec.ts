@@ -4,6 +4,7 @@ import { TeamEntity } from "../team";
 import { TopicEntity } from "../topic";
 import { UserEntity } from "../user";
 import { createTestAppClientDbWithData } from "./testDB";
+import { makeMessage, makeTask, makeTopic, makeUser } from "./utils";
 import { ClientDb } from "..";
 
 const now = new Date();
@@ -21,26 +22,15 @@ describe("clientdb topic", () => {
     db = _db;
     team = _team;
     currentUser = _currentUser;
-    topic = await db.topic.create({
-      name: "Hello World!",
-      slug: "hello-world",
-    });
+    topic = await makeTopic(db);
   });
 
   it("gets the last seen message info and a list of all unread messages", async () => {
-    const userThatSendsMessage = db.user.create({
-      email: "me@acape.la",
-      name: "Acapela user",
-      id: "other-user",
-      avatar_url: null,
-      has_account: true,
-    });
+    const userThatSendsMessage = await makeUser(db);
 
-    const seenMessage = await db.message.create({
+    const seenMessage = await makeMessage(db, {
       user_id: userThatSendsMessage.id,
       topic_id: topic.id,
-      type: "TEXT",
-      content: "",
       created_at: aDayAgo,
       updated_at: aDayAgo,
     });
@@ -53,11 +43,9 @@ describe("clientdb topic", () => {
       updated_at: anHourAgo,
     });
 
-    const unSeenMessage = await db.message.create({
+    const unSeenMessage = await makeMessage(db, {
       user_id: userThatSendsMessage.id,
       topic_id: topic.id,
-      type: "TEXT",
-      content: "",
     });
 
     expect(topic.lastSeenMessageByCurrentUserInfo).toBe(lastSeen);
@@ -65,13 +53,8 @@ describe("clientdb topic", () => {
   });
 
   it("gets all topic members", async () => {
-    const randomTeamMember = await db.user.create({
-      email: "me@acape.la",
-      name: "Acapela user",
-      id: "other-user",
-      avatar_url: null,
-      has_account: true,
-    });
+    const randomTeamMember = await makeUser(db);
+
     await db.teamMember.create({
       has_joined: true,
       team_id: team.id,
@@ -93,35 +76,29 @@ describe("clientdb topic", () => {
 
   it("opens a topic", async () => {
     topic.close();
-    topic.open();
+    expect(topic.closedByUser).not.toBeNull();
+    expect(topic.closed_at).not.toBeNull();
 
+    topic.open();
     expect(topic.closedByUser).toBeNull();
     expect(topic.closed_at).toBeNull();
   });
 
   it("gets all tasks", async () => {
-    const firstMessage = await db.message.create({
-      topic_id: topic.id,
-      type: "TEXT",
-      content: "",
-    });
+    const firstMessage = await makeMessage(db, { topic_id: topic.id });
 
-    const firstTask = await db.task.create({
+    const firstTask = await makeTask(db, {
       message_id: firstMessage.id,
       user_id: currentUser.id,
-      type: "request-read",
     });
 
-    const secondMessage = await db.message.create({
+    const secondMessage = await makeMessage(db, {
       topic_id: topic.id,
-      type: "TEXT",
-      content: "",
     });
 
-    const secondTask = await db.task.create({
+    const secondTask = await makeTask(db, {
       message_id: secondMessage.id,
       user_id: currentUser.id,
-      type: "request-response",
     });
 
     expect(topic.tasks.all).toEqual([firstTask, secondTask]);
