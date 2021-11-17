@@ -6,6 +6,7 @@ import { Bits, Blocks, Elements, Message, Modal } from "slack-block-builder";
 
 import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
+import { ViewSubmitAction } from "~node_modules/@slack/bolt/dist/types/view";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
@@ -82,7 +83,8 @@ export function setupRequestModal(app: App) {
     await tryOpenRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
-  listenToViewWithMetadata(app, "create_request", async ({ ack, view, body, client, context, metadata }) => {
+  listenToViewWithMetadata<ViewSubmitAction>(app, "create_request", async (args) => {
+    const { ack, view, body, client, context, metadata } = args;
     const {
       topic_block: {
         topic_name: { value: topicName },
@@ -137,6 +139,8 @@ export function setupRequestModal(app: App) {
       }
     }
 
+    await ack({ response_action: "clear" });
+
     const topic = await createTopicForSlackUsers({
       token,
       teamId: team.id,
@@ -148,19 +152,10 @@ export function setupRequestModal(app: App) {
       slackUserIdsWithMentionType,
     });
 
-    if (!topic) {
-      return await ack({
-        response_action: "errors",
-        errors: {
-          request_type_block: "Topic creation failed",
-        },
-      });
-    }
-
     if (!channelId) {
       const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
-      await ack({
-        response_action: "update",
+      await client.views.open({
+        trigger_id: body.trigger_id,
         view: Modal({ title: "Request created" })
           .blocks(
             Blocks.Section({ text: `You can find your request in you sidebar or behind this link:\n${topicURL}` })
@@ -169,8 +164,6 @@ export function setupRequestModal(app: App) {
       });
       return;
     }
-
-    await ack({ response_action: "clear" });
 
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic)),
