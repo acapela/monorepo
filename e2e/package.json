@@ -7,6 +7,7 @@
   },
   "scripts": {
     "test": "APP=e2e playwright test --workers 1",
-    "test:debug": "PWDEBUG=1 APP=e2e playwright test"
+    "test:debug": "PWDEBUG=1 APP=e2e playwright test",
+    "dev": "ts-node --transpile-only ./cli/dev.ts"
   }
 }
