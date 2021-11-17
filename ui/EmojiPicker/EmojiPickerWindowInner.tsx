@@ -1,7 +1,7 @@
 import { chunk } from "lodash";
 import { Dispatch, SetStateAction, memo, useEffect, useMemo, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
-import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import { FixedSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
 import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "~shared/emoji";
@@ -347,7 +347,8 @@ const Row = memo(function Row({
       })}
     </UIEmojiRow>
   );
-});
+},
+areEqual);
 
 const UIHolder = styled.div<{}>``;
 
