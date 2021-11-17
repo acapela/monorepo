@@ -82,7 +82,7 @@ describe("clientdb message", () => {
     it("has been mentioned", async () => {
       const userWithMention = await makeUser(db);
 
-      message.update({ content: mockMentionMessageContent(userWithMention.id, "observer") });
+      message.update({ content: mockMentionMessageContent(userWithMention.id, "request-read") });
 
       expect(message.getIsUserParticipating(userWithMention.id)).toBeTruthy();
     });
