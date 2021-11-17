@@ -61,7 +61,7 @@ test("mark own request as read", async ({ page, auth, db }) => {
   await appPage.waitForRequestInGroup(requestName, "Sent");
 });
 
-test.only("reply to a message", async ({ page, auth, db }) => {
+test("reply to a message", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const mentionedUser = db.user2.name;
   const requestName = "Message" + getUUID();
