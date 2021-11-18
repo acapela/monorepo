@@ -17,4 +17,6 @@ export const RequestFeed = observer(() => {
   );
 });
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{}>`
+  height: 100%;
+`;
