@@ -22,7 +22,7 @@ export const TeamMemberBasicInfo = observer(({ teamMember }: Props) => {
       <Avatar url={user.avatar_url} size={30} />
       <div>
         <UIUserName>{user.name}</UIUserName>
-        <HStack gap={10}>
+        <HStack gap={10} data-test-user-id={user.id}>
           <UIEmail>{user.email}</UIEmail>
           {!(user.has_account && teamMember.has_joined) && <UIIndicator>(Invite pending)</UIIndicator>}
           {user.id === currentTeam?.owner_id && <UIIndicator>Owner</UIIndicator>}

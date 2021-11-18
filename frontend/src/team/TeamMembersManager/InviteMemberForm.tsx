@@ -33,7 +33,7 @@ export const InviteMemberForm = observer(({ team }: Props) => {
 
   return (
     <UIHolder>
-      <TextInput placeholder="user@company.com" value={email} onChangeText={setEmail} />
+      <TextInput placeholder="user@company.com" name="invite-email" value={email} onChangeText={setEmail} />
       <Button
         iconAtStart
         icon={<IconPlusSquare />}
