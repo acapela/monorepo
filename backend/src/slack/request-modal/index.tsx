@@ -30,10 +30,11 @@ export function setupRequestModal(app: App) {
     if (body.text.toLowerCase() == "help") {
       await ack({
         response_type: "ephemeral",
-        text:
-          "To create a request type the Acapela command and the text for the initial message. " +
-          "You can also @-tag people that should receive the request. For example:\n" +
-          Md.codeBlock(`/acapela ${Md.user(slackUserId)} can you forward the documentation to me?`),
+        text: [
+          `To create a request type ${Md.codeInline("/acapela")} with the text for the initial message.`,
+          "You can also @-tag people that should receive the request.",
+          `For example:\n${Md.codeBlock(`/acapela can you forward the documentation to me, ${Md.user(slackUserId)}?`)}`,
+        ].join(" "),
       });
       return;
     }
