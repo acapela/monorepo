@@ -5,9 +5,9 @@
   },
   "display_information": {
     "name": "Acapela",
-    "description": "End your meetings before they start.",
+    "description": "Capture and prioritise requests",
     "background_color": "#000000",
-    "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
+    "long_description": "Acapela is a lightweight task manager that works with tools like Slack and Notion. It captures and prioritises requests for your team so they can focus on the things that matter."
   },
   "features": {
     "app_home": {
