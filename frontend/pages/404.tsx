@@ -1,12 +1,12 @@
 import router from "next/router";
 
-import { ErrorView } from "~frontend/views/ErrorView";
+import { PlainErrorView } from "~frontend/views/ErrorView";
 import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 
 export default function ErrorPage() {
   return (
-    <ErrorView
+    <PlainErrorView
       title="Page not found"
       description={
         <>
@@ -22,6 +22,6 @@ export default function ErrorPage() {
       >
         Go back to homepage
       </Button>
-    </ErrorView>
+    </PlainErrorView>
   );
 }

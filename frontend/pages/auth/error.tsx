@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { ErrorView } from "~frontend/views/ErrorView";
+import { PlainErrorView } from "~frontend/views/ErrorView";
 import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
 import { addToast } from "~ui/toasts/data";
@@ -41,7 +41,7 @@ function ResendInviteForm() {
   );
 }
 
-const errors: { [error: string]: React.ComponentProps<typeof ErrorView> } = {
+const errors: { [error: string]: React.ComponentProps<typeof PlainErrorView> } = {
   OAuthCreateAccount: {
     title: "Acapela is early-stage and invite-only.",
     description: (
@@ -69,9 +69,9 @@ export default function ErrorPage() {
   const error = errors[errCode];
 
   return error ? (
-    <ErrorView {...error} />
+    <PlainErrorView {...error} />
   ) : (
-    <ErrorView
+    <PlainErrorView
       title="Unknown authentication error."
       description={
         <>

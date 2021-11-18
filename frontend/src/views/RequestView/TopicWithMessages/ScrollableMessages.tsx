@@ -1,10 +1,10 @@
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { styledObserver } from "~shared/component";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { select } from "~shared/sharedState";
 
 import { ScrollHandle, ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
