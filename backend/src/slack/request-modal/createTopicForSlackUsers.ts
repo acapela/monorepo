@@ -1,5 +1,4 @@
 import { sendInviteNotification } from "~backend/src/inviteUser";
-import { updateHomeView } from "~backend/src/slack/home-tab";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assertDefined } from "~shared/assert";
@@ -11,7 +10,8 @@ import { EditorMentionData } from "~shared/types/editor";
 import { MentionType, REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
-import { parseAndTransformToTipTapJSON } from "../slackMarkdown/parser";
+import { updateHomeView } from "../home-tab";
+import { parseAndTransformToTipTapJSON } from "../md/parser";
 import { fetchTeamBotToken, findUserBySlackId } from "../utils";
 
 async function createAndInviteMissingUsers(

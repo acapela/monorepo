@@ -4,8 +4,6 @@ import { App, BlockButtonAction } from "@slack/bolt";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { Blocks, Modal } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/notifications/sendNotification";
-import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -14,6 +12,8 @@ import { Sentry } from "~shared/sentry";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
+import { updateHomeView } from "./home-tab";
+import { createSlackLink } from "./md/utils";
 import { tryOpenRequestModal } from "./request-modal/tryOpenRequestModal";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 

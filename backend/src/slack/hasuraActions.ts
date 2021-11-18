@@ -1,4 +1,3 @@
-import { findSlackUserId } from "~backend/src/slack/utils";
 import { db } from "~db";
 import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput, SlackUserOutput } from "~gql";
 import { assert } from "~shared/assert";
@@ -7,6 +6,7 @@ import { Maybe } from "~shared/types";
 import { ActionHandler } from "../actions/actionHandlers";
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { getSlackInstallURL } from "./install";
+import { findSlackUserId } from "./utils";
 
 export const getTeamSlackInstallationURL: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },

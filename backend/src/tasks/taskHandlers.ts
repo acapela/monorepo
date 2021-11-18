@@ -1,6 +1,7 @@
 import { HasuraEvent, UpdateHasuraEvent } from "~backend/src/hasura";
-import { createSlackLink, sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
+import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
+import { createSlackLink } from "~backend/src/slack/md/utils";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Task, db } from "~db";
 import { assert } from "~shared/assert";

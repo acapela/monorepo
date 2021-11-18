@@ -1,9 +1,8 @@
 import { Express } from "express";
 
-import { setupHomeTab } from "~backend/src/slack/home-tab";
-
 import { setupSlackActionHandlers } from "./actions";
 import { slackApp, slackReceiver } from "./app";
+import { setupHomeTab } from "./home-tab";
 import { setupRequestModal } from "./request-modal";
 
 export function setupSlack(app: Express) {

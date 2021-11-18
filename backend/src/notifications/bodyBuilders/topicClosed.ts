@@ -1,8 +1,9 @@
 import { BlockCollection, Blocks, Elements } from "slack-block-builder";
 
+import { createSlackLink } from "~backend/src/slack/md/utils";
 import { SlackActionIds } from "~backend/src/slack/utils";
 
-import { NotificationMessage, createSlackLink } from "../sendNotification";
+import { NotificationMessage } from "../sendNotification";
 
 interface Props {
   closedBy?: string | null;
