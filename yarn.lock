@@ -7644,6 +7644,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"customerio-node@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "customerio-node@npm:3.1.0"
+  checksum: a0226d2e0f289463bbfc6a0411b01603b1b070bc9cbc0f59ce750dfba375969fc474a361f3dca79dc31cead2943a5a38e7c76ac47eb1cd2ec10eb08d7a99feb6
+  languageName: node
+  linkType: hard
+
 "cz-conventional-changelog@npm:3.2.0":
   version: 3.2.0
   resolution: "cz-conventional-changelog@npm:3.2.0"
@@ -20978,6 +20985,7 @@ fsevents@^1.2.7:
     "@types/uuid": ^8.3.1
     cookie-parser: ^1.4.5
     cors: ^2.8.5
+    customerio-node: ^3.1.0
     date-fns-tz: ^1.1.6
     deep-object-diff: ^1.1.0
     express-async-errors: ^3.1.1
