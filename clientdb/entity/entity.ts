@@ -118,7 +118,7 @@ export function createEntity<D, C>({
     getUpdatedAt() {
       const rawInfo = entity[config.updatedAtField];
 
-      const updatedAt = new Date(rawInfo as string);
+      const updatedAt = new Date(rawInfo as unknown as string);
 
       if (isNaN(updatedAt.getTime())) {
         console.error({ entity });

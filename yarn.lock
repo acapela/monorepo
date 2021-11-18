@@ -19895,10 +19895,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.3.0":
-  version: 2.3.0
-  resolution: "tslib@npm:2.3.0"
-  checksum: 8869694c26e4a7b56d449662fd54a4f9ba872c889d991202c74462bd99f10e61d5bd63199566c4284c0f742277736292a969642cc7b590f98727a7cae9529122
+"tslib@npm:2.3.1":
+  version: 2.3.1
+  resolution: "tslib@npm:2.3.1"
+  checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
   languageName: node
   linkType: hard
 
@@ -20020,23 +20020,23 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.4.0-beta":
-  version: 4.4.0-beta
-  resolution: "typescript@npm:4.4.0-beta"
+"typescript@npm:4.4.3":
+  version: 4.4.3
+  resolution: "typescript@npm:4.4.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: aff0ab90b62eec675a40417e924870deafd32a02a8268318798656c5c44551ec1e4c83626a7145df3edbf3ec14dcd618c7c9737c72b60d6fc898da76b6217e43
+  checksum: 05823f21796d450531a7e4ab299715d38fd9ded0e4ce7400876053f4b5166ca3dde7a68cecfe72d9086039f03c0b6edba36516fb10ed83c5837d9600532ea4c2
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A4.4.0-beta#~builtin<compat/typescript>":
-  version: 4.4.0-beta
-  resolution: "typescript@patch:typescript@npm%3A4.4.0-beta#~builtin<compat/typescript>::version=4.4.0-beta&hash=32657b"
+"typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>":
+  version: 4.4.3
+  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 0ecaa2c90de4d30a99e0134c9b06c4ea4b1e114ad63421a0c245e8f9828dab785fe0ba19a9827925a422bbe6777551e2c7fa1648874346a777fa8689fb5a6a08
+  checksum: 28ab98313afab46788ff41014fdb5932430ada6e03cf9e92ac47f406526a2cac1ae2894834e7da61e46b7429318e9c47f45ba8de323332f0cb9af99b72ebae74
   languageName: node
   linkType: hard
 
