@@ -10,14 +10,14 @@ interface CommonErrorAdditionalInfo {
   renderActions?: () => ReactNode;
 }
 
-class CommonError extends Error {
+class KnownError extends Error {
   constructor(message: string, public info?: CommonErrorAdditionalInfo) {
     super(message);
   }
 }
 
-export const commonErrors = {
-  removedFromCurrentTeam: new CommonError(`You have been removed from current team`, {
+export const knownErrors = {
+  removedFromCurrentTeam: new KnownError(`You have been removed from current team`, {
     description: "Please select other team or create a new one",
     renderActions() {
       return (
@@ -32,7 +32,7 @@ export const commonErrors = {
       );
     },
   }),
-  sessionInvalid: new CommonError(`You have been logged out`, {
+  sessionInvalid: new KnownError(`You have been logged out`, {
     description: "Please log in again",
     renderActions() {
       return (
@@ -49,6 +49,6 @@ export const commonErrors = {
   }),
 };
 
-export function isCommonError(error: unknown): error is CommonError {
-  return error instanceof CommonError;
+export function isKnownError(error: unknown): error is KnownError {
+  return error instanceof KnownError;
 }

@@ -11,7 +11,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export function PlainErrorView({ title = "Something went wrong", description, extraContent, children }: Props) {
+export function ErrorView({ title = "Something went wrong", description, extraContent, children }: Props) {
   return (
     <FocusedActionLayout hideLogo title={title} description={description}>
       {extraContent}

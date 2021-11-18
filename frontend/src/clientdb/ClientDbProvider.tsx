@@ -6,7 +6,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
-import { PlainErrorView } from "~frontend/views/ErrorView";
+import { ErrorView } from "~frontend/views/ErrorView";
 import { assert } from "~shared/assert";
 import { devAssignWindowVariable } from "~shared/dev";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
@@ -90,7 +90,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   if (error) {
     console.error(error);
     return (
-      <PlainErrorView
+      <ErrorView
         title="Failed to load app data"
         description="This might be due to using the app in private mode or disk being out of space."
       />

@@ -4,7 +4,7 @@ import { unstable_batchedUpdates } from "react-dom";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useNullableDb } from "~frontend/clientdb";
-import { commonErrors } from "~frontend/errors/commonErrors";
+import { knownErrors } from "~frontend/errors/knownErrors";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
@@ -162,7 +162,7 @@ export function useCurrentTeam() {
 export function useAssertCurrentTeam() {
   const team = useCurrentTeam();
 
-  assert(team, commonErrors.removedFromCurrentTeam);
+  assert(team, knownErrors.removedFromCurrentTeam);
 
   return team;
 }

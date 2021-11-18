@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
-import { commonErrors } from "~frontend/errors/commonErrors";
+import { knownErrors } from "~frontend/errors/knownErrors";
 import { assertDefined } from "~shared/assert";
 import { UserTokenPayload } from "~shared/jwt";
 
@@ -28,7 +28,7 @@ export function useAssertCurrentUser(): UserEntity {
   const validatedUser = useAssetCurrentUserAuth();
   const db = useDb();
 
-  const user = db.user.assertFindById(validatedUser.id, commonErrors.sessionInvalid);
+  const user = db.user.assertFindById(validatedUser.id, knownErrors.sessionInvalid);
 
   return user;
 }
