@@ -24,3 +24,17 @@ delete_permissions:
         owner_id:
           _eq: X-Hasura-User-Id
   role: user
+event_triggers:
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: team_slack_installation_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

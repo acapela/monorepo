@@ -8,12 +8,11 @@ import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~sh
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
 
+export const extractInstallationDataBotToken = (data: unknown) => (data as SlackInstallation)?.bot?.token;
+
 export async function fetchTeamBotToken(teamId: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });
-  if (!slackInstallation) {
-    return;
-  }
-  return (slackInstallation.data as unknown as SlackInstallation)?.bot?.token;
+  return slackInstallation ? extractInstallationDataBotToken(slackInstallation.data) : null;
 }
 
 export const assertToken = (c: Context) => assertDefined(c.userToken ?? c.botToken, "must have at least one token");
