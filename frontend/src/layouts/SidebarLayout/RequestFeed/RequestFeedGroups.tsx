@@ -1,5 +1,16 @@
-import { isAfter, startOfDay, startOfWeek, subBusinessDays, subWeeks } from "date-fns";
-import { min, sortBy } from "lodash";
+import {
+  endOfDay,
+  endOfMonth,
+  format,
+  isAfter,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  subBusinessDays,
+  subWeeks,
+} from "date-fns";
+import { subMonths } from "date-fns/esm";
+import { min, orderBy, sortBy } from "lodash";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 import styled, { css } from "styled-components";
@@ -18,6 +29,9 @@ interface Props {
   topics: TopicEntity[];
   showArchived?: boolean;
 }
+
+// TODO; optimize enough to show more topics
+const SHOW_RECENT_ONLY = true;
 
 const hasTopicOpenTasksForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
@@ -76,15 +90,18 @@ function prepareTopicsGroups(topics: TopicEntity[]) {
     sentTasks: sortSentTopics(sentTasks),
     openTopics: remainingUncategorizedOpenTopics,
     closedTopics,
-    archived,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    archived: orderBy(archived, (t) => t.archived_at!, "desc"),
   };
 }
 
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
+  // MBA m1 2021 -> 186 ms to process (archived orderBy is main culprit)
   const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = prepareTopicsGroups(topics);
 
-  const [isShowingArchived, { toggle: toggleShowArchived }] = useBoolean(false);
+  const [isShowingArchivedTimeline, { toggle: toggleShowArchived }] = useBoolean(false);
 
+  // MBA m1 2021 -> 26 ms to process
   const archivedGroups: RequestsGroupProps[] = useMemo(() => {
     const groups: RequestsGroupProps[] = [];
 
@@ -95,6 +112,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
     const now = new Date();
     const sameTimeYesterday = subBusinessDays(now, 1);
     const sameTimeLastWeek = subWeeks(now, 1);
+    const sameTimeLastMonth = subMonths(now, 1);
 
     const [today, notToday] = groupByFilter(archived, happenedWithin(startOfDay(now)));
     if (today.length > 0) {
@@ -111,13 +129,35 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
       groups.push({ groupName: "Rest of this week", topics: thisWeek });
     }
 
-    const [lastWeek, notLast2Weeks] = groupByFilter(notThisWeek, happenedWithin(startOfWeek(sameTimeLastWeek)));
+    const [lastWeek, notLastWeek] = groupByFilter(notThisWeek, happenedWithin(startOfWeek(sameTimeLastWeek)));
     if (lastWeek.length > 0) {
       groups.push({ groupName: "Last week", topics: lastWeek });
     }
 
-    if (notLast2Weeks.length > 0) {
-      groups.push({ groupName: "All", topics: notLast2Weeks });
+    if (SHOW_RECENT_ONLY) {
+      return groups;
+    }
+
+    const [restOfMonth, allRemaining] = groupByFilter(notLastWeek, happenedWithin(startOfMonth(sameTimeLastMonth)));
+    if (restOfMonth.length > 0) {
+      groups.push({ groupName: "Rest of month", topics: lastWeek });
+    }
+
+    let remainingDays = allRemaining;
+
+    while (remainingDays.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const beginningOfMonth = new Date(remainingDays[0].archived_at!);
+
+      const previousMonth = endOfMonth(endOfDay(subMonths(beginningOfMonth, 1)));
+
+      const [month, remaining] = groupByFilter(remainingDays, happenedWithin(previousMonth));
+      if (month.length > 0) {
+        const groupName = format(beginningOfMonth, "MMMM uuuu");
+        groups.push({ groupName, topics: month });
+      }
+
+      remainingDays = remaining;
     }
 
     return groups;
@@ -125,7 +165,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
 
   return (
     <UIHolder data-test-id="sidebar-all-request-groups">
-      {!isShowingArchived && (
+      {!isShowingArchivedTimeline && (
         <>
           {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}
           {!!sentTasks.length && <RequestsGroup topics={sentTasks} groupName="Sent" />}
@@ -135,11 +175,11 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
         </>
       )}
 
-      <UIArchivedToggle onClick={toggleShowArchived} isShowingArchived={isShowingArchived}>
-        <Toggle isSet={isShowingArchived} size="small" /> <div>Show archived</div>
+      <UIArchivedToggle onClick={toggleShowArchived} isShowingArchived={isShowingArchivedTimeline}>
+        <Toggle isSet={isShowingArchivedTimeline} size="small" /> <div>Show archived</div>
       </UIArchivedToggle>
 
-      {isShowingArchived && (
+      {isShowingArchivedTimeline && (
         <>
           {archivedGroups.map(({ groupName, topics }) => (
             <RequestsGroup key={groupName} topics={topics} groupName={groupName} />
