@@ -1,5 +1,9 @@
+import { expect } from "@playwright/test";
+
+import { getInviteURL } from "~backend/src/inviteUser/utils";
 import { test } from "~e2e/helper/base-test";
 import { basePath } from "~e2e/helper/constants";
+import { routes } from "~shared/routes";
 
 test("create a team", async ({ page, auth, db }) => {
   await auth.login(db.user1);
@@ -16,4 +20,24 @@ test("create a team", async ({ page, auth, db }) => {
 
   // Expect to be on homepage
   await page.waitForSelector(`text="New Request"`);
+});
+
+test("invite a new user", async ({ page, auth, db, browser }) => {
+  await auth.login(db.user2);
+  await page.goto(basePath + routes.settings);
+  const newUserEmail = "__TESTING__greenhorn@acape.la";
+  await page.fill('[name="invite-email"]', newUserEmail);
+  await page.click('text="Send invite"');
+  const element = await page.waitForSelector(`text=${newUserEmail}(Invite pending)`);
+  const invitedUserId = await element.getAttribute("data-test-user-id");
+  expect(typeof invitedUserId).toBe("string");
+
+  // In the real world, this is where an invite would be received through E-Mail or Slack. Since we do not mock this yet
+  // we generate an invite URL ourselves
+
+  const newBrowserContext = await browser.newContext();
+  const newPage = await newBrowserContext.newPage();
+  await newPage.goto(getInviteURL(invitedUserId!));
+  await newPage.waitForSelector("text=You have been invited");
+  await newBrowserContext.close();
 });

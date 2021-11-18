@@ -20,20 +20,12 @@ export const db = new PrismaClient({
 
 const PREFIX = "__TESTING__";
 
-function createJWTForUser(user: user): string {
-  return signJWT(
-    createJWT({
-      sub: user.id,
-      userId: user.id,
-      teamId: user.current_team_id,
-    })
-  );
-}
+const createJWTForUser = (userId: string): string => signJWT(createJWT({ sub: userId, userId: userId }));
 
 export type TestUser = user & { jwt: string };
 
 async function createUser(name: string, email: string, currentTeam: string | null): Promise<TestUser> {
-  const dbUser1 = await db.user.create({
+  const dbUser = await db.user.create({
     data: {
       name,
       email: PREFIX + email,
@@ -48,8 +40,8 @@ async function createUser(name: string, email: string, currentTeam: string | nul
     },
   });
   return {
-    ...dbUser1,
-    jwt: createJWTForUser(dbUser1),
+    ...dbUser,
+    jwt: createJWTForUser(dbUser.id),
   };
 }
 
@@ -71,11 +63,9 @@ export async function setupDatabase() {
   return {
     data: { user1, user2 },
     async cleanup() {
-      await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
-      // Prisma does its own constraint checking, so we have to go raw SQL to make deletion cascade
       const userIds = Prisma.join([user1.id, user2.id]);
       await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
-      await db.$executeRaw`DELETE FROM "user" WHERE id IN (${userIds})`;
+      await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
     },
   };
 }
