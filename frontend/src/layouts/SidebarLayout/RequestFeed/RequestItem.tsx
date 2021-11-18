@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { niceFormatDate } from "~frontend/../../shared/dates/format";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRouteParams } from "~frontend/hooks/useRouteParams";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
@@ -60,7 +61,6 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
   const isHighlighted = topicRouteParams.topicSlug === topic.slug;
 
   const unreadMessagesCount = topic.unreadMessages.count;
-  const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
 
   return (
     <>
@@ -77,21 +77,32 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
               {unreadMessagesCount > 0 && <UIBubble>{unreadMessagesCount}</UIBubble>}
             </HStack>
             <UIFeedItemSubTitle>
-              {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
-              {!unfinishedTaskWithEarliestDueDate && (
-                <LazyRender fallback={<div>&nbsp;</div>}>
-                  <RequestContentSnippet topic={topic} />
-                </LazyRender>
-              )}
-
-              {unfinishedTaskWithEarliestDueDate && (
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.dueDate!)}</>
-              )}
+              {!topic.isArchived && <OpenTopicSubtitle topic={topic} />}
+              {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+              {topic.isArchived && <>Archived {niceFormatDate(new Date(topic.archived_at!))}</>}
             </UIFeedItemSubTitle>
           </UIFeedItemLabels>
         </UIFeedItem>
       </Link>
+    </>
+  );
+});
+
+const OpenTopicSubtitle = observer(function OpenTopicSubtitle({ topic }: { topic: TopicEntity }) {
+  const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
+  return (
+    <>
+      {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
+      {!unfinishedTaskWithEarliestDueDate && (
+        <LazyRender fallback={<div>&nbsp;</div>}>
+          <RequestContentSnippet topic={topic} />
+        </LazyRender>
+      )}
+
+      {unfinishedTaskWithEarliestDueDate && (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.dueDate!)}</>
+      )}
     </>
   );
 });
