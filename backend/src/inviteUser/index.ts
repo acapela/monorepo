@@ -10,39 +10,25 @@ import { routes } from "~shared/routes";
 
 import { getInviteURL } from "./utils";
 
-async function sendNewUserInviteNotification(user: User, team: Team, inviter: User) {
-  const inviteURL = getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });
+async function sendInviteNotification(user: User, team: Team, inviter: User, hasUserSignedUp: boolean) {
+  const inviteUrl = hasUserSignedUp
+    ? `${process.env.FRONTEND_URL}${routes.teamSelect}`
+    : getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
   await sendNotificationIgnoringPreference(user, team.id, {
-    email: {
-      subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
-      html: [
-        "Hey!",
-        `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
-        `Follow <a href="${inviteURL}">this link</a> to sign up and join the discussion.`,
-      ].join("<br>"),
+    template: {
+      transactionalMessageId: 2,
+      messageData: {
+        inviter: inviter.name,
+        inviteUrl,
+        team: team.name,
+      },
     },
-    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}" on Acapela`)}`,
+    slack: `${slackFrom} ${createSlackLink(inviteUrl, `has invited you to join team "${team.name}" on Acapela`)}`,
   });
 }
 
-async function sendExistingUserInviteNotification(user: User, team: Team, inviter: User) {
-  const inviteURL = `${process.env.FRONTEND_URL}${routes.teamSelect}`;
-  const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
-  await sendNotificationIgnoringPreference(user, team.id, {
-    email: {
-      subject: `${inviter.name} has invited you to collaborate on ${team.name}`,
-      html: [
-        "Hey!",
-        `${inviter.name} has invited you to join ${team.name} team on Acapela.`,
-        `Follow <a href="${inviteURL}">this link</a> and select team "${team.name}" to join the discussion.`,
-      ].join("<br>"),
-    },
-    slack: `${slackFrom} ${createSlackLink(inviteURL, `has invited you to join team "${team.name}"`)}`,
-  });
-}
-
-export async function sendInviteNotification(
+export async function handleInviteNotifications(
   user: User & { account: Account[] },
   teamId: string,
   invitingUserId: string
@@ -54,11 +40,8 @@ export async function sendInviteNotification(
   assert(team, `missing team for ${teamId}`);
   assert(inviter, `Inviter ${invitingUserId} does not exist`);
 
-  if (user.account.length == 0) {
-    await sendNewUserInviteNotification(user, team, inviter);
-  } else {
-    await sendExistingUserInviteNotification(user, team, inviter);
-  }
+  const hasUserSignedUp = user.account.length > 0;
+  await sendInviteNotification(user, team, inviter, hasUserSignedUp);
 
   log.info("Sent invite notification", { userId: user.id, teamId });
 }
@@ -108,7 +91,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, userEmail: email });
     }
 
-    await sendInviteNotification(teamMember.user, team_id, invitingUserId);
+    await handleInviteNotifications(teamMember.user, team_id, invitingUserId);
 
     return {
       success: true,
