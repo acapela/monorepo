@@ -164,7 +164,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   }, [archived]);
 
   return (
-    <UIHolder data-test-id="sidebar-all-request-groups">
+    <UIHolder data-test-id="sidebar-all-request-groups" $isShowingArchived={isShowingArchivedTimeline}>
       {!isShowingArchivedTimeline && (
         <>
           {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}
@@ -175,9 +175,9 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
         </>
       )}
 
-      <UIArchivedToggle onClick={toggleShowArchived} isShowingArchived={isShowingArchivedTimeline}>
-        {!isShowingArchivedTimeline && <>Show archived requests</>}
-        {isShowingArchivedTimeline && <>Hide archived requests</>}
+      <UIArchivedToggle onClick={toggleShowArchived} $isShowingArchived={isShowingArchivedTimeline}>
+        {!isShowingArchivedTimeline && <>Show recently archived requests</>}
+        {isShowingArchivedTimeline && <>Hide recently archived requests</>}
         <IconChevronDown />
       </UIArchivedToggle>
 
@@ -192,13 +192,18 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   );
 });
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div<{ $isShowingArchived: boolean }>`
   position: relative;
   height: 100%;
   overflow-x: hidden;
+  ${(props) =>
+    !props.$isShowingArchived &&
+    css`
+      padding-top: 12px;
+    `}
 `;
 
-const UIArchivedToggle = styled.div<{ isShowingArchived: boolean }>`
+const UIArchivedToggle = styled.div<{ $isShowingArchived: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
@@ -209,7 +214,7 @@ const UIArchivedToggle = styled.div<{ isShowingArchived: boolean }>`
     font-size: 25px;
   }
   ${(props) =>
-    props.isShowingArchived
+    props.$isShowingArchived
       ? css`
           margin-bottom: 10px;
           border-top-width: 0px;
