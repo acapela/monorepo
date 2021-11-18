@@ -80,7 +80,7 @@
     "token_rotation_enabled": false,
     "event_subscriptions": {
       "request_url": "https://app.acape.la/api/backend/slack/events",
-      "bot_events": ["app_home_opened"]
+      "bot_events": ["app_uninstalled", "app_home_opened"]
     }
   }
 }

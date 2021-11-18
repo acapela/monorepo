@@ -226,4 +226,14 @@ export function setupSlackActionHandlers(slackApp: App) {
       });
     }
   });
+
+  slackApp.event("app_uninstalled", async ({ body }) => {
+    const slack_team_id = body.team_id;
+    await db.$transaction([
+      db.team_slack_installation.deleteMany({ where: { slack_team_id } }),
+      db.team_member_slack.deleteMany({
+        where: { team_member: { team: { team_slack_installation: { slack_team_id } } } },
+      }),
+    ]);
+  });
 }
