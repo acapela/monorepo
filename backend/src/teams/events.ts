@@ -1,4 +1,6 @@
-import { Team, db } from "~db";
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "~backend/src/slack/app";
+import { extractInstallationDataBotToken } from "~backend/src/slack/utils";
+import { Team, TeamSlackInstallation, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
@@ -45,4 +47,17 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
       has_joined: true,
     },
   });
+}
+
+export async function handleTeamSlackInstallationDelete(event: HasuraEvent<TeamSlackInstallation>) {
+  if (event.type == "delete") {
+    await db.team_member_slack.deleteMany({ where: { team_member: { team_id: event.item.team_id } } });
+    const botToken = extractInstallationDataBotToken(event.item.data);
+    assert(botToken, "must have bot token");
+    await slackClient.apps.uninstall({
+      token: botToken,
+      client_id: SLACK_CLIENT_ID,
+      client_secret: SLACK_CLIENT_SECRET,
+    });
+  }
 }
