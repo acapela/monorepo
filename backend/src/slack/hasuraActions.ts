@@ -15,12 +15,17 @@ export const getTeamSlackInstallationURL: ActionHandler<
   actionName: "get_team_slack_installation_url",
 
   async handle(userId, { input: { team_id, redirectURL } }) {
+    assert(userId, "userId is required");
     const team = await db.team.findFirst({
       where: { id: team_id, team_member: { some: { user_id: userId } } },
-      include: { team_member: true },
+      include: { team_member: true, team_slack_installation: true },
     });
     assert(team, new UnprocessableEntityError(`Team ${team_id} for member ${userId} not found`));
-    const url = await getSlackInstallURL({ withBot: true }, { teamId: team_id, redirectURL, userId });
+    const url = await getSlackInstallURL(
+      // we need bot permissions if they were not already granted
+      { withBot: !team.team_slack_installation },
+      { teamId: team_id, redirectURL, userId }
+    );
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
     return { url };
   },
