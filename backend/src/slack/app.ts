@@ -7,6 +7,7 @@ import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
+import { routes } from "~shared/routes";
 import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
 import { HttpStatus } from "../http";
@@ -16,13 +17,12 @@ type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters
 
 export type SlackInstallation = SlackBolt.Installation;
 
-const clientId = process.env.SLACK_CLIENT_ID;
-const clientSecret = process.env.SLACK_CLIENT_SECRET;
+export const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
 
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
-  clientId,
-  clientSecret,
+  clientId: SLACK_CLIENT_ID,
+  clientSecret: SLACK_CLIENT_SECRET,
   stateSecret: assertDefined(process.env.SLACK_STATE_SECRET, "missing SLACK_STATE_SECRET"),
 
   installationStore: {
@@ -43,13 +43,8 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           create: { team_id: teamId, data, slack_team_id: slackTeamId },
           update: { data },
         });
-        if (userId) {
-          trackBackendUserEvent(userId, "Added Team Slack Integration", { slackTeamId, teamId });
-          identifyBackendUserTeam(userId, teamId, { isSlackInstalled: true });
-        }
-      }
-      if (!userId) {
-        return;
+        trackBackendUserEvent(userId, "Added Team Slack Integration", { slackTeamId, teamId });
+        identifyBackendUserTeam(userId, teamId, { isSlackInstalled: true });
       }
       const teamMember = await db.team_member.findFirst({ where: { user_id: userId, team_id: teamId } });
       if (!teamMember) {
@@ -84,14 +79,6 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       const memberData = teamMemberSlackInstallation?.installation_data;
       return { ...teamData, user: memberData ?? {} } as SlackInstallation;
     },
-    async deleteInstallation(query) {
-      await db.$transaction([
-        db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } }),
-        db.team_member_slack.deleteMany({
-          where: { team_member: { team: { team_slack_installation: { slack_team_id: query.teamId } } } },
-        }),
-      ]);
-    },
   },
 
   installerOptions: {
@@ -101,6 +88,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         res.writeHead(HttpStatus.FOUND, { Location: redirectURL || "/" }).end();
       },
       failure(error, options, req, res) {
+        if (!options) {
+          res.writeHead(HttpStatus.FOUND, { Location: process.env.FRONTEND_URL + routes.settings }).end();
+          return;
+        }
         const { redirectURL } = parseMetadata({ metadata: options.metadata });
         const isAlreadyUsedError = Boolean(error.stack?.includes(SLACK_WORKSPACE_ALREADY_USED_ERROR));
         if (!isAlreadyUsedError) {

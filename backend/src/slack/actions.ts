@@ -9,11 +9,11 @@ import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { routes } from "~shared/routes";
 import { Sentry } from "~shared/sentry";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
-import { getSlackInstallURL } from "./install";
 import { tryOpenRequestModal } from "./request-modal/tryOpenRequestModal";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 
@@ -201,11 +201,10 @@ export function setupSlackActionHandlers(slackApp: App) {
                   text: `If you really want to press a button, we recommend the ones starting with "${user.name}".`,
                 })
               : Blocks.Section({
-                  text: `Now if this IS your button, make sure to ${createSlackLink(
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    (await getSlackInstallURL({ withBot: false }, { teamId: task.message.topic.team_id }))!,
-                    "authorize Acapela to access your Slack"
-                  )} so that something happens next time you press that button.`,
+                  text: `Now if this IS your button, make sure ${createSlackLink(
+                    process.env.FRONTEND_URL + routes.settings,
+                    "to link your Slack account in your Acapela team settings"
+                  )} so that something happens next time you press it.`,
                 })
           )
           .buildToObject(),
