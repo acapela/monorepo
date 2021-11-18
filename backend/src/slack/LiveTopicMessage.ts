@@ -1,7 +1,7 @@
-import { groupBy, uniq } from "lodash";
+import { groupBy } from "lodash";
 import { Blocks, Elements, Md, Message } from "slack-block-builder";
 
-import { Topic, db } from "~db";
+import { Task, Topic, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert, assertDefined } from "~shared/assert";
 import { routes } from "~shared/routes";
@@ -9,41 +9,41 @@ import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { generateMarkdownFromTipTapJson } from "./md/generator";
-import { createSlackLink } from "./md/utils";
+import { createSlackLink, mdDate } from "./md/utils";
 import { REQUEST_TYPE_EMOJIS, fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "./utils";
 
+const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<string, string>) =>
+  Object.entries(groupBy(tasks, (task) => task.type))
+    .map(([type, tasks]) => {
+      const isTaskTypeDone = tasks.every((t) => t.done_at);
+      const taskText = `${Md.bold(MENTION_TYPE_LABELS[type as RequestType])} requested from ${tasks
+        .map(({ user, done_at }) => {
+          const userText = slackUsers[user.id] ? Md.user(slackUsers[user.id]) : Md.italic(user.name);
+          return !isTaskTypeDone && done_at ? Md.strike(userText) : userText;
+        })
+        .join(", ")}`;
+      return isTaskTypeDone ? Md.strike(taskText) : taskText;
+    })
+    .join("\n");
+
 export async function LiveTopicMessage(topic: Topic) {
-  const [message, topicMembers] = await Promise.all([
+  const [message, teamMemberSlack] = await Promise.all([
     db.message.findFirst({
       where: { topic_id: topic.id },
       orderBy: [{ created_at: "asc" }],
-      include: { task: { include: { user: true } } },
+      include: { task: { include: { user: true } }, message_task_due_date: true },
     }),
-    db.topic_member.findMany({
+    db.team_member_slack.findMany({
       where: {
-        topic_id: topic.id,
+        team_member: {
+          user: { topic_member: { some: { topic_id: topic.id } } },
+        },
       },
-      select: {
-        user_id: true,
-      },
+      include: { team_member: true },
     }),
   ]);
 
-  const mentionedSlackIdByUsersId = (
-    await db.team_member_slack.findMany({
-      where: {
-        team_member: {
-          user_id: {
-            in: uniq(topicMembers.map((tm) => tm.user_id)),
-          },
-          team_id: topic.team_id,
-        },
-      },
-      include: {
-        team_member: true,
-      },
-    })
-  ).map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+  const mentionedSlackIdByUsersId = teamMemberSlack.map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
 
   assert(message, "must have a first message");
 
@@ -59,6 +59,7 @@ export async function LiveTopicMessage(topic: Topic) {
   const slackUsers: Record<string, string> = Object.fromEntries(
     await Promise.all(tasks.map(async ({ user }) => [user.id, await findSlackUserId(topic.team_id, user)]))
   );
+  const dueAt = message.message_task_due_date?.due_at;
   return Message({ text })
     .blocks(
       Blocks.Section({ text }),
@@ -66,20 +67,8 @@ export async function LiveTopicMessage(topic: Topic) {
       topic.closed_at || tasks.length == 0
         ? Blocks.Section({ text: "🎉 All requests have been actioned. 💪" })
         : [
-            Blocks.Section({
-              text: Object.entries(groupBy(tasks, (task) => task.type))
-                .map(([type, tasks]) => {
-                  const isTaskTypeDone = tasks.every((t) => t.done_at);
-                  const taskText = `${Md.bold(MENTION_TYPE_LABELS[type as RequestType])} requested from ${tasks
-                    .map(({ user, done_at }) => {
-                      const userText = slackUsers[user.id] ? Md.user(slackUsers[user.id]) : Md.italic(user.name);
-                      return !isTaskTypeDone && done_at ? Md.strike(userText) : userText;
-                    })
-                    .join(", ")}`;
-                  return isTaskTypeDone ? Md.strike(taskText) : taskText;
-                })
-                .join("\n"),
-            }),
+            Blocks.Section({ text: getTasksText(tasks, slackUsers) }),
+            dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
             tasks.length == 0
               ? undefined
               : Blocks.Actions().elements(

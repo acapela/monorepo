@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { formatRelative } from "date-fns";
 import { flattenDeep, minBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
@@ -15,7 +14,7 @@ import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "./md/generator";
-import { createSlackLink } from "./md/utils";
+import { createSlackLink, mdDate } from "./md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "./utils";
 
 const TOPICS_PER_CATEGORY = 10;
@@ -86,7 +85,7 @@ function RequestItem(topic: TopicWithOpenTask, context: GenerateContext) {
     Blocks.Section({
       text: [
         createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
-          (mostUrgentDueDate ? " - " + Md.italic("due " + formatRelative(mostUrgentDueDate, new Date())) : ""),
+          (mostUrgentDueDate ? " - " + Md.italic("due " + mdDate(mostUrgentDueDate)) : ""),
         mostUrgentMessage?.content_text
           ? Md.bold(mostUrgentMessage.user.name + ":") +
             " " +
