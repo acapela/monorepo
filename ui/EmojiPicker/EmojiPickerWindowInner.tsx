@@ -1,7 +1,7 @@
 import { chunk } from "lodash";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, memo, useEffect, useMemo, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
-import { List } from "react-virtualized";
+import { FixedSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
 import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "~shared/emoji";
@@ -14,7 +14,9 @@ import { useFrequentlyUsedEmoji } from "./frequentlyUsed";
 const EMOJI_SIZE = 30;
 const EMOJI_IN_ROW_COUNT = 10;
 
-const PICKER_WIDTH = EMOJI_SIZE * EMOJI_IN_ROW_COUNT;
+// scrollbar width is very different depending on the browser. This kind works for the few I use
+const SCROLLBAR_WIDTH = 20;
+const PICKER_WIDTH = EMOJI_SIZE * EMOJI_IN_ROW_COUNT + SCROLLBAR_WIDTH;
 const PICKER_HEIGHT = EMOJI_SIZE * 7;
 
 /**
@@ -81,13 +83,29 @@ interface Point {
 // Keyboard direction
 type Direction = "up" | "down" | "left" | "right";
 
+interface ItemData {
+  allRows: VirtualizedRow[];
+  emojiOnlyRows: EmojiRow[];
+  selectedPosition: Point | null;
+  setSelectedPosition: Dispatch<SetStateAction<Point | null>>;
+  handleEmojiPicked: (emoji: string) => void;
+}
+
+function getItemKey(index: number, { allRows }: ItemData) {
+  const row = allRows[index];
+  if (row.type === "header") {
+    return row.label;
+  }
+  return row.emojiInRow[0];
+}
+
 export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
   const listRef = useRef<List>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPosition, setSelectedPosition] = useState<Point | null>(null);
   const { frequentlyUsedEmoji, markEmojiAsUsed } = useFrequentlyUsedEmoji();
 
-  const resultsToShow = useMemo<VirtualizedRow[]>(() => {
+  const allRows = useMemo<VirtualizedRow[]>(() => {
     // If we're not searching - prepare regular list of all emoji
     if (!searchTerm.trim()) {
       return [
@@ -108,10 +126,10 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
   // To make navigation logic easier - create another list of virtualized rows, but ignoring headers.
   // This makes emoji x,y coordinates logic a lot simpler
   const emojiOnlyRows = useMemo(() => {
-    const emojiRows = resultsToShow.filter((row) => row.type === "emoji-row") as EmojiRow[];
+    const emojiRows = allRows.filter((row) => row.type === "emoji-row") as EmojiRow[];
 
     return emojiRows;
-  }, [resultsToShow]);
+  }, [allRows]);
 
   // When typing in search - reset selected position
   useEffect(() => {
@@ -133,11 +151,11 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
     if (!emojiRow) return;
 
     // To scroll accurately - we need now to take index of row including headers
-    const realRow = resultsToShow.indexOf(emojiRow);
+    const realRow = allRows.indexOf(emojiRow);
 
     if (realRow < 0) return;
 
-    listRef.current?.scrollToRow(realRow);
+    listRef.current?.scrollToItem(realRow);
   }, [selectedPosition, emojiOnlyRows]);
 
   // Will calculate new position of selection basing on current position and direction of movement
@@ -245,6 +263,17 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
     onEmojiPicked?.(emoji);
   }
 
+  const itemData = useMemo<ItemData>(
+    () => ({
+      allRows,
+      emojiOnlyRows,
+      selectedPosition,
+      setSelectedPosition,
+      handleEmojiPicked,
+    }),
+    [allRows, emojiOnlyRows, selectedPosition, setSelectedPosition, handleEmojiPicked]
+  );
+
   return (
     <UIHolder>
       <UISearch>
@@ -258,60 +287,68 @@ export function EmojiPickerWindowInner({ onEmojiPicked }: EmojiPickerProps) {
         />
       </UISearch>
       <UIEmojiList>
-        <List
+        <List<ItemData>
           ref={listRef}
-          rowCount={resultsToShow.length}
-          rowHeight={EMOJI_SIZE}
+          itemCount={allRows.length}
+          itemKey={getItemKey}
+          itemData={itemData}
+          itemSize={EMOJI_SIZE}
           height={PICKER_HEIGHT}
           width={PICKER_WIDTH}
-          rowRenderer={(row) => {
-            const { index, style, key } = row;
-
-            // Get row this emoji is part of (including headers rows)
-            const rowData = resultsToShow[index];
-
-            if (rowData.type === "header") {
-              return <UIHeader style={style}>{rowData.label}</UIHeader>;
-            }
-
-            // Get which emoji-only row is it in (excluding headers)
-            const emojiRowIndex = emojiOnlyRows.indexOf(rowData);
-
-            return (
-              <UIEmojiRow style={style} key={key}>
-                {rowData.emojiInRow.map((emoji, columnIndex) => {
-                  /**
-                   * Note - we decide if emoji is selected by x,y cords, not by emoji itself. It is because it is possible
-                   * that same emoji appears twice (eg as frequently used and on the list)
-                   */
-                  const isSelected =
-                    !!selectedPosition && selectedPosition.x === columnIndex && selectedPosition.y === emojiRowIndex;
-
-                  return (
-                    <UIEmojiButton
-                      tabIndex={0}
-                      onMouseEnter={() => {
-                        setSelectedPosition({ x: columnIndex, y: emojiRowIndex });
-                      }}
-                      title={getEmojiSlug(emoji) ?? undefined}
-                      key={emoji}
-                      isSelected={isSelected}
-                      onClick={() => {
-                        handleEmojiPicked(emoji);
-                      }}
-                    >
-                      {emoji}
-                    </UIEmojiButton>
-                  );
-                })}
-              </UIEmojiRow>
-            );
-          }}
-        />
+        >
+          {Row}
+        </List>
       </UIEmojiList>
     </UIHolder>
   );
 }
+
+const Row = memo(function Row({
+  index,
+  style,
+  data: { allRows, emojiOnlyRows, selectedPosition, setSelectedPosition, handleEmojiPicked },
+}: ListChildComponentProps<ItemData>) {
+  // Get row this emoji is part of (including headers rows)
+  const rowData = allRows[index];
+
+  if (rowData.type === "header") {
+    return <UIHeader style={style}>{rowData.label}</UIHeader>;
+  }
+
+  // Get which emoji-only row is it in (excluding headers)
+  const emojiRowIndex = emojiOnlyRows.indexOf(rowData);
+
+  return (
+    <UIEmojiRow style={style}>
+      {rowData.emojiInRow.map((emoji, columnIndex) => {
+        /**
+         * Note - we decide if emoji is selected by x,y cords, not by emoji itself. It is because it is possible
+         * that same emoji appears twice (eg as frequently used and on the list)
+         */
+        const isSelected =
+          !!selectedPosition && selectedPosition.x === columnIndex && selectedPosition.y === emojiRowIndex;
+
+        return (
+          <UIEmojiButton
+            tabIndex={0}
+            onMouseEnter={() => {
+              setSelectedPosition({ x: columnIndex, y: emojiRowIndex });
+            }}
+            title={getEmojiSlug(emoji) ?? undefined}
+            key={emoji}
+            isSelected={isSelected}
+            onClick={() => {
+              handleEmojiPicked(emoji);
+            }}
+          >
+            {emoji}
+          </UIEmojiButton>
+        );
+      })}
+    </UIEmojiRow>
+  );
+},
+areEqual);
 
 const UIHolder = styled.div<{}>``;
 
