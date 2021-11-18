@@ -2,7 +2,6 @@ import { View } from "@slack/types";
 import { uniq } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
@@ -11,6 +10,7 @@ import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~sha
 
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
+import { createSlackLink } from "../md/utils";
 import { ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })

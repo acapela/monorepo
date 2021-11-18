@@ -5,9 +5,6 @@ import { formatRelative } from "date-fns";
 import { flattenDeep, minBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/notifications/sendNotification";
-import { slackClient } from "~backend/src/slack/app";
-import { GenerateContext, generateMarkdownFromTipTapJson } from "~backend/src/slack/slackMarkdown/generator";
 import { Message, MessageTaskDueDate, Task, TeamMember, Topic, TopicMember, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assertDefined } from "~shared/assert";
@@ -16,6 +13,9 @@ import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 import { RequestType } from "~shared/types/mention";
 
+import { slackClient } from "./app";
+import { GenerateContext, generateMarkdownFromTipTapJson } from "./md/generator";
+import { createSlackLink } from "./md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "./utils";
 
 const TOPICS_PER_CATEGORY = 10;
@@ -123,12 +123,13 @@ const RequestsList = (title: string, topics: TopicRowsWithCount, context: Genera
           Blocks.Divider(),
           Blocks.Section({
             text: Md.italic(
-              `There ${pluralize(extraRequestsCount, "is", "are")} ${Md.bold(
+              `There ${pluralize(extraRequestsCount, "is another topic", "are more topics")} ${Md.bold(
                 extraRequestsCount.toString()
-              )} more ${pluralize(extraRequestsCount, "topic", "topics")} in this category. ${createSlackLink(
-                process.env.FRONTEND_URL,
-                "Open the web app"
-              )} to see ${pluralize(extraRequestsCount, "it", "them")}.`
+              )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
+                extraRequestsCount,
+                "it",
+                "them"
+              )}.`
             ),
           }),
         ]

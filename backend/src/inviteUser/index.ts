@@ -1,5 +1,6 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { createSlackLink, sendNotificationIgnoringPreference } from "~backend/src/notifications/sendNotification";
+import { sendNotificationIgnoringPreference } from "~backend/src/notifications/sendNotification";
+import { createSlackLink } from "~backend/src/slack/md/utils";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";

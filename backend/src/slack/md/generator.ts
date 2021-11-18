@@ -1,8 +1,9 @@
 import { compact, get, isArray, isString, isUndefined } from "lodash";
 import { Md } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/notifications/sendNotification";
 import { RichEditorNode } from "~richEditor/content/types";
+
+import { createSlackLink } from "./utils";
 
 function toString(input: string | string[] | undefined): string {
   if (!input) return "";

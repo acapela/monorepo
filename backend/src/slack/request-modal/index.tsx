@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { find } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
-import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -12,6 +11,7 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
+import { slackClient } from "../app";
 import { LiveTopicMessage } from "../LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
