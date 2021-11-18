@@ -20,8 +20,8 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { isNotNullish } from "~shared/nullish";
+import { IconChevronDown } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { Toggle } from "~ui/toggle";
 
 import { RequestsGroup, RequestsGroupProps } from "./RequestsGroup";
 
@@ -176,7 +176,9 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
       )}
 
       <UIArchivedToggle onClick={toggleShowArchived} isShowingArchived={isShowingArchivedTimeline}>
-        <Toggle isSet={isShowingArchivedTimeline} size="small" /> <div>Show archived</div>
+        {!isShowingArchivedTimeline && <>Show archived requests</>}
+        {isShowingArchivedTimeline && <>Hide archived requests</>}
+        <IconChevronDown />
       </UIArchivedToggle>
 
       {isShowingArchivedTimeline && (
@@ -191,25 +193,42 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
 });
 
 const UIHolder = styled.div<{}>`
+  position: relative;
+  height: 100%;
   overflow-x: hidden;
 `;
 
 const UIArchivedToggle = styled.div<{ isShowingArchived: boolean }>`
   width: 100%;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  padding-top: 10px;
-  padding-left: 22px;
+  justify-content: space-between;
+  padding: 16px;
+
+  svg {
+    font-size: 25px;
+  }
   ${(props) =>
     props.isShowingArchived
       ? css`
-          padding-bottom: 10px;
+          margin-bottom: 10px;
+          border-top-width: 0px;
+          svg {
+            transform: rotate(180deg);
+            transition-duration: 0.2s;
+          }
         `
       : css`
-          padding-bottom: 40px;
+          position: absolute;
+          bottom: 0;
         `}
-  ${theme.typo.item.secondaryTitle}
+  ${theme.typo.content.semibold}
+  ${theme.colors.text.asColor}
   opacity: 0.6;
   cursor: pointer;
+
+  border-color: rgba(0, 0, 0, 0.05);
+  border-style: solid;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
 `;
