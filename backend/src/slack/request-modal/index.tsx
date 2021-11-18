@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
 import { find } from "lodash";
-import { Bits, Blocks, Elements, Message, Modal } from "slack-block-builder";
+import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
@@ -25,9 +25,22 @@ const hourToOption = (hour: number) => Bits.Option({ value: `${hour}`, text: for
 
 export function setupRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
+    const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
+
+    if (body.text.toLowerCase() == "help") {
+      await ack({
+        response_type: "ephemeral",
+        text: [
+          `To create a request type ${Md.codeInline("/acapela")} with the text for the initial message.`,
+          "You can also @-tag people that should receive the request.",
+          `For example:\n${Md.codeBlock(`/acapela can you forward the documentation to me, ${Md.user(slackUserId)}?`)}`,
+        ].join(" "),
+      });
+      return;
+    }
+
     await ack();
 
-    const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
     const { user } = await tryOpenRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
