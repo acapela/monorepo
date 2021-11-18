@@ -15,11 +15,11 @@ import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client"
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { ClientDbProvider } from "~frontend/clientdb";
+import { sentryFallbackErrorRenderer } from "~frontend/errors/sentryFallbackErrorRenderer";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
-import { ErrorView } from "~frontend/views/ErrorView";
 import { useConst } from "~shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
@@ -109,9 +109,7 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <Sentry.ErrorBoundary
-        fallback={<ErrorView title="It's not you, it's us!" description="An error occurred. We will look into it." />}
-      >
+      <Sentry.ErrorBoundary fallback={sentryFallbackErrorRenderer}>
         <RequiredSessionProvider session={appConfig.session}>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
             <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
