@@ -1,7 +1,5 @@
 import { APIClient, RegionEU, SendEmailRequest } from "customerio-node";
 
-import { NotificationMessage } from "~backend/src/notifications/sendNotification";
-
 import { assertDefined } from "./assert";
 
 const customerioApiKey = assertDefined(
@@ -13,24 +11,31 @@ const customerioClient = new APIClient(customerioApiKey, { region: RegionEU });
 
 const DEFAULT_FROM_ADDRESS = "Acapela <hello@acapela.com>";
 
-export async function sendEmail(message: Partial<NotificationMessage>, to: string): Promise<void> {
+export type EmailData =
+  | {
+      subject: string;
+      html: string;
+    }
+  | { transactionalMessageId: number; messageData: { [key: string]: string } };
+
+export async function sendEmail(message: EmailData, to: string): Promise<void> {
   try {
     let request;
-    if (message.email) {
+    if ("html" in message) {
       request = new SendEmailRequest({
         to,
         identifiers: {
           email: to,
         },
         from: DEFAULT_FROM_ADDRESS,
-        subject: message.email.subject,
-        body: message.email.html,
+        subject: message.subject,
+        body: message.html,
       });
-    } else if (message.template) {
+    } else if ("transactionalMessageId" in message) {
       request = new SendEmailRequest({
         to,
-        transactional_message_id: message.template.transactionalMessageId,
-        message_data: message.template.messageData,
+        transactional_message_id: message.transactionalMessageId,
+        message_data: message.messageData,
         identifiers: {
           email: to,
         },

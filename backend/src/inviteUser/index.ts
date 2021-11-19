@@ -16,7 +16,7 @@ export async function sendInviteNotification(user: User, team: Team, inviter: Us
     : getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });
   const slackFrom = await getSlackUserMentionOrLabel(inviter, team.id);
   await sendNotificationIgnoringPreference(user, team.id, {
-    template: {
+    email: {
       transactionalMessageId: 2,
       messageData: {
         inviter: inviter.name,
