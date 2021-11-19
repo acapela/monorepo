@@ -10,11 +10,13 @@ import {
   subWeeks,
 } from "date-fns";
 import { subMonths } from "date-fns/esm";
+import { AnimatePresence, motion } from "framer-motion";
 import { min, orderBy, sortBy } from "lodash";
 import { observer } from "mobx-react";
-import { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { useBoundingBox } from "~frontend/../../shared/hooks/useBoundingBox";
 import { cachedComputed } from "~clientdb/entity/utils/cachedComputed";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
@@ -32,6 +34,8 @@ interface Props {
 
 // TODO; optimize enough to show more topics
 const SHOW_RECENT_ONLY = true;
+
+const ANIMATION_DURATION = 0.55;
 
 const hasTopicOpenTasksForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
@@ -96,6 +100,9 @@ function prepareTopicsGroups(topics: TopicEntity[]) {
 }
 
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const boundingBox = useBoundingBox(ref);
+
   // MBA m1 2021 -> 186 ms to process (archived orderBy is main culprit)
   const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = prepareTopicsGroups(topics);
 
@@ -164,30 +171,63 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   }, [archived]);
 
   return (
-    <UIHolder data-test-id="sidebar-all-request-groups" $isShowingArchived={isShowingArchivedTimeline}>
-      {!isShowingArchivedTimeline && (
-        <>
-          {!!receivedTasks.length && <RequestsGroup topics={receivedTasks} groupName="Received" />}
-          {!!sentTasks.length && <RequestsGroup topics={sentTasks} groupName="Sent" />}
-          {!!openTopics.length && <RequestsGroup topics={openTopics} groupName="Open" />}
-          {!!closedTopics.length && <RequestsGroup topics={closedTopics} groupName="Closed" />}
-          {showArchived && !!archived.length && <RequestsGroup topics={archived} groupName="Archived" />}
-        </>
-      )}
-
-      <UIArchivedToggle onClick={toggleShowArchived} $isShowingArchived={isShowingArchivedTimeline}>
+    <UIHolder ref={ref} data-test-id="sidebar-all-request-groups" $isShowingArchived={isShowingArchivedTimeline}>
+      <UIArchivedToggle
+        layout="position"
+        layoutId="sidebar-archive-toggle"
+        transition={{ duration: ANIMATION_DURATION }}
+        initial={{ y: 0 }}
+        animate={{
+          y: isShowingArchivedTimeline ? -boundingBox.height + 58 : 0,
+        }}
+        onClick={toggleShowArchived}
+        $isShowingArchived={isShowingArchivedTimeline}
+      >
         {!isShowingArchivedTimeline && <>Show recently archived requests</>}
         {isShowingArchivedTimeline && <>Hide recently archived requests</>}
         <IconChevronDown />
       </UIArchivedToggle>
 
-      {isShowingArchivedTimeline && (
-        <>
-          {archivedGroups.map(({ groupName, topics }) => (
-            <RequestsGroup key={groupName} topics={topics} groupName={groupName} />
-          ))}
-        </>
-      )}
+      <AnimatePresence key="first" initial={false}>
+        {!isShowingArchivedTimeline && (
+          <UIScrollableGroup
+            key="archived"
+            layout="position"
+            layoutId="sidebar-unarchived-topics"
+            // Add height of UIArchiveToggle + padding from top
+            initial={{ y: -boundingBox.height + 72 }}
+            animate={{ y: 12 }}
+            exit={{ y: -boundingBox.height + 72 }}
+            transition={{ duration: ANIMATION_DURATION }}
+          >
+            {!!receivedTasks.length && <RequestsGroup key="Received" topics={receivedTasks} groupName="Received" />}
+            {!!sentTasks.length && <RequestsGroup key="Sent" topics={sentTasks} groupName="Sent" />}
+            {!!openTopics.length && <RequestsGroup key="Open" topics={openTopics} groupName="Open" />}
+            {!!closedTopics.length && <RequestsGroup key="Closed" topics={closedTopics} groupName="Closed" />}
+            {showArchived && !!archived.length && (
+              <RequestsGroup key="Archived" topics={archived} groupName="Archived" />
+            )}
+          </UIScrollableGroup>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence key="second">
+        {isShowingArchivedTimeline && (
+          <UIScrollableGroup
+            key="unarchived"
+            layout="position"
+            layoutId="sidebar-archived-topics"
+            initial={{ y: boundingBox.height }}
+            animate={{ y: 60 }}
+            exit={{ y: boundingBox.height }}
+            transition={{ duration: ANIMATION_DURATION }}
+          >
+            {archivedGroups.map(({ groupName, topics }) => (
+              <RequestsGroup key={groupName} topics={topics} groupName={groupName} />
+            ))}
+          </UIScrollableGroup>
+        )}
+      </AnimatePresence>
     </UIHolder>
   );
 });
@@ -196,19 +236,27 @@ const UIHolder = styled.div<{ $isShowingArchived: boolean }>`
   position: relative;
   height: 100%;
   overflow-x: hidden;
-  ${(props) =>
-    !props.$isShowingArchived &&
-    css`
-      padding-top: 12px;
-    `}
+  overflow-y: hidden;
 `;
 
-const UIArchivedToggle = styled.div<{ $isShowingArchived: boolean }>`
+const UIScrollableGroup = styled(motion.div)<{}>`
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  position: absolute;
+
+  padding-bottom: 60px;
+`;
+
+const UIArchivedToggle = styled(motion.div)<{ $isShowingArchived: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
 
   svg {
     font-size: 25px;
@@ -216,20 +264,21 @@ const UIArchivedToggle = styled.div<{ $isShowingArchived: boolean }>`
   ${(props) =>
     props.$isShowingArchived
       ? css`
-          margin-bottom: 10px;
           border-top-width: 0px;
           svg {
             transform: rotate(180deg);
-            transition-duration: 0.2s;
+            transition-duration: ${ANIMATION_DURATION}s;
           }
         `
       : css`
-          position: absolute;
-          bottom: 0;
+          svg {
+            transform: rotate(360deg);
+            transition-duration: ${ANIMATION_DURATION}s;
+          }
         `}
   ${theme.typo.content.semibold}
   ${theme.colors.text.asColor}
-  opacity: 0.6;
+  ${theme.colors.layout.backgroundAccent.asBg}  
   cursor: pointer;
 
   border-color: rgba(0, 0, 0, 0.05);
