@@ -17,9 +17,6 @@ import { groupByFilter } from "~shared/groupByFilter";
 
 import { RequestsGroupProps } from "../RequestsGroup";
 
-// TODO; optimize enough to show more topics
-const SHOW_RECENT_ONLY = true;
-
 export const useArchivedGroups = (archived: TopicEntity[]) => {
   const archivedGroups = useMemo(() => {
     const groups: RequestsGroupProps[] = [];
@@ -51,10 +48,6 @@ export const useArchivedGroups = (archived: TopicEntity[]) => {
     const [lastWeek, notLastWeek] = groupByFilter(notThisWeek, happenedWithin(startOfWeek(sameTimeLastWeek)));
     if (lastWeek.length > 0) {
       groups.push({ groupName: "Last week", topics: lastWeek });
-    }
-
-    if (SHOW_RECENT_ONLY) {
-      return groups;
     }
 
     const [restOfMonth, allRemaining] = groupByFilter(notLastWeek, happenedWithin(startOfMonth(sameTimeLastMonth)));
