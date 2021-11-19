@@ -13,7 +13,7 @@ import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { updateHomeView } from "./home-tab";
-import { createSlackLink } from "./md/utils";
+import { createSlackLink, mdDate } from "./md/utils";
 import { tryOpenRequestModal } from "./request-modal/tryOpenRequestModal";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 
@@ -167,11 +167,7 @@ export function setupSlackActionHandlers(slackApp: App) {
         origin: "slack-command",
       });
 
-      const unixTime = dueAtUTC.getTime() / 1000;
-      await respond({
-        replace_original: true,
-        text: `Due date was set to <!date^${unixTime}^{date_long_pretty} {time}|${dueAtUTC.toISOString()}>`,
-      });
+      await respond({ replace_original: true, text: `Due date was set to ${mdDate(dueAtUTC)}` });
     }
   );
 
