@@ -32,7 +32,6 @@ const requiredEnvVarNames = [
   "DB_NAME",
   "DB_PASSWORD",
   "LOGGING_LEVEL",
-  "SENDGRID_API_KEY",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "BACKEND_AUTH_TOKEN",
@@ -63,7 +62,7 @@ const requiredEnvVarNamesFrontend = [
   "FRONTEND_URL",
 ] as const;
 
-const optionalEnvVarNames = ["SEGMENT_API_KEY", "USERBACK_ACCESS_TOKEN"] as const;
+const optionalEnvVarNames = ["SEGMENT_API_KEY", "USERBACK_ACCESS_TOKEN", "CUSTOMERIO_API_KEY"] as const;
 
 // Out of array of variable names, prepare types for process.env
 
