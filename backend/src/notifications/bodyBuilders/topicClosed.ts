@@ -53,7 +53,7 @@ export function createEmailClosureMessage({
   };
 }
 
-export function createClosureNotificationMessage(props: Props): NotificationMessage {
+export function createClosureNotificationMessage(props: Props): Partial<NotificationMessage> {
   return {
     ...createEmailClosureMessage(props),
     ...createSlackClosureMessage(props),

@@ -10,7 +10,7 @@ import { routes } from "~shared/routes";
 
 import { getInviteURL } from "./utils";
 
-async function sendInviteNotification(user: User, team: Team, inviter: User, hasUserSignedUp: boolean) {
+export async function sendInviteNotification(user: User, team: Team, inviter: User, hasUserSignedUp: boolean) {
   const inviteUrl = hasUserSignedUp
     ? `${process.env.FRONTEND_URL}${routes.teamSelect}`
     : getInviteURL(user.id, { teamId: team.id, invitingUserId: inviter.id });

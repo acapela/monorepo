@@ -51,8 +51,13 @@ async function createAndInviteMissingUsers(
       })
     );
   });
-
-  await Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, teamId, invitingUserId)));
+  const [team, invitingUser] = await Promise.all([
+    db.team.findUnique({ where: { id: teamId } }),
+    db.user.findUnique({ where: { id: invitingUserId } }),
+  ]);
+  if (team && invitingUser) {
+    await Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, team, invitingUser, false)));
+  }
 
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
 }
