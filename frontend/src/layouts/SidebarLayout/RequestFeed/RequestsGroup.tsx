@@ -6,12 +6,12 @@ import { theme } from "~ui/theme";
 
 import { RequestItem } from "./RequestItem";
 
-interface Props {
+export interface RequestsGroupProps {
   topics: TopicEntity[];
   groupName: string;
 }
 
-export const RequestsGroup = observer(({ topics, groupName }: Props) => {
+export const RequestsGroup = observer(({ topics, groupName }: RequestsGroupProps) => {
   return (
     <UIHolder data-test-id={`sidebar-request-group-${groupName.toLowerCase().split(" ").join("-").trim()}`}>
       <UISection>

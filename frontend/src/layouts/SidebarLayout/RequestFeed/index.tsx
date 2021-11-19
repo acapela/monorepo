@@ -8,7 +8,7 @@ import { RequestFeedGroups } from "./RequestFeedGroups";
 export const RequestFeed = observer(() => {
   const db = useDb();
   // We dont need to sort here as request groups have its own sorting rules.
-  const topics = db.topic.query({ isArchived: false }).all;
+  const topics = db.topic.all;
 
   return (
     <UIHolder>
@@ -17,4 +17,6 @@ export const RequestFeed = observer(() => {
   );
 });
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{}>`
+  height: 100%;
+`;

@@ -72,6 +72,7 @@ export const SidebarContent = observer(function SidebarContent({ onMobileCloseRe
 
 const UIHolder = styled.div<{}>`
   width: 100%;
+  height: 100%;
   max-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -110,6 +111,7 @@ const UIHeaderUser = styled.div`
 
 const UIRequestFeed = styled.div<{}>`
   overflow-y: auto;
+  height: 100%;
 `;
 
 const UISearch = styled.div<{}>`
@@ -126,7 +128,6 @@ const UISearch = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
 `;
 
 const UISearchPlaceholder = styled.input<{}>`

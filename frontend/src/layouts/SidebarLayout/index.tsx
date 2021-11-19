@@ -63,6 +63,7 @@ export const SidebarLayout = observer(({ children }: Props) => {
 });
 
 const UISidebar = styled.div<{ mobileIsOpened: boolean }>`
+  height: 100vh;
   max-height: 100vh;
   ${theme.colors.layout.backgroundAccent.asBg};
 
