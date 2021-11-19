@@ -37,17 +37,27 @@ type TopicRow = {
 
 type VirtualizedRow = HeaderRow | TopicRow;
 
+const SPACE_ALLOCATED_FOR_HEADER_IN_PX = 40;
+const SPACE_ALLOCATED_FOR_REQUEST_TITLES_WITH_1_LINE_IN_PX = 55;
+const SPACE_ALLOCATED_FOR_REQUEST_TITLES_WITH_2_LINES_IN_PX = 69;
+
+const AMOUNT_OF_CHARACTERS_IN_1_REQUEST_TITLE_LINE = 28;
+
 function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): [VirtualizedRow[], number[]] {
   const rowsData: VirtualizedRow[] = [];
   const rowsHeight: number[] = [];
 
   for (const { groupName, topics } of groups) {
     rowsData.push({ type: "header", label: groupName, key: groupName });
-    rowsHeight.push(17);
+    rowsHeight.push(SPACE_ALLOCATED_FOR_HEADER_IN_PX);
     for (const topic of topics) {
       rowsData.push({ type: "topic", topic, key: topic.id });
-      const hasTopicTitleMoreThan2Lines = topic.name.length > 28;
-      rowsHeight.push(hasTopicTitleMoreThan2Lines ? 69 : 55);
+      const hasTopicTitleMoreThan2Lines = topic.name.length > AMOUNT_OF_CHARACTERS_IN_1_REQUEST_TITLE_LINE;
+      rowsHeight.push(
+        hasTopicTitleMoreThan2Lines
+          ? SPACE_ALLOCATED_FOR_REQUEST_TITLES_WITH_2_LINES_IN_PX
+          : SPACE_ALLOCATED_FOR_REQUEST_TITLES_WITH_1_LINE_IN_PX
+      );
     }
   }
 
@@ -124,8 +134,8 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
           onClick={toggleShowArchived}
           $isShowingArchived={isShowingArchivedTimeline}
         >
-          {!isShowingArchivedTimeline && <>Show recently archived requests</>}
-          {isShowingArchivedTimeline && <>Hide recently archived requests</>}
+          {!isShowingArchivedTimeline && <>Show archived requests</>}
+          {isShowingArchivedTimeline && <>Hide archived requests</>}
           <IconChevronDown />
         </UIArchivedToggle>
       )}
@@ -200,13 +210,28 @@ const renderRow = memo(function renderRow({ data, index, style }: ListChildCompo
 const Row = observer(function Row({ item }: { item: VirtualizedRow }) {
   return (
     <UIItem key={item.key}>
-      {item.type === "header" && <>{item.label}</>}
+      {item.type === "header" && <UIGroupName>{item.label}</UIGroupName>}
       {item.type === "topic" && <RequestItem topic={item.topic} />}
     </UIItem>
   );
 });
 
-const UIItem = styled.div<{}>``;
+const UIItem = styled.div<{}>`
+  padding: 12px;
+  height: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+`;
+
+const UIGroupName = styled.h6<{}>`
+  padding-left: 10px;
+  padding-bottom: 2px;
+
+  ${theme.typo.item.secondaryTitle}
+  opacity: 0.6;
+`;
 
 const UIHolder = styled.div<{}>`
   position: relative;
@@ -268,7 +293,7 @@ const UIArchivedToggle = styled(motion.div)<{ $isShowingArchived: boolean }>`
             transition-duration: ${ANIMATION_DURATION}s;
           }
         `}
-  ${theme.typo.content.semibold}
+  ${theme.typo.content.medium}
   ${theme.colors.text.asColor}
   ${theme.colors.layout.backgroundAccent.asBg}  
   cursor: pointer;
