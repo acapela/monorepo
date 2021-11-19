@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import { useDb } from "~frontend/clientdb";
 import { isNotNullish } from "~shared/nullish";
 
-import { RequestFeedGroups } from "./RequestFeedGroups";
+import { RequestFeedGroups } from "./RequestFeedGroups/RequestFeedGroups";
 
 interface Props {
   searchTerm: string;

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { theme } from "~ui/theme";
 
-import { RequestItem } from "./RequestItem";
+import { RequestItem } from "./RequestFeedGroups/RequestItem";
 
 export interface RequestsGroupProps {
   topics: TopicEntity[];

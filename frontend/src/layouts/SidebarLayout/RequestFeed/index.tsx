@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 
-import { RequestFeedGroups } from "./RequestFeedGroups";
+import { RequestFeedGroups } from "./RequestFeedGroups/RequestFeedGroups";
 
 export const RequestFeed = observer(() => {
   const db = useDb();
