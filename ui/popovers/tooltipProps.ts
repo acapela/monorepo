@@ -30,7 +30,7 @@ export function getTooltipProps(input: TooltipConfig): TooltipProps {
   return props;
 }
 
-function parseShortcutRaw(input: any): ShortcutDefinition | null {
+function parseShortcutRaw(input: unknown): ShortcutDefinition | null {
   if (typeof input !== "string") return null;
 
   return JSON.parse(input);

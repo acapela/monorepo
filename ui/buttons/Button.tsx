@@ -5,9 +5,8 @@ import styled, { css } from "styled-components";
 import { styledForwardRef } from "~shared/component";
 import { PopPresenceAnimator } from "~ui/animations";
 import { disabledCss } from "~ui/disabled";
-import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
-import { useOptionalShortcut, useShortcut } from "~ui/keyboard/useShortcut";
+import { useOptionalShortcut } from "~ui/keyboard/useShortcut";
 import { getTooltipProps } from "~ui/popovers/tooltipProps";
 import { theme } from "~ui/theme";
 
