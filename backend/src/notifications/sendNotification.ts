@@ -50,15 +50,6 @@ export async function sendNotificationIgnoringPreference(
   return sendNotification(user, teamId, message);
 }
 
-function escapeStringForSlackLink(input: string) {
-  return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-export function createSlackLink(url: string, name?: string) {
-  if (!name || url === name) return `<${escapeStringForSlackLink(url)}>`;
-  return `<${escapeStringForSlackLink(url)}|${escapeStringForSlackLink(name)}>`;
-}
-
 export async function sendNotificationPerPreference(user: User, teamId: string, message: Partial<NotificationMessage>) {
   const teamMember = assertDefined(
     await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
