@@ -5,8 +5,9 @@ import styled, { css } from "styled-components";
 import { styledForwardRef } from "~shared/component";
 import { PopPresenceAnimator } from "~ui/animations";
 import { disabledCss } from "~ui/disabled";
-import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
+import { useOptionalShortcut } from "~ui/keyboard/useShortcut";
+import { getTooltipProps } from "~ui/popovers/tooltipProps";
 import { theme } from "~ui/theme";
 
 import { ButtonKind, getButtonKindtyles } from "./variants";
@@ -63,6 +64,13 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     return tooltip ?? null;
   }
 
+  useOptionalShortcut(shortcut, () => {
+    if (isDisabled) return;
+
+    onClick?.();
+    return true;
+  });
+
   return (
     <UIButton
       ref={ref}
@@ -70,7 +78,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       $isDisabled={isDisabledBoolean}
       disabled={isDisabledBoolean}
       $isWide={isWide}
-      data-tooltip={getTooltipLabel()}
+      {...getTooltipProps({ label: getTooltipLabel(), shortcut })}
       $kind={kind}
       onClick={onClick}
       {...htmlProps}
@@ -78,17 +86,6 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       {iconAtStart && iconNode}
       {children && <UIContentHolder>{children}</UIContentHolder>}
       {!iconAtStart && iconNode}
-      {shortcut && (
-        <Shortcut
-          shortcut={shortcut}
-          callback={() => {
-            if (isDisabled) return;
-
-            onClick?.();
-            return true;
-          }}
-        />
-      )}
     </UIButton>
   );
 })``;

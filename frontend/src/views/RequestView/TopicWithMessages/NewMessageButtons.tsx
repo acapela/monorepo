@@ -1,12 +1,9 @@
-import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { RequestMessagePreview } from "~frontend/layouts/SidebarLayout/RequestFeed/RequestMessagePreview";
-import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -61,9 +58,6 @@ function getTaskCompletionCTA(pendingTasks: TaskEntity[]): string {
 }
 
 export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteRequest, canSend }: Props) => {
-  const elementRef = useRef<HTMLButtonElement>(null);
-  const isHovered = useIsElementOrChildHovered(elementRef);
-
   const pendingTasks = topic.tasks.query({ isDone: false, isAssignedToSelf: true }).all;
 
   const { actions, primaryAction } = getAllowedActions(pendingTasks);
@@ -71,12 +65,6 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
 
   return (
     <UIHolder>
-      <AnimatePresence>
-        {isHovered && pendingTasks.length === 1 && (
-          <RequestMessagePreview placement="top-start" maxLines={7} anchorRef={elementRef} topic={topic} />
-        )}
-      </AnimatePresence>
-
       {actions.includes("send") && (
         <Button
           shortcut={["Mod", "Enter"]}
@@ -90,7 +78,6 @@ export const NewMessageButtons = observer(({ topic, onSendRequest, onCompleteReq
       )}
       {actions.includes("complete") && (
         <Button
-          ref={elementRef}
           shortcut={["Mod", "Shift", "Enter"]}
           kind={primaryAction === "complete" ? "primary" : "secondary"}
           onClick={onCompleteRequest}
