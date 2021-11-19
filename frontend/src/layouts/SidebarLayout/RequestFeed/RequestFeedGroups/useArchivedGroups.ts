@@ -26,33 +26,35 @@ export const useArchivedGroups = (archived: TopicEntity[]) => {
     const happenedWithin = (compareDate: Date) => (topic: TopicEntity) => isAfter(toArchivedDate(topic), compareDate);
 
     const now = new Date();
-    const sameTimeYesterday = subBusinessDays(now, 1);
-    const sameTimeLastWeek = subWeeks(now, 1);
-    const sameTimeLastMonth = subMonths(now, 1);
+    const beginningOfToday = startOfDay(now);
+    const beginningOfYesterday = subBusinessDays(beginningOfToday, 1);
+    const beginningOfWeek = startOfWeek(beginningOfToday);
+    const beginningOfLastWeek = startOfWeek(subWeeks(beginningOfToday, 1));
+    const beginningOfThisMonth = startOfMonth(beginningOfToday);
 
     const [today, notToday] = groupByFilter(archived, happenedWithin(startOfDay(now)));
     if (today.length > 0) {
       groups.push({ groupName: "Today", topics: today });
     }
 
-    const [yesterday, notYesterday] = groupByFilter(notToday, happenedWithin(startOfDay(sameTimeYesterday)));
+    const [yesterday, notYesterday] = groupByFilter(notToday, happenedWithin(beginningOfYesterday));
     if (yesterday.length > 0) {
       groups.push({ groupName: "Yesterday", topics: yesterday });
     }
 
-    const [thisWeek, notThisWeek] = groupByFilter(notYesterday, happenedWithin(startOfWeek(now)));
+    const [thisWeek, notThisWeek] = groupByFilter(notYesterday, happenedWithin(beginningOfWeek));
     if (thisWeek.length > 0) {
       groups.push({ groupName: "Rest of this week", topics: thisWeek });
     }
 
-    const [lastWeek, notLastWeek] = groupByFilter(notThisWeek, happenedWithin(startOfWeek(sameTimeLastWeek)));
+    const [lastWeek, notLastWeek] = groupByFilter(notThisWeek, happenedWithin(beginningOfLastWeek));
     if (lastWeek.length > 0) {
       groups.push({ groupName: "Last week", topics: lastWeek });
     }
 
-    const [restOfMonth, allRemaining] = groupByFilter(notLastWeek, happenedWithin(startOfMonth(sameTimeLastMonth)));
+    const [restOfMonth, allRemaining] = groupByFilter(notLastWeek, happenedWithin(beginningOfThisMonth));
     if (restOfMonth.length > 0) {
-      groups.push({ groupName: "Rest of month", topics: lastWeek });
+      groups.push({ groupName: "Rest of month", topics: restOfMonth });
     }
 
     let remainingDays = allRemaining;
