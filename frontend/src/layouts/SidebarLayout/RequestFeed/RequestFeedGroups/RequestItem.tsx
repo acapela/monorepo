@@ -139,6 +139,11 @@ const UIFeedItemLabels = styled.div<{}>`
 
 const UIFeedItemTitle = styled.h6`
   ${theme.typo.content.semibold.resetLineHeight};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const UIBubble = styled.div<{}>`
