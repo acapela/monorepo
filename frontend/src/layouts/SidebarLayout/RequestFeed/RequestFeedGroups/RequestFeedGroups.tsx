@@ -69,7 +69,9 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   const boundingBox = useBoundingBox(ref);
 
   // MBA m1 2021 -> 186 ms to process (archived orderBy is main culprit)
-  const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = prepareTopicsGroups(topics);
+  const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = computed(() =>
+    prepareTopicsGroups(topics)
+  ).get();
 
   const [isShowingArchivedTimeline, { toggle: toggleShowArchived }] = useBoolean(false);
 
@@ -108,7 +110,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
     return groups;
   }).get();
 
-  // MBA m1 2021 -> 26 ms to process
+  // MBA m1 2021 -> 26 ms to process 1 year worth of topics ~600
   const archivedGroups: RequestsGroupProps[] = useArchivedGroups(archived);
 
   const [unarchivedRows, unarchiveHeights] = useMemo(
@@ -129,6 +131,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
           transition={{ duration: ANIMATION_DURATION }}
           initial={{ y: 0 }}
           animate={{
+            // include height of Archive Toggle itself minus border
             y: isShowingArchivedTimeline ? -boundingBox.height + 58 : 0,
           }}
           onClick={toggleShowArchived}
@@ -140,6 +143,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
         </UIArchivedToggle>
       )}
 
+      {/* initial={false} prevents the list from scrolling from it's hiding place on page load */}
       <AnimatePresence key="first" initial={false}>
         {!isShowingArchivedTimeline && (
           <UIFeedGroups
@@ -174,6 +178,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             layout="position"
             layoutId="sidebar-archived-topics"
             initial={{ y: boundingBox.height, opacity: 0.2 }}
+            // Should only animate until it reaches the archive toggle
             animate={{ y: 50, opacity: 1 }}
             exit={{ y: boundingBox.height, opacity: 0.2 }}
             transition={{ duration: ANIMATION_DURATION }}
@@ -183,6 +188,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
               itemKey={getVirtualizedRowKey}
               itemData={archivedRows}
               itemSize={(index) => archiveHeights[index]}
+              // Should only be visible outside of the archive toggle box
               height={boundingBox.height - 60}
               width={boundingBox.width}
             >
@@ -249,6 +255,9 @@ const UIFeedGroups = styled(motion.div)<{ $isOnTop?: boolean }>`
 
   ${theme.colors.layout.backgroundAccent.asBg}
 
+  /* z-index are necessary to prevent the archived and unarchived lists from stacking on top of each other. 
+  This happens due to different starting and end positions. This way, the archived  list will hide the very end of 
+  the unarchived list as it moves */
   ${(props) =>
     props.$isOnTop
       ? css`
@@ -272,7 +281,7 @@ const UIArchivedToggle = styled(motion.div)<{ $isShowingArchived: boolean }>`
 
   padding: 16px;
 
-  /* in line with rest of content */
+  /* Text is now adjusted to be in same line as rest of sidebar text */
   padding-left: 22px;
 
   svg {
