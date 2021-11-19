@@ -43,7 +43,7 @@ export function createAllRequestsDoneEmailMessage({ topicName, topicURL }: Props
   };
 }
 
-export function createAllRequestsDoneNotificationMessage(props: Props): NotificationMessage {
+export function createAllRequestsDoneNotificationMessage(props: Props): Partial<NotificationMessage> {
   return {
     ...createAllRequestsDoneEmailMessage(props),
     ...createSlackAllRequestsDoneMessage(props),
