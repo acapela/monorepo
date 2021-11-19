@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
-import React, { useMemo, useRef } from "react";
-import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import React, { memo, useMemo, useRef } from "react";
+import { VariableSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -37,17 +37,21 @@ type TopicRow = {
 
 type VirtualizedRow = HeaderRow | TopicRow;
 
-function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): VirtualizedRow[] {
-  const rows: VirtualizedRow[] = [];
+function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): [VirtualizedRow[], number[]] {
+  const rowsData: VirtualizedRow[] = [];
+  const rowsHeight: number[] = [];
 
   for (const { groupName, topics } of groups) {
-    rows.push({ type: "header", label: groupName, key: groupName });
+    rowsData.push({ type: "header", label: groupName, key: groupName });
+    rowsHeight.push(17);
     for (const topic of topics) {
-      rows.push({ type: "topic", topic, key: topic.id });
+      rowsData.push({ type: "topic", topic, key: topic.id });
+      const hasTopicTitleMoreThan2Lines = topic.name.length > 28;
+      rowsHeight.push(hasTopicTitleMoreThan2Lines ? 69 : 55);
     }
   }
 
-  return rows;
+  return [rowsData, rowsHeight];
 }
 
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
@@ -97,8 +101,14 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   // MBA m1 2021 -> 26 ms to process
   const archivedGroups: RequestsGroupProps[] = useArchivedGroups(archived);
 
-  const unarchivedRows = useMemo(() => convertGroupsToVirtualizedRows(unarchivedGroups), [unarchivedGroups]);
-  const archivedRows = useMemo(() => convertGroupsToVirtualizedRows(archivedGroups), [archivedGroups]);
+  const [unarchivedRows, unarchiveHeights] = useMemo(
+    () => convertGroupsToVirtualizedRows(unarchivedGroups),
+    [unarchivedGroups]
+  );
+  const [archivedRows, archiveHeights] = useMemo(
+    () => convertGroupsToVirtualizedRows(archivedGroups),
+    [archivedGroups]
+  );
 
   return (
     <UIHolder ref={ref} data-test-id="sidebar-all-request-groups">
@@ -136,7 +146,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
               itemCount={unarchivedRows.length}
               itemKey={getVirtualizedRowKey}
               itemData={unarchivedRows}
-              itemSize={70}
+              itemSize={(index) => unarchiveHeights[index]}
               height={boundingBox.height - 60}
               width={boundingBox.width}
             >
@@ -162,7 +172,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
               itemCount={archivedRows.length}
               itemKey={getVirtualizedRowKey}
               itemData={archivedRows}
-              itemSize={70}
+              itemSize={(index) => archiveHeights[index]}
               height={boundingBox.height - 60}
               width={boundingBox.width}
             >
@@ -179,13 +189,13 @@ function getVirtualizedRowKey(index: number, data: VirtualizedRow[]) {
   return data[index].key;
 }
 
-function renderRow({ data, index, style }: ListChildComponentProps<VirtualizedRow[]>) {
+const renderRow = memo(function renderRow({ data, index, style }: ListChildComponentProps<VirtualizedRow[]>) {
   return (
     <div style={style}>
       <Row item={data[index]} />
     </div>
   );
-}
+}, areEqual);
 
 const Row = observer(function Row({ item }: { item: VirtualizedRow }) {
   return (
