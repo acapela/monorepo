@@ -1,6 +1,6 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { sendNotificationIgnoringPreference } from "~backend/src/notifications/sendNotification";
-import { createSlackLink } from "~backend/src/slack/md/utils";
+import { createSlackInviteNotification } from "~backend/src/slack/md/utils";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
@@ -24,7 +24,7 @@ export async function sendInviteNotification(user: User, team: Team, inviter: Us
         team: team.name,
       },
     },
-    slack: `${slackFrom} ${createSlackLink(inviteUrl, `has invited you to join team "${team.name}" on Acapela`)}`,
+    slack: createSlackInviteNotification(slackFrom, inviteUrl),
   });
 }
 

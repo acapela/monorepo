@@ -13,8 +13,10 @@ router.post("/v1/login/recover", async (req: Request, res: Response) => {
   if (user) {
     await sendEmail(
       {
-        subject: "Your Acapela Invitation",
-        html: `Follow <a href="${getInviteURL(user.id)}">this link</a> to sign up and join the discussion.`,
+        transactionalMessageId: 2,
+        messageData: {
+          inviteUrl: getInviteURL(user.id),
+        },
       },
       user.email
     );
