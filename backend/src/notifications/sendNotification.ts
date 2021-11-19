@@ -6,7 +6,7 @@ import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
 import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
-import { sendEmail } from "~shared/email";
+import { EmailData, sendEmail } from "~shared/email";
 
 async function trySendSlackNotification(teamId: string, user: User, payload: string | (KnownBlock | Block)[]) {
   const [token, slackUserId] = await Promise.all([fetchTeamBotToken(teamId), findSlackUserId(teamId, user)]);
@@ -22,15 +22,7 @@ async function trySendSlackNotification(teamId: string, user: User, payload: str
   });
 }
 
-export type NotificationMessage = {
-  email: {
-    subject: string;
-    html: string;
-  };
-  template: { transactionalMessageId: number; messageData: { [key: string]: string } };
-  slack: string | (KnownBlock | Block)[];
-};
-
+export type NotificationMessage = { slack: string | (KnownBlock | Block)[]; email: EmailData };
 /*
   NOTE: Don't await in crucial business logic flows.
   This method interacts with 3rd party providers over network.
@@ -39,7 +31,7 @@ export type NotificationMessage = {
 const sendNotification = async (user: User, teamId: string, message: Partial<NotificationMessage>): Promise<unknown> =>
   Promise.all([
     message.slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
-    message.email || message.template ? sendEmail(message, user.email) : undefined,
+    message.email ? sendEmail(message.email, user.email) : undefined,
   ]).catch((error) => Sentry.captureException(error));
 
 export async function sendNotificationIgnoringPreference(
