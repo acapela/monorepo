@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { computed } from "mobx";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import styled, { css } from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -9,8 +11,9 @@ import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { IconChevronDown } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-import { RequestsGroup, RequestsGroupProps } from "../RequestsGroup";
+import { RequestsGroupProps } from "../RequestsGroup";
 import { prepareTopicsGroups } from "./prepareTopicsGroups";
+import { RequestItem } from "./RequestItem";
 import { useArchivedGroups } from "./useArchivedGroups";
 
 interface Props {
@@ -19,6 +22,33 @@ interface Props {
 }
 
 const ANIMATION_DURATION = 0.55;
+
+type HeaderRow = {
+  type: "header";
+  key: string;
+  label: string;
+};
+
+type TopicRow = {
+  type: "topic";
+  key: string;
+  topic: TopicEntity;
+};
+
+type VirtualizedRow = HeaderRow | TopicRow;
+
+function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): VirtualizedRow[] {
+  const rows: VirtualizedRow[] = [];
+
+  for (const { groupName, topics } of groups) {
+    rows.push({ type: "header", label: groupName, key: groupName });
+    for (const topic of topics) {
+      rows.push({ type: "topic", topic, key: topic.id });
+    }
+  }
+
+  return rows;
+}
 
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -29,8 +59,46 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
 
   const [isShowingArchivedTimeline, { toggle: toggleShowArchived }] = useBoolean(false);
 
+  const unarchivedGroups: RequestsGroupProps[] = computed(() => {
+    const groups: RequestsGroupProps[] = [];
+    if (receivedTasks.length > 0) {
+      groups.push({
+        groupName: "Received",
+        topics: receivedTasks,
+      });
+    }
+    if (sentTasks.length > 0) {
+      groups.push({
+        groupName: "Sent",
+        topics: sentTasks,
+      });
+    }
+    if (openTopics.length > 0) {
+      groups.push({
+        groupName: "Open",
+        topics: openTopics,
+      });
+    }
+    if (closedTopics.length > 0) {
+      groups.push({
+        groupName: "Closed",
+        topics: closedTopics,
+      });
+    }
+    if (showArchived && archived.length > 0) {
+      groups.push({
+        groupName: "Archived",
+        topics: archived,
+      });
+    }
+    return groups;
+  }).get();
+
   // MBA m1 2021 -> 26 ms to process
   const archivedGroups: RequestsGroupProps[] = useArchivedGroups(archived);
+
+  const unarchivedRows = useMemo(() => convertGroupsToVirtualizedRows(unarchivedGroups), [unarchivedGroups]);
+  const archivedRows = useMemo(() => convertGroupsToVirtualizedRows(archivedGroups), [archivedGroups]);
 
   return (
     <UIHolder ref={ref} data-test-id="sidebar-all-request-groups">
@@ -54,7 +122,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
 
       <AnimatePresence key="first" initial={false}>
         {!isShowingArchivedTimeline && (
-          <UIScrollableGroup
+          <UIFeedGroups
             key="unarchived"
             layout="position"
             layoutId="sidebar-unarchived-topics"
@@ -64,20 +132,23 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             exit={{ y: -boundingBox.height + 60, opacity: 0.2 }}
             transition={{ duration: ANIMATION_DURATION }}
           >
-            {!!receivedTasks.length && <RequestsGroup key="Received" topics={receivedTasks} groupName="Received" />}
-            {!!sentTasks.length && <RequestsGroup key="Sent" topics={sentTasks} groupName="Sent" />}
-            {!!openTopics.length && <RequestsGroup key="Open" topics={openTopics} groupName="Open" />}
-            {!!closedTopics.length && <RequestsGroup key="Closed" topics={closedTopics} groupName="Closed" />}
-            {showArchived && !!archived.length && (
-              <RequestsGroup key="Archived" topics={archived} groupName="Archived" />
-            )}
-          </UIScrollableGroup>
+            <List<VirtualizedRow[]>
+              itemCount={unarchivedRows.length}
+              itemKey={getVirtualizedRowKey}
+              itemData={unarchivedRows}
+              itemSize={70}
+              height={boundingBox.height - 60}
+              width={boundingBox.width}
+            >
+              {renderRow}
+            </List>
+          </UIFeedGroups>
         )}
       </AnimatePresence>
 
       <AnimatePresence key="second">
         {isShowingArchivedTimeline && (
-          <UIScrollableGroup
+          <UIFeedGroups
             $isOnTop
             key="archived"
             layout="position"
@@ -87,15 +158,45 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             exit={{ y: boundingBox.height, opacity: 0.2 }}
             transition={{ duration: ANIMATION_DURATION }}
           >
-            {archivedGroups.map(({ groupName, topics }) => (
-              <RequestsGroup key={groupName} topics={topics} groupName={groupName} />
-            ))}
-          </UIScrollableGroup>
+            <List<VirtualizedRow[]>
+              itemCount={archivedRows.length}
+              itemKey={getVirtualizedRowKey}
+              itemData={archivedRows}
+              itemSize={70}
+              height={boundingBox.height - 60}
+              width={boundingBox.width}
+            >
+              {renderRow}
+            </List>
+          </UIFeedGroups>
         )}
       </AnimatePresence>
     </UIHolder>
   );
 });
+
+function getVirtualizedRowKey(index: number, data: VirtualizedRow[]) {
+  return data[index].key;
+}
+
+function renderRow({ data, index, style }: ListChildComponentProps<VirtualizedRow[]>) {
+  return (
+    <div style={style}>
+      <Row item={data[index]} />
+    </div>
+  );
+}
+
+const Row = observer(function Row({ item }: { item: VirtualizedRow }) {
+  return (
+    <UIItem key={item.key}>
+      {item.type === "header" && <>{item.label}</>}
+      {item.type === "topic" && <RequestItem topic={item.topic} />}
+    </UIItem>
+  );
+});
+
+const UIItem = styled.div<{}>``;
 
 const UIHolder = styled.div<{}>`
   position: relative;
@@ -104,13 +205,13 @@ const UIHolder = styled.div<{}>`
   overflow-y: hidden;
 `;
 
-const UIScrollableGroup = styled(motion.div)<{ $isOnTop?: boolean }>`
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
+const UIFeedGroups = styled(motion.div)<{ $isOnTop?: boolean }>`
   position: absolute;
-
+  bottom: 0;
   padding-bottom: 60px;
+  overflow-y: auto;
+  height: 100%;
+
   ${theme.colors.layout.backgroundAccent.asBg}
 
   ${(props) =>
