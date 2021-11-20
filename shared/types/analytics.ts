@@ -23,8 +23,7 @@ export type AnalyticsEventsMap = {
   "Invite Sent": { inviteEmail: string; teamId: string };
   "Resent Team Invitation": { teamId: string; userEmail: string };
   // invitation accepted
-  // TODO: to be implemented once team invitations works again
-  "Account Added User": { teamId: string; userEmail: string };
+  "Account Added User": { teamId: string };
   // delete a team member from team management space
   "Account Removed User": { teamId: string; userId: string };
   // should be called simultanously with Account Created for now
@@ -68,6 +67,7 @@ export type AnalyticsEventsMap = {
 
   // Slack
   "Added Team Slack Integration": { slackTeamId: string; teamId: string };
+  "Removed Team Slack Integration": { teamId: string };
   "Added User Slack Integration": { slackTeamId: string; teamId: string };
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };

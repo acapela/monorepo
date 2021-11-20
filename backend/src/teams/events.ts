@@ -2,7 +2,7 @@ import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "~backend/src/
 import { extractInstallationDataBotToken } from "~backend/src/slack/utils";
 import { Team, TeamSlackInstallation, db } from "~db";
 import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
@@ -24,6 +24,18 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
   if (event.type === "create") {
     trackBackendUserEvent(ownerId, "Account Created", { teamName: team.name });
     trackBackendUserEvent(ownerId, "Trial Started", { teamName: team.name });
+    // owner also counts as a user
+    trackBackendUserEvent(ownerId, "Account Added User", {
+      teamId: team.id,
+    });
+    identifyBackendUserTeam(ownerId, team.id, {
+      id: team.id,
+      name: team.name,
+      slug: team.slug,
+      plan: "trial",
+      createdAt: team.created_at,
+      isSlackInstalled: false,
+    });
   }
 
   const creatorIsAlreadyParticipant = await getHasTeamMember(teamId, userId);
@@ -59,5 +71,8 @@ export async function handleTeamSlackInstallationDelete(event: HasuraEvent<TeamS
       client_id: SLACK_CLIENT_ID,
       client_secret: SLACK_CLIENT_SECRET,
     });
+    if (event.userId) {
+      trackBackendUserEvent(event.userId, "Removed Team Slack Integration", { teamId: event.item.team_id });
+    }
   }
 }
