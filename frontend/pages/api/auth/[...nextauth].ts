@@ -8,7 +8,7 @@ import SlackProvider from "next-auth/providers/slack";
 import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
-import { identifyBackendUserTeam, trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { isDev } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { Maybe } from "~shared/types";
@@ -85,18 +85,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           .then(async (user) => {
             if (user) {
               trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
-            }
-            if (user?.current_team_id) {
-              const team = await db.team.findFirst({ where: { id: user.current_team_id } });
-              if (team) {
-                identifyBackendUserTeam(user.id, team.id, {
-                  id: team.id,
-                  name: team.name,
-                  slug: team.slug,
-                  plan: "trial",
-                  createdAt: team.created_at,
-                });
-              }
             }
           })
           .catch((error) => Sentry.captureException(error));
@@ -191,8 +179,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         const user = await db.user.create({ data: { name, email, avatar_url: image } });
 
-        trackFirstBackendUserEvent(user, "Signed Up", { userEmail: user.email });
-
         return toAdapterUser(user);
       },
 
@@ -241,6 +227,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           }),
         ]);
         trackFirstBackendUserEvent(user, "Signed Up", { userEmail: user.email });
+        if (user.current_team_id) {
+          trackBackendUserEvent(user.id, "Account Added User", { teamId: user.current_team_id });
+        }
       },
 
       createSession() {

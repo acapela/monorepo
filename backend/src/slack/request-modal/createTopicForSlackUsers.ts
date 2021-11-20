@@ -2,6 +2,7 @@ import { sendInviteNotification } from "~backend/src/inviteUser";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assertDefined } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { MENTION_TYPE_KEY, getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
@@ -57,6 +58,10 @@ async function createAndInviteMissingUsers(
   ]);
   if (team && invitingUser) {
     await Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, team, invitingUser, false)));
+  }
+
+  for (const invitedUser of usersWithSlackIds) {
+    trackBackendUserEvent(invitingUserId, "Invite Sent", { inviteEmail: invitedUser.user.email, teamId });
   }
 
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
