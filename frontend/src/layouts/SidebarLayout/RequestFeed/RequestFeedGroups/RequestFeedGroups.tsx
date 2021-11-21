@@ -6,6 +6,7 @@ import { VariableSizeList as List, ListChildComponentProps, areEqual } from "rea
 import styled, { css } from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { IconChevronDown } from "~ui/icons";
@@ -44,6 +45,8 @@ const SPACE_ALLOCATED_FOR_REQUEST_TITLES_WITH_2_LINES_IN_PX = 69;
 
 const AMOUNT_OF_CHARACTERS_IN_1_REQUEST_TITLE_LINE = 28;
 
+const HEIGHT_OF_ARCHIVED_LIST_TOGGLE = 60;
+
 function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): [VirtualizedRow[], number[]] {
   const rowsData: VirtualizedRow[] = [];
   const rowsHeight: number[] = [];
@@ -74,7 +77,11 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
     prepareTopicsGroups(topics)
   ).get();
 
-  const [isShowingArchivedTimeline, { toggle: toggleShowArchived }] = useBoolean(false);
+  // Allows the archived list to remain shown if changing route with same layout
+  const [isShowingArchivedTimeline, setShowArchivedTimeline] = usePersistedState({
+    key: "is-showing-archived-timeline",
+    initialValue: false,
+  });
 
   const unarchivedGroups: RequestsGroupProps[] = computed(() => {
     const groups: RequestsGroupProps[] = [];
@@ -123,17 +130,24 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
     [archivedGroups]
   );
 
+  const [isFirstToggleRender, { unset: setFirstToggleRenderAsComplete }] = useBoolean(true);
+
+  function toggleShowArchived() {
+    setFirstToggleRenderAsComplete();
+    setShowArchivedTimeline(!isShowingArchivedTimeline);
+  }
+
   return (
     <UIHolder ref={ref} data-test-id="sidebar-all-request-groups">
       {archived && archived.length > 0 && (
         <UIArchivedToggle
           layout="position"
           layoutId="sidebar-archive-toggle"
-          transition={{ duration: ANIMATION_DURATION }}
+          transition={{ duration: isFirstToggleRender ? 0 : ANIMATION_DURATION }}
           initial={{ y: 0 }}
           animate={{
             // include height of Archive Toggle itself minus border
-            y: isShowingArchivedTimeline ? -boundingBox.height + 58 : 0,
+            y: isShowingArchivedTimeline ? -boundingBox.height + HEIGHT_OF_ARCHIVED_LIST_TOGGLE - 2 : 0,
           }}
           onClick={toggleShowArchived}
           $isShowingArchived={isShowingArchivedTimeline}
@@ -145,16 +159,16 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
       )}
 
       {/* initial={false} prevents the list from scrolling from it's hiding place on page load */}
-      <AnimatePresence key="first" initial={false}>
+      <AnimatePresence initial={false} key="sidebar-presence-unarchived">
         {!isShowingArchivedTimeline && (
           <UIFeedGroups
             key="unarchived"
             layout="position"
             layoutId="sidebar-unarchived-topics"
             // Add height of UIArchiveToggle + padding from top
-            initial={{ y: -boundingBox.height + 60, opacity: 0.2 }}
+            initial={{ y: -boundingBox.height + HEIGHT_OF_ARCHIVED_LIST_TOGGLE, opacity: 0.2 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -boundingBox.height + 60, opacity: 0.2 }}
+            exit={{ y: -boundingBox.height + HEIGHT_OF_ARCHIVED_LIST_TOGGLE, opacity: 0.2 }}
             transition={{ duration: ANIMATION_DURATION }}
           >
             <List<VirtualizedRow[]>
@@ -162,7 +176,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
               itemKey={getVirtualizedRowKey}
               itemData={unarchivedRows}
               itemSize={(index) => unarchiveHeights[index]}
-              height={boundingBox.height - 60}
+              height={boundingBox.height - HEIGHT_OF_ARCHIVED_LIST_TOGGLE}
               width={boundingBox.width}
             >
               {renderRow}
@@ -171,7 +185,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
         )}
       </AnimatePresence>
 
-      <AnimatePresence key="second">
+      <AnimatePresence key="sidebar-presence-archived">
         {isShowingArchivedTimeline && (
           <UIFeedGroups
             $isOnTop
@@ -180,7 +194,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             layoutId="sidebar-archived-topics"
             initial={{ y: boundingBox.height, opacity: 0.2 }}
             // Should only animate until it reaches the archive toggle
-            animate={{ y: 50, opacity: 1 }}
+            animate={{ y: HEIGHT_OF_ARCHIVED_LIST_TOGGLE, opacity: 1 }}
             exit={{ y: boundingBox.height, opacity: 0.2 }}
             transition={{ duration: ANIMATION_DURATION }}
           >
@@ -191,7 +205,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
               itemData={archivedRows}
               itemSize={(index) => archiveHeights[index]}
               // Should only be visible outside of the archive toggle box
-              height={boundingBox.height - 60}
+              height={boundingBox.height - HEIGHT_OF_ARCHIVED_LIST_TOGGLE}
               width={boundingBox.width}
             >
               {renderRow}
