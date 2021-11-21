@@ -48,7 +48,7 @@ test("can rename a topic", async ({ page, auth, db }) => {
   await page.waitForSelector(`text=renamed ${originalTopicName} to ${renamedTopicName}`);
 });
 
-test("can archive topic", async ({ page, auth, db }) => {
+test.only("can archive topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
@@ -60,6 +60,9 @@ test("can archive topic", async ({ page, auth, db }) => {
     mentions: [["Request read", userName]],
     title: requestTitle,
   });
+
+  // Added to sidebar
+  await appPage.waitForRequestInSidebar(requestTitle);
 
   await appPage.selectTopicOption("Archive");
 

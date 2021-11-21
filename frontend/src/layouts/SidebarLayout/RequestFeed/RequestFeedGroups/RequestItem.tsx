@@ -5,9 +5,9 @@ import Link from "next/link";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { niceFormatDate } from "~frontend/../../shared/dates/format";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRouteParams } from "~frontend/hooks/useRouteParams";
+import { niceFormatDate } from "~shared/dates/format";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { routes } from "~shared/routes";
 import { getFadeInAnimationStyles } from "~ui/animations";
@@ -15,10 +15,10 @@ import { LazyRender } from "~ui/performance/LazyRender";
 import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
 
-import { RequestContentSnippet } from "./RequestContentSnippet";
-import { RequestMessagePreview } from "./RequestMessagePreview";
-import { RequestParticipants } from "./RequestParticipants";
-import { getUnfinishedTopicTaskWithEarliestDueDate } from "./utils";
+import { RequestContentSnippet } from "../RequestContentSnippet";
+import { RequestMessagePreview } from "../RequestMessagePreview";
+import { RequestParticipants } from "../RequestParticipants";
+import { getUnfinishedTopicTaskWithEarliestDueDate } from "../utils";
 
 interface Props {
   topic: TopicEntity;
@@ -139,6 +139,11 @@ const UIFeedItemLabels = styled.div<{}>`
 
 const UIFeedItemTitle = styled.h6`
   ${theme.typo.content.semibold.resetLineHeight};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const UIBubble = styled.div<{}>`
