@@ -11,7 +11,6 @@ import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
-import { PopPresenceAnimator } from "~ui/animations";
 import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
@@ -114,7 +113,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -122,7 +121,7 @@ const UIHolder = styled.div`
   flex-grow: 1;
 `;
 
-const UIFooterContainer = styled(PopPresenceAnimator)`
+const UIFooterContainer = styled.div<{}>`
   width: 100%;
   margin-top: auto;
   padding-top: 20px;
@@ -137,7 +136,7 @@ const UIFooterContainer = styled(PopPresenceAnimator)`
   )}
 `;
 
-const UIFooter = styled(HorizontalSpacingContainer)`
+const UIFooter = styled(HorizontalSpacingContainer)<{}>`
   width: 100%;
   max-width: ${MESSAGES_VIEW_MAX_WIDTH_PX}px;
 `;
