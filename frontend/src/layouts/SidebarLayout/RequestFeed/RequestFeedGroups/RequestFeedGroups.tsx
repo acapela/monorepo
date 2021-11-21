@@ -26,12 +26,13 @@ const ANIMATION_DURATION = 0.55;
 type HeaderRow = {
   type: "header";
   key: string;
-  label: string;
+  groupName: string;
 };
 
 type TopicRow = {
   type: "topic";
   key: string;
+  groupName: string;
   topic: TopicEntity;
 };
 
@@ -48,10 +49,10 @@ function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): [Virtuali
   const rowsHeight: number[] = [];
 
   for (const { groupName, topics } of groups) {
-    rowsData.push({ type: "header", label: groupName, key: groupName });
+    rowsData.push({ type: "header", groupName: groupName, key: groupName });
     rowsHeight.push(SPACE_ALLOCATED_FOR_HEADER_IN_PX);
     for (const topic of topics) {
-      rowsData.push({ type: "topic", topic, key: topic.id });
+      rowsData.push({ type: "topic", topic, key: topic.id, groupName });
       const hasTopicTitleMoreThan2Lines = topic.name.length > AMOUNT_OF_CHARACTERS_IN_1_REQUEST_TITLE_LINE;
       rowsHeight.push(
         hasTopicTitleMoreThan2Lines
@@ -184,6 +185,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             transition={{ duration: ANIMATION_DURATION }}
           >
             <List<VirtualizedRow[]>
+              data-test-id="sidebar-all-request-groups"
               itemCount={archivedRows.length}
               itemKey={getVirtualizedRowKey}
               itemData={archivedRows}
@@ -215,8 +217,8 @@ const renderRow = memo(function renderRow({ data, index, style }: ListChildCompo
 
 const Row = observer(function Row({ item }: { item: VirtualizedRow }) {
   return (
-    <UIItem key={item.key}>
-      {item.type === "header" && <UIGroupName>{item.label}</UIGroupName>}
+    <UIItem key={item.key} data-test-id={`sidebar-request-group-${item.groupName.toLowerCase().split(" ").join("-")}`}>
+      {item.type === "header" && <UIGroupName>{item.groupName}</UIGroupName>}
       {item.type === "topic" && <RequestItem topic={item.topic} />}
     </UIItem>
   );
