@@ -9,12 +9,9 @@ insert_permissions:
 - permission:
     backend_only: false
     check:
-      _or:
-      - message:
-          user_id:
-            _eq: X-Hasura-User-Id
-      - message:
-          tasks:
+      message:
+        topic:
+          members:
             user_id:
               _eq: X-Hasura-User-Id
     columns:
@@ -55,8 +52,10 @@ delete_permissions:
 - permission:
     filter:
       message:
-        user_id:
-          _eq: X-Hasura-User-Id
+        topic:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
