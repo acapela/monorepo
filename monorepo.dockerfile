@@ -23,8 +23,6 @@ RUN yarn frontend:build
 # main image
 FROM node:16-buster
 
-RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
-
 WORKDIR /app
 
 ARG BUILD_ID

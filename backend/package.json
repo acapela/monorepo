@@ -15,7 +15,6 @@
     "axios": "*",
     "date-fns": "*",
     "express": "*",
-    "hasura-cli": "*",
     "typescript": "*"
   },
   "dependencies": {
