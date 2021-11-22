@@ -33,8 +33,8 @@ spec:
             port: 8080
             path: /healthz
           initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 10
         readinessProbe:
           httpGet:
             port: 8080
@@ -42,7 +42,7 @@ spec:
           initialDelaySeconds: 20
           periodSeconds: 5
           successThreshold: 3
-          timeoutSeconds: 5
+          timeoutSeconds: 10
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
         command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
