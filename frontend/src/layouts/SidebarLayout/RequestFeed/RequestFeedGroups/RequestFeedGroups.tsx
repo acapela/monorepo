@@ -5,6 +5,7 @@ import React, { memo, useMemo, useRef } from "react";
 import { VariableSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
+import { useLastValue } from "~frontend/../../shared/hooks/useLastValue";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -68,9 +69,32 @@ function convertGroupsToVirtualizedRows(groups: RequestsGroupProps[]): [Virtuali
   return [rowsData, rowsHeight];
 }
 
+function useVirtualRowConverter(
+  groups: RequestsGroupProps[],
+  onListHeightUpdate: (index: number) => void
+): [VirtualizedRow[], number[]] {
+  const [dataRows, heightRows] = useMemo(() => convertGroupsToVirtualizedRows(groups), [groups]);
+  const previousHeightRows = useLastValue(heightRows);
+
+  if (previousHeightRows) {
+    for (let i = 0; i < heightRows.length && i < previousHeightRows?.length; i++) {
+      if (heightRows[i] !== previousHeightRows[i]) {
+        // Forces react-window to redo its internal item height cache
+        onListHeightUpdate(i);
+        break;
+      }
+    }
+  }
+
+  return [dataRows, heightRows];
+}
+
 export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const boundingBox = useBoundingBox(ref);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const boundingBox = useBoundingBox(containerRef);
+
+  const unarchivedListRef = useRef<List>(null);
+  const archivedListRef = useRef<List>(null);
 
   // MBA m1 2021 -> 186 ms to process (archived orderBy is main culprit)
   const { receivedTasks, sentTasks, openTopics, closedTopics, archived } = computed(() =>
@@ -121,13 +145,11 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   // MBA m1 2021 -> 26 ms to process 1 year worth of topics ~600
   const archivedGroups: RequestsGroupProps[] = useArchivedGroups(archived);
 
-  const [unarchivedRows, unarchiveHeights] = useMemo(
-    () => convertGroupsToVirtualizedRows(unarchivedGroups),
-    [unarchivedGroups]
+  const [unarchivedRows, unarchiveHeights] = useVirtualRowConverter(unarchivedGroups, (i) =>
+    unarchivedListRef.current?.resetAfterIndex(i, true)
   );
-  const [archivedRows, archiveHeights] = useMemo(
-    () => convertGroupsToVirtualizedRows(archivedGroups),
-    [archivedGroups]
+  const [archivedRows, archiveHeights] = useVirtualRowConverter(archivedGroups, (i) =>
+    archivedListRef.current?.resetAfterIndex(i, true)
   );
 
   const [isFirstToggleRender, { unset: setFirstToggleRenderAsComplete }] = useBoolean(true);
@@ -138,7 +160,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   }
 
   return (
-    <UIHolder ref={ref} data-test-id="sidebar-all-request-groups">
+    <UIHolder ref={containerRef} data-test-id="sidebar-all-request-groups">
       {archived && archived.length > 0 && (
         <UIArchivedToggle
           layout="position"
@@ -172,6 +194,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             transition={{ duration: ANIMATION_DURATION }}
           >
             <List<VirtualizedRow[]>
+              ref={unarchivedListRef}
               itemCount={unarchivedRows.length}
               itemKey={getVirtualizedRowKey}
               itemData={unarchivedRows}
@@ -199,6 +222,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
             transition={{ duration: ANIMATION_DURATION }}
           >
             <List<VirtualizedRow[]>
+              ref={archivedListRef}
               data-test-id="sidebar-all-request-groups"
               itemCount={archivedRows.length}
               itemKey={getVirtualizedRowKey}
