@@ -9,11 +9,16 @@ insert_permissions:
 - permission:
     backend_only: false
     check:
-      message:
-        topic:
-          members:
-            user_id:
+      _or:
+      - message:
+          topic:
+            owner_id:
               _eq: X-Hasura-User-Id
+      - message:
+          topic:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
     columns:
     - created_at
     - due_at
@@ -30,11 +35,16 @@ select_permissions:
     - id
     - message_id
     filter:
-      message:
-        topic:
-          members:
-            user_id:
+      _or:
+      - message:
+          topic:
+            owner_id:
               _eq: X-Hasura-User-Id
+      - message:
+          topic:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -42,20 +52,30 @@ update_permissions:
     columns:
     - due_at
     filter:
-      message:
-        topic:
-          members:
-            user_id:
+      _or:
+      - message:
+          topic:
+            owner_id:
               _eq: X-Hasura-User-Id
+      - message:
+          topic:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
     filter:
-      message:
-        topic:
-          members:
-            user_id:
+      _or:
+      - message:
+          topic:
+            owner_id:
               _eq: X-Hasura-User-Id
+      - message:
+          topic:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
