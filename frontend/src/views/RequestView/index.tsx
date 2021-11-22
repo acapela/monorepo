@@ -10,6 +10,7 @@ import { PageMeta } from "~frontend/utils/PageMeta";
 import { routes } from "~shared/routes";
 import { phone } from "~ui/responsive";
 
+import { NotFound } from "./NotFound";
 import { TopicWithMessages } from "./TopicWithMessages";
 
 interface Props {
@@ -70,7 +71,7 @@ export const RequestView = observer(({ topicSlug }: Props) => {
   useUpdateTopicLastSeenMessage(topic);
 
   if (!topic) {
-    return null;
+    return <NotFound />;
   }
 
   return (
