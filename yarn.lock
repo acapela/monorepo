@@ -21041,7 +21041,6 @@ fsevents@^1.2.7:
     axios: "*"
     date-fns: "*"
     express: "*"
-    hasura-cli: "*"
     typescript: "*"
   languageName: unknown
   linkType: soft
