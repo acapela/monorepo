@@ -20,7 +20,7 @@ export const Avatar = styled<Props>(({ url, name, className, size = "inherit", d
 
   if (!url || failedToLoad) {
     return (
-      <UIHolder size={size} className={className}>
+      <UIHolder size={size} className={className} aria-label={name ?? undefined}>
         <UINameLabel>{!!name && getInitials(name)}</UINameLabel>
       </UIHolder>
     );
