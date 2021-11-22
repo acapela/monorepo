@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
-import { find } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -11,7 +10,6 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
-import { slackClient } from "../app";
 import { LiveTopicMessage } from "../LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
@@ -140,16 +138,6 @@ export function setupRequestModal(app: App) {
     }));
 
     const channelId = metadata.channelId ?? view.state.values.channel_block.channel_select.selected_channel;
-
-    if (channelId) {
-      const response = await slackClient.conversations.members({ token, channel: channelId });
-      for (const member of response.members || []) {
-        // if a channel member was already mentioned, don't add them twice
-        if (!find(slackUserIdsWithMentionType, ["slackUserId", member])) {
-          slackUserIdsWithMentionType.push({ slackUserId: member });
-        }
-      }
-    }
 
     await ack({ response_action: "clear" });
 
