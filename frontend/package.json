@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.4.13",
+    "@install-binary/berglas": "^0.6.1",
     "@popperjs/core": "^2.10.1",
     "@segment/analytics.js-core": "^4.1.11",
     "@segment/snippet": "^4.15.3",
