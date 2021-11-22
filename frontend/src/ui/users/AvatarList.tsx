@@ -39,7 +39,7 @@ export const AvatarList = styledObserver(function AvatarList({
   });
 
   return (
-    <UIHolder ref={holderRef} className={className}>
+    <UIHolder ref={holderRef} className={className} aria-label="topic members">
       {visibleAvatars.map((user) => (
         <UserAvatar size={size} key={user.id} user={user} />
       ))}

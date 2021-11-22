@@ -129,3 +129,23 @@ test("add and remove reaction", async ({ page, auth, db }) => {
   await page.click(`[data-reaction]:has-text("❤️")`);
   expect(await page.$$("[data-reaction]")).toHaveLength(0);
 });
+
+test("create a new read request for self, then add another user via a request", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  const appPage = new AppDevPage(page);
+
+  await appPage.makeNewRequest({
+    mentions: [["Request read", db.user2.name]],
+  });
+
+  const newUserName = db.user1.name;
+  const topicMemberSelector = `[aria-label="topic members"] [aria-label="${newUserName}"]`;
+  await expect(await page.locator(topicMemberSelector)).toHaveCount(0);
+
+  await page.fill('[contenteditable="true"]', "@");
+  await page.click(`[role="option"]:has-text("${newUserName}")`);
+  await page.click("text=Request read");
+  await page.click("text=Send");
+
+  await page.waitForSelector(topicMemberSelector);
+});
