@@ -180,12 +180,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
               await uploadAttachments(files);
             }}
           />
-          <NewMessageButtons
-            canSend={!isEmptyWithNoAttachments}
-            topic={topic}
-            onSendRequest={() => handleSubmitTextMessage(false)}
-            onCompleteRequest={() => handleSubmitTextMessage(true)}
-          />
+          <NewMessageButtons canSend={!isEmptyWithNoAttachments} onSendRequest={() => handleSubmitTextMessage(false)} />
         </UIRequestControls>
       </UIEditorContainer>
     </UIHolder>
