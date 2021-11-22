@@ -24,6 +24,8 @@ test("create a new read request and update it to a response request", async ({ p
   await page.click("text=Request response");
   await page.click("text=Save");
 
+  await page.click("text=recipient");
+
   await page.waitForSelector("text=Response");
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 });
@@ -54,7 +56,9 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   await appPage.waitForRequestInGroup(requestName, "Received");
 
-  await page.click('button:has-text("Mark as read")');
+  await page.click("text=Mark as read");
+
+  await page.click("text=recipient");
 
   await page.waitForSelector(`[data-test-task-assignee="${db.user2.id}"]:has-text("✓")`);
 
