@@ -32,14 +32,14 @@ spec:
           httpGet:
             port: 8080
             path: /healthz
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
             port: 8080
             path: /healthz
-          initialDelaySeconds: 10
+          initialDelaySeconds: 20
           periodSeconds: 5
           successThreshold: 3
           timeoutSeconds: 5
