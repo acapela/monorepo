@@ -86,9 +86,9 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     assert(teamMember, "teamMember must have been created");
 
     if (firstInvite) {
-      trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, inviteEmail: email });
+      trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, email, origin: "webapp" });
     } else {
-      trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, userEmail: email });
+      trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, email });
     }
 
     await handleInviteNotifications(teamMember.user, team_id, invitingUserId);

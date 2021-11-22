@@ -84,7 +84,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           })
           .then(async (user) => {
             if (user) {
-              trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
+              trackFirstBackendUserEvent(user, "Signed In");
             }
           })
           .catch((error) => Sentry.captureException(error));
@@ -226,7 +226,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
           }),
         ]);
-        trackFirstBackendUserEvent(user, "Signed Up", { userEmail: user.email });
+        trackFirstBackendUserEvent(user, "Signed Up");
         if (user.current_team_id) {
           trackBackendUserEvent(user.id, "Account Added User", { teamId: user.current_team_id });
         }
