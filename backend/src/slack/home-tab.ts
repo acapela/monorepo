@@ -159,15 +159,29 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     return;
   }
 
+  const currentUserId = teamMember.user_id;
+
   const whereIsOpen: TopicWhereInput = { closed_at: null };
+
   const whereHasOpenTask: TopicWhereInput = {
-    message: { some: { task: { some: { user_id: teamMember.user_id, done_at: null } } } },
+    // Any message with task(s) assigned to user and not done
+    message: { some: { task: { some: { user_id: currentUserId, done_at: null } } } },
   };
+
   const whereHasOpenSentTask: TopicWhereInput = {
-    message: {
-      some: { user_id: teamMember.user_id, task: { some: { user_id: { not: teamMember.user_id }, done_at: null } } },
-    },
+    OR: [
+      // Any message  that is created by user and with task(s) that are not done
+      {
+        message: {
+          some: { user_id: currentUserId, task: { some: { done_at: null } } },
+        },
+      },
+      {
+        owner_id: { equals: currentUserId },
+      },
+    ],
   };
+
   const [received, sent, open, closed] = await Promise.all(
     (
       [
