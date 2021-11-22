@@ -8,13 +8,15 @@ import { isNotNullish } from "~shared/nullish";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
-import { taskEntity } from "./task";
+import { TaskEntity, taskEntity } from "./task";
 import { topicEventEntity } from "./topicEvent";
 import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
+
+export const sortByEarliestTaskDueDate = (task: TaskEntity) => task.message?.dueDate;
 
 const topicFragment = gql`
   fragment Topic on topic {
@@ -96,6 +98,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       message_id: () => getMessageIds(),
     });
 
+    const getunfinishedTaskWithEarliestDueDateByCurrentUser = cachedComputed(() => {
+      return tasks.query({ isAssignedToSelf: true, hasDueDate: true, isDone: false }, sortByEarliestTaskDueDate).first;
+    });
+
     const unreadMessages = getEntity(messageEntity)
       .query({ topic_id: topic.id })
       .query((message) => {
@@ -152,6 +158,10 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
 
       unreadMessages,
+
+      get currentUserUnfinishedTaskWithEarliestDueDate() {
+        return getunfinishedTaskWithEarliestDueDateByCurrentUser();
+      },
 
       events,
     };

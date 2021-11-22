@@ -18,7 +18,6 @@ import { theme } from "~ui/theme";
 import { RequestContentSnippet } from "../RequestContentSnippet";
 import { RequestMessagePreview } from "../RequestMessagePreview";
 import { RequestParticipants } from "../RequestParticipants";
-import { getUnfinishedTopicTaskWithEarliestDueDate } from "../utils";
 
 interface Props {
   topic: TopicEntity;
@@ -89,19 +88,18 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
 });
 
 const OpenTopicSubtitle = observer(function OpenTopicSubtitle({ topic }: { topic: TopicEntity }) {
-  const unfinishedTaskWithEarliestDueDate = getUnfinishedTopicTaskWithEarliestDueDate(topic);
   return (
     <>
       {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
-      {!unfinishedTaskWithEarliestDueDate && (
+      {!topic.currentUserUnfinishedTaskWithEarliestDueDate && (
         <LazyRender fallback={<div>&nbsp;</div>}>
           <RequestContentSnippet topic={topic} />
         </LazyRender>
       )}
 
-      {unfinishedTaskWithEarliestDueDate && (
+      {topic.currentUserUnfinishedTaskWithEarliestDueDate && (
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        <>{getRelativeDueTimeLabel(unfinishedTaskWithEarliestDueDate.dueDate!)}</>
+        <>{getRelativeDueTimeLabel(topic.currentUserUnfinishedTaskWithEarliestDueDate.dueDate!)}</>
       )}
     </>
   );
