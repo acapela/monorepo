@@ -91,15 +91,15 @@ const OpenTopicSubtitle = observer(function OpenTopicSubtitle({ topic }: { topic
   return (
     <>
       {/* Content snippet requires booting up rich editor with plugins, lets make it lazy so it renders in next 'tick' */}
-      {!topic.unfinishedTaskWithEarliestDueDate && (
+      {!topic.currentUserUnfinishedTaskWithEarliestDueDate && (
         <LazyRender fallback={<div>&nbsp;</div>}>
           <RequestContentSnippet topic={topic} />
         </LazyRender>
       )}
 
-      {topic.unfinishedTaskWithEarliestDueDate && (
+      {topic.currentUserUnfinishedTaskWithEarliestDueDate && (
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        <>{getRelativeDueTimeLabel(topic.unfinishedTaskWithEarliestDueDate.dueDate!)}</>
+        <>{getRelativeDueTimeLabel(topic.currentUserUnfinishedTaskWithEarliestDueDate.dueDate!)}</>
       )}
     </>
   );
