@@ -38,13 +38,13 @@ describe("clientdb task", () => {
   });
 
   it("gets the due date", async () => {
-    const now = new Date().toISOString();
+    const due_at = new Date().toISOString();
     await db.messageTaskDueDate.create({
       message_id: message.id,
-      due_at: new Date().toISOString(),
+      due_at,
     });
     expect(task.hasDueDate).toBeTruthy();
-    expect(task.dueDate).toEqual(new Date(now));
+    expect(task.dueDate).toEqual(new Date(due_at));
   });
 
   it("gets the user that created the task", async () => {
