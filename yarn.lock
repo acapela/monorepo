@@ -1758,6 +1758,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@install-binary/berglas-darwin-arm64@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas-darwin-arm64@npm:0.6.1"
+  checksum: e68133c866dc34829a2a626d3f154ed77b205542dd16217fd30362d167f57e4f0da3054f128014e3da311ae3d872fffcde478faab572874b13f2a48f7691530f
+  languageName: node
+  linkType: hard
+
+"@install-binary/berglas-darwin-x64@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas-darwin-x64@npm:0.6.1"
+  checksum: a75cce7cb43d6d0e9b0f63dad05fd6e00835b7314c97c04e7b225471409243f3267398dd9125f7c9502ebb9f145fb2a0a1086602e50a5824085c066cd9feae5d
+  languageName: node
+  linkType: hard
+
+"@install-binary/berglas-linux-arm64@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas-linux-arm64@npm:0.6.1"
+  checksum: 6b4f7d2e9bfa244180f99ecbfd3b234a9d49c817adff6949f094aabb09394cf52479c9f0f1bad11d4e3cfe2dee21cb882f1f9e51016b6031b01a30e9278effa8
+  languageName: node
+  linkType: hard
+
+"@install-binary/berglas-linux-arm@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas-linux-arm@npm:0.6.1"
+  checksum: 76210ba48874b333d77df9806ae702eb5b7bf9f072d516791fd2920f68ca2cda4ab49c8e9ae2f51868c48c103b19f807effabe990d4e8458fddf896d9d12ed33
+  languageName: node
+  linkType: hard
+
+"@install-binary/berglas-linux-x64@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas-linux-x64@npm:0.6.1"
+  checksum: 96a46cc3f9c1e143abc0c7f714633c2a73c9e023cedf9af5864ad0ce8d660cb575da57a926a83baaf8c68997ef250705e2f9e1723000d1de2578bc2cb84e8e09
+  languageName: node
+  linkType: hard
+
+"@install-binary/berglas@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@install-binary/berglas@npm:0.6.1"
+  dependencies:
+    "@install-binary/berglas-darwin-arm64": 0.6.1
+    "@install-binary/berglas-darwin-x64": 0.6.1
+    "@install-binary/berglas-linux-arm": 0.6.1
+    "@install-binary/berglas-linux-arm64": 0.6.1
+    "@install-binary/berglas-linux-x64": 0.6.1
+  dependenciesMeta:
+    "@install-binary/berglas-darwin-arm64":
+      optional: true
+    "@install-binary/berglas-darwin-x64":
+      optional: true
+    "@install-binary/berglas-linux-arm":
+      optional: true
+    "@install-binary/berglas-linux-arm64":
+      optional: true
+    "@install-binary/berglas-linux-x64":
+      optional: true
+  bin:
+    berglas: run.js
+  checksum: 402c0692d618decb85b902b51ef257aeeae7890ee58fcb31f0ed3f74f1cfbf46d8328ecbb564d73ccf62bac98ba2998cb33a00c3209725017321a41d63a9ba47
+  languageName: node
+  linkType: hard
+
 "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1"
@@ -20943,6 +21004,7 @@ fsevents@^1.2.7:
     "@godaddy/terminus": ^4.9.0
     "@google-cloud/secret-manager": ^3.10.1
     "@google-cloud/storage": ^5.14.3
+    "@install-binary/berglas": ^0.6.1
     "@sentry/node": ^6.13.2
     "@slack/bolt": ^3.8.1
     "@slack/web-api": ^6.4.0
@@ -21026,6 +21088,7 @@ fsevents@^1.2.7:
   resolution: "~frontend@workspace:frontend"
   dependencies:
     "@apollo/client": ^3.4.13
+    "@install-binary/berglas": ^0.6.1
     "@next/bundle-analyzer": ^12.0.4
     "@popperjs/core": ^2.10.1
     "@segment/analytics.js-core": ^4.1.11
