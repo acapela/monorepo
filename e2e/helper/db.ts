@@ -28,13 +28,13 @@ async function createUser(name: string, email: string, currentTeam: string | nul
   const dbUser = await db.user.create({
     data: {
       name,
-      email: PREFIX + email,
+      email: email,
       current_team_id: currentTeam,
       account: {
         create: {
           provider_id: PREFIX,
           provider_type: PREFIX,
-          provider_account_id: PREFIX + email,
+          provider_account_id: email,
         },
       },
     },
@@ -45,13 +45,14 @@ async function createUser(name: string, email: string, currentTeam: string | nul
   };
 }
 
-export async function setupDatabase() {
-  const user1 = await createUser("u1", "user-1@acape.la", null);
+export async function setupDatabase(key: string) {
+  const fullPrefix = PREFIX + key;
+  const user1 = await createUser("u1", fullPrefix + "user-1@acape.la", null);
   const team = await db.team.create({
-    data: { owner_id: user1.id, name: PREFIX + "what a team", slug: PREFIX + "team-with-a-slug" },
+    data: { owner_id: user1.id, name: fullPrefix + "what a team", slug: fullPrefix + "team-with-a-slug" },
   });
 
-  const user2 = await createUser("u2", "user-2@acape.la", team.id);
+  const user2 = await createUser("u2", fullPrefix + "user-2@acape.la", team.id);
 
   await db.team_member.createMany({
     data: [
@@ -65,7 +66,7 @@ export async function setupDatabase() {
     async cleanup() {
       const userIds = Prisma.join([user1.id, user2.id]);
       await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
-      await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
+      await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
     },
   };
 }

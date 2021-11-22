@@ -1,8 +1,7 @@
 import { test as rootTest } from "@playwright/test";
-import { get } from "lodash";
 
 import { domain } from "./constants";
-import type { TestUser, setupDatabase } from "./db";
+import { TestUser, setupDatabase } from "./db";
 import { isSentryStoreURL } from "./utils";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
@@ -19,8 +18,10 @@ export const test = rootTest.extend<{
     await use(page);
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async db({ page }, use) {
-    await use(JSON.parse(get(process.env, "TESTING_DB_DATA", "null")));
+  async db({ page, context }, use, testInfo) {
+    const { data, cleanup } = await setupDatabase(String(testInfo.workerIndex));
+    await use(data);
+    await cleanup();
   },
   async auth({ page }, use) {
     await use({
