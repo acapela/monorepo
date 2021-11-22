@@ -12,7 +12,7 @@ interface Props {
   task: TaskEntity;
 }
 
-function getCompleteTaskLabel(task: TaskEntity) {
+function getUncompletedTaskLabel(task: TaskEntity) {
   const taskType = task.type;
 
   if (taskType === REQUEST_READ) {
@@ -51,7 +51,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
           task.update({ done_at: new Date().toISOString() });
         }}
       >
-        {getCompleteTaskLabel(task)}
+        {getUncompletedTaskLabel(task)}
       </TaskColoredButton>
     );
   }
