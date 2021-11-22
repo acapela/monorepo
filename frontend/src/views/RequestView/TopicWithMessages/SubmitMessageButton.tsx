@@ -10,7 +10,7 @@ interface Props {
   canSend: boolean;
 }
 
-export const NewMessageButtons = observer(({ onSendRequest, canSend }: Props) => {
+export const SubmitMessageButton = observer(({ onSendRequest, canSend }: Props) => {
   return (
     <UIHolder>
       <Button shortcut={["Mod", "Enter"]} kind="primary" onClick={onSendRequest} isDisabled={!canSend}>
