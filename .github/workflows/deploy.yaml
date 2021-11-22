@@ -23,11 +23,13 @@ jobs:
       - name: Install kustomize
         run: |
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+      - uses: google-github-actions/auth@v0.4.0
+        with:
+          credentials_json: ${{ secrets.GCLOUD_AUTH }}
       - uses: google-github-actions/get-gke-credentials@main
         with:
           cluster_name: cluster-1
           location: europe-west1
-          credentials: ${{ secrets.GCLOUD_AUTH }}
       - run: |
           ./scripts/deploy.sh -s ${{ github.event.inputs.stage }} -a ${{ github.event.inputs.app }} -v ${{ github.event.inputs.version }}
         env:
