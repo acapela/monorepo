@@ -6,6 +6,7 @@ type Params<Keys extends string> = Record<Keys, string>;
 
 export type RouteBuilder<ParamKeys extends string> = ((params: Params<ParamKeys>) => string) & {
   paramKeys: ParamKeys[];
+  path: string;
 };
 
 export function parameterizeRoutes<Routes extends LabeledRoutes>(
@@ -22,7 +23,7 @@ export function parameterizeRoutes<Routes extends LabeledRoutes>(
     return Object.assign(
       (params: Params<string>) =>
         paramKeys.reduce((filledIn, key) => filledIn.replaceAll(`[${key}]`, params[key]), template),
-      { paramKeys }
+      { paramKeys, path: template }
     );
   });
 }

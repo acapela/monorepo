@@ -2,15 +2,20 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { DropFileContext } from "~richEditor/DropFileContext";
 
 import { NewRequest } from "./NewRequest";
 
-export const NewRequestView = observer(function NewRequestView() {
+interface Props {
+  topicToDuplicate?: TopicEntity;
+}
+
+export const NewRequestView = observer(function NewRequestView({ topicToDuplicate }: Props) {
   return (
     <>
       <UIDropFileHolder>
-        <NewRequest />
+        <NewRequest topicToDuplicate={topicToDuplicate} />
       </UIDropFileHolder>
     </>
   );

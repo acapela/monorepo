@@ -1,5 +1,6 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
@@ -9,8 +10,9 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { routes } from "~shared/routes";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconCheck, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
+import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
@@ -39,6 +41,10 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
     topic.update({ name: name ?? undefined });
   });
 
+  const handleTopicDuplicateRequest = action(async () => {
+    router.push(routes.topicDuplicate({ topicSlug: topic.slug }));
+  });
+
   const handleTopicArchive = action(async () => {
     if (!topic.isClosed) {
       handleCloseTopic();
@@ -64,6 +70,11 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
               label: "Rename",
               onSelect: () => handleTopicRename(),
               icon: <IconEdit />,
+            },
+            {
+              label: "Duplicate",
+              onSelect: () => handleTopicDuplicateRequest(),
+              icon: <IconCopy />,
             },
             {
               label: topic.isClosed ? "Reopen" : "Close",

@@ -9,6 +9,7 @@ import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { ClientDb, useDb } from "~frontend/clientdb";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
@@ -73,7 +74,11 @@ async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
   });
 }
 
-export const NewRequest = observer(function NewRequest() {
+interface Props {
+  topicToDuplicate?: TopicEntity;
+}
+
+export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Props) {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
@@ -92,7 +97,11 @@ export const NewRequest = observer(function NewRequest() {
     focusEditor,
     hasAnyTextContent,
     clearPersistedContent,
-  } = useMessageEditorManager({ editorRef, persistanceKey: "message-draft-for-new-request" });
+  } = useMessageEditorManager({
+    editorRef,
+    persistanceKey: `message-draft-for-new-request-${topicToDuplicate?.id}`,
+    initialValue: topicToDuplicate?.messages.first?.content,
+  });
 
   // const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
   //   uploadAttachments(files);
@@ -110,8 +119,8 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   const [topicName, setTopicName, clearTopicName] = usePersistedState<string>({
-    key: "topic-name-draft-for-new-request",
-    initialValue: "",
+    key: `topic-name-draft-for-new-request-${topicToDuplicate?.id}`,
+    initialValue: topicToDuplicate?.name ?? "",
   });
 
   const hasTypedInAnything = useMemo(() => topicName !== "" || hasAnyTextContent, [topicName, hasAnyTextContent]);
