@@ -1,16 +1,14 @@
-import { expect } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 
 import { getInviteURL } from "~backend/src/inviteUser/utils";
 import { test } from "~e2e/helper/base-test";
 import { basePath } from "~e2e/helper/constants";
 import { routes } from "~shared/routes";
 
-test("create a team", async ({ page, auth, db }) => {
-  await auth.login(db.user1);
+async function createTeam(page: Page, teamName: string) {
   await page.goto(basePath);
   await page.click('button:has-text("Create new team")');
   await page.waitForNavigation();
-  const teamName = "Team The Best Team" + Date.now();
   await page.keyboard.type(teamName);
   await page.click('button:has-text("Create new team")');
   // Skip slack
@@ -20,15 +18,24 @@ test("create a team", async ({ page, auth, db }) => {
 
   // Expect to be on homepage
   await page.waitForSelector(`text="New Request"`);
+}
+
+test("create a team", async ({ page, auth, db }) => {
+  await auth.login(db.user1);
+  await createTeam(page, "Team The Best Team" + Date.now());
 });
+
+async function inviteUser(page: Page, email: string) {
+  await page.goto(basePath + routes.settings);
+  await page.fill('[name="invite-email"]', email);
+  await page.click('text="Send invite"');
+  return page.waitForSelector(`text=${email}(Invite pending)`);
+}
 
 test("invite a new user", async ({ page, auth, db, browser }) => {
   await auth.login(db.user2);
-  await page.goto(basePath + routes.settings);
-  const newUserEmail = "__TESTING__greenhorn@acape.la";
-  await page.fill('[name="invite-email"]', newUserEmail);
-  await page.click('text="Send invite"');
-  const element = await page.waitForSelector(`text=${newUserEmail}(Invite pending)`);
+
+  const element = await inviteUser(page, "__TESTING__greenhorn@acape.la");
   const invitedUserId = await element.getAttribute("data-test-user-id");
   expect(typeof invitedUserId).toBe("string");
 
@@ -40,4 +47,10 @@ test("invite a new user", async ({ page, auth, db, browser }) => {
   await newPage.goto(getInviteURL(invitedUserId!));
   await newPage.waitForSelector("text=You have been invited");
   await newBrowserContext.close();
+});
+
+test("invite an existing user", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  await createTeam(page, "Just the Two of Us" + Date.now());
+  await inviteUser(page, db.user1.email);
 });
