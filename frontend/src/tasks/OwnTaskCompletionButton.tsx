@@ -1,9 +1,11 @@
 import { observer } from "mobx-react";
+import styled from "styled-components";
 
-import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~frontend/../../shared/types/mention";
-import { Button } from "~frontend/../../ui/buttons/Button";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { IconArrowLeft } from "~ui/icons";
+import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
+import { MentionType, REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { Button, baseButtonStyles } from "~ui/buttons/Button";
+import { IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 interface Props {
@@ -41,24 +43,16 @@ function getCompletedTaskLabel(task: TaskEntity) {
 export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton({ task }: Props) {
   const isDone = task.isDone;
 
-  function getLabel() {
-    if (isDone) {
-      return getCompletedTaskLabel(task);
-    }
-
-    return getCompleteTaskLabel(task);
-  }
-
   if (!isDone) {
     return (
-      <Button
-        kind="primary"
+      <TaskColoredButton
+        $taskType={task.type as MentionType}
         onClick={() => {
           task.update({ done_at: new Date().toISOString() });
         }}
       >
         {getCompleteTaskLabel(task)}
-      </Button>
+      </TaskColoredButton>
     );
   }
 
@@ -71,7 +65,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
           onSelect: () => {
             task.update({ done_at: null });
           },
-          icon: <IconArrowLeft />,
+          icon: <IconUndo />,
         },
       ]}
     >
@@ -81,3 +75,8 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
     </PopoverMenuTrigger>
   );
 });
+
+const TaskColoredButton = styled.div<{ $taskType: MentionType }>`
+  ${baseButtonStyles};
+  ${(props) => getMentionColor(props.$taskType).interactive};
+`;

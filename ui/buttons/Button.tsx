@@ -107,12 +107,7 @@ const UIIconHolder = styled.div<{}>`
   align-items: center;
 `;
 
-export const UIButton = styled(motion.button)<{
-  $kind: ButtonKind;
-  $isLoading?: boolean;
-  $isDisabled?: boolean;
-  $isWide?: boolean;
-}>`
+export const baseButtonStyles = css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -130,6 +125,15 @@ export const UIButton = styled(motion.button)<{
   }
 
   ${theme.transitions.hover()}
+`;
+
+export const UIButton = styled(motion.button)<{
+  $kind: ButtonKind;
+  $isLoading?: boolean;
+  $isDisabled?: boolean;
+  $isWide?: boolean;
+}>`
+  ${baseButtonStyles};
 
   ${(props) => getButtonKindtyles(props.$kind)}
 

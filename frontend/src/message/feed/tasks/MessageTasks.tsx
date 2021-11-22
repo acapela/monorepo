@@ -7,16 +7,12 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
-import { theme } from "~ui/theme";
 
-import { CollapsedTasksButton } from "./CollapsedTasksButton";
-import { MessageTask } from "./MessageTask";
+import { MessageTasksPeople } from "./MessageTasksPeople";
 
 interface Props {
   message: MessageEntity;
 }
-
-const COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING = 3;
 
 const allTasksInMessageFilter = () => true;
 
@@ -31,9 +27,6 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
     return null;
   }
 
-  const displayedTasks = allTasks.slice(0, COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
-  const collapsedTasks = allTasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
-
   const selfTask = tasks.query({ isAssignedToSelf: true }).first;
 
   return (
@@ -45,15 +38,7 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
       <UIDivider />
 
-      <UITasksPossibleScroller>
-        <UITasks>
-          {displayedTasks.map((task) => (
-            <MessageTask key={task.id} task={task} />
-          ))}
-        </UITasks>
-
-        {collapsedTasks.length > 0 && <CollapsedTasksButton tasks={collapsedTasks} />}
-      </UITasksPossibleScroller>
+      <MessageTasksPeople tasks={allTasks} />
     </UIHolder>
   );
 })``;
@@ -71,18 +56,4 @@ const UIDivider = styled.div<{}>`
   width: 1px;
   height: 30px;
   background-color: rgba(0, 0, 0, 0.05);
-`;
-
-const UITasksPossibleScroller = styled.div`
-  display: flex;
-  flex-direction: row;
-  min-width: 0;
-  overflow-x: auto;
-  ${theme.spacing.actions.asGap}
-`;
-
-const UITasks = styled.div<{}>`
-  display: flex;
-  flex-direction: row;
-  ${theme.spacing.actions.asGap}
 `;
