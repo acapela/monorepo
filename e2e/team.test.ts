@@ -6,7 +6,7 @@ import { basePath } from "~e2e/helper/constants";
 import { routes } from "~shared/routes";
 
 async function createTeam(page: Page, teamName: string) {
-  await page.goto(basePath);
+  await page.goto(basePath + routes.teamSelect);
   await page.click('button:has-text("Create new team")');
   await page.waitForNavigation();
   await page.keyboard.type(teamName);
@@ -53,4 +53,16 @@ test("invite an existing user", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   await createTeam(page, "Just the Two of Us" + Date.now());
   await inviteUser(page, db.user1.email);
+});
+
+test("remove team member", async ({ page, auth, db }) => {
+  await auth.login(db.user1);
+  await page.goto(basePath);
+  await page.click("text=Select team");
+
+  await page.goto(basePath + routes.settings);
+  await expect(page.locator(`text=${db.user2.name}`)).toHaveCount(1);
+
+  await page.click(`button[title^="Remove ${db.user2.name}"]`);
+  await expect(page.locator(`text=${db.user2.name}`)).toHaveCount(0);
 });
