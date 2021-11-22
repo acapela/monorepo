@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { styledForwardRef } from "~shared/component";
 import { PopPresenceAnimator } from "~ui/animations";
 import { disabledCss } from "~ui/disabled";
+import { IconChevronDown } from "~ui/icons";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { useOptionalShortcut } from "~ui/keyboard/useShortcut";
 import { getTooltipProps } from "~ui/popovers/tooltipProps";
@@ -25,6 +26,7 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
   tooltip?: string;
   kind?: ButtonKind;
   shortcut?: ShortcutDefinition;
+  indicateDropdown?: boolean;
   onClick?: () => void;
 }
 
@@ -48,6 +50,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     children,
     shortcut,
     onClick,
+    indicateDropdown,
     ...htmlProps
   },
   ref
@@ -86,6 +89,11 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       {iconAtStart && iconNode}
       {children && <UIContentHolder>{children}</UIContentHolder>}
       {!iconAtStart && iconNode}
+      {indicateDropdown && (
+        <UIIconHolder>
+          <IconChevronDown />
+        </UIIconHolder>
+      )}
     </UIButton>
   );
 })``;

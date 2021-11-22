@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TaskEntity } from "~frontend/clientdb/task";
+import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
 import { theme } from "~ui/theme";
@@ -22,18 +23,23 @@ const allTasksInMessageFilter = () => true;
 const sortCurrentUserInFront = (item: TaskEntity) => (item.assignedUser?.isCurrentUser ? -1 : 0);
 
 export const MessageTasks = styledObserver(({ message }: Props) => {
-  const tasks = message.tasks.query(allTasksInMessageFilter, sortCurrentUserInFront).all;
+  const tasks = message.tasks.query(allTasksInMessageFilter, sortCurrentUserInFront);
+
+  const allTasks = tasks.all;
 
   if (!message.tasks.hasItems) {
     return null;
   }
 
-  const displayedTasks = tasks.slice(0, COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
-  const collapsedTasks = tasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
+  const displayedTasks = allTasks.slice(0, COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
+  const collapsedTasks = allTasks.slice(COUNT_OF_MESSAGES_DISPLAYED_BEFORE_COLLAPSING);
+
+  const selfTask = tasks.query({ isAssignedToSelf: true }).first;
 
   return (
     <UIHolder data-test-message-tasks>
       <LayoutGroup>
+        {selfTask && <OwnTaskCompletionButton task={selfTask} />}
         <TaskDueDateSetter message={message} />
       </LayoutGroup>
 
