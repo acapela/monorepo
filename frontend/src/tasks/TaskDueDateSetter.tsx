@@ -121,7 +121,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
           isDisabled={message.topic?.isClosed}
           data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
         >
-          {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : null}
+          {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : "Add due date"}
         </Button>
       </UITriggerHolder>
     </>

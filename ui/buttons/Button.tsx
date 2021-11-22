@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { styledForwardRef } from "~shared/component";
 import { PopPresenceAnimator } from "~ui/animations";
 import { disabledCss } from "~ui/disabled";
+import { IconChevronDown } from "~ui/icons";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { useOptionalShortcut } from "~ui/keyboard/useShortcut";
 import { getTooltipProps } from "~ui/popovers/tooltipProps";
@@ -25,6 +26,7 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
   tooltip?: string;
   kind?: ButtonKind;
   shortcut?: ShortcutDefinition;
+  indicateDropdown?: boolean;
   onClick?: () => void;
 }
 
@@ -48,6 +50,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     children,
     shortcut,
     onClick,
+    indicateDropdown,
     ...htmlProps
   },
   ref
@@ -86,6 +89,11 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       {iconAtStart && iconNode}
       {children && <UIContentHolder>{children}</UIContentHolder>}
       {!iconAtStart && iconNode}
+      {indicateDropdown && (
+        <UIIconHolder>
+          <IconChevronDown />
+        </UIIconHolder>
+      )}
     </UIButton>
   );
 })``;
@@ -99,12 +107,7 @@ const UIIconHolder = styled.div<{}>`
   align-items: center;
 `;
 
-export const UIButton = styled(motion.button)<{
-  $kind: ButtonKind;
-  $isLoading?: boolean;
-  $isDisabled?: boolean;
-  $isWide?: boolean;
-}>`
+export const baseButtonStyles = css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -122,6 +125,15 @@ export const UIButton = styled(motion.button)<{
   }
 
   ${theme.transitions.hover()}
+`;
+
+export const UIButton = styled(motion.button)<{
+  $kind: ButtonKind;
+  $isLoading?: boolean;
+  $isDisabled?: boolean;
+  $isWide?: boolean;
+}>`
+  ${baseButtonStyles};
 
   ${(props) => getButtonKindtyles(props.$kind)}
 
