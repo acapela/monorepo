@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-set -eu
+set -euo pipefail
 
 [ -z "${HASURA_ENDPOINT:-}" ] && {
   echo "hasura endpoint missing"
@@ -11,6 +11,8 @@ set -eu
   echo "hasura admin secret missing"
   exit 1
 }
+
+set -x
 
 cd ../infrastructure/hasura
 yarn hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
