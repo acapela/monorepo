@@ -153,10 +153,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCLOUD_AUTH }}
         if: steps.semrel.outputs.version != ''
-      - name: Install kustomize
-        run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-        if: steps.semrel.outputs.version != ''
       - name: Set up kubectl
         uses: google-github-actions/get-gke-credentials@main
         with:
@@ -168,7 +164,6 @@ jobs:
       - run: ./scripts/build-deploy.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
         env:
-          KUSTOMIZE_BIN: ./kustomize
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_PRODUCT_WEBHOOK_URL: ${{ secrets.SLACK_PRODUCT_WEBHOOK_URL }}

@@ -6,7 +6,7 @@ set -euo pipefail
   KUSTOMIZE_BIN=$(realpath $KUSTOMIZE_BIN)
 }
 
-kustomize_command=${KUSTOMIZE_BIN:-kustomize}
+kustomize_command=${KUSTOMIZE_BIN:-"yarn kustomize"}
 
 usage() {
 cat << EOF
