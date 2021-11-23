@@ -11,7 +11,7 @@ import { useOptionalShortcut } from "~ui/keyboard/useShortcut";
 import { getTooltipProps } from "~ui/popovers/tooltipProps";
 import { theme } from "~ui/theme";
 
-import { ButtonKind, getButtonKindtyles } from "./variants";
+import { ButtonKind, ButtonSize, getButtonKindtyles, getButtonSizeStyles } from "./variants";
 
 export interface ButtonDisabledInfo {
   reason: string;
@@ -25,6 +25,7 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
   isWide?: boolean;
   tooltip?: string;
   kind?: ButtonKind;
+  size?: ButtonSize;
   shortcut?: ShortcutDefinition;
   indicateDropdown?: boolean;
   onClick?: () => void;
@@ -47,6 +48,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     tooltip,
     iconAtStart = true,
     kind = "secondary",
+    size = "regular",
     children,
     shortcut,
     onClick,
@@ -83,6 +85,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       $isWide={isWide}
       {...getTooltipProps({ label: getTooltipLabel(), shortcut })}
       $kind={kind}
+      $size={size}
       onClick={onClick}
       {...htmlProps}
     >
@@ -115,7 +118,6 @@ export const baseButtonStyles = css`
   cursor: pointer;
 
   ${theme.typo.content.medium.resetLineHeight};
-  ${theme.box.button};
   ${theme.radius.secondaryItem};
   ${theme.spacing.actions.asGap};
 
@@ -129,6 +131,7 @@ export const baseButtonStyles = css`
 
 export const UIButton = styled(motion.button)<{
   $kind: ButtonKind;
+  $size: ButtonSize;
   $isLoading?: boolean;
   $isDisabled?: boolean;
   $isWide?: boolean;
@@ -136,6 +139,7 @@ export const UIButton = styled(motion.button)<{
   ${baseButtonStyles};
 
   ${(props) => getButtonKindtyles(props.$kind)}
+  ${(props) => getButtonSizeStyles(props.$size)}
 
   ${(props) => (props.$isDisabled || props.$isLoading) && disabledCss};
   ${(props) =>
