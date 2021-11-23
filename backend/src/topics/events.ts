@@ -52,7 +52,8 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
       },
     });
 
-    // add owner to topic members if hasn't been added before
+    // Check avoids race condition from hasura event triggers,
+    // when topic owner is added as member through the topic's first message
     if (!hasTopicOwnerBeenAddedAsMember) {
       await db.topic_member.create({
         data: {
