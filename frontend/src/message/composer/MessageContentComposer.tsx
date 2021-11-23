@@ -77,10 +77,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
   );
 });
 
-const UIEditorHolder = styled.div`
-  overflow-y: auto;
-  width: 100%;
-`;
+const UIEditorHolder = styled.div``;
 
 const UIAttachmentsPreviews = styled.div<{}>`
   display: grid;

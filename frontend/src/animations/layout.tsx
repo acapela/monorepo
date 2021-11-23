@@ -27,6 +27,4 @@ export const PageLayoutAnimator = styled(function PageLayoutAnimator(props: Prop
 const UIAnimator = styled(motion.div)`
   will-change: transform;
   transform: translate3d(0, 0, 0);
-  min-height: 0;
-  min-width: 0;
 `;
