@@ -72,7 +72,7 @@ describe("slack markdown generator", () => {
             { type: "paragraph" },
           ],
         },
-        { mentionedSlackIdByUsersId: { "123-456-789": "U123456" } }
+        { mentionedSlackIdByUsersId: { "123-456-789": { slackId: "U123456" } } }
       )
     ).toStrictEqual(`:pray: this is a test <@U123456>
 > blockqoute test
@@ -86,5 +86,36 @@ describe("slack markdown generator", () => {
 2. 34123
 3. 12312312332
 `);
+  });
+  it("mentions test", async () => {
+    expect(
+      generateMarkdownFromTipTapJson(
+        {
+          type: "doc",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "mention",
+                  attrs: { data: { type: "request-response", userId: "111" } },
+                },
+                { text: " + ", type: "text" },
+                {
+                  type: "mention",
+                  attrs: { data: { type: "request-response", userId: "222" } },
+                },
+                { text: " + ", type: "text" },
+                {
+                  type: "mention",
+                  attrs: { data: { type: "request-response", userId: "333" } },
+                },
+              ],
+            },
+          ],
+        },
+        { mentionedSlackIdByUsersId: { "111": { slackId: "U123456" }, "222": { name: "two" } } }
+      )
+    ).toStrictEqual(`<@U123456> + *@two* + *@unknown*`);
   });
 });

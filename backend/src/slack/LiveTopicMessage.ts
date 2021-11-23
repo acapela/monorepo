@@ -43,7 +43,9 @@ export async function LiveTopicMessage(topic: Topic) {
     }),
   ]);
 
-  const mentionedSlackIdByUsersId = teamMemberSlack.map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+  const mentionedSlackIdByUsersId = teamMemberSlack.map((tm) => ({
+    [tm.team_member.user_id]: { slackId: tm.slack_user_id },
+  }));
 
   assert(message, "must have a first message");
 

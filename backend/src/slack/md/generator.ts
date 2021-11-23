@@ -83,9 +83,11 @@ function renderNode(node: RichEditorNode | undefined, context: GenerateContext =
     case "mention": {
       const userId = get(node.attrs, "data.userId");
       if (context.mentionedSlackIdByUsersId && context.mentionedSlackIdByUsersId[userId]) {
-        return createSlackLink(`@${context.mentionedSlackIdByUsersId[userId]}`);
+        const slackMentionCtx = context.mentionedSlackIdByUsersId[userId];
+        if (slackMentionCtx.slackId) return createSlackLink(`@${slackMentionCtx.slackId}`);
+        if (slackMentionCtx.name) return Md.bold(`@${slackMentionCtx.name}`);
       }
-      return createSlackLink("@unknown");
+      return Md.bold("@unknown");
     }
     case "bulletList":
       return renderList(node.content, context);
@@ -100,9 +102,14 @@ function removeEndingNewline(input: string): string {
   return input;
 }
 
+type SlackMentionContext = {
+  slackId?: string;
+  name?: string;
+};
+
 export type GenerateContext = {
   mentionedSlackIdByUsersId?: {
-    [userId: string]: string;
+    [userId: string]: SlackMentionContext;
   };
 };
 
