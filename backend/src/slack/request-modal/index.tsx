@@ -182,6 +182,7 @@ export function setupRequestModal(app: App) {
       token,
       channel: channelId,
       thread_ts: metadata.messageTs,
+      text: "Add a due date to let your team know by when you need them to get back to you.",
       user: ownerSlackUserId,
       blocks: Message()
         .blocks(
