@@ -35,19 +35,23 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
       </UIInlineAttachmentHolder>
       <AnimatePresence>
         {isFullscreenOpened && (
-          <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
+          <UIFullscreenBackground isTransparent={false} onCloseRequest={closeFullscreen}>
             <CornerButtonWrapper>
               <IconButton tooltip="Esc or Space" onClick={closeFullscreen} icon={<IconCross />} />
             </CornerButtonWrapper>
             <PopPresenceAnimator>
               <ImageWrapper src={attachmentUrl} className={className} />
             </PopPresenceAnimator>
-          </ScreenCover>
+          </UIFullscreenBackground>
         )}
       </AnimatePresence>
     </LayoutGroup>
   );
 })``;
+
+const UIFullscreenBackground = styled(ScreenCover)`
+  z-index: ${theme.zIndex.fullScreenPreview};
+`;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;
