@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
+  version: 5
   cacheKey: 8
 
 "@apollo/client@npm:^3.4.13":
@@ -66,7 +66,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.15.5, @babel/core@npm:^7.0.0, @babel/core@npm:^7.1.0, @babel/core@npm:^7.12.3, @babel/core@npm:^7.14.8, @babel/core@npm:^7.2.2, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5":
+"@babel/core@npm:^7.0.0, @babel/core@npm:^7.1.0, @babel/core@npm:^7.12.3, @babel/core@npm:^7.14.8, @babel/core@npm:^7.2.2, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5":
   version: 7.15.5
   resolution: "@babel/core@npm:7.15.5"
   dependencies:
@@ -1761,35 +1761,35 @@ __metadata:
 "@install-binary/berglas-darwin-arm64@npm:0.6.1":
   version: 0.6.1
   resolution: "@install-binary/berglas-darwin-arm64@npm:0.6.1"
-  checksum: e68133c866dc34829a2a626d3f154ed77b205542dd16217fd30362d167f57e4f0da3054f128014e3da311ae3d872fffcde478faab572874b13f2a48f7691530f
+  conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
 "@install-binary/berglas-darwin-x64@npm:0.6.1":
   version: 0.6.1
   resolution: "@install-binary/berglas-darwin-x64@npm:0.6.1"
-  checksum: a75cce7cb43d6d0e9b0f63dad05fd6e00835b7314c97c04e7b225471409243f3267398dd9125f7c9502ebb9f145fb2a0a1086602e50a5824085c066cd9feae5d
+  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
 "@install-binary/berglas-linux-arm64@npm:0.6.1":
   version: 0.6.1
   resolution: "@install-binary/berglas-linux-arm64@npm:0.6.1"
-  checksum: 6b4f7d2e9bfa244180f99ecbfd3b234a9d49c817adff6949f094aabb09394cf52479c9f0f1bad11d4e3cfe2dee21cb882f1f9e51016b6031b01a30e9278effa8
+  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
 "@install-binary/berglas-linux-arm@npm:0.6.1":
   version: 0.6.1
   resolution: "@install-binary/berglas-linux-arm@npm:0.6.1"
-  checksum: 76210ba48874b333d77df9806ae702eb5b7bf9f072d516791fd2920f68ca2cda4ab49c8e9ae2f51868c48c103b19f807effabe990d4e8458fddf896d9d12ed33
+  conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
 "@install-binary/berglas-linux-x64@npm:0.6.1":
   version: 0.6.1
   resolution: "@install-binary/berglas-linux-x64@npm:0.6.1"
-  checksum: 96a46cc3f9c1e143abc0c7f714633c2a73c9e023cedf9af5864ad0ce8d660cb575da57a926a83baaf8c68997ef250705e2f9e1723000d1de2578bc2cb84e8e09
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1822,35 +1822,35 @@ __metadata:
 "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1"
-  checksum: b87c1a0703ed811fc09d86337061b50234cb242010e4157a818b4474396324536fd3acb0a2cce3e8574bc25b2ffeba3e3c381d07e4cd767ce37dbe504a4f4592
+  conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
 "@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1"
-  checksum: c7d27cafb98e318fc358be56fa4afd23846a7cbc98efd6f0b26bff9188b5ed063c3b6de90678548c1c38b274bcdf89b5c6e0e3ae2c356c9442665d3b8ba3507d
+  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
 "@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1"
-  checksum: 88f3343d4a07d757048d18ae5e24e638e77c23a4d30b540027395ade0935273810d87672c9bd70e16c4c0d870d698372e30e628c60674fa1388a8fb57b0ca308
+  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
 "@install-binary/hasura-linux-x64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-linux-x64@npm:2.1.0-beta.1"
-  checksum: a44a87fe102ddc7c368864b549d1f5eb6064ffff6284568dfd9703a7b0fb2745d0db4811c624e5e2ac852b763e811070c9b9411b47a9d69dd0f4775a383e0beb
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
 "@install-binary/hasura-win32-x64@npm:2.1.0-beta.1":
   version: 2.1.0-beta.1
   resolution: "@install-binary/hasura-win32-x64@npm:2.1.0-beta.1"
-  checksum: 3a4cc247fa2d2a40d5a0f0287ac897225fbdd1f6a1ce2398116af3c363158a4fea2b860c691b1c95b8862cef88d280530de702d278a7742df1439f8c6a30243c
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1877,6 +1877,55 @@ __metadata:
   bin:
     hasura: run.js
   checksum: 73572bc79d6e2bc4702dccd3b18c617755e9be81efc3e51975298df3799214e61859fedc389fe8dfb477612be85934e0ed62b2b2864569cda19897693f250130
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-darwin-arm64@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-darwin-arm64@npm:4.4.1"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-darwin-x64@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-darwin-x64@npm:4.4.1"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-linux-arm64@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-linux-arm64@npm:4.4.1"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-linux-ppc64le@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-linux-ppc64le@npm:4.4.1"
+  conditions: os=linux & cpu=ppc64le
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-linux-s390x@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-linux-s390x@npm:4.4.1"
+  conditions: os=linux & cpu=s390x
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-linux-x64@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-linux-x64@npm:4.4.1"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-win32-x64@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@install-binary/kustomize-win32-x64@npm:4.4.1"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -2513,77 +2562,77 @@ __metadata:
 "@next/swc-android-arm64@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-android-arm64@npm:12.0.4"
-  checksum: ca864e13a564ad3b0a88468f128bffb9f0bdaff7d4867c175af0fc40d8eb43e340e6b1a01183543d41f4b6d32c15ea0fede69d02fdc7b599d0db48e3fa1fc1d4
+  conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
 
 "@next/swc-darwin-arm64@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-darwin-arm64@npm:12.0.4"
-  checksum: 5fcef850628a96c6a952b2623a71f39bbf19490b1cd063b264ae9dc547fc99cff4b294bf46dc85515ad3e0434d9159591f46e855ac18a13757ad6b05e2584406
+  conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
 "@next/swc-darwin-x64@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-darwin-x64@npm:12.0.4"
-  checksum: 978693ed7dce780d4b11909fed7ec42969ed4d68148f152ae51eb9e8c57a498296cf336699bfcc530a9ce52aa0866200bda10412ddd47f056584c573ffc4f049
+  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
 "@next/swc-linux-arm-gnueabihf@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-linux-arm-gnueabihf@npm:12.0.4"
-  checksum: 24d7b7a3123a060083d3baa7cec351ba8c17b4c14694a922606c91747cfbc0ac576369cda794b56dd74d03355d093c09041797f2d2ab08989b0280f076d7e684
+  conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
 "@next/swc-linux-arm64-gnu@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-linux-arm64-gnu@npm:12.0.4"
-  checksum: ec140bcff0f6c133e9c57e952636754ad3c494abe408794fef39eb80178b563e28903a8b9881a8b1bc5f248f5e6a827074882c7f6c455a87a26e06b2f40271b5
+  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
 "@next/swc-linux-arm64-musl@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-linux-arm64-musl@npm:12.0.4"
-  checksum: 79942d889fd462c076743baea1713d04af0cb270be9a05177a7be6b57c90c577bc9c6b7b123ae068eb55f43f8cae67d86394eb8ceb670e54137733f26afc9cab
+  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
 "@next/swc-linux-x64-gnu@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-linux-x64-gnu@npm:12.0.4"
-  checksum: 4a25016f1e16aa480c7d421ef63fd039c3baddd70dae53789475294204b4e4a753ca2e72a426268e133c9ae8ab9c0ca7cb26cd1c8f10f180129eafda2a079eeb
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
 "@next/swc-linux-x64-musl@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-linux-x64-musl@npm:12.0.4"
-  checksum: 8043ee179e06664c32a8c14fbfc46e25653a0e8081cb5687c7d2cab3786acc67c1930dd61a919c4a69324e2e2b86c74100b58d1ccef7fa64d72867395c4c66ac
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
 "@next/swc-win32-arm64-msvc@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-win32-arm64-msvc@npm:12.0.4"
-  checksum: b5433fe999b92353cabd75e7eee77155dd51b1f844723a9f57b3f4e0e7df65b0eaeba83fa9984f33e79b988467d2065ab93cdc24e65c26d8255144f2508f789a
+  conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
 "@next/swc-win32-ia32-msvc@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-win32-ia32-msvc@npm:12.0.4"
-  checksum: c23f4ad75d0d31dd155a8dd43d48524f6e14cb4feb156f872c70ba002a16f9989b7a43a4af089b1131d0ea4afeac30f6d21fb72b9556b5810fc8422742c8fd71
+  conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
 "@next/swc-win32-x64-msvc@npm:12.0.4":
   version: 12.0.4
   resolution: "@next/swc-win32-x64-msvc@npm:12.0.4"
-  checksum: 43a65623e268c3029627233eb0248234669179c49702d433e1e1eb000ee61ce0eee81d618b386bfa6eae0cbd2225da7c482e0c416e51cfd31402e98085bdd2bb
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -9812,6 +9861,7 @@ fsevents@^1.2.7:
     bindings: ^1.5.0
     nan: ^2.12.1
   checksum: ae855aa737aaa2f9167e9f70417cf6e45a5cd11918e1fee9923709a0149be52416d765433b4aeff56c789b1152e718cd1b13ddec6043b78cdda68260d86383c1
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -9821,25 +9871,26 @@ fsevents@^1.2.7:
   dependencies:
     node-gyp: latest
   checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.13
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  checksum: b264407498db2cfdcc2a05287334a4160c985a88e4a989e2f2f8dcc6afc8b04a4fcd82c797266442452e11c1fb07d7747d138b078fe4bb1f8f4fd2a6f2484d7e
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.1#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
-  checksum: 78db9daf1f6526a49cefee3917cc988f62dc7f25b5dd80ad6de4ffc4af7f0cab7491ac737626ff53e482a111bc53aac9e411fe3602458eca36f6a003ecf69c16
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -12706,7 +12757,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-resolve@npm:27.2.2, jest-resolve@npm:^27.2.2":
+"jest-resolve@npm:^27.2.2":
   version: 27.2.2
   resolution: "jest-resolve@npm:27.2.2"
   dependencies:
@@ -12724,7 +12775,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-resolve@npm:27.3.1, jest-resolve@npm:^27.3.1":
+"jest-resolve@npm:^27.3.1":
   version: 27.3.1
   resolution: "jest-resolve@npm:27.3.1"
   dependencies:
@@ -13528,6 +13579,38 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"kustomize@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "kustomize@npm:4.4.1"
+  dependencies:
+    "@install-binary/kustomize-darwin-arm64": 4.4.1
+    "@install-binary/kustomize-darwin-x64": 4.4.1
+    "@install-binary/kustomize-linux-arm64": 4.4.1
+    "@install-binary/kustomize-linux-ppc64le": 4.4.1
+    "@install-binary/kustomize-linux-s390x": 4.4.1
+    "@install-binary/kustomize-linux-x64": 4.4.1
+    "@install-binary/kustomize-win32-x64": 4.4.1
+  dependenciesMeta:
+    "@install-binary/kustomize-darwin-arm64":
+      optional: true
+    "@install-binary/kustomize-darwin-x64":
+      optional: true
+    "@install-binary/kustomize-linux-arm64":
+      optional: true
+    "@install-binary/kustomize-linux-ppc64le":
+      optional: true
+    "@install-binary/kustomize-linux-s390x":
+      optional: true
+    "@install-binary/kustomize-linux-x64":
+      optional: true
+    "@install-binary/kustomize-win32-x64":
+      optional: true
+  bin:
+    kustomize: run.js
+  checksum: 3d2d05954f201260e90486d4ae4542dd22cb471a792eb3716bc146e8fc2b027ea73dc604f7648730373022856f5ab45887d616f9bd7b16084fcbf8a3df1d16e1
+  languageName: node
+  linkType: hard
+
 "latest-version@npm:5.1.0":
   version: 5.1.0
   resolution: "latest-version@npm:5.1.0"
@@ -13665,7 +13748,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"listr@npm:0.14.3, listr@npm:^0.14.3":
+"listr@npm:^0.14.3":
   version: 0.14.3
   resolution: "listr@npm:0.14.3"
   dependencies:
@@ -17790,11 +17873,11 @@ fsevents@^1.2.7:
 
 "resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: bed00be983cd20a8af0e7840664f655c4b269786dbd9595c5f156cd9d8a0050e65cdbbbdafc30ee9b6245b230c78a2c8ab6447a52545b582f476c29adb188cc5
+  checksum: a0dd7d16a8e47af23afa9386df2dff10e3e0debb2c7299a42e581d9d9b04d7ad5d2c53f24f1e043f7b3c250cbdc71150063e53d0b6559683d37f790b7c8c3cd5
   languageName: node
   linkType: hard
 
@@ -20071,11 +20154,11 @@ fsevents@^1.2.7:
 
 "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>":
   version: 4.4.3
-  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"
+  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 28ab98313afab46788ff41014fdb5932430ada6e03cf9e92ac47f406526a2cac1ae2894834e7da61e46b7429318e9c47f45ba8de323332f0cb9af99b72ebae74
+  checksum: 79f5c13d21c9dea3eb44d2b7002ff25a0569fefc432e083d65a360e3aca990aca25fc733e14aa6883b5e9a68e3e2f0330a34123e048806f91d701732ece00e6f
   languageName: node
   linkType: hard
 
@@ -21204,6 +21287,7 @@ fsevents@^1.2.7:
     import-sort-style-module-and-prefix: ^0.1.3
     inquirer: ^8.2.0
     jest: ^27.2.2
+    kustomize: ^4.4.1
     lint-staged: ^11.1.2
     mobx: ^6.3.3
     ntl: ^5.1.0

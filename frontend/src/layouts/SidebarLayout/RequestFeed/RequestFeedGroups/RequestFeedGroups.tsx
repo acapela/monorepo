@@ -5,11 +5,11 @@ import React, { memo, useMemo, useRef } from "react";
 import { VariableSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
-import { useLastValue } from "~frontend/../../shared/hooks/useLastValue";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { useLastValue } from "~shared/hooks/useLastValue";
 import { IconChevronDown } from "~ui/icons";
 import { theme } from "~ui/theme";
 

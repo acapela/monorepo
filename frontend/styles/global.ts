@@ -1,5 +1,7 @@
 import { css } from "styled-components";
 
+import { devAssignWindowVariable } from "~shared/dev";
+
 import { base } from "./base";
 import { fontFacesStyles } from "./fontFaces";
 
@@ -19,9 +21,19 @@ export const global = css`
     color: #232b35;
   }
 
+  body.css-debug {
+    * {
+      outline: 1px solid red;
+    }
+  }
+
   body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-size: 14px;
   }
 `;
+
+devAssignWindowVariable("cssDebug", () => {
+  document.body.classList.toggle("css-debug");
+});

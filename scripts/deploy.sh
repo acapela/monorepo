@@ -2,11 +2,7 @@
 
 set -euo pipefail
 
-[ -n "${KUSTOMIZE_BIN:-}" ] && {
-  KUSTOMIZE_BIN=$(realpath $KUSTOMIZE_BIN)
-}
-
-kustomize_command=${KUSTOMIZE_BIN:-kustomize}
+kustomize_command=${KUSTOMIZE_CMD:-"yarn kustomize"}
 
 usage() {
 cat << EOF

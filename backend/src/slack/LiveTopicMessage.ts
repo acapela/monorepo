@@ -8,7 +8,7 @@ import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
-import { generateMarkdownFromTipTapJson } from "./md/generator";
+import { SlackMentionContext, generateMarkdownFromTipTapJson } from "./md/generator";
 import { createSlackLink, mdDate } from "./md/utils";
 import { REQUEST_TYPE_EMOJIS, fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "./utils";
 
@@ -29,14 +29,14 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
 function makeSlackMessageTextWithContent(
   topic: Topic,
   message: Message,
-  mentionedSlackIdByUsersId: { [userId: string]: string }[]
+  mentionedSlackIdByUsersId: { [userId: string]: SlackMentionContext }
 ) {
   const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
   return (
     Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
     "\n" +
     generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
-      mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
+      mentionedSlackIdByUsersId,
     })
   );
 }
@@ -47,7 +47,7 @@ function makeSlackMessageTextWithoutContent(topic: Topic) {
 }
 
 export async function LiveTopicMessage(topic: Topic, options?: { isMessageContentExcluded?: boolean }) {
-  const [message, teamMemberSlack] = await Promise.all([
+  const [message, teamMemberSlack, teamMemberTopic] = await Promise.all([
     db.message.findFirst({
       where: { topic_id: topic.id },
       orderBy: [{ created_at: "asc" }],
@@ -61,9 +61,21 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
       },
       include: { team_member: true },
     }),
+    db.team_member.findMany({
+      where: {
+        user: { topic_member: { some: { topic_id: topic.id } } },
+      },
+      include: { user: true },
+    }),
   ]);
 
-  const mentionedSlackIdByUsersId = teamMemberSlack.map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+  const mentionedSlackIdByUsersId = Object.assign(
+    {},
+    ...teamMemberTopic.map((tm) => ({ [tm.user_id]: { name: tm.user.name } })),
+    ...teamMemberSlack.map((tm) => ({
+      [tm.team_member.user_id]: { slackId: tm.slack_user_id },
+    }))
+  );
 
   assert(message, "must have a first message");
 

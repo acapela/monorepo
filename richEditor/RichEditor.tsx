@@ -321,5 +321,5 @@ const UIEditorContent = styled.div<{}>`
 
 const UIHolder = styled.div<{}>`
   width: 100%;
-  min-width: 0;
+  min-width: 0; ;
 `;

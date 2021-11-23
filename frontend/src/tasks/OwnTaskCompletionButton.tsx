@@ -7,6 +7,7 @@ import { MentionType, REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~sh
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
 import { IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { theme } from "~ui/theme";
 
 interface Props {
   task: TaskEntity;
@@ -78,5 +79,6 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
 
 const TaskColoredButton = styled.div<{ $taskType: MentionType }>`
   ${baseButtonStyles};
+  ${theme.box.button};
   ${(props) => getMentionColor(props.$taskType).interactive};
 `;

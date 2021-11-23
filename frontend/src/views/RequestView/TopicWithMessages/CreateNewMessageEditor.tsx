@@ -144,21 +144,24 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
         )}
       </>
       <UIEditorContainer>
-        <MessageContentEditor
-          ref={editorRef}
-          isDisabled={isDisabled || isEditingAnyMessage}
-          content={content}
-          onContentChange={setContent}
-          onFilesSelected={uploadAttachments}
-          uploadingAttachments={uploadingAttachments}
-          attachments={attachments}
-          onEditorReady={focusEditor}
-          customEditFieldStyles={messageEditorSpacing}
-          onAttachmentRemoveRequest={(attachmentId) => {
-            removeAttachmentById(attachmentId);
-          }}
-          placeholder={`Reply to ${topic.name}`}
-        />
+        <UIEditorScroller>
+          <MessageContentEditor
+            ref={editorRef}
+            isDisabled={isDisabled || isEditingAnyMessage}
+            content={content}
+            onContentChange={setContent}
+            onFilesSelected={uploadAttachments}
+            uploadingAttachments={uploadingAttachments}
+            attachments={attachments}
+            onEditorReady={focusEditor}
+            customEditFieldStyles={messageEditorSpacing}
+            onAttachmentRemoveRequest={(attachmentId) => {
+              removeAttachmentById(attachmentId);
+            }}
+            placeholder={`Reply to ${topic.name}`}
+          />
+        </UIEditorScroller>
+
         <UIRequestControls layoutId={layoutAnimations.newTopic.messageTools(topic.id)}>
           <MessageTools
             onRecordingReady={
@@ -209,6 +212,14 @@ const UIEditorContainer = styled.div<{}>`
 
   ${theme.spacing.actionsSection.asGap};
 `;
+
+const UIEditorScroller = styled.div`
+  max-height: 25vh;
+  overflow-y: auto;
+  flex-basis: 0;
+  flex-grow: 1;
+`;
+
 const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   display: flex;
   flex-direction: row;

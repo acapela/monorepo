@@ -11,7 +11,7 @@ export type LazyComputed<T> = {
 
 const SECOND = 1000;
 
-const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
+export const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
 
 /**
  * Normally we keep not used computed alive for KEEP_ALIVE_TIME_AFTER_UNOBSERVED time.
@@ -39,9 +39,13 @@ export function cachedComputedWithoutArgs<T>(
   let needsRecomputing = true;
   let currentReaction: Reaction | null;
 
+  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
+  const [scheduleDisposal, cancelScheduledDisposal] = createBiddableTimeout(KEEP_ALIVE_TIME_AFTER_UNOBSERVED, dispose);
+
   const updateSignal = createAtom(
     name,
     () => {
+      cancelScheduledDisposal();
       aliveLazyReactions++;
     },
     handleBecameUnobserved
@@ -98,9 +102,6 @@ export function cachedComputedWithoutArgs<T>(
     }
   }
 
-  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
-  const scheduleDisposal = createBiddableTimeout(KEEP_ALIVE_TIME_AFTER_UNOBSERVED, dispose);
-
   const recomputeValueIfNeeded = () => {
     // No dependencies did change since we last computed.
     if (!needsRecomputing) {
@@ -128,7 +129,7 @@ export function cachedComputedWithoutArgs<T>(
       return;
     }
   };
-  // r.schedule();
+
   return {
     dispose,
     get() {
