@@ -34,7 +34,7 @@ jobs:
       - run: |
           ./scripts/deploy.sh -s ${{ github.event.inputs.stage }} -a ${{ github.event.inputs.app }} -v ${{ github.event.inputs.version }}
         env:
-          KUSTOMIZE_BIN: kustomize
+          KUSTOMIZE_CMD: kustomize
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_PRODUCT_WEBHOOK_URL: ${{ secrets.SLACK_PRODUCT_WEBHOOK_URL }}
