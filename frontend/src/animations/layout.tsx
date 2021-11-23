@@ -13,7 +13,7 @@ export const layoutAnimations = {
 
 type Props = HTMLMotionProps<"div">;
 
-export function PageLayoutAnimator(props: Props) {
+export const PageLayoutAnimator = styled(function PageLayoutAnimator(props: Props) {
   const { layoutId } = props;
   return (
     <UIAnimator
@@ -22,9 +22,11 @@ export function PageLayoutAnimator(props: Props) {
       transition={layoutId ? POP_ANIMATION_CONFIG : undefined}
     />
   );
-}
+})``;
 
 const UIAnimator = styled(motion.div)`
   will-change: transform;
   transform: translate3d(0, 0, 0);
+  min-height: 0;
+  min-width: 0;
 `;

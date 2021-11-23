@@ -65,15 +65,18 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   return (
     <UIHolder>
-      <MessageContentEditor
-        content={content}
-        onContentChange={setContent}
-        onFilesSelected={uploadAttachments}
-        uploadingAttachments={uploadingAttachments}
-        attachments={attachments}
-        onAttachmentRemoveRequest={removeAttachmentById}
-        autofocusKey={message.id}
-      />
+      <UIEditorScroller>
+        <MessageContentEditor
+          content={content}
+          onContentChange={setContent}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
+          attachments={attachments}
+          onAttachmentRemoveRequest={removeAttachmentById}
+          autofocusKey={message.id}
+        />
+      </UIEditorScroller>
+
       <UIActions>
         <MessageTools onFilesPicked={uploadAttachments} />
         <UIButtons>
@@ -98,6 +101,11 @@ const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   ${theme.spacing.actionsSection.asGap};
+`;
+
+const UIEditorScroller = styled.div`
+  max-height: 25vh;
+  overflow-y: auto; ;
 `;
 
 const UIActions = styled.div<{}>`

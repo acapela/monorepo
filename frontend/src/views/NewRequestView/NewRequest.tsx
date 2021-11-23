@@ -187,7 +187,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
             />
           </PageLayoutAnimator>
 
-          <PageLayoutAnimator layoutId={layoutAnimations.newTopic.message(newTopicId)}>
+          <UIComposerHolder layoutId={layoutAnimations.newTopic.message(newTopicId)}>
             <MessageContentEditor
               ref={editorRef}
               placeholder={messageContentExample}
@@ -198,7 +198,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
               onFilesSelected={uploadAttachments}
               uploadingAttachments={uploadingAttachments}
             />
-          </PageLayoutAnimator>
+          </UIComposerHolder>
 
           <AnimatePresence exitBeforeEnter>
             <UINextStepPrompt
@@ -243,8 +243,10 @@ const UIHolder = styled(HorizontalSpacingContainer)<{}>`
   width: 100%;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 20px;
 
   ${phone(css`
     margin-top: 60px;
@@ -256,6 +258,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
   will-change: transform;
+  min-height: 0;
   ${theme.spacing.actionsSection.asGap};
 
   ${(props) => {
@@ -314,4 +317,9 @@ const UIActions = styled(PageLayoutAnimator)<{}>`
   will-change: transform, opacity;
 
   ${theme.spacing.actionsSection.asGap}
+`;
+
+const UIComposerHolder = styled(PageLayoutAnimator)`
+  min-height: 0;
+  overflow-y: auto;
 `;

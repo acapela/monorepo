@@ -78,7 +78,6 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
 });
 
 const UIEditorHolder = styled.div`
-  max-height: 30vh;
   overflow-y: auto;
   width: 100%;
 `;
