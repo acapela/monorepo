@@ -1,6 +1,7 @@
-import { autorun, observable, runInAction } from "mobx";
+import { ObservableMap, autorun, observable, runInAction } from "mobx";
 
 import { cachedComputedWithoutArgs } from "~clientdb/entity/utils/cachedComputedWithoutArgs";
+import { wait } from "~shared/time";
 
 import { runObserved } from "./utils";
 
@@ -19,7 +20,7 @@ describe("lazyComputed", () => {
     expect(getter).toBeCalledTimes(0);
   });
 
-  it("is will keep value in cache, if is observed", () => {
+  it("is will keep value in cache, if is observed", (done) => {
     runObserved(() => {
       const getter = jest.fn(() => 42);
       const value = cachedComputedWithoutArgs(getter);
@@ -30,6 +31,7 @@ describe("lazyComputed", () => {
 
       expect(value.get()).toBe(42);
       expect(getter).toBeCalledTimes(1);
+      done();
     });
   });
 
@@ -107,5 +109,36 @@ describe("lazyComputed", () => {
     expect(getter).toBeCalledTimes(2);
 
     dispose();
+  });
+
+  it("gets most recent value after disposing", async () => {
+    const meanings = new ObservableMap();
+    meanings.set("life", -2);
+    const realMeaning = cachedComputedWithoutArgs(() => meanings.get("life") + 2, { customKeepAliveTime: 10 });
+
+    let values: number[] = [];
+    const watcher = () => {
+      values.push(realMeaning.get());
+    };
+    const dispose = autorun(watcher);
+
+    runInAction(() => {
+      meanings.set("life", 40);
+    });
+
+    dispose();
+
+    expect(values).toEqual(expect.arrayContaining([0, 42]));
+    values = [];
+
+    autorun(watcher);
+
+    await wait(10);
+
+    runInAction(() => {
+      meanings.set("life", 1335);
+    });
+
+    expect(values).toEqual(expect.arrayContaining([42, 1337]));
   });
 });

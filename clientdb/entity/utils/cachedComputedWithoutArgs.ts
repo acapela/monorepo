@@ -33,15 +33,26 @@ let isDisposalCascadeRunning = false;
  */
 export function cachedComputedWithoutArgs<T>(
   getter: () => T,
-  { name = "LazyComputed", equals }: IComputedValueOptions<T> = {}
+  {
+    name = "LazyComputed",
+    equals,
+    customKeepAliveTime,
+  }: IComputedValueOptions<T> & { customKeepAliveTime?: number } = {}
 ): LazyComputed<T> {
   let latestValue: T;
   let needsRecomputing = true;
   let currentReaction: Reaction | null;
 
+  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
+  const [scheduleDisposal, stopDisposal] = createBiddableTimeout(
+    customKeepAliveTime ?? KEEP_ALIVE_TIME_AFTER_UNOBSERVED,
+    dispose
+  );
+
   const updateSignal = createAtom(
     name,
     () => {
+      stopDisposal();
       aliveLazyReactions++;
     },
     handleBecameUnobserved
@@ -98,9 +109,6 @@ export function cachedComputedWithoutArgs<T>(
     }
   }
 
-  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
-  const scheduleDisposal = createBiddableTimeout(KEEP_ALIVE_TIME_AFTER_UNOBSERVED, dispose);
-
   const recomputeValueIfNeeded = () => {
     // No dependencies did change since we last computed.
     if (!needsRecomputing) {
@@ -128,7 +136,7 @@ export function cachedComputedWithoutArgs<T>(
       return;
     }
   };
-  // r.schedule();
+
   return {
     dispose,
     get() {
