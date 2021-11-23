@@ -1,4 +1,5 @@
 import { addBusinessDays, differenceInHours, formatRelative } from "date-fns";
+import { AnimatePresence } from "framer-motion";
 import { sortBy } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
@@ -9,6 +10,7 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { relativeFormatDate } from "~shared/dates/format";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
+import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { theme } from "~ui/theme";
 
@@ -38,7 +40,13 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
         ]
       }
       &nbsp;
-      <UIAnchorLink href={`#${nextTask.message_id}`}>{nextTask.message?.user.name}'s request</UIAnchorLink>
+      <TextAction
+        onClick={() => {
+          location.hash = `#${nextTask.message_id}`;
+        }}
+      >
+        {nextTask.message?.user.name}'s request
+      </TextAction>
       {dueDate &&
         (dueDate > now ? " before " + formatRelative(dueDate, now) : ` (due ${formatRelative(dueDate, now)})`)}
     </TopicEventTemplate>
@@ -46,7 +54,7 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
 });
 
 const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" | "inline">) => (
-  <TextButton {...props} kind="primary" inline />
+  <Button {...props} kind="primarySubtle" size="link" />
 );
 
 const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
@@ -64,10 +72,10 @@ const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {
     <TopicEventTemplate>
       Please{" "}
       <TextAction onClick={() => topicContext?.editorRef?.current?.chain().focus("end").run()}>
-        continue the conversation
+        Continue the conversation
       </TextAction>
-      , <TextAction onClick={() => closeTopic()}>close</TextAction> or{" "}
-      <TextAction onClick={() => closeTopic({ isArchived: true })}>close & archive</TextAction> the topic
+      , <TextAction onClick={() => closeTopic()}>Close</TextAction> or{" "}
+      <TextAction onClick={() => closeTopic({ isArchived: true })}>Close & archive</TextAction> the topic.
     </TopicEventTemplate>
   );
 });
@@ -113,23 +121,27 @@ const NextActionArchivePrompt = observer(({ topic }: { topic: TopicEntity }) => 
 export const NextAction = observer(({ topic }: { topic: TopicEntity }) => {
   const openTasks = topic.tasks.query({ isDone: false });
 
-  if (topic.isArchived) {
+  function renderNextAction() {
+    if (topic.isArchived) {
+      return null;
+    }
+
+    if (topic.isClosed && !topic.isArchived) {
+      return <NextActionArchivePrompt key="archive" topic={topic} />;
+    }
+    const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
+    if (openTasksAssignedToSelf.length > 0) {
+      return <NextActionOpenTaskUser key="open" tasks={openTasksAssignedToSelf} />;
+    }
+
+    if (!openTasks.hasItems && !topic.isClosed && topic.isOwn) {
+      return <NextActionOwner key="owner" topic={topic} />;
+    }
+
     return null;
   }
 
-  if (topic.isClosed && !topic.isArchived) {
-    return <NextActionArchivePrompt topic={topic} />;
-  }
-  const openTasksAssignedToSelf = openTasks.query({ isAssignedToSelf: true }).all;
-  if (openTasksAssignedToSelf.length > 0) {
-    return <NextActionOpenTaskUser tasks={openTasksAssignedToSelf} />;
-  }
-
-  if (!openTasks.hasItems && !topic.isClosed && topic.isOwn) {
-    return <NextActionOwner topic={topic} />;
-  }
-
-  return null;
+  return <AnimatePresence exitBeforeEnter>{renderNextAction()}</AnimatePresence>;
 });
 
 const UIBold = styled.span<{}>`
@@ -139,10 +151,4 @@ const UIBold = styled.span<{}>`
 const UIArchiveTooltip = styled.span<{}>`
   text-decoration: underline;
   cursor: default;
-`;
-
-const UIAnchorLink = styled.a<{}>`
-  ${theme.typo.content.medium};
-  text-decoration: underline;
-  opacity: 0.8;
 `;

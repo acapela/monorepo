@@ -39,13 +39,14 @@ export const PopoverMenu = styled<Props>(
         <Popover anchorRef={anchorRef} placement={placement} isDisabled={isDisabled}>
           <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
             {options.map((option) => {
-              const labelNode = (
+              const labelInnerNode = (
                 <>
                   {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
                   {option.label}
                 </>
               );
-              return (
+
+              const labelNode = (
                 <UIMenuItem
                   data-test-id="popover-menu-item"
                   isDestructive={option.isDestructive ?? false}
@@ -62,15 +63,19 @@ export const PopoverMenu = styled<Props>(
                     });
                   }}
                 >
-                  {"href" in option ? (
-                    <Link href={option.href} passHref>
-                      <a>{labelNode}</a>
-                    </Link>
-                  ) : (
-                    labelNode
-                  )}
+                  {labelInnerNode}
                 </UIMenuItem>
               );
+
+              if ("href" in option) {
+                return (
+                  <Link href={option.href} passHref>
+                    <a>{labelNode}</a>
+                  </Link>
+                );
+              }
+
+              return labelNode;
             })}
           </UIPopoverMenuModal>
         </Popover>
