@@ -153,15 +153,16 @@ function transformMessage(
         { type: "text", text: " " },
       ];
     });
+
   if (extraMentionNodes.length) {
-    messageContent.content.push(
-      {
-        type: "paragraph",
-        content: [],
-      },
+    messageContent.content.unshift(
       {
         type: "paragraph",
         content: extraMentionNodes,
+      },
+      {
+        type: "paragraph",
+        content: [],
       }
     );
   }
@@ -199,6 +200,7 @@ export async function createTopicForSlackUsers({
     slackTeamId,
     usersWithMentionType.filter((u) => u.mentionType) as never
   );
+
   const messageContentText = convertMessageContentToPlainText(messageContent);
   const userIds = new Set(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
   topicName = topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);

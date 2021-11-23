@@ -1,14 +1,14 @@
 import { groupBy } from "lodash";
-import { Blocks, Elements, Md, Message } from "slack-block-builder";
+import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
-import { Task, Topic, User, db } from "~db";
+import { Message, Task, Topic, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert, assertDefined } from "~shared/assert";
 import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
-import { generateMarkdownFromTipTapJson } from "./md/generator";
+import { SlackMentionContext, generateMarkdownFromTipTapJson } from "./md/generator";
 import { createSlackLink, mdDate } from "./md/utils";
 import { REQUEST_TYPE_EMOJIS, fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "./utils";
 
@@ -26,7 +26,27 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
     })
     .join("\n");
 
-export async function LiveTopicMessage(topic: Topic) {
+function makeSlackMessageTextWithContent(
+  topic: Topic,
+  message: Message,
+  mentionedSlackIdByUsersId: { [userId: string]: SlackMentionContext }
+) {
+  const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
+  return (
+    Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
+    "\n" +
+    generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
+      mentionedSlackIdByUsersId,
+    })
+  );
+}
+
+function makeSlackMessageTextWithoutContent(topic: Topic) {
+  const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
+  return Md.bold(`Made Acapela Request ➡️ ${createSlackLink(topicURL, topic.name)}`);
+}
+
+export async function LiveTopicMessage(topic: Topic, options?: { isMessageContentExcluded?: boolean }) {
   const [message, teamMemberSlack, teamMemberTopic] = await Promise.all([
     db.message.findFirst({
       where: { topic_id: topic.id },
@@ -59,20 +79,16 @@ export async function LiveTopicMessage(topic: Topic) {
 
   assert(message, "must have a first message");
 
-  const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
-  const text =
-    Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
-    "\n" +
-    generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
-      mentionedSlackIdByUsersId,
-    });
+  const text = options?.isMessageContentExcluded
+    ? makeSlackMessageTextWithoutContent(topic)
+    : makeSlackMessageTextWithContent(topic, message, mentionedSlackIdByUsersId);
 
   const tasks = message.task;
   const slackUsers: Record<string, string> = Object.fromEntries(
     await Promise.all(tasks.map(async ({ user }) => [user.id, await findSlackUserId(topic.team_id, user)]))
   );
   const dueAt = message.message_task_due_date?.due_at;
-  return Message({ text })
+  return SlackMessage({ text })
     .blocks(
       Blocks.Section({ text }),
       Blocks.Divider(),
@@ -109,8 +125,11 @@ export async function tryUpdateTopicSlackMessage(topic: Topic) {
     fetchTeamBotToken(topic.team_id),
   ]);
   const token = assertDefined(teamMemberToken ?? teamToken, "must have one of the two tokens");
+
   await slackClient.chat.update({
-    ...(await LiveTopicMessage(topic)),
+    ...(await LiveTopicMessage(topic, {
+      isMessageContentExcluded: topicSlackMessage.is_excluding_content ?? undefined,
+    })),
     token,
     channel: topicSlackMessage.slack_channel_id,
     ts: topicSlackMessage.slack_message_ts,

@@ -102,7 +102,7 @@ function removeEndingNewline(input: string): string {
   return input;
 }
 
-type SlackMentionContext = {
+export type SlackMentionContext = {
   slackId?: string;
   name?: string;
 };

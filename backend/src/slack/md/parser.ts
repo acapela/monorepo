@@ -392,7 +392,7 @@ function detectedAndTransformParagraphs(
       type: "paragraph",
       content: compact(p.map((n) => transformNode(n, context))),
     }))
-    .filter((p) => p.content.length);
+    .filter((p) => p.content.length > 0);
 }
 
 export function transformToTipTapJSON(ast: markdown.SingleASTNode[], context: TransformContext = {}) {
