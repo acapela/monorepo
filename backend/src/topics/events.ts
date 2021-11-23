@@ -42,13 +42,25 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     if (event.userId) {
       trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
     }
-    // add owner to topic members
-    await db.topic_member.create({
-      data: {
-        user_id: event.item.owner_id,
-        topic_id: event.item.id,
+
+    const user_id = event.item.owner_id;
+    const topic_id = event.item.id;
+    const hasTopicOwnerBeenAddedAsMember = await db.topic_member.findFirst({
+      where: {
+        user_id,
+        topic_id,
       },
     });
+
+    // add owner to topic members if hasn't been added before
+    if (!hasTopicOwnerBeenAddedAsMember) {
+      await db.topic_member.create({
+        data: {
+          user_id: event.item.owner_id,
+          topic_id: event.item.id,
+        },
+      });
+    }
   } else if (event.type === "update") {
     trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
