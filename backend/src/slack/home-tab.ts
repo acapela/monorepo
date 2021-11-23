@@ -211,7 +211,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
         team_member: true,
       },
     })
-  ).map((tm) => ({ [tm.team_member.user_id]: tm.slack_user_id }));
+  ).map((tm) => ({ [tm.team_member.user_id]: { slackId: tm.slack_user_id } }));
 
   const generatorContext: GenerateContext = {
     mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
