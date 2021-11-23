@@ -11,6 +11,7 @@ export interface IconButtonProps {
   kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
+  title?: string;
   tooltip?: string;
   isDisabled?: boolean;
   iconSizeRatio?: number;

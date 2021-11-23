@@ -61,7 +61,7 @@ async function createAndInviteMissingUsers(
   }
 
   for (const invitedUser of usersWithSlackIds) {
-    trackBackendUserEvent(invitingUserId, "Invite Sent", { inviteEmail: invitedUser.user.email, teamId });
+    trackBackendUserEvent(invitingUserId, "Invite Sent", { email: invitedUser.user.email, teamId, origin: "slack" });
   }
 
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));

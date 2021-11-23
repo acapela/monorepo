@@ -22,7 +22,7 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
-import { NewMessageButtons } from "./NewMessageButtons";
+import { SubmitMessageButton } from "./SubmitMessageButton";
 
 interface Props {
   topic: TopicEntity;
@@ -180,11 +180,9 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
               await uploadAttachments(files);
             }}
           />
-          <NewMessageButtons
+          <SubmitMessageButton
             canSend={!isEmptyWithNoAttachments}
-            topic={topic}
             onSendRequest={() => handleSubmitTextMessage(false)}
-            onCompleteRequest={() => handleSubmitTextMessage(true)}
           />
         </UIRequestControls>
       </UIEditorContainer>

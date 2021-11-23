@@ -95,18 +95,18 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
   );
 });
 
-function getMentionFontColor(mentionType: MentionType) {
+export function getMentionColor(mentionType: MentionType) {
   switch (mentionType) {
     case "request-action":
-      return theme.colors.tags.action.asColor;
+      return theme.colors.tags.action;
     case "request-response":
-      return theme.colors.tags.feedback.asColor;
+      return theme.colors.tags.feedback;
     case "request-read":
-      return theme.colors.tags.read.asColor;
+      return theme.colors.tags.read;
     case "observer":
-      return theme.colors.tags.observe.asColor;
+      return theme.colors.tags.observe;
     default:
-      return theme.colors.tags.primary.asColor;
+      return theme.colors.tags.primary;
   }
 }
 
@@ -117,7 +117,7 @@ const UIMention = styled.span<{ isEditable: boolean; type: MentionType }>`
   ${theme.font.medium}
   ${(props) =>
     css`
-      ${getMentionFontColor(props.type)}
+      ${getMentionColor(props.type).asColor}
     `}
     ${(props) =>
     props.isEditable &&

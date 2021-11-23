@@ -44,6 +44,7 @@ export const TeamMembersManager = observer(({ team }: Props) => {
                   <CloseIconButton
                     isDisabled={false}
                     onClick={() => teamMember.user && handleRemoveTeamMember(teamMember.user.id)}
+                    title={`Remove ${teamMember.user?.name} from team`}
                     tooltip="Remove user from your team"
                   />
                 )}

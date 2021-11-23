@@ -16,12 +16,13 @@ export type AnalyticsEventsMap = {
   "Account Created": { teamName: string };
   // unused for now - would be in case a team gets deleted
   "Account Deleted": { teamName: string };
-  "Signed Up": { userEmail: string };
-  "Signed In": { userEmail: string };
+  "Signed Up": void;
+  "Signed In": void;
   "Signed Out": void;
   // invited a new team mate
-  "Invite Sent": { inviteEmail: string; teamId: string };
-  "Resent Team Invitation": { teamId: string; userEmail: string };
+  "Invite Sent": { email: string; teamId: string; origin: "webapp" | "slack" };
+  "Deleted Invite": { email: string; teamId: string };
+  "Resent Team Invitation": { teamId: string; email: string };
   // invitation accepted
   "Account Added User": { teamId: string };
   // delete a team member from team management space

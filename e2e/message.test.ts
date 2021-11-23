@@ -24,6 +24,8 @@ test("create a new read request and update it to a response request", async ({ p
   await page.click("text=Request response");
   await page.click("text=Save");
 
+  await page.click("text=recipient");
+
   await page.waitForSelector("text=Response");
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 });
@@ -54,7 +56,9 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   await appPage.waitForRequestInGroup(requestName, "Received");
 
-  await page.click('button:has-text("Mark as read")');
+  await page.click("text=Mark as read");
+
+  await page.click("text=recipient");
 
   await page.waitForSelector(`[data-test-task-assignee="${db.user2.id}"]:has-text("✓")`);
 
@@ -128,4 +132,24 @@ test("add and remove reaction", async ({ page, auth, db }) => {
   await page.waitForSelector(`[data-reaction]:has-text("❤️")`);
   await page.click(`[data-reaction]:has-text("❤️")`);
   expect(await page.$$("[data-reaction]")).toHaveLength(0);
+});
+
+test("create a new read request for self, then add another user via a request", async ({ page, auth, db }) => {
+  await auth.login(db.user2);
+  const appPage = new AppDevPage(page);
+
+  await appPage.makeNewRequest({
+    mentions: [["Request read", db.user2.name]],
+  });
+
+  const newUserName = db.user1.name;
+  const topicMemberSelector = `[aria-label="topic members"] [aria-label="${newUserName}"]`;
+  await expect(await page.locator(topicMemberSelector)).toHaveCount(0);
+
+  await page.fill('[contenteditable="true"]', "@");
+  await page.click(`[role="option"]:has-text("${newUserName}")`);
+  await page.click("text=Request read");
+  await page.click("text=Send");
+
+  await page.waitForSelector(topicMemberSelector);
 });

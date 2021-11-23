@@ -17,8 +17,8 @@ const primary = color("hsl(310, 100%, 67%)", {
 });
 
 const secondary = color("hsl(34, 100%, 68%)", {
-  hover: color("hsl(34°, 100%, 63%)"),
-  active: color("hsl(34°, 100%, 46 %)"),
+  hover: color("hsl(34, 100%, 63%)"),
+  active: color("hsl(34, 100%, 46 %)"),
   readableText: black,
 });
 
