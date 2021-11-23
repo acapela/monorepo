@@ -10,16 +10,23 @@ interface Props {
   children: ReactNode;
   onCloseRequest?: () => void;
   isTransparent?: boolean;
+  className?: string;
 }
 
 const BACKGROUND_BLUR_SIZE_PX = 8;
 
-export function ScreenCover({ children, onCloseRequest, isTransparent = true }: Props) {
+export const ScreenCover = styled(function ScreenCover({
+  children,
+  onCloseRequest,
+  isTransparent = true,
+  className,
+}: Props) {
   const isMounted = useUnmountPresence(200);
 
   return (
     <BodyPortal>
       <UIBodyCover
+        className={className}
         isCovering={isMounted && !isTransparent}
         onClick={handleWithStopPropagation(onCloseRequest)}
         enableBlur={isTransparent}
@@ -28,7 +35,7 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
       </UIBodyCover>
     </BodyPortal>
   );
-}
+})``;
 
 const background = theme.colors.primary;
 
