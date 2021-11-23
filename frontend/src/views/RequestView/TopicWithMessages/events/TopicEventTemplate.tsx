@@ -3,9 +3,9 @@ import styled from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { AcapelaAvatar } from "~frontend/utils/AcapelaAvatar";
 import { styledObserver } from "~shared/component";
-import { IconAcapelaWave } from "~ui/icons";
-import { CircleLabel } from "~ui/icons/CircleLabel";
+import { FadePresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
@@ -20,14 +20,14 @@ export const TopicEventTemplate = styledObserver(function TopicEvent({ user, chi
   return (
     <UIHolder className={className}>
       {user && <UserAvatar user={user} size={20} />}
-      {!user && <UIAcapelaCircle label={<IconAcapelaWave />} />}
+      {!user && <UIAcapelaAvatar />}
       <UIBody>{children}</UIBody>
       {date && <UISideTimeLabel date={date} />}
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled(FadePresenceAnimator)<{}>`
   margin-top: 20px;
   padding: 0 5px;
 
@@ -39,16 +39,13 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.typo.content.secondary};
-  line-height: 20px;
+  ${theme.typo.content.secondary.readingLineHeight};
 `;
 
 const UIBody = styled.div<{}>`
-  line-height: 20px;
+  ${theme.font.readingLineHeight};
 `;
 
-const UIAcapelaCircle = styled(CircleLabel)<{}>`
-  height: 20px;
-  width: 20px;
+const UIAcapelaAvatar = styled(AcapelaAvatar)`
   font-size: 20px;
 `;

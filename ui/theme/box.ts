@@ -6,6 +6,8 @@ export const box = {
   selectOption: createBox(10, 6),
   item: createBox(10, 10),
   label: createBox(10, 4),
+  linkButton: createBox(7, 4),
+
   popover: createBox(10, 10),
   previewPopover: createBox(20, 20),
   pageCart: createBox(30, 30),
