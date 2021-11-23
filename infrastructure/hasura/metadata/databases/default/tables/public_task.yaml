@@ -87,6 +87,6 @@ event_triggers:
   name: task_updates
   retry_conf:
     interval_sec: 10
-    num_retries: 5
+    num_retries: 0
     timeout_sec: 30
   webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
