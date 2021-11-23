@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."topic_slack_message" add column "is_excluding_content" boolean
+--  null;

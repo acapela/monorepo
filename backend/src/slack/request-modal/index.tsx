@@ -166,7 +166,7 @@ export function setupRequestModal(app: App) {
     }
 
     const response = await client.chat.postMessage({
-      ...(await LiveTopicMessage(topic)),
+      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: true })),
       token,
       channel: channelId,
       thread_ts: metadata.messageTs,
@@ -208,7 +208,7 @@ export function setupRequestModal(app: App) {
     const { channel, message } = response;
     assert(channel && message?.ts, "ok response without channel or message_ts");
     await db.topic_slack_message.create({
-      data: { topic_id: topic.id, slack_channel_id: channel, slack_message_ts: message.ts },
+      data: { topic_id: topic.id, slack_channel_id: channel, slack_message_ts: message.ts, is_excluding_content: true },
     });
 
     if (owner) {
