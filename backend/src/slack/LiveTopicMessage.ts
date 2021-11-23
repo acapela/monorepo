@@ -27,7 +27,7 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
     .join("\n");
 
 export async function LiveTopicMessage(topic: Topic) {
-  const [message, teamMemberSlack] = await Promise.all([
+  const [message, teamMemberSlack, teamMemberTopic] = await Promise.all([
     db.message.findFirst({
       where: { topic_id: topic.id },
       orderBy: [{ created_at: "asc" }],
@@ -41,11 +41,21 @@ export async function LiveTopicMessage(topic: Topic) {
       },
       include: { team_member: true },
     }),
+    db.team_member.findMany({
+      where: {
+        user: { topic_member: { some: { topic_id: topic.id } } },
+      },
+      include: { user: true },
+    }),
   ]);
 
-  const mentionedSlackIdByUsersId = teamMemberSlack.map((tm) => ({
-    [tm.team_member.user_id]: { slackId: tm.slack_user_id },
-  }));
+  const mentionedSlackIdByUsersId = Object.assign(
+    {},
+    ...teamMemberTopic.map((tm) => ({ [tm.user_id]: { name: tm.user.name } })),
+    ...teamMemberSlack.map((tm) => ({
+      [tm.team_member.user_id]: { slackId: tm.slack_user_id },
+    }))
+  );
 
   assert(message, "must have a first message");
 
@@ -54,7 +64,7 @@ export async function LiveTopicMessage(topic: Topic) {
     Md.bold(`[Acapela request] ${createSlackLink(topicURL, topic.name)}`) +
     "\n" +
     generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
-      mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
+      mentionedSlackIdByUsersId,
     });
 
   const tasks = message.task;

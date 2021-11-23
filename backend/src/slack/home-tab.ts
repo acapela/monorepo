@@ -197,8 +197,8 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     flattenDeep([received, sent, open, closed].map((e) => e.rows.map((r) => r.topic_member.map((tm) => tm.user_id))))
   );
 
-  const mentionedSlackIdByUsersId = (
-    await db.team_member_slack.findMany({
+  const [teamMemberSlack, teamMemberTopic] = await Promise.all([
+    db.team_member_slack.findMany({
       where: {
         team_member: {
           user_id: {
@@ -210,11 +210,28 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
       include: {
         team_member: true,
       },
-    })
-  ).map((tm) => ({ [tm.team_member.user_id]: { slackId: tm.slack_user_id } }));
+    }),
+    db.team_member.findMany({
+      where: {
+        user_id: {
+          in: mentionedUserIds,
+        },
+        team_id: teamMember.team_id,
+      },
+      include: { user: true },
+    }),
+  ]);
+
+  const mentionedSlackIdByUsersId = Object.assign(
+    {},
+    ...teamMemberTopic.map((tm) => ({ [tm.user_id]: { name: tm.user.name } })),
+    ...teamMemberSlack.map((tm) => ({
+      [tm.team_member.user_id]: { slackId: tm.slack_user_id },
+    }))
+  );
 
   const generatorContext: GenerateContext = {
-    mentionedSlackIdByUsersId: Object.assign({}, ...mentionedSlackIdByUsersId),
+    mentionedSlackIdByUsersId,
   };
 
   await publishView(
