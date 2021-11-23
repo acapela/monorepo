@@ -146,9 +146,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
             const rawDataJSON = element.getAttribute(DATA_ATTRIBUTE_NAME);
 
             const data = rawDataJSON ? JSON.parse(rawDataJSON) : {};
-            return {
-              data,
-            };
+            return data;
           },
 
           renderHTML: (attributes) => {
