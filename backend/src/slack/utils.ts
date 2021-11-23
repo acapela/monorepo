@@ -85,6 +85,7 @@ export type ViewMetadata = {
     channelId?: string;
     messageTs?: string;
     messageText?: string;
+    fromMessageBelongingToSlackUserId?: string;
   };
   create_request: {
     requestToSlackUserIds?: string[];
@@ -92,6 +93,7 @@ export type ViewMetadata = {
     channelId?: string;
     messageTs?: string;
     origin: CreateRequestOrigin;
+    fromMessageBelongingToSlackUserId?: string;
   };
 };
 

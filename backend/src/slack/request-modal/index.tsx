@@ -69,17 +69,35 @@ export function setupRequestModal(app: App) {
     }
   });
 
-  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context }) => {
+  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client }) => {
     await ack();
 
     const { channel, message, trigger_id } = shortcut;
+
+    const userOpeningModal = body.user.id;
+    const userFromOriginalMessage = message.user;
+
+    const slackUrl = await client.chat.getPermalink({ channel: channel.id, message_ts: message.ts });
+    const messageAuthorInfo = userFromOriginalMessage
+      ? await client.users.info({ user: userFromOriginalMessage })
+      : null;
+
+    const isOriginalMessageCreatedByAnotherUser =
+      messageAuthorInfo?.user && userOpeningModal !== userFromOriginalMessage;
+
+    const messageBody =
+      (message.text ?? "") +
+      `\n> from <${slackUrl.permalink}|slack message>` +
+      (isOriginalMessageCreatedByAnotherUser ? ` by ${messageAuthorInfo.user?.real_name}` : "");
+
     const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
       messageTs: message.ts,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
-      messageText: message.text || "",
+      messageText: messageBody,
       origin: "slack-message-action",
+      fromMessageBelongingToSlackUserId: isOriginalMessageCreatedByAnotherUser ? userFromOriginalMessage : undefined,
     });
 
     if (user) {
@@ -137,6 +155,14 @@ export function setupRequestModal(app: App) {
       mentionType: requestType.value as MentionType,
     }));
 
+    // When a request is created from a message, add message author as observer
+    const hasRequestOriginatedFromMessageAction = metadata.origin === "slack-message-action";
+    if (hasRequestOriginatedFromMessageAction && metadata.fromMessageBelongingToSlackUserId) {
+      slackUserIdsWithMentionType.push({
+        slackUserId: metadata.fromMessageBelongingToSlackUserId,
+      });
+    }
+
     const channelId = metadata.channelId ?? view.state.values.channel_block.channel_select.selected_channel;
 
     await ack({ response_action: "clear" });
@@ -166,7 +192,7 @@ export function setupRequestModal(app: App) {
     }
 
     const response = await client.chat.postMessage({
-      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: true })),
+      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,
       channel: channelId,
       thread_ts: metadata.messageTs,
@@ -209,7 +235,12 @@ export function setupRequestModal(app: App) {
     const { channel, message } = response;
     assert(channel && message?.ts, "ok response without channel or message_ts");
     await db.topic_slack_message.create({
-      data: { topic_id: topic.id, slack_channel_id: channel, slack_message_ts: message.ts, is_excluding_content: true },
+      data: {
+        topic_id: topic.id,
+        slack_channel_id: channel,
+        slack_message_ts: message.ts,
+        is_excluding_content: hasRequestOriginatedFromMessageAction,
+      },
     });
 
     if (owner) {
