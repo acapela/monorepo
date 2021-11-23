@@ -4,6 +4,7 @@ export const routes = parameterizeRoutes({
   home: "/",
   newRequest: "/new",
   topic: ["/topic/[topicSlug]", ["topicSlug"]],
+  topicDuplicate: ["/topic/[topicSlug]/duplicate", ["topicSlug"]],
   settings: "/settings",
   invite: "/invite",
   logout: "/logout",
