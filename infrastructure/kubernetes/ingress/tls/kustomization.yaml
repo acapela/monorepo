@@ -1,6 +1,6 @@
 secretGenerator:
-- name: cloudflare
-  type: kubernetes.io/tls
-  files:
-  - tls.crt
-  - tls.key
+  - name: cloudflare
+    type: kubernetes.io/tls
+    files:
+      - tls.crt
+      - tls.key

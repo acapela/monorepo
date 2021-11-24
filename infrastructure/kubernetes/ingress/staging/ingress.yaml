@@ -7,17 +7,17 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "ingress-staging"
 spec:
   rules:
-  - host: app-staging.acape.la
-    http: &frontend_http
-      paths:
-      - backend:
-          service:
-            name: frontend
-            port:
-              number: 80
-        path: /*
-        pathType: ImplementationSpecific
-  - host: dev.acape.la
-    http: *frontend_http
+    - host: app-staging.acape.la
+      http: &frontend_http
+        paths:
+          - backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+            path: /*
+            pathType: ImplementationSpecific
+    - host: dev.acape.la
+      http: *frontend_http
   tls:
-  - secretName: cloudflare
+    - secretName: cloudflare

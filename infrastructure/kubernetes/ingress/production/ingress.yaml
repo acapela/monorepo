@@ -7,15 +7,15 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "ingress-production"
 spec:
   rules:
-  - host: app.acape.la
-    http:
-      paths:
-      - backend:
-          service:
-            name: frontend
-            port:
-              number: 80
-        path: /*
-        pathType: ImplementationSpecific
+    - host: app.acape.la
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+            path: /*
+            pathType: ImplementationSpecific
   tls:
-  - secretName: cloudflare
+    - secretName: cloudflare
