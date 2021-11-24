@@ -6,7 +6,7 @@ import { AuthenticationError } from "~backend/src/errors/errorTypes";
 import { handleMessageChanges, handleMessageReactionChanges } from "~backend/src/messages/events";
 import { handleTaskChanges } from "~backend/src/tasks/taskHandlers";
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
-import { handleTeamSlackInstallationDelete, handleTeamUpdates } from "~backend/src/teams/events";
+import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicMemberChanges, handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserUpdates } from "~backend/src/users/events";
 import { log } from "~shared/logger";
@@ -20,7 +20,6 @@ export const router = Router();
 log.info("Initialize hasura event handlers");
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
-hasuraEvents.addHandler("team_slack_installation_updates", ["DELETE"], handleTeamSlackInstallationDelete);
 hasuraEvents.addHandler("topic_updates", ["INSERT", "UPDATE"], handleTopicUpdates);
 hasuraEvents.addHandler("topic_member_updates", ["INSERT"], handleTopicMemberChanges);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);

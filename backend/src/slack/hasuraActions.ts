@@ -1,12 +1,20 @@
+import * as Sentry from "@sentry/node";
+
 import { db } from "~db";
-import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput, SlackUserOutput } from "~gql";
+import {
+  GetTeamSlackInstallationUrlInput,
+  GetTeamSlackInstallationUrlOutput,
+  SlackUserOutput,
+  UninstallSlackOutput,
+} from "~gql";
 import { assert } from "~shared/assert";
 import { Maybe } from "~shared/types";
 
 import { ActionHandler } from "../actions/actionHandlers";
 import { UnprocessableEntityError } from "../errors/errorTypes";
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "./app";
 import { getSlackInstallURL } from "./install";
-import { findSlackUserId } from "./utils";
+import { fetchTeamBotToken, findSlackUserId } from "./utils";
 
 export const getTeamSlackInstallationURL: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },
@@ -44,5 +52,31 @@ export const slackUser: ActionHandler<{ team_id: string }, SlackUserOutput> = {
     }
 
     return { slack_user_id: slackUserId };
+  },
+};
+
+export const uninstallSlack: ActionHandler<{ team_id: string }, UninstallSlackOutput> = {
+  actionName: "uninstall_slack",
+
+  async handle(userId, { team_id }) {
+    const [team, botToken] = await Promise.all([
+      db.team.findUnique({ where: { id: team_id } }),
+      fetchTeamBotToken(team_id),
+    ]);
+    if (!team || team.owner_id !== userId) {
+      return { success: false };
+    }
+    const response = await slackClient.apps.uninstall({
+      token: botToken,
+      client_id: SLACK_CLIENT_ID,
+      client_secret: SLACK_CLIENT_SECRET,
+    });
+
+    if (!response.ok || response.error) {
+      Sentry.captureException(new Error(`Slack uninstall failed: ${response.error ?? "without error information"}`));
+      return { success: false };
+    }
+
+    return { success: true };
   },
 };

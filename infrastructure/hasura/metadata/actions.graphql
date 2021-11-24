@@ -15,6 +15,10 @@ type Query {
 }
 
 type Mutation {
+  uninstall_slack(team_id: uuid!): UninstallSlackOutput!
+}
+
+type Mutation {
   upgrade_current_user: UpgradeUserResponse
 }
 
@@ -68,4 +72,8 @@ type InviteUserOutput {
 
 type SlackUserOutput {
   slack_user_id: String
+}
+
+type UninstallSlackOutput {
+  success: Boolean!
 }

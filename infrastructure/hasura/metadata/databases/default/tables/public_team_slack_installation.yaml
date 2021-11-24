@@ -17,13 +17,6 @@ select_permissions:
           user_id:
             _eq: X-Hasura-User-Id
   role: user
-delete_permissions:
-- permission:
-    filter:
-      team:
-        owner_id:
-          _eq: X-Hasura-User-Id
-  role: user
 event_triggers:
 - definition:
     delete:
