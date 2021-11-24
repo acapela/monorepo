@@ -13,7 +13,7 @@ import { MentionType } from "~shared/types/mention";
 import { LiveTopicMessage } from "../LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
-import { tryOpenRequestModal } from "./tryOpenRequestModal";
+import { openCreateRequestModal } from "./openCreateRequestModal";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
@@ -39,7 +39,7 @@ export function setupRequestModal(app: App) {
 
     await ack();
 
-    const { user } = await tryOpenRequestModal(assertToken(context), triggerId, {
+    const { user } = await openCreateRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
       slackTeamId,
@@ -58,7 +58,7 @@ export function setupRequestModal(app: App) {
   app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
     await ack();
 
-    const { user } = await tryOpenRequestModal(assertToken(context), shortcut.trigger_id, {
+    const { user } = await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
@@ -90,7 +90,7 @@ export function setupRequestModal(app: App) {
       `\n> from <${slackUrl.permalink}|slack message>` +
       (isOriginalMessageCreatedByAnotherUser ? ` by ${messageAuthorInfo.user?.real_name}` : "");
 
-    const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
+    const { user } = await openCreateRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
       messageTs: message.ts,
       slackUserId: body.user.id,
@@ -105,10 +105,10 @@ export function setupRequestModal(app: App) {
     }
   });
 
-  listenToViewWithMetadata(app, "open_request_modal", async ({ ack, context, body, metadata }) => {
+  listenToViewWithMetadata(app, "open_create_request_modal", async ({ ack, context, body, metadata }) => {
     await ack();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await tryOpenRequestModal(assertToken(context), (body as any).trigger_id, metadata);
+    await openCreateRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
   listenToViewWithMetadata<ViewSubmitAction>(app, "create_request", async (args) => {

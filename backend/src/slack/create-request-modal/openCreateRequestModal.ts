@@ -24,11 +24,11 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
   )
   .buildToObject();
 
-const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =>
+const AuthForCreateRequestModal = async (viewData: ViewMetadata["open_create_request_modal"]) =>
   Modal({
     title: "Please authorize Acapela",
     submit: "Try again",
-    ...attachToViewWithMetadata("open_request_modal", viewData),
+    ...attachToViewWithMetadata("open_create_request_modal", viewData),
   })
     .blocks(
       Blocks.Section({
@@ -49,7 +49,7 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
     )
     .buildToObject();
 
-const TopicModal = (metadata: ViewMetadata["create_request"]) => {
+const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText } = metadata;
   const slackUserIds = messageText
     ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)
@@ -119,7 +119,11 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
   return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
 }
 
-export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
+export async function openCreateRequestModal(
+  token: string,
+  triggerId: string,
+  data: ViewMetadata["open_create_request_modal"]
+) {
   const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin, fromMessageBelongingToSlackUserId } =
     data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
@@ -139,11 +143,11 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
   ]);
 
   if (!user || !hasChannelAccess || !hasSlackScopes) {
-    await openView(await AuthForTopicModal(data));
+    await openView(await AuthForCreateRequestModal(data));
     return { user };
   }
 
-  await openView(TopicModal({ messageText, channelId, messageTs, origin, fromMessageBelongingToSlackUserId }));
+  await openView(CreateRequestModal({ messageText, channelId, messageTs, origin, fromMessageBelongingToSlackUserId }));
 
   return { user };
 }

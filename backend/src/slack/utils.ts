@@ -79,7 +79,7 @@ export const SlackActionIds = {
 export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];
 
 export type ViewMetadata = {
-  open_request_modal: {
+  open_create_request_modal: {
     slackUserId: string;
     slackTeamId: string;
     origin: CreateRequestOrigin;
