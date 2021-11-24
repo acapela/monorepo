@@ -1,10 +1,3 @@
-import dynamic from "next/dynamic";
+import { TopicOrNewRequestPage } from "~frontend/views/TopicOrNewRequestPage";
 
-const TopicOrNewRequestPageDynamic = dynamic(
-  async () => (await import("~frontend/views/TopicOrNewRequestPage")).TopicOrNewRequestPage,
-  { ssr: false }
-);
-
-export default function Foo() {
-  return <TopicOrNewRequestPageDynamic />;
-}
+export default TopicOrNewRequestPage;

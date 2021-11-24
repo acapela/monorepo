@@ -3,6 +3,8 @@
 set -euo pipefail
 
 export NODE_ENV=production
+export NODE_OPTIONS="--max-old-space-size=4096"
+
 echo "starting frontend..."
 nohup yarn next:start > frontend.log 2>&1 & echo $! > frontend.pid
 
