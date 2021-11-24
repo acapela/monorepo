@@ -1,4 +1,3 @@
-import { minBy } from "lodash";
 import { Blocks, Elements, Md } from "slack-block-builder";
 
 import { Task } from "~db";
@@ -10,6 +9,7 @@ import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator
 import { createSlackLink, mdDate } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "../utils";
 import { TopicWithOpenTask } from "./types";
+import { getMostUrgentTask } from "./utils";
 
 function getAccessoryButton(topic: TopicWithOpenTask, mostUrgentOpenTask?: Task) {
   if (!topic.closed_at) {
@@ -38,14 +38,7 @@ function getAccessoryButton(topic: TopicWithOpenTask, mostUrgentOpenTask?: Task)
 }
 
 export function RequestItem(topic: TopicWithOpenTask, context: GenerateContext) {
-  // TODO this will need to be updated in the year 3k
-  const mostUrgentMessage = minBy(
-    topic.message,
-    (message) => (message.task[0] && message.message_task_due_date?.due_at) ?? new Date(3000, 0)
-  );
-  const mostUrgentTask = mostUrgentMessage?.task[0];
-  const mostUrgentDueDate = mostUrgentMessage?.message_task_due_date?.due_at;
-
+  const { mostUrgentMessage, mostUrgentTask, mostUrgentDueDate } = getMostUrgentTask(topic);
   return [
     Blocks.Section({
       text: [

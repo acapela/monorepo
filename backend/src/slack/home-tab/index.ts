@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { flattenDeep, uniq } from "lodash";
+import { flattenDeep, orderBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
@@ -15,6 +15,7 @@ import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
 import { RequestsList } from "./RequestList";
 import { TopicWithOpenTask } from "./types";
+import { getMostUrgentTask } from "./utils";
 
 type TopicWhereInput = Prisma.topicWhereInput;
 
@@ -110,7 +111,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ).map((where) => findAndCountTopics(teamMember, where))
   );
 
-  const received = unsortedReceived;
+  const received = orderBy(unsortedReceived, (topic) => {
+    const { mostUrgentDueDate } = getMostUrgentTask(topic);
+    return mostUrgentDueDate;
+  });
 
   const mentionedUserIds = uniq(
     flattenDeep([received, sent, open, closed].map((e) => e.map((r) => r.topic_member.map((tm) => tm.user_id))))
