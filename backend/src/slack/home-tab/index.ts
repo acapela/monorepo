@@ -2,19 +2,18 @@ import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
 import { flattenDeep, uniq } from "lodash";
-import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
+import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
-import { pluralize } from "~shared/text/pluralize";
 
 import { slackClient } from "../app";
 import { GenerateContext } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
-import { RequestItem } from "./RequestItem";
+import { RequestsList } from "./RequestList";
 import { TopicRowsWithCount } from "./types";
 
 const TOPICS_PER_CATEGORY = 10;
@@ -60,38 +59,6 @@ async function findAndCountTopics(
   ]);
   return { rows, count };
 }
-
-const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
-
-const RequestsList = (title: string, topics: TopicRowsWithCount, context: GenerateContext) => {
-  const extraRequestsCount = topics.count - topics.rows.length;
-  return [
-    ...Padding,
-    Blocks.Header({ text: title }),
-    ...(topics.count === 0
-      ? [Blocks.Section({ text: Md.italic("No requests here") })]
-      : topics.rows.flatMap((topic, i) => [
-          ...RequestItem(topic, context),
-          i < topics.rows.length - 1 ? Blocks.Divider() : undefined,
-        ])),
-    ...(extraRequestsCount > 0
-      ? [
-          Blocks.Divider(),
-          Blocks.Section({
-            text: Md.italic(
-              `There ${pluralize(extraRequestsCount, "is another topic", "are more topics")} ${Md.bold(
-                extraRequestsCount.toString()
-              )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
-                extraRequestsCount,
-                "it",
-                "them"
-              )}.`
-            ),
-          }),
-        ]
-      : []),
-  ];
-};
 
 const WelcomeHeader = Blocks.Header({ text: "Welcome to Acapela!" });
 
