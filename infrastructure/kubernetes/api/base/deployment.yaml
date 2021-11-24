@@ -23,7 +23,7 @@ spec:
       serviceAccountName: gsm
       containers:
         - name: backend
-          image: eu.gcr.io/meetnomoreapp/monorepo:2.28.0
+          image: eu.gcr.io/meetnomoreapp/monorepo:3.133.1
           command: ["yarn", "run", "start:backend"]
           ports:
             - containerPort: 8080

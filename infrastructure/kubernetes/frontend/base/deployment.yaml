@@ -18,7 +18,7 @@ spec:
       serviceAccountName: gsm
       containers:
         - name: caddy
-          image: eu.gcr.io/meetnomoreapp/caddy:3.105.3
+          image: eu.gcr.io/meetnomoreapp/caddy:3.133.1
           ports:
             - containerPort: 3000
           envFrom:
@@ -73,7 +73,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 20
         - name: frontend
-          image: eu.gcr.io/meetnomoreapp/monorepo:3.105.3
+          image: eu.gcr.io/meetnomoreapp/monorepo:3.133.1
           command: ["yarn", "run", "start:frontend"]
           envFrom:
             - configMapRef:
