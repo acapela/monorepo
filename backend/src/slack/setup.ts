@@ -2,7 +2,7 @@ import { Express } from "express";
 
 import { setupSlackActionHandlers } from "./actions";
 import { slackApp, slackReceiver } from "./app";
-import { setupRequestModal } from "./create-request-modal";
+import { setupCreateRequestModal } from "./create-request-modal";
 import { setupHomeTab } from "./home-tab";
 
 export function setupSlack(app: Express) {
@@ -10,7 +10,7 @@ export function setupSlack(app: Express) {
 
   setupHomeTab(slackApp);
 
-  setupRequestModal(slackApp);
+  setupCreateRequestModal(slackApp);
 
   setupSlackActionHandlers(slackApp);
 }

@@ -21,7 +21,7 @@ const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" 
 
 const hourToOption = (hour: number) => Bits.Option({ value: `${hour}`, text: format(new Date(0, 0, 0, hour), "h a") });
 
-export function setupRequestModal(app: App) {
+export function setupCreateRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
 
