@@ -7,7 +7,7 @@ import { MessageText } from "~frontend/message/display/types/TextMessageContent"
 import { getStyledMentionForUserSelector } from "~frontend/message/extensions/mentions/TypedMention";
 import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
-import { MentionType, getMentionTypeLabel } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
@@ -40,7 +40,7 @@ export const RequestMessagePreview = styledObserver(function RequestMessagePrevi
     <Popover anchorRef={anchorRef} placement={placement}>
       <UIHolder $currentUserId={currentUser.id}>
         <UIHint>
-          <strong>{getMentionTypeLabel(lastCurrentUserTask.type as MentionType)}</strong> task from{" "}
+          <strong>{MENTION_TYPE_LABELS[lastCurrentUserTask.type as MentionType]}</strong> task from{" "}
           <strong>{messageToPreview.user.name}</strong>:
         </UIHint>
 

@@ -10,7 +10,7 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
-import { LiveTopicMessage } from "../LiveTopicMessage";
+import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { tryOpenRequestModal } from "./tryOpenRequestModal";

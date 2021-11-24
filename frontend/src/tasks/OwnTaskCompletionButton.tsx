@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { TaskEntity } from "~frontend/clientdb/task";
 import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
-import { MentionType, RequestType, getCompletedTaskLabel, getUncompletedTaskLabel } from "~shared/types/mention";
+import { COMPLETED_REQUEST_LABEL, MentionType, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
 import { IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -24,7 +24,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
           task.update({ done_at: new Date().toISOString() });
         }}
       >
-        {getUncompletedTaskLabel(task.type as RequestType)}
+        {UNCOMPLETED_REQUEST_LABEL[task.type as RequestType]}
       </TaskColoredButton>
     );
   }
@@ -43,7 +43,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
       ]}
     >
       <Button key="done" kind="secondary" size="compact" indicateDropdown>
-        {getCompletedTaskLabel(task.type as RequestType)}
+        {COMPLETED_REQUEST_LABEL[task.type as RequestType]}
       </Button>
     </PopoverMenuTrigger>
   );

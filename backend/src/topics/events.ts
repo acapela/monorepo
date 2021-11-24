@@ -1,7 +1,7 @@
-import * as Sentry from "@sentry/node";
 import { updatedDiff } from "deep-object-diff";
 
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
+import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Topic, TopicMember, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -115,7 +115,13 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
   assert(event.itemBefore, "Updated topic didn't contain previous topic data");
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
-    tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
+    await Promise.all([
+      tryUpdateTopicSlackMessage(topic),
+      tryUpdateTaskSlackMessages({
+        taskSlackMessage: { task: { message: { topic_id: topic.id } } },
+        message: { topic_id: topic.id },
+      }),
+    ]);
   }
 
   if (wasJustClosed && !isClosedByOwner) {

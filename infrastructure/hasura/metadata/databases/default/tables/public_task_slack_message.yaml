@@ -1,0 +1,3 @@
+table:
+  name: task_slack_message
+  schema: public
