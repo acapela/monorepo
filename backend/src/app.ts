@@ -86,6 +86,13 @@ function setupGracefulShutdown(server: Server) {
         setTimeout(resolve, 5000);
       });
     },
+    logger(msg, error) {
+      if (error) {
+        console.error("error thrown in /healthz", msg, error);
+      } else {
+        console.info("/healthz", msg);
+      }
+    },
     healthChecks: {
       verbatim: true,
       "/healthz": async function () {
