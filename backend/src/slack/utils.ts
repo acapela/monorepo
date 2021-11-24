@@ -70,6 +70,7 @@ export async function getSlackUserMentionOrLabel(user: User, teamId: string) {
 export const SlackActionIds = {
   CreateTopic: "create-topic",
   ReOpenTopic: "reopen-topic",
+  CloseTopic: "close-topic",
   ArchiveTopic: "archive-topic",
   UpdateMessageTaskDueAt: "update-task-due-at",
   TrackEvent: "track-event",
