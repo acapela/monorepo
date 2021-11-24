@@ -85,14 +85,19 @@ spec:
             httpGet:
               port: 3030
               path: /
-            initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 15
           readinessProbe:
             httpGet:
               port: 3030
               path: /
-            initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 3
             timeoutSeconds: 15
+          startupProbe:
+            httpGet:
+              port: 3030
+              path: /
+            periodSeconds: 15
+            timeoutSeconds: 45
+            failureThreshold: 10
