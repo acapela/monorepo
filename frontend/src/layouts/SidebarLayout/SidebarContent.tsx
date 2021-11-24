@@ -115,7 +115,7 @@ const UIRequestFeed = styled.div<{}>`
 `;
 
 const UISearch = styled.div<{}>`
-  border-color: rgba(0, 0, 0, 0.05);
+  border-color: ${theme.colors.layout.background.border};
   border-style: solid;
   border-top-width: 1px;
   border-bottom-width: 1px;

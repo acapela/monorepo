@@ -29,6 +29,8 @@ const lightGray = color("hsl(220, 33%, 98%)", {
 
 const blue = color("hsl(204, 100%, 50%)");
 
+const divider = color("#E0E0E0");
+
 export const colors = {
   primary,
   secondary,
@@ -54,6 +56,7 @@ export const colors = {
     background: white,
     // Used eg. for app sidebar
     backgroundAccent: lightGray,
+    divider,
   },
   panels: {
     popover: black,

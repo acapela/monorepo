@@ -7,6 +7,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
+import { theme } from "~ui/theme";
 
 import { MessageTasksPeople } from "./MessageTasksPeople";
 
@@ -48,12 +49,13 @@ const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 20px;
+  ${theme.spacing.actions.asGap}
   overflow-y: hidden;
 `;
 
 const UIDivider = styled.div<{}>`
   width: 1px;
-  height: 30px;
-  background-color: rgba(0, 0, 0, 0.05);
+  align-self: stretch;
+  ${theme.colors.layout.divider.asBg};
+  margin: 0 5px;
 `;

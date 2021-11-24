@@ -1,5 +1,7 @@
 import React, { ChangeEvent } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
+
+import { theme } from "~ui/theme";
 
 interface Props {
   name: string;
@@ -9,7 +11,7 @@ interface Props {
   onSelect: () => void;
 }
 
-const Container = styled.label<{ selected: boolean }>`
+const UIContainer = styled.label<{ selected: boolean }>`
   position: relative;
   cursor: pointer;
   border-radius: 4px;
@@ -18,12 +20,10 @@ const Container = styled.label<{ selected: boolean }>`
   justify-content: center;
   align-items: center;
   white-space: nowrap;
+  ${theme.colors.layout.background.interactive};
+  ${theme.transitions.hover()};
 
-  ${({ selected }) =>
-    selected &&
-    css`
-      background: #f4f4f4;
-    `}
+  ${({ selected }) => selected && theme.colors.layout.background.active.asBg}
 
   input[type=radio] {
     border: 0;
@@ -35,9 +35,6 @@ const Container = styled.label<{ selected: boolean }>`
     position: absolute;
     width: 1px;
   }
-  :hover {
-    background: #f4f4f4;
-  }
 `;
 
 export const RadioOption = ({ value, children, selected, onSelect, name }: Props) => {
@@ -48,9 +45,9 @@ export const RadioOption = ({ value, children, selected, onSelect, name }: Props
   };
 
   return (
-    <Container onFocus={onSelect} onClick={onSelect} selected={selected}>
+    <UIContainer onFocus={onSelect} onClick={onSelect} selected={selected}>
       <input type="radio" name={name} checked={selected} value={value} onChange={handleChange} />
       {children}
-    </Container>
+    </UIContainer>
   );
 };
