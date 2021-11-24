@@ -4,7 +4,7 @@ import { Blocks, Elements, Md } from "slack-block-builder";
 import { Task } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { routes } from "~shared/routes";
-import { RequestType } from "~shared/types/mention";
+import { RequestType, getUncompletedTaskLabel } from "~shared/types/mention";
 
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink, mdDate } from "../md/utils";
@@ -18,7 +18,9 @@ function getAccessoryButton(topic: TopicWithOpenTask, mostUrgentOpenTask?: Task)
       return Elements.Button({
         actionId: "toggle_task_done_at:" + mostUrgentOpenTask.id,
         value: mostUrgentOpenTask.id,
-        text: `${REQUEST_TYPE_EMOJIS[mostUrgentOpenTask.type as RequestType]} Mark as done`,
+        text: `${REQUEST_TYPE_EMOJIS[mostUrgentOpenTask.type as RequestType]} ${getUncompletedTaskLabel(
+          mostUrgentOpenTask.type as RequestType
+        )}`,
       });
     }
     return Elements.Button({
