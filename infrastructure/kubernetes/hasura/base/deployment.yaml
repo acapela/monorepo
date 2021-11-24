@@ -17,24 +17,52 @@ spec:
     spec:
       serviceAccountName: gsm
       containers:
-      - name: cloudsql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
-        command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(INSTANCE_NAME)=tcp:5432"]
-        envFrom:
-        - configMapRef:
-            name: cloudsql-proxy-config
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsUser: 2 # non-root user
-      - name: graphql-engine
-        image: eu.gcr.io/meetnomoreapp/graphql-engine:2.0.7
-        ports:
-        - containerPort: 8080
-        envFrom:
-        - configMapRef:
-            name: hasura-config
-        readinessProbe:
-          httpGet:
-            port: 8080
-            path: /healthz
-        imagePullPolicy: Always
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.27.0
+          command:
+            [
+              "/cloud_sql_proxy",
+              "-ip_address_types=PRIVATE",
+              "-instances=meetnomoreapp:europe-west1:$(INSTANCE_NAME)=tcp:5432",
+              "-structured_logs",
+              "-use_http_health_check",
+            ]
+          envFrom:
+            - configMapRef:
+                name: cloudsql-proxy-config
+          securityContext:
+            runAsNonRoot: true
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8090
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8090
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: 8090
+            periodSeconds: 1
+            timeoutSeconds: 5
+            failureThreshold: 20
+        - name: graphql-engine
+          image: eu.gcr.io/meetnomoreapp/graphql-engine:2.0.7
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: hasura-config
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /healthz
+          imagePullPolicy: Always
