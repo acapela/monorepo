@@ -72,6 +72,42 @@ export function setupSlackActionHandlers(slackApp: App) {
     await say(`*${topic.name}* has been reopened.`);
   });
 
+  slackApp.action<BlockButtonAction>(SlackActionIds.CloseTopic, async ({ action, say, ack, body, context }) => {
+    await ack();
+
+    const topicId = action.value;
+    const user = await findUserBySlackId(assertToken(context), body.user.id);
+    const topic = await db.topic.findFirst({ where: { id: topicId } });
+
+    assert(user, "Unable to find user(slack-id=${body.user.id}");
+
+    if (!topic) {
+      await say(`Whoops! Seems that this request doesn't exist anymore.`);
+      return;
+    }
+
+    if (topic.closed_at) {
+      await say(`Whoops! Seems that *${topic.name}* has been already closed.`);
+      return;
+    }
+
+    const now = new Date().toISOString();
+    await db.topic.update({
+      where: { id: topicId },
+      data: {
+        closed_at: now,
+        closed_by_user_id: user.id,
+      },
+    });
+
+    const isCalledFromSlackHome = body.view?.type == "home";
+    if (isCalledFromSlackHome) {
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    } else {
+      await say(`*${topic.name}* has been closed.`);
+    }
+  });
+
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
     await ack();
 
@@ -107,7 +143,12 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    await say(`*${topic.name}* has been archived.`);
+    const isCalledFromSlackHome = body.view?.type == "home";
+    if (isCalledFromSlackHome) {
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    } else {
+      await say(`*${topic.name}* has been archived.`);
+    }
   });
 
   slackApp.action("members_select", async ({ ack }) => {
