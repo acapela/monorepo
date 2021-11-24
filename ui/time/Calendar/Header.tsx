@@ -28,6 +28,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
         {canReturnToCurrentMonth && (
           <PopPresenceAnimator key="fo">
             <IconButton
+              kind="primarySubtle"
               tooltip={`Current month - ${format(now, "MMMM")}`}
               icon={<IconCalendar />}
               onClick={() => {
@@ -39,6 +40,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
       </AnimatePresence>
 
       <IconButton
+        kind="primarySubtle"
         tooltip={format(endOfPrevious, "MMMM")}
         icon={<IconChevronLeft />}
         onClick={() => {
@@ -47,6 +49,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
       />
 
       <IconButton
+        kind="primarySubtle"
         icon={<IconChevronRight />}
         tooltip={format(startOfNext, "MMMM")}
         onClick={() => {
@@ -65,7 +68,7 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UIDateTitle = styled.div<{}>`
-  ${theme.typo.label};
+  ${theme.typo.secondaryTitle};
   flex: 17;
   display: inline-block;
 `;
