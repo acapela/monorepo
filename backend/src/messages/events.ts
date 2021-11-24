@@ -1,4 +1,5 @@
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
+import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Message, MessageReaction, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
@@ -7,7 +8,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { log } from "~shared/logger";
-import { Sentry } from "~shared/sentry";
+import { isEqualForPick } from "~shared/object";
 
 import { HasuraEvent } from "../hasura";
 
@@ -47,7 +48,7 @@ async function maybeUpdateSlackMessage(message: Message) {
   }
   const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
   assert(topic, "must have topic");
-  tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
+  await tryUpdateTopicSlackMessage(topic);
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
@@ -74,6 +75,12 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     trackBackendUserEvent(userId, "Edited Message", {
       messageId: event.item?.id,
     });
+    if (!isEqualForPick(event.item, event.itemBefore, ["content"])) {
+      await tryUpdateTaskSlackMessages({
+        taskSlackMessage: { task: { message_id: event.item.id } },
+        message: { id: event.item.id },
+      });
+    }
   }
 
   const message = event.item;

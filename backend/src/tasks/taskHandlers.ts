@@ -1,13 +1,12 @@
 import { HasuraEvent, UpdateHasuraEvent } from "~backend/src/hasura";
 import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/LiveTopicMessage";
-import { createSlackLink } from "~backend/src/slack/md/utils";
-import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
-import { Task, db } from "~db";
-import { assert } from "~shared/assert";
+import { LiveTaskMessage, tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
+import { Task, Topic, User, db } from "~db";
+import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { isEqualForPick } from "~shared/object";
 import { routes } from "~shared/routes";
-import { Sentry } from "~shared/sentry";
 import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/mention";
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
@@ -15,6 +14,42 @@ export async function handleTaskChanges(event: HasuraEvent<Task>) {
     return onTaskCreation(event.item);
   } else if (event.type === "update") {
     return onTaskUpdate(event);
+  }
+}
+
+async function sendTaskNotification(topic: Topic, task: Task, toUser: User, fromUser: User) {
+  if (fromUser.id === toUser.id) {
+    // do not notify users about tasks created by themselves
+    return;
+  }
+
+  const teamId = topic.team_id;
+  const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
+  const taskLabel = MENTION_TYPE_LABELS[task.type as MentionType] ?? "attention";
+  const { slackMessage } = await sendNotificationPerPreference(toUser, teamId, {
+    email: {
+      subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
+      html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
+    },
+    slack: async () =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      (
+        await LiveTaskMessage(
+          assertDefined(
+            await db.task.findUnique({
+              where: { id: task.id },
+              include: { message: { include: { topic: true, message_task_due_date: true } } },
+            }),
+            "must still find the task"
+          )
+        )
+      ).blocks!,
+  });
+
+  if (slackMessage && slackMessage.channel && slackMessage.ts) {
+    await db.task_slack_message.create({
+      data: { task_id: task.id, slack_channel_id: slackMessage.channel, slack_message_ts: slackMessage.ts },
+    });
   }
 }
 
@@ -45,28 +80,20 @@ async function onTaskCreation(task: Task) {
     mentionedUserId: toUser.id,
   });
 
-  if (fromUser.id === toUser.id) {
-    // do not notify users about tasks created by themselves
-    return;
-  }
-
-  const teamId = topic.team_id;
-  const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
-  const slackFrom = await getSlackUserMentionOrLabel(fromUser, teamId);
-  const taskLabel = MENTION_TYPE_LABELS[task.type as MentionType] ?? "attention";
-  await sendNotificationPerPreference(toUser, teamId, {
-    email: {
-      subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
-      html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
-    },
-    slack: `${slackFrom} has asked for your *${taskLabel}* in ${createSlackLink(topicURL, topic.name)}`,
-  });
+  await sendTaskNotification(topic, task, toUser, fromUser);
 }
 
 async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: UpdateHasuraEvent<Task>) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
   assert(topic, "must have topic");
+
+  if (!isEqualForPick(task, taskBefore, ["done_at"])) {
+    await tryUpdateTaskSlackMessages({
+      taskSlackMessage: { task_id: task.id },
+      message: { task: { some: { id: task.id } } },
+    });
+  }
 
   if (userId && task.done_at && task.done_at !== taskBefore.done_at) {
     // userId is null when the update is not triggered through the frontend
@@ -77,7 +104,7 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     });
   }
 
-  tryUpdateTopicSlackMessage(topic).catch((error) => Sentry.captureException(error));
+  await tryUpdateTopicSlackMessage(topic);
 
   const amountOfOpenTasksLeft = await db.task.count({
     where: {
