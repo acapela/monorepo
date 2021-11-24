@@ -5,8 +5,3 @@ export type TopicWithOpenTask = Topic & {
   message: (Message & { user: User; task: Task[]; message_task_due_date: MessageTaskDueDate | null })[];
   topic_member: TopicMember[];
 };
-
-export type TopicRowsWithCount = {
-  rows: TopicWithOpenTask[];
-  count: number;
-};
