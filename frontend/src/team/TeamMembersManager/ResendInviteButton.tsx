@@ -14,7 +14,7 @@ export const ResendInviteButton = ({ user, teamId }: { user: UserEntity; teamId:
   };
 
   return (
-    <Button onClick={handleClick} isLoading={loading} isDisabled={called}>
+    <Button size="compact" onClick={handleClick} isLoading={loading} isDisabled={called}>
       Re-send invite
     </Button>
   );

@@ -103,7 +103,7 @@ test("set due dates", async ({ page, auth, db }) => {
     title: requestName,
   });
 
-  await page.click(`[data-tooltip="Add due date"]`);
+  await page.click(`[text="Add due date"]`);
   await page.click(`text=Today, End of day`);
   await expect(page.locator("[data-due-date-picker]")).toContainText("Today at 5:00 PM");
   await page.click(`text=Today at 5:00 PM`);

@@ -114,13 +114,7 @@ export const TaskDueDateSetter = observer(({ message }: Props) => {
       </AnimatePresence>
 
       <UITriggerHolder ref={ref} onClick={openMenu} data-due-date-picker>
-        <Button
-          kind="secondary"
-          icon={<IconClock />}
-          iconAtStart
-          isDisabled={message.topic?.isClosed}
-          data-tooltip={currentDueDate ? "Change due date" : "Add due date"}
-        >
+        <Button kind="secondary" size="compact" icon={<IconClock />} iconAtStart isDisabled={message.topic?.isClosed}>
           {currentDueDate ? upperFirst(formatRelative(currentDueDate, new Date())) : "Add due date"}
         </Button>
       </UITriggerHolder>

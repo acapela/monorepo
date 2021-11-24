@@ -70,7 +70,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
         },
       ]}
     >
-      <Button key="done" kind="secondary" indicateDropdown>
+      <Button key="done" kind="secondary" size="compact" indicateDropdown>
         {getCompletedTaskLabel(task)}
       </Button>
     </PopoverMenuTrigger>
@@ -79,6 +79,6 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
 
 const TaskColoredButton = styled.div<{ $taskType: MentionType }>`
   ${baseButtonStyles};
-  ${theme.box.button};
+  ${theme.box.compactButton};
   ${(props) => getMentionColor(props.$taskType).interactive};
 `;
