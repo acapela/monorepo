@@ -92,7 +92,7 @@ test("reply to a message", async ({ page, auth, db }) => {
   expect(await page.$$("[data-reply-to]")).toHaveLength(1);
 });
 
-test.only("set due dates", async ({ page, auth, db }) => {
+test("set due dates", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const mentionedUser = db.user2.name;
   const requestName = "Message" + getUUID();
