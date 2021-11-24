@@ -54,13 +54,13 @@ if (process.argv.includes("--staging")) {
       {
         type: "text",
         name: "name",
-        message: "Name?",
+        message: 'Name (e.g. "Fakeapela")?',
         validate: (value) => (value.includes(" ") ? "no spaces please" : true),
       },
       {
         type: "text",
         name: "domain",
-        message: "Domain?",
+        message: 'Domain (e.g. "https://gregapela.ngrok.io")?',
         validate: (value) => {
           try {
             new URL(value);

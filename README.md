@@ -88,14 +88,21 @@ We use [Hasura](https://hasura.io/) to generate a GraphQL API with permission fo
 To modify the database schema or access rules or other configurations use the hasura console (run `yarn hasura:console` to open it).
 This automatically creates migrations. [You can squash the migrations, using the hasura cli, into a single logical migration](https://hasura.io/docs/latest/graphql/core/hasura-cli/hasura_migrate_squash.html)
 
+## Ngrok
+
+We use ngrok to expose our backend to the internet. Get an invite into our premium account from one of our team mates, then navigate to https://dashboard.ngrok.com/get-started/your-authtoken
+
+Add the authtoken from the Ngrok dashboard into your `.env` as `NGROK_AUTH_TOKEN`, with a `NGROK_SUBDOMAIN` of your choosing. The domain needs to be unique, and only used on one machine at a time, otherwise the tunnel will crash on startup.
+
 ## Slack integration
 
 Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
 1. Run `yarn shared clone-slack-manifest`
-2. go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
-3. make sure to give it a unique name and command name
-4. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_STATE_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. The slash command needs to be unique within our workspace
+2. Go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
+3. Make sure to give it a unique name and command name (which also should be unique within our workspace)
+4. Fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. Also add `SLACK_STATE_SECRET` which can be any random string.
+5. To start using Slack's actions, open the frontend, navigate to a team's settings page and click the button for linking the team to Slack.
 
 ## Commit Message Convention
 
