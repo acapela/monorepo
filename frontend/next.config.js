@@ -7,7 +7,7 @@ const withTranspileModules = require("next-transpile-modules");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
-const SentryCliPlugin = require("@sentry/webpack-plugin");
+// const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 /**
  * Let's tell next.js to compile TypeScript files from other packages of monorepo.
@@ -67,7 +67,7 @@ const envVariables = (nextConfig = {}) => {
   }
 
   return Object.assign({}, nextConfig, {
-    productionBrowserSourceMaps: true,
+    // productionBrowserSourceMaps: true,
 
     webpack: (config, options) => {
       if (typeof nextConfig.webpack === "function") {
@@ -77,16 +77,16 @@ const envVariables = (nextConfig = {}) => {
       const isServer = options.isServer;
       const allEnvVariablesMap = { ...tryGetDotEnvVars(options.config.envFilePath), ...process.env };
 
-      if (process.env.SENTRY_RELEASE && process.env.SENTRY_AUTH_TOKEN) {
-        config.plugins.push(
-          new SentryCliPlugin({
-            include: ".next",
-            org: "acapela",
-            project: "acapela",
-            release: process.env.SENTRY_RELEASE,
-          })
-        );
-      }
+      // if (process.env.SENTRY_RELEASE && process.env.SENTRY_AUTH_TOKEN) {
+      //   config.plugins.push(
+      //     new SentryCliPlugin({
+      //       include: ".next",
+      //       org: "acapela",
+      //       project: "acapela",
+      //       release: process.env.SENTRY_RELEASE,
+      //     })
+      //   );
+      // }
 
       // Prepare list of var names.
       // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be available. (this follows official docs)
