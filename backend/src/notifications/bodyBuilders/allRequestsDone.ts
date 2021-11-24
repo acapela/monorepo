@@ -16,10 +16,10 @@ export function createSlackAllRequestsDoneMessage({
   topicName,
   topicURL,
 }: Props): Pick<NotificationMessage, "slack"> {
-  const sectionText = `🎉 All requests have been actioned in ${createSlackLink(
+  const sectionText = `All tasks have been completed in ${createSlackLink(
     topicURL,
     topicName
-  )}. The topic awaits your review 👀.`;
+  )}. The request will automatically be closed in 24 hours.`;
 
   return {
     slack: BlockCollection(
@@ -33,8 +33,8 @@ export function createSlackAllRequestsDoneMessage({
 }
 
 export function createAllRequestsDoneEmailMessage({ topicName, topicURL }: Props): Pick<NotificationMessage, "email"> {
-  const subject = `${topicName} is ready for review`;
-  const html = `🎉 All requests have been actioned in  <a href="${topicURL}">${topicName}</a>. The topic awaits your review 👀.`;
+  const subject = `All tasks have been completed in ${topicName}.`;
+  const html = `All tasks have been completed in  <a href="${topicURL}">${topicName}</a>. The request will automatically be closed in 24 hours.`;
   return {
     email: {
       subject,
