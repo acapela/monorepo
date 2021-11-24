@@ -17,54 +17,82 @@ spec:
     spec:
       serviceAccountName: gsm
       containers:
-      - name: caddy
-        image: eu.gcr.io/meetnomoreapp/caddy:3.105.3
-        ports:
-        - containerPort: 3000
-        envFrom:
-        - configMapRef:
-            name: frontend-default
-        env:
-        - name: FRONTEND_HOST
-          value: "localhost:3030"
-        readinessProbe:
-          httpGet:
-            port: 3000
-            path: /healthz
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          successThreshold: 3
-          timeoutSeconds: 5
-      - name: cloudsql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
-        command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
-        envFrom:
-        - configMapRef:
-            name: frontend-default
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsUser: 2 # non-root user
-      - name: frontend
-        image: eu.gcr.io/meetnomoreapp/monorepo:3.105.3
-        command: ["yarn", "run", "start:frontend"]
-        envFrom:
-        - configMapRef:
-            name: frontend-default
-        env:
-        - name: PORT
-          value: "3030"
-        livenessProbe:
-          httpGet:
-            port: 3030
-            path: /
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 15
-        readinessProbe:
-          httpGet:
-            port: 3030
-            path: /
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 3
-          timeoutSeconds: 15
+        - name: caddy
+          image: eu.gcr.io/meetnomoreapp/caddy:3.105.3
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: frontend-default
+          env:
+            - name: FRONTEND_HOST
+              value: "localhost:3030"
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 3
+            timeoutSeconds: 5
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.27.0
+          command:
+            [
+              "/cloud_sql_proxy",
+              "-ip_address_types=PRIVATE",
+              "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432",
+              "-structured_logs",
+              "-use_http_health_check",
+            ]
+          envFrom:
+            - configMapRef:
+                name: frontend-default
+          securityContext:
+            runAsNonRoot: true
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8090
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8090
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: 8090
+            periodSeconds: 1
+            timeoutSeconds: 5
+            failureThreshold: 20
+        - name: frontend
+          image: eu.gcr.io/meetnomoreapp/monorepo:3.105.3
+          command: ["yarn", "run", "start:frontend"]
+          envFrom:
+            - configMapRef:
+                name: frontend-default
+          env:
+            - name: PORT
+              value: "3030"
+          livenessProbe:
+            httpGet:
+              port: 3030
+              path: /
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 15
+          readinessProbe:
+            httpGet:
+              port: 3030
+              path: /
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 3
+            timeoutSeconds: 15
