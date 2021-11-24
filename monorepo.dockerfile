@@ -18,7 +18,7 @@ ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 COPY ./ ./
 
 RUN yarn frontend:build
-RUN rm frontend/.next/**/*.map
+RUN /bin/bash -c 'shopt -s globstar; rm frontend/.next/**/*.map'
 
 
 # main image
