@@ -92,7 +92,7 @@ test("reply to a message", async ({ page, auth, db }) => {
   expect(await page.$$("[data-reply-to]")).toHaveLength(1);
 });
 
-test("set due dates", async ({ page, auth, db }) => {
+test.only("set due dates", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const mentionedUser = db.user2.name;
   const requestName = "Message" + getUUID();
@@ -103,7 +103,7 @@ test("set due dates", async ({ page, auth, db }) => {
     title: requestName,
   });
 
-  await page.click(`[text="Add due date"]`);
+  await page.click(`text="Add due date"`);
   await page.click(`text=Today, End of day`);
   await expect(page.locator("[data-due-date-picker]")).toContainText("Today at 5:00 PM");
   await page.click(`text=Today at 5:00 PM`);
