@@ -6,7 +6,7 @@ export const spacing = {
   // eg. messages, settings items
   sections: number(20),
   // eg. message composer buttons, top corner user avatar + "..." button
-  actions: number(10),
+  actions: number(8),
   actionsSection: number(15),
   pageSections: number(30),
 };

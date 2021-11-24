@@ -34,6 +34,9 @@ export const buttonSizeMap = {
   regular: css`
     ${theme.box.button};
   `,
+  compact: css`
+    ${theme.box.compactButton};
+  `,
   link: css`
     ${theme.box.linkButton};
     ${theme.font.medium};
