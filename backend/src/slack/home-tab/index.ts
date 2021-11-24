@@ -14,16 +14,14 @@ import { GenerateContext } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
 import { RequestsList } from "./RequestList";
-import { TopicRowsWithCount } from "./types";
-
-const TOPICS_PER_CATEGORY = 10;
+import { TopicWithOpenTask } from "./types";
 
 type TopicWhereInput = Prisma.topicWhereInput;
 
 async function findAndCountTopics(
   { user_id, team_id }: TeamMember,
   where: TopicWhereInput
-): Promise<TopicRowsWithCount> {
+): Promise<TopicWithOpenTask[]> {
   const globalWhere: TopicWhereInput = {
     AND: [
       {
@@ -35,29 +33,24 @@ async function findAndCountTopics(
     ],
   };
   const whereOpenUserTask: Prisma.taskWhereInput = { user_id, done_at: null };
-  const [rows, count] = await Promise.all([
-    db.topic.findMany({
-      where: globalWhere,
-      orderBy: { created_at: "desc" },
-      take: TOPICS_PER_CATEGORY,
-      include: {
-        user: true,
-        message: {
-          where: { task: { some: whereOpenUserTask } },
-          include: {
-            user: true,
-            message_task_due_date: true,
-            task: {
-              where: whereOpenUserTask,
-            },
+  return await db.topic.findMany({
+    where: globalWhere,
+    orderBy: { created_at: "desc" },
+    include: {
+      user: true,
+      message: {
+        where: { task: { some: whereOpenUserTask } },
+        include: {
+          user: true,
+          message_task_due_date: true,
+          task: {
+            where: whereOpenUserTask,
           },
         },
-        topic_member: true,
       },
-    }),
-    db.topic.count({ where: globalWhere }),
-  ]);
-  return { rows, count };
+      topic_member: true,
+    },
+  });
 }
 
 const WelcomeHeader = Blocks.Header({ text: "Welcome to Acapela!" });
@@ -106,7 +99,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ],
   };
 
-  const [received, sent, open, closed] = await Promise.all(
+  const [unsortedReceived, sent, open, closed] = await Promise.all(
     (
       [
         { AND: [whereIsOpen, whereHasOpenTask] },
@@ -117,8 +110,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ).map((where) => findAndCountTopics(teamMember, where))
   );
 
+  const received = unsortedReceived;
+
   const mentionedUserIds = uniq(
-    flattenDeep([received, sent, open, closed].map((e) => e.rows.map((r) => r.topic_member.map((tm) => tm.user_id))))
+    flattenDeep([received, sent, open, closed].map((e) => e.map((r) => r.topic_member.map((tm) => tm.user_id))))
   );
 
   const [teamMemberSlack, teamMemberTopic] = await Promise.all([
