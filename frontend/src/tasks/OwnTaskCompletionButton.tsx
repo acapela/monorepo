@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { TaskEntity } from "~frontend/clientdb/task";
 import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
-import { MentionType, REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MentionType, RequestType, getCompletedTaskLabel, getUncompletedTaskLabel } from "~shared/types/mention";
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
 import { IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -11,34 +11,6 @@ import { theme } from "~ui/theme";
 
 interface Props {
   task: TaskEntity;
-}
-
-function getUncompletedTaskLabel(task: TaskEntity) {
-  const taskType = task.type;
-
-  if (taskType === REQUEST_READ) {
-    return "Mark as read";
-  }
-  if (taskType === REQUEST_ACTION) {
-    return "Mark as done";
-  }
-  if (taskType === REQUEST_RESPONSE) {
-    return "Mark as replied";
-  }
-}
-
-function getCompletedTaskLabel(task: TaskEntity) {
-  const taskType = task.type;
-
-  if (taskType === REQUEST_READ) {
-    return "Marked as read";
-  }
-  if (taskType === REQUEST_ACTION) {
-    return "Marked as done";
-  }
-  if (taskType === REQUEST_RESPONSE) {
-    return "Marked as replied";
-  }
 }
 
 export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton({ task }: Props) {
@@ -52,7 +24,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
           task.update({ done_at: new Date().toISOString() });
         }}
       >
-        {getUncompletedTaskLabel(task)}
+        {getUncompletedTaskLabel(task.type as RequestType)}
       </TaskColoredButton>
     );
   }
@@ -71,7 +43,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
       ]}
     >
       <Button key="done" kind="secondary" size="compact" indicateDropdown>
-        {getCompletedTaskLabel(task)}
+        {getCompletedTaskLabel(task.type as RequestType)}
       </Button>
     </PopoverMenuTrigger>
   );

@@ -5,7 +5,7 @@ import { Message, Task, Topic, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert, assertDefined } from "~shared/assert";
 import { routes } from "~shared/routes";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, RequestType, getUncompletedTaskLabel } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { SlackMentionContext, generateMarkdownFromTipTapJson } from "./md/generator";
@@ -93,7 +93,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
       Blocks.Section({ text }),
       Blocks.Divider(),
       topic.closed_at || tasks.length == 0
-        ? Blocks.Section({ text: "🎉 All requests have been actioned. 💪" })
+        ? Blocks.Section({ text: "All tasks have been completed 🎉" })
         : [
             Blocks.Section({ text: getTasksText(tasks, slackUsers) }),
             dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
@@ -106,7 +106,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
                       value: task.id,
                       text: `${task.done_at ? "✅️" : REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${
                         task.user.name
-                      }:  ${task.done_at ? "Undo" : "Mark as complete"}`,
+                      }:  ${task.done_at ? "Undo" : getUncompletedTaskLabel(task.type as RequestType)}`,
                     })
                   )
                 ),

@@ -1,36 +1,25 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { flattenDeep, minBy, uniq } from "lodash";
+import { flattenDeep, uniq } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
-import { Message, MessageTaskDueDate, Task, TeamMember, Topic, TopicMember, User, db } from "~db";
-import { RichEditorNode } from "~richEditor/content/types";
+import { TeamMember, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
-import { RequestType } from "~shared/types/mention";
 
-import { slackClient } from "./app";
-import { GenerateContext, generateMarkdownFromTipTapJson } from "./md/generator";
-import { createSlackLink, mdDate } from "./md/utils";
-import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "./utils";
+import { slackClient } from "../app";
+import { GenerateContext } from "../md/generator";
+import { createSlackLink } from "../md/utils";
+import { SlackActionIds } from "../utils";
+import { RequestItem } from "./RequestItem";
+import { TopicRowsWithCount } from "./types";
 
 const TOPICS_PER_CATEGORY = 10;
 
 type TopicWhereInput = Prisma.topicWhereInput;
-
-type TopicWithOpenTask = Topic & {
-  user: User;
-  message: (Message & { user: User; task: Task[]; message_task_due_date: MessageTaskDueDate | null })[];
-  topic_member: TopicMember[];
-};
-
-type TopicRowsWithCount = {
-  rows: TopicWithOpenTask[];
-  count: number;
-};
 
 async function findAndCountTopics(
   { user_id, team_id }: TeamMember,
@@ -72,38 +61,6 @@ async function findAndCountTopics(
   return { rows, count };
 }
 
-function RequestItem(topic: TopicWithOpenTask, context: GenerateContext) {
-  // TODO this will need to be updated in the year 3k
-  const mostUrgentMessage = minBy(
-    topic.message,
-    (message) => (message.task[0] && message.message_task_due_date?.due_at) ?? new Date(3000, 0)
-  );
-  const mostUrgentTask = mostUrgentMessage?.task[0];
-  const mostUrgentDueDate = mostUrgentMessage?.message_task_due_date?.due_at;
-
-  return [
-    Blocks.Section({
-      text: [
-        createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name) +
-          (mostUrgentDueDate ? " - " + Md.italic("due " + mdDate(mostUrgentDueDate)) : ""),
-        mostUrgentMessage?.content_text
-          ? Md.bold(mostUrgentMessage.user.name + ":") +
-            " " +
-            generateMarkdownFromTipTapJson(mostUrgentMessage?.content as RichEditorNode, context)
-          : "",
-      ].join("\n"),
-    }).accessory(
-      mostUrgentTask
-        ? Elements.Button({
-            actionId: "toggle_task_done_at:" + mostUrgentTask.id,
-            value: mostUrgentTask.id,
-            text: `${REQUEST_TYPE_EMOJIS[mostUrgentTask.type as RequestType]} Mark as done`,
-          })
-        : undefined
-    ),
-  ];
-}
-
 const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
 
 const RequestsList = (title: string, topics: TopicRowsWithCount, context: GenerateContext) => {
@@ -111,7 +68,7 @@ const RequestsList = (title: string, topics: TopicRowsWithCount, context: Genera
   return [
     ...Padding,
     Blocks.Header({ text: title }),
-    ...(topics.count == 0
+    ...(topics.count === 0
       ? [Blocks.Section({ text: Md.italic("No requests here") })]
       : topics.rows.flatMap((topic, i) => [
           ...RequestItem(topic, context),
