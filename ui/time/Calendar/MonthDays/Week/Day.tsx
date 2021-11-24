@@ -3,6 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { Button } from "~ui/buttons/Button";
+import { ButtonKind } from "~ui/buttons/variants";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -20,12 +21,25 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
     onSelect?.(dayDate);
   }
 
+  function getButtonKind(): ButtonKind {
+    if (isSelected) {
+      return "primarySubtle";
+    }
+
+    if (isTodayDay) {
+      return "backgroundAccent";
+    }
+
+    return "transparent";
+  }
+
   return (
     <UIDay>
       <UISquareWrapper>
         <UISquareContent>
           <UIDayButton
             data-tooltip={isTodayDay && "Today"}
+            kind={getButtonKind()}
             $isToday={isTodayDay}
             $isSelected={isSelected}
             onClick={handleDayClick}

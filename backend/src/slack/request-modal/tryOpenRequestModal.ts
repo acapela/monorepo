@@ -1,4 +1,5 @@
 import { View } from "@slack/types";
+import { uniq } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -50,6 +51,9 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
 
 const TopicModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText } = metadata;
+  const slackUserIds = messageText
+    ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)
+    : [];
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
       Blocks.Input({ blockId: "request_type_block", label: "Request Type:" }).element(
@@ -72,7 +76,9 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
-        Elements.UserMultiSelect({ actionId: "members_select" })
+        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(
+          uniq(slackUserIds.concat(metadata.requestToSlackUserIds ?? []))
+        )
       ),
       messageText
         ? Blocks.Section({
@@ -81,7 +87,7 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
         : Blocks.Input({ label: "Your Message", blockId: "message_block" }).element(
             Elements.TextInput({ actionId: "message_text" }).multiline(true)
           ),
-      Blocks.Input({ blockId: "topic_block", label: "Topic Title" })
+      Blocks.Input({ blockId: "topic_block", label: "Request Title" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
         .optional(true),
       metadata.channelId

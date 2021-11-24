@@ -56,8 +56,8 @@ export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation 
         </UITimePickerWrapper>
       </UIPickers>
       {!shouldSkipConfirmation && (
-        <Button type="button" onClick={handleSubmit}>
-          Save
+        <Button kind="primary" type="button" onClick={handleSubmit} shortcut="Enter">
+          Confirm
         </Button>
       )}
     </UIDateTimePickerForm>

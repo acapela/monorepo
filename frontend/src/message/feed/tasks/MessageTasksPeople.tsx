@@ -57,13 +57,12 @@ const UICountLabel = styled.div``;
 const UICollapsedTasks = styled(UIDropdownPanelBody)<{}>`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.actions.asGap};
 
   max-height: 400px;
   overflow-y: auto;
 
   ${MessageTask} {
     ${theme.transitions.hover("all")};
-    ${theme.colors.panels.popover.withBorder.interactive};
+    ${theme.colors.panels.popover.interactive};
   }
 `;

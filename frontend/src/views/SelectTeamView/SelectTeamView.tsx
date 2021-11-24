@@ -49,12 +49,12 @@ export const SelectTeamView = observer(() => {
                   <UITeamName>{team.name}</UITeamName>
                 </UITeamInfo>
                 {!isCurrentTeam && (
-                  <Button kind="primary" onClick={() => handleSelectExistingTeam(team)}>
+                  <Button size="compact" kind="primary" onClick={() => handleSelectExistingTeam(team)}>
                     Select team
                   </Button>
                 )}
                 {isCurrentTeam && (
-                  <Button kind="secondary" onClick={() => handleSelectExistingTeam(team)}>
+                  <Button size="compact" kind="secondary" onClick={() => handleSelectExistingTeam(team)}>
                     Keep using
                   </Button>
                 )}
