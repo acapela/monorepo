@@ -1,4 +1,4 @@
-import { View } from "@slack/types";
+import type { View } from "@slack/types";
 import { uniq } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 

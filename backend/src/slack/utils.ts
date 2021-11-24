@@ -1,6 +1,6 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 
-import { User, db } from "~db";
+import { Topic, User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
@@ -95,6 +95,12 @@ export type ViewMetadata = {
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
+  };
+  open_view_request_modal: {
+    topicId: string;
+  };
+  view_request_modal: {
+    topic: Topic;
   };
 };
 
