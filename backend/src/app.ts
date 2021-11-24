@@ -89,7 +89,6 @@ function setupGracefulShutdown(server: Server) {
     healthChecks: {
       verbatim: true,
       "/healthz": async function () {
-        await db.$connect();
         await db.$executeRaw`SELECT 1;`;
         const [hasuraRes, hasuraVersionRes] = await Promise.all([
           axios.get(`${process.env.HASURA_ENDPOINT}/healthz`),
