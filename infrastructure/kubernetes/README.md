@@ -35,12 +35,12 @@ kkprod get services
 
 The following resources currently exist in this repository:
 
-| Resource | Description                         | Automatic deployment | Staging Endpoint / IP                                                                        | Production Endpoint / IP                     |
-| -------- | ----------------------------------- | -------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| api      | monorepo/backend deployment config  | yes                  | internal                                                                                     | internal                                     |
-| frontend | monorepo/frontend deployment config | yes                  | [app-staging.acape.la](https://app-staging.acape.la)<br>[dev.acape.la](https://dev.acape.la) | [app.acape.la](https://app.acape.la)         |
-| hasura   | the hasura backend                  | no                   | `yarn hasura:console:proxy staging`                                                          | `yarn hasura:console:proxy production`       |
-| ingress  | handles all incoming traffic        | no                   | 34.117.218.52                                                                                | 35.241.35.179                                |
+| Resource | Description                         | Automatic deployment | Staging Endpoint / IP                                                                        | Production Endpoint / IP               |
+| -------- | ----------------------------------- | -------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------- |
+| api      | monorepo/backend deployment config  | yes                  | internal                                                                                     | internal                               |
+| frontend | monorepo/frontend deployment config | yes                  | [app-staging.acape.la](https://app-staging.acape.la)<br>[dev.acape.la](https://dev.acape.la) | [app.acape.la](https://app.acape.la)   |
+| hasura   | the hasura backend                  | no                   | `yarn hasura:console:proxy staging`                                                          | `yarn hasura:console:proxy production` |
+| ingress  | handles all incoming traffic        | no                   | 34.117.218.52                                                                                | 35.241.35.179                          |
 
 Furthermore, the `iam` and `namespaces` folders contain resources that were initially used to configure the cluster.
 

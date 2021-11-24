@@ -3,11 +3,11 @@ commonLabels:
   app: frontend
   env: production
 resources:
-- ../base
+  - ../base
 replicas:
-- name: frontend
-  count: 2
+  - name: frontend
+    count: 2
 configMapGenerator:
-- name: frontend-default
-  envs:
-  - default.env
+  - name: frontend-default
+    envs:
+      - default.env

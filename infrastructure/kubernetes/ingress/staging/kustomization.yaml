@@ -1,4 +1,4 @@
 namespace: staging
 resources:
-- ../tls
-- ingress.yaml
+  - ../tls
+  - ingress.yaml

@@ -1,4 +1,4 @@
 namespace: production
 resources:
-- ../tls
-- ingress.yaml
+  - ../tls
+  - ingress.yaml

@@ -3,8 +3,8 @@ commonLabels:
   app: frontend
   env: staging
 resources:
-- ../base
+  - ../base
 configMapGenerator:
-- name: frontend-default
-  envs:
-  - default.env
+  - name: frontend-default
+    envs:
+      - default.env
