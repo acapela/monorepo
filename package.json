@@ -28,7 +28,7 @@
     "frontend:dev": "yarn frontend dev",
     "frontend:test": "yarn frontend test",
     "frontend:test:watch": "yarn frontend test:watch",
-    "frontend:build": "yarn frontend next:build",
+    "frontend:build": "NODE_OPTIONS='--max-old-space-size=4096' yarn frontend next:build",
     "backend:dev": "yarn backend dev",
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",

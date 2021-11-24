@@ -85,7 +85,7 @@ jobs:
           path: frontend/.next
           key: ${{ runner.os }}-next-${{ github.sha }}
       - name: Build frontend
-        run: NODE_OPTIONS='--max-old-space-size=4096' yarn run frontend:build
+        run: yarn run frontend:build
       - name: Start frontend
         run: |
           cd frontend/
