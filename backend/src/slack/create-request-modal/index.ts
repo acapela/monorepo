@@ -125,6 +125,8 @@ export function setupRequestModal(app: App) {
       },
     } = view.state.values;
 
+    assert("messageText" in metadata, "create_request called with wrong arguments");
+
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     if (!(members && requestType && messageText && members.length > 0)) {
       return await ack({
