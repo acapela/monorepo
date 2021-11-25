@@ -64,7 +64,7 @@ export type AnalyticsEventsMap = {
   };
   "Added Due Date": { topicId: string; messageId: string; origin: Origin };
 
-  "Opened App": { currentTeamId: string };
+  "Opened App": { currentTeamId: string; loadingTime: number };
 
   // Slack
   "Added Team Slack Integration": { slackTeamId: string; teamId: string };
