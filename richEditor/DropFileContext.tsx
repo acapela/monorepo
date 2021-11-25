@@ -1,9 +1,9 @@
-import { ReactNode, RefObject, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, RefObject, createContext, useContext, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { createCleanupObject } from "~shared/cleanup";
 import { createElementEvent, createElementEvents } from "~shared/domEvents";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { useThrottledState } from "~shared/hooks/useDebouncedState";
 
 interface DropFileContextData {
   holderRef: RefObject<HTMLDivElement>;
@@ -42,65 +42,30 @@ interface FileDropOptions {
   isDisabled?: boolean;
 }
 
-const THROTTLE_STOP_DRAG_TIMEOUT_IN_MS = 5000;
-
 export function useFileDroppedInContext(callback?: (files: File[]) => void, options?: FileDropOptions) {
   const dropFileContext = useDropFileContext();
 
   /* 
-    There is weird race condition happening between the start/ongoing drag and stop drag events.
+    When dragging inside nested elements, there are bunch of 'drag enter' and 'drag leave' events fired as 'drag' is switching
+    from one element inside to another.
 
-    When the drag leaves a parent element, drag-leave event gets triggered. However the children elements
-    immediately fire dragenter event, and this bubbles up through the DOM until getting to the parent.
-
-    In a lot of cases, the drag and drop context is placed on a parent element, 
-    or an element that has multiple children, so this happens quite a lot.
-    
-    Because of this, when we set the "isDragging" state directly in the event handler we will
-    have constant blinking of "isDragging" when we drag the file around.
-
-    # Example:
-    Imagine we have this DOM tree
-    <A>  <--- drag events listened here
-      <B>
-        <C />
-      </B>
-    </A>
-
-    1. * Mouse drags over A
-    2. Fire 'dragenter' on A
-    3. Handle 'dragenter'
-    4. * Mouse Drag leaves A , Mouse Drag Enters C
-    5. Fire 'dragleave' on A
-    6. Fire 'dragenter' on C
-    7. Handle 'dragleave'
-    8. Bubble 'dragenter' from C to B
-    9. Bubble 'dragenter' from B to A
-    10. Handle 'dragenter' 
-    
-    Solution:
-    With a "throttled" approach, we prevent these blinks from happening. When we handle a stop dragging event
-    we wait 5 seconds before officially set the state as not dragging. If any new "dragenter" or "dragover" event
-    happens within those 5 seconds, we will cancel that timer and we won't stop dragging anymore.    
+    To avoid flickering of this state and way too many re-renders, we throttle state changes of 'isDragging'
   */
-  const [isDragging, { set: setIsDragging, unset: setIsNotDragging }] = useBoolean(false);
-  const [delayedDragStopTimerRef, setDelayedDragStopTimerRef] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [isDragging, setIsDragging] = useThrottledState(false, 50);
 
-  function handleStopDrag() {
-    const timeoutRef = setTimeout(() => {
-      setIsNotDragging();
-    }, THROTTLE_STOP_DRAG_TIMEOUT_IN_MS);
-    setDelayedDragStopTimerRef(timeoutRef);
-  }
-
-  function handleStartDrag() {
-    if (delayedDragStopTimerRef) {
-      clearTimeout(delayedDragStopTimerRef);
-      setDelayedDragStopTimerRef(null);
+  // Indicate visually if is dragging or not
+  useEffect(() => {
+    const dropElement = dropFileContext?.holderRef.current;
+    if (!dropElement) {
+      return;
+    }
+    if (isDragging) {
+      dropElement.classList.add(DROP_INDICATOR_CLASSNAME);
+      return;
     }
 
-    setIsDragging();
-  }
+    dropElement.classList.remove(DROP_INDICATOR_CLASSNAME);
+  }, [isDragging]);
 
   useEffect(() => {
     if (!dropFileContext) return;
@@ -113,54 +78,63 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void, opti
     const cleanup = createCleanupObject();
 
     cleanup.enqueue(
-      createElementEvent(dropElement, "drop", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+      createElementEvent(
+        dropElement,
+        "drop",
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
 
-        const filesList = event.dataTransfer?.files;
-        if (!filesList) return;
+          setIsDragging(false);
 
-        const filesArray = Array.from(filesList);
+          const filesList = event.dataTransfer?.files;
+          if (!filesList) return;
 
-        callback?.(filesArray);
-        setIsNotDragging();
-      })
+          const filesArray = Array.from(filesList);
+
+          callback?.(filesArray);
+        },
+        { capture: true }
+      )
     );
 
     cleanup.enqueue(
-      createElementEvents(dropElement, ["dragenter", "dragover"], (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        handleStartDrag();
-        dropElement.classList.add(DROP_INDICATOR_CLASSNAME);
-      })
+      createElementEvents(
+        dropElement,
+        ["dragenter", "dragover"],
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          setIsDragging(true);
+        },
+        { capture: true }
+      )
     );
 
     cleanup.enqueue(
-      createElementEvents(dropElement, ["dragleave", "dragend", "drop"], (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        dropElement.classList.remove(DROP_INDICATOR_CLASSNAME);
-        handleStopDrag();
-      })
+      createElementEvents(
+        dropElement,
+        ["dragleave", "dragend", "drop"],
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          setIsDragging(false);
+        },
+        { capture: true }
+      )
     );
 
     return () => cleanup.clean();
   }, [dropFileContext, callback, options?.isDisabled]);
 
-  // Prevents delayedDragStopTimer from modifying state after component unmounted
-  useEffect(
-    () => () => {
-      if (delayedDragStopTimerRef) {
-        clearTimeout(delayedDragStopTimerRef);
-        setDelayedDragStopTimerRef(null);
-      }
-      setIsNotDragging();
-    },
-    []
-  );
-
   return { isDragging } as const;
 }
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{}>`
+  transition: 0.15s opacity;
+  &.${DROP_INDICATOR_CLASSNAME} {
+    opacity: 0.6;
+  }
+`;

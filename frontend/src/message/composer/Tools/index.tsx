@@ -27,12 +27,22 @@ export const MessageTools = styled(({ className, onRecordingReady, onFilesPicked
         <IconButton
           tooltip="Upload files..."
           icon={<IconPaperclip />}
-          onClick={async () => {
-            const files = await pickUserFiles();
+          onClick={() => {
+            /**
+             * Important!
+             *
+             * Do not use async function here! pickUserFiles is async function, but it is required to be called instantly during
+             * click event. Otherwise browser might reject opening browser files outside of trusted event.
+             *
+             * As we use Sentry that might modify 'Promise.then' prototype - it might be unsafe in production.
+             *
+             * This we make sure to call `pickUserFiles` in sync by using old-good foo().then
+             */
+            pickUserFiles().then((files) => {
+              if (!files?.length) return;
 
-            if (!files?.length) return;
-
-            onFilesPicked(files);
+              onFilesPicked(files);
+            });
           }}
         />
       )}
