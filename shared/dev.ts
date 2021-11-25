@@ -1,6 +1,6 @@
 import { noop } from "lodash";
 
-export const IS_DEV = process.env.STAGE === "staging" || process.env.STAGE === "production";
+export const IS_DEV = process.env.STAGE !== "staging" && process.env.STAGE !== "production";
 
 const groupsTotal = new Map<string, number>();
 
