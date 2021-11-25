@@ -5,7 +5,7 @@ import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { userGroupEntity, userGroupMemberEntity } from "~frontend/clientdb/userGroup";
-import { devAssignWindowVariable, isDev } from "~shared/dev";
+import { IS_DEV, devAssignWindowVariable } from "~shared/dev";
 import { isClient } from "~shared/document";
 
 import { attachmentEntity } from "./attachment";
@@ -77,6 +77,6 @@ type ThenType<T> = T extends Promise<infer I> ? I : never;
 
 export type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
-if (isDev() && isClient) {
+if (IS_DEV && isClient) {
   setupDevIncorrectMobxUseageWarnings();
 }

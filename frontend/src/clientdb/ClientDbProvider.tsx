@@ -1,12 +1,12 @@
 import { useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useState } from "react";
 
-import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
 import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
 import { ErrorView } from "~frontend/views/ErrorView";
+import { useReportPageReady } from "~shared/analytics/useReportPageReady";
 import { assert } from "~shared/assert";
 import { devAssignWindowVariable } from "~shared/dev";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
@@ -15,6 +15,9 @@ import { ClientDb, createNewClientDb } from "./createNewClientDb";
 import { LoadingScreen } from "./LoadingScreen";
 
 const reactContext = createContext<ClientDb | null>(null);
+
+// How long do we wait to show too long loading warning and recovery tools
+const TIME_TO_SHOW_LOADING_WARNING = 7000;
 
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
@@ -74,16 +77,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     [userId, teamManager.isLoading, teamManager.teamId, apolloClient]
   );
 
-  // If db is ready we track initial successful app load event on the backend
-  useEffect(() => {
-    if (db && userId && teamManager.teamId) {
-      const currentUser = db.user.assertFindById(
-        userId,
-        "Fetching the current user from clientDb failed on initial load"
-      );
-      trackEvent("Opened App", { currentTeamId: teamManager.teamId }, currentUser.getData());
-    }
-  }, [db, userId, teamManager.teamId]);
+  useReportPageReady(teamManager.teamId ?? undefined, !error && canRender);
 
   devAssignWindowVariable("db", db);
 
@@ -104,7 +98,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
         {!canRender && (
           <LoadingScreen
             longLoadingFallback={{
-              timeout: 2500,
+              timeout: TIME_TO_SHOW_LOADING_WARNING,
               hint: "It takes a bit too long...",
               fallbackNode: <AppRecoveryButtons />,
             }}
