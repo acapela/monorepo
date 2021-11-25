@@ -20,11 +20,11 @@ import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { useIsHashActive } from "~shared/hooks/useHashChangeEffect";
 import { select } from "~shared/sharedState";
+import { highlightOnceStyles } from "~ui/highlight";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
-import { wiggleOnceStyles } from "~ui/wiggle";
 
 import { EditMessageEditor } from "./EditMessageEditor";
 import { MessageLikeContent } from "./MessageLikeContent";
@@ -126,10 +126,10 @@ export const Message = styledObserver<Props>(
       []
     );
 
-    const shouldWiggle = useIsHashActive(message.id);
+    const shouldHighlight = useIsHashActive(message.id);
 
     return (
-      <UIHolder id={message.id} ref={rootRef} $shouldWiggle={shouldWiggle}>
+      <UIHolder id={message.id} ref={rootRef} $shouldHighlight={shouldHighlight}>
         <MessageLikeContent
           anchorLink={`#${message.id}`}
           className={className}
@@ -176,8 +176,8 @@ export const Message = styledObserver<Props>(
   }
 )``;
 
-const UIHolder = styled.div<{ $shouldWiggle: boolean }>`
-  ${(props) => props.$shouldWiggle && wiggleOnceStyles};
+const UIHolder = styled.div<{ $shouldHighlight: boolean }>`
+  ${(props) => props.$shouldHighlight && highlightOnceStyles};
 `;
 
 const UITools = styled.div<{}>`

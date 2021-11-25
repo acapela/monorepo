@@ -79,8 +79,7 @@ const UIContentContainer = styled.div<{}>`
 const UIAnimatedMessageWrapper = styled.div<{ hasTopSpacing: boolean }>`
   display: flex;
   align-items: start;
-  padding: 7px;
-  margin: 0 -7px;
+  padding: 10px;
 
   ${theme.radius.secondaryItem};
   ${theme.transitions.hover()};
