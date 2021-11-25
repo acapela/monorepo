@@ -48,7 +48,12 @@ async function sendTaskNotification(topic: Topic, task: Task, toUser: User, from
 
   if (slackMessage && slackMessage.channel && slackMessage.ts) {
     await db.task_slack_message.create({
-      data: { task_id: task.id, slack_channel_id: slackMessage.channel, slack_message_ts: slackMessage.ts },
+      data: {
+        topic_id: topic.id,
+        task_id: task.id,
+        slack_channel_id: slackMessage.channel,
+        slack_message_ts: slackMessage.ts,
+      },
     });
   }
 }

@@ -1,6 +1,7 @@
 CREATE TABLE "public"."task_slack_message"
 (
   "id"                       UUID        NOT NULL DEFAULT gen_random_uuid(),
+  "topic_id"                 UUID        NOT NULL,
   "task_id"                  UUID        NOT NULL,
   "slack_channel_id"         TEXT        NOT NULL,
   "slack_message_ts"         TEXT        NOT NULL,
@@ -8,6 +9,7 @@ CREATE TABLE "public"."task_slack_message"
   "updated_at"               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   "slack_message_updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY ("id"),
+  FOREIGN KEY ("topic_id") REFERENCES "public"."topic" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY ("task_id") REFERENCES "public"."task" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   UNIQUE ("task_id")
 );
