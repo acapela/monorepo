@@ -9,7 +9,7 @@ import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
 import { Maybe } from "~shared/types";
 
@@ -65,7 +65,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       signOut: "/logout",
       error: "/auth/error", // Error code passed in query string as ?error=
     },
-    debug: isDev(),
+    debug: IS_DEV,
     callbacks: {
       jwt: ({ token, user }) => {
         if (!user) {
@@ -136,7 +136,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           sameSite: "lax",
           path: "/",
           // If this is true in dev, Safari will block this cookie in localhost making it impossible to log in.
-          secure: !isDev(),
+          secure: !IS_DEV,
         },
       },
     },

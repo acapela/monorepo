@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/node";
 
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import { initializeSecrets } from "~config";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 
 import { getDevPublicTunnelURL } from "./localtunnel";
 
@@ -35,7 +35,7 @@ async function start(): Promise<void> {
     })
   );
 
-  if (isDev()) {
+  if (IS_DEV) {
     const tunnelURL = await getDevPublicTunnelURL(3000);
     log.info("Public dev tunnel set up", {
       url: `${tunnelURL}/api/backend`,

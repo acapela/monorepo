@@ -6,7 +6,7 @@ import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 import { routes } from "~shared/routes";
 import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
@@ -116,7 +116,7 @@ export const slackReceiver = new SlackBolt.ExpressReceiver({
 export const slackApp = new SlackBolt.App({
   ...sharedOptions,
   receiver: slackReceiver,
-  developerMode: isDev(),
+  developerMode: IS_DEV,
   socketMode: false,
 });
 
