@@ -32,6 +32,10 @@ export function setupSlackActionHandlers(slackApp: App) {
     }
   });
 
+  slackApp.action<BlockButtonAction>(/open-external-url/, async ({ ack }) => {
+    await ack();
+  });
+
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
     const topicId = action.value;
 
