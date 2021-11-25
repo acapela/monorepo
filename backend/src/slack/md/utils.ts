@@ -10,6 +10,11 @@ export const mdDate = (date: Date, format = "date_long_pretty") => {
   return `<!date^${unixTime}^{${format}} {time}|${date.toISOString()}>`;
 };
 
+export const mdTime = (date: Date) => {
+  const unixTime = Math.floor(date.getTime() / 1000);
+  return `<!date^${unixTime}^{time}|${date.toISOString()}>`;
+};
+
 export function createSlackInviteNotification(inviterName: string, inviteUrl: string) {
   return `Welcome to Acapela! 🎉
 ${inviterName} invited you to join your team! Acapela is a lightweight task manager for all the requests spread out in channels, DMs, threads and on other tools like Notion or Google Docs.

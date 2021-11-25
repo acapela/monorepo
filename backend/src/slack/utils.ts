@@ -1,12 +1,13 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 
-import { Topic, User, db } from "~db";
+import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
+import { TopicInfo } from "./view-request-modal/types";
 
 export const extractInstallationDataBotToken = (data: unknown) => (data as SlackInstallation)?.bot?.token;
 
@@ -97,10 +98,12 @@ export type ViewMetadata = {
     fromMessageBelongingToSlackUserId?: string;
   };
   open_view_request_modal: {
+    slackUserId: string;
+    slackTeamId: string;
     topicId: string;
   };
   view_request_modal: {
-    topic: Topic;
+    topic: TopicInfo;
   };
 };
 
