@@ -6,5 +6,6 @@ const config: PlaywrightTestConfig = {
     video: "retain-on-failure",
     trace: "retain-on-failure",
   },
+  forbidOnly: Boolean(process.env.CI) && process.env.CI !== "false",
 };
 export default config;
