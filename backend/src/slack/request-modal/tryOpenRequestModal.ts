@@ -117,8 +117,6 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
 }
 
 async function filterBotUsers(token: string, userIds: string[]): Promise<string[]> {
-  // don't check to large channels
-  if (userIds.length >= 99) return userIds;
   return compact(
     (
       await Promise.all(
@@ -171,10 +169,12 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
   let channelName = "";
   if (channelId) {
     const membersRes = await slackClient.conversations.members({ token, channel: channelId });
-    if (membersRes.ok && membersRes.members)
+    // ignore too large channels
+    if (membersRes.ok && membersRes.members && membersRes.members.length < 99) {
       channelMembers = await filterBotUsers(token, without(membersRes.members, slackUserId));
-    const infoRes = await slackClient.conversations.info({ token, channel: channelId });
-    if (infoRes.ok && infoRes.channel?.name) channelName = infoRes.channel.name;
+      const infoRes = await slackClient.conversations.info({ token, channel: channelId });
+      channelName = (infoRes.ok && infoRes.channel?.name) || "";
+    }
   }
 
   let requestToSlackUserIds = slackUserIdsFromMessage;
