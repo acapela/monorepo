@@ -63,14 +63,6 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
                 .map(([value, text]) => Bits.Option({ value, text }))
             )
           )
-          .optionGroups(
-            Bits.OptionGroup({ label: "Non-request types" }).options(
-              Bits.Option({
-                value: MENTION_OBSERVER,
-                text: MENTION_TYPE_PICKER_LABELS[MENTION_OBSERVER],
-              })
-            )
-          )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
         Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(requestToSlackUserIds ?? [])
