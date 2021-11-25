@@ -46,6 +46,7 @@ export interface RichEditorProps {
   extensions?: Extensions;
   onEditorReady?: (editor: Editor) => void;
   customEditFieldStyles?: StylesPart;
+  capturePastedFiles?: boolean;
 }
 
 /**
@@ -110,6 +111,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     extensions = [],
     onEditorReady,
     customEditFieldStyles,
+    capturePastedFiles,
   },
   ref
 ) {
@@ -256,7 +258,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     (files) => {
       onFilesSelected?.(files);
     },
-    { isDisabled }
+    { isDisabled: isDisabled || !capturePastedFiles }
   );
 
   // function insertEmoji(emoji: string) {

@@ -17,7 +17,6 @@ import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
-import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
 import { routes } from "~shared/routes";
@@ -107,10 +106,6 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
   //   uploadAttachments(files);
   // });
 
-  useDocumentFilesPaste((files) => {
-    uploadAttachments(files);
-  });
-
   // Submitting can be done from the editor or from the topic input box
   useShortcut(["Mod", "Enter"], () => {
     submit();
@@ -197,6 +192,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
               onAttachmentRemoveRequest={removeAttachmentById}
               onFilesSelected={uploadAttachments}
               uploadingAttachments={uploadingAttachments}
+              capturePastedFiles
             />
           </UIComposerHolder>
 

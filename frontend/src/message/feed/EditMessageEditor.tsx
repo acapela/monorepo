@@ -74,6 +74,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
           attachments={attachments}
           onAttachmentRemoveRequest={removeAttachmentById}
           autofocusKey={message.id}
+          capturePastedFiles
         />
       </UIEditorScroller>
 
