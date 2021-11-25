@@ -25,4 +25,5 @@ export interface TopicInfo {
   slackUserId: string;
   name: string;
   messages: MessageInfo[];
+  slackMessagePermalink?: string;
 }

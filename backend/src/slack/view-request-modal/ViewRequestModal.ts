@@ -80,7 +80,6 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
       ])
       .end(),
     ...Padding(),
-    Blocks.Divider(),
   ];
 };
 
@@ -118,12 +117,18 @@ export const ViewRequestModal = (metadata: ViewMetadata["view_request_modal"]) =
     ...attachToViewWithMetadata("view_request_modal", metadata),
   })
     .blocks(
-      Blocks.Header({ text: `${topic.name}` }),
+      Blocks.Header({ text: topic.name }),
       ...Padding(1),
       // Main Request may have no tasks if only observers are mentioned
       RequestOrMessageBlock(mainRequest),
-      ...(otherMessages.length > 0 ? [Blocks.Section({ text: Md.bold("Replies") }), ...Padding()] : []),
-      ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(1)])
+      ...(otherMessages.length > 0
+        ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]
+        : []),
+      ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(2)]),
+      Blocks.Divider(),
+      topic.slackMessagePermalink
+        ? Blocks.Section({ text: `<${topic.slackMessagePermalink}|View original Slack thread>` })
+        : undefined
     )
     .buildToObject();
 };

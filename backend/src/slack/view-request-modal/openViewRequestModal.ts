@@ -67,6 +67,7 @@ export async function openViewRequestModal(
           task: true,
         },
       },
+      topic_slack_message: true,
     },
   });
 
@@ -98,11 +99,22 @@ export async function openViewRequestModal(
     mentionedSlackIdByUsersId,
   };
 
+  const slackMessagePermalink = topic.topic_slack_message
+    ? (
+        await slackClient.chat.getPermalink({
+          channel: topic.topic_slack_message.slack_channel_id,
+          message_ts: topic.topic_slack_message.slack_message_ts,
+          token,
+        })
+      ).permalink
+    : undefined;
+
   const topicInfo: TopicInfo = {
     id: topic.id,
     url: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
     name: topic.name,
     slackUserId: data.slackUserId,
+    slackMessagePermalink,
     messages: topic.message.map((m) => ({
       message: {
         id: m.id,
