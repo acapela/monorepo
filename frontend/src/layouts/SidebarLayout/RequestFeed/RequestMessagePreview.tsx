@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import styled, { css, keyframes } from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -11,6 +11,7 @@ import { MentionType, getMentionTypeLabel } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
+import { wiggleAnimation } from "~ui/wiggle";
 
 interface Props {
   topic: TopicEntity;
@@ -53,26 +54,6 @@ export const RequestMessagePreview = styledObserver(function RequestMessagePrevi
     </Popover>
   );
 })``;
-
-const WIGGLE_MAX = 1;
-
-const wiggleAnimation = keyframes`
-  10%, 90% {
-    transform: translate3d(-${WIGGLE_MAX / 4}px, 0, 0);
-  }
-
-  20%, 80% {
-    transform: translate3d(${WIGGLE_MAX / 2}px, 0, 0);
-  }
-
-  30%, 50%, 70% {
-    transform: translate3d(-${WIGGLE_MAX}px, 0, 0);
-  }
-
-  40%, 60% {
-    transform: translate3d(${WIGGLE_MAX}px, 0, 0);
-  }
-`;
 
 const UIHolder = styled(PopPresenceAnimator)<{ $currentUserId: string }>`
   ${theme.colors.layout.background.asBgWithReadableText};

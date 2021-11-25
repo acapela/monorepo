@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { wait } from "~frontend/../../shared/time";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
@@ -41,7 +42,12 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
       }
       &nbsp;
       <TextAction
-        onClick={() => {
+        onClick={async () => {
+          location.hash = "";
+
+          // Wait so hash animations will replay
+          await wait(10);
+
           location.hash = `#${nextTask.message_id}`;
         }}
       >
