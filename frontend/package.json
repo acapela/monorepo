@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3030",
+    "dev": "next dev -p 3030",
     "dev:inspect": "NODE_OPTIONS='--inspect' next dev -p 3030",
     "next:build": "next build",
     "next:start": "dotenv -e ../.env -- next start -p 3030",
