@@ -1,5 +1,5 @@
 import { View } from "@slack/types";
-import { uniq, without } from "lodash";
+import { compact, uniq, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -117,16 +117,20 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
 }
 
 async function filterBotUsers(token: string, userIds: string[]): Promise<string[]> {
-  const filtered = [];
-  for (const userId of userIds) {
-    const slackUserRes = await slackClient.users.info({
-      token,
-      user: userId,
-    });
-    if (!slackUserRes.ok) continue;
-    if (!slackUserRes.user?.is_bot) filtered.push(userId);
-  }
-  return filtered;
+  // don't check to large channels
+  if (userIds.length >= 99) return userIds;
+  return compact(
+    (
+      await Promise.all(
+        userIds.map((userId) =>
+          slackClient.users.info({
+            token,
+            user: userId,
+          })
+        )
+      )
+    ).map((res) => res.ok && !res.user?.is_bot && res.user?.id)
+  );
 }
 
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
