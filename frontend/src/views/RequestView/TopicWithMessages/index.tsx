@@ -11,6 +11,7 @@ import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
 import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
+import { DropFileContext } from "~richEditor/DropFileContext";
 import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
@@ -113,7 +114,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   );
 });
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled(DropFileContext)<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
