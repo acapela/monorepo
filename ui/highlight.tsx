@@ -35,7 +35,7 @@ export const highlightOnceStyles = css`
     left: ${-HIGHLIGHT_OFFSET_PX}px;
     right: ${-HIGHLIGHT_OFFSET_PX}px;
     bottom: ${-HIGHLIGHT_OFFSET_PX}px;
-    animation: ${highlightDropAnimation} 1s ease-in-out both;
+    animation: ${highlightDropAnimation} 2.5s ease-in-out both;
     ${theme.colors.secondary.opacity(0.2).asBg};
     ${theme.radius.secondaryItem};
     will-change: transform, opacity;
