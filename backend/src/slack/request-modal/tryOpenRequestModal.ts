@@ -73,7 +73,7 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
-        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(uniq(requestToSlackUserIds ?? []))
+        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(requestToSlackUserIds ?? [])
       ),
       messageText
         ? Blocks.Section({
@@ -153,7 +153,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
 
   let requestToSlackUserIds = await filterBotUsers(
     token,
-    messageText ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId) : []
+    messageText ? uniq(Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)) : []
   );
 
   // if there is no real user mentioned add all channel members
