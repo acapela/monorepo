@@ -16,6 +16,9 @@ import { LoadingScreen } from "./LoadingScreen";
 
 const reactContext = createContext<ClientDb | null>(null);
 
+// How long do we wait to show too long loading warning and recovery tools
+const TIME_TO_SHOW_LOADING_WARNING = 7000;
+
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
   const [error, setError] = useState<unknown | null>(null);
@@ -95,7 +98,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
         {!canRender && (
           <LoadingScreen
             longLoadingFallback={{
-              timeout: 7000,
+              timeout: TIME_TO_SHOW_LOADING_WARNING,
               hint: "It takes a bit too long...",
               fallbackNode: <AppRecoveryButtons />,
             }}
