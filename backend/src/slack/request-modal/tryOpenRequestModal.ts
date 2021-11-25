@@ -11,7 +11,7 @@ import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~sha
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
 import { createSlackLink } from "../md/utils";
-import { ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
+import { ChannelInfo, ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -50,7 +50,12 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
     .buildToObject();
 
 const TopicModal = (metadata: ViewMetadata["create_request"]) => {
-  const { messageText, channelName, requestToSlackUserIds } = metadata;
+  const { messageText, channelInfo, requestToSlackUserIds } = metadata;
+  let channelInfoName = "";
+  if (channelInfo?.isIm) channelInfoName = "this direct message conversation";
+  else if (channelInfo?.isMpim) channelInfoName = "this group message conversation";
+  else if (channelInfo?.name) channelInfoName = `#${channelInfo.name}`;
+
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
       Blocks.Input({ blockId: "request_type_block", label: "Request Type:" }).element(
@@ -64,32 +69,34 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
             )
           )
       ),
-      Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
+      Blocks.Input({ blockId: "members_block", label: "Request to:" }).element(
         Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(requestToSlackUserIds ?? [])
       ),
-      channelName
-        ? Blocks.Section({ blockId: "channel_observers_block", text: "Add observers:" }).accessory(
-            Elements.Checkboxes({ actionId: "channel_observers_checkbox" }).options(
-              Bits.Option({
-                value: "include_channel_members",
-                text: `Include all members of #${channelName} as observer`,
-              })
-            )
-          )
-        : undefined,
       messageText
         ? Blocks.Section({
             text: Md.bold("Your Message:") + "\n" + Md.blockquote(messageText),
           })
-        : Blocks.Input({ label: "Your Message", blockId: "message_block" }).element(
+        : Blocks.Input({ label: "Your Message:", blockId: "message_block" }).element(
             Elements.TextInput({ actionId: "message_text" }).multiline(true)
           ),
-      Blocks.Input({ blockId: "topic_block", label: "Request Title" })
+      Blocks.Input({ blockId: "topic_block", label: "Request Title:" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
         .optional(true),
+      channelInfoName
+        ? Blocks.Input({ blockId: "channel_observers_block", label: "Access rights:" })
+            .element(
+              Elements.Checkboxes({ actionId: "channel_observers_checkbox" }).options(
+                Bits.Option({
+                  value: "include_channel_members",
+                  text: `Give all Acapela members of ${channelInfoName} access to the request.`,
+                })
+              )
+            )
+            .optional(true)
+        : undefined,
       metadata.channelId
         ? undefined
-        : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
+        : Blocks.Input({ label: "Post in channel:", blockId: "channel_block" })
             .element(Elements.ChannelSelect({ actionId: "channel_select" }))
             .optional(true)
     )
@@ -131,6 +138,28 @@ async function filterBotUsers(token: string, userIds: string[]): Promise<string[
   );
 }
 
+async function getChannelInfo(token: string, channelId: string | undefined): Promise<ChannelInfo> {
+  if (!channelId) return null;
+
+  const [infoRes, membersRes] = await Promise.all([
+    slackClient.conversations.info({ token, channel: channelId }),
+    slackClient.conversations.members({ token, channel: channelId }),
+  ]);
+
+  if (!infoRes.ok || !infoRes.channel || !membersRes.ok || !membersRes.members) return null;
+  // ignore too large channels
+  if (membersRes.members.length > 99) return null;
+  // ignore channel if public or not a direct message,
+  if (!infoRes.channel.is_private && !infoRes.channel.is_im) return null;
+
+  return {
+    members: await filterBotUsers(token, membersRes.members),
+    name: infoRes.channel.name,
+    isMpim: !!infoRes.channel.is_mpim,
+    isIm: !!infoRes.channel.is_im,
+  };
+}
+
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
   const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin, fromMessageBelongingToSlackUserId } =
     data;
@@ -165,30 +194,20 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
       : []
   );
 
-  let channelMembers: string[] = [];
-  let channelName = "";
-  if (channelId) {
-    const membersRes = await slackClient.conversations.members({ token, channel: channelId });
-    // ignore too large channels
-    if (membersRes.ok && membersRes.members && membersRes.members.length < 99) {
-      channelMembers = await filterBotUsers(token, without(membersRes.members, slackUserId));
-      const infoRes = await slackClient.conversations.info({ token, channel: channelId });
-      channelName = (infoRes.ok && infoRes.channel?.name) || "";
-    }
-  }
+  const channelInfo = await getChannelInfo(token, channelId);
+  if (channelInfo) channelInfo.members = without(channelInfo.members, slackUserId);
 
   let requestToSlackUserIds = slackUserIdsFromMessage;
   // if there is no real user mentioned add all channel members
-  if (requestToSlackUserIds.length === 0) {
-    requestToSlackUserIds = channelMembers;
+  if (requestToSlackUserIds.length === 0 && channelInfo) {
+    requestToSlackUserIds = channelInfo.members;
   }
 
   await openView(
     TopicModal({
       messageText,
       channelId,
-      channelName,
-      channelMembers,
+      channelInfo,
       messageTs,
       origin,
       fromMessageBelongingToSlackUserId,
