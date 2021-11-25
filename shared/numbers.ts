@@ -15,3 +15,7 @@ export function getNumbersAverage(input: number[]) {
 
   return total / input.length;
 }
+
+export function roundNumber(input: number, decimalPlaces = 2) {
+  return Number(input.toFixed(decimalPlaces));
+}

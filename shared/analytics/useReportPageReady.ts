@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { trackEvent } from "~frontend/src/analytics/tracking";
 import { IS_DEV } from "~shared/dev";
+import { roundNumber } from "~shared/numbers";
 
 let didReport = false;
 
@@ -11,8 +12,12 @@ export function useReportPageReady(teamId?: string, condition?: boolean) {
 
     didReport = true;
 
-    IS_DEV && console.info(`Load time - ${performance.now()}`);
+    const loadingTimeSeconds = performance.now() / 1000;
 
-    trackEvent("Opened App", { currentTeamId: teamId, loadingTime: performance.now() });
+    const loadingTime = roundNumber(loadingTimeSeconds, 3);
+
+    IS_DEV && console.info(`Load time - ${loadingTime}`);
+
+    trackEvent("Opened App", { currentTeamId: teamId, loadingTime: loadingTime });
   }, [condition, teamId]);
 }
