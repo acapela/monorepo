@@ -27,10 +27,7 @@ export const ToggleTaskDoneAtButton = (task: Task, user?: User) => {
 
 export async function generateMessageTextWithMentions(topic: Topic, message: Message) {
   const teamMembersForTopic = await db.team_member.findMany({
-    where: {
-      team_id: topic.team_id,
-      user: { topic_member: { some: { topic_id: topic.id } } },
-    },
+    where: { team_id: topic.team_id },
     include: { user: true, team_member_slack: true },
   });
   const mentionedSlackIdByUsersId = Object.fromEntries(
