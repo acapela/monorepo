@@ -50,10 +50,7 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
     .buildToObject();
 
 const TopicModal = (metadata: ViewMetadata["create_request"]) => {
-  const { messageText } = metadata;
-  const slackUserIds = messageText
-    ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)
-    : [];
+  const { messageText, requestToSlackUserIds } = metadata;
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
       Blocks.Input({ blockId: "request_type_block", label: "Request Type:" }).element(
@@ -76,9 +73,7 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
           )
       ),
       Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
-        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(
-          uniq(slackUserIds.concat(metadata.requestToSlackUserIds ?? []))
-        )
+        Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(uniq(requestToSlackUserIds ?? []))
       ),
       messageText
         ? Blocks.Section({
@@ -143,7 +138,29 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  await openView(TopicModal({ messageText, channelId, messageTs, origin, fromMessageBelongingToSlackUserId }));
+  const slackUserIdsFromMessage = messageText
+    ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)
+    : [];
+  const requestToSlackUserIds = [];
+  for (const slackUserId of slackUserIdsFromMessage) {
+    const slackUserRes = await slackClient.users.info({
+      token,
+      user: slackUserId,
+    });
+    if (!slackUserRes.ok) continue;
+    if (!slackUserRes.user?.is_bot) requestToSlackUserIds.push(slackUserId);
+  }
+
+  await openView(
+    TopicModal({
+      messageText,
+      channelId,
+      messageTs,
+      origin,
+      fromMessageBelongingToSlackUserId,
+      requestToSlackUserIds,
+    })
+  );
 
   return { user };
 }
