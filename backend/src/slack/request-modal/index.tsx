@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
+import { find } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -123,7 +124,14 @@ export function setupRequestModal(app: App) {
       request_type_block: {
         request_type_select: { selected_option: requestType },
       },
+      channel_observers_block: {
+        channel_observers_checkbox: { selected_options: channelObserverCheckbox },
+      },
     } = view.state.values;
+
+    const includeChannelMembers = !!find(channelObserverCheckbox, ["value", "include_channel_members"]);
+    //TODO: handle includeChannelMembers
+    console.info(includeChannelMembers);
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     if (!(members && requestType && messageText && members.length > 0)) {

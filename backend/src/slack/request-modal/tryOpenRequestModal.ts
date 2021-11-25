@@ -1,5 +1,5 @@
 import { View } from "@slack/types";
-import { uniq } from "lodash";
+import { uniq, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -50,7 +50,7 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
     .buildToObject();
 
 const TopicModal = (metadata: ViewMetadata["create_request"]) => {
-  const { messageText, requestToSlackUserIds } = metadata;
+  const { messageText, channelName, requestToSlackUserIds } = metadata;
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
       Blocks.Input({ blockId: "request_type_block", label: "Request Type:" }).element(
@@ -67,6 +67,16 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
       Blocks.Section({ blockId: "members_block", text: "Request to:" }).accessory(
         Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(requestToSlackUserIds ?? [])
       ),
+      channelName
+        ? Blocks.Section({ blockId: "channel_observers_block", text: "Add observers:" }).accessory(
+            Elements.Checkboxes({ actionId: "channel_observers_checkbox" }).options(
+              Bits.Option({
+                value: "include_channel_members",
+                text: `Include all members of #${channelName} as observer`,
+              })
+            )
+          )
+        : undefined,
       messageText
         ? Blocks.Section({
             text: Md.bold("Your Message:") + "\n" + Md.blockquote(messageText),
@@ -143,21 +153,38 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  let requestToSlackUserIds = await filterBotUsers(
+  const slackUserIdsFromMessage = await filterBotUsers(
     token,
-    messageText ? uniq(Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)) : []
+    messageText
+      ? without(
+          uniq(Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)),
+          slackUserId
+        )
+      : []
   );
 
+  let channelMembers: string[] = [];
+  let channelName = "";
+  if (channelId) {
+    const membersRes = await slackClient.conversations.members({ token, channel: channelId });
+    if (membersRes.ok && membersRes.members)
+      channelMembers = await filterBotUsers(token, without(membersRes.members, slackUserId));
+    const infoRes = await slackClient.conversations.info({ token, channel: channelId });
+    if (infoRes.ok && infoRes.channel?.name) channelName = infoRes.channel.name;
+  }
+
+  let requestToSlackUserIds = slackUserIdsFromMessage;
   // if there is no real user mentioned add all channel members
-  if (requestToSlackUserIds.length === 0 && channelId) {
-    const response = await slackClient.conversations.members({ token, channel: channelId });
-    if (response.ok && response.members) requestToSlackUserIds = await filterBotUsers(token, response.members);
+  if (requestToSlackUserIds.length === 0) {
+    requestToSlackUserIds = channelMembers;
   }
 
   await openView(
     TopicModal({
       messageText,
       channelId,
+      channelName,
+      channelMembers,
       messageTs,
       origin,
       fromMessageBelongingToSlackUserId,
