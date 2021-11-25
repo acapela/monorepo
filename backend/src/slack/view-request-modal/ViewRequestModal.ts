@@ -4,7 +4,7 @@ import { assert } from "~shared/assert";
 import { RequestType, getCompletedTaskLabel, getUncompletedTaskLabel } from "~shared/types/mention";
 
 import { mdDate, mdTime } from "../md/utils";
-import { REQUEST_TYPE_EMOJIS, ViewMetadata, attachToViewWithMetadata } from "../utils";
+import { REQUEST_TYPE_EMOJIS, SlackActionIds, ViewMetadata, attachToViewWithMetadata } from "../utils";
 import { MessageInfo, TaskInfo } from "./types";
 
 const Padding = (amountOfSpaces = 1) => [...new Array(amountOfSpaces)].map(() => Blocks.Section({ text: " " }));
@@ -126,9 +126,11 @@ export const ViewRequestModal = (metadata: ViewMetadata["view_request_modal"]) =
         : []),
       ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(2)]),
       Blocks.Divider(),
-      topic.slackMessagePermalink
-        ? Blocks.Section({ text: `<${topic.slackMessagePermalink}|View original Slack thread>` })
-        : undefined
+      Blocks.Section({
+        text: topic.slackMessagePermalink ? `<${topic.slackMessagePermalink}|View original Slack thread>` : " ",
+      }).accessory(
+        Elements.Button({ text: "Close & Archive" }).value(topic.id).actionId(SlackActionIds.ArchiveTopic).danger(true)
+      )
     )
     .buildToObject();
 };
