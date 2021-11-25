@@ -1,6 +1,7 @@
 import { App, BlockButtonAction } from "@slack/bolt";
 
 import { assert } from "~shared/assert";
+import { Sentry } from "~shared/sentry";
 
 import { assertToken } from "../utils";
 import { openViewRequestModal } from "./openViewRequestModal";
@@ -11,11 +12,15 @@ export function setupViewRequestModal(slackApp: App) {
 
     assert(body.team?.id, "team not present in slack");
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await openViewRequestModal(assertToken(context), (body as any).trigger_id, {
-      topicId: action.value,
-      slackTeamId: body.team.id,
-      slackUserId: body.user.id,
-    });
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await openViewRequestModal(assertToken(context), (body as any).trigger_id, {
+        topicId: action.value,
+        slackTeamId: body.team.id,
+        slackUserId: body.user.id,
+      });
+    } catch (e) {
+      Sentry.captureException(e);
+    }
   });
 }

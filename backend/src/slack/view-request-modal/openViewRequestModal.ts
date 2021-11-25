@@ -30,6 +30,9 @@ export async function openViewRequestModal(
         },
       },
     },
+    select: {
+      id: true,
+    },
   });
 
   assert(team, "not team exists");
@@ -66,6 +69,7 @@ export async function openViewRequestModal(
       },
     },
   });
+
   assert(topic, "topic not found");
 
   function toSlackTeamMember(userId: string): SlackMember {

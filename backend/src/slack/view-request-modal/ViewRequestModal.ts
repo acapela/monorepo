@@ -31,7 +31,7 @@ function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserI
       : undefined,
     Elements.Button({
       text: `💬 Reply to ${message.fromUser.name}`,
-      actionId: "open-external-url-reply-button",
+      actionId: `open-external-url-reply-button:${message.id}`,
       url: `${topicURL}/#${message.id}`,
     }),
   ]);
@@ -84,7 +84,7 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
   ];
 };
 
-const MessageBlock = (messageInfo: MessageInfo) => {
+const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
   const { message } = messageInfo;
   return [
     Blocks.Context()
@@ -97,7 +97,9 @@ const MessageBlock = (messageInfo: MessageInfo) => {
       .end(),
     Blocks.Section({ text: message.content }).accessory(
       Elements.Button({
-        text: "Reply",
+        text: `Reply`,
+        actionId: `open-external-url-reply-button:${message.id}`,
+        url: `${topicURL}/#${message.id}`,
       })
     ),
   ];
@@ -106,21 +108,22 @@ const MessageBlock = (messageInfo: MessageInfo) => {
 export const ViewRequestModal = (metadata: ViewMetadata["view_request_modal"]) => {
   const { topic } = metadata;
   const [mainRequest, ...otherMessages] = topic.messages;
+
+  const RequestOrMessageBlock = (message: MessageInfo) =>
+    message.tasks?.length ? RequestBlock(message, topic.slackUserId, topic.url) : MessageBlock(message, topic.url);
+
   return Modal({
-    title: `${topic.name}`,
+    title: "View Request",
     close: "Dismiss",
     ...attachToViewWithMetadata("view_request_modal", metadata),
   })
     .blocks(
       Blocks.Header({ text: `${topic.name}` }),
       ...Padding(1),
-      RequestBlock(mainRequest, topic.slackUserId, topic.url),
-      otherMessages.length > 0 ? Blocks.Section({ text: Md.bold("Replies") }) : undefined,
-      ...Padding(),
-      ...otherMessages.flatMap((message) => [
-        message.tasks?.length ? RequestBlock(message, topic.slackUserId, topic.url) : MessageBlock(message),
-        ...Padding(1),
-      ])
+      // Main Request may have no tasks if only observers are mentioned
+      RequestOrMessageBlock(mainRequest),
+      ...(otherMessages.length > 0 ? [Blocks.Section({ text: Md.bold("Replies") }), ...Padding()] : []),
+      ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(1)])
     )
     .buildToObject();
 };
