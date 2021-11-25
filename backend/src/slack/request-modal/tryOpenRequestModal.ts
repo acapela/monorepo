@@ -114,6 +114,19 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
   return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
 }
 
+async function filterBotUsers(token: string, userIds: string[]): Promise<string[]> {
+  const filtered = [];
+  for (const userId of userIds) {
+    const slackUserRes = await slackClient.users.info({
+      token,
+      user: userId,
+    });
+    if (!slackUserRes.ok) continue;
+    if (!slackUserRes.user?.is_bot) filtered.push(userId);
+  }
+  return filtered;
+}
+
 export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
   const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin, fromMessageBelongingToSlackUserId } =
     data;
@@ -138,17 +151,15 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  const slackUserIdsFromMessage = messageText
-    ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)
-    : [];
-  const requestToSlackUserIds = [];
-  for (const slackUserId of slackUserIdsFromMessage) {
-    const slackUserRes = await slackClient.users.info({
-      token,
-      user: slackUserId,
-    });
-    if (!slackUserRes.ok) continue;
-    if (!slackUserRes.user?.is_bot) requestToSlackUserIds.push(slackUserId);
+  let requestToSlackUserIds = await filterBotUsers(
+    token,
+    messageText ? Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId) : []
+  );
+
+  // if there is no real user mentioned add all channel members
+  if (requestToSlackUserIds.length === 0 && channelId) {
+    const response = await slackClient.conversations.members({ token, channel: channelId });
+    if (response.ok && response.members) requestToSlackUserIds = await filterBotUsers(token, response.members);
   }
 
   await openView(
