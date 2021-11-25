@@ -78,6 +78,13 @@ export const SlackActionIds = {
 
 export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];
 
+export type ChannelInfo = {
+  members: string[];
+  name: string | undefined;
+  isMpim: boolean;
+  isIm: boolean;
+} | null;
+
 export type ViewMetadata = {
   open_request_modal: {
     slackUserId: string;
@@ -92,8 +99,7 @@ export type ViewMetadata = {
     requestToSlackUserIds?: string[];
     messageText?: string;
     channelId?: string;
-    channelName?: string;
-    channelMembers?: string[];
+    channelInfo?: ChannelInfo;
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
