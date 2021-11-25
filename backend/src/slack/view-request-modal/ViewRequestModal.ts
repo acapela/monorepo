@@ -37,21 +37,33 @@ function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserI
   ]);
 }
 
-function getTaskRecipientsLabel(tasks: TaskInfo[]) {
+function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
   assert(tasks.length > 0, "there should be at least one task");
 
-  if (tasks.length === 1) {
-    return `${Md.bold(tasks[0].user.name)}`;
+  function printTask(task: TaskInfo) {
+    const isMeLabel = task.user.slackUserId === slackUserId ? " (you)" : "";
+    return Md.bold(task.user.name + isMeLabel);
   }
 
-  const lastTask = tasks.slice(-1)[0];
+  if (tasks.length === 1) {
+    return printTask(tasks[0]);
+  }
 
-  return (
-    tasks
-      .slice(0, -1)
-      .map((t) => `${Md.bold(t.user.name)}`)
-      .join(", ") + ` and ${Md.bold(lastTask.user.name)}`
-  );
+  const currentUserTaskIndex = tasks.findIndex((t) => t.user.slackUserId === slackUserId);
+  const reorderedTasks =
+    currentUserTaskIndex === -1
+      ? [...tasks]
+      : [
+          tasks[currentUserTaskIndex],
+          ...tasks.slice(0, currentUserTaskIndex),
+          ...tasks.slice(currentUserTaskIndex + 1),
+        ];
+
+  if (tasks.length === 2) {
+    return `${printTask(reorderedTasks[0])} and ${printTask(reorderedTasks[1])} `;
+  }
+
+  return `${printTask(reorderedTasks[0])} and ${reorderedTasks.length - 1} others`;
 }
 
 const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: string) => {
@@ -65,7 +77,9 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
         message.fromUserImage
           ? Blocks.Image({ imageUrl: message.fromUserImage, altText: message.fromUser.name })
           : undefined,
-        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks)}   ${mdTime(message.createdAt)}`,
+        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks, slackUserId)}   ${mdTime(
+          message.createdAt
+        )}`,
       ])
       .end(),
     Blocks.Section({ text: message.content }),
