@@ -92,6 +92,8 @@ export type ViewMetadata = {
     requestToSlackUserIds?: string[];
     messageText?: string;
     channelId?: string;
+    channelName?: string;
+    channelMembers?: string[];
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
