@@ -85,12 +85,12 @@ export const Popover = styled<PopoverProps>(
       </UIHolder>
     );
 
-    return (
-      <BodyPortal>
-        {!enableScreenCover && popoverNode}
-        {enableScreenCover && <ScreenCover>{popoverNode}</ScreenCover>}
-      </BodyPortal>
-    );
+    if (!enableScreenCover) {
+      return <BodyPortal>{popoverNode}</BodyPortal>;
+    }
+
+    // Screen cover is already body portal by itself
+    return <ScreenCover>{popoverNode}</ScreenCover>;
   }
 )``;
 
