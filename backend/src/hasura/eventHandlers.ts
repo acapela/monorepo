@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { convertMaybeArrayToArray } from "~shared/array";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 import { log } from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
 
@@ -72,7 +72,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const hasuraEvent = req.body as RawHasuraEvent<unknown>;
     const userId = getUserIdFromRawHasuraEvent(hasuraEvent);
 
-    if (isDev()) {
+    if (IS_DEV) {
       log.info(`Handling event (${hasuraEvent.trigger.name})`);
     } else {
       log.info("Handling event", {
@@ -84,7 +84,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
 
     await handleHasuraEvent(hasuraEvent);
 
-    if (isDev()) {
+    if (IS_DEV) {
       log.info(`Handled event (${hasuraEvent.trigger.name})`);
     } else {
       log.info("Handled event", {

@@ -1,8 +1,6 @@
 import { noop } from "lodash";
 
-export function isDev() {
-  return !["staging", "production"].includes(process.env.STAGE);
-}
+export const IS_DEV = process.env.STAGE !== "staging" && process.env.STAGE !== "production";
 
 const groupsTotal = new Map<string, number>();
 
@@ -24,7 +22,7 @@ export function measureTime(name: string, isEnabled = true) {
 }
 
 export function devAssignWindowVariable(name: string, value: unknown) {
-  if (!isDev) return;
+  if (!IS_DEV) return;
   if (typeof window === "undefined") return;
 
   Reflect.set(window, name, value);
@@ -32,7 +30,7 @@ export function devAssignWindowVariable(name: string, value: unknown) {
 
 export function createDebugLogger(name: string, isEnabled?: boolean) {
   return function log(...input: unknown[]) {
-    if (!isDev || isEnabled == false) return;
+    if (!IS_DEV || isEnabled == false) return;
     console.info(`[${name}]`, ...input);
   };
 }

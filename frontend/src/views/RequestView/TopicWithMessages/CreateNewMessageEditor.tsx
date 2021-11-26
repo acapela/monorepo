@@ -159,6 +159,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
               removeAttachmentById(attachmentId);
             }}
             placeholder={`Reply to ${topic.name}`}
+            capturePastedFiles={!isEditingAnyMessage}
           />
         </UIEditorScroller>
 

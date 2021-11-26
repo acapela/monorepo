@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { Block, KnownBlock } from "@slack/bolt";
+import { ChatPostMessageResponse } from "@slack/web-api";
 import { pick } from "lodash";
 
 import { slackClient } from "~backend/src/slack/app";
@@ -8,31 +9,43 @@ import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { EmailData, sendEmail } from "~shared/email";
 
-async function trySendSlackNotification(teamId: string, user: User, payload: string | (KnownBlock | Block)[]) {
+type SlackMessage = string | (KnownBlock | Block)[];
+type SlackPayload = SlackMessage | (() => Promise<SlackMessage>);
+
+async function trySendSlackNotification(teamId: string, user: User, payload: SlackPayload) {
   const [token, slackUserId] = await Promise.all([fetchTeamBotToken(teamId), findSlackUserId(teamId, user)]);
   if (!token || !slackUserId) {
-    return;
+    return undefined;
   }
 
+  payload = typeof payload == "function" ? await payload() : payload;
   const textOrBlocks = typeof payload === "string" ? { text: payload } : { blocks: payload };
-  await slackClient.chat.postMessage({
+  return slackClient.chat.postMessage({
     token,
     channel: slackUserId,
     ...textOrBlocks,
   });
 }
 
-export type NotificationMessage = { slack: string | (KnownBlock | Block)[]; email: EmailData };
-/*
-  NOTE: Don't await in crucial business logic flows.
-  This method interacts with 3rd party providers over network.
-  There's a higher risk of timeout and errors present.
-*/
-const sendNotification = async (user: User, teamId: string, message: Partial<NotificationMessage>): Promise<unknown> =>
-  Promise.all([
-    message.slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
-    message.email ? sendEmail(message.email, user.email) : undefined,
-  ]).catch((error) => Sentry.captureException(error));
+export type NotificationMessage = { slack: SlackPayload; email: EmailData };
+
+async function sendNotification(
+  user: User,
+  teamId: string,
+  message: Partial<NotificationMessage>
+): Promise<{ slackMessage?: ChatPostMessageResponse }> {
+  try {
+    const [slackMessage] = await Promise.all([
+      message.slack ? trySendSlackNotification(teamId, user, message.slack) : undefined,
+      message.email ? sendEmail(message.email, user.email) : undefined,
+    ]);
+    return slackMessage?.ok ? { slackMessage } : {};
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error(error);
+    return {};
+  }
+}
 
 export async function sendNotificationIgnoringPreference(
   user: User,

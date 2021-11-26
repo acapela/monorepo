@@ -3,7 +3,7 @@ import querystring from "querystring";
 import axios, { Method } from "axios";
 
 import { assert, assertDefined } from "~shared/assert";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 import { SonixTranscriptData } from "~shared/types/transcript";
 
 import { getDevPublicTunnelURL } from "../localtunnel";
@@ -40,7 +40,7 @@ const SONIX_API_URL = "https://api.sonix.ai/v1";
  * Because of that, we're using tunnel that will create 'proxy' connecting to localhost and get us public url.
  */
 async function getPublicBackendUrl() {
-  if (isDev()) {
+  if (IS_DEV) {
     return `${await getDevPublicTunnelURL()}/api`;
   }
 

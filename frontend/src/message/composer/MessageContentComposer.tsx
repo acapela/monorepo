@@ -23,6 +23,7 @@ interface Props {
   onEditorReady?: (editor: Editor) => void;
   customEditFieldStyles?: StylesPart;
   placeholder?: string;
+  capturePastedFiles?: boolean;
 }
 
 export const MessageContentEditor = namedForwardRef<Editor, Props>(function MessageContentEditor(
@@ -39,6 +40,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
     onEditorReady,
     customEditFieldStyles,
     placeholder = "Reply…",
+    capturePastedFiles,
   },
   ref
 ) {
@@ -56,6 +58,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
         additionalTopContent={additionalContent}
         onEditorReady={onEditorReady}
         customEditFieldStyles={customEditFieldStyles}
+        capturePastedFiles={capturePastedFiles}
         additionalBottomContent={
           (uploadingAttachments.length > 0 || attachments.length > 0) && (
             <UIAttachmentsPreviews>

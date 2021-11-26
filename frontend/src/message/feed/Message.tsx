@@ -18,7 +18,9 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { assert } from "~shared/assert";
 import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { useIsHashActive } from "~shared/hooks/useHashChangeEffect";
 import { select } from "~shared/sharedState";
+import { highlightOnceStyles } from "~ui/highlight";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -124,8 +126,10 @@ export const Message = styledObserver<Props>(
       []
     );
 
+    const shouldHighlight = useIsHashActive(message.id);
+
     return (
-      <UIHolder id={message.id} ref={rootRef}>
+      <UIHolder id={message.id} ref={rootRef} $shouldHighlight={shouldHighlight}>
         <MessageLikeContent
           anchorLink={`#${message.id}`}
           className={className}
@@ -172,7 +176,9 @@ export const Message = styledObserver<Props>(
   }
 )``;
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{ $shouldHighlight: boolean }>`
+  ${(props) => props.$shouldHighlight && highlightOnceStyles};
+`;
 
 const UITools = styled.div<{}>`
   display: flex;

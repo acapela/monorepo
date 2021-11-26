@@ -7,6 +7,7 @@
 - "!include public_message_type.yaml"
 - "!include public_sync_request.yaml"
 - "!include public_task.yaml"
+- "!include public_task_slack_message.yaml"
 - "!include public_team.yaml"
 - "!include public_team_member.yaml"
 - "!include public_team_member_slack.yaml"

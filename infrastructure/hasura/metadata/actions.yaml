@@ -35,6 +35,15 @@ actions:
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
   permissions:
   - role: user
+- name: uninstall_slack
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
 - name: upgrade_current_user
   definition:
     kind: synchronous
@@ -69,4 +78,5 @@ custom_types:
   - name: AcceptInvitationsOutput
   - name: InviteUserOutput
   - name: SlackUserOutput
+  - name: UninstallSlackOutput
   scalars: []

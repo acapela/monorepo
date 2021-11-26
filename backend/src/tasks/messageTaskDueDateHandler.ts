@@ -1,3 +1,5 @@
+import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { MessageTaskDueDate, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -5,7 +7,8 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { HasuraEvent } from "../hasura";
 
 export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDueDate>) {
-  const topic = await db.topic.findFirst({ where: { message: { some: { id: event.item.message_id } } } });
+  const messageId = event.item.message_id;
+  const topic = await db.topic.findFirst({ where: { message: { some: { id: messageId } } } });
 
   assert(topic, "must have topic");
 
@@ -13,13 +16,19 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
   if (!event.userId) {
     return;
   }
-  assert(event.userId, "due date can only be changed by users");
 
   if (event.item.due_at !== event.itemBefore?.due_at) {
     trackBackendUserEvent(event.userId, "Added Due Date", {
       topicId: topic.id,
-      messageId: event.item.message_id,
+      messageId,
       origin: "web-app",
     });
+    await Promise.all([
+      tryUpdateTopicSlackMessage(topic),
+      tryUpdateTaskSlackMessages({
+        taskSlackMessage: { task: { message_id: messageId } },
+        message: { id: messageId },
+      }),
+    ]);
   }
 }

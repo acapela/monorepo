@@ -1,7 +1,7 @@
 import os from "os";
 
 import { assertDefined } from "~shared/assert";
-import { isDev } from "~shared/dev";
+import { IS_DEV } from "~shared/dev";
 
 const backendPort = assertDefined(process.env.BACKEND_PORT, "BACKEND_PORT env variable is required");
 
@@ -14,7 +14,7 @@ const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 
 export const getDevPublicTunnelURL = createSelfCleaningCache(
   async (reset, port: number = parseInt(backendPort, 10)) => {
-    if (!isDev()) {
+    if (!IS_DEV) {
       throw new Error(`Public tunnel is only allowed to be used in dev mode.`);
     }
 

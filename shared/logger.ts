@@ -6,7 +6,7 @@ import { Request } from "express";
 import pino from "pino";
 
 import { assertDefined } from "./assert";
-import { isDev } from "./dev";
+import { IS_DEV } from "./dev";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 
@@ -72,7 +72,7 @@ export function middleware(req: Request, res: ServerResponse, next: () => void):
   const startTime = process.hrtime();
   res.once("finish", () => {
     const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
-    if (!isDev()) {
+    if (!IS_DEV) {
       info(`Request finished - ${requestStatusDescription}`, {
         host: req.hostname,
         userAgent: req.get("user-agent"),

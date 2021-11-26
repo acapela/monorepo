@@ -28,30 +28,14 @@ export const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
   [MENTION_OBSERVER]: "Add as observer",
 };
 
-export function getMentionTypeLabel(type: MentionType) {
-  return MENTION_TYPE_PICKER_LABELS[type];
-}
+export const UNCOMPLETED_REQUEST_LABEL: Record<RequestType, string> = {
+  [REQUEST_READ]: "Mark as read",
+  [REQUEST_ACTION]: "Mark as done",
+  [REQUEST_RESPONSE]: "Mark as replied",
+};
 
-export function getUncompletedTaskLabel(taskType: RequestType) {
-  if (taskType === REQUEST_READ) {
-    return "Mark as read";
-  }
-  if (taskType === REQUEST_ACTION) {
-    return "Mark as done";
-  }
-  if (taskType === REQUEST_RESPONSE) {
-    return "Mark as replied";
-  }
-}
-
-export function getCompletedTaskLabel(taskType: RequestType) {
-  if (taskType === REQUEST_READ) {
-    return "Marked as read";
-  }
-  if (taskType === REQUEST_ACTION) {
-    return "Marked as done";
-  }
-  if (taskType === REQUEST_RESPONSE) {
-    return "Marked as replied";
-  }
-}
+export const COMPLETED_REQUEST_LABEL: Record<RequestType, string> = {
+  [REQUEST_READ]: "Marked as read",
+  [REQUEST_ACTION]: "Marked as done",
+  [REQUEST_RESPONSE]: "Marked as replied",
+};

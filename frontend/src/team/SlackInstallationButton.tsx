@@ -1,18 +1,18 @@
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-import styled from "styled-components";
+import React, { useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
 
 import { TeamEntity } from "~frontend/clientdb/team";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import {
-  DeleteSlackInstallationMutation,
-  DeleteSlackInstallationMutationVariables,
   GetSlackInstallationUrlQuery,
   GetSlackInstallationUrlQueryVariables,
   TeamSlackInstallationSubscription,
   TeamSlackInstallationSubscriptionVariables,
+  UninstallSlackMutation,
+  UninstallSlackMutationVariables,
 } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { isServer } from "~shared/isServer";
@@ -95,26 +95,14 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
 });
 
 function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
-  const [deleteSlackInstallation, { loading: isDeletingSlackInstallation }] = useMutation<
-    DeleteSlackInstallationMutation,
-    DeleteSlackInstallationMutationVariables
-  >(
+  const [uninstallSlack, { data, loading }] = useMutation<UninstallSlackMutation, UninstallSlackMutationVariables>(
     gql`
-      mutation DeleteSlackInstallation($teamId: uuid!) {
-        slack_installation: delete_team_slack_installation_by_pk(team_id: $teamId) {
-          team_id
+      mutation UninstallSlack($teamId: uuid!) {
+        uninstall_slack(team_id: $teamId) {
+          success
         }
       }
-    `,
-    {
-      optimisticResponse: () => ({ __typename: "mutation_root", slack_installation: null }),
-      update(cache) {
-        cache.modify({
-          id: cache.identify({ __typename: "team", id: teamId }),
-          fields: { slack_installation: () => null },
-        });
-      },
-    }
+    `
   );
 
   const handleClickDisableSlack = async () => {
@@ -126,13 +114,15 @@ function RemoveSlackInstallationButton({ teamId }: { teamId: string }) {
     if (!didConfirm) {
       return;
     }
-    await deleteSlackInstallation({ variables: { teamId } });
-    addToast({ type: "success", title: "Slack installation was disabled" });
+    await uninstallSlack({ variables: { teamId } });
   };
+
+  if (loading || data?.uninstall_slack.success) {
+    return <SlackLoadingButton>Waiting for Slack to uninstall Acapela from your workspace</SlackLoadingButton>;
+  }
 
   return (
     <UISlackButton
-      disabled={isDeletingSlackInstallation}
       onClick={handleClickDisableSlack}
       icon={<IconMinus />}
       iconAtStart
@@ -154,12 +144,21 @@ export const SlackInstallationButton = observer(function SlackInstallationButton
     `,
     { variables: { teamId: team.id } }
   );
+
+  const hasTeamSlackInstallationRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const hasTeamSlackInstallation = !!data.teamSlack;
+    if (hasTeamSlackInstallationRef.current && !hasTeamSlackInstallation) {
+      addToast({ type: "success", title: "Slack has been uninstalled from your workspace" });
+    }
+    hasTeamSlackInstallationRef.current = hasTeamSlackInstallation;
+  }, [data]);
+
   if (!data) {
-    return (
-      <UISlackButton icon={<SlackLogo />} iconAtStart isWide disabled>
-        Loading...
-      </UISlackButton>
-    );
+    return <SlackLoadingButton>Loading...</SlackLoadingButton>;
   }
   if (!data.teamSlack) {
     return (
@@ -178,4 +177,15 @@ export const SlackInstallationButton = observer(function SlackInstallationButton
   return <RemoveSlackInstallationButton teamId={team.id} />;
 });
 
-const UISlackButton = styled(Button)``;
+const UISlackButton = styled(Button)`
+  ${(props) =>
+    props.disabled &&
+    css`
+      opacity: 0.6;
+      cursor: initial;
+    `}
+`;
+
+const SlackLoadingButton = (props: React.ComponentProps<typeof UISlackButton>) => (
+  <UISlackButton icon={<SlackLogo />} iconAtStart isWide disabled {...props} />
+);

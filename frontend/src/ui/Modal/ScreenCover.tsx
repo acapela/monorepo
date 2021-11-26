@@ -5,6 +5,7 @@ import { useUnmountPresence } from "~frontend/ui/presence";
 import { handleWithStopPropagation } from "~shared/events";
 import { BodyPortal } from "~ui/BodyPortal";
 import { theme } from "~ui/theme";
+import { zIndexValues } from "~ui/theme/zIndex";
 
 interface Props {
   children: ReactNode;
@@ -56,4 +57,5 @@ const UIBodyCover = styled.div<{ enableBlur: boolean; isCovering: boolean }>`
   backdrop-filter: blur(${(props) => (props.isCovering ? BACKGROUND_BLUR_SIZE_PX : 0)}px);
   background-color: ${(props) => (props.isCovering ? background.opacity(0.5) : background.opacity(0))};
   transition: 0.1s all;
+  z-index: ${zIndexValues.overlay};
 `;

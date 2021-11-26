@@ -4,7 +4,6 @@ import React, { ReactNode, RefObject, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 
-import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { openInNewTab } from "~frontend/src/utils/openInNewTab";
 import { theme } from "~ui/theme";
 
@@ -35,51 +34,55 @@ export const PopoverMenu = styled<Props>(
     useClickAway(popoverRef, () => onCloseRequest?.());
 
     return (
-      <ScreenCover onCloseRequest={onCloseRequest}>
-        <Popover anchorRef={anchorRef} placement={placement} isDisabled={isDisabled}>
-          <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
-            {options.map((option) => {
-              const labelInnerNode = (
-                <>
-                  {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
-                  {option.label}
-                </>
+      <Popover
+        anchorRef={anchorRef}
+        placement={placement}
+        isDisabled={isDisabled}
+        enableScreenCover
+        onClickOutside={onCloseRequest}
+      >
+        <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
+          {options.map((option) => {
+            const labelInnerNode = (
+              <>
+                {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
+                {option.label}
+              </>
+            );
+
+            const labelNode = (
+              <UIMenuItem
+                data-test-id="popover-menu-item"
+                isDestructive={option.isDestructive ?? false}
+                isDisabled={option.isDisabled ?? false}
+                key={option.key ?? option.label}
+                onClick={() => {
+                  if ("externalURL" in option) {
+                    openInNewTab(option.externalURL);
+                  }
+                  onItemSelected?.(option);
+                  onCloseRequest?.();
+                  runInAction(() => {
+                    "onSelect" in option && option.onSelect();
+                  });
+                }}
+              >
+                {labelInnerNode}
+              </UIMenuItem>
+            );
+
+            if ("href" in option) {
+              return (
+                <Link href={option.href} passHref>
+                  <a>{labelNode}</a>
+                </Link>
               );
+            }
 
-              const labelNode = (
-                <UIMenuItem
-                  data-test-id="popover-menu-item"
-                  isDestructive={option.isDestructive ?? false}
-                  isDisabled={option.isDisabled ?? false}
-                  key={option.key ?? option.label}
-                  onClick={() => {
-                    if ("externalURL" in option) {
-                      openInNewTab(option.externalURL);
-                    }
-                    onItemSelected?.(option);
-                    onCloseRequest?.();
-                    runInAction(() => {
-                      "onSelect" in option && option.onSelect();
-                    });
-                  }}
-                >
-                  {labelInnerNode}
-                </UIMenuItem>
-              );
-
-              if ("href" in option) {
-                return (
-                  <Link href={option.href} passHref>
-                    <a>{labelNode}</a>
-                  </Link>
-                );
-              }
-
-              return labelNode;
-            })}
-          </UIPopoverMenuModal>
-        </Popover>
-      </ScreenCover>
+            return labelNode;
+          })}
+        </UIPopoverMenuModal>
+      </Popover>
     );
   }
 )``;

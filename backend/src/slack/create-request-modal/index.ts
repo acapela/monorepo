@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
+import { difference, find, get } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -10,7 +11,7 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
-import { LiveTopicMessage } from "../LiveTopicMessage";
+import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { openCreateRequestModal } from "./openCreateRequestModal";
@@ -92,7 +93,7 @@ export function setupCreateRequestModal(app: App) {
 
     const { user } = await openCreateRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
-      messageTs: message.ts,
+      messageTs: message.thread_ts ?? message.ts,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       messageText: messageBody,
@@ -111,7 +112,7 @@ export function setupCreateRequestModal(app: App) {
     await openCreateRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
-  listenToViewWithMetadata<ViewSubmitAction>(app, "create_request", async (args) => {
+  listenToViewWithMetadata<ViewSubmitAction, "create_request">(app, "create_request", async (args) => {
     const { ack, view, body, client, context, metadata } = args;
     const {
       topic_block: {
@@ -126,6 +127,16 @@ export function setupCreateRequestModal(app: App) {
     } = view.state.values;
 
     assert("messageText" in metadata, "create_request called with wrong arguments");
+    // is the include channel members check box checked?
+    const includeChannelMembers = !!find(
+      get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
+      ["value", "include_channel_members"]
+    );
+
+    let requestedObservers: string[] = [];
+    if (includeChannelMembers && metadata.channelInfo?.members) {
+      requestedObservers = difference(metadata.channelInfo?.members, members || []);
+    }
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     if (!(members && requestType && messageText && members.length > 0)) {
@@ -178,6 +189,7 @@ export function setupCreateRequestModal(app: App) {
       rawTopicMessage: messageText,
       topicName,
       slackUserIdsWithMentionType,
+      requestedObservers,
     });
 
     if (!channelId) {

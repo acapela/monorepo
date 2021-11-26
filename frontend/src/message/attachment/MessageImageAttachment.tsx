@@ -50,7 +50,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
 })``;
 
 const UIFullscreenBackground = styled(ScreenCover)`
-  z-index: ${theme.zIndex.fullScreenPreview};
+  z-index: ${theme.zIndex.overlay};
 `;
 
 const UIInlineAttachmentHolder = styled.div<{}>`

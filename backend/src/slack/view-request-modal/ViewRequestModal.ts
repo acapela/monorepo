@@ -1,7 +1,7 @@
 import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { assert } from "~shared/assert";
-import { RequestType, getCompletedTaskLabel, getUncompletedTaskLabel } from "~shared/types/mention";
+import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
 import { mdDate, mdTime } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds, ViewMetadata, attachToViewWithMetadata } from "../utils";
@@ -13,7 +13,7 @@ function getTaskLabel(task: TaskInfo): string {
   if (task.doneAt) {
     return `↩️ Undo`;
   }
-  return `${REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${getUncompletedTaskLabel(task.type as RequestType)}`;
+  return `${REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${UNCOMPLETED_REQUEST_LABEL[task.type as RequestType]}`;
 }
 
 function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserId: string, topicURL: string) {
@@ -90,7 +90,7 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
         Md.bold(`${tasks.length} recipients`),
         dueDate ? Md.bold("Due " + mdDate(dueDate, "date_short_pretty")) : " ",
         `@${tasks[0].user.name}`,
-        Md.italic(`${tasks[0].doneAt ? getCompletedTaskLabel(tasks[0].type as RequestType) : "Pending"}`),
+        Md.italic(`${tasks[0].doneAt ? COMPLETED_REQUEST_LABEL[tasks[0].type as RequestType] : "Pending"}`),
       ])
       .end(),
     ...Padding(),

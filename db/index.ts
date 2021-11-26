@@ -15,6 +15,7 @@ export type {
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
   task as Task,
+  task_slack_message as TaskSlackMessage,
   team as Team,
   team_member as TeamMember,
   team_slack_installation as TeamSlackInstallation,
