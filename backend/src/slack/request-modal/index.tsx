@@ -126,6 +126,7 @@ export function setupRequestModal(app: App) {
       },
     } = view.state.values;
 
+    // is the include channel members check box checked?
     const includeChannelMembers = !!find(
       get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
       ["value", "include_channel_members"]

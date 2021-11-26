@@ -52,8 +52,8 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
 const TopicModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText, channelInfo, requestToSlackUserIds } = metadata;
   let channelInfoName = "";
-  if (channelInfo?.isIm) channelInfoName = "this direct message conversation";
-  else if (channelInfo?.isMpim) channelInfoName = "this group message conversation";
+  if (channelInfo?.isDirectConversation) channelInfoName = "this direct message conversation";
+  else if (channelInfo?.isGroupConversation) channelInfoName = "this group message conversation";
   else if (channelInfo?.name) channelInfoName = `#${channelInfo.name}`;
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
@@ -155,8 +155,8 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
   return {
     members: await filterBotUsers(token, membersRes.members),
     name: infoRes.channel.name,
-    isMpim: !!infoRes.channel.is_mpim,
-    isIm: !!infoRes.channel.is_im,
+    isGroupConversation: !!infoRes.channel.is_mpim,
+    isDirectConversation: !!infoRes.channel.is_im,
   };
 }
 
