@@ -58,7 +58,7 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
-      Blocks.Input({ blockId: "request_type_block", label: "Request Type:" }).element(
+      Blocks.Input({ blockId: "request_type_block", label: "Request Type" }).element(
         Elements.StaticSelect({ actionId: "request_type_select" })
           .initialOption(Bits.Option({ value: REQUEST_READ, text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] }))
           .optionGroups(
@@ -69,21 +69,21 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
             )
           )
       ),
-      Blocks.Input({ blockId: "members_block", label: "Request to:" }).element(
+      Blocks.Input({ blockId: "members_block", label: "Request to" }).element(
         Elements.UserMultiSelect({ actionId: "members_select" }).initialUsers(requestToSlackUserIds ?? [])
       ),
       messageText
         ? Blocks.Section({
-            text: Md.bold("Your Message:") + "\n" + Md.blockquote(messageText),
+            text: Md.bold("Your Message") + "\n" + Md.blockquote(messageText),
           })
-        : Blocks.Input({ label: "Your Message:", blockId: "message_block" }).element(
+        : Blocks.Input({ label: "Your Message", blockId: "message_block" }).element(
             Elements.TextInput({ actionId: "message_text" }).multiline(true)
           ),
-      Blocks.Input({ blockId: "topic_block", label: "Request Title:" })
+      Blocks.Input({ blockId: "topic_block", label: "Request Title" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
         .optional(true),
       channelInfoName
-        ? Blocks.Input({ blockId: "channel_observers_block", label: "Access rights:" })
+        ? Blocks.Input({ blockId: "channel_observers_block", label: "Access rights" })
             .element(
               Elements.Checkboxes({ actionId: "channel_observers_checkbox" }).options(
                 Bits.Option({
@@ -96,7 +96,7 @@ const TopicModal = (metadata: ViewMetadata["create_request"]) => {
         : undefined,
       metadata.channelId
         ? undefined
-        : Blocks.Input({ label: "Post in channel:", blockId: "channel_block" })
+        : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
             .element(Elements.ChannelSelect({ actionId: "channel_select" }))
             .optional(true)
     )
