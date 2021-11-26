@@ -17,7 +17,6 @@ import { log } from "~shared/logger";
 import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";
 import { router as authenticationRoutes } from "./authentication";
-import { router as calendarRoutes } from "./calendar/calendar";
 import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
@@ -59,7 +58,6 @@ function setupRoutes(app: Application): void {
     actionRoutes,
     recoverLoginRoutes,
     transcriptionRoutes,
-    calendarRoutes,
     cronRoutes,
     waitlistRoutes,
     tracking

@@ -19,7 +19,6 @@ import { sentryFallbackErrorRenderer } from "~frontend/errors/sentryFallbackErro
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
-import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { useConst } from "~shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
@@ -98,7 +97,7 @@ export default function App({
             <PromiseUIRenderer />
             <TooltipsRenderer />
             <ToastsRenderer />
-            {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+            <Component {...{ appConfig, ...pageProps }} />
           </AppThemeProvider>
         </RequiredSessionProvider>
       </>
@@ -119,7 +118,7 @@ export default function App({
                     <PromiseUIRenderer />
                     <TooltipsRenderer />
                     <ToastsRenderer />
-                    {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+                    <Component {...{ appConfig, ...pageProps }} />
                   </ClientDbProvider>
                 </CurrentTeamProvider>
               </AppThemeProvider>
