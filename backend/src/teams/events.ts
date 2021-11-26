@@ -1,7 +1,7 @@
+import { logger } from "~backend/src/logger";
 import { Team, db } from "~db";
 import { assert } from "~shared/assert";
 import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
-import { log } from "~shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
@@ -11,7 +11,7 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
   const { userId, item: team } = event;
   const { owner_id: ownerId, id: teamId } = team;
   if (userId !== ownerId) {
-    log.error("User id of action caller does not match room creator", {
+    logger.error("User id of action caller does not match room creator", {
       ownerId,
       userId,
     });
@@ -38,14 +38,14 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
 
   const creatorIsAlreadyParticipant = await getHasTeamMember(teamId, userId);
   if (creatorIsAlreadyParticipant) {
-    log.info("Skipping adding creator as participant, as they are already there", {
+    logger.info("Skipping adding creator as participant, as they are already there", {
       roomId: team.id,
       ownerId,
     });
     return;
   }
 
-  log.info("Adding team owner as participant to team", {
+  logger.info("Adding team owner as participant to team", {
     roomId: team.id,
     ownerId,
   });

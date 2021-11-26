@@ -1,7 +1,7 @@
+import { logger } from "~backend/src/logger";
 import { initializeAttachmentTranscription } from "~backend/src/transcriptions/transcriptionService";
 import { Attachment, db } from "~db";
 import { Message_Type_Enum } from "~gql";
-import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 
@@ -15,11 +15,11 @@ export async function handleAttachmentUpdates({ item: attachment }: HasuraEvent<
   if (!message) return;
 
   if (MESSAGE_TYPES_TO_BE_PROCESSED.includes(message.type as Message_Type_Enum)) {
-    log.info("Sending message for transcription");
+    logger.info("Sending message for transcription");
     try {
       await initializeAttachmentTranscription(attachment);
     } catch (error) {
-      log.error(`Failed to prepare `, { error });
+      logger.error(`Failed to prepare `, { error });
     }
   }
 }

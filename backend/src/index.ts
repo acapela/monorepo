@@ -19,9 +19,9 @@ async function start(): Promise<void> {
   // Note: We're lazy loading modules here to avoid requesting config too early.
   await initializeSecrets();
 
-  const { log } = await import("~shared/logger");
-  log.info("Environment variables loaded");
-  log.info("Secrets loaded");
+  const { logger } = await import("~backend/src/logger");
+  logger.info("Environment variables loaded");
+  logger.info("Secrets loaded");
   const serverModule = await import("./app");
 
   const server = await serverModule.setupServer();
@@ -29,7 +29,7 @@ async function start(): Promise<void> {
   const port = process.env.BACKEND_PORT;
 
   server.listen(port, () =>
-    log.info("Server started", {
+    logger.info("Server started", {
       port,
       production: process.env.NODE_ENV === "production",
     })
@@ -37,7 +37,7 @@ async function start(): Promise<void> {
 
   if (IS_DEV) {
     const tunnelURL = await getDevPublicTunnelURL(3000);
-    log.info("Public dev tunnel set up", {
+    logger.info("Public dev tunnel set up", {
       url: `${tunnelURL}/api/backend`,
     });
   }

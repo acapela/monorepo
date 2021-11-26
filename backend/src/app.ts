@@ -1,18 +1,19 @@
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
 
-import { Server, createServer } from "http";
+import { Server, ServerResponse, createServer } from "http";
 import { promisify } from "util";
 
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
 import axios from "axios";
 import cookieParser from "cookie-parser";
-import express, { Application, json } from "express";
+import express, { Application, Request, json } from "express";
 import securityMiddleware from "helmet";
 
+import { logger } from "~backend/src/logger";
 import { initializeSecrets } from "~config";
 import { db } from "~db";
-import { log } from "~shared/logger";
+import { IS_DEV } from "~shared/dev";
 
 import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";
@@ -27,6 +28,8 @@ import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
+
+const NANOSECONDS_IN_MILLISECOND = 10e5;
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
@@ -46,7 +49,22 @@ export async function setupServer(): Promise<Server> {
 function setupMiddleware(app: Application): void {
   app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   app.use(securityMiddleware());
-  app.use(log.middleware);
+  app.use(function middleware(req: Request, res: ServerResponse, next: () => void): void {
+    const startTime = process.hrtime();
+    res.once("finish", () => {
+      const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
+      if (!IS_DEV) {
+        logger.info(`Request finished - ${requestStatusDescription}`, {
+          host: req.hostname,
+          userAgent: req.get("user-agent"),
+          timeInMilliseconds: process.hrtime(startTime)[1] / NANOSECONDS_IN_MILLISECOND,
+        });
+      } else {
+        logger.info(`Request finished - ${requestStatusDescription}`);
+      }
+    });
+    next();
+  });
   app.use(cookieParser());
   app.use(json());
 }
@@ -88,9 +106,9 @@ function setupGracefulShutdown(server: Server) {
     },
     logger(msg, error) {
       if (error) {
-        console.error("error thrown in /healthz", msg, error);
+        logger.error(error, "error thrown in /healthz " + msg);
       } else {
-        console.info("/healthz", msg);
+        logger.info("/healthz " + msg);
       }
     },
     healthChecks: {

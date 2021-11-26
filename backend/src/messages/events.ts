@@ -1,3 +1,4 @@
+import { logger } from "~backend/src/logger";
 import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Message, MessageReaction, db } from "~db";
@@ -7,7 +8,6 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
-import { log } from "~shared/logger";
 import { isEqualForPick } from "~shared/object";
 
 import { HasuraEvent } from "../hasura";
@@ -24,7 +24,7 @@ async function prepareMessagePlainTextData(message: Message) {
 
     await db.message.update({ where: { id: message.id }, data: { content_text: plainText } });
   } catch (error) {
-    log.warn("Failed to prepare message plain text content", message);
+    logger.warn("Failed to prepare message plain text content", message);
   }
 }
 

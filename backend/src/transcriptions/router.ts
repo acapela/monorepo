@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { log } from "~shared/logger";
+import { logger } from "~backend/src/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";
@@ -16,7 +16,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   const { secret } = req.query;
 
   if (secret !== process.env.SONIX_CALLBACK_SECRET) {
-    log.info("Invalid Sonix callback secret");
+    logger.info("Invalid Sonix callback secret");
 
     return res.status(HttpStatus.UNAUTHORIZED).end();
   }
@@ -27,7 +27,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
     throw new BadRequestError("Sonix call has no body");
   }
 
-  log.info(`Received update from sonix - current status is ${media.status}`);
+  logger.info(`Received update from sonix - current status is ${media.status}`);
 
   if (media.status === "completed") {
     await handleAttachementTranscriptionStatusUpdate(media);

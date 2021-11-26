@@ -1,8 +1,8 @@
-import * as Sentry from "@sentry/node";
 import { Block, KnownBlock } from "@slack/bolt";
 import { ChatPostMessageResponse } from "@slack/web-api";
 import { pick } from "lodash";
 
+import { logger } from "~backend/src/logger";
 import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
 import { User, db } from "~db";
@@ -41,8 +41,7 @@ async function sendNotification(
     ]);
     return slackMessage?.ok ? { slackMessage } : {};
   } catch (error) {
-    Sentry.captureException(error);
-    console.error(error);
+    logger.error(error);
     return {};
   }
 }
