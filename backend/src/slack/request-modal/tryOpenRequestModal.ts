@@ -123,7 +123,7 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
   return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
 }
 
-async function filterBotUsers(token: string, userIds: string[]): Promise<string[]> {
+async function excluseBotUsers(token: string, userIds: string[]): Promise<string[]> {
   return compact(
     (
       await Promise.all(
@@ -153,7 +153,7 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
   if (!infoRes.channel.is_private && !infoRes.channel.is_im) return null;
 
   return {
-    members: await filterBotUsers(token, membersRes.members),
+    members: await excluseBotUsers(token, membersRes.members),
     name: infoRes.channel.name,
     isGroupConversation: !!infoRes.channel.is_mpim,
     isDirectConversation: !!infoRes.channel.is_im,
@@ -184,7 +184,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
     return { user };
   }
 
-  const slackUserIdsFromMessage = await filterBotUsers(
+  const slackUserIdsFromMessage = await excluseBotUsers(
     token,
     messageText
       ? without(
