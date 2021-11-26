@@ -3,11 +3,11 @@ import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/b
 import { format } from "date-fns";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
+import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
-import { routes } from "~shared/routes";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
@@ -179,7 +179,7 @@ export function setupRequestModal(app: App) {
     });
 
     if (!channelId) {
-      const topicURL = process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug });
+      const topicURL = await backendGetTopicUrl(topic);
       await client.views.open({
         trigger_id: body.trigger_id,
         view: Modal({ title: "Request created" })

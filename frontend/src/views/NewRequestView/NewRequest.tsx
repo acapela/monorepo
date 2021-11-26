@@ -19,7 +19,6 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
-import { routes } from "~shared/routes";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
@@ -149,7 +148,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
 
-      router.push(routes.topic({ topicSlug: topic.slug }));
+      router.push(topic.href);
     });
     clearPersistedContent();
     clearTopicName();

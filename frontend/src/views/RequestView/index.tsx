@@ -1,4 +1,4 @@
-import { autorun } from "mobx";
+import { autorun, reaction } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -7,14 +7,13 @@ import styled, { css } from "styled-components";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { routes } from "~shared/routes";
 import { phone } from "~ui/responsive";
 
 import { NotFound } from "./NotFound";
 import { TopicWithMessages } from "./TopicWithMessages";
 
 interface Props {
-  topicSlug: string;
+  topic: TopicEntity | null;
 }
 
 /**
@@ -24,18 +23,19 @@ function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
   const router = useRouter();
   useEffect(() => {
     if (!topic) return;
-
     let isFirstRun = true;
-    return autorun(() => {
-      const slugNow = topic.slug;
 
-      if (isFirstRun) {
-        isFirstRun = false;
-        return;
+    reaction(
+      () => topic.href,
+      (href) => {
+        if (isFirstRun) {
+          isFirstRun = false;
+          return;
+        }
+
+        router.replace(href);
       }
-
-      router.replace(routes.topic({ topicSlug: slugNow }));
-    });
+    );
   }, [router, topic]);
 }
 
@@ -63,10 +63,7 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
   }, [topic, db]);
 }
 
-export const RequestView = observer(({ topicSlug }: Props) => {
-  const db = useDb();
-  const topic = db.topic.findByUniqueIndex("slug", topicSlug);
-
+export const RequestView = observer(({ topic }: Props) => {
   useUpdateRouterIfSlugChanges(topic);
   useUpdateTopicLastSeenMessage(topic);
 

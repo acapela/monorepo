@@ -6,15 +6,20 @@ import { TopicWithOpenTask } from "./types";
 
 const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
 
-export function RequestsList(title: string, topics: TopicWithOpenTask[], context: GenerateContext) {
-  return [
-    ...Padding,
-    Blocks.Header({ text: title }),
-    ...(topics.length === 0
-      ? [Blocks.Section({ text: Md.italic("No requests here") })]
-      : topics.flatMap((topic, i) => [
-          ...RequestItem(topic, context),
-          i < topics.length - 1 ? Blocks.Divider() : undefined,
-        ])),
-  ];
+export async function RequestsList(title: string, topics: TopicWithOpenTask[], context: GenerateContext) {
+  const header = [...Padding, Blocks.Header({ text: title })];
+
+  if (topics.length === 0) {
+    return [...header, Blocks.Section({ text: Md.italic("No requests here") })];
+  }
+
+  const nestedTopicsBlocks = await Promise.all(
+    topics.map(async (topic, i) => {
+      return [...(await RequestItem(topic, context)), i < topics.length - 1 ? Blocks.Divider() : undefined];
+    })
+  );
+
+  const topicBlocks = nestedTopicsBlocks.flat();
+
+  return [...header, ...topicBlocks];
 }

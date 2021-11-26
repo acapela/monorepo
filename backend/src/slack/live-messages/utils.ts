@@ -1,16 +1,15 @@
 import { Elements } from "slack-block-builder";
 
+import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { Message, Task, Topic, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
-import { routes } from "~shared/routes";
 import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
 import { generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS } from "../utils";
 
-export const createTopicLink = (topic: Topic) =>
-  createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name);
+export const createTopicLink = async (topic: Topic) => createSlackLink(await backendGetTopicUrl(topic), topic.name);
 
 export const ToggleTaskDoneAtButton = (task: Task, user?: User) => {
   const type = task.type as RequestType;

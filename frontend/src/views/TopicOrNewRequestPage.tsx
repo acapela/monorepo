@@ -9,9 +9,21 @@ import { RequestView } from "~frontend/views/RequestView";
 import { routes } from "~shared/routes";
 
 export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): JSX.Element {
-  const topicRouteParams = useRouteParamsIfRouteActive(routes.topic);
+  const topicRouteParams = useRouteParamsIfRouteActive(routes._deprecated_topic);
   const duplicateRouteParams = useRouteParamsIfRouteActive(routes.topicDuplicate);
+  const topicByHandleParams = useRouteParamsIfRouteActive(routes.topicByHandle);
+
   const db = useDb();
+
+  if (topicByHandleParams?.topicId) {
+    const topic = db.topic.findById(topicByHandleParams.topicId);
+
+    return (
+      <SidebarLayout>
+        <RequestView topic={topic} />
+      </SidebarLayout>
+    );
+  }
 
   const topicSlug = topicRouteParams?.topicSlug;
   const topicToDuplicateSlug = duplicateRouteParams?.topicSlug;
@@ -25,9 +37,11 @@ export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): 
     );
   }
 
+  const topic = db.topic.findByUniqueIndex("slug", topicSlug);
+
   return (
     <SidebarLayout>
-      <RequestView topicSlug={topicSlug} />
+      <RequestView topic={topic} />
     </SidebarLayout>
   );
 });

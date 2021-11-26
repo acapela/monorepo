@@ -30,7 +30,8 @@ export async function LiveTaskMessage(task: TaskDetail) {
   const authorLabel = author.team_member_slack ? Md.user(author.team_member_slack.slack_user_id) : author.user.name;
   const requestType = Md.bold(MENTION_TYPE_LABELS[task.type as MentionType]);
   const text =
-    `${authorLabel} has asked for your ${requestType} in ${createTopicLink(topic)}:\n` + Md.blockquote(messageText);
+    `${authorLabel} has asked for your ${requestType} in ${await createTopicLink(topic)}:\n` +
+    Md.blockquote(messageText);
 
   const dueAt = message.message_task_due_date?.due_at;
   return SlackMessage({ text })
