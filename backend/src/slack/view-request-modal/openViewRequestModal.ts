@@ -24,9 +24,7 @@ export async function openViewRequestModal(
     where: {
       topic: {
         some: {
-          id: {
-            equals: topicId,
-          },
+          id: topicId,
         },
       },
     },
@@ -49,9 +47,7 @@ export async function openViewRequestModal(
                   team_member_slack: true,
                 },
                 where: {
-                  team_id: {
-                    equals: team.id,
-                  },
+                  team_id: team.id,
                 },
               },
             },

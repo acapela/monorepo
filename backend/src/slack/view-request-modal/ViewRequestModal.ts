@@ -3,7 +3,7 @@ import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 import { assert } from "~shared/assert";
 import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
-import { mdDate, mdTime } from "../md/utils";
+import { mdDate } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds, ViewMetadata, attachToViewWithMetadata } from "../utils";
 import { MessageInfo, TaskInfo } from "./types";
 
@@ -40,13 +40,13 @@ function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserI
 function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
   assert(tasks.length > 0, "there should be at least one task");
 
-  function printTask(task: TaskInfo) {
+  function getIsOwnTaskIndicator(task: TaskInfo) {
     const isMeLabel = task.user.slackUserId === slackUserId ? " (you)" : "";
     return Md.bold(task.user.name + isMeLabel);
   }
 
   if (tasks.length === 1) {
-    return printTask(tasks[0]);
+    return getIsOwnTaskIndicator(tasks[0]);
   }
 
   const currentUserTaskIndex = tasks.findIndex((t) => t.user.slackUserId === slackUserId);
@@ -60,10 +60,10 @@ function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
         ];
 
   if (tasks.length === 2) {
-    return `${printTask(reorderedTasks[0])} and ${printTask(reorderedTasks[1])} `;
+    return `${getIsOwnTaskIndicator(reorderedTasks[0])} and ${getIsOwnTaskIndicator(reorderedTasks[1])} `;
   }
 
-  return `${printTask(reorderedTasks[0])} and ${reorderedTasks.length - 1} others`;
+  return `${getIsOwnTaskIndicator(reorderedTasks[0])} and ${reorderedTasks.length - 1} others`;
 }
 
 const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: string) => {
@@ -77,8 +77,9 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
         message.fromUserImage
           ? Blocks.Image({ imageUrl: message.fromUserImage, altText: message.fromUser.name })
           : undefined,
-        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks, slackUserId)}   ${mdTime(
-          message.createdAt
+        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks, slackUserId)}   ${mdDate(
+          message.createdAt,
+          "time"
         )}`,
       ])
       .end(),
@@ -105,7 +106,7 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
         message.fromUserImage
           ? Blocks.Image({ imageUrl: message.fromUserImage, altText: message.fromUser.name })
           : undefined,
-        `${Md.bold(message.fromUser.name)}   ${mdTime(message.createdAt)}`,
+        `${Md.bold(message.fromUser.name)}   ${mdDate(message.createdAt, "time")}`,
       ])
       .end(),
     Blocks.Section({ text: message.content }).accessory(
@@ -132,14 +133,20 @@ export const ViewRequestModal = (metadata: ViewMetadata["view_request_modal"]) =
   })
     .blocks(
       Blocks.Header({ text: topic.name }),
+
       ...Padding(1),
+
       // Main Request may have no tasks if only observers are mentioned
       RequestOrMessageBlock(mainRequest),
+
       ...(otherMessages.length > 0
         ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]
         : []),
+
       ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(2)]),
+
       Blocks.Divider(),
+
       Blocks.Section({
         text: topic.slackMessagePermalink ? `<${topic.slackMessagePermalink}|View original Slack thread>` : " ",
       }).accessory(

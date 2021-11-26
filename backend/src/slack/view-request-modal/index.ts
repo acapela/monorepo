@@ -13,8 +13,7 @@ export function setupViewRequestModal(slackApp: App) {
     assert(body.team?.id, "team not present in slack");
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await openViewRequestModal(assertToken(context), (body as any).trigger_id, {
+      await openViewRequestModal(assertToken(context), body.trigger_id, {
         topicId: action.value,
         slackTeamId: body.team.id,
         slackUserId: body.user.id,
