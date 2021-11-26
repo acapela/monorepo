@@ -1,5 +1,3 @@
-import type { View } from "@slack/types";
-
 import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
@@ -8,18 +6,9 @@ import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";
-import { ViewMetadata } from "../utils";
 import { SlackMember, TopicInfo } from "./types";
-import { ViewRequestModal } from "./ViewRequestModal";
 
-export async function openViewRequestModal(
-  token: string,
-  triggerId: string,
-  data: ViewMetadata["open_view_request_modal"]
-) {
-  const { topicId } = data;
-  const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
-
+export async function getViewRequestViewModel(token: string, topicId: string, slackUserId: string) {
   const team = await db.team.findFirst({
     where: {
       topic: {
@@ -109,7 +98,7 @@ export async function openViewRequestModal(
     id: topic.id,
     url: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
     name: topic.name,
-    slackUserId: data.slackUserId,
+    slackUserId,
     slackMessagePermalink,
     messages: topic.message.map((m) => ({
       message: {
@@ -129,5 +118,5 @@ export async function openViewRequestModal(
     })),
   };
 
-  await openView(ViewRequestModal({ topic: topicInfo }));
+  return topicInfo;
 }

@@ -5,6 +5,7 @@ import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from 
 
 import { mdDate } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS, SlackActionIds, ViewMetadata, attachToViewWithMetadata } from "../utils";
+import { getViewRequestViewModel } from "./getTopicInfo";
 import { MessageInfo, TaskInfo } from "./types";
 
 const Padding = (amountOfSpaces = 1) => [...new Array(amountOfSpaces)].map(() => Blocks.Section({ text: " " }));
@@ -119,8 +120,8 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
   ];
 };
 
-export const ViewRequestModal = (metadata: ViewMetadata["view_request_modal"]) => {
-  const { topic } = metadata;
+export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"]) => {
+  const topic = await getViewRequestViewModel(token, metadata.topicId, metadata.slackUserId);
   const [mainRequest, ...otherMessages] = topic.messages;
 
   const RequestOrMessageBlock = (message: MessageInfo) =>

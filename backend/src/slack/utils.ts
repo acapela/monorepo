@@ -7,7 +7,6 @@ import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~sh
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
-import { TopicInfo } from "./view-request-modal/types";
 
 export const extractInstallationDataBotToken = (data: unknown) => (data as SlackInstallation)?.bot?.token;
 
@@ -110,7 +109,8 @@ export type ViewMetadata = {
     topicId: string;
   };
   view_request_modal: {
-    topic: TopicInfo;
+    topicId: string;
+    slackUserId: string;
   };
 };
 
