@@ -92,7 +92,7 @@ export function setupRequestModal(app: App) {
 
     const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
-      messageTs: message.ts,
+      messageTs: message.thread_ts ?? message.ts,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       messageText: messageBody,

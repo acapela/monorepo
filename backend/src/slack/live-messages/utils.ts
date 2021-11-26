@@ -10,7 +10,7 @@ import { createSlackLink } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS } from "../utils";
 
 export const createTopicLink = (topic: Topic) =>
-  createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name);
+  createSlackLink(process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }), topic.name.replaceAll("\n", " "));
 
 export const ToggleTaskDoneAtButton = (task: Task, user?: User) => {
   const type = task.type as RequestType;
