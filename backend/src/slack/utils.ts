@@ -81,8 +81,7 @@ export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"
 export type ChannelInfo = {
   members: string[];
   name: string | undefined;
-  isGroupConversation: boolean;
-  isDirectConversation: boolean;
+  conversationType: "direct" | "group" | "channel";
 } | null;
 
 export type ViewMetadata = {
