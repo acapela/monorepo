@@ -85,7 +85,7 @@ export type ChannelInfo = {
 } | null;
 
 export type ViewMetadata = {
-  open_request_modal: {
+  open_create_request_modal: {
     slackUserId: string;
     slackTeamId: string;
     origin: CreateRequestOrigin;
@@ -102,6 +102,15 @@ export type ViewMetadata = {
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
+  };
+  open_view_request_modal: {
+    slackUserId: string;
+    slackTeamId: string;
+    topicId: string;
+  };
+  view_request_modal: {
+    topicId: string;
+    slackUserId: string;
   };
 };
 

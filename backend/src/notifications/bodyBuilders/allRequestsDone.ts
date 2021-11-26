@@ -25,7 +25,9 @@ export function createSlackAllRequestsDoneMessage({
     slack: BlockCollection(
       Blocks.Section({ text: sectionText }),
       Blocks.Actions().elements(
-        Elements.Button({ text: "Review" }).primary(true).url(topicURL),
+        Elements.Button({ text: "Review", actionId: `open-external-url-all-request-done:${topicId}` })
+          .primary(true)
+          .url(topicURL),
         Elements.Button({ text: "Close & Archive" }).value(topicId).actionId(SlackActionIds.ArchiveTopic)
       )
     ),

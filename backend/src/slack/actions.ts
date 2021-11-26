@@ -12,14 +12,14 @@ import { Sentry } from "~shared/sentry";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
+import { openCreateRequestModal } from "./create-request-modal/openCreateRequestModal";
 import { updateHomeView } from "./home-tab";
 import { createSlackLink, mdDate } from "./md/utils";
-import { tryOpenRequestModal } from "./request-modal/tryOpenRequestModal";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
-    const { user } = await tryOpenRequestModal(assertToken(context), body.trigger_id, {
+    const { user } = await openCreateRequestModal(assertToken(context), body.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-home-tab",
@@ -30,6 +30,10 @@ export function setupSlackActionHandlers(slackApp: App) {
     if (user) {
       trackBackendUserEvent(user.id, "Used Slack Home Tab New Request", { slackUserName: body.user.name });
     }
+  });
+
+  slackApp.action<BlockButtonAction>(/open-external-url/, async ({ ack }) => {
+    await ack();
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {

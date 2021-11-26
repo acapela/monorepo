@@ -1,4 +1,4 @@
-import { View } from "@slack/types";
+import type { View } from "@slack/types";
 import { compact, uniq, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
@@ -24,11 +24,11 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
   )
   .buildToObject();
 
-const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =>
+const AuthForCreateRequestModal = async (viewData: ViewMetadata["open_create_request_modal"]) =>
   Modal({
     title: "Please authorize Acapela",
     submit: "Try again",
-    ...attachToViewWithMetadata("open_request_modal", viewData),
+    ...attachToViewWithMetadata("open_create_request_modal", viewData),
   })
     .blocks(
       Blocks.Section({
@@ -49,7 +49,7 @@ const AuthForTopicModal = async (viewData: ViewMetadata["open_request_modal"]) =
     )
     .buildToObject();
 
-const TopicModal = (metadata: ViewMetadata["create_request"]) => {
+const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText, channelInfo, requestToSlackUserIds } = metadata;
   let channelInfoName = "";
   if (channelInfo?.conversationType === "direct") channelInfoName = "this direct message conversation";
@@ -123,7 +123,7 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
   return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
 }
 
-async function excluseBotUsers(token: string, userIds: string[]): Promise<string[]> {
+async function excludeBotUsers(token: string, userIds: string[]): Promise<string[]> {
   return compact(
     (
       await Promise.all(
@@ -153,13 +153,17 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
   if (!infoRes.channel.is_private && !infoRes.channel.is_im) return null;
 
   return {
-    members: await excluseBotUsers(token, membersRes.members),
+    members: await excludeBotUsers(token, membersRes.members),
     name: infoRes.channel.name,
     conversationType: infoRes.channel.is_mpim ? "group" : infoRes.channel.is_im ? "direct" : "channel",
   };
 }
 
-export async function tryOpenRequestModal(token: string, triggerId: string, data: ViewMetadata["open_request_modal"]) {
+export async function openCreateRequestModal(
+  token: string,
+  triggerId: string,
+  data: ViewMetadata["open_create_request_modal"]
+) {
   const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin, fromMessageBelongingToSlackUserId } =
     data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
@@ -179,11 +183,11 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
   ]);
 
   if (!user || !hasChannelAccess || !hasSlackScopes) {
-    await openView(await AuthForTopicModal(data));
+    await openView(await AuthForCreateRequestModal(data));
     return { user };
   }
 
-  const slackUserIdsFromMessage = await excluseBotUsers(
+  const slackUserIdsFromMessage = await excludeBotUsers(
     token,
     messageText
       ? without(
@@ -203,7 +207,7 @@ export async function tryOpenRequestModal(token: string, triggerId: string, data
   }
 
   await openView(
-    TopicModal({
+    CreateRequestModal({
       messageText,
       channelId,
       channelInfo,
