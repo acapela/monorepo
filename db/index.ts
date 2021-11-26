@@ -33,7 +33,7 @@ assert(process.env.DB_NAME, "DB_NAME required");
 
 const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@${
   process.env.DB_HOST
-}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
+}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public&connection_limit=10`;
 
 export const db = new PrismaClient({
   datasources: {
