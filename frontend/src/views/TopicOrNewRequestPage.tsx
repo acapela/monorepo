@@ -26,10 +26,10 @@ export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): 
   }
 
   const topicSlug = topicRouteParams?.topicSlug;
-  const topicToDuplicateSlug = duplicateRouteParams?.topicSlug;
+  const topicToDuplicateId = duplicateRouteParams?.topicId;
 
   if (!topicSlug) {
-    const topicToDuplicate = topicToDuplicateSlug ? db.topic.findByUniqueIndex("slug", topicToDuplicateSlug) : null;
+    const topicToDuplicate = topicToDuplicateId ? db.topic.findById(topicToDuplicateId) : null;
     return (
       <SidebarLayout>
         <NewRequestView topicToDuplicate={topicToDuplicate ?? undefined} />

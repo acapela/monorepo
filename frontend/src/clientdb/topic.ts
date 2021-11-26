@@ -148,6 +148,21 @@ export const topicEntity = defineEntity<TopicFragment>({
           topicId: topic.id,
         });
       },
+      get duplicateHref() {
+        const team = connections.team;
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const firstMessage = connections.messages.first!;
+
+        const slug = getTopicSlug(firstMessage.content, topic.name);
+
+        return routes.topicDuplicate({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          teamSlug: team!.slug,
+          topicSlug: slug,
+          topicId: topic.id,
+        });
+      },
       get isOwn() {
         return topic.owner_id === currentUserId;
       },
