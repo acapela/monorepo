@@ -112,7 +112,7 @@ export function setupRequestModal(app: App) {
     await tryOpenRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
-  listenToViewWithMetadata<ViewSubmitAction>(app, "create_request", async (args) => {
+  listenToViewWithMetadata<ViewSubmitAction, "create_request">(app, "create_request", async (args) => {
     const { ack, view, body, client, context, metadata } = args;
     const {
       topic_block: {
