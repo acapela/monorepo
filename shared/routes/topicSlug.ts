@@ -34,9 +34,15 @@ function getTextSnippetFromMessageContent(content: RichEditorNode): string | nul
   return null;
 }
 
+function pickFirstSentenceOrWords(content: string, maxWordsCount = 10) {
+  const [firstSentence] = content.split(".");
+
+  return firstSentence.split(" ").slice(0, maxWordsCount).join(" ").replace(/ +/, "");
+}
+
 export function getTopicSlug(firstMessageContent: RichEditorNode, topicName?: string): string {
   if (topicName) {
-    return slugifySync(topicName, "topic");
+    return slugifySync(pickFirstSentenceOrWords(topicName), "topic");
   }
 
   const snippet = getTextSnippetFromMessageContent(firstMessageContent);
@@ -45,5 +51,7 @@ export function getTopicSlug(firstMessageContent: RichEditorNode, topicName?: st
     return "topic";
   }
 
-  return slugifySync(snippet, "topic");
+  const shortSnippet = pickFirstSentenceOrWords(snippet);
+
+  return slugifySync(shortSnippet, "topic");
 }
