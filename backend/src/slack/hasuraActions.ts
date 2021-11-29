@@ -13,10 +13,10 @@ import { Maybe } from "~shared/types";
 import { ActionHandler } from "../actions/actionHandlers";
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "./app";
-import { getSlackInstallURL } from "./install";
+import { getSlackInstallURL, getTeamSlackInstallURL } from "./install";
 import { fetchTeamBotToken, findSlackUserId } from "./utils";
 
-export const getTeamSlackInstallationURL: ActionHandler<
+export const getTeamSlackInstallationURLHandler: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },
   GetTeamSlackInstallationUrlOutput
 > = {
@@ -29,11 +29,11 @@ export const getTeamSlackInstallationURL: ActionHandler<
       include: { team_member: true, team_slack_installation: true },
     });
     assert(team, new UnprocessableEntityError(`Team ${team_id} for member ${userId} not found`));
-    const url = await getSlackInstallURL(
-      // we need bot permissions if they were not already granted
-      { withBot: !team.team_slack_installation },
-      { teamId: team_id, redirectURL, userId }
-    );
+    const url = await (team.team_slack_installation ? getSlackInstallURL : getTeamSlackInstallURL)({
+      teamId: team_id,
+      redirectURL,
+      userId,
+    });
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
     return { url };
   },

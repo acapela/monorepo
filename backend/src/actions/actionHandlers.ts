@@ -1,6 +1,6 @@
 import { getUploadUrl } from "~backend/src/attachments/attachments";
 import { inviteUser } from "~backend/src/inviteUser";
-import { getTeamSlackInstallationURL, slackUser, uninstallSlack } from "~backend/src/slack/hasuraActions";
+import { getTeamSlackInstallationURLHandler, slackUser, uninstallSlack } from "~backend/src/slack/hasuraActions";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;
@@ -9,7 +9,7 @@ export interface ActionHandler<DataT, ResponseT> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handlers: ActionHandler<any, any>[] = [
-  getTeamSlackInstallationURL,
+  getTeamSlackInstallationURLHandler,
   getUploadUrl,
   inviteUser,
   slackUser,

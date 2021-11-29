@@ -2,6 +2,7 @@ import type { View } from "@slack/types";
 import { compact, uniq, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
+import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
@@ -24,8 +25,13 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
   )
   .buildToObject();
 
-const AuthForCreateRequestModal = async (viewData: ViewMetadata["open_create_request_modal"]) =>
-  Modal({
+const AuthForCreateRequestModal = async (
+  token: string,
+  viewData: ViewMetadata["open_create_request_modal"],
+  teamId: string
+) => {
+  const user = await findUserBySlackId(token, viewData.slackUserId, teamId);
+  return Modal({
     title: "Please authorize Acapela",
     submit: "Try again",
     ...attachToViewWithMetadata("open_create_request_modal", viewData),
@@ -38,16 +44,17 @@ const AuthForCreateRequestModal = async (viewData: ViewMetadata["open_create_req
         ].join(" "),
       }),
       Blocks.Section({
-        text: `Head over to ${createSlackLink(
-          process.env.FRONTEND_URL + routes.settings,
-          "your Acapela settings"
-        )} to authorize it.`,
+        text: `Head over ${createSlackLink(
+          await getSlackInstallURL({ teamId, userId: user?.id }),
+          "here"
+        )} to authorize it and then try again.`,
       }),
       viewData.messageText
         ? [Blocks.Divider(), Blocks.Section().text("Your Request Message:\n" + Md.blockquote(viewData.messageText))]
         : undefined
     )
     .buildToObject();
+};
 
 const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText, channelInfo, requestToSlackUserIds } = metadata;
@@ -183,7 +190,7 @@ export async function openCreateRequestModal(
   ]);
 
   if (!user || !hasChannelAccess || !hasSlackScopes) {
-    await openView(await AuthForCreateRequestModal(data));
+    await openView(await AuthForCreateRequestModal(token, data, team.id));
     return { user };
   }
 
