@@ -5,6 +5,16 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { routes } from "~shared/routes";
 import { getTopicSlug } from "~shared/routes/topicSlug";
 
+/**
+ * This is function used only for backend to create full topic url.
+ *
+ * This needs to fetch team for given topic from database (thus only usable on backend).
+ *
+ * It also is async due to fetching. On frontend we have entity which is able to resolve team relation in sync
+ * way.
+ *
+ * To avoid confusion - I added backend prefix to make it explicit.
+ */
 export async function backendGetTopicUrl(topic: Topic, hrefOnly = false) {
   const team = await db.team.findFirst({ where: { id: topic.id } });
   const firstMessage = await db.message.findFirst({ where: { topic_id: topic.id }, orderBy: { created_at: "asc" } });
