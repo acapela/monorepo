@@ -6,7 +6,7 @@ import _, { noop } from "lodash";
 
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { IS_DEV } from "~shared/dev";
 import { logger } from "~shared/logger";
@@ -15,6 +15,7 @@ import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~sh
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
+import { createTeamMemberUserFromSlack } from "./utils";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
@@ -33,27 +34,6 @@ function handleInstallationResponse(res: ServerResponse, redirectURL?: string, s
     res.writeHead(HttpStatus.OK).write("<script>window.close();</script>");
     res.end();
   }
-}
-
-async function createTeamMemberUserFromSlack(installationUser: SlackBolt.Installation["user"], teamId: string) {
-  const { profile } = await slackClient.users.profile.get({ token: installationUser.token, user: installationUser.id });
-  assert(profile, "missing profile");
-  return db.team_member.create({
-    data: {
-      user: {
-        create: {
-          email: assertDefined(profile.email, "must have email"),
-          name: assertDefined(profile.display_name, "must have display name"),
-          avatar_url: profile.image_original,
-          current_team_id: teamId,
-        },
-      },
-      team: { connect: { id: teamId } },
-    },
-    include: {
-      user: { include: { account: true } },
-    },
-  });
 }
 
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
@@ -94,8 +74,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         throw new Error(SLACK_WORKSPACE_ALREADY_USED_ERROR);
       }
 
+      const slackUser = installation.user;
       if (!userId) {
-        userId = (await createTeamMemberUserFromSlack(installation.user, teamId)).user.id;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userId = (await createTeamMemberUserFromSlack(slackUser.token!, slackUser.id, teamId)).user.id;
       }
 
       if (installation.bot) {
@@ -113,15 +95,14 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       if (!teamMember) {
         return;
       }
-      const installation_data = installation.user as never;
       await db.team_member_slack.upsert({
         where: { team_member_id: teamMember.id },
         create: {
           team_member_id: teamMember.id,
-          installation_data,
-          slack_user_id: installation.user.id,
+          installation_data: slackUser,
+          slack_user_id: slackUser.id,
         },
-        update: { installation_data, slack_user_id: installation.user.id },
+        update: { installation_data: slackUser, slack_user_id: slackUser.id },
       });
       trackBackendUserEvent(userId, "Added User Slack Integration", { slackTeamId, teamId });
       identifyBackendUser(userId, { isSlackInstalled: true });

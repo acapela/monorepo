@@ -1,7 +1,7 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 
 import { User, db } from "~db";
-import { assertDefined } from "~shared/assert";
+import { assert, assertDefined } from "~shared/assert";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
@@ -40,7 +40,7 @@ export async function findSlackUserId(teamId: string, user: User): Promise<strin
   }
 }
 
-export async function fetchTeamMemberBotToken(userId: string, teamId: string) {
+export async function fetchTeamMemberToken(userId: string, teamId: string) {
   const teamMemberSlack = await db.team_member_slack.findFirst({
     where: { team_member: { team_id: teamId, user_id: userId } },
   });
@@ -135,3 +135,28 @@ export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
   [REQUEST_RESPONSE]: "✍️",
   [REQUEST_READ]: "👀",
 };
+
+export async function createTeamMemberUserFromSlack(token: string, slackUserId: string, teamId: string) {
+  const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
+  assert(profile, "missing profile");
+  const email = assertDefined(profile.email, "must have email");
+  return db.team_member.create({
+    data: {
+      user: {
+        connectOrCreate: {
+          where: { email },
+          create: {
+            email,
+            name: assertDefined(profile.display_name, "must have display name"),
+            avatar_url: profile.image_original,
+            current_team_id: teamId,
+          },
+        },
+      },
+      team: { connect: { id: teamId } },
+    },
+    include: {
+      user: { include: { account: true } },
+    },
+  });
+}

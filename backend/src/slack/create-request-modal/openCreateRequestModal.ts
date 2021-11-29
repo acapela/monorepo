@@ -111,10 +111,17 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
     .buildToObject();
 };
 
-async function checkHasChannelAccess(token: string, channelId: string) {
+async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
+  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
+  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
+  return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
+}
+
+async function checkHasChannelAccess(token: string, channelId: string, slackUserId: string) {
   try {
-    await slackClient.conversations.info({ token, channel: channelId });
-    return true;
+    const { channel } = await slackClient.conversations.info({ token, channel: channelId });
+    const isPublic = channel?.is_channel && !channel.is_private;
+    return isPublic || checkHasTeamMemberAllSlackUserScopes(slackUserId);
   } catch (error) {
     if (isChannelNotFoundError(error)) {
       return false;
@@ -122,12 +129,6 @@ async function checkHasChannelAccess(token: string, channelId: string) {
       throw error;
     }
   }
-}
-
-async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
-  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
-  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
-  return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
 }
 
 async function excludeBotUsers(token: string, userIds: string[]): Promise<string[]> {
@@ -183,12 +184,9 @@ export async function openCreateRequestModal(
     return { user };
   }
 
-  const [hasChannelAccess, hasSlackScopes] = await Promise.all([
-    !channelId || checkHasChannelAccess(token, channelId),
-    checkHasTeamMemberAllSlackUserScopes(slackUserId),
-  ]);
+  const hasChannelAccess = !channelId || (await checkHasChannelAccess(token, channelId, slackUserId));
 
-  if (!user || !hasChannelAccess || !hasSlackScopes) {
+  if (!hasChannelAccess) {
     await openView(await AuthForCreateRequestModal(token, data, team.id));
     return { user };
   }
