@@ -1,4 +1,4 @@
-export type InstallMetadata = { teamId: string; redirectURL: string; userId: string };
+export type InstallMetadata = { teamId: string; userId?: string; redirectURL?: string };
 
 /**
  * When getting a Slack OAuth installation URL, one can supply metadata which Slack will

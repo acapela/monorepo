@@ -1,14 +1,16 @@
+import { ServerResponse } from "http";
+
 import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import _ from "lodash";
 
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
-import { assertDefined } from "~shared/assert";
+import { assert, assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { IS_DEV } from "~shared/dev";
 import { routes } from "~shared/routes";
-import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
+import { SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
@@ -19,6 +21,41 @@ export type SlackInstallation = SlackBolt.Installation;
 
 export const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
 
+function handleInstallationResponse(res: ServerResponse, redirectURL?: string, searchParams?: Record<string, string>) {
+  if (redirectURL) {
+    const redirectURLObject = new URL(redirectURL);
+    for (const [key, value] of Object.entries(searchParams || {})) {
+      redirectURLObject.searchParams.set(key, value);
+    }
+    res.writeHead(HttpStatus.FOUND, { Location: redirectURLObject.toString() }).end();
+  } else {
+    res.writeHead(HttpStatus.OK).write("<script>window.close();</script>");
+    res.end();
+  }
+}
+
+async function createTeamMemberUserFromSlack(installationUser: SlackBolt.Installation["user"], teamId: string) {
+  const { profile } = await slackClient.users.profile.get({ token: installationUser.token, user: installationUser.id });
+  assert(profile, "missing profile");
+  const teamMember = await db.team_member.create({
+    data: {
+      user: {
+        create: {
+          email: assertDefined(profile.email, "must have email"),
+          name: assertDefined(profile.display_name, "must have display name"),
+          avatar_url: profile.image_original,
+          current_team_id: teamId,
+        },
+      },
+      team: { connect: { id: teamId } },
+    },
+    include: {
+      user: { include: { account: true } },
+    },
+  });
+  return teamMember.user.id;
+}
+
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
   clientId: SLACK_CLIENT_ID,
@@ -27,7 +64,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 
   installationStore: {
     async storeInstallation(installation) {
-      const { teamId, userId } = parseMetadata(installation);
+      const metadata = parseMetadata(installation);
+      const { teamId } = metadata;
+      let { userId } = metadata;
+
       const slackTeamId = assertDefined(installation.team, "installation must have team").id;
       const otherTeamWithSameSlack = await db.team.findFirst({
         where: { NOT: { id: teamId }, team_slack_installation: { slack_team_id: slackTeamId } },
@@ -35,6 +75,11 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       if (otherTeamWithSameSlack) {
         throw new Error(SLACK_WORKSPACE_ALREADY_USED_ERROR);
       }
+
+      if (!userId) {
+        userId = await createTeamMemberUserFromSlack(installation.user, teamId);
+      }
+
       if (installation.bot) {
         const teamData = _.omit(installation, "user", "metadata");
         const data = teamData as never;
@@ -85,7 +130,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     callbackOptions: {
       success(installation, options, req, res) {
         const { redirectURL } = parseMetadata(installation);
-        res.writeHead(HttpStatus.FOUND, { Location: redirectURL || "/" }).end();
+        handleInstallationResponse(res, redirectURL);
       },
       failure(error, options, req, res) {
         if (!options) {
@@ -97,12 +142,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         if (!isAlreadyUsedError) {
           Sentry.captureException(error);
         }
-        const redirectURLObject = new URL(redirectURL ?? "/");
-        redirectURLObject.searchParams.set(
-          SLACK_INSTALL_ERROR_KEY,
-          isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown"
-        );
-        res.writeHead(HttpStatus.FOUND, { Location: redirectURLObject.toString() }).end();
+        handleInstallationResponse(res, redirectURL, {
+          SLACK_INSTALL_ERROR_KEY: isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown",
+        });
       },
     },
   },
@@ -121,7 +163,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  console.error("Error occurred during a slack flow:", JSON.stringify(error, null, 2));
+  console.error("Error occurred during a slack flow:", JSON.stringify(error, null, 2), error.original ?? error);
   Sentry.captureException(error.original ?? error);
 });
 
