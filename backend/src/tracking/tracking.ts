@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
 
 import { BadRequestError } from "~backend/src/errors/errorTypes";
-import { logger } from "~backend/src/logger";
 import { getUserIdFromRequest } from "~backend/src/utils";
 import { UserFragment } from "~gql";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
+import { logger } from "~shared/logger";
 import { AnalyticsEventName } from "~shared/types/analytics";
 
 import { HttpStatus } from "../http";

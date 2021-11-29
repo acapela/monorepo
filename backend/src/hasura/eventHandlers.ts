@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-import { logger } from "~backend/src/logger";
 import { convertMaybeArrayToArray } from "~shared/array";
 import { IS_DEV } from "~shared/dev";
+import { logger } from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
 
 import { HasuraEvent, RawHasuraEvent, getUserIdFromRawHasuraEvent, normalizeHasuraEvent } from "./eventUtils";

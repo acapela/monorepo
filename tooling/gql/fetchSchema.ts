@@ -6,7 +6,7 @@ import path from "path";
 import axios from "axios";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
 
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 import { GQL_PACKAGE_PATH } from "./files";
 

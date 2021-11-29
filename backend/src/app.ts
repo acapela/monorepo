@@ -10,10 +10,10 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, json } from "express";
 import securityMiddleware from "helmet";
 
-import { logger } from "~backend/src/logger";
 import { initializeSecrets } from "~config";
 import { db } from "~db";
 import { IS_DEV } from "~shared/dev";
+import { logger } from "~shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";
@@ -29,7 +29,7 @@ import { router as tracking } from "./tracking/tracking";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
-const NANOSECONDS_IN_MILLISECOND = 10e5;
+const NANOSECONDS_IN_MILLISECOND = 1e6;
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();

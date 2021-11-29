@@ -1,4 +1,3 @@
-import { logger } from "~backend/src/logger";
 import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Message, MessageReaction, db } from "~db";
@@ -8,6 +7,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
+import { logger } from "~shared/logger";
 import { isEqualForPick } from "~shared/object";
 
 import { HasuraEvent } from "../hasura";

@@ -1,7 +1,7 @@
-import { logger } from "~backend/src/logger";
 import { initializeAttachmentTranscription } from "~backend/src/transcriptions/transcriptionService";
 import { Attachment, db } from "~db";
 import { Message_Type_Enum } from "~gql";
+import { logger } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 

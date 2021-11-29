@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";

@@ -1,11 +1,11 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { logger } from "~backend/src/logger";
 import { sendNotificationIgnoringPreference } from "~backend/src/notifications/sendNotification";
 import { createSlackInviteNotification } from "~backend/src/slack/md/utils";
 import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { logger } from "~shared/logger";
 import { routes } from "~shared/routes";
 
 import { getInviteURL } from "./utils";

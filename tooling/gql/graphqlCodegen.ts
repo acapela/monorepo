@@ -3,7 +3,7 @@ import path from "path";
 
 import { generate } from "@graphql-codegen/cli";
 
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 import { SCHEMA_FILE_PATH, updateSchemaFile } from "./fetchSchema";
 import { GQL_PACKAGE_PATH, ROOT_PATH } from "./files";

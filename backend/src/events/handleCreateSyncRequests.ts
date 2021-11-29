@@ -1,5 +1,5 @@
-import { logger } from "~backend/src/logger";
 import { db } from "~db";
+import { logger } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 

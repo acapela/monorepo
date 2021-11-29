@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
 import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 import { HttpStatus } from "../http";
 import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";

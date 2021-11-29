@@ -1,7 +1,7 @@
-import { logger } from "~backend/src/logger";
 import { Team, db } from "~db";
 import { assert } from "~shared/assert";
 import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
+import { logger } from "~shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";

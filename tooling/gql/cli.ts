@@ -9,7 +9,7 @@ import yargs from "yargs";
 // @ts-ignore
 import { hideBin } from "yargs/helpers";
 
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 const tooling = yargs(hideBin(process.argv));
 

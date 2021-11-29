@@ -19,7 +19,7 @@ async function start(): Promise<void> {
   // Note: We're lazy loading modules here to avoid requesting config too early.
   await initializeSecrets();
 
-  const { logger } = await import("~backend/src/logger");
+  const { logger } = await import("~shared/logger");
   logger.info("Environment variables loaded");
   logger.info("Secrets loaded");
   const serverModule = await import("./app");

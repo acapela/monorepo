@@ -3,11 +3,11 @@ import * as SlackBolt from "@slack/bolt";
 import _, { noop } from "lodash";
 
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { logger } from "~backend/src/logger";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { IS_DEV } from "~shared/dev";
+import { logger } from "~shared/logger";
 import { routes } from "~shared/routes";
 import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 

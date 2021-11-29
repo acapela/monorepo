@@ -1,8 +1,8 @@
 import cors from "cors";
 import { Request, Response, Router } from "express";
 
-import { logger } from "~backend/src/logger";
 import { db } from "~db";
+import { logger } from "~shared/logger";
 
 import { HttpStatus } from "../http";
 import { addUserToMailchimp } from "./mailchimp";

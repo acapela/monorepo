@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { logger } from "~backend/src/logger";
 import { UserTokenPayload } from "~shared/jwt";
+import { logger } from "~shared/logger";
 import { JsonValue } from "~shared/types";
 
 import { extractAndAssertBearerToken } from "../authentication";

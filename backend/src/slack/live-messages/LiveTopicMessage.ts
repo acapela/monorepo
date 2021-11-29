@@ -1,9 +1,9 @@
 import { groupBy } from "lodash";
 import { Blocks, Md, Message as SlackMessage } from "slack-block-builder";
 
-import { logger } from "~backend/src/logger";
 import { Message, Task, Topic, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
+import { logger } from "~shared/logger";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";

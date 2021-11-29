@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { logger } from "~backend/src/logger";
+import { logger } from "~shared/logger";
 
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError, isHttpError } from "../errors/errorTypes";
