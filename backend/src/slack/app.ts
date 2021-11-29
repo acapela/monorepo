@@ -10,7 +10,7 @@ import { assert, assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { IS_DEV } from "~shared/dev";
 import { routes } from "~shared/routes";
-import { SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
@@ -37,7 +37,7 @@ function handleInstallationResponse(res: ServerResponse, redirectURL?: string, s
 async function createTeamMemberUserFromSlack(installationUser: SlackBolt.Installation["user"], teamId: string) {
   const { profile } = await slackClient.users.profile.get({ token: installationUser.token, user: installationUser.id });
   assert(profile, "missing profile");
-  const teamMember = await db.team_member.create({
+  return db.team_member.create({
     data: {
       user: {
         create: {
@@ -53,7 +53,6 @@ async function createTeamMemberUserFromSlack(installationUser: SlackBolt.Install
       user: { include: { account: true } },
     },
   });
-  return teamMember.user.id;
 }
 
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
@@ -77,7 +76,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       }
 
       if (!userId) {
-        userId = await createTeamMemberUserFromSlack(installation.user, teamId);
+        userId = (await createTeamMemberUserFromSlack(installation.user, teamId)).user.id;
       }
 
       if (installation.bot) {
@@ -143,7 +142,8 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           Sentry.captureException(error);
         }
         handleInstallationResponse(res, redirectURL, {
-          SLACK_INSTALL_ERROR_KEY: isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown",
+          // puts the error into the URL's query params for the frontend to pick it up
+          [SLACK_INSTALL_ERROR_KEY]: isAlreadyUsedError ? SLACK_WORKSPACE_ALREADY_USED_ERROR : "unknown",
         });
       },
     },
@@ -163,7 +163,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  console.error("Error occurred during a slack flow:", JSON.stringify(error, null, 2), error.original ?? error);
+  console.error("Error occurred during a slack flow:", JSON.stringify(error, null, 2));
   Sentry.captureException(error.original ?? error);
 });
 

@@ -31,7 +31,7 @@ export const getTeamSlackInstallationURL: ActionHandler<
     assert(team, new UnprocessableEntityError(`Team ${team_id} for member ${userId} not found`));
     const url = await getSlackInstallURL(
       // we need bot permissions if they were not already granted
-      { withBot: !team.team_slack_installation },
+      team.team_slack_installation ? "user-only" : "full",
       { teamId: team_id, redirectURL, userId }
     );
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
