@@ -1,6 +1,5 @@
 import { usePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useIsomorphicLayoutEffect } from "react-use";
 
 import { createTimeout } from "~shared/time";
 
@@ -9,8 +8,11 @@ export function useUnmountPresence(time: number) {
 
   const [isNotRemoved, safeToRemove] = usePresence();
 
-  useIsomorphicLayoutEffect(() => {
-    setIsMounted(true);
+  useEffect(() => {
+    /**
+     * We intentionally set mounted to true with small timeout to allow animation of initial mounting.
+     */
+    setTimeout(() => setIsMounted(true), 1);
   }, []);
 
   useEffect(() => {

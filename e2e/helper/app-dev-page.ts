@@ -21,7 +21,7 @@ export class AppDevPage {
     messageContent = "What is happening",
   }: NewRequestProps) {
     await this.goToNewRequestPage();
-    await this.page.fill(`[placeholder="e.g. Feedback for new website copy"]`, title);
+    await this.page.fill(`[placeholder="Add Title (optional)"]`, title);
 
     await this.page.fill('[contenteditable="true"]', messageContent);
 

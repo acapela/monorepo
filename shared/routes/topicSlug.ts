@@ -37,7 +37,17 @@ function getTextSnippetFromMessageContent(content: RichEditorNode): string | nul
 function pickFirstSentenceOrWords(content: string, maxWordsCount = 10) {
   const [firstSentence] = content.split(".");
 
-  return firstSentence.split(" ").slice(0, maxWordsCount).join(" ").replace(/ +/, "");
+  return firstSentence.split(" ").slice(0, maxWordsCount).join(" ").replace(/ +/, " ");
+}
+
+export function getTopicNameFromContent(firstMessageContent: RichEditorNode, wordsCount?: number) {
+  const snippet = getTextSnippetFromMessageContent(firstMessageContent);
+
+  if (!snippet) return null;
+
+  const shortSnippet = pickFirstSentenceOrWords(snippet, wordsCount);
+
+  return shortSnippet;
 }
 
 export function getTopicSlug(firstMessageContent: RichEditorNode, topicName?: string): string {
@@ -45,13 +55,11 @@ export function getTopicSlug(firstMessageContent: RichEditorNode, topicName?: st
     return slugifySync(pickFirstSentenceOrWords(topicName), "topic");
   }
 
-  const snippet = getTextSnippetFromMessageContent(firstMessageContent);
+  const topicNameFromContent = getTopicNameFromContent(firstMessageContent);
 
-  if (!snippet) {
+  if (!topicNameFromContent) {
     return "topic";
   }
 
-  const shortSnippet = pickFirstSentenceOrWords(snippet);
-
-  return slugifySync(shortSnippet, "topic");
+  return slugifySync(topicNameFromContent, "topic");
 }
