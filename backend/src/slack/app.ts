@@ -2,13 +2,14 @@ import { ServerResponse } from "http";
 
 import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
-import _ from "lodash";
+import _, { noop } from "lodash";
 
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { IS_DEV } from "~shared/dev";
+import { logger } from "~shared/logger";
 import { routes } from "~shared/routes";
 import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
 
@@ -60,6 +61,24 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   clientId: SLACK_CLIENT_ID,
   clientSecret: SLACK_CLIENT_SECRET,
   stateSecret: assertDefined(process.env.SLACK_STATE_SECRET, "missing SLACK_STATE_SECRET"),
+
+  logger: {
+    debug: (...msgs) => {
+      logger.debug(msgs);
+    },
+    info: (...msgs) => {
+      logger.info(msgs);
+    },
+    warn: (...msgs) => {
+      logger.warn(msgs);
+    },
+    error: (...msgs) => {
+      logger.error(msgs);
+    },
+    setLevel: noop,
+    getLevel: () => SlackBolt.LogLevel.DEBUG,
+    setName: noop,
+  },
 
   installationStore: {
     async storeInstallation(installation) {
@@ -163,8 +182,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  console.error("Error occurred during a slack flow:", JSON.stringify(error, null, 2));
-  Sentry.captureException(error.original ?? error);
+  logger.error(error.original ?? error, "Error occurred during a slack flow:", JSON.stringify(error, null, 2));
 });
 
 export const slackClient = slackApp.client;

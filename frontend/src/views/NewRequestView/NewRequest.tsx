@@ -19,6 +19,7 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
+import { getTopicNameFromContent } from "~shared/routes/topicSlug";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
@@ -120,9 +121,6 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
   const hasTypedInAnything = useMemo(() => topicName !== "" || hasAnyTextContent, [topicName, hasAnyTextContent]);
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
-    if (topicName.length === 0) {
-      return [false, "Add a title to your request"];
-    }
     const mentionNodes = getNodesFromContentByType(content, "mention");
     if (mentionNodes.length < 1) {
       return [false, "Mention team members using @Name to make your request more actionable."];
@@ -136,10 +134,17 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
       return;
     }
 
-    const topicNameSlug = await getAvailableSlugForTopicName(db, topicName);
+    // If no title is provided - we'll auto generate it from content
+    let finalTitle = topicName;
+
+    if (!finalTitle.trim().length) {
+      finalTitle = getTopicNameFromContent(content) ?? "New topic";
+    }
+
+    const topicNameSlug = await getAvailableSlugForTopicName(db, finalTitle);
 
     runInAction(() => {
-      const topic = db.topic.create({ id: newTopicId, name: topicName, slug: topicNameSlug });
+      const topic = db.topic.create({ id: newTopicId, name: finalTitle, slug: topicNameSlug });
       const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
       updateMessageTasks(newMessage);
@@ -173,10 +178,9 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
         <UIEditableParts isEmpty={!hasTypedInAnything}>
           <PageLayoutAnimator layoutId={layoutAnimations.newTopic.title(newTopicId)}>
             <UITopicNameInput
-              autoFocus
               value={topicName}
               onChangeText={setTopicName}
-              placeholder={"e.g. Feedback for new website copy"}
+              placeholder={"Add Title (optional)"}
               onKeyPress={onEnterPressed(focusEditor)}
             />
           </PageLayoutAnimator>
@@ -192,6 +196,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
               onFilesSelected={uploadAttachments}
               uploadingAttachments={uploadingAttachments}
               capturePastedFiles
+              autofocusKey="new-request"
             />
           </UIComposerHolder>
 
@@ -286,7 +291,7 @@ const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
   position: absolute;
   /* Aligning prompt absolutely from very center of screen */
   left: -140px;
-  top: -50px;
+  top: -10px;
 
   @media only screen and (max-width: 900px) {
     display: none;

@@ -10,7 +10,7 @@ import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicMemberChanges, handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserUpdates } from "~backend/src/users/events";
-import { log } from "~shared/logger";
+import { logger } from "~shared/logger";
 
 import { handleTaskDueDateChanges } from "../tasks/messageTaskDueDateHandler";
 import { hasuraEvents } from "./eventHandlers";
@@ -18,7 +18,7 @@ import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
 export const router = Router();
 
-log.info("Initialize hasura event handlers");
+logger.info("Initialize hasura event handlers");
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
 hasuraEvents.addHandler("topic_updates", ["INSERT", "UPDATE"], handleTopicUpdates);

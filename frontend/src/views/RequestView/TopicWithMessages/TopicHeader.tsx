@@ -57,7 +57,12 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
 
   return (
     <UIHolder>
-      <UITitle data-test-id="topic-title" layoutId={layoutAnimations.newTopic.title(topic.id)}>
+      <UITitle
+        data-test-id="topic-title"
+        data-tooltip="Rename..."
+        layoutId={layoutAnimations.newTopic.title(topic.id)}
+        onClick={handleTopicRename}
+      >
         {topic.name}
       </UITitle>
       <UITopicTools>
@@ -107,6 +112,7 @@ const UIHolder = styled(HorizontalSpacingContainer)`
 
 const UITitle = styled(PageLayoutAnimator)`
   ${theme.typo.pageTitle};
+  cursor: pointer;
 `;
 
 const UITopicTools = styled.div`

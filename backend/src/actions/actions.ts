@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { log } from "~shared/logger";
+import { logger } from "~shared/logger";
 
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError, isHttpError } from "../errors/errorTypes";
@@ -16,7 +16,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
 
-  log.info(`Handling action (${hasuraAction.action.name})`, {
+  logger.info(`Handling action (${hasuraAction.action.name})`, {
     userId,
   });
 
@@ -28,7 +28,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   try {
     const response = await handler.handle(userId, hasuraAction.input);
     res.status(HttpStatus.OK).json(response);
-    log.info(`Action handled (${hasuraAction.action.name})`, {
+    logger.info(`Action handled (${hasuraAction.action.name})`, {
       userId,
     });
   } catch (error) {
@@ -40,7 +40,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
       message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
-    log.info("Failed handling action", {
+    logger.info("Failed handling action", {
       actionName: hasuraAction.action.name,
       userId,
       failureReason: anyError.message,

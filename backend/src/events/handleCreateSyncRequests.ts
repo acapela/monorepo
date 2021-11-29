@@ -1,5 +1,5 @@
 import { db } from "~db";
-import { log } from "~shared/logger";
+import { logger } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 
@@ -26,28 +26,28 @@ export async function handleCreateSyncRequests(event: HasuraEvent<unknown>) {
    */
 
   if (!userId) {
-    log.warn(`Cannot create sync request for system caused database changes (no way to get user.current_team_id)`);
+    logger.warn(`Cannot create sync request for system caused database changes (no way to get user.current_team_id)`);
     return;
   }
 
   const user = await db.user.findFirst({ where: { id: userId } });
 
   if (!user) {
-    log.warn(`Failed to create sync request - could not find user with id ${userId}`);
+    logger.warn(`Failed to create sync request - could not find user with id ${userId}`);
     return;
   }
 
   const teamId = user.current_team_id;
 
   if (!teamId) {
-    log.warn(`Failed to create sync request - no current team id for user causing the action`);
+    logger.warn(`Failed to create sync request - no current team id for user causing the action`);
     return;
   }
 
   const itemId = Reflect.get(item as object, "id");
 
   if (!itemId) {
-    log.warn(`Failed to create sync request - no item id`);
+    logger.warn(`Failed to create sync request - no item id`);
     return;
   }
 
@@ -62,5 +62,5 @@ export async function handleCreateSyncRequests(event: HasuraEvent<unknown>) {
     },
   });
 
-  log.info(`sync request created`);
+  logger.info(`sync request created`);
 }
