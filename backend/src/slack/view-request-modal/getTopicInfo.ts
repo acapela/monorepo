@@ -1,9 +1,9 @@
 import { Md } from "slack-block-builder";
 
+import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
-import { routes } from "~shared/routes";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
@@ -102,9 +102,10 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
       ).permalink
     : undefined;
 
+  const topicUrl = await backendGetTopicUrl(topic);
   const topicInfo: TopicInfo = {
     id: topic.id,
-    url: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
+    url: topicUrl,
     name: topic.name,
     isClosed: !!topic.closed_at,
     slackUserId,
@@ -114,12 +115,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
         generateMarkdownFromTipTapJson(message.content as RichEditorNode, generatorContext) +
         (message.attachment.length > 0
           ? "\n " +
-            Md.italic(
-              `(Attachment Included - ${createSlackLink(
-                process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }) + `/#${message.id}`,
-                "View in webapp"
-              )})`
-            )
+            Md.italic(`(Attachment Included - ${createSlackLink(topicUrl + `/#${message.id}`, "View in webapp")})`)
           : "");
 
       return {

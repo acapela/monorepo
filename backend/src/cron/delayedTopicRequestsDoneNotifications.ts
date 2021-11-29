@@ -2,10 +2,10 @@ import { addMinutes } from "date-fns";
 
 import { db } from "~db";
 import { assert } from "~shared/assert";
-import { routes } from "~shared/routes";
 
 import { createAllRequestsDoneNotificationMessage } from "../notifications/bodyBuilders/allRequestsDone";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
+import { backendGetTopicUrl } from "../topics/url";
 
 export async function delayedTopicRequestsDoneNotifications() {
   const now = new Date();
@@ -37,7 +37,7 @@ export async function delayedTopicRequestsDoneNotifications() {
       continue;
     }
 
-    const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
+    const topicURL = await backendGetTopicUrl(topic);
 
     sendNotificationPerPreference(
       topicOwner,

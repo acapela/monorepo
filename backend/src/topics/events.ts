@@ -6,11 +6,11 @@ import { Topic, TopicMember, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isEqualForPick } from "~shared/object";
-import { routes } from "~shared/routes";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
+import { backendGetTopicUrl } from "./url";
 
 function trackTopicChanges(event: HasuraEvent<Topic>) {
   if (!event.userId) return;
@@ -144,7 +144,7 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
       closedBy: topicCloser?.name,
       topicId: topic.id,
       topicName: topic.name,
-      topicURL: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
+      topicURL: await backendGetTopicUrl(topic),
     })
   );
 }
