@@ -10,7 +10,6 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { routes } from "~shared/routes";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -42,7 +41,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   });
 
   const handleTopicDuplicateRequest = action(async () => {
-    router.push(routes.topicDuplicate({ topicSlug: topic.slug }));
+    router.push(topic.duplicateHref);
   });
 
   const handleTopicArchive = action(async () => {
