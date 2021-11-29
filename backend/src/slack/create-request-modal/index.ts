@@ -132,7 +132,6 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    assert("messageText" in metadata, "create_request called with wrong arguments");
     // is the include channel members check box checked?
     const includeChannelMembers = !!find(
       get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
@@ -145,6 +144,7 @@ export function setupCreateRequestModal(app: App) {
     }
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
+    assert(messageText, "create_request called with wrong arguments");
     if (!(members && requestType && messageText && members.length > 0)) {
       return await ack({
         response_action: "errors",
