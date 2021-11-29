@@ -151,7 +151,12 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
       Blocks.Section({
         text: topic.slackMessagePermalink ? `<${topic.slackMessagePermalink}|View original Slack thread>` : " ",
       }).accessory(
-        Elements.Button({ text: "Close & Archive" }).value(topic.id).actionId(SlackActionIds.ArchiveTopic).danger(true)
+        topic.isClosed
+          ? Elements.Button({ text: "Re-Open" }).value(topic.id).actionId(SlackActionIds.ReOpenTopic).primary(true)
+          : Elements.Button({ text: "Close & Archive" })
+              .value(topic.id)
+              .actionId(SlackActionIds.ArchiveTopic)
+              .danger(true)
       )
     )
     .buildToObject();

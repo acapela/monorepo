@@ -59,6 +59,8 @@ export function setupSlackActionHandlers(slackApp: App) {
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
+    await ack();
+
     const topicId = action.value;
 
     const user = await findUserBySlackId(assertToken(context), body.user.id);
@@ -94,8 +96,24 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    await ack();
-    await say(`*${topic.name}* has been reopened.`);
+    const token = assertToken(context);
+    const origin = getViewOrigin(body.view);
+
+    if (origin === "slack-view-request-modal") {
+      await slackClient.views.update({
+        token,
+        view_id: body.view?.id,
+        view: await ViewRequestModal(token, {
+          slackUserId: body.user.id,
+          topicId,
+        }),
+      });
+
+      // Move task back into list
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    } else {
+      await say(`*${topic.name}* has been reopened.`);
+    }
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.CloseTopic, async ({ action, say, ack, body, context }) => {
@@ -126,12 +144,7 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    const isCalledFromSlackHome = body.view?.type == "home";
-    if (isCalledFromSlackHome) {
-      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
-    } else {
-      await say(`*${topic.name}* has been closed.`);
-    }
+    await say(`*${topic.name}* has been closed.`);
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {

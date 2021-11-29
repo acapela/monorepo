@@ -98,6 +98,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     id: topic.id,
     url: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
     name: topic.name,
+    isClosed: !!topic.closed_at,
     slackUserId,
     slackMessagePermalink,
     messages: topic.message.map((m) => ({
