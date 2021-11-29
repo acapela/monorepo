@@ -299,7 +299,11 @@ export function setupSlackActionHandlers(slackApp: App) {
       });
       return;
     }
-    await db.task.update({ where: { id: taskId }, data: { done_at: task.done_at ? null : new Date().toISOString() } });
+    const wasTaskCompleteBeforeToggle = task.done_at;
+    await db.task.update({
+      where: { id: taskId },
+      data: { done_at: wasTaskCompleteBeforeToggle ? null : new Date().toISOString() },
+    });
 
     const slackOrigin = getViewOrigin(body.view);
 
@@ -318,7 +322,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     }
 
     if (user) {
-      trackBackendUserEvent(user.id, "Marked Task As Done", {
+      trackBackendUserEvent(user.id, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
         taskType: task.type as RequestType,
         topicId: task.message.topic_id,
         origin: slackOrigin,
