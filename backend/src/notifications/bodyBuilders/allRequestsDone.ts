@@ -1,6 +1,5 @@
-import { BlockCollection, Blocks, Elements } from "slack-block-builder";
+import { BlockCollection, Blocks, Elements, Md } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/slack/md/utils";
 import { SlackActionIds } from "~backend/src/slack/utils";
 
 import { NotificationMessage } from "../sendNotification";
@@ -11,13 +10,8 @@ interface Props {
   topicURL: string;
 }
 
-export function createSlackAllRequestsDoneMessage({
-  topicId,
-  topicName,
-  topicURL,
-}: Props): Pick<NotificationMessage, "slack"> {
-  const sectionText = `All tasks have been completed in ${createSlackLink(
-    topicURL,
+export function createSlackAllRequestsDoneMessage({ topicId, topicName }: Props): Pick<NotificationMessage, "slack"> {
+  const sectionText = `All tasks have been completed in ${Md.bold(
     topicName
   )}. The request will automatically be closed in 24 hours.`;
 
@@ -25,9 +19,11 @@ export function createSlackAllRequestsDoneMessage({
     slack: BlockCollection(
       Blocks.Section({ text: sectionText }),
       Blocks.Actions().elements(
-        Elements.Button({ text: "Review", actionId: `open-external-url-all-request-done:${topicId}` })
-          .primary(true)
-          .url(topicURL),
+        Elements.Button({
+          actionId: "open_view_request_modal",
+          value: topicId,
+          text: "View Request",
+        }).primary(true),
         Elements.Button({ text: "Close & Archive" }).value(topicId).actionId(SlackActionIds.ArchiveTopic)
       )
     ),
