@@ -7,6 +7,7 @@ export type Origin =
   | "slack-command"
   | "slack-shortcut"
   | "slack-live-message"
+  | "slack-message-action"
   | "slack-home-tab"
   | "slack-view-request-modal"
   | "web-app"
