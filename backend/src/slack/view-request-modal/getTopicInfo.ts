@@ -1,3 +1,5 @@
+import { Md } from "slack-block-builder";
+
 import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
@@ -6,6 +8,7 @@ import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";
+import { createSlackLink } from "../md/utils";
 import { SlackMember, TopicInfo } from "./types";
 
 export async function getViewRequestViewModel(token: string, topicId: string, slackUserId: string) {
@@ -50,6 +53,11 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
         include: {
           message_task_due_date: true,
           task: true,
+          attachment: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
       topic_slack_message: true,
@@ -101,22 +109,36 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     isClosed: !!topic.closed_at,
     slackUserId,
     slackMessagePermalink,
-    messages: topic.message.map((m) => ({
-      message: {
-        id: m.id,
-        content: generateMarkdownFromTipTapJson(m.content as RichEditorNode, generatorContext),
-        createdAt: new Date(m.created_at),
-        fromUser: toSlackTeamMember(m.user_id),
-        fromUserImage: topic.topic_member.find((tm) => tm.user_id === m.user_id)?.user.avatar_url ?? undefined,
-      },
-      dueDate: m.message_task_due_date ? new Date(m.message_task_due_date.due_at) : undefined,
-      tasks: m.task.map((t) => ({
-        id: t.id,
-        user: toSlackTeamMember(t.user_id),
-        type: t.type as RequestType,
-        doneAt: t.done_at ? new Date(t.done_at) : undefined,
-      })),
-    })),
+    messages: topic.message.map((message) => {
+      const content =
+        generateMarkdownFromTipTapJson(message.content as RichEditorNode, generatorContext) +
+        (message.attachment.length > 0
+          ? "\n " +
+            Md.italic(
+              `(Attachment Included - ${createSlackLink(
+                process.env.FRONTEND_URL + routes.topic({ topicSlug: topic.slug }) + `/#${message.id}`,
+                "View in webapp"
+              )})`
+            )
+          : "");
+
+      return {
+        message: {
+          id: message.id,
+          content,
+          createdAt: new Date(message.created_at),
+          fromUser: toSlackTeamMember(message.user_id),
+          fromUserImage: topic.topic_member.find((tm) => tm.user_id === message.user_id)?.user.avatar_url ?? undefined,
+        },
+        dueDate: message.message_task_due_date ? new Date(message.message_task_due_date.due_at) : undefined,
+        tasks: message.task.map((t) => ({
+          id: t.id,
+          user: toSlackTeamMember(t.user_id),
+          type: t.type as RequestType,
+          doneAt: t.done_at ? new Date(t.done_at) : undefined,
+        })),
+      };
+    }),
   };
 
   return topicInfo;
