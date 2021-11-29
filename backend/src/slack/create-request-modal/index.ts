@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
+import { difference, find, get } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
@@ -13,7 +14,7 @@ import { MentionType } from "~shared/types/mention";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
-import { tryOpenRequestModal } from "./tryOpenRequestModal";
+import { openCreateRequestModal } from "./openCreateRequestModal";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
@@ -21,7 +22,7 @@ const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" 
 
 const hourToOption = (hour: number) => Bits.Option({ value: `${hour}`, text: format(new Date(0, 0, 0, hour), "h a") });
 
-export function setupRequestModal(app: App) {
+export function setupCreateRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
 
@@ -39,7 +40,7 @@ export function setupRequestModal(app: App) {
 
     await ack();
 
-    const { user } = await tryOpenRequestModal(assertToken(context), triggerId, {
+    const { user } = await openCreateRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
       slackTeamId,
@@ -58,7 +59,7 @@ export function setupRequestModal(app: App) {
   app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
     await ack();
 
-    const { user } = await tryOpenRequestModal(assertToken(context), shortcut.trigger_id, {
+    const { user } = await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
@@ -90,9 +91,9 @@ export function setupRequestModal(app: App) {
       `\n> from <${slackUrl.permalink}|slack message>` +
       (isOriginalMessageCreatedByAnotherUser ? ` by ${messageAuthorInfo.user?.real_name}` : "");
 
-    const { user } = await tryOpenRequestModal(assertToken(context), trigger_id, {
+    const { user } = await openCreateRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
-      messageTs: message.ts,
+      messageTs: message.thread_ts ?? message.ts,
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       messageText: messageBody,
@@ -105,13 +106,13 @@ export function setupRequestModal(app: App) {
     }
   });
 
-  listenToViewWithMetadata(app, "open_request_modal", async ({ ack, context, body, metadata }) => {
+  listenToViewWithMetadata(app, "open_create_request_modal", async ({ ack, context, body, metadata }) => {
     await ack();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await tryOpenRequestModal(assertToken(context), (body as any).trigger_id, metadata);
+    await openCreateRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
-  listenToViewWithMetadata<ViewSubmitAction>(app, "create_request", async (args) => {
+  listenToViewWithMetadata<ViewSubmitAction, "create_request">(app, "create_request", async (args) => {
     const { ack, view, body, client, context, metadata } = args;
     const {
       topic_block: {
@@ -124,6 +125,18 @@ export function setupRequestModal(app: App) {
         request_type_select: { selected_option: requestType },
       },
     } = view.state.values;
+
+    assert("messageText" in metadata, "create_request called with wrong arguments");
+    // is the include channel members check box checked?
+    const includeChannelMembers = !!find(
+      get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
+      ["value", "include_channel_members"]
+    );
+
+    let requestedObservers: string[] = [];
+    if (includeChannelMembers && metadata.channelInfo?.members) {
+      requestedObservers = difference(metadata.channelInfo?.members, members || []);
+    }
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     if (!(members && requestType && messageText && members.length > 0)) {
@@ -176,6 +189,7 @@ export function setupRequestModal(app: App) {
       rawTopicMessage: messageText,
       topicName,
       slackUserIdsWithMentionType,
+      requestedObservers,
     });
 
     if (!channelId) {

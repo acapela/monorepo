@@ -5,9 +5,12 @@ export function createSlackLink(url: string, name?: string) {
   return `<${escapeStringForSlackLink(url)}|${escapeStringForSlackLink(name)}>`;
 }
 
+// https://api.slack.com/reference/surfaces/formatting#date-formatting
 export const mdDate = (date: Date, format = "date_long_pretty") => {
-  const unixTime = date.getTime() / 1000;
-  return `<!date^${unixTime}^{${format}} {time}|${date.toISOString()}>`;
+  const unixTime = Math.floor(date.getTime() / 1000);
+  return format !== "time"
+    ? `<!date^${unixTime}^{${format}} {time}|${date.toISOString()}>`
+    : `<!date^${unixTime}^{time}|${date.toISOString()}>`;
 };
 
 export function createSlackInviteNotification(inviterName: string, inviteUrl: string) {

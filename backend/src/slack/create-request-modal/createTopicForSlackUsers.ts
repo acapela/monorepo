@@ -1,3 +1,5 @@
+import { compact, uniq } from "lodash";
+
 import { sendInviteNotification } from "~backend/src/inviteUser";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
@@ -178,6 +180,7 @@ export async function createTopicForSlackUsers({
   topicName,
   rawTopicMessage,
   slackUserIdsWithMentionType,
+  requestedObservers,
 }: {
   token: string;
   teamId: string;
@@ -187,6 +190,7 @@ export async function createTopicForSlackUsers({
   topicName: Maybe<string>;
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
+  requestedObservers: string[];
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -195,6 +199,12 @@ export async function createTopicForSlackUsers({
     slackUserIdsWithMentionType,
   });
 
+  const observerUsers = compact(
+    (await Promise.all(requestedObservers.map((slackUserId) => findUserBySlackId(token, slackUserId, teamId)))).map(
+      (u) => u?.id
+    )
+  );
+
   const messageContent = transformMessage(
     rawTopicMessage,
     slackTeamId,
@@ -202,7 +212,12 @@ export async function createTopicForSlackUsers({
   );
 
   const messageContentText = convertMessageContentToPlainText(messageContent);
-  const userIds = new Set(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
+  const userIds = uniq(
+    usersWithMentionType
+      .map(({ userId }) => userId)
+      .concat(ownerId)
+      .concat(observerUsers)
+  );
   topicName = topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
   const topic = await db.topic.create({
     data: {
