@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Block, KnownBlock } from "@slack/bolt";
 import { ChatPostMessageResponse } from "@slack/web-api";
 import { pick } from "lodash";
@@ -8,6 +7,7 @@ import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
 import { User, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { EmailData, sendEmail } from "~shared/email";
+import { logger } from "~shared/logger";
 
 type SlackMessage = string | (KnownBlock | Block)[];
 type SlackPayload = SlackMessage | (() => Promise<SlackMessage>);
@@ -41,8 +41,7 @@ async function sendNotification(
     ]);
     return slackMessage?.ok ? { slackMessage } : {};
   } catch (error) {
-    Sentry.captureException(error);
-    console.error(error);
+    logger.error(error);
     return {};
   }
 }

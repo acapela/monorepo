@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 
 import { getUserIdFromRequest } from "~backend/src/utils";
 import { db } from "~db";
-import { log } from "~shared/logger";
+import { logger } from "~shared/logger";
 
 import { BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";
@@ -38,6 +38,6 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   }
 
   const downloadUrl = await getSignedDownloadUrl(attachmentId, attachment.mime_type);
-  log.info(`serving attachment ${attachmentId}`);
+  logger.info(`serving attachment ${attachmentId}`);
   res.redirect(downloadUrl);
 });

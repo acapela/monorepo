@@ -218,7 +218,8 @@ export async function createTopicForSlackUsers({
       .concat(ownerId)
       .concat(observerUsers)
   );
-  topicName = topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
+  topicName =
+    topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH).replaceAll("\n", "");
   const topic = await db.topic.create({
     data: {
       team_id: teamId,

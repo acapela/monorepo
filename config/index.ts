@@ -1,7 +1,5 @@
 import "./dotenv";
 
-import { warn } from "~shared/logger";
-
 let isLoaded = false;
 let loadingPromise: Promise<void> | null = null;
 
@@ -30,7 +28,7 @@ export async function initializeSecrets(): Promise<void> {
   // setting required env variables locally.
 
   if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined) {
-    warn(`Skipping google secrets initialization in dev mode. Use .env variables file instead`);
+    console.warn(`Skipping google secrets initialization in dev mode. Use .env variables file instead`);
     isLoaded = true;
     return;
   }

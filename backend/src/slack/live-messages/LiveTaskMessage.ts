@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
-import * as Sentry from "@sentry/node";
 import { Blocks, Md, Message as SlackMessage } from "slack-block-builder";
 
 import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
+import { logger } from "~shared/logger";
 import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
@@ -84,7 +84,6 @@ export async function tryUpdateTaskSlackMessages(where: {
       })
     );
   } catch (error) {
-    Sentry.captureException(error);
-    console.error("error while updating task slack message", error);
+    logger.error(error, "error while updating task slack message");
   }
 }

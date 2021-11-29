@@ -5,7 +5,7 @@ import { getSlackUserMentionOrLabel } from "~backend/src/slack/utils";
 import { Account, Team, User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { log } from "~shared/logger";
+import { logger } from "~shared/logger";
 import { routes } from "~shared/routes";
 
 import { getInviteURL } from "./utils";
@@ -43,7 +43,7 @@ export async function handleInviteNotifications(
   const hasUserSignedUp = user.account.length > 0;
   await sendInviteNotification(user, team, inviter, hasUserSignedUp);
 
-  log.info("Sent invite notification", { userId: user.id, teamId });
+  logger.info("Sent invite notification", { userId: user.id, teamId });
 }
 
 export const inviteUser: ActionHandler<{ input: { email: string; team_id: string } }, { success: boolean }> = {
