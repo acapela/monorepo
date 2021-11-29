@@ -1,0 +1,8 @@
+namespace: default
+resources:
+  - service-account.yaml
+  - pod.yaml
+configMapGenerator:
+  - name: kubewatch
+    files:
+      - .kubewatch.yaml

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubewatch
+spec:
+  serviceAccountName: kubewatch
+  containers:
+    - image: bitnami/kubewatch
+      imagePullPolicy: Always
+      name: kubewatch
+      volumeMounts:
+        - name: config-volume
+          mountPath: /root
+      env:
+        - name: HOME
+          value: /root
+        - name: KW_CONFIG
+          value: /root
+  restartPolicy: Always
+  volumes:
+    - name: config-volume
+      configMap:
+        name: kubewatch

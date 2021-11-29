@@ -1,0 +1,10 @@
+namespace: ""
+handler:
+  slack:
+    token: "xoxb-111111111111111111111111111"
+    channel: "k8s-monitoring"
+resource:
+  deployment: true
+  namespace: false
+  services: true
+  pod: true
