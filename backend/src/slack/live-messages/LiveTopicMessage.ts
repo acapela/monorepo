@@ -8,7 +8,7 @@ import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
-import { fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "../utils";
+import { fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
 
 const makeSlackMessageTextWithContent = async (topic: Topic, message: Message) =>
@@ -77,10 +77,10 @@ export async function tryUpdateTopicSlackMessage(topic: Topic) {
     return;
   }
   const [teamMemberToken, teamToken] = await Promise.all([
-    fetchTeamMemberBotToken(topic.owner_id, topic.team_id),
+    fetchTeamMemberToken(topic.owner_id, topic.team_id),
     fetchTeamBotToken(topic.team_id),
   ]);
-  const token = assertDefined(teamMemberToken ?? teamToken, "must have one of the two tokens");
+  const token = assertDefined(topicSlackMessage.was_sent_by_bot ? teamToken : teamMemberToken, "must have token");
   try {
     await slackClient.chat.update({
       ...(await LiveTopicMessage(topic, {

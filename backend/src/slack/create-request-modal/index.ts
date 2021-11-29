@@ -12,7 +12,13 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import { SlackActionIds, assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import {
+  SlackActionIds,
+  assertToken,
+  createTeamMemberUserFromSlack,
+  findUserBySlackId,
+  listenToViewWithMetadata,
+} from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 
@@ -155,13 +161,12 @@ export function setupCreateRequestModal(app: App) {
 
     const ownerSlackUserId = body.user.id;
 
-    const [team, owner] = await Promise.all([
-      db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
-      findUserBySlackId(token, ownerSlackUserId),
-    ]);
-
+    const team = await db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } });
     assert(team, "must have a team");
-    assert(owner, "must have a user");
+
+    const owner =
+      (await findUserBySlackId(token, ownerSlackUserId, team.id)) ??
+      (await createTeamMemberUserFromSlack(token, ownerSlackUserId, team.id)).user;
 
     const slackUserIdsWithMentionType: { slackUserId: string; mentionType?: MentionType }[] = members.map((id) => ({
       slackUserId: id,
@@ -205,6 +210,7 @@ export function setupCreateRequestModal(app: App) {
       return;
     }
 
+    await client.conversations.join({ token, channel: channelId });
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,
