@@ -74,5 +74,19 @@
     "Uncategorized",
     "Unprocessable",
     "Userback"
-  ]
+  ],
+  "replace-on-save": {
+    "enabled": true,
+    "replacements": [
+      {
+        "languageIdentifiers": ["typescriptreact", "typescriptreact", "ts", "tsx"],
+        "rules": [
+          {
+            "search": "~frontend/../../",
+            "replace": "~"
+          }
+        ]
+      }
+    ]
+  }
 }

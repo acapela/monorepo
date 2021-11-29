@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { isNotNullish } from "~shared/nullish";
+import { FadePresenceAnimator } from "~ui/animations";
 import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
 import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
@@ -14,9 +15,11 @@ import { MessageTask } from "./MessageTask";
 
 interface Props {
   tasks: TaskEntity[];
+  label: string;
+  isPrimary?: boolean;
 }
 
-export const MessageTasksPeople = observer(function MessageTasksPeople({ tasks }: Props) {
+export const MessageTasksPeople = observer(function MessageTasksPeople({ tasks, label, isPrimary = false }: Props) {
   const users = tasks.map((task) => task.assignedUser).filter(isNotNullish);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -26,9 +29,12 @@ export const MessageTasksPeople = observer(function MessageTasksPeople({ tasks }
     <>
       <UIHolder ref={ref} onClick={() => setIsPopoverOpen(true)}>
         <AvatarList maxVisibleCount={3} users={users} />
-        <UICountLabel>
-          {users.length} {users.length !== 1 ? "recipients" : "recipient"}
-        </UICountLabel>
+        <UIMeta>
+          <UICountLabel>
+            {users.length} {users.length !== 1 ? "recipients" : "recipient"}
+          </UICountLabel>
+          <UIKindLabel $isPrimary={isPrimary}>{label}</UIKindLabel>
+        </UIMeta>
       </UIHolder>
       <AnimatePresence>
         {isPopoverOpen && (
@@ -45,14 +51,24 @@ export const MessageTasksPeople = observer(function MessageTasksPeople({ tasks }
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled(FadePresenceAnimator)`
   display: flex;
   align-items: center;
   ${theme.spacing.actions.asGap};
   cursor: pointer;
 `;
 
-const UICountLabel = styled.div``;
+const UIMeta = styled.div``;
+
+const UICountLabel = styled.div`
+  ${theme.typo.item.title}
+`;
+
+const UIKindLabel = styled.div<{ $isPrimary: boolean }>`
+  ${theme.typo.label.opacity(0.8).medium}
+
+  ${(props) => props.$isPrimary && theme.colors.primary.asColor};
+`;
 
 const UICollapsedTasks = styled(UIDropdownPanelBody)<{}>`
   display: flex;
