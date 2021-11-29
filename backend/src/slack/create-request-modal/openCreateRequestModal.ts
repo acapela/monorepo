@@ -156,12 +156,11 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
   if (!infoRes.ok || !infoRes.channel || !membersRes.ok || !membersRes.members) return null;
   // ignore too large channels
   if (membersRes.members.length > 99) return null;
-  // ignore channel if public or not a direct message,
-  if (!infoRes.channel.is_private && !infoRes.channel.is_im) return null;
 
   return {
     members: await excludeBotUsers(token, membersRes.members),
     name: infoRes.channel.name,
+    isPrivate: !!infoRes.channel.is_private || !!infoRes.channel.is_im,
     conversationType: infoRes.channel.is_mpim ? "group" : infoRes.channel.is_im ? "direct" : "channel",
   };
 }
@@ -208,8 +207,9 @@ export async function openCreateRequestModal(
   if (channelInfo) channelInfo.members = without(channelInfo.members, slackUserId);
 
   let requestToSlackUserIds = slackUserIdsFromMessage;
-  // if there is no real user mentioned add all channel members
-  if (requestToSlackUserIds.length === 0 && channelInfo) {
+
+  // if there is no real user mentioned prefill all channel members
+  if (requestToSlackUserIds.length === 0 && channelInfo && channelInfo.isPrivate) {
     requestToSlackUserIds = channelInfo.members;
   }
 
