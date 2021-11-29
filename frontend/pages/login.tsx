@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { DEFAULT_REDIRECT_URL } from "~frontend/config";
 import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
@@ -44,5 +43,5 @@ function useRedirectWhenAuthenticated() {
 function readRedirectUrl(query: ParsedUrlQuery): string {
   const redirectUrl = Array.isArray(query.redirectUrl) ? query.redirectUrl[0] : query.redirectUrl;
 
-  return redirectUrl || DEFAULT_REDIRECT_URL;
+  return redirectUrl || "/";
 }
