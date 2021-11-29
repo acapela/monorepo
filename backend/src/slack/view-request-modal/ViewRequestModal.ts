@@ -33,7 +33,7 @@ function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserI
     Elements.Button({
       text: `💬 Reply to ${message.fromUser.name}`,
       actionId: `open-external-url-reply-button:${message.id}`,
-      url: `${topicURL}/#${message.id}`,
+      url: `${topicURL}#${message.id}`,
     }),
   ]);
 }
@@ -114,7 +114,7 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
       Elements.Button({
         text: `Reply`,
         actionId: `open-external-url-reply-button:${message.id}`,
-        url: `${topicURL}/#${message.id}`,
+        url: `${topicURL}#${message.id}`,
       })
     ),
   ];

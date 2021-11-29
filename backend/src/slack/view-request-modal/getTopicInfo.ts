@@ -115,7 +115,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
         generateMarkdownFromTipTapJson(message.content as RichEditorNode, generatorContext) +
         (message.attachment.length > 0
           ? "\n " +
-            Md.italic(`(Attachment Included - ${createSlackLink(topicUrl + `/#${message.id}`, "View in webapp")})`)
+            Md.italic(`(Attachment Included - ${createSlackLink(topicUrl + `#${message.id}`, "View in webapp")})`)
           : "");
 
       return {
