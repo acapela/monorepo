@@ -3,7 +3,14 @@ import { Message_Type_Enum } from "~gql";
 import { Maybe } from "../types";
 import { RequestType } from "./mention";
 
-type Origin = "slack-command" | "slack-shortcut" | "slack-message-action" | "slack-home-tab" | "web-app" | "unknown";
+export type Origin =
+  | "slack-command"
+  | "slack-shortcut"
+  | "slack-live-message"
+  | "slack-home-tab"
+  | "slack-view-request-modal"
+  | "web-app"
+  | "unknown";
 
 /**
  * Map of tracking event types with their required payload.
@@ -60,8 +67,14 @@ export type AnalyticsEventsMap = {
   "Marked Task As Done": {
     taskType: RequestType;
     topicId: string;
-    origin: "webapp" | "slack-home" | "slack-live-message" | "unknown";
+    origin: Origin;
   };
+  "Marked Task As Not Done": {
+    taskType: RequestType;
+    topicId: string;
+    origin: Origin;
+  };
+
   "Added Due Date": { topicId: string; messageId: string; origin: Origin };
 
   "Opened App": { currentTeamId: string; loadingTime: number };
