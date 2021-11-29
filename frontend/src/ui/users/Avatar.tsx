@@ -46,7 +46,7 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
 
   font-weight: 600;
 
-  ${theme.colors.action.icon.asBgWithReadableText};
+  ${theme.colors.functional.userAvatar.asBgWithReadableText};
   ${theme.radius.circle};
   overflow: hidden;
 

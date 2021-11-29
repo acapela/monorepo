@@ -78,4 +78,7 @@ export const colors = {
     read: blue,
     observe: black.opacity(0.5),
   },
+  functional: {
+    userAvatar: blue,
+  },
 };
