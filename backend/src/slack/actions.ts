@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import { App, BlockButtonAction } from "@slack/bolt";
+import { App, BlockButtonAction, ViewOutput } from "@slack/bolt";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { Blocks, Modal } from "slack-block-builder";
 
@@ -9,6 +9,7 @@ import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { Sentry } from "~shared/sentry";
+import { Origin } from "~shared/types/analytics";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
@@ -16,6 +17,27 @@ import { openCreateRequestModal } from "./create-request-modal/openCreateRequest
 import { updateHomeView } from "./home-tab";
 import { createSlackLink, mdDate } from "./md/utils";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
+import { ViewRequestModal } from "./view-request-modal/ViewRequestModal";
+
+type SlackViewOrigin = Extract<
+  Origin,
+  "slack-live-message" | "slack-home-tab" | "slack-view-request-modal" | "unknown"
+>;
+
+function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
+  if (!view) {
+    return "slack-live-message";
+  }
+
+  if (view.type === "home") {
+    return "slack-home-tab";
+  }
+  if (view.type === "modal" && view.callback_id === "view_request_modal") {
+    return "slack-view-request-modal";
+  }
+
+  return "unknown";
+}
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
@@ -37,6 +59,8 @@ export function setupSlackActionHandlers(slackApp: App) {
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ReOpenTopic, async ({ action, say, ack, context, body }) => {
+    await ack();
+
     const topicId = action.value;
 
     const user = await findUserBySlackId(assertToken(context), body.user.id);
@@ -72,8 +96,24 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    await ack();
-    await say(`*${topic.name}* has been reopened.`);
+    const token = assertToken(context);
+    const origin = getViewOrigin(body.view);
+
+    if (origin === "slack-view-request-modal") {
+      await slackClient.views.update({
+        token,
+        view_id: body.view?.id,
+        view: await ViewRequestModal(token, {
+          slackUserId: body.user.id,
+          topicId,
+        }),
+      });
+
+      // Move task back into list
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    } else {
+      await say(`*${topic.name}* has been reopened.`);
+    }
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.CloseTopic, async ({ action, say, ack, body, context }) => {
@@ -104,12 +144,7 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    const isCalledFromSlackHome = body.view?.type == "home";
-    if (isCalledFromSlackHome) {
-      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
-    } else {
-      await say(`*${topic.name}* has been closed.`);
-    }
+    await say(`*${topic.name}* has been closed.`);
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
@@ -147,8 +182,20 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    const isCalledFromSlackHome = body.view?.type == "home";
-    if (isCalledFromSlackHome) {
+    const token = assertToken(context);
+    const origin = getViewOrigin(body.view);
+
+    if (origin === "slack-view-request-modal") {
+      await slackClient.views.update({
+        token,
+        view_id: body.view?.id,
+        view: await ViewRequestModal(token, {
+          slackUserId: body.user.id,
+          topicId,
+        }),
+      });
+
+      // Excluding task from list
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
     } else {
       await say(`*${topic.name}* has been archived.`);
@@ -252,18 +299,33 @@ export function setupSlackActionHandlers(slackApp: App) {
       });
       return;
     }
-    await db.task.update({ where: { id: taskId }, data: { done_at: task.done_at ? null : new Date().toISOString() } });
+    const wasTaskCompleteBeforeToggle = task.done_at;
+    await db.task.update({
+      where: { id: taskId },
+      data: { done_at: wasTaskCompleteBeforeToggle ? null : new Date().toISOString() },
+    });
 
-    const isCalledFromSlackHome = body.view?.type == "home";
-    if (isCalledFromSlackHome) {
+    const slackOrigin = getViewOrigin(body.view);
+
+    if (slackOrigin === "slack-view-request-modal") {
+      await slackClient.views.update({
+        token,
+        view_id: body.view?.id,
+        view: await ViewRequestModal(token, {
+          slackUserId: body.user.id,
+          topicId: task.message.topic_id,
+        }),
+      });
+
+      // Updating homeview as task may have moved to open
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
     }
 
     if (user) {
-      trackBackendUserEvent(user.id, "Marked Task As Done", {
+      trackBackendUserEvent(user.id, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
         taskType: task.type as RequestType,
         topicId: task.message.topic_id,
-        origin: isCalledFromSlackHome ? "slack-home" : "slack-live-message",
+        origin: slackOrigin,
       });
     }
   });

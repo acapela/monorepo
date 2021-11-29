@@ -1,7 +1,6 @@
-import assert from "assert";
-
 import { Topic, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
+import { assert } from "~shared/assert";
 import { routes } from "~shared/routes";
 import { getTopicSlug } from "~shared/routes/topicSlug";
 
@@ -16,7 +15,7 @@ import { getTopicSlug } from "~shared/routes/topicSlug";
  * To avoid confusion - I added backend prefix to make it explicit.
  */
 export async function backendGetTopicUrl(topic: Topic, hrefOnly = false) {
-  const team = await db.team.findFirst({ where: { id: topic.id } });
+  const team = await db.team.findFirst({ where: { id: topic.team_id } });
   const firstMessage = await db.message.findFirst({ where: { topic_id: topic.id }, orderBy: { created_at: "asc" } });
 
   assert(team, `Cannot create topic url - no team with id ${topic.team_id}`);
