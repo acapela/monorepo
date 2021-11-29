@@ -1,4 +1,4 @@
-import { LayoutGroup } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
@@ -7,6 +7,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
+import { groupByFilter } from "~shared/groupByFilter";
 import { theme } from "~ui/theme";
 
 import { MessageTasksPeople } from "./MessageTasksPeople";
@@ -24,6 +25,8 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
   const allTasks = tasks.all;
 
+  const [completedTasks, pendingTasks] = groupByFilter(allTasks, (task) => task.isDone);
+
   if (!message.tasks.hasItems) {
     return null;
   }
@@ -35,11 +38,16 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
       <LayoutGroup>
         {selfTask && <OwnTaskCompletionButton task={selfTask} />}
         <TaskDueDateSetter message={message} />
+
+        <UIDivider />
+
+        <UIParticipantsGroups layout="position">
+          <AnimatePresence>
+            {pendingTasks.length > 0 && <MessageTasksPeople tasks={pendingTasks} label="Pending" />}
+            {completedTasks.length > 0 && <MessageTasksPeople tasks={completedTasks} label="Done" isPrimary />}
+          </AnimatePresence>
+        </UIParticipantsGroups>
       </LayoutGroup>
-
-      <UIDivider />
-
-      <MessageTasksPeople tasks={allTasks} />
     </UIHolder>
   );
 })``;
@@ -58,4 +66,11 @@ const UIDivider = styled.div<{}>`
   align-self: stretch;
   ${theme.colors.layout.divider.asBg};
   margin: 0 5px;
+`;
+
+const UIParticipantsGroups = styled(motion.div)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  ${theme.spacing.sections.asGap}
 `;
