@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import { Blocks, Md, Message as SlackMessage } from "slack-block-builder";
+import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
 import { Message, Task, Topic, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
@@ -20,7 +20,7 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
   Object.entries(groupBy(tasks, (task) => task.type))
     .map(([type, tasks]) => {
       const isTaskTypeDone = tasks.every((t) => t.done_at);
-      const taskText = `${Md.bold(MENTION_TYPE_LABELS[type as RequestType])} requested from ${tasks
+      const taskText = `${Md.bold(MENTION_TYPE_LABELS[type as RequestType])} requested by ${tasks
         .map(({ user, done_at }) => {
           const userText = slackUsers[user.id] ? Md.user(slackUsers[user.id]) : Md.italic(user.name);
           return !isTaskTypeDone && done_at ? Md.strike(userText) : userText;
@@ -40,7 +40,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
   assert(message, "must have a first message");
 
   const text = options?.isMessageContentExcluded
-    ? Md.bold(`Made Acapela Request ➡️ ${await createTopicLink(topic)}`)
+    ? Md.italic("New Acapela Request Created:") + `\n> "${Md.bold(topic.name)}"`
     : await makeSlackMessageTextWithContent(topic, message);
 
   const tasks = message.task;
@@ -50,7 +50,13 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
   const dueAt = message.message_task_due_date?.due_at;
   return SlackMessage({ text })
     .blocks(
-      Blocks.Section({ text }),
+      Blocks.Section({ text }).accessory(
+        Elements.Button({
+          actionId: "open_view_request_modal",
+          value: topic.id,
+          text: "View Request",
+        }).primary(true)
+      ),
       Blocks.Divider(),
       topic.closed_at || tasks.length == 0
         ? Blocks.Section({ text: "All tasks have been completed 🎉" })

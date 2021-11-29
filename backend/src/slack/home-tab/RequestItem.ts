@@ -25,7 +25,7 @@ export async function RequestItem(topic: TopicWithOpenTask, context: GenerateCon
       Elements.Button({
         actionId: "open_view_request_modal",
         value: topic.id,
-        text: "Open",
+        text: "View Request",
       })
     ),
   ];
