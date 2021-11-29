@@ -13,3 +13,13 @@ export async function slugify(text: string): Promise<string> {
   if (slug.length != 0) return slug;
   return slugifyWithEmojis(text);
 }
+
+export function slugifySync(text: string, emptyResultBackup: string) {
+  const slug = _slugify(text);
+
+  if (!slug.length) {
+    return emptyResultBackup;
+  }
+
+  return slug;
+}

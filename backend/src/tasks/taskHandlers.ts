@@ -6,8 +6,9 @@ import { Task, Topic, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isEqualForPick } from "~shared/object";
-import { routes } from "~shared/routes";
 import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/mention";
+
+import { backendGetTopicUrl } from "../topics/url";
 
 export async function handleTaskChanges(event: HasuraEvent<Task>) {
   if (event.type === "create") {
@@ -24,7 +25,7 @@ async function sendTaskNotification(topic: Topic, task: Task, toUser: User, from
   }
 
   const teamId = topic.team_id;
-  const topicURL = `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`;
+  const topicURL = await backendGetTopicUrl(topic);
   const taskLabel = MENTION_TYPE_LABELS[task.type as MentionType] ?? "attention";
   const { slackMessage } = await sendNotificationPerPreference(toUser, teamId, {
     email: {

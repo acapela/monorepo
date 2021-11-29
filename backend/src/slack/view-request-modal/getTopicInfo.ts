@@ -1,7 +1,7 @@
+import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
-import { routes } from "~shared/routes";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
@@ -96,7 +96,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
 
   const topicInfo: TopicInfo = {
     id: topic.id,
-    url: `${process.env.FRONTEND_URL}${routes.topic({ topicSlug: topic.slug })}`,
+    url: await backendGetTopicUrl(topic),
     name: topic.name,
     slackUserId,
     slackMessagePermalink,

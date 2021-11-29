@@ -52,7 +52,7 @@ const getRelativeDueTimeLabel = (dueDate: Date) => {
 };
 
 export const RequestItem = observer(function RequestItem({ topic }: Props) {
-  const topicRouteParams = useRouteParams(routes.topic);
+  const topicRouteParams = useRouteParams(routes._deprecated_topic);
   const elementRef = useRef<HTMLAnchorElement>(null);
   const isHovered = useIsElementOrChildHovered(elementRef);
 
@@ -67,7 +67,7 @@ export const RequestItem = observer(function RequestItem({ topic }: Props) {
         {isHovered && !isHighlighted && <RequestMessagePreview anchorRef={elementRef} topic={topic} />}
       </AnimatePresence>
 
-      <Link passHref href={routes.topic({ topicSlug: topic.slug })}>
+      <Link passHref href={topic.href}>
         <UIFeedItem $isHighlighted={isHighlighted} ref={elementRef}>
           <RequestParticipants topic={topic} />
           <UIFeedItemLabels>

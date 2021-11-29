@@ -5,10 +5,13 @@ import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
 import { isNotNullish } from "~shared/nullish";
+import { routes } from "~shared/routes";
+import { getTopicSlug } from "~shared/routes/topicSlug";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { TaskEntity, taskEntity } from "./task";
+import { teamEntity } from "./team";
 import { topicEventEntity } from "./topicEvent";
 import { UserEntity, userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
@@ -126,6 +129,39 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       get isCurrentUserMember() {
         return Boolean(currentUserId && connections.members.some((user) => user.id === currentUserId));
+      },
+      get team() {
+        return getEntity(teamEntity).findById(topic.team_id);
+      },
+      get href() {
+        const team = connections.team;
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const firstMessage = connections.messages.first!;
+
+        const slug = getTopicSlug(firstMessage.content, topic.name);
+
+        return routes.topicByHandle({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          teamSlug: team!.slug,
+          topicSlug: slug,
+          topicId: topic.id,
+        });
+      },
+      get duplicateHref() {
+        const team = connections.team;
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const firstMessage = connections.messages.first!;
+
+        const slug = getTopicSlug(firstMessage.content, topic.name);
+
+        return routes.topicDuplicate({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          teamSlug: team!.slug,
+          topicSlug: slug,
+          topicId: topic.id,
+        });
       },
       get isOwn() {
         return topic.owner_id === currentUserId;

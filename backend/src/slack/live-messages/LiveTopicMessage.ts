@@ -12,7 +12,7 @@ import { fetchTeamBotToken, fetchTeamMemberBotToken, findSlackUserId } from "../
 import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
 
 const makeSlackMessageTextWithContent = async (topic: Topic, message: Message) =>
-  Md.bold(`[Acapela request] ${createTopicLink(topic)}`) +
+  Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
   "\n" +
   (await generateMessageTextWithMentions(topic, message));
 
@@ -40,7 +40,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
   assert(message, "must have a first message");
 
   const text = options?.isMessageContentExcluded
-    ? Md.bold(`Made Acapela Request ➡️ ${createTopicLink(topic)}`)
+    ? Md.bold(`Made Acapela Request ➡️ ${await createTopicLink(topic)}`)
     : await makeSlackMessageTextWithContent(topic, message);
 
   const tasks = message.task;
