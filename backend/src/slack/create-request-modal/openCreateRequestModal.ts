@@ -45,7 +45,7 @@ const AuthForCreateRequestModal = async (
       }),
       Blocks.Section({
         text: `Head over ${createSlackLink(
-          await getSlackInstallURL("user-only", { teamId, userId: user?.id }),
+          await getSlackInstallURL({ teamId, userId: user?.id }),
           "here"
         )} to authorize it and then try again.`,
       }),

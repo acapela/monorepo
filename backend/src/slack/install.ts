@@ -6,12 +6,13 @@ import { botScopes, userScopes } from "~shared/slack";
 import { slackReceiver } from "./app";
 import { InstallMetadata } from "./installMetadata";
 
-export const getSlackInstallURL = async (mode: "full" | "user-only", metadata: InstallMetadata) => {
+export const getSlackInstallURL = async (metadata: InstallMetadata, scopes: string[] = []) => {
   const basePath = IS_DEV ? (await getDevPublicTunnelURL(3000)) + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
   return assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
     userScopes,
-    scopes: mode == "full" ? botScopes : [],
+    scopes,
     redirectUri: basePath + "/slack/oauth_redirect",
     metadata: JSON.stringify(metadata),
   });
 };
+export const getTeamSlackInstallURL = async (metadata: InstallMetadata) => getSlackInstallURL(metadata, botScopes);
