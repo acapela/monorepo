@@ -103,7 +103,8 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
 
   if (userId && task.done_at && task.done_at !== taskBefore.done_at) {
     // userId is null when the update is not triggered through the frontend
-    trackBackendUserEvent(userId, "Marked Task As Done", {
+    const wasTaskCompleteBeforeToggle = taskBefore.done_at;
+    trackBackendUserEvent(userId, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
       taskType: task.type as RequestType,
       topicId: topic.id,
       origin: "unknown",

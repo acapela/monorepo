@@ -24,6 +24,7 @@ export interface TopicInfo {
   url: string;
   slackUserId: string;
   name: string;
+  isClosed: boolean;
   messages: MessageInfo[];
   slackMessagePermalink?: string;
 }
