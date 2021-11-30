@@ -66,8 +66,29 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
 
   assert(topic, "topic not found");
 
-  function toSlackTeamMember(userId: string): SlackMember {
-    const userWithTeamAndSlackMember = topic?.topic_member.find((tm) => tm.user_id === userId)?.user;
+  async function toSlackTeamMember(userId: string): Promise<SlackMember> {
+    let userWithTeamAndSlackMember = topic?.topic_member.find((tm) => tm.user_id === userId)?.user;
+
+    // Hack - When topic_owner is not part of team member for old requests
+    // (created before https://github.com/weareacapela/monorepo/pull/703)
+    if (userId === topic?.owner_id && !userWithTeamAndSlackMember) {
+      userWithTeamAndSlackMember =
+        (await db.user.findFirst({
+          where: {
+            id: userId,
+          },
+          include: {
+            team_member: {
+              include: {
+                team_member_slack: true,
+              },
+              where: {
+                team_id: topic.team_id,
+              },
+            },
+          },
+        })) ?? undefined;
+    }
 
     assert(userWithTeamAndSlackMember, "user not found");
 
@@ -80,12 +101,12 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
 
   const mentionedSlackIdByUsersId = Object.assign(
     {},
-    ...topic.topic_member.map((tm) => ({
-      [tm.user_id]: {
-        name: tm.user.name,
-        slackId: tm.user.team_member[0].team_member_slack?.slack_user_id,
-      },
-    }))
+    ...topic.topic_member.map((tm) => {
+      const slackId = tm.user.team_member[0].team_member_slack?.slack_user_id;
+      return {
+        [tm.user_id]: slackId ? { slackId } : { name: tm.user.name },
+      };
+    })
   );
 
   const generatorContext: GenerateContext = {
@@ -110,31 +131,36 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     isClosed: !!topic.closed_at,
     slackUserId,
     slackMessagePermalink,
-    messages: topic.message.map((message) => {
-      const content =
-        generateMarkdownFromTipTapJson(message.content as RichEditorNode, generatorContext) +
-        (message.attachment.length > 0
-          ? "\n " +
-            Md.italic(`(Attachment Included - ${createSlackLink(topicUrl + `#${message.id}`, "View in webapp")})`)
-          : "");
+    messages: await Promise.all(
+      topic.message.map(async (message) => {
+        const content =
+          generateMarkdownFromTipTapJson(message.content as RichEditorNode, generatorContext) +
+          (message.attachment.length > 0
+            ? "\n " +
+              Md.italic(`(Attachment Included - ${createSlackLink(topicUrl + `#${message.id}`, "View in webapp")})`)
+            : "");
 
-      return {
-        message: {
-          id: message.id,
-          content,
-          createdAt: new Date(message.created_at),
-          fromUser: toSlackTeamMember(message.user_id),
-          fromUserImage: topic.topic_member.find((tm) => tm.user_id === message.user_id)?.user.avatar_url ?? undefined,
-        },
-        dueDate: message.message_task_due_date ? new Date(message.message_task_due_date.due_at) : undefined,
-        tasks: message.task.map((t) => ({
-          id: t.id,
-          user: toSlackTeamMember(t.user_id),
-          type: t.type as RequestType,
-          doneAt: t.done_at ? new Date(t.done_at) : undefined,
-        })),
-      };
-    }),
+        return {
+          message: {
+            id: message.id,
+            content,
+            createdAt: new Date(message.created_at),
+            fromUser: await toSlackTeamMember(message.user_id),
+            fromUserImage:
+              topic.topic_member.find((tm) => tm.user_id === message.user_id)?.user.avatar_url ?? undefined,
+          },
+          dueDate: message.message_task_due_date ? new Date(message.message_task_due_date.due_at) : undefined,
+          tasks: await Promise.all(
+            message.task.map(async (t) => ({
+              id: t.id,
+              user: await toSlackTeamMember(t.user_id),
+              type: t.type as RequestType,
+              doneAt: t.done_at ? new Date(t.done_at) : undefined,
+            }))
+          ),
+        };
+      })
+    ),
   };
 
   return topicInfo;
