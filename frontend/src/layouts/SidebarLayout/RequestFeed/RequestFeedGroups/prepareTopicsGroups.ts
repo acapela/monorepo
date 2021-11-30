@@ -6,6 +6,8 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { isNotNullish } from "~shared/nullish";
 
+import { getNearestTaskDueDateForCurrentUser } from "./shared";
+
 const hasTopicOpenTasksForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
     return topic.tasks.query({ isAssignedToSelf: true, isDone: false }).hasItems;
@@ -18,18 +20,6 @@ const hasTopicSentTasksByCurrentUser = cachedComputed(
     return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems || topic.isOwn;
   },
   { name: "hasTopicSentTasksByCurrentUser" }
-);
-
-const getNearestTaskDueDateForCurrentUser = cachedComputed(
-  (topic: TopicEntity) => {
-    const selfTasks = topic.tasks.query({ isAssignedToSelf: true, isDone: false }).all;
-
-    if (!selfTasks.length) return null;
-
-    const selfDueDates = selfTasks.map((task) => task.message?.dueDate).filter(isNotNullish);
-    return min(selfDueDates) ?? null;
-  },
-  { name: "getNearestTaskDueDateForCurrentUser" }
 );
 
 const getNearestTaskDueDateCreatedByCurrentUser = cachedComputed(
