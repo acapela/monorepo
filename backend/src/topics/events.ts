@@ -1,5 +1,5 @@
 import { updatedDiff } from "deep-object-diff";
-import { get, map } from "lodash";
+import { get } from "lodash";
 
 import { updateHomeView } from "~backend/src/slack/home-tab";
 import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
@@ -35,6 +35,30 @@ function trackTopicChanges(event: HasuraEvent<Topic>) {
   }
 }
 
+async function updateSlackHomeTab(item: Topic) {
+  const slackInstallation = await db.team_slack_installation.findFirst({
+    where: {
+      team_id: item.team_id,
+    },
+  });
+  const botToken = get(slackInstallation?.data, "bot.token");
+  if (!botToken) return;
+
+  const teamMemberTopicOwner = await db.team_member.findFirst({
+    where: {
+      user_id: item.owner_id,
+      team_id: item.team_id,
+    },
+    include: {
+      team_member_slack: true,
+    },
+  });
+  const slackUserId = get(teamMemberTopicOwner, "team_member_slack.slack_user_id");
+  if (!slackUserId) return;
+
+  await updateHomeView(botToken, slackUserId);
+}
+
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (event.type === "create") {
@@ -65,31 +89,7 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
       });
     }
 
-    const slackInstallation = await db.team_slack_installation.findFirst({
-      where: {
-        team_id: event.item.team_id,
-      },
-    });
-    const botToken = get(slackInstallation?.data, "bot.token");
-    if (!botToken) return;
-
-    const slackMembers = await db.team_member.findMany({
-      where: {
-        user: {
-          topic_member: {
-            some: {
-              topic_id: event.item.id,
-            },
-          },
-        },
-      },
-      include: {
-        team_member_slack: true,
-      },
-    });
-    await Promise.all(
-      map(slackMembers, "team_member_slack.slack_user_id").map((slackUserId) => updateHomeView(botToken, slackUserId))
-    );
+    await updateSlackHomeTab(event.item);
   } else if (event.type === "update") {
     trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
