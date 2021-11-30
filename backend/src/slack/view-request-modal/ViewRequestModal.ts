@@ -99,7 +99,10 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
       .fields([
         Md.bold(`${tasks.length} recipients`),
         dueDate ? Md.bold("Due " + mdDate(dueDate, "date_short_pretty")) : " ",
-        ...taskStatusByUsers,
+        // Only 10 fields supported, 2 fields go into the header area
+        ...(taskStatusByUsers.length > 8
+          ? [...taskStatusByUsers.slice(0, 6), `...and ${Math.floor(taskStatusByUsers.length / 2 - 3)} more`]
+          : taskStatusByUsers),
       ])
       .end(),
     ...Padding(),
