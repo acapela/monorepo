@@ -1,3 +1,5 @@
+import "~config/dotenv";
+
 import * as Sentry from "@sentry/node";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { DefaultUser, Session } from "next-auth";
@@ -5,7 +7,6 @@ import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 import SlackProvider from "next-auth/providers/slack";
 
-import { initializeSecrets } from "~config";
 import { User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
@@ -35,7 +36,6 @@ const toMaybeAdapterUser = (user: Maybe<User>): AdapterUser | null => (user ? to
 const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await initializeSecrets();
   return NextAuth(req, res, {
     secret: process.env.AUTH_SECRET,
     jwt: {

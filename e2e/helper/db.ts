@@ -1,4 +1,4 @@
-import "~config";
+import "~config/dotenv";
 
 import { Prisma, PrismaClient } from "@prisma/client";
 

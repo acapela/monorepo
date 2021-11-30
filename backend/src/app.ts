@@ -10,7 +10,6 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, json } from "express";
 import securityMiddleware from "helmet";
 
-import { initializeSecrets } from "~config";
 import { db } from "~db";
 import { IS_DEV } from "~shared/dev";
 import { logger } from "~shared/logger";
@@ -31,7 +30,6 @@ import { router as waitlistRoutes } from "./waitlist/waitlist";
 const NANOSECONDS_IN_MILLISECOND = 1e6;
 
 export async function setupServer(): Promise<Server> {
-  await initializeSecrets();
   const app = express();
   // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
   setupSlack(app);

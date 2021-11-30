@@ -1,4 +1,4 @@
-import "~config";
+import "~config/dotenv";
 
 import { db } from "~db";
 
