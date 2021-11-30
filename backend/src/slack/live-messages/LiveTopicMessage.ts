@@ -1,7 +1,7 @@
 import { groupBy } from "lodash";
 import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
-import { Message, Task, Topic, User, db } from "~db";
+import { Message, Task, Topic, TopicAccessToken, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
 import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
@@ -11,8 +11,8 @@ import { mdDate } from "../md/utils";
 import { fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
 
-const makeSlackMessageTextWithContent = async (topic: Topic, message: Message) =>
-  Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
+const makeSlackMessageTextWithContent = async (topic: Topic, message: Message, accessToken?: string) =>
+  Md.bold(`[Acapela request] ${await createTopicLink(topic, accessToken)}`) +
   "\n" +
   (await generateMessageTextWithMentions(topic, message));
 
@@ -30,18 +30,25 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
     })
     .join("\n");
 
-export async function LiveTopicMessage(topic: Topic, options?: { isMessageContentExcluded?: boolean }) {
-  const message = await db.message.findFirst({
-    where: { topic_id: topic.id },
-    orderBy: [{ created_at: "asc" }],
-    include: { task: { include: { user: true } }, message_task_due_date: true },
-  });
+type TopicWithToken = Topic & { topic_access_token?: TopicAccessToken[] };
+
+export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMessageContentExcluded?: boolean }) {
+  const [message, accessToken] = await Promise.all([
+    db.message.findFirst({
+      where: { topic_id: topic.id },
+      orderBy: [{ created_at: "asc" }],
+      include: { task: { include: { user: true } }, message_task_due_date: true },
+    }),
+    topic.topic_access_token
+      ? topic.topic_access_token[0]
+      : db.topic_access_token.findFirst({ where: { topic_id: topic.id } }),
+  ]);
 
   assert(message, "must have a first message");
 
   const text = options?.isMessageContentExcluded
     ? Md.italic("New Acapela Request Created:") + `\n> "${Md.bold(topic.name)}"`
-    : await makeSlackMessageTextWithContent(topic, message);
+    : await makeSlackMessageTextWithContent(topic, message, accessToken?.token);
 
   const tasks = message.task;
   const slackUsers: Record<string, string> = Object.fromEntries(
@@ -71,7 +78,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
     .buildToObject();
 }
 
-export async function tryUpdateTopicSlackMessage(topic: Topic) {
+export async function tryUpdateTopicSlackMessage(topic: TopicWithToken) {
   const topicSlackMessage = await db.topic_slack_message.findUnique({ where: { topic_id: topic.id } });
   if (!topicSlackMessage) {
     return;

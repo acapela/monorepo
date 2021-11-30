@@ -132,10 +132,8 @@ export const topicEntity = defineEntity<TopicFragment>({
       get href() {
         const team = connections.team;
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const firstMessage = connections.messages.first!;
-
-        const slug = getTopicSlug(firstMessage.content, topic.name);
+        const firstMessage = connections.messages.first;
+        const slug = getTopicSlug(firstMessage?.content ?? "unknown", topic.name);
 
         return routes.topicByHandle({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

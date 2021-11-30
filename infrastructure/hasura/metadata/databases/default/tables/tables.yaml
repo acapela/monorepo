@@ -13,6 +13,7 @@
 - "!include public_team_member_slack.yaml"
 - "!include public_team_slack_installation.yaml"
 - "!include public_topic.yaml"
+- "!include public_topic_access_token.yaml"
 - "!include public_topic_event.yaml"
 - "!include public_topic_member.yaml"
 - "!include public_topic_slack_message.yaml"

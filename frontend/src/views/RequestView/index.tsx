@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { autorun, reaction } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
@@ -7,6 +8,7 @@ import styled, { css } from "styled-components";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { PageMeta } from "~frontend/utils/PageMeta";
+import { JoinTopicMutation, JoinTopicMutationVariables } from "~gql";
 import { phone } from "~ui/responsive";
 
 import { NotFound } from "./NotFound";
@@ -64,8 +66,43 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
 }
 
 export const RequestView = observer(({ topic }: Props) => {
+  const [joinTopic] = useMutation<JoinTopicMutation, JoinTopicMutationVariables>(
+    gql`
+      mutation JoinTopic($accessToken: uuid!) {
+        join_topic(access_token: $accessToken) {
+          success
+        }
+      }
+    `
+  );
+
+  const router = useRouter();
+
   useUpdateRouterIfSlugChanges(topic);
   useUpdateTopicLastSeenMessage(topic);
+
+  const accessToken = router.query.access_token;
+  useEffect(() => {
+    const removeAccessTokenFromQuery = () => {
+      const url = new URL(router.asPath, location.origin);
+      url.searchParams.delete("access_token");
+      router.replace(url, undefined, { shallow: true });
+    };
+
+    if (!topic && typeof accessToken == "string") {
+      joinTopic({ variables: { accessToken } }).then((data) => {
+        data.data;
+        removeAccessTokenFromQuery();
+      });
+    }
+    if (topic && accessToken) {
+      removeAccessTokenFromQuery();
+    }
+  }, [accessToken, joinTopic, router, topic]);
+
+  if (accessToken) {
+    return null;
+  }
 
   if (!topic) {
     return <NotFound />;

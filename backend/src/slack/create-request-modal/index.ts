@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { format } from "date-fns";
-import { difference, find, get } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
 import { isWebAPIErrorType } from "~backend/src/slack/errors";
@@ -133,17 +132,6 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    // is the include channel members check box checked?
-    const includeChannelMembers = !!find(
-      get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
-      ["value", "include_channel_members"]
-    );
-
-    let requestedObservers: string[] = [];
-    if (includeChannelMembers && metadata.channelInfo?.members) {
-      requestedObservers = difference(metadata.channelInfo?.members, members || []);
-    }
-
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     assert(messageText, "create_request called with wrong arguments");
     if (!(members && requestType && messageText && members.length > 0)) {
@@ -195,7 +183,6 @@ export function setupCreateRequestModal(app: App) {
       rawTopicMessage: messageText,
       topicName,
       slackUserIdsWithMentionType,
-      requestedObservers,
     });
 
     if (!channelId) {

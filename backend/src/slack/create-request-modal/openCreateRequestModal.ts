@@ -64,11 +64,7 @@ const AuthForCreateRequestModal = async (
 };
 
 const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
-  const { messageText, channelInfo, requestToSlackUserIds } = metadata;
-  let channelInfoName = "";
-  if (channelInfo?.conversationType === "direct") channelInfoName = "this direct message conversation";
-  else if (channelInfo?.conversationType === "group") channelInfoName = "this group message conversation";
-  else if (channelInfo?.name) channelInfoName = `#${channelInfo.name}`;
+  const { messageText, requestToSlackUserIds } = metadata;
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
@@ -96,18 +92,6 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
       Blocks.Input({ blockId: "topic_block", label: "Request Title" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
         .optional(true),
-      channelInfoName
-        ? Blocks.Input({ blockId: "channel_observers_block", label: "Access rights" })
-            .element(
-              Elements.Checkboxes({ actionId: "channel_observers_checkbox" }).options(
-                Bits.Option({
-                  value: "include_channel_members",
-                  text: `Give all Acapela members of ${channelInfoName} access to the request.`,
-                })
-              )
-            )
-            .optional(true)
-        : undefined,
       metadata.channelId
         ? undefined
         : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
@@ -165,13 +149,11 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
 
   if (!infoRes.ok || !infoRes.channel || !membersRes.ok || !membersRes.members) return null;
   // ignore too large channels
-  if (membersRes.members.length > 99) return null;
+  if (membersRes.members.length > 30) return null;
 
   return {
     members: await excludeBotUsers(token, membersRes.members),
-    name: infoRes.channel.name,
     isPrivate: !!infoRes.channel.is_private || !!infoRes.channel.is_im,
-    conversationType: infoRes.channel.is_mpim ? "group" : infoRes.channel.is_im ? "direct" : "channel",
   };
 }
 
