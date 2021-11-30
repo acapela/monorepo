@@ -2,6 +2,7 @@ import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } fr
 
 import { User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
+import { checkHasAllSlackBotScopes } from "~shared/slack";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
@@ -159,3 +160,6 @@ export async function createTeamMemberUserFromSlack(token: string, slackUserId: 
     },
   });
 }
+
+export const checkHasSlackInstallationAllBotScopes = (data: unknown) =>
+  checkHasAllSlackBotScopes((data as SlackInstallation)?.bot?.scopes ?? []);

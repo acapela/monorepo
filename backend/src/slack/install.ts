@@ -6,7 +6,7 @@ import { botScopes, userScopes } from "~shared/slack";
 import { slackReceiver } from "./app";
 import { InstallMetadata } from "./installMetadata";
 
-export const getSlackInstallURL = async (metadata: InstallMetadata, scopes: string[] = []) => {
+export const getUserSlackInstallURL = async (metadata: InstallMetadata, scopes: string[] = []) => {
   const basePath = IS_DEV ? (await getDevPublicTunnelURL(3000)) + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
   return assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
     userScopes,
@@ -15,4 +15,4 @@ export const getSlackInstallURL = async (metadata: InstallMetadata, scopes: stri
     metadata: JSON.stringify(metadata),
   });
 };
-export const getTeamSlackInstallURL = async (metadata: InstallMetadata) => getSlackInstallURL(metadata, botScopes);
+export const getTeamSlackInstallURL = async (metadata: InstallMetadata) => getUserSlackInstallURL(metadata, botScopes);

@@ -42,6 +42,9 @@ export const teamEntity = defineEntity<TeamFragment>({
 }).addConnections((team, { getEntity, getContextValue }) => {
   const slackInstallations = getEntity(teamSlackInstallationEntity).query({ team_id: team.id });
   return {
+    get slackInstallation() {
+      return slackInstallations.first;
+    },
     get hasSlackInstallation() {
       return slackInstallations.hasItems;
     },

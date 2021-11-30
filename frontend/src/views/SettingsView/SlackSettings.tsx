@@ -7,7 +7,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
-import { checkHasAllSlackUserScopes } from "~shared/slack";
+import { checkHasAllSlackBotScopes, checkHasAllSlackUserScopes } from "~shared/slack";
 import { theme } from "~ui/theme";
 
 export const SlackSettings = observer(() => {
@@ -18,7 +18,8 @@ export const SlackSettings = observer(() => {
   const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
 
   const userScopes = toJS(teamMember?.teamMemberSlack?.slack_scopes) ?? [];
-  const hasMissingScopes = !checkHasAllSlackUserScopes(userScopes ?? []);
+  const hasMissingScopes =
+    !checkHasAllSlackUserScopes(userScopes ?? []) || !checkHasAllSlackBotScopes(team?.slackInstallation?.scopes ?? []);
 
   if (!team?.hasSlackInstallation || (teamMember?.teamMemberSlack && !hasMissingScopes)) {
     return null;

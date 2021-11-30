@@ -1,0 +1,6 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- CREATE FUNCTION team_slack_installation_scopes(team_slack_installation_row team_slack_installation)
+-- RETURNS JSONB AS $$
+--   SELECT (team_slack_installation_row.data -> 'bot' ->> 'scopes')::jsonb
+-- $$ LANGUAGE sql STABLE;

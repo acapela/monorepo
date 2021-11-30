@@ -11,6 +11,7 @@ const teamSlackInstallationFragment = gql`
   fragment TeamSlackInstallation on team_slack_installation {
     id
     team_id
+    scopes
     updated_at
   }
 `;

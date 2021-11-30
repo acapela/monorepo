@@ -28,6 +28,7 @@ describe("clientdb team", () => {
       id: "slack",
       team_id: team.id,
       updated_at: now,
+      scopes: [],
       __typename: "team_slack_installation",
     });
 
