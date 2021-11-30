@@ -1,5 +1,7 @@
 import { updatedDiff } from "deep-object-diff";
+import { get, map } from "lodash";
 
+import { updateHomeView } from "~backend/src/slack/home-tab";
 import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Topic, TopicMember, db } from "~db";
@@ -62,6 +64,32 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
         },
       });
     }
+
+    const slackInstallation = await db.team_slack_installation.findFirst({
+      where: {
+        team_id: event.item.team_id,
+      },
+    });
+    const botToken = get(slackInstallation?.data, "bot.token");
+    if (!botToken) return;
+
+    const slackMembers = await db.team_member.findMany({
+      where: {
+        user: {
+          topic_member: {
+            some: {
+              topic_id: event.item.id,
+            },
+          },
+        },
+      },
+      include: {
+        team_member_slack: true,
+      },
+    });
+    await Promise.all(
+      map(slackMembers, "team_member_slack.slack_user_id").map((slackUserId) => updateHomeView(botToken, slackUserId))
+    );
   } else if (event.type === "update") {
     trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
