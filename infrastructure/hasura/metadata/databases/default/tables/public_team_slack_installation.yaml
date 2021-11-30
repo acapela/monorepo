@@ -5,12 +5,20 @@ object_relationships:
 - name: team
   using:
     foreign_key_constraint_on: team_id
+computed_fields:
+- definition:
+    function:
+      name: team_slack_installation_scopes
+      schema: public
+  name: scopes
 select_permissions:
 - permission:
     columns:
     - id
     - team_id
     - updated_at
+    computed_fields:
+    - scopes
     filter:
       team:
         memberships:

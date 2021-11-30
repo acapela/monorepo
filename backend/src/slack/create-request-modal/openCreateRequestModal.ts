@@ -2,7 +2,7 @@ import type { View } from "@slack/types";
 import { compact, uniq, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { getSlackInstallURL } from "~backend/src/slack/install";
+import { getTeamSlackInstallURL, getUserSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
@@ -12,7 +12,13 @@ import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~sha
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
 import { createSlackLink } from "../md/utils";
-import { ChannelInfo, ViewMetadata, attachToViewWithMetadata, findUserBySlackId } from "../utils";
+import {
+  ChannelInfo,
+  ViewMetadata,
+  attachToViewWithMetadata,
+  checkHasSlackInstallationAllBotScopes,
+  findUserBySlackId,
+} from "../utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -28,7 +34,8 @@ const MissingTeamModal = Modal({ title: "Four'O'Four" })
 const AuthForCreateRequestModal = async (
   token: string,
   viewData: ViewMetadata["open_create_request_modal"],
-  teamId: string
+  teamId: string,
+  hasAllBotScopes: boolean
 ) => {
   const user = await findUserBySlackId(token, viewData.slackUserId, teamId);
   return Modal({
@@ -44,9 +51,9 @@ const AuthForCreateRequestModal = async (
         ].join(" "),
       }),
       Blocks.Section({
-        text: `Head over ${createSlackLink(
-          await getSlackInstallURL({ teamId, userId: user?.id }),
-          "here"
+        text: `${createSlackLink(
+          await (hasAllBotScopes ? getUserSlackInstallURL : getTeamSlackInstallURL)({ teamId, userId: user?.id }),
+          ":arrow_right:  Link your Account (again)"
         )} to authorize it and then try again.`,
       }),
       viewData.messageText
@@ -177,7 +184,10 @@ export async function openCreateRequestModal(
 
   const [user, team] = await Promise.all([
     findUserBySlackId(token, slackUserId),
-    db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } }),
+    db.team.findFirst({
+      where: { team_slack_installation: { slack_team_id: slackTeamId } },
+      include: { team_slack_installation: true },
+    }),
   ]);
   if (!team) {
     await openView(MissingTeamModal);
@@ -186,8 +196,9 @@ export async function openCreateRequestModal(
 
   const hasChannelAccess = !channelId || (await checkHasChannelAccess(token, channelId, slackUserId));
 
-  if (!hasChannelAccess) {
-    await openView(await AuthForCreateRequestModal(token, data, team.id));
+  const hasAllBotScopes = checkHasSlackInstallationAllBotScopes(team.team_slack_installation?.data);
+  if (!hasChannelAccess || !hasAllBotScopes) {
+    await openView(await AuthForCreateRequestModal(token, data, team.id, hasAllBotScopes));
     return { user };
   }
 
