@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { difference, find, get } from "lodash";
 import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
 
+import { isWebAPIErrorType } from "~backend/src/slack/errors";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
@@ -210,7 +211,14 @@ export function setupCreateRequestModal(app: App) {
       return;
     }
 
-    await client.conversations.join({ token, channel: channelId });
+    try {
+      // try to join the channel in case the bot/user is not in it already
+      await client.conversations.join({ token, channel: channelId });
+    } catch (error) {
+      if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
+        throw error;
+      }
+    }
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,
