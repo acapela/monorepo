@@ -19,6 +19,7 @@
 - "!include public_topic_slack_message.yaml"
 - "!include public_transcription.yaml"
 - "!include public_transcription_status.yaml"
+- "!include public_unread_messages.yaml"
 - "!include public_user.yaml"
 - "!include public_user_group.yaml"
 - "!include public_user_group_member.yaml"

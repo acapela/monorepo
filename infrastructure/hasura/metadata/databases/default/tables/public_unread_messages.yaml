@@ -1,0 +1,14 @@
+table:
+  name: unread_messages
+  schema: public
+select_permissions:
+- permission:
+    columns:
+    - user_id
+    - team_id
+    - topic_id
+    - unread_messages
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
