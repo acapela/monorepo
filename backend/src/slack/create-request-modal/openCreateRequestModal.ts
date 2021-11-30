@@ -126,7 +126,7 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
 
 async function checkHasChannelAccess(token: string, channelId: string, slackUserId: string) {
   try {
-    // TODO: this is currently blocked on us not being able to change our prod manifest
+    // TODO Bot posting is currently blocked on us not being able to change our prod manifest
     /*const { channel } = */ await slackClient.conversations.info({ token, channel: channelId });
     // const isPublic = channel?.is_channel && !channel.is_private;
     // return isPublic || checkHasTeamMemberAllSlackUserScopes(slackUserId);
