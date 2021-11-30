@@ -37,7 +37,11 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
     <UIHolder data-test-message-tasks>
       <LayoutGroup>
         {selfTask && <OwnTaskCompletionButton task={selfTask} />}
-        <TaskDueDateSetter message={message} />
+        <TaskDueDateSetter
+          dueDate={message.dueDate}
+          onChange={message.setTasksDueDate}
+          isDisabled={message.topic?.isClosed}
+        />
 
         <UIDivider />
 

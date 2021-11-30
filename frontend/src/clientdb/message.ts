@@ -129,6 +129,24 @@ export const messageEntity = defineEntity<MessageFragment>({
       return currentUserId === message.user_id;
     },
 
+    setTasksDueDate(dueDate: Date | null) {
+      const messageTaskDueDate = getEntity(messageTaskDueDateEntity);
+      const previouslyStoredDueDate = messageTaskDueDate.query({ message_id: message.id }).first;
+
+      if (!dueDate && previouslyStoredDueDate) {
+        previouslyStoredDueDate.remove();
+      } else if (dueDate && previouslyStoredDueDate) {
+        previouslyStoredDueDate.update({
+          due_at: dueDate.toISOString(),
+        });
+      } else if (dueDate && !previouslyStoredDueDate) {
+        messageTaskDueDate.create({
+          message_id: message.id,
+          due_at: dueDate.toISOString(),
+        });
+      }
+    },
+
     get dueDate() {
       return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
     },

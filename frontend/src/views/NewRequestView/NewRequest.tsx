@@ -259,16 +259,18 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   flex-direction: column;
   will-change: transform;
   min-height: 0;
+  max-width: 900px;
+  width: 100%;
   ${theme.spacing.actionsSection.asGap};
 
   ${(props) => {
     if (props.isEmpty) {
       return css`
-        width: 500px;
+        max-width: 500px;
       `;
     }
     return css`
-      width: 900px;
+      max-width: 900px;
     `;
   }}
 `;
