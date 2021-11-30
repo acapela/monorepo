@@ -20,8 +20,8 @@
     "~shared": "0.1.0"
   },
   "devDependencies": {
-    "@svgr/cli": "^5.5.0",
-    "@types/emoji-mart": "^3.0.6",
+    "@svgr/cli": "^6.0.0",
+    "@types/emoji-mart": "^3.0.8",
     "@types/react-window": "^1.8.5"
   }
 }
