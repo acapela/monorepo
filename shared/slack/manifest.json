@@ -47,7 +47,6 @@
     "redirect_urls": ["https://app.acape.la/api/backend/slack/oauth_redirect", "https://app.acape.la"],
     "scopes": {
       "bot": [
-        "channels:join",
         "channels:read",
         "commands",
         "im:write",
@@ -58,7 +57,6 @@
       ],
       "user": [
         "channels:read",
-        "channels:write",
         "chat:write",
         "groups:read",
         "im:read",
