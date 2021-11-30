@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
+import { ButtonSize } from "~ui/buttons/variants";
 import { IconClock } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
@@ -16,10 +17,11 @@ import { DateTimePicker } from "~ui/time/DateTimePicker";
 interface Props {
   dueDate: Date | null;
   onChange: (dueDate: Date | null) => void;
+  size?: ButtonSize;
   isDisabled?: boolean;
 }
 
-export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled }: Props) => {
+export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size = "compact" }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
@@ -94,7 +96,7 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled }: Pr
       </AnimatePresence>
 
       <UITriggerHolder ref={ref} onClick={openMenu} data-due-date-picker>
-        <Button kind="secondary" size="compact" icon={<IconClock />} iconAtStart isDisabled={isDisabled}>
+        <Button kind="secondary" size={size} icon={<IconClock />} iconAtStart isDisabled={isDisabled}>
           {dueDate ? upperFirst(formatRelative(dueDate, new Date())) : "Add due date"}
         </Button>
       </UITriggerHolder>

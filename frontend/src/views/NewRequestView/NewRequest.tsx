@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { sampleSize } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import { useRouter } from "next/router";
-import React, { useMemo, useRef } from "react";
+import router from "next/router";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
@@ -15,6 +15,7 @@ import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
@@ -22,7 +23,7 @@ import { runUntracked } from "~shared/mobxUtils";
 import { getTopicNameFromContent } from "~shared/routes/topicSlug";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { FadePresenceAnimator, POP_ANIMATION_CONFIG } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
@@ -77,12 +78,18 @@ interface Props {
   topicToDuplicate?: TopicEntity;
 }
 
+type CreatingRequestStage = "empty" | "has-any-content" | "valid";
+
+const creatingRequestStageHints: Partial<Record<CreatingRequestStage, ReactNode | null>> = {
+  "has-any-content": `Mention team members using @Name to make your request more actionable.`,
+};
+
 export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Props) {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
   const updateMessageTasks = useUpdateMessageTasks();
-  const router = useRouter();
+  const [tasksDueDate, setTasksDueDate] = useState<Date | null>(null);
 
   const newTopicId = useConst(() => getUUID());
 
@@ -102,10 +109,6 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
     initialValue: topicToDuplicate?.messages.first?.content,
   });
 
-  // const { isDragging: isDraggingFile } = useFileDroppedInContext((files) => {
-  //   uploadAttachments(files);
-  // });
-
   // Submitting can be done from the editor or from the topic input box
   useShortcut(["Mod", "Enter"], () => {
     submit();
@@ -118,19 +121,28 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
     initialValue: topicToDuplicate?.name ?? "",
   });
 
-  const hasTypedInAnything = useMemo(() => topicName !== "" || hasAnyTextContent, [topicName, hasAnyTextContent]);
-
-  const [isValid, nextStepPromptLabel] = useMemo(() => {
-    const mentionNodes = getNodesFromContentByType(content, "mention");
-    if (mentionNodes.length < 1) {
-      return [false, "Mention team members using @Name to make your request more actionable."];
+  const stage = useMemo<CreatingRequestStage>(() => {
+    if (!topicName.trim().length && !hasAnyTextContent) {
+      return "empty";
     }
-    return [true, ""];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topicName, content]);
+
+    const mentionNodes = getNodesFromContentByType(content, "mention");
+
+    if (!mentionNodes.length) {
+      return "has-any-content";
+    }
+
+    return "valid";
+  }, [topicName, hasAnyTextContent, content]);
+
+  const canSubmit = stage === "valid";
+
+  const isEmpty = stage === "empty";
+
+  const stageHint = creatingRequestStageHints[stage];
 
   async function submit() {
-    if (!isValid) {
+    if (!canSubmit) {
       return;
     }
 
@@ -149,6 +161,10 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
 
       updateMessageTasks(newMessage);
 
+      if (tasksDueDate) {
+        newMessage.setTasksDueDate(tasksDueDate);
+      }
+
       attachments.forEach((attachment) => {
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
@@ -161,21 +177,21 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
 
   return (
     <UIHolder>
-      <UIContentHolder isEmpty={!hasTypedInAnything}>
+      <UIContentHolder isEmpty={isEmpty}>
         <div>
           <UIFlyingCreateARequestLabel
             layout="position"
             layoutId="UIFlyingCreateARequestLabel"
             animate={{
-              opacity: hasTypedInAnything ? 0 : 1,
-              x: hasTypedInAnything ? -50 : 0,
-              y: hasTypedInAnything ? -50 : 0,
+              opacity: !isEmpty ? 0 : 1,
+              x: !isEmpty ? -50 : 0,
+              y: !isEmpty ? -50 : 0,
             }}
             transition={POP_ANIMATION_CONFIG}
           />
         </div>
 
-        <UIEditableParts isEmpty={!hasTypedInAnything}>
+        <UIEditableParts isEmpty={isEmpty}>
           <PageLayoutAnimator layoutId={layoutAnimations.newTopic.title(newTopicId)}>
             <UITopicNameInput
               value={topicName}
@@ -203,7 +219,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
           <AnimatePresence exitBeforeEnter>
             <UINextStepPrompt
               // Next step label can be empty so make sure we use some key
-              key={nextStepPromptLabel || "no-step"}
+              key={stageHint?.toString() || "no-step"}
               layoutId="UINextStepPrompt"
               layout="position"
               initial={{ opacity: 0 }}
@@ -211,19 +227,28 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
               exit={{ opacity: 0 }}
             >
               {/* Avoid height flicker if there is no next prompt by adding nbsp */}
-              {nextStepPromptLabel}&nbsp;
+              {stageHint}&nbsp;
             </UINextStepPrompt>
           </AnimatePresence>
         </UIEditableParts>
         <UIActions
-          animate={{ opacity: hasTypedInAnything ? 1 : 0 }}
+          animate={{ opacity: !isEmpty ? 1 : 0 }}
           initial={{ opacity: 0 }}
           layoutId={layoutAnimations.newTopic.messageTools(newTopicId)}
         >
+          <UIAdditionalActions>
+            <AnimatePresence>
+              {stage === "valid" && (
+                <FadePresenceAnimator>
+                  <TaskDueDateSetter dueDate={tasksDueDate} onChange={setTasksDueDate} size="regular" />
+                </FadePresenceAnimator>
+              )}
+            </AnimatePresence>
+          </UIAdditionalActions>
           <MessageTools onFilesPicked={uploadAttachments} />
 
           <Button
-            isDisabled={!isValid && { reason: nextStepPromptLabel }}
+            isDisabled={!canSubmit}
             kind="primary"
             tooltip="Send request"
             onClick={submit}
@@ -319,6 +344,10 @@ const UIActions = styled(PageLayoutAnimator)<{}>`
   will-change: transform, opacity;
 
   ${theme.spacing.actionsSection.asGap}
+`;
+
+const UIAdditionalActions = styled.div`
+  flex-grow: 1;
 `;
 
 const UIComposerHolder = styled(PageLayoutAnimator)`
