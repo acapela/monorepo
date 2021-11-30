@@ -101,10 +101,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       message_id: () => getMessageIds(),
     });
 
-    const getunfinishedTaskWithEarliestDueDateByCurrentUser = cachedComputed(() => {
-      return tasks.query({ isAssignedToSelf: true, hasDueDate: true, isDone: false }, sortByEarliestTaskDueDate).first;
-    });
-
     const unreadMessages = getEntity(messageEntity)
       .query({ topic_id: topic.id })
       .query((message) => {
@@ -194,10 +190,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
 
       unreadMessages,
-
-      get currentUserUnfinishedTaskWithEarliestDueDate() {
-        return getunfinishedTaskWithEarliestDueDateByCurrentUser();
-      },
 
       events,
     };
