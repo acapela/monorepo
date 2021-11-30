@@ -4,7 +4,7 @@ import { sampleSize } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import router from "next/router";
-import React, { ReactNode, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
@@ -80,10 +80,6 @@ interface Props {
 
 type CreatingRequestStage = "empty" | "has-any-content" | "valid";
 
-const creatingRequestStageHints: Partial<Record<CreatingRequestStage, ReactNode | null>> = {
-  "has-any-content": `Mention team members using @Name to make your request more actionable.`,
-};
-
 export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Props) {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
@@ -139,7 +135,18 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
 
   const isEmpty = stage === "empty";
 
-  const stageHint = creatingRequestStageHints[stage];
+  function getHint() {
+    if (stage === "has-any-content") {
+      return `Mention team members using @Name to make your request more actionable.`;
+    }
+    if (stage === "valid") {
+      if (!tasksDueDate) {
+        return `You can optionally set due date to indicate when you need input from others.`;
+      }
+    }
+  }
+
+  const stageHint = getHint();
 
   async function submit() {
     if (!canSubmit) {
