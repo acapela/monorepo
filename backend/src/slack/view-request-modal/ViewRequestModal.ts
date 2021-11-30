@@ -1,3 +1,4 @@
+import { sortBy } from "lodash";
 import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { assert } from "~shared/assert";
@@ -72,6 +73,13 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
 
   assert(tasks, "tasks must always present in request");
 
+  const taskStatusByUsers = sortBy(tasks, "doneAt").reduce<string[]>((acc, task) => {
+    return acc.concat([
+      `@${task.user.name}`,
+      Md.italic(`${task.doneAt ? COMPLETED_REQUEST_LABEL[task.type as RequestType] : "Pending"}`),
+    ]);
+  }, []);
+
   return [
     Blocks.Context()
       .elements([
@@ -91,8 +99,7 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
       .fields([
         Md.bold(`${tasks.length} recipients`),
         dueDate ? Md.bold("Due " + mdDate(dueDate, "date_short_pretty")) : " ",
-        `@${tasks[0].user.name}`,
-        Md.italic(`${tasks[0].doneAt ? COMPLETED_REQUEST_LABEL[tasks[0].type as RequestType] : "Pending"}`),
+        ...taskStatusByUsers,
       ])
       .end(),
     ...Padding(),
