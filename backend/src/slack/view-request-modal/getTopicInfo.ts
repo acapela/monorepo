@@ -101,12 +101,12 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
 
   const mentionedSlackIdByUsersId = Object.assign(
     {},
-    ...topic.topic_member.map((tm) => ({
-      [tm.user_id]: {
-        name: tm.user.name,
-        slackId: tm.user.team_member[0].team_member_slack?.slack_user_id,
-      },
-    }))
+    ...topic.topic_member.map((tm) => {
+      const slackId = tm.user.team_member[0].team_member_slack?.slack_user_id;
+      return {
+        [tm.user_id]: slackId ? { slackId } : { name: tm.user.name },
+      };
+    })
   );
 
   const generatorContext: GenerateContext = {
