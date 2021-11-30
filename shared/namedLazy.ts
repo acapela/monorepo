@@ -33,11 +33,13 @@ export function namedLazy<T, K extends keyof PickByValue<T, AnyComponent>>(
 
     // Default react lazy expects 'default' export to be react component.
     return {
-      default: namedExport,
+      default: namedExport as unknown as AnyComponent,
     };
   });
 
   Reflect.set(LazyComponent, "preload", preload);
 
-  return LazyComponent as WithPreload<LazyExoticComponent<T[K]>>;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return LazyComponent as unknown as WithPreload<LazyExoticComponent<T[K]>>;
 }
