@@ -1,13 +1,14 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { flattenDeep, orderBy, uniq } from "lodash";
+import { flattenDeep, get, orderBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
+import { pluralize } from "~shared/text/pluralize";
 
 import { slackClient } from "../app";
 import { GenerateContext } from "../md/generator";
@@ -157,6 +158,17 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     mentionedSlackIdByUsersId,
   };
 
+  const queryRes =
+    await db.$queryRaw`SELECT SUM(unread_messages) FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
+  const unreadMessages: number = get(queryRes, "0.sum", 0) || 0;
+
+  const unreadMessagesText = unreadMessages
+    ? `:envelope_with_arrow: You currently have *${unreadMessages}* unread ${pluralize(
+        unreadMessages,
+        "message",
+        "messages"
+      )}.`
+    : ":envelope_with_arrow: You are all caught up. :tada:";
   await publishView(
     HomeTab()
       .blocks(
@@ -167,6 +179,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             "in the web app"
           )}.`,
         }),
+        Blocks.Section({ text: unreadMessagesText }),
         Blocks.Actions().elements(
           Elements.Button({ text: "+ New Request", actionId: SlackActionIds.CreateTopic }).primary(true),
           Elements.Button({ text: "Open web app" })
