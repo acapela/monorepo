@@ -5,7 +5,9 @@ import "~config/dotenv";
 import * as Sentry from "@sentry/node";
 
 import { IS_DEV } from "~shared/dev";
+import { logger } from "~shared/logger";
 
+import { setupServer } from "./app";
 import { getDevPublicTunnelURL } from "./localtunnel";
 
 if (process.env.SENTRY_DSN) {
@@ -16,15 +18,9 @@ if (process.env.SENTRY_DSN) {
 }
 
 async function start(): Promise<void> {
-  const { logger } = await import("~shared/logger");
-  logger.info("Environment variables loaded");
-  logger.info("Secrets loaded");
-  const serverModule = await import("./app");
-
-  const server = await serverModule.setupServer();
-
+  logger.info("Starting server...");
+  const server = setupServer();
   const port = process.env.BACKEND_PORT;
-
   server.listen(port, () =>
     logger.info("Server started", {
       port,
