@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
-import React, { memo, useMemo, useRef } from "react";
+import React, { memo, useEffect, useMemo, useRef } from "react";
 import { VariableSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
@@ -151,6 +151,12 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
   const [archivedRows, archiveHeights] = useVirtualRowConverter(archivedGroups, (i) =>
     archivedListRef.current?.resetAfterIndex(i, true)
   );
+
+  useEffect(() => {
+    if (archivedRows.length === 0) {
+      setShowArchivedTimeline(false);
+    }
+  }, [archivedRows.length, setShowArchivedTimeline]);
 
   const [isFirstToggleRender, { unset: setFirstToggleRenderAsComplete }] = useBoolean(true);
 
