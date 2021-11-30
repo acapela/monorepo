@@ -29,7 +29,7 @@ import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 const NANOSECONDS_IN_MILLISECOND = 1e6;
 
-export async function setupServer(): Promise<Server> {
+export function setupServer(): Server {
   const app = express();
   // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
   setupSlack(app);
