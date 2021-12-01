@@ -86,6 +86,7 @@ const envVariables = (nextConfig = {}) => {
             org: "acapela",
             project: "acapela",
             release: process.env.SENTRY_RELEASE,
+            urlPrefix: "~/_next",
           })
         );
       }
