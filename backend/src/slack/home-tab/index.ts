@@ -15,7 +15,7 @@ import { GenerateContext } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
 import { RequestsList } from "./RequestList";
-import { TopicWithOpenTask, UnreadMessages } from "./types";
+import { TopicWithOpenTask, UnreadMessage } from "./types";
 import { getMostUrgentTask } from "./utils";
 
 type TopicWhereInput = Prisma.topicWhereInput;
@@ -158,17 +158,22 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     mentionedSlackIdByUsersId,
   };
 
-  const unreadMessages: UnreadMessages =
+  const unreadMessagesByTopic: UnreadMessage[] =
     await db.$queryRaw`SELECT topic_id, unread_messages FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
 
-  const allUnreadMessages: number = sumBy(unreadMessages, "unread_messages");
+  const allUnreadMessages: number = sumBy(unreadMessagesByTopic, "unread_messages");
   const allUnreadMessagesText = allUnreadMessages
     ? `:envelope_with_arrow: You currently have *${allUnreadMessages}* unread ${pluralize(
         allUnreadMessages,
         "message",
         "messages"
       )}.`
-    : ":envelope_with_arrow: You are all caught up. :tada:";
+    : ":envelope: You are all caught up. :tada:";
+
+  const unreadMessagesByTopicId = Object.assign(
+    {},
+    ...unreadMessagesByTopic.map((um) => ({ [um.topic_id]: um.unread_messages }))
+  );
 
   await publishView(
     HomeTab()
@@ -188,10 +193,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        await RequestsList("🔥 Received", received, generatorContext, unreadMessages),
-        await RequestsList("📤 Sent", sent, generatorContext, unreadMessages),
-        await RequestsList("⏳ Open", open, generatorContext, unreadMessages),
-        await RequestsList("✅ Closed", closed, generatorContext, unreadMessages)
+        await RequestsList("🔥 Received", received, generatorContext, unreadMessagesByTopicId),
+        await RequestsList("📤 Sent", sent, generatorContext, unreadMessagesByTopicId),
+        await RequestsList("⏳ Open", open, generatorContext, unreadMessagesByTopicId),
+        await RequestsList("✅ Closed", closed, generatorContext, unreadMessagesByTopicId)
       )
       .buildToObject()
   );
