@@ -10,7 +10,7 @@ import { getMostUrgentTask } from "./utils";
 
 export async function RequestItem(topic: TopicWithOpenTask, context: GenerateContext, unreadMessages: number) {
   const { mostUrgentMessage, mostUrgentDueDate } = getMostUrgentTask(topic);
-  const unreadPrefix = unreadMessages ? `*(${unreadMessages})* ` : "";
+  const unreadPrefix = unreadMessages ? `*(${unreadMessages} unread)* ` : "";
   return [
     Blocks.Section({
       text:

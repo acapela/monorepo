@@ -1,9 +1,9 @@
 import { Message, MessageTaskDueDate, Task, Topic, TopicMember, User } from "~db";
 
-export type UnreadMessages = {
+export type UnreadMessage = {
   topic_id: string;
   unread_messages: number;
-}[];
+};
 
 export type TopicWithOpenTask = Topic & {
   user: User;

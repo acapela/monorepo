@@ -2,7 +2,7 @@ import { Blocks, Md } from "slack-block-builder";
 
 import { GenerateContext } from "../md/generator";
 import { RequestItem } from "./RequestItem";
-import { TopicWithOpenTask, UnreadMessages } from "./types";
+import { TopicWithOpenTask } from "./types";
 
 const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
 
@@ -10,18 +10,13 @@ export async function RequestsList(
   title: string,
   topics: TopicWithOpenTask[],
   context: GenerateContext,
-  unreadMessages: UnreadMessages
+  unreadMessagesByTopicId: { [topicId: string]: number }
 ) {
   const header = [...Padding, Blocks.Header({ text: title })];
 
   if (topics.length === 0) {
     return [...header, Blocks.Section({ text: Md.italic("No requests here") })];
   }
-
-  const unreadMessagesByTopicId = Object.assign(
-    {},
-    ...unreadMessages.map((um) => ({ [um.topic_id]: um.unread_messages }))
-  );
 
   const nestedTopicsBlocks = await Promise.all(
     topics.map(async (topic, i) => {
