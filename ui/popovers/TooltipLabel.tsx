@@ -6,6 +6,7 @@ import { Shortcut } from "~ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { theme } from "~ui/theme";
+import { zIndexValues } from "~ui/theme/zIndex";
 
 import { Popover, PopoverPlacement } from "./Popover";
 
@@ -20,15 +21,20 @@ export interface TooltipLabelProps {
 export const TooltipLabel = styled<TooltipLabelProps>(
   ({ anchorRef, label, isDisabled, shortcut, placement = "top" }) => {
     return (
-      <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
+      <TooltipFlyer anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
         <UITooltip presenceStyles={POP_PRESENCE_STYLES}>
           {label}
           {shortcut && <Shortcut shortcut={shortcut} />}
         </UITooltip>
-      </Popover>
+      </TooltipFlyer>
     );
   }
 )``;
+
+const TooltipFlyer = styled(Popover)`
+  z-index: ${zIndexValues.tooltip};
+  pointer-events: none;
+`;
 
 const UITooltip = styled(PresenceAnimator)<{}>`
   ${theme.typo.functional.tooltip};

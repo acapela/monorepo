@@ -78,6 +78,9 @@ export function createEntity<D, C>({
           return databaseUtilities.entityCache.getCached(key, id, config.name, updatedAt, observableData, getter);
         });
       },
+      updateSelf(data) {
+        entity.update(data, "user");
+      },
     }) ?? ({} as C);
 
   // Note: we dont want to add connections as {...data, ...connections}. Connections might have getters so it would simply unwrap them.

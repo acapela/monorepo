@@ -73,7 +73,6 @@ export const SlackActionIds = {
   ReOpenTopic: "reopen-topic",
   CloseTopic: "close-topic",
   ArchiveTopic: "archive-topic",
-  UpdateMessageTaskDueAt: "update-task-due-at",
   TrackEvent: "track-event",
 } as const;
 
@@ -102,6 +101,7 @@ export type ViewMetadata = {
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
+    slackUserIdsFromMessage?: string[];
   };
   open_view_request_modal: {
     slackUserId: string;

@@ -40,19 +40,13 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
       onClick={(event) => event.stopPropagation()}
       role="dialog"
     >
-      {hasCloseButton && (
-        <UIToolbar>
-          <UIHead>
-            {head && (
-              <>
-                <UITitle>{head.title}</UITitle>
-                <UIDescription>{head.description}</UIDescription>
-              </>
-            )}
-          </UIHead>
-          <CloseIconButton onClick={onCloseRequest} />
-        </UIToolbar>
-      )}
+      <UIToolbar>
+        <UIHead>
+          {head?.title && <UITitle>{head.title}</UITitle>}
+          {hasCloseButton && <CloseIconButton kind="primarySubtle" onClick={onCloseRequest} />}
+        </UIHead>
+        {head?.description && <UIDescription>{head.description}</UIDescription>}
+      </UIToolbar>
       <UIBody>{children}</UIBody>
     </UIModal>
   );
@@ -75,6 +69,8 @@ const background = theme.colors.layout.background;
 
 const UIModal = styled(PopPresenceAnimator)<{}>`
   min-width: 368px;
+  width: 420px;
+  max-width: 100vw;
 
   ${background.asBg};
 
@@ -86,6 +82,9 @@ const UIModal = styled(PopPresenceAnimator)<{}>`
 
 const UIHead = styled.div<{}>`
   flex: 1;
+  display: flex;
+  align-items: center;
+  ${theme.spacing.actions.asGap}
 `;
 
 const UIBody = styled.div<{}>`
@@ -95,16 +94,20 @@ const UIBody = styled.div<{}>`
 
 const UIToolbar = styled.div<{}>`
   display: flex;
+  flex-direction: column;
+  ${theme.spacing.actions.asGap}
   padding: 24px 24px 0;
-  margin-bottom: 32px;
 
   ${CloseIconButton} {
-    margin-top: -4px;
+    align-self: flex-end;
+    position: relative;
   }
 `;
 
 const UITitle = styled.h3`
   ${theme.typo.secondaryTitle};
+  flex-grow: 1;
+  min-width: 0;
 `;
 
 const UIDescription = styled.h3`

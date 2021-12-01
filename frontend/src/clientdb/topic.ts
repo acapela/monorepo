@@ -73,7 +73,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   }),
   search: { fields: { name: true } },
 })
-  .addConnections((topic, { getEntity, getContextValue }) => {
+  .addConnections((topic, { getEntity, getContextValue, updateSelf }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
     const getMessageIds = cachedComputed(() => {
@@ -175,16 +175,21 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
 
       close() {
+        if (connections.isClosed) return;
         const closed_at = new Date().toISOString();
         const closed_by_user_id = currentUserId;
 
-        return getEntity(topicEntity).query({ id: topic.id }).first?.update({ closed_at, closed_by_user_id });
+        return updateSelf({ closed_at, closed_by_user_id });
+      },
+
+      archive() {
+        if (connections.isArchived) return;
+        connections.close();
+        return updateSelf({ archived_at: new Date().toISOString() });
       },
 
       open() {
-        return getEntity(topicEntity)
-          .query({ id: topic.id })
-          .first?.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
+        return updateSelf({ closed_at: null, closed_by_user_id: null, archived_at: null });
       },
 
       unreadMessages,
@@ -200,8 +205,10 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addEventHandlers({
     itemUpdated: (topicNow, topicBefore, { getEntity }) => {
       const isNameChanged = topicNow.name !== topicBefore.name;
+      const topicEventClient = getEntity(topicEventEntity);
+
       if (isNameChanged) {
-        getEntity(topicEventEntity).create({
+        topicEventClient.create({
           topic_id: topicNow.id,
           topic_from_name: topicBefore.name,
           topic_to_name: topicNow.name,
@@ -210,7 +217,7 @@ export const topicEntity = defineEntity<TopicFragment>({
 
       const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
       if (isOpenStatusChanged) {
-        getEntity(topicEventEntity).create({
+        topicEventClient.create({
           topic_id: topicNow.id,
           topic_from_closed_at: topicBefore.closed_at,
           topic_to_closed_at: topicNow.closed_at,
@@ -219,7 +226,7 @@ export const topicEntity = defineEntity<TopicFragment>({
 
       const isArchivedStatusChanged = topicNow.archived_at !== topicBefore.archived_at;
       if (isArchivedStatusChanged) {
-        getEntity(topicEventEntity).create({
+        topicEventClient.create({
           topic_id: topicNow.id,
           topic_from_archived_at: topicBefore.archived_at,
           topic_to_archived_at: topicNow.archived_at,
