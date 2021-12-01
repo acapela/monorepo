@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
-import { format } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { difference, find, get } from "lodash";
-import { Bits, Blocks, Elements, Md, Message, Modal } from "slack-block-builder";
+import { Blocks, Md, Modal } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
@@ -12,21 +12,13 @@ import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import {
-  SlackActionIds,
-  assertToken,
-  createTeamMemberUserFromSlack,
-  findUserBySlackId,
-  listenToViewWithMetadata,
-} from "../utils";
+import { assertToken, createTeamMemberUserFromSlack, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
-
-const hourToOption = (hour: number) => Bits.Option({ value: `${hour}`, text: format(new Date(0, 0, 0, hour), "h a") });
 
 export function setupCreateRequestModal(app: App) {
   app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
@@ -130,6 +122,12 @@ export function setupCreateRequestModal(app: App) {
       request_type_block: {
         request_type_select: { selected_option: requestType },
       },
+      due_at_date_block: {
+        due_at_date: { selected_date: dueAtDate },
+      },
+      due_at_hour_block: {
+        due_at_hour: { selected_time: dueAtHour },
+      },
     } = view.state.values;
 
     // is the include channel members check box checked?
@@ -185,6 +183,15 @@ export function setupCreateRequestModal(app: App) {
 
     await ack({ response_action: "clear" });
 
+    let dueAt: Date | null = null;
+    if (dueAtDate || dueAtHour) {
+      const { user: slackUser } = await client.users.info({ user: ownerSlackUserId });
+      const date = dueAtDate ?? getNextWorkDayEndOfDay().toISOString().split("T")[0];
+      const hour = dueAtHour ?? "12";
+      const timeZone = slackUser?.tz ?? "Europe/Berlin";
+      dueAt = zonedTimeToUtc(`${date} ${hour}:00`, timeZone);
+    }
+
     const topic = await createTopicForSlackUsers({
       token,
       teamId: team.id,
@@ -193,6 +200,7 @@ export function setupCreateRequestModal(app: App) {
       slackTeamId,
       rawTopicMessage: messageText,
       topicName,
+      dueAt,
       slackUserIdsWithMentionType,
       requestedObservers,
     });
@@ -222,34 +230,6 @@ export function setupCreateRequestModal(app: App) {
       Sentry.captureException(response.error);
       return;
     }
-
-    await client.chat.postEphemeral({
-      token,
-      channel: channelId,
-      thread_ts: metadata.messageTs,
-      text: "Add a due date to let your team know by when you need them to get back to you.",
-      user: ownerSlackUserId,
-      blocks: Message()
-        .blocks(
-          Blocks.Section({ text: "Add a due date to let your team know by when you need them to get back to you." }),
-          Blocks.Input({ blockId: "due_at_date_block", label: "Date" }).element(
-            Elements.DatePicker({ actionId: "due_at_date" }).initialDate(getNextWorkDayEndOfDay())
-          ),
-          Blocks.Input({ blockId: "due_at_hour_block", label: "Time" }).element(
-            Elements.StaticSelect({ actionId: "due_at_hour" })
-              .options([...Array(24).keys()].map((hour) => hourToOption(hour)))
-              .initialOption(hourToOption(12))
-          ),
-          Blocks.Actions().elements(
-            Elements.Button({
-              actionId: SlackActionIds.UpdateMessageTaskDueAt,
-              text: "Set Due Date",
-              value: topic.message[0].id,
-            }).primary(true)
-          )
-        )
-        .buildToObject().blocks,
-    });
 
     const { channel, message } = response;
     assert(channel && message?.ts, "ok response without channel or message_ts");
