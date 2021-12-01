@@ -53,6 +53,8 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
   );
 })``;
 
+const ICON_SIZE = 20;
+
 export const UIButton = styled.button<{
   kind: ButtonKind;
   isDisabled: boolean;
@@ -61,8 +63,9 @@ export const UIButton = styled.button<{
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: ${ICON_SIZE}px;
   aspect-ratio: 1;
+  padding: 6px;
 
   ${theme.radius.button};
   ${theme.transitions.hover()};
