@@ -233,6 +233,7 @@ export async function openCreateRequestModal(
       origin,
       fromMessageBelongingToSlackUserId,
       requestToSlackUserIds,
+      slackUserIdsFromMessage,
     })
   );
 

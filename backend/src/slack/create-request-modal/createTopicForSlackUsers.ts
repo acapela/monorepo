@@ -1,11 +1,11 @@
-import { compact, uniq } from "lodash";
+import { compact, map, uniq } from "lodash";
 
 import { sendInviteNotification } from "~backend/src/inviteUser";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { MENTION_TYPE_KEY, getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { Maybe } from "~shared/types";
@@ -141,11 +141,11 @@ function transformMessage(
     slackTeamId,
     mentionedUsersBySlackId,
   });
+
   const alreadyMentionedUsers = new Set(
-    getUniqueRequestMentionDataFromContent(messageContent)
-      .filter((d) => "userId" in d)
-      .map((mentionData) => mentionData.userId)
+    uniq(compact(map(getMentionNodesFromContent(messageContent), "attrs.data.userId")))
   );
+
   const extraMentionNodes = usersWithRequestType
     .filter(({ userId }) => !alreadyMentionedUsers.has(userId))
     .flatMap(({ userId, mentionType }) => {

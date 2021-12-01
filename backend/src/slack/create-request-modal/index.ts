@@ -9,7 +9,7 @@ import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
-import { MentionType } from "~shared/types/mention";
+import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
 
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import {
@@ -173,11 +173,20 @@ export function setupCreateRequestModal(app: App) {
       mentionType: requestType.value as MentionType,
     }));
 
+    // add mentioned users from message as observers
+    difference(metadata.slackUserIdsFromMessage, members || []).forEach((id) => {
+      slackUserIdsWithMentionType.push({
+        slackUserId: id,
+        mentionType: MENTION_OBSERVER,
+      });
+    });
+
     // When a request is created from a message, add message author as observer
     const hasRequestOriginatedFromMessageAction = metadata.origin === "slack-message-action";
     if (hasRequestOriginatedFromMessageAction && metadata.fromMessageBelongingToSlackUserId) {
       slackUserIdsWithMentionType.push({
         slackUserId: metadata.fromMessageBelongingToSlackUserId,
+        mentionType: MENTION_OBSERVER,
       });
     }
 
