@@ -107,7 +107,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
   const topicBefore = event.itemBefore;
 
   // Should never be null on event updates
-  assert(topicBefore, "Updated topic didn't contain previous topic data");
+  assert(topicBefore, `Updated topic ${event.item.id} didn't contain previous topic data`);
 
   const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
   if (isOpenStatusChanged) {
@@ -140,7 +140,7 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
   const isClosedByOwner = ownerId === userIdThatClosedTopic;
   const wasJustClosed = topic.closed_at && event?.itemBefore?.closed_at === null;
 
-  assert(event.itemBefore, "Updated topic didn't contain previous topic data");
+  assert(event.itemBefore, `Updated topic ${topic.id} didn't contain previous topic data`);
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
     await Promise.all([

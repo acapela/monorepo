@@ -22,7 +22,7 @@ export const TeamMembersManager = observer(({ team }: Props) => {
 
   const handleRemoveTeamMember = (userId: string) => {
     const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
-    assert(teamMember, "did not find teamMember");
+    assert(teamMember, `did not find teamMember for user ${userId}`);
     teamMember.remove();
   };
 

@@ -47,20 +47,20 @@ async function maybeUpdateSlackMessage(message: Message) {
     return;
   }
   const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
-  assert(topic, "must have topic");
+  assert(topic, `must have topic ${message.topic_id}`);
   await tryUpdateTopicSlackMessage(topic);
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
   const userId = event.userId || event.item?.user_id || event.itemBefore?.user_id;
-  assert(userId, "cannot find user_id for message");
+  assert(userId, `cannot find user_id for message ${event.item.id}`);
   if (event.type === "create") {
     // this is required for fetching the attachments
     const message = await db.message.findUnique({
       where: { id: event.item.id },
       include: { attachment: true },
     });
-    assert(message, "message must exist");
+    assert(message, `message ${event.item.id} must exist`);
     trackBackendUserEvent(userId, "Sent Message", {
       messageType: event.item.type as Message_Type_Enum,
       hasAttachments: message.attachment.length !== 0,
@@ -90,7 +90,7 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
 export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
   if (event.type === "create") {
     const userId = event.userId || event.item.user_id;
-    assert(userId, "cannot find user_id for message reaction");
+    assert(userId, `cannot find user_id for message reaction ${event.item.id}`);
     trackBackendUserEvent(userId, "Reacted To Message", {
       messageId: event.item.message_id,
       reactionEmoji: event.item.emoji,

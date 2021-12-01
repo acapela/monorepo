@@ -26,7 +26,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
     }),
     generateMessageTextWithMentions(topic, message),
   ]);
-  assert(author, "missing message author");
+  assert(author, `missing author for message ${message.id}`);
   const authorLabel = author.team_member_slack ? Md.user(author.team_member_slack.slack_user_id) : author.user.name;
   const requestType = Md.bold(MENTION_TYPE_LABELS[task.type as MentionType]);
   const text =
@@ -62,7 +62,8 @@ export async function tryUpdateTaskSlackMessages(where: {
   if (!firstMessage) {
     return;
   }
-  const botToken = assertDefined(await fetchTeamBotToken(firstMessage.topic.team_id), "must have a token");
+  const teamId = firstMessage.topic.team_id;
+  const botToken = assertDefined(await fetchTeamBotToken(teamId), `must have a token for team ${teamId}`);
 
   const messagesById = Object.fromEntries(messages.map((message) => [message.id, message]));
 

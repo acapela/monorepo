@@ -250,7 +250,7 @@ export async function createTopicForSlackUsers({
     include: { message: true },
   });
 
-  const botToken = assertDefined(await fetchTeamBotToken(teamId), "must have bot token");
+  const botToken = assertDefined(await fetchTeamBotToken(teamId), `must have bot token for team ${teamId}`);
   await updateHomeView(botToken, ownerSlackUserId);
 
   return topic;

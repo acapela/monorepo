@@ -162,7 +162,7 @@ export function setupCreateRequestModal(app: App) {
     const ownerSlackUserId = body.user.id;
 
     const team = await db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } });
-    assert(team, "must have a team");
+    assert(team, `must have a team for slack team ${slackTeamId}`);
 
     const owner =
       (await findUserBySlackId(token, ownerSlackUserId, team.id)) ??

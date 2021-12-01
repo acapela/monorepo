@@ -62,7 +62,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
     });
 
     const firstInvite = !teamMember;
-    if (firstInvite) {
+    if (!teamMember) {
       teamMember = await db.team_member.create({
         data: {
           user: {
@@ -82,8 +82,6 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
         },
       });
     }
-
-    assert(teamMember, "teamMember must have been created");
 
     if (firstInvite) {
       trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, email, origin: "webapp" });

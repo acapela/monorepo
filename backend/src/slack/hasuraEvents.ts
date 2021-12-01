@@ -9,8 +9,9 @@ export async function handleTaskSlackMessageChanges(event: HasuraEvent<TaskSlack
   if (event.type == "delete") {
     const { topic_id, slack_channel_id: channel, slack_message_ts: ts } = event.item;
     const topic = await db.topic.findUnique({ where: { id: topic_id } });
-    assert(topic, "missing topic");
-    const token = assertDefined(await fetchTeamBotToken(topic.team_id), "missing token");
+    assert(topic, `missing topic ${topic_id}`);
+    const teamId = topic.team_id;
+    const token = assertDefined(await fetchTeamBotToken(teamId), `missing token for team ${teamId}`);
     await slackClient.chat.delete({ token, channel, ts });
   }
 }
