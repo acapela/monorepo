@@ -10,6 +10,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { MentionType } from "~shared/types/mention";
 
+import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import {
   SlackActionIds,
@@ -197,6 +198,16 @@ export function setupCreateRequestModal(app: App) {
       return;
     }
 
+    try {
+      if (context.botToken == token) {
+        // try to join the channel in case the bot is not in it already
+        await client.conversations.join({ token, channel: channelId });
+      }
+    } catch (error) {
+      if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
+        throw error;
+      }
+    }
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,

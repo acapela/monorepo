@@ -90,9 +90,15 @@ export const RequestView = observer(({ topic }: Props) => {
     };
 
     if (!topic && typeof accessToken == "string") {
-      joinTopic({ variables: { accessToken } }).then((data) => {
-        data.data;
-        removeAccessTokenFromQuery();
+      joinTopic({ variables: { accessToken } }).then(({ data }) => {
+        if (data?.join_topic?.success) {
+          // the success case will trigger a sync of the newly synced topic, which will lead
+          // to the token being removed from the query once it's completed
+        } else {
+          // we log any errors on the backend site, where we also have more context
+          // otherwise we 'd just strip the access token, thus showing topic not found
+          removeAccessTokenFromQuery();
+        }
       });
     }
     if (topic && accessToken) {

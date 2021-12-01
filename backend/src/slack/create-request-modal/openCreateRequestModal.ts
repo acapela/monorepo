@@ -110,11 +110,9 @@ async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
 
 async function checkHasChannelAccess(token: string, channelId: string, slackUserId: string) {
   try {
-    // TODO Bot posting is currently blocked on us not being able to change our prod manifest
-    /*const { channel } = */ await slackClient.conversations.info({ token, channel: channelId });
-    // const isPublic = channel?.is_channel && !channel.is_private;
-    // return isPublic || checkHasTeamMemberAllSlackUserScopes(slackUserId);
-    return checkHasTeamMemberAllSlackUserScopes(slackUserId);
+    const { channel } = await slackClient.conversations.info({ token, channel: channelId });
+    const isPublic = channel?.is_channel && !channel.is_private;
+    return isPublic || checkHasTeamMemberAllSlackUserScopes(slackUserId);
   } catch (error) {
     if (isChannelNotFoundError(error)) {
       return false;
@@ -148,8 +146,9 @@ async function getChannelInfo(token: string, channelId: string | undefined): Pro
   ]);
 
   if (!infoRes.ok || !infoRes.channel || !membersRes.ok || !membersRes.members) return null;
-  // ignore too large channels
-  if (membersRes.members.length > 30) return null;
+  // ignore large channels, since we use members only for setting the default assignee
+  // which is not useful for large channels
+  if (membersRes.members.length > 10) return null;
 
   return {
     members: await excludeBotUsers(token, membersRes.members),
