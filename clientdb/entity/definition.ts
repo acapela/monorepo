@@ -55,6 +55,7 @@ export interface EntityDefinition<Data, Connections> {
 
 export interface ConnectionsManager<Data> extends DatabaseUtilities {
   createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
+  updateSelf(data: Partial<Data>): void;
 }
 
 type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;

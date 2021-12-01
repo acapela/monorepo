@@ -15,6 +15,7 @@ import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "~
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
+import { TopicCloseButton } from "./TopicCloseButton";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";
 
 interface Props {
@@ -32,7 +33,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
 
   const handleTopicRename = action(async () => {
     const name = await openUIPrompt({
-      title: "Rename",
+      title: "Rename topic",
       initialValue: topic.name,
       validateInput: createLengthValidator("Topic name", 3),
     });
@@ -45,14 +46,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   });
 
   const handleTopicArchive = action(async () => {
-    if (!topic.isClosed) {
-      handleCloseTopic();
-    }
-    topic.update({ archived_at: new Date().toISOString() });
-  });
-
-  const handleTopicUnarchive = action(async () => {
-    topic.update({ archived_at: null });
+    topic.archive();
   });
 
   return (
@@ -66,6 +60,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
         {topic.name}
       </UITitle>
       <UITopicTools>
+        <TopicCloseButton topic={topic} />
         <AvatarList users={topic.members} maxVisibleCount={5} />
         {/* TODO: Include invite button */}
         <PopoverMenuTrigger
@@ -87,7 +82,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
             },
             {
               label: topic.isArchived ? "Unarchive" : topic.isClosed ? "Archive" : "Close and Archive",
-              onSelect: () => (topic.isArchived ? handleTopicUnarchive() : handleTopicArchive()),
+              onSelect: () => (topic.isArchived ? handleReopenTopic() : handleTopicArchive()),
               icon: topic.isArchived ? <IconUnlock /> : <IconLock />,
               isDestructive: true,
             },

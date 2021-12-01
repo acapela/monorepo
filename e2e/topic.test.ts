@@ -41,7 +41,7 @@ test("can rename a topic", async ({ page, auth, db }) => {
 
   await page.waitForSelector("text=Submit");
 
-  await page.fill('[data-test-id="prompt-input-rename"]', renamedTopicName);
+  await page.fill('[data-test-id="prompt-input-rename-topic"]', renamedTopicName);
 
   await page.click("text=Submit");
 
