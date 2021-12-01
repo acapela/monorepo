@@ -73,7 +73,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   }),
   search: { fields: { name: true } },
 })
-  .addConnections((topic, { getEntity, getContextValue }) => {
+  .addConnections((topic, { getEntity, getContextValue, updateSelf }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
     const getMessageIds = cachedComputed(() => {
@@ -181,23 +181,17 @@ export const topicEntity = defineEntity<TopicFragment>({
         const closed_at = new Date().toISOString();
         const closed_by_user_id = currentUserId;
 
-        return getEntity(topicEntity).findById(topic.id)?.update({ closed_at, closed_by_user_id });
+        return updateSelf({ closed_at, closed_by_user_id });
       },
 
       archive() {
         if (connections.isArchived) return;
         connections.close();
-        return getEntity(topicEntity).findById(topic.id)?.update({ archived_at: new Date().toISOString() });
-      },
-
-      unarchive() {
-        return getEntity(topicEntity).findById(topic.id)?.update({ archived_at: null });
+        return updateSelf({ archived_at: new Date().toISOString() });
       },
 
       open() {
-        return getEntity(topicEntity)
-          .query({ id: topic.id })
-          .first?.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
+        return updateSelf({ closed_at: null, closed_by_user_id: null, archived_at: null });
       },
 
       unreadMessages,

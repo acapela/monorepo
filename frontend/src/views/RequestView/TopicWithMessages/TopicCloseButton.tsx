@@ -4,7 +4,7 @@ import { cachedComputed } from "~clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { Button } from "~ui/buttons/Button";
-import { IconCheck, IconLock, IconUndo, IconUnlock } from "~ui/icons";
+import { IconCheck, IconLock, IconUndo } from "~ui/icons";
 
 interface Props {
   topic: TopicEntity;
@@ -47,14 +47,14 @@ export const TopicCloseButton = observer(function TopicCloseButton({ topic }: Pr
     return (
       <Button
         key="unarchive"
-        icon={<IconUnlock />}
+        icon={<IconUndo />}
         onClick={() => {
           topic.open();
         }}
         kind="secondary"
         size="compact"
       >
-        Unarchive
+        Reopen
       </Button>
     );
   }

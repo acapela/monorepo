@@ -49,10 +49,6 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
     topic.archive();
   });
 
-  const handleTopicUnarchive = action(async () => {
-    topic.unarchive();
-  });
-
   return (
     <UIHolder>
       <UITitle
@@ -86,7 +82,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
             },
             {
               label: topic.isArchived ? "Unarchive" : topic.isClosed ? "Archive" : "Close and Archive",
-              onSelect: () => (topic.isArchived ? handleTopicUnarchive() : handleTopicArchive()),
+              onSelect: () => (topic.isArchived ? handleReopenTopic() : handleTopicArchive()),
               icon: topic.isArchived ? <IconUnlock /> : <IconLock />,
               isDestructive: true,
             },
