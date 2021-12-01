@@ -37,7 +37,7 @@ export async function LiveTopicMessage(topic: Topic, options?: { isMessageConten
     include: { task: { include: { user: true } }, message_task_due_date: true },
   });
 
-  assert(message, "must have a first message");
+  assert(message, `must have a first message for topic ${topic.id}`);
 
   const text = options?.isMessageContentExcluded
     ? Md.italic("New Acapela Request Created:") + `\n> "${Md.bold(topic.name)}"`
@@ -80,7 +80,10 @@ export async function tryUpdateTopicSlackMessage(topic: Topic) {
     fetchTeamMemberToken(topic.owner_id, topic.team_id),
     fetchTeamBotToken(topic.team_id),
   ]);
-  const token = assertDefined(topicSlackMessage.was_sent_by_bot ? teamToken : teamMemberToken, "must have token");
+  const token = assertDefined(
+    topicSlackMessage.was_sent_by_bot ? teamToken : teamMemberToken,
+    `must have token for topic slack message ${topicSlackMessage.id}`
+  );
   try {
     await slackClient.chat.update({
       ...(await LiveTopicMessage(topic, {

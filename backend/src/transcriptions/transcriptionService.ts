@@ -36,8 +36,8 @@ export async function handleAttachementTranscriptionStatusUpdate(mediaResponse: 
 
   const attachment = await db.attachment.findUnique({ where: { id: attachmentId } });
 
-  assert(attachment, "No attachment for given id");
-  assert(attachment.transcription_id, "Provided attachment has no transcript");
+  assert(attachment, `No attachment for given id ${attachmentId}`);
+  assert(attachment.transcription_id, `Provided attachment ${attachmentId} has no transcript`);
 
   await db.transcription.update({
     where: { id: attachment.transcription_id },
