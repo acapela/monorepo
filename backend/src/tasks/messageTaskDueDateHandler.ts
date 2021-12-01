@@ -10,7 +10,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
   const messageId = event.item.message_id;
   const topic = await db.topic.findFirst({ where: { message: { some: { id: messageId } } } });
 
-  assert(topic, "must have topic");
+  assert(topic, `must have topic for message ${messageId}`);
 
   // Most likely created by slack command. The analytics event should be triggered where the slack command is captured
   if (!event.userId) {

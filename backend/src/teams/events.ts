@@ -1,5 +1,4 @@
 import { Team, db } from "~db";
-import { assert } from "~shared/assert";
 import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
 import { logger } from "~shared/logger";
 
@@ -17,7 +16,6 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
     });
     throw new UnprocessableEntityError(`User id of action caller: ${userId} does not match room creator: ${ownerId}`);
   }
-  assert(ownerId, "team must have owner id");
 
   if (event.type === "create") {
     trackBackendUserEvent(ownerId, "Account Created", { teamName: team.name });

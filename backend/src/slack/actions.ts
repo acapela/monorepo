@@ -66,7 +66,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
-    assert(user, "Unable to find user(slack-id=${body.user.id}");
+    assert(user, `Unable to find user(slack-id=${body.user.id}`);
 
     if (!topic) {
       await ack();
@@ -123,7 +123,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
-    assert(user, "Unable to find user(slack-id=${body.user.id}");
+    assert(user, `Unable to find user(slack-id=${body.user.id}`);
 
     if (!topic) {
       await say(`Whoops! Seems that this request doesn't exist anymore.`);
@@ -154,7 +154,7 @@ export function setupSlackActionHandlers(slackApp: App) {
     const user = await findUserBySlackId(assertToken(context), body.user.id);
     const topic = await db.topic.findFirst({ where: { id: topicId } });
 
-    assert(user, "Unable to find user(slack-id=${body.user.id}");
+    assert(user, `Unable to find user(slack-id=${body.user.id}`);
 
     if (!topic) {
       await say(`Whoops! Seems that this request doesn't exist anymore.`);
@@ -251,7 +251,7 @@ export function setupSlackActionHandlers(slackApp: App) {
         },
       });
 
-      assert(message, "updating due date for inexistent message");
+      assert(message, `updating due date for inexistent message ${messageId}`);
 
       trackBackendUserEvent(message.user_id, "Added Due Date", {
         topicId: message.topic_id,
@@ -272,7 +272,7 @@ export function setupSlackActionHandlers(slackApp: App) {
       findUserBySlackId(token, body.user.id),
       db.task.findUnique({ where: { id: taskId }, include: { message: { include: { topic: true } }, user: true } }),
     ]);
-    assert(task, "missing task");
+    assert(task, `missing task ${taskId}`);
 
     if (user?.id !== task.user_id) {
       await slackClient.views.open({

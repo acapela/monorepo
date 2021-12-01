@@ -92,7 +92,7 @@ async function onTaskCreation(task: Task) {
 async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: UpdateHasuraEvent<Task>) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
-  assert(topic, "must have topic");
+  assert(topic, `must have topic for message ${task.message_id}`);
 
   if (!isEqualForPick(task, taskBefore, ["done_at"])) {
     await tryUpdateTaskSlackMessages({

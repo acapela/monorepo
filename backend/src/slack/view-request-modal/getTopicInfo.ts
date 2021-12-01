@@ -25,7 +25,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     },
   });
 
-  assert(team, "not team exists");
+  assert(team, `missing team for topic ${topicId}`);
 
   const topic = await db.topic.findFirst({
     where: { id: topicId },
@@ -64,7 +64,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     },
   });
 
-  assert(topic, "topic not found");
+  assert(topic, `topic ${topicId} not found`);
 
   async function toSlackTeamMember(userId: string): Promise<SlackMember> {
     let userWithTeamAndSlackMember = topic?.topic_member.find((tm) => tm.user_id === userId)?.user;
@@ -90,7 +90,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
         })) ?? undefined;
     }
 
-    assert(userWithTeamAndSlackMember, "user not found");
+    assert(userWithTeamAndSlackMember, `user ${userId} not found`);
 
     return {
       name: userWithTeamAndSlackMember.name,

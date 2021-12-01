@@ -57,7 +57,7 @@ export async function sendNotificationIgnoringPreference(
 export async function sendNotificationPerPreference(user: User, teamId: string, message: Partial<NotificationMessage>) {
   const teamMember = assertDefined(
     await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
-    "missing team_member"
+    `missing team_member for user ${user.id} in team ${teamId}`
   );
   const notificationChannels: (keyof NotificationMessage)[] = [];
   if (teamMember.notify_email) {

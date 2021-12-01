@@ -137,8 +137,8 @@ export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
 
 export async function createTeamMemberUserFromSlack(token: string, slackUserId: string, teamId: string) {
   const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
-  assert(profile, "missing profile");
-  const email = assertDefined(profile.email, "must have email");
+  assert(profile, `missing profile for slack user ${slackUserId}`);
+  const email = assertDefined(profile.email, `missing email for slack user ${slackUserId}`);
   return db.team_member.create({
     data: {
       user: {
@@ -146,7 +146,7 @@ export async function createTeamMemberUserFromSlack(token: string, slackUserId: 
           where: { email },
           create: {
             email,
-            name: assertDefined(profile.display_name, "must have display name"),
+            name: assertDefined(profile.display_name, `missing display name for slack user ${slackUserId}`),
             avatar_url: profile.image_original,
             current_team_id: teamId,
           },

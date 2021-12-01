@@ -1,5 +1,7 @@
 import { updatedDiff } from "deep-object-diff";
+import { get } from "lodash";
 
+import { updateHomeView } from "~backend/src/slack/home-tab";
 import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
 import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
 import { Topic, TopicMember, db } from "~db";
@@ -33,6 +35,30 @@ function trackTopicChanges(event: HasuraEvent<Topic>) {
   }
 }
 
+async function updateSlackHomeTab(item: Topic) {
+  const slackInstallation = await db.team_slack_installation.findFirst({
+    where: {
+      team_id: item.team_id,
+    },
+  });
+  const botToken = get(slackInstallation?.data, "bot.token");
+  if (!botToken) return;
+
+  const teamMemberTopicOwner = await db.team_member.findFirst({
+    where: {
+      user_id: item.owner_id,
+      team_id: item.team_id,
+    },
+    include: {
+      team_member_slack: true,
+    },
+  });
+  const slackUserId = get(teamMemberTopicOwner, "team_member_slack.slack_user_id");
+  if (!slackUserId) return;
+
+  await updateHomeView(botToken, slackUserId);
+}
+
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (event.type === "create") {
@@ -62,6 +88,8 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
         },
       });
     }
+
+    await updateSlackHomeTab(event.item);
   } else if (event.type === "update") {
     trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
@@ -79,7 +107,7 @@ async function updateTopicEvents(event: HasuraEvent<Topic>) {
   const topicBefore = event.itemBefore;
 
   // Should never be null on event updates
-  assert(topicBefore, "Updated topic didn't contain previous topic data");
+  assert(topicBefore, `Updated topic ${event.item.id} didn't contain previous topic data`);
 
   const isOpenStatusChanged = topicNow.closed_at !== topicBefore.closed_at;
   if (isOpenStatusChanged) {
@@ -112,7 +140,7 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
   const isClosedByOwner = ownerId === userIdThatClosedTopic;
   const wasJustClosed = topic.closed_at && event?.itemBefore?.closed_at === null;
 
-  assert(event.itemBefore, "Updated topic didn't contain previous topic data");
+  assert(event.itemBefore, `Updated topic ${topic.id} didn't contain previous topic data`);
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
     await Promise.all([
