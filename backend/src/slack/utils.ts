@@ -104,6 +104,7 @@ export type ViewMetadata = {
     messageTs?: string;
     origin: CreateRequestOrigin;
     fromMessageBelongingToSlackUserId?: string;
+    slackUserIdsFromMessage?: string[];
   };
   open_view_request_modal: {
     slackUserId: string;
