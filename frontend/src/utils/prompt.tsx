@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { slugifySync } from "~shared/slugify";
 import { InputValidatorFunction } from "~shared/validation/inputValidation";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
@@ -74,7 +75,7 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
       >
         <UIContentWrapper>
           <TextInput
-            data-test-id={`prompt-input-${title.toLowerCase()}`}
+            data-test-id={`prompt-input-${slugifySync(title, title.toLowerCase())}`}
             ref={inputRef}
             icon={inputIcon}
             onBlur={showValidationErrors}

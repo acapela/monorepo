@@ -24,7 +24,7 @@ test("can close a topic", async ({ page, auth, db }) => {
   await appPage.waitForRequestInGroup(title, "Closed");
 });
 
-test("can rename a topic", async ({ page, auth, db }) => {
+test.only("can rename a topic", async ({ page, auth, db }) => {
   await auth.login(db.user2);
   const userName = db.user2.name;
 
@@ -41,7 +41,7 @@ test("can rename a topic", async ({ page, auth, db }) => {
 
   await page.waitForSelector("text=Submit");
 
-  await page.fill('[data-test-id="prompt-input-rename"]', renamedTopicName);
+  await page.fill('[data-test-id="prompt-input-rename-topic"]', renamedTopicName);
 
   await page.click("text=Submit");
 
