@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { flattenDeep, get, orderBy, uniq } from "lodash";
+import { flattenDeep, orderBy, sumBy, uniq } from "lodash";
 import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
@@ -15,7 +15,7 @@ import { GenerateContext } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
 import { RequestsList } from "./RequestList";
-import { TopicWithOpenTask } from "./types";
+import { TopicWithOpenTask, UnreadMessages } from "./types";
 import { getMostUrgentTask } from "./utils";
 
 type TopicWhereInput = Prisma.topicWhereInput;
@@ -158,17 +158,18 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     mentionedSlackIdByUsersId,
   };
 
-  const queryRes =
-    await db.$queryRaw`SELECT SUM(unread_messages) FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
-  const unreadMessages: number = get(queryRes, "0.sum", 0) || 0;
+  const unreadMessages: UnreadMessages =
+    await db.$queryRaw`SELECT topic_id, unread_messages FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
 
-  const unreadMessagesText = unreadMessages
-    ? `:envelope_with_arrow: You currently have *${unreadMessages}* unread ${pluralize(
-        unreadMessages,
+  const allUnreadMessages: number = sumBy(unreadMessages, "unread_messages");
+  const allUnreadMessagesText = allUnreadMessages
+    ? `:envelope_with_arrow: You currently have *${allUnreadMessages}* unread ${pluralize(
+        allUnreadMessages,
         "message",
         "messages"
       )}.`
     : ":envelope_with_arrow: You are all caught up. :tada:";
+
   await publishView(
     HomeTab()
       .blocks(
@@ -179,7 +180,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             "in the web app"
           )}.`,
         }),
-        Blocks.Section({ text: unreadMessagesText }),
+        Blocks.Section({ text: allUnreadMessagesText }),
         Blocks.Actions().elements(
           Elements.Button({ text: "+ New Request", actionId: SlackActionIds.CreateTopic }).primary(true),
           Elements.Button({ text: "Open web app" })
@@ -187,10 +188,10 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        await RequestsList("🔥 Received", received, generatorContext),
-        await RequestsList("📤 Sent", sent, generatorContext),
-        await RequestsList("⏳ Open", open, generatorContext),
-        await RequestsList("✅ Closed", closed, generatorContext)
+        await RequestsList("🔥 Received", received, generatorContext, unreadMessages),
+        await RequestsList("📤 Sent", sent, generatorContext, unreadMessages),
+        await RequestsList("⏳ Open", open, generatorContext, unreadMessages),
+        await RequestsList("✅ Closed", closed, generatorContext, unreadMessages)
       )
       .buildToObject()
   );
