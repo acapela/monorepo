@@ -1,7 +1,6 @@
 import assert from "assert";
 
 import { App, BlockButtonAction, ViewOutput } from "@slack/bolt";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -15,7 +14,7 @@ import { RequestType } from "~shared/types/mention";
 import { slackClient } from "./app";
 import { openCreateRequestModal } from "./create-request-modal/openCreateRequestModal";
 import { updateHomeView } from "./home-tab";
-import { createSlackLink, mdDate } from "./md/utils";
+import { createSlackLink } from "./md/utils";
 import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
 import { ViewRequestModal } from "./view-request-modal/ViewRequestModal";
 
@@ -210,58 +209,6 @@ export function setupSlackActionHandlers(slackApp: App) {
     await ack();
     trackBackendUserEvent(...(JSON.parse(payload.value) as [never, never]));
   });
-
-  slackApp.action<BlockButtonAction>(
-    SlackActionIds.UpdateMessageTaskDueAt,
-    async ({ ack, action, body, client, respond }) => {
-      await ack();
-      if (!body.state) {
-        return;
-      }
-      const messageId = action.value;
-      const {
-        due_at_date_block: {
-          due_at_date: { selected_date: dueAtDate },
-        },
-        due_at_hour_block: {
-          due_at_hour: { selected_option: dueAtHour },
-        },
-      } = body.state.values;
-      if (!dueAtDate || !dueAtHour?.value) {
-        return;
-      }
-
-      const { user: slackUser } = await client.users.info({ user: body.user.id });
-      if (!slackUser?.tz) {
-        return;
-      }
-
-      const dueAtUTC = zonedTimeToUtc(`${dueAtDate} ${dueAtHour.value}:00`, slackUser.tz);
-
-      const data = { due_at: dueAtUTC.toISOString() };
-      await db.message_task_due_date.upsert({
-        where: { message_id: messageId },
-        create: { message_id: messageId, ...data },
-        update: data,
-      });
-
-      const message = await db.message.findFirst({
-        where: {
-          id: messageId,
-        },
-      });
-
-      assert(message, `updating due date for inexistent message ${messageId}`);
-
-      trackBackendUserEvent(message.user_id, "Added Due Date", {
-        topicId: message.topic_id,
-        messageId: messageId,
-        origin: "slack-command",
-      });
-
-      await respond({ replace_original: true, text: `Due date was set to ${mdDate(dueAtUTC)}` });
-    }
-  );
 
   slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
     await ack();

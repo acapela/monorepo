@@ -73,7 +73,6 @@ export const SlackActionIds = {
   ReOpenTopic: "reopen-topic",
   CloseTopic: "close-topic",
   ArchiveTopic: "archive-topic",
-  UpdateMessageTaskDueAt: "update-task-due-at",
   TrackEvent: "track-event",
 } as const;
 

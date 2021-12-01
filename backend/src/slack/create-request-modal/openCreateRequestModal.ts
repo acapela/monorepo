@@ -93,6 +93,12 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
         : Blocks.Input({ label: "Your Message", blockId: "message_block" }).element(
             Elements.TextInput({ actionId: "message_text" }).multiline(true)
           ),
+      Blocks.Input({ blockId: "due_at_date_block", label: "Due Date" })
+        .element(Elements.DatePicker({ actionId: "due_at_date" }))
+        .optional(true),
+      Blocks.Input({ blockId: "due_at_hour_block", label: "Time" })
+        .element(Elements.TimePicker({ actionId: "due_at_hour" }))
+        .optional(true),
       Blocks.Input({ blockId: "topic_block", label: "Request Title" })
         .element(Elements.TextInput({ actionId: "topic_name", placeholder: "Eg feedback for Figma v12" }))
         .optional(true),

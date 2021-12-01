@@ -178,6 +178,7 @@ export async function createTopicForSlackUsers({
   ownerSlackUserId,
   slackTeamId,
   topicName,
+  dueAt,
   rawTopicMessage,
   slackUserIdsWithMentionType,
   requestedObservers,
@@ -188,6 +189,7 @@ export async function createTopicForSlackUsers({
   ownerSlackUserId: string;
   slackTeamId: string;
   topicName: Maybe<string>;
+  dueAt: Maybe<Date>;
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
   requestedObservers: string[];
@@ -234,6 +236,7 @@ export async function createTopicForSlackUsers({
           user_id: ownerId,
           content: messageContent,
           content_text: messageContentText,
+          message_task_due_date: dueAt ? { create: { due_at: dueAt } } : undefined,
           task: {
             createMany: {
               data: usersWithMentionType
