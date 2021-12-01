@@ -8,6 +8,7 @@ export type {
   message_type as MessageType,
   message_reaction as MessageReaction,
   topic as Topic,
+  topic_access_token as TopicAccessToken,
   topic_event as TopicEvent,
   topic_member as TopicMember,
   user as User,

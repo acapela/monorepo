@@ -10,6 +10,10 @@ type Mutation {
   invite_user(input: InviteUserInput!): InviteUserOutput
 }
 
+type Mutation {
+  join_topic(access_token: uuid!): JoinTopicOutput
+}
+
 type Query {
   slack_user(team_id: uuid!): SlackUserOutput
 }
@@ -75,5 +79,9 @@ type SlackUserOutput {
 }
 
 type UninstallSlackOutput {
+  success: Boolean!
+}
+
+type JoinTopicOutput {
   success: Boolean!
 }

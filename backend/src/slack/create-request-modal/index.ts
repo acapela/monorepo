@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { zonedTimeToUtc } from "date-fns-tz";
-import { difference, find, get } from "lodash";
 import { Blocks, Md, Modal } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
@@ -11,6 +10,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
 
+import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
 import { assertToken, createTeamMemberUserFromSlack, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
@@ -130,17 +130,6 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    // is the include channel members check box checked?
-    const includeChannelMembers = !!find(
-      get(view.state.values, "channel_observers_block.channel_observers_checkbox.selected_options"),
-      ["value", "include_channel_members"]
-    );
-
-    let requestedObservers: string[] = [];
-    if (includeChannelMembers && metadata.channelInfo?.members) {
-      requestedObservers = difference(metadata.channelInfo?.members, members || []);
-    }
-
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
     assert(messageText, "create_request called with wrong arguments");
     if (!(members && requestType && messageText && members.length > 0)) {
@@ -170,14 +159,6 @@ export function setupCreateRequestModal(app: App) {
       slackUserId: id,
       mentionType: requestType.value as MentionType,
     }));
-
-    // add mentioned users from message as observers
-    difference(metadata.slackUserIdsFromMessage, members || []).forEach((id) => {
-      slackUserIdsWithMentionType.push({
-        slackUserId: id,
-        mentionType: MENTION_OBSERVER,
-      });
-    });
 
     // When a request is created from a message, add message author as observer
     const hasRequestOriginatedFromMessageAction = metadata.origin === "slack-message-action";
@@ -211,7 +192,6 @@ export function setupCreateRequestModal(app: App) {
       topicName,
       dueAt,
       slackUserIdsWithMentionType,
-      requestedObservers,
     });
 
     if (!channelId) {
@@ -227,6 +207,16 @@ export function setupCreateRequestModal(app: App) {
       return;
     }
 
+    try {
+      if (context.botToken == token) {
+        // try to join the channel in case the bot is not in it already
+        await client.conversations.join({ token, channel: channelId });
+      }
+    } catch (error) {
+      if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
+        throw error;
+      }
+    }
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,

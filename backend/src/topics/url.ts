@@ -14,7 +14,7 @@ import { getTopicSlug } from "~shared/routes/topicSlug";
  *
  * To avoid confusion - I added backend prefix to make it explicit.
  */
-export async function backendGetTopicUrl(topic: Topic, hrefOnly = false) {
+export async function backendGetTopicUrl(topic: Topic, accessToken?: string) {
   const team = await db.team.findFirst({ where: { id: topic.team_id } });
   const firstMessage = await db.message.findFirst({ where: { topic_id: topic.id }, orderBy: { created_at: "asc" } });
 
@@ -23,9 +23,14 @@ export async function backendGetTopicUrl(topic: Topic, hrefOnly = false) {
 
   const topicSlug = getTopicSlug(firstMessage.content as RichEditorNode, topic.name);
 
-  const href = routes.topicByHandle({ teamSlug: team?.slug, topicSlug: topicSlug, topicId: topic.id });
+  const url = new URL(
+    routes.topicByHandle({ teamSlug: team?.slug, topicSlug: topicSlug, topicId: topic.id }),
+    process.env.FRONTEND_URL
+  );
 
-  if (hrefOnly) return href;
+  if (accessToken) {
+    url.searchParams.append("access_token", accessToken);
+  }
 
-  return `${process.env.FRONTEND_URL}${href}`;
+  return url.toString();
 }

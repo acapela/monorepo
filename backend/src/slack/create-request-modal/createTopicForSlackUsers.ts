@@ -181,7 +181,6 @@ export async function createTopicForSlackUsers({
   dueAt,
   rawTopicMessage,
   slackUserIdsWithMentionType,
-  requestedObservers,
 }: {
   token: string;
   teamId: string;
@@ -192,7 +191,6 @@ export async function createTopicForSlackUsers({
   dueAt: Maybe<Date>;
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
-  requestedObservers: string[];
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -201,12 +199,6 @@ export async function createTopicForSlackUsers({
     slackUserIdsWithMentionType,
   });
 
-  const observerUsers = compact(
-    (await Promise.all(requestedObservers.map((slackUserId) => findUserBySlackId(token, slackUserId, teamId)))).map(
-      (u) => u?.id
-    )
-  );
-
   const messageContent = transformMessage(
     rawTopicMessage,
     slackTeamId,
@@ -214,12 +206,8 @@ export async function createTopicForSlackUsers({
   );
 
   const messageContentText = convertMessageContentToPlainText(messageContent);
-  const userIds = uniq(
-    usersWithMentionType
-      .map(({ userId }) => userId)
-      .concat(ownerId)
-      .concat(observerUsers)
-  );
+  const userIds = uniq(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
+
   topicName =
     topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH).replaceAll("\n", "");
   const topic = await db.topic.create({
@@ -229,6 +217,7 @@ export async function createTopicForSlackUsers({
       slug: await slugify(topicName),
       index: "a",
       owner_id: ownerId,
+      topic_access_token: { create: {} },
       topic_member: { createMany: { data: Array.from(userIds).map((user_id) => ({ user_id })) } },
       message: {
         create: {
@@ -250,7 +239,7 @@ export async function createTopicForSlackUsers({
         },
       },
     },
-    include: { message: true },
+    include: { message: true, topic_access_token: true },
   });
 
   const botToken = assertDefined(await fetchTeamBotToken(teamId), `must have bot token for team ${teamId}`);

@@ -1,0 +1,3 @@
+table:
+  name: topic_access_token
+  schema: public

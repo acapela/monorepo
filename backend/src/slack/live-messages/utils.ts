@@ -9,8 +9,8 @@ import { generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS } from "../utils";
 
-export const createTopicLink = async (topic: Topic) =>
-  createSlackLink(await backendGetTopicUrl(topic), topic.name.replaceAll("\n", " "));
+export const createTopicLink = async (topic: Topic, accessToken?: string) =>
+  createSlackLink(await backendGetTopicUrl(topic, accessToken), topic.name.replaceAll("\n", " "));
 
 export const ToggleTaskDoneAtButton = (task: Task, user?: User) => {
   const type = task.type as RequestType;
