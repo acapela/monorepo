@@ -208,7 +208,7 @@ export async function openCreateRequestModal(
     token,
     messageText
       ? without(
-          uniq(Array.from(messageText.matchAll(/<@(.+?)\|/gm)).map(({ 1: slackUserId }) => slackUserId)),
+          uniq(Array.from(messageText.matchAll(/<@([^|>]+)(\|([^>]*))?>/gm)).map(({ 1: slackUserId }) => slackUserId)),
           slackUserId
         )
       : []
