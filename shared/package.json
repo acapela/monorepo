@@ -24,7 +24,7 @@
     "@types/jest": "^27.0.3",
     "@types/jsonwebtoken": "^8.5.6",
     "@types/prompts": "^2.4.0",
-    "clipboardy": "^3.0.0",
+    "clipboardy": "2.3.0",
     "jest": "^27.4.1",
     "pino-pretty": "^7.2.0",
     "prompts": "^2.4.2",
