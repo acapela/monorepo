@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { zonedTimeToUtc } from "date-fns-tz";
+import { difference } from "lodash";
 import { Blocks, Md, Modal } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
@@ -159,6 +160,14 @@ export function setupCreateRequestModal(app: App) {
       slackUserId: id,
       mentionType: requestType.value as MentionType,
     }));
+
+    // add mentioned users from message as observers
+    difference(metadata.slackUserIdsFromMessage, members || []).forEach((id) => {
+      slackUserIdsWithMentionType.push({
+        slackUserId: id,
+        mentionType: MENTION_OBSERVER,
+      });
+    });
 
     // When a request is created from a message, add message author as observer
     const hasRequestOriginatedFromMessageAction = metadata.origin === "slack-message-action";
