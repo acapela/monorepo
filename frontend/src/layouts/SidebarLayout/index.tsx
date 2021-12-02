@@ -13,6 +13,7 @@ import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { SidebarContent } from "./SidebarContent";
+import { useAppInitBatchProcedures } from "./useAppInit";
 import { useAppRedirects } from "./useAppRedirects";
 
 interface Props {
@@ -32,6 +33,8 @@ export const SidebarLayout = observer(({ children }: Props) => {
   }, [closeMobileMenu]);
 
   const willRedirect = useAppRedirects();
+
+  useAppInitBatchProcedures({ skip: willRedirect });
 
   // Close mobile menu if user rotates the screen
   useWindowEvent("orientationchange", closeMobileMenu);

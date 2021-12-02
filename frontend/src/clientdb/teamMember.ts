@@ -19,6 +19,9 @@ const teamMemberFragment = gql`
     notify_slack
     updated_at
     has_joined
+    timezone
+    work_start_hour_in_utc
+    work_end_hour_in_utc
   }
 `;
 
@@ -29,11 +32,23 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
   keys: getFragmentKeys<TeamMemberFragment>(teamMemberFragment),
   getDefaultValues: () => ({
     __typename: "team_member",
+    timezone: undefined,
+    work_start_hour_in_utc: undefined,
+    work_end_hour_in_utc: undefined,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TeamMemberFragment>(teamMemberFragment, {
-    insertColumns: ["id", "team_id", "user_id", "notify_email", "notify_slack"],
-    updateColumns: ["notify_email", "notify_slack"],
+    insertColumns: [
+      "id",
+      "team_id",
+      "user_id",
+      "notify_email",
+      "notify_slack",
+      "timezone",
+      "work_start_hour_in_utc",
+      "work_end_hour_in_utc",
+    ],
+    updateColumns: ["notify_email", "notify_slack", "timezone", "work_start_hour_in_utc", "work_end_hour_in_utc"],
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
 }).addConnections((teamMember, { getEntity, getContextValue }) => ({
