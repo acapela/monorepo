@@ -10,7 +10,7 @@ import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButt
 import { checkHasAllSlackBotScopes, checkHasAllSlackUserScopes } from "~shared/slack";
 import { theme } from "~ui/theme";
 
-import { UISettingsPanel, UISettingsTitle } from "./shared";
+import { Panel } from "./ui";
 
 export const SlackSettings = observer(() => {
   const currentUser = useAssertCurrentUser();
@@ -30,9 +30,7 @@ export const SlackSettings = observer(() => {
   const needsRelinking = userScopes.length > 0 && hasMissingScopes;
 
   return (
-    <UISettingsPanel>
-      <UISettingsTitle>Slack</UISettingsTitle>
-
+    <Panel title="Slack">
       {needsRelinking && (
         <UINoteParagraph>
           Note: You have linked your Slack account before but the permissions have changed. To use Acapela in Slack,
@@ -61,7 +59,7 @@ export const SlackSettings = observer(() => {
       </UIList>
 
       <AddSlackInstallationButton label={(needsRelinking ? "Re-" : "") + "Link your Slack account"} teamId={team.id} />
-    </UISettingsPanel>
+    </Panel>
   );
 });
 

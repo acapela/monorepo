@@ -11,8 +11,8 @@ import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
-import { UISettingsPanel, UISettingsTitle } from "./shared";
 import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
+import { Panel } from "./ui";
 
 const getNotificationChannelDescription = (channel: string) => `Receive personal notifications via ${channel}.`;
 
@@ -71,9 +71,7 @@ export const NotificationSettings = observer(() => {
   }
 
   return (
-    <UISettingsPanel>
-      <UISettingsTitle>Notifications</UISettingsTitle>
-
+    <Panel title="Notifications">
       <LabeledToggle
         title="Email"
         description={getNotificationChannelDescription("email")}
@@ -101,9 +99,8 @@ export const NotificationSettings = observer(() => {
             />
           )
         ))}
-
       <TeamMemberWorkHoursSettings />
-    </UISettingsPanel>
+    </Panel>
   );
 });
 

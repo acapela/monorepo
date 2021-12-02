@@ -1,9 +1,9 @@
 import { HasuraEvent } from "~backend/src/hasura";
-import { fetchTeamBotToken } from "~backend/src/slack/utils";
-import { TaskSlackMessage, db } from "~db";
+import { extractInstallationDataBotToken, fetchTeamBotToken } from "~backend/src/slack/utils";
+import { TaskSlackMessage, TeamSlackInstallation, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 
-import { slackClient } from "./app";
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "./app";
 
 export async function handleTaskSlackMessageChanges(event: HasuraEvent<TaskSlackMessage>) {
   if (event.type == "delete") {
@@ -14,4 +14,18 @@ export async function handleTaskSlackMessageChanges(event: HasuraEvent<TaskSlack
     const token = assertDefined(await fetchTeamBotToken(teamId), `missing token for team ${teamId}`);
     await slackClient.chat.delete({ token, channel, ts });
   }
+}
+
+export async function handleTeamSlackInstallationUpdates(event: HasuraEvent<TeamSlackInstallation>) {
+  if (event.type !== "delete") {
+    return;
+  }
+  await db.team_member_slack.deleteMany({ where: { team_member: { team_id: event.item.team_id } } });
+  const botToken = extractInstallationDataBotToken(event.item.data);
+  assert(botToken, "must have bot token");
+  await slackClient.apps.uninstall({
+    token: botToken,
+    client_id: SLACK_CLIENT_ID,
+    client_secret: SLACK_CLIENT_SECRET,
+  });
 }

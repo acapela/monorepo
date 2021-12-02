@@ -11,6 +11,7 @@ import { theme } from "~ui/theme";
 import { NotificationSettings } from "./NotificationSettings";
 import { SlackSettings } from "./SlackSettings";
 import { TeamManagerSettingsPanel } from "./TeamManager";
+import { TeamSettings } from "./TeamSettings";
 import { UserGroupsSettings } from "./UserGroupsSettings";
 
 export const SettingsView = observer(function SettingsView({
@@ -40,6 +41,8 @@ export const SettingsView = observer(function SettingsView({
         <NotificationSettings />
         <SlackSettings />
         <TeamManagerSettingsPanel team={team} />
+
+        {team.isOwnedByCurrentUser && <TeamSettings />}
 
         {version && (
           <UIVersionInfo>
