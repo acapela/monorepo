@@ -18,6 +18,14 @@ export const db = new PrismaClient({
   },
 });
 
+// Make sure we disconnect previous instance
+if (globalThis.dbInstance) {
+  globalThis.dbInstance.$disconnect();
+  globalThis.dbInstance = null;
+}
+
+globalThis.dbInstance = db;
+
 const PREFIX = "__TESTING__";
 
 const createJWTForUser = (userId: string): string => signJWT(createJWT({ sub: userId, userId: userId }));
