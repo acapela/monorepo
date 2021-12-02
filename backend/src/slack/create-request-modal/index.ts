@@ -178,7 +178,8 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
-    const channelId = metadata.channelId ?? view.state.values.channel_block.channel_select.selected_channel;
+    const conversationId =
+      metadata.channelId ?? view.state.values.conversation_block.conversation_select.selected_conversation;
 
     await ack({ response_action: "clear" });
 
@@ -203,7 +204,7 @@ export function setupCreateRequestModal(app: App) {
       slackUserIdsWithMentionType,
     });
 
-    if (!channelId) {
+    if (!metadata.channelId) {
       const topicURL = await backendGetTopicUrl(topic);
       await client.views.open({
         trigger_id: body.trigger_id,
@@ -213,13 +214,16 @@ export function setupCreateRequestModal(app: App) {
           )
           .buildToObject(),
       });
+    }
+
+    if (!conversationId) {
       return;
     }
 
     try {
-      if (context.botToken == token) {
+      if (conversationId && context.botToken == token) {
         // try to join the channel in case the bot is not in it already
-        await client.conversations.join({ token, channel: channelId });
+        await client.conversations.join({ token, channel: conversationId });
       }
     } catch (error) {
       if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
@@ -229,7 +233,7 @@ export function setupCreateRequestModal(app: App) {
     const response = await client.chat.postMessage({
       ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
       token,
-      channel: channelId,
+      channel: conversationId,
       thread_ts: metadata.messageTs,
     });
 
