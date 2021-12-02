@@ -12784,6 +12784,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"js-base64@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "js-base64@npm:3.7.2"
+  checksum: 573f28e9a27c3df60096d4d3f551bcb4fcb6d49161cf83396e9bad9b76f94736a70bb70b8808fe834dff2a388f76604ba09d6e153bbf181646e407720139fa5b
+  languageName: node
+  linkType: hard
+
 "js-cookie@npm:^2.2.1":
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
@@ -20806,6 +20813,7 @@ fsevents@^1.2.7:
     import-sort-style-module-and-prefix: ^0.1.3
     inquirer: ^8.2.0
     jest: ^27.4.1
+    js-base64: ^3.7.2
     kustomize: ^4.4.1
     lint-staged: ^12.1.2
     mobx: ^6.3.8

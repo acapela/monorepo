@@ -5,16 +5,16 @@ import styled from "styled-components";
 
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
+import { useBase64SearchParam } from "~shared/hooks/useMutableSearchParam";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
-import { Toggle } from "~ui/toggle";
 
 function stringifyJSONWithIndent(input: unknown) {
   return JSON.stringify(input, undefined, 2);
 }
 
 export default function DevContentPage() {
-  const [content, setContent] = useState<JSONContent>(getEmptyRichContent);
+  const [content, setContent] = useBase64SearchParam<JSONContent>("content", getEmptyRichContent);
   const [dirtyContent, setDirtyContent] = useState(stringifyJSONWithIndent(content));
 
   useEffect(() => {
