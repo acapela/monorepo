@@ -34,7 +34,7 @@ export const TeamSettings = observer(() => {
           onClick={async () => {
             const shouldDelete = !!(await openUIPrompt({
               title: "Delete team",
-              description: "This action can NOT be undone. If you are sure, enter you team's name:",
+              description: `This action can NOT be undone. If you are sure, enter your team's name "${team?.name}":`,
               validateInput: (input) => (team?.name == input ? true : "This is not your team's name"),
               submitLabel: "Permanently delete this team",
             }));
