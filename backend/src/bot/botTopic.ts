@@ -39,6 +39,7 @@ export async function createTopicByBot({ teamId, topicName, messageContent }: Cr
       topic_id: topicId,
       type: "TEXT",
       user_id: bot.id,
+      content: messageContent,
     },
   });
 
