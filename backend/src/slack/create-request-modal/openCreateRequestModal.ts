@@ -102,8 +102,10 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
         .optional(true),
       metadata.channelId
         ? undefined
-        : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
-            .element(Elements.ChannelSelect({ actionId: "channel_select" }))
+        : Blocks.Input({ label: "Post in channel", blockId: "conversation_block" })
+            .element(
+              Elements.ConversationSelect({ actionId: "conversation_select" }).defaultToCurrentConversation(true)
+            )
             .optional(true)
     )
     .submit("Create")
