@@ -11,6 +11,8 @@ import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
+import { UISettingsPanel, UISettingsTitle } from "./shared";
+
 const getNotificationChannelDescription = (channel: string) => `Receive personal notifications via ${channel}.`;
 
 const LabeledToggle = ({
@@ -68,8 +70,8 @@ export const NotificationSettings = observer(() => {
   }
 
   return (
-    <UIPanel>
-      <UITitle>Notifications</UITitle>
+    <UISettingsPanel>
+      <UISettingsTitle>Notifications</UISettingsTitle>
 
       <LabeledToggle
         title="Email"
@@ -98,25 +100,9 @@ export const NotificationSettings = observer(() => {
             />
           )
         ))}
-    </UIPanel>
+    </UISettingsPanel>
   );
 });
-
-const UIPanel = styled.div<{}>`
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 24px;
-
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.radius.primaryItem};
-
-  width: 100%;
-`;
-
-const UITitle = styled.h3<{}>`
-  ${theme.typo.secondaryTitle};
-`;
 
 const UILabel = styled.label<{}>`
   display: flex;
