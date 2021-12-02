@@ -1,25 +1,38 @@
 type Query {
-  get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
+  get_team_slack_installation_url(
+    input: GetTeamSlackInstallationURLInput!
+  ): GetTeamSlackInstallationURLOutput
 }
 
 type Query {
-  get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
+  get_upload_url(
+    fileName: String!
+    mimeType: String!
+  ): UploadUrlResponse
 }
 
 type Mutation {
-  invite_user(input: InviteUserInput!): InviteUserOutput
+  invite_user(
+    input: InviteUserInput!
+  ): InviteUserOutput
 }
 
 type Mutation {
-  join_topic(access_token: uuid!): JoinTopicOutput
+  join_topic(
+    access_token: uuid!
+  ): JoinTopicOutput
 }
 
 type Query {
-  slack_user(team_id: uuid!): SlackUserOutput
+  slack_user(
+    team_id: uuid!
+  ): SlackUserOutput
 }
 
 type Mutation {
-  uninstall_slack(team_id: uuid!): UninstallSlackOutput!
+  uninstall_slack(
+    team_id: uuid!
+  ): UninstallSlackOutput!
 }
 
 type Mutation {
@@ -85,3 +98,4 @@ type UninstallSlackOutput {
 type JoinTopicOutput {
   success: Boolean!
 }
+
