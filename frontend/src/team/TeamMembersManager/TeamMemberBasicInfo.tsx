@@ -9,11 +9,11 @@ import { theme } from "~ui/theme";
 
 import { useCurrentTeam } from "../CurrentTeam";
 
-type Props = { teamMember: TeamMemberEntity };
+type Props = { teamMembership: TeamMemberEntity };
 
-export const TeamMemberBasicInfo = observer(({ teamMember }: Props) => {
+export const TeamMemberBasicInfo = observer(({ teamMembership }: Props) => {
   const currentTeam = useCurrentTeam();
-  const { user } = teamMember;
+  const { user } = teamMembership;
   if (!user) {
     return null;
   }
@@ -24,7 +24,7 @@ export const TeamMemberBasicInfo = observer(({ teamMember }: Props) => {
         <UIUserName>{user.name}</UIUserName>
         <HStack gap={10} data-test-user-id={user.id}>
           <UIEmail>{user.email}</UIEmail>
-          {!(user.has_account && teamMember.has_joined) && <UIIndicator>(Invite pending)</UIIndicator>}
+          {!(user.has_account && teamMembership.has_joined) && <UIIndicator>(Invite pending)</UIIndicator>}
           {user.id === currentTeam?.owner_id && <UIIndicator>Owner</UIIndicator>}
         </HStack>
       </div>

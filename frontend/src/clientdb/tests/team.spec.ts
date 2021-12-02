@@ -49,6 +49,6 @@ describe("clientdb team", () => {
   });
 
   it("gets team members", async () => {
-    expect(team.members.all).toEqual([userTeamMembership]);
+    expect(team.memberships.all).toEqual([userTeamMembership]);
   });
 });

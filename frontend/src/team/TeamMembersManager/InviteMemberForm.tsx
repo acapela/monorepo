@@ -18,7 +18,7 @@ export const InviteMemberForm = observer(({ team }: Props) => {
   const [inviteUser] = useInviteUser();
 
   const teamEmails = useMemo(
-    () => new Set(team.members.all.map((members) => members.user?.email).filter(isNotNullish)),
+    () => new Set(team.memberships.all.map((members) => members.user?.email).filter(isNotNullish)),
     [team]
   );
 
