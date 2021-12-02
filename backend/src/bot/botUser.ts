@@ -1,5 +1,12 @@
 import { db } from "~db";
 
+/**
+ * We hardcode bot user id. This is to avoid having to perform lookups to ensure bot is created in database already or not.
+ *
+ * Also it makes nested transaction easier as we know this id in advance.
+ *
+ * Might also be quite future proof if we have more than one bot.
+ */
 export const BOT_USER_ID = "690f446b-716a-42da-a27c-70a95be7df39";
 
 const BOT_NAME = "Einstein the Alpaca";
@@ -13,7 +20,7 @@ export async function ensureBotUserExists() {
       name: BOT_NAME,
       avatar_url: BOT_AVATAR_URL,
       email: "team@acape.la",
-      // TODO: is_bot: true
+      is_bot: true,
     },
     update: {},
     where: {
