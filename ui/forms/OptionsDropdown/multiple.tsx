@@ -116,6 +116,7 @@ export function MultipleOptionsDropdown<I>({
                   selectedItems={selectedItems}
                   onCloseRequest={close}
                   iconGetter={iconGetter}
+                  shouldScrollSelectedIntoView={true}
                   additionalContent={
                     newItem && (
                       <DropdownItem

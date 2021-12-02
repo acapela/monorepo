@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useClickAway, useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
 
@@ -20,6 +20,7 @@ interface Props<I> {
   onCloseRequest?: () => void;
   additionalContent?: ReactNode;
   dividerIndexes?: number[];
+  shouldScrollSelectedIntoView?: boolean;
 }
 
 export function ItemsDropdown<I>({
@@ -32,6 +33,7 @@ export function ItemsDropdown<I>({
   iconGetter,
   additionalContent,
   dividerIndexes,
+  shouldScrollSelectedIntoView,
 }: Props<I>) {
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(items, {
     enableKeyboard: true,
@@ -63,21 +65,40 @@ export function ItemsDropdown<I>({
     onCloseRequest?.();
   });
 
+  const [firstSelectedItem, setFirstSelectedItem] = useState<{
+    ref: React.RefObject<HTMLDivElement>;
+    index: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (shouldScrollSelectedIntoView && firstSelectedItem) {
+      firstSelectedItem.ref.current?.scrollIntoView();
+    }
+  }, [shouldScrollSelectedIntoView, firstSelectedItem]);
+
   const maxHeight = windowHeight - menuBoundingBox.top - 20;
 
   return (
     <UIMenu $maxHeight={maxHeight} ref={menuRef}>
-      {items.map((item, i) => {
+      {items.map((item, index) => {
         const itemKey = keyGetter(item);
         const isSelected = getIsItemSelected(item);
         const isHighlighted = keyGetter(highlightedItem) === itemKey;
+        const ref = useRef<HTMLDivElement>(null);
+        if (isSelected && (!firstSelectedItem || index < firstSelectedItem.index)) {
+          setFirstSelectedItem({
+            ref,
+            index,
+          });
+        }
         return (
           <React.Fragment key={itemKey}>
-            {dividerIndexes && dividerIndexes.includes(i) && <UIDivider />}
+            {dividerIndexes && dividerIndexes.includes(index) && <UIDivider />}
             <DropdownItem
               onClick={() => {
                 onItemSelected(item);
               }}
+              ref={ref}
               onHighlightRequest={() => setHighlightedItem(item)}
               isHighlighted={isHighlighted}
               isSelected={isSelected}
