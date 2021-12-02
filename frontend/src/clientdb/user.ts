@@ -20,6 +20,7 @@ const userFragment = gql`
     updated_at
     has_account
     created_at
+    is_bot
   }
 `;
 
