@@ -6,7 +6,7 @@ import { AuthenticationError } from "~backend/src/errors/errorTypes";
 import { handleMessageChanges, handleMessageReactionChanges } from "~backend/src/messages/events";
 import { handleTaskSlackMessageChanges } from "~backend/src/slack/hasuraEvents";
 import { handleTaskChanges } from "~backend/src/tasks/taskHandlers";
-import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
+import { handleTeamMemberAdded, handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicMemberChanges, handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserUpdates } from "~backend/src/users/events";
@@ -31,6 +31,7 @@ hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE", "DELETE"], handleTa
 hasuraEvents.addHandler("task_slack_message_updates", ["DELETE"], handleTaskSlackMessageChanges);
 hasuraEvents.addHandler("message_task_due_date_updates", ["INSERT", "UPDATE"], handleTaskDueDateChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
+hasuraEvents.addHandler("team_member_updates", ["INSERT"], handleTeamMemberAdded);
 hasuraEvents.addHandler("user_updates", ["INSERT", "UPDATE"], handleUserUpdates);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 

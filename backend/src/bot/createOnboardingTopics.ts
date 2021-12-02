@@ -1,5 +1,3 @@
-import { db } from "~db";
-
 import { createTopicByBot } from "./botTopic";
 import {
   getInitialTipsMessage,

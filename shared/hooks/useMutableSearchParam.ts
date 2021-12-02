@@ -1,5 +1,5 @@
 import { decode, encode } from "js-base64";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useSearchParam } from "react-use";
 
 function setUrlParam(key: string, value: string) {
@@ -19,14 +19,6 @@ export function useMutableSearchParam(key: string) {
 }
 
 export function useBase64SearchParam<T>(key: string, initialValue: () => T) {
-  function encodeValue(value: T) {
-    encode(JSON.stringify(value));
-  }
-
-  function decodeValue(base64: string) {
-    return JSON.parse(decode(base64)) as T;
-  }
-
   const [rawValue, rawSet] = useMutableSearchParam(key);
 
   const realValue = useMemo(() => (rawValue ? (JSON.parse(decode(rawValue)) as T) : null), [rawValue]);

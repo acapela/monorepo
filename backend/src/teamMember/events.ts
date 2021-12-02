@@ -1,6 +1,8 @@
 import { TeamMember, db } from "~db";
+import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
+import { createOnboardingTopicsWithBot } from "../bot/createOnboardingTopics";
 import { HasuraEvent } from "../hasura";
 
 export async function handleTeamMemberDeleted({ userId, item: teamMember }: HasuraEvent<TeamMember>) {
@@ -22,4 +24,16 @@ export async function handleTeamMemberDeleted({ userId, item: teamMember }: Hasu
       });
     }
   }
+}
+
+export async function handleTeamMemberAdded({ type, item: teamMember }: HasuraEvent<TeamMember>) {
+  if (type !== "create") return;
+
+  const user = await db.user.findUnique({ where: { id: teamMember.user_id } });
+
+  assert(user, `Cannot create onboarding - no user with id ${teamMember.user_id}`);
+
+  if (user.is_bot) return;
+
+  await createOnboardingTopicsWithBot(teamMember.user_id, teamMember.team_id);
 }
