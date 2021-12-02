@@ -13,9 +13,16 @@ interface CreateTopicByBotInput {
   topicName: string;
   messageContent: JSONContent;
   createdAt: Date;
+  emojiReaction?: string;
 }
 
-export async function createTopicByBot({ teamId, topicName, messageContent, createdAt }: CreateTopicByBotInput) {
+export async function createTopicByBot({
+  teamId,
+  topicName,
+  messageContent,
+  createdAt,
+  emojiReaction,
+}: CreateTopicByBotInput) {
   const bot = await ensureBotUserExists();
   await ensureBotIsTeamMember(teamId);
 
@@ -45,6 +52,10 @@ export async function createTopicByBot({ teamId, topicName, messageContent, crea
     },
   });
 
+  const reactionPromise = emojiReaction
+    ? db.message_reaction.create({ data: { message_id: messageId, user_id: bot.id, emoji: emojiReaction } })
+    : null;
+
   const tasksInfo = getUniqueRequestMentionDataFromContent(messageContent);
 
   const tasksPromises = tasksInfo.map((taskInfo) => {
@@ -58,6 +69,10 @@ export async function createTopicByBot({ teamId, topicName, messageContent, crea
   });
 
   const [topic, message, ...tasks] = await db.$transaction([topicPromise, messagePromise, ...tasksPromises]);
+
+  if (reactionPromise) {
+    await reactionPromise;
+  }
 
   return { topic, message, tasks };
 }
