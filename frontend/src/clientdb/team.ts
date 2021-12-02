@@ -37,7 +37,7 @@ export const teamEntity = defineEntity<TeamFragment>({
   },
   sync: createHasuraSyncSetupFromFragment<TeamFragment>(teamFragment, {
     insertColumns: ["id", "slug", "name"],
-    updateColumns: [],
+    updateColumns: ["name"],
   }),
 }).addConnections((team, { getEntity, getContextValue }) => {
   const slackInstallations = getEntity(teamSlackInstallationEntity).query({ team_id: team.id });

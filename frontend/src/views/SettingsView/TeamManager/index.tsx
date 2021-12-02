@@ -6,13 +6,15 @@ import { SlackInstallationButton } from "~frontend/team/SlackInstallationButton"
 import { TeamMembersManager } from "~frontend/team/TeamMembersManager";
 import { theme } from "~ui/theme";
 
+import { Panel } from "../ui";
+
 interface Props {
   team: TeamEntity;
 }
 
 export const TeamManagerSettingsPanel = observer(({ team }: Props) => {
   return (
-    <UIPanel>
+    <Panel>
       <UIHeader>
         <UITitle>
           {team.name} <span>team</span>
@@ -21,21 +23,9 @@ export const TeamManagerSettingsPanel = observer(({ team }: Props) => {
       <SlackInstallationButton team={team} />
 
       <TeamMembersManager team={team} />
-    </UIPanel>
+    </Panel>
   );
 });
-
-const UIPanel = styled.div<{}>`
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 24px;
-
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.radius.panel};
-
-  width: 100%;
-`;
 
 const UIHeader = styled.div<{}>`
   display: flex;
