@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { uniqBy } from "lodash";
 
+import { slugifySync } from "~frontend/../../shared/slugify";
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
@@ -133,7 +134,14 @@ export const topicEntity = defineEntity<TopicFragment>({
         const team = connections.team;
 
         const firstMessage = connections.messages.first;
-        const slug = getTopicSlug(firstMessage?.content ?? "unknown", topic.name);
+
+        /**
+         * If for some reason topic has no messages - we'll get slug directly from title
+         * Note: this is safe as slug has no functional meaning in url, it is only for readable link
+         */
+        const slug = firstMessage
+          ? getTopicSlug(firstMessage.content, topic.name)
+          : slugifySync(topic.name, "unnamed-topic");
 
         return routes.topicByHandle({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
