@@ -62,14 +62,12 @@ select_permissions:
 update_permissions:
 - permission:
     check: null
-    columns: []
+    columns:
+    - name
+    - owner_id
     filter:
-      _or:
-      - owner_id:
-          _eq: X-Hasura-User-Id
-      - memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
+      owner_id:
+        _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
