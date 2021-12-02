@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
+import { dailyMessageNotification } from "~backend/src/cron/dailyMessageNotification";
 import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
 import { logger } from "~shared/logger";
 
@@ -13,6 +14,7 @@ export const router = Router();
 const handlers: Record<string, Function> = {
   "auto-archive-or-close-topics": autoArchiveOrCloseTopics,
   "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
+  "daily-message-notification": dailyMessageNotification,
 };
 
 interface CronPayload {
