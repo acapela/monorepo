@@ -75,6 +75,8 @@ export async function setupDatabase(key: string) {
       const userIds = Prisma.join([user1.id, user2.id]);
       await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
       await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
+
+      await db.$disconnect();
     },
   };
 }
