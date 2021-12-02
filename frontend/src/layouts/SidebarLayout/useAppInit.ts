@@ -36,8 +36,13 @@ export function useAppInitBatchProcedures({ skip }: Props) {
 
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  if (!browserTimezone) {
+    return;
+  }
+
   // Can be negative or positive, e.g -2, 8, etc
-  const timezoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+  // Unusual timezones (like UTC+12:45) will use a full hour
+  const timezoneOffsetInHours = Math.ceil(new Date().getTimezoneOffset() / 60);
 
   let startWorkHourInUtc;
   let endWorkHourInUtc;
