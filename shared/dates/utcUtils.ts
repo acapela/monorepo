@@ -21,10 +21,19 @@ export function convertZonedHourToUTCHour(zonedHour: number, timeZone: string) {
 
 export function convertUTCHourToZonedHour(utcHour: number, timeZone: string) {
   const mockDate = new Date();
+
+  // Creating a mock UTC date prevents the Date constructor from adding the local system timezone
+  // We add here the `utcHour`, in most cases this is stored in the db this way
   const mockUTC = Date.UTC(mockDate.getFullYear(), mockDate.getMonth(), mockDate.getDate(), utcHour);
 
+  // This creates a new date object with a specific timezone
   const zonedDate = utcToZonedTime(mockUTC, timeZone);
+
+  // We need to extract the "Hour" component of zoned date
+  // The easiest way to do this is by printing a formatted date that only included the hour portion
+  // otherwise. utils like date.getHour() will always convert to local timezone
   const hoursInTimezoneAsString = format(zonedDate, "HH", { timeZone });
 
+  // Most risky part of the operation. We convert this into a decimal number.
   return Number.parseInt(hoursInTimezoneAsString, 10);
 }
