@@ -73,7 +73,7 @@ export const PopoverMenu = styled<Props>(
 
             if ("href" in option) {
               return (
-                <Link href={option.href} passHref>
+                <Link key={option.key ?? option.label} href={option.href} passHref>
                   <a>{labelNode}</a>
                 </Link>
               );
