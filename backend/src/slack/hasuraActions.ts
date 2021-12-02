@@ -8,6 +8,7 @@ import {
   UninstallSlackOutput,
 } from "~gql";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { Maybe } from "~shared/types";
 
 import { ActionHandler } from "../actions/actionHandlers";
@@ -74,6 +75,8 @@ export const uninstallSlack: ActionHandler<{ team_id: string }, UninstallSlackOu
       Sentry.captureException(new Error(`Slack uninstall failed: ${response.error ?? "without error information"}`));
       return { success: false };
     }
+
+    trackBackendUserEvent(userId, "Removed Team Slack Integration", { teamId: team_id });
 
     return { success: true };
   },
