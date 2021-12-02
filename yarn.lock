@@ -20803,6 +20803,7 @@ fsevents@^1.2.7:
     commitizen: ^4.2.4
     cz-conventional-changelog: ^3.3.0
     date-fns: ^2.26.0
+    date-fns-tz: ^1.1.6
     dotenv: ^10.0.0
     eslint: ^8.3.0
     eslint-config-prettier: ^8.3.0
