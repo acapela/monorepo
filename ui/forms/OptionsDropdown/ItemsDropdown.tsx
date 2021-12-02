@@ -1,3 +1,4 @@
+import { defer } from "lodash";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useClickAway, useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
@@ -72,7 +73,8 @@ export function ItemsDropdown<I>({
 
   useEffect(() => {
     if (shouldScrollSelectedIntoView && firstSelectedItem) {
-      firstSelectedItem.ref.current?.scrollIntoView();
+      // Makes sure rendering is completely done -- Also positions item in center
+      defer(() => firstSelectedItem.ref.current?.scrollIntoView({ block: "center" }));
     }
   }, [shouldScrollSelectedIntoView, firstSelectedItem]);
 
