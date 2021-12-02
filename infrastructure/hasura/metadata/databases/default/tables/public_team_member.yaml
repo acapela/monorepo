@@ -25,8 +25,11 @@ insert_permissions:
     - notify_email
     - notify_slack
     - team_id
+    - timezone
     - updated_at
     - user_id
+    - work_end_hour_in_utc
+    - work_start_hour_in_utc
   role: user
 select_permissions:
 - permission:
@@ -37,8 +40,11 @@ select_permissions:
     - notify_email
     - notify_slack
     - team_id
+    - timezone
     - updated_at
     - user_id
+    - work_end_hour_in_utc
+    - work_start_hour_in_utc
     filter:
       team:
         memberships:
@@ -51,6 +57,9 @@ update_permissions:
     columns:
     - notify_email
     - notify_slack
+    - timezone
+    - work_end_hour_in_utc
+    - work_start_hour_in_utc
     filter:
       user_id:
         _eq: X-Hasura-User-Id
