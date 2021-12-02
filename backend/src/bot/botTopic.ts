@@ -12,9 +12,10 @@ interface CreateTopicByBotInput {
   teamId: string;
   topicName: string;
   messageContent: JSONContent;
+  createdAt: Date;
 }
 
-export async function createTopicByBot({ teamId, topicName, messageContent }: CreateTopicByBotInput) {
+export async function createTopicByBot({ teamId, topicName, messageContent, createdAt }: CreateTopicByBotInput) {
   const bot = await ensureBotUserExists();
   await ensureBotIsTeamMember(teamId);
 
@@ -28,6 +29,7 @@ export async function createTopicByBot({ teamId, topicName, messageContent }: Cr
       slug: await slugify(topicName),
       team_id: teamId,
       index: "0",
+      created_at: createdAt,
     },
   });
 
