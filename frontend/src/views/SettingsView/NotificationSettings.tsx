@@ -12,6 +12,7 @@ import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
 import { UISettingsPanel, UISettingsTitle } from "./shared";
+import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
 
 const getNotificationChannelDescription = (channel: string) => `Receive personal notifications via ${channel}.`;
 
@@ -100,6 +101,8 @@ export const NotificationSettings = observer(() => {
             />
           )
         ))}
+
+      <TeamMemberWorkHoursSettings />
     </UISettingsPanel>
   );
 });

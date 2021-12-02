@@ -11,8 +11,6 @@ import { convertUTCHourToZonedHour, convertZonedHourToUTCHour } from "~shared/da
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { theme } from "~ui/theme";
 
-import { UISettingsPanel, UISettingsTitle } from "./shared";
-
 function getHourLabel(hour: number): string {
   if (hour === 0) {
     return "12:00 AM (Midnight)";
@@ -94,9 +92,7 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
   const hours = [...Array(24).keys()];
 
   return (
-    <UISettingsPanel>
-      <UISettingsTitle>Work Hours</UISettingsTitle>
-
+    <>
       <UISection>
         <UISectionLabel>Time zone</UISectionLabel>
         <SingleOptionDropdown
@@ -136,10 +132,10 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
           />
         </UIWorkDayRange>
         <UISectionDescription>
-          Acapela will only send you notifications on weekdays within these hours
+          Acapela will only send you notifications on weekdays within these hours.
         </UISectionDescription>
       </UISection>
-    </UISettingsPanel>
+    </>
   );
 });
 
