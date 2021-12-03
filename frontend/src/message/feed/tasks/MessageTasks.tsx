@@ -48,7 +48,7 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
         <UIParticipantsGroups layout="position">
           <AnimatePresence>
             {pendingTasks.length > 0 && <MessageTasksPeople tasks={pendingTasks} label="Pending" />}
-            {completedTasks.length > 0 && <MessageTasksPeople tasks={completedTasks} label="Done" isPrimary />}
+            {completedTasks.length > 0 && <MessageTasksPeople tasks={completedTasks} label="✓ Completed" isPrimary />}
           </AnimatePresence>
         </UIParticipantsGroups>
       </LayoutGroup>
