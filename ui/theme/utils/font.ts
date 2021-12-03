@@ -4,7 +4,7 @@ import { phone } from "~ui/responsive";
 
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 
-const SECONDARY_TEXT_OPACITY = 0.4;
+const SECONDARY_TEXT_OPACITY = 0.8;
 
 type FontVariants = {
   spezia: Font;

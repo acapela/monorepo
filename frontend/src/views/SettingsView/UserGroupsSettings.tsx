@@ -15,6 +15,7 @@ import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { theme } from "~ui/theme";
 
+import { Panel } from "./ui";
 import { UIAt, UIMention, UIMentionInput, UserPicker } from "./UserPicker";
 
 function useUpdateUserGroupMembers() {
@@ -139,8 +140,7 @@ export const UserGroupsSettings = observer(({ team }: { team: TeamEntity }) => {
   const db = useDb();
   const userGroups = db.userGroup.query({ team_id: team.id });
   return (
-    <UIPanel>
-      <UITitle>Groups</UITitle>
+    <Panel title="Groups">
       <UIGroupRows>
         <AnimatePresence>
           {userGroups.all.map((group) => (
@@ -153,25 +153,9 @@ export const UserGroupsSettings = observer(({ team }: { team: TeamEntity }) => {
           </PopPresenceAnimator>
         </AnimatePresence>
       </UIGroupRows>
-    </UIPanel>
+    </Panel>
   );
 });
-
-const UIPanel = styled.div<{}>`
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 24px;
-
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.radius.primaryItem};
-
-  width: 100%;
-`;
-
-const UITitle = styled.h3<{}>`
-  ${theme.typo.secondaryTitle};
-`;
 
 const UIGroupRows = styled.div<{}>`
   display: flex;

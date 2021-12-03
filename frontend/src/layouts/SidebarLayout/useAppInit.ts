@@ -1,6 +1,7 @@
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useNullableDb } from "~frontend/clientdb";
 import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
+import { convertZonedHourToUTCHour } from "~shared/dates/utcUtils";
 
 interface Props {
   skip?: boolean;
@@ -40,28 +41,8 @@ export function useAppInitBatchProcedures({ skip }: Props) {
     return;
   }
 
-  // Can be negative or positive, e.g -2, 8, etc
-  // Unusual timezones (like UTC+12:45) will use a full hour
-  const timezoneOffsetInHours = Math.ceil(new Date().getTimezoneOffset() / 60);
-
-  let startWorkHourInUtc;
-  let endWorkHourInUtc;
-
-  // Use Case: Hawaii where `timezoneOffsetInHours === -10`
-  if (timezoneOffsetInHours + DEFAULT_WORK_DAY_START_HOUR < 0) {
-    // Use Case: Hawaii `startWorkTimeInUtc = 24 + (-10) + 9 === 23`
-    startWorkHourInUtc = 24 + timezoneOffsetInHours + DEFAULT_WORK_DAY_START_HOUR;
-  } else {
-    startWorkHourInUtc = timezoneOffsetInHours + DEFAULT_WORK_DAY_START_HOUR;
-  }
-
-  // Use Case: Hawaii where `timezoneOffsetInHours === 11`
-  if (timezoneOffsetInHours + DEFAULT_WORK_DAY_END_HOUR >= 24) {
-    // Use Case: Sydney `endWorkTimeInUtc = 11 + (18) - 24 === 5`
-    endWorkHourInUtc = timezoneOffsetInHours + DEFAULT_WORK_DAY_END_HOUR - 24;
-  } else {
-    endWorkHourInUtc = timezoneOffsetInHours + DEFAULT_WORK_DAY_END_HOUR;
-  }
+  const startWorkHourInUtc = convertZonedHourToUTCHour(DEFAULT_WORK_DAY_START_HOUR, browserTimezone);
+  const endWorkHourInUtc = convertZonedHourToUTCHour(DEFAULT_WORK_DAY_END_HOUR, browserTimezone);
 
   teamMember.update({
     timezone: browserTimezone,

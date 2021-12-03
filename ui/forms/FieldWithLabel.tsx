@@ -145,4 +145,5 @@ const UIDropdownIcon = styled(IconChevronDown)<{}>`
   opacity: 0.6;
   align-self: center;
   margin-right: 16px;
+  cursor: pointer;
 `;

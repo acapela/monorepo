@@ -22,9 +22,9 @@ export const MENTION_TYPE_LABELS: Record<MentionType, string> = {
 };
 
 export const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
+  [REQUEST_ACTION]: "Request action",
   [REQUEST_RESPONSE]: "Request response",
   [REQUEST_READ]: "Request read confirmation",
-  [REQUEST_ACTION]: "Request action",
   [MENTION_OBSERVER]: "Add as observer",
 };
 

@@ -5121,6 +5121,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vvo/tzdb@npm:^6.34.0":
+  version: 6.34.0
+  resolution: "@vvo/tzdb@npm:6.34.0"
+  checksum: 100bcced25aabe406b0e5b8cd2b6fef1a6e4e2459b7314fe0184638d238305f05c895bbb9901265a6abaf44fcc9d4feb61bedb27100be987974ba2adee1dfc0c
+  languageName: node
+  linkType: hard
+
 "@wry/context@npm:^0.6.0":
   version: 0.6.1
   resolution: "@wry/context@npm:0.6.1"
@@ -20798,10 +20805,12 @@ fsevents@^1.2.7:
     "@types/react-dom": ^17.0.11
     "@typescript-eslint/eslint-plugin": ^5.5.0
     "@typescript-eslint/parser": ^5.5.0
+    "@vvo/tzdb": ^6.34.0
     axios: ^0.24.0
     commitizen: ^4.2.4
     cz-conventional-changelog: ^3.3.0
     date-fns: ^2.26.0
+    date-fns-tz: ^1.1.6
     dotenv: ^10.0.0
     eslint: ^8.3.0
     eslint-config-prettier: ^8.3.0

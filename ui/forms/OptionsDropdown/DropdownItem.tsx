@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+import { styledForwardRef } from "~shared/component";
 import { handleWithStopPropagation } from "~shared/events";
 import { IconCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
@@ -18,18 +19,22 @@ interface Props {
   className?: string;
 }
 
-export const DropdownItem = styled(function DropdownItem({
-  label,
-  icon,
-  onClick,
-  isHighlighted = false,
-  isSelected = false,
-  onHighlightRequest,
-  onStopHighlightRequest,
-  className,
-}: Props) {
+export const DropdownItem = styledForwardRef<HTMLDivElement, Props>(function DropdownItem(
+  {
+    label,
+    icon,
+    onClick,
+    isHighlighted = false,
+    isSelected = false,
+    onHighlightRequest,
+    onStopHighlightRequest,
+    className,
+  }: Props,
+  ref
+) {
   return (
     <UIOption
+      ref={ref}
       role="option"
       className={className}
       isHighlighted={isHighlighted}
