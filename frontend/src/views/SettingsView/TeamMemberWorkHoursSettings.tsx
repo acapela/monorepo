@@ -1,6 +1,7 @@
-import { RawTimeZone, rawTimeZones } from "@vvo/tzdb";
+import type { RawTimeZone } from "@vvo/tzdb";
 import { observer } from "mobx-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useEffectOnce } from "react-use";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -11,19 +12,21 @@ import { convertUTCHourToZonedHour, convertZonedHourToUTCHour } from "~shared/da
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { theme } from "~ui/theme";
 
-function getHourLabel(hour: number): string {
+function getHourLabel(hour: number, startOfRange?: number): string {
+  const nextDay = startOfRange && hour <= startOfRange ? ", +1 day" : "";
+
   if (hour === 0) {
-    return "12:00 AM (Midnight)";
+    return `12:00 AM (Midnight)${nextDay}`;
   }
   if (hour === 12) {
-    return "12:00 PM (Noon)";
+    return `12:00 PM (Noon)${nextDay}`;
   }
 
   if (hour < 12) {
-    return `${hour}:00 AM`;
+    return `${hour}:00 AM${nextDay}`;
   }
 
-  return `${hour - 12}:00 PM`;
+  return `${hour - 12}:00 PM${nextDay}`;
 }
 
 function getZonedHour(utcHour?: number | null, timeZone?: string | null) {
@@ -39,6 +42,16 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
   const userTokenData = useAssertCurrentUser();
   const teamInfo = useAssertCurrentTeam();
 
+  const [rawTimeZones, loadTimezones] = useState<RawTimeZone[]>([]);
+
+  useEffectOnce(() => {
+    async function loadTZ() {
+      const timeZoneLibrary = await import("@vvo/tzdb");
+      loadTimezones(timeZoneLibrary.rawTimeZones);
+    }
+    loadTZ();
+  });
+
   const currentTeamMember = db.teamMember.query({
     user_id: userTokenData.id,
     team_id: teamInfo.id,
@@ -47,29 +60,29 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
   const currentUserTimezone = currentTeamMember?.timezone;
   const selectedTimezone = useMemo(
     () =>
-      currentUserTimezone
+      currentUserTimezone && rawTimeZones.length > 0
         ? rawTimeZones.find((timeZone) => {
             return currentUserTimezone === timeZone.name || timeZone.group.includes(currentUserTimezone);
           })
         : undefined,
-    [currentUserTimezone]
+    [currentUserTimezone, rawTimeZones]
   );
 
-  const startOfWorkInUtc = currentTeamMember?.work_start_hour_in_utc;
+  const startOfWorkInUTC = currentTeamMember?.work_start_hour_in_utc;
   const selectedStartOfWork = useMemo(
-    () => getZonedHour(startOfWorkInUtc, selectedTimezone?.name),
-    [startOfWorkInUtc, selectedTimezone]
+    () => getZonedHour(startOfWorkInUTC, selectedTimezone?.name),
+    [startOfWorkInUTC, selectedTimezone]
   );
 
-  const endOfWorkInUtc = currentTeamMember?.work_end_hour_in_utc;
+  const endOfWorkInUTC = currentTeamMember?.work_end_hour_in_utc;
   const selectedEndOfWork = useMemo(
-    () => getZonedHour(endOfWorkInUtc, selectedTimezone?.name),
-    [endOfWorkInUtc, selectedTimezone]
+    () => getZonedHour(endOfWorkInUTC, selectedTimezone?.name),
+    [endOfWorkInUTC, selectedTimezone]
   );
 
-  function updateTimezone(tz: RawTimeZone) {
+  function updateTimezone(timezone: string) {
     currentTeamMember?.update({
-      timezone: tz.name,
+      timezone,
     });
   }
 
@@ -100,7 +113,7 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
           keyGetter={(tz) => tz.name}
           labelGetter={(tz) => tz.rawFormat}
           selectedItem={selectedTimezone}
-          onChange={updateTimezone}
+          onChange={(tz) => updateTimezone(tz.name)}
           placeholder="Please select your timezone..."
         />
         <UISectionDescription>
@@ -125,7 +138,7 @@ export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHours
             items={hours}
             keyGetter={(hour) => hour.toString()}
             selectedItem={selectedEndOfWork}
-            labelGetter={getHourLabel}
+            labelGetter={(hour) => getHourLabel(hour, selectedStartOfWork)}
             isDisabled={!selectedTimezone}
             onChange={updateEndWork}
             placeholder="Select end of work day..."
