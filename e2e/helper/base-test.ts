@@ -19,9 +19,14 @@ export const test = rootTest.extend<{
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async db({ page, context }, use, testInfo) {
-    const { data, cleanup } = await setupDatabase(String(testInfo.workerIndex));
-    await use(data);
-    await cleanup();
+    try {
+      const { data, cleanup } = await setupDatabase(String(testInfo.workerIndex));
+      await use(data);
+      await cleanup();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   },
   async auth({ page }, use) {
     await use({

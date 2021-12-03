@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
+import { cachedComputed } from "~clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { useInviteUser } from "~frontend/team/useInviteUser";
 import { isNotNullish } from "~shared/nullish";
@@ -14,19 +15,26 @@ interface Props {
   team: TeamEntity;
 }
 
+const getTeamEmails = cachedComputed((team: TeamEntity) => {
+  return new Set(team.memberships.all.map((members) => members.user?.email).filter(isNotNullish));
+});
+
 export const InviteMemberForm = observer(({ team }: Props) => {
   const [inviteUser] = useInviteUser();
 
-  const teamEmails = useMemo(
-    () => new Set(team.memberships.all.map((members) => members.user?.email).filter(isNotNullish)),
-    [team]
-  );
+  const teamEmails = getTeamEmails(team);
 
   const [email, setEmail] = useState("");
 
-  const isEmailAcceptable = isEmail(email) && !teamEmails.has(email);
+  const isEmailValid = isEmail(email);
+
+  const isAlreadyInvited = teamEmails.has(email);
 
   const handleSubmit = () => {
+    if (isAlreadyInvited) {
+      alert(`This user is already invited`);
+    }
+
     inviteUser({ variables: { input: { email, team_id: team.id } } });
     setEmail("");
   };
@@ -38,7 +46,7 @@ export const InviteMemberForm = observer(({ team }: Props) => {
         iconAtStart
         icon={<IconPlusSquare />}
         onClick={handleSubmit}
-        isDisabled={!isEmailAcceptable}
+        isDisabled={!isEmailValid}
         shortcut={"Enter"}
       >
         Send invite

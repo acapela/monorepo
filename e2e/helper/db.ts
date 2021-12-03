@@ -55,6 +55,10 @@ async function createUser(name: string, email: string, currentTeam: string | nul
 
 export async function setupDatabase(key: string) {
   const fullPrefix = PREFIX + key;
+  await db.$executeRaw`DELETE FROM "team" WHERE slug ILIKE ${PREFIX + "%"}`;
+  await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
+  await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
+
   const user1 = await createUser("u1", fullPrefix + "user-1@acape.la", null);
   const team = await db.team.create({
     data: { owner_id: user1.id, name: fullPrefix + "what a team", slug: fullPrefix + "team-with-a-slug" },
@@ -73,10 +77,15 @@ export async function setupDatabase(key: string) {
     data: { user1, user2 },
     async cleanup() {
       const userIds = Prisma.join([user1.id, user2.id]);
-      await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
-      await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
+      try {
+        await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
 
-      await db.$disconnect();
+        await db.$disconnect();
+      } catch (error) {
+        console.error(`Database cleanup failed`);
+        console.error(error);
+        throw error;
+      }
     },
   };
 }
