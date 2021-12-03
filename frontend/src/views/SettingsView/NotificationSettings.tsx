@@ -11,6 +11,7 @@ import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
+import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
 import { Panel } from "./ui";
 
 const getNotificationChannelDescription = (channel: string) => `Receive personal notifications via ${channel}.`;
@@ -98,6 +99,7 @@ export const NotificationSettings = observer(() => {
             />
           )
         ))}
+      <TeamMemberWorkHoursSettings />
     </Panel>
   );
 });
