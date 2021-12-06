@@ -20,31 +20,27 @@ export async function enqueueSlackNotification(teamId: string, user: User, paylo
 
   payload = typeof payload == "function" ? await payload() : payload;
 
-  const textOrBlocks = typeof payload === "string" ? { text: payload } : { blocks: extractText(payload) };
+  const payloadAsText = typeof payload === "string" ? payload : extractText(payload);
 
   await db.slack_notification_queue.create({
     data: {
       team_member_slack_id: teamMemberSlack?.id,
-      payload: JSON.stringify(textOrBlocks),
+      payload: payloadAsText,
     },
   });
 }
 
-function extractText(blocks: KnownBlock[] | SlackBlockDto[]) {
-  const result: KnownBlock[] = [];
+function extractText(blocks: KnownBlock[] | SlackBlockDto[]): string {
+  let result = "";
 
   blocks.forEach((block) => {
     if (block.type === "section") {
       // SlackBlockDto is heavily duck-typed. We need to make runtime assertions to make TS happy
-      const block_id = "block_id" in block ? block.block_id : undefined;
-      const text = "text" in block ? block.text : undefined;
-      const fields = "fields" in block ? block.fields : undefined;
-      result.push({
-        block_id,
-        type: block.type,
-        text,
-        fields,
-      });
+      const text = "text" in block ? block.text?.text : undefined;
+
+      if (text) {
+        result += `${text}\n`;
+      }
     }
   });
 
