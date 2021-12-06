@@ -336,12 +336,12 @@ export function createHasuraSyncSetupFromFragment<T>(
     });
   }
 
-  async function handlePush(entity: Entity<T, unknown>, apollo: ApolloClient<unknown>) {
+  async function handlePush(entity: Entity<T, unknown>, changedData: Partial<T>, apollo: ApolloClient<unknown>) {
     const hasUpdateColumns = updateColumns?.length ?? 0 > 0;
 
     const hasInsertColumns = insertColumns?.length ?? 0 > 0;
 
-    const input = getPushInputFromData(entity);
+    const input = getPushInputFromData({ ...entity.getData(), ...changedData });
 
     if (hasUpdateColumns && hasInsertColumns) {
       return upsert(input, apollo);
@@ -433,10 +433,10 @@ export function createHasuraSyncSetupFromFragment<T>(
         subscription.unsubscribe();
       };
     },
-    async push(entity, { getContextValue }) {
+    async push(entity, changedData, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
 
-      const result = await handlePush(entity, apollo);
+      const result = await handlePush(entity, changedData, apollo);
 
       if (result.errors) {
         throw result.errors;
