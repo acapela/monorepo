@@ -2,6 +2,6 @@ table:
   name: slack_notification_queue
   schema: public
 object_relationships:
-  - name: team_member_slack
-    using:
-      foreign_key_constraint_on: team_member_slack_id
+- name: team_member_slack
+  using:
+    foreign_key_constraint_on: team_member_slack_id
