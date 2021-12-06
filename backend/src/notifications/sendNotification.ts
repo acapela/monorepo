@@ -72,6 +72,8 @@ async function sendOrEnqueueSlackNotification(teamId: string, user: User, payloa
   if (await shouldSendNotificationDirectly(teamId, user)) {
     return trySendSlackNotification(teamId, user, payload);
   }
+
+  // Look at dailyMessageNotification for whole flow explanation
   return await enqueueSlackNotification(teamId, user, payload);
 }
 
