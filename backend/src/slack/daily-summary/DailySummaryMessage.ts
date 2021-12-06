@@ -13,6 +13,11 @@ interface DailySummaryMessageProps {
 }
 
 const MAX_ALLOWED_ELEMENTS = 100;
+
+function getEarliestDueDate(topic: TopicVM) {
+  return min(topic.message.map((m) => m.message_task_due_date?.due_at));
+}
+
 export function DailySummaryMessage({
   topicsDueToday,
   otherReceivedTopics,
@@ -41,9 +46,11 @@ function TasksDueSoon(topicsDueToday: TopicVM[]) {
 
   const Header = [Blocks.Header({ text: "🔥 Requires Attention" }), Blocks.Divider()];
 
+  const sortedTopics = sortBy(topicsDueToday, getEarliestDueDate);
+
   return Header.concat(
-    topicsDueToday.map((topic) => {
-      const earliestDueDate = min(topic.message.map((m) => m.message_task_due_date?.due_at) ?? new Date(3000, 0));
+    sortedTopics.map((topic) => {
+      const earliestDueDate = getEarliestDueDate(topic);
       return Blocks.Section({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         text: `${Md.bold(topic.name)}\nDue at ${mdDate(earliestDueDate!, "time")}`,
@@ -56,10 +63,6 @@ function TasksDueSoon(topicsDueToday: TopicVM[]) {
       );
     })
   );
-}
-
-function getEarliestDueDate(topic: TopicVM) {
-  return min(topic.message.map((m) => m.message_task_due_date?.due_at));
 }
 
 function TasksInputStillNeeded(otherReceivedTopics: TopicVM[]) {
@@ -98,12 +101,10 @@ function Notifications(notificationsSentOutsideOfWorkHours: SlackNotificationQue
   const Header = [Blocks.Header({ text: "🌙  While you were away..." }), Blocks.Divider()];
 
   return Header.concat(
-    notificationsSentOutsideOfWorkHours
-      .filter((notification) => !!notification.payload)
-      .map((notification) => {
-        return Blocks.Section({
-          text: notification.payload,
-        });
-      })
+    notificationsSentOutsideOfWorkHours.map((notification) => {
+      return Blocks.Section({
+        text: notification.payload,
+      });
+    })
   );
 }
