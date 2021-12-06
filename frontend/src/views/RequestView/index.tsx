@@ -9,6 +9,7 @@ import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { JoinTopicMutation, JoinTopicMutationVariables } from "~gql";
+import { useIsMountedRef } from "~shared/hooks/useIsMountedRef";
 import { phone } from "~ui/responsive";
 
 import { NotFound } from "./NotFound";
@@ -23,11 +24,12 @@ interface Props {
  */
 function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
   const router = useRouter();
+  const isMounted = useIsMountedRef();
   useEffect(() => {
     if (!topic) return;
     let isFirstRun = true;
 
-    reaction(
+    return reaction(
       () => topic.href,
       (href) => {
         if (isFirstRun) {
@@ -35,10 +37,12 @@ function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
           return;
         }
 
+        if (!isMounted.current) return;
+
         router.replace(href);
       }
     );
-  }, [router, topic]);
+  }, [router, topic, isMounted]);
 }
 
 function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
