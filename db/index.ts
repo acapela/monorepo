@@ -19,6 +19,7 @@ export type {
   task_slack_message as TaskSlackMessage,
   team as Team,
   team_member as TeamMember,
+  team_member_slack as TeamMemberSlack,
   team_slack_installation as TeamSlackInstallation,
   slack_notification_queue as SlackNotificationQueue,
   message_task_due_date as MessageTaskDueDate,
