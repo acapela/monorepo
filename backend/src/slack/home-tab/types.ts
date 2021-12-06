@@ -5,8 +5,14 @@ export type UnreadMessage = {
   unread_messages: number;
 };
 
+export type MessageWithOpenTask = Message & {
+  user: User;
+  task: Task[];
+  message_task_due_date: MessageTaskDueDate | null;
+};
+
 export type TopicWithOpenTask = Topic & {
   user: User;
-  message: (Message & { user: User; task: Task[]; message_task_due_date: MessageTaskDueDate | null })[];
+  message: MessageWithOpenTask[];
   topic_member: TopicMember[];
 };
