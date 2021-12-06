@@ -55,9 +55,14 @@ async function createUser(name: string, email: string, currentTeam: string | nul
 
 export async function setupDatabase(key: string) {
   const fullPrefix = PREFIX + key;
-  await db.$executeRaw`DELETE FROM "team" WHERE slug ILIKE ${PREFIX + "%"}`;
-  await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
-  await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
+  try {
+    await db.$connect();
+    await db.$executeRaw`DELETE FROM "team" WHERE slug ILIKE ${PREFIX + "%"}`;
+    await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
+    await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
+  } catch (error) {
+    console.error(error);
+  }
 
   const user1 = await createUser("u1", fullPrefix + "user-1@acape.la", null);
   const team = await db.team.create({
