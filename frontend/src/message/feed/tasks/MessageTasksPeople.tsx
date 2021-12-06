@@ -65,8 +65,7 @@ const UICountLabel = styled.div`
 `;
 
 const UIKindLabel = styled.div<{ $isPrimary: boolean }>`
-  ${theme.typo.label.opacity(0.8).medium}
-
+  ${theme.typo.label.opacity(0.8).bold}
   ${(props) => props.$isPrimary && theme.colors.primary.asColor};
 `;
 

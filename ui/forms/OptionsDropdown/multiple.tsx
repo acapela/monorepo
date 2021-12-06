@@ -94,17 +94,15 @@ export function MultipleOptionsDropdown<I>({
     >
       <UIHolder>
         <UIMenuOpener>
-          {selectedItems.length > 0 && (
-            <UISelectedItemsPreview>
-              {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
-              {!selectedItemsPreviewRenderer &&
-                selectedItems.map((selectedItem) => {
-                  const key = keyGetter(selectedItem);
-                  const label = labelGetter(selectedItem);
-                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
-                })}
-            </UISelectedItemsPreview>
-          )}
+          <UISelectedItemsPreview>
+            {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
+            {!selectedItemsPreviewRenderer &&
+              selectedItems.map((selectedItem) => {
+                const key = keyGetter(selectedItem);
+                const label = labelGetter(selectedItem);
+                return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
+              })}
+          </UISelectedItemsPreview>
         </UIMenuOpener>
         <AnimatePresence>
           {isOpen && (
@@ -118,6 +116,7 @@ export function MultipleOptionsDropdown<I>({
                   selectedItems={selectedItems}
                   onCloseRequest={close}
                   iconGetter={iconGetter}
+                  shouldScrollSelectedIntoView={true}
                   additionalContent={
                     newItem && (
                       <DropdownItem
@@ -145,6 +144,7 @@ const UIHolder = styled.div<{}>`
   min-width: 0;
   display: flex;
   flex-grow: 1;
+  cursor: pointer;
 `;
 
 const UIMenuOpener = styled.div<{}>`

@@ -7,7 +7,7 @@ import { db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
 import { Maybe } from "~shared/types";
-import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_READ } from "~shared/types/mention";
+import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_ACTION, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
@@ -63,6 +63,9 @@ const AuthForCreateRequestModal = async (
     .buildToObject();
 };
 
+const buildOptionFromRequestType = (value: RequestType) =>
+  Bits.Option({ value, text: MENTION_TYPE_PICKER_LABELS[value] });
+
 const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
   const { messageText, requestToSlackUserIds } = metadata;
 
@@ -70,13 +73,12 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
     .blocks(
       Blocks.Input({ blockId: "request_type_block", label: "Request Type" }).element(
         Elements.StaticSelect({ actionId: "request_type_select" })
-          .initialOption(Bits.Option({ value: REQUEST_READ, text: MENTION_TYPE_PICKER_LABELS[REQUEST_READ] }))
-          .optionGroups(
-            Bits.OptionGroup({ label: "Request types" }).options(
-              Object.entries(MENTION_TYPE_PICKER_LABELS)
-                .filter(([value]) => value !== MENTION_OBSERVER)
-                .map(([value, text]) => Bits.Option({ value, text }))
-            )
+          .initialOption(buildOptionFromRequestType(REQUEST_ACTION))
+          .options(
+            Object.keys(MENTION_TYPE_PICKER_LABELS)
+              .filter((value) => value !== MENTION_OBSERVER)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .map(buildOptionFromRequestType as any)
           )
       ),
       Blocks.Input({ blockId: "members_block", label: "Request to" }).element(
@@ -100,8 +102,10 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
         .optional(true),
       metadata.channelId
         ? undefined
-        : Blocks.Input({ label: "Post in channel", blockId: "channel_block" })
-            .element(Elements.ChannelSelect({ actionId: "channel_select" }))
+        : Blocks.Input({ label: "Post in channel", blockId: "conversation_block" })
+            .element(
+              Elements.ConversationSelect({ actionId: "conversation_select" }).defaultToCurrentConversation(true)
+            )
             .optional(true)
     )
     .submit("Create")

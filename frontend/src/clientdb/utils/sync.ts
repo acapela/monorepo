@@ -39,6 +39,7 @@ import {
   Team_Member_Insert_Input,
   Team_Member_Set_Input,
   Team_Member_Slack_Bool_Exp,
+  Team_Set_Input,
   Topic_Bool_Exp,
   Topic_Constraint,
   Topic_Event_Bool_Exp,
@@ -123,7 +124,7 @@ type InsertTypeMap = {
 type UpdateTypeMap = {
   task: Task_Set_Input;
   topic: Topic_Set_Input;
-  team: never;
+  team: Team_Set_Input;
   team_member: Team_Member_Set_Input;
   message: Message_Set_Input;
   message_reaction: Message_Reaction_Set_Input;
