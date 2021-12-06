@@ -104,7 +104,7 @@ function Notifications(notificationsSentOutsideOfWorkHours: SlackNotificationQue
   return Header.concat(
     notificationsSentOutsideOfWorkHours.map((notification) => {
       return Blocks.Section({
-        text: notification.payload,
+        text: notification.payload + "\n",
       });
     })
   );
