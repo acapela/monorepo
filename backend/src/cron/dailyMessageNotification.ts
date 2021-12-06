@@ -1,8 +1,13 @@
 import { get, map, uniq } from "lodash";
 
-import { slackClient } from "~backend/src/slack/app";
 import { db } from "~db";
+import { logger } from "~shared/logger";
+import { Sentry } from "~shared/sentry";
 
+import { trySendDailySummary } from "../slack/daily-summary";
+import { TeamMemberWithSlack } from "../slack/daily-summary/types";
+
+// TODO: Make more efficient when we get more users!
 export async function dailyMessageNotification() {
   const currentUtcHour = new Date().getUTCHours();
   // get all users that currently have the first working hour
@@ -30,12 +35,16 @@ export async function dailyMessageNotification() {
 
   for (const teamMember of teamMembers) {
     const token = slackBotTokenByTeamId[teamMember.team_id];
-    const slackUserId = get(teamMember.team_member_slack, "slack_user_id");
-    if (!token || !slackUserId) continue;
-    await slackClient.chat.postMessage({
-      token,
-      channel: slackUserId,
-      text: "Good morning :sunny:",
-    });
+    if (!teamMember.team_member_slack) {
+      continue;
+    }
+    try {
+      // Awaiting in order to slow down the API calls and not overwhelm Slack API
+      // A more elegant approach should be used once we're getting to scale phase
+      await trySendDailySummary(teamMember as TeamMemberWithSlack, token);
+    } catch (e) {
+      Sentry.captureException(e);
+      logger.error(e);
+    }
   }
 }
