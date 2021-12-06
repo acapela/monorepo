@@ -20,6 +20,7 @@ export type {
   team as Team,
   team_member as TeamMember,
   team_slack_installation as TeamSlackInstallation,
+  slack_notification_queue as SlackNotificationQueue,
   message_task_due_date as MessageTaskDueDate,
   whitelist as Whitelist,
   PrismaPromise,

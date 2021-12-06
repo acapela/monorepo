@@ -6,6 +6,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
 import { HasuraEvent } from "../hasura";
 
+// TODO: Update live message on task due date delete
 export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDueDate>) {
   const messageId = event.item.message_id;
   const topic = await db.topic.findFirst({ where: { message: { some: { id: messageId } } } });
