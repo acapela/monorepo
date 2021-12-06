@@ -54,8 +54,8 @@ async function shouldSendNotificationDirectly(teamId: string, user: User): Promi
   const currentUtcHour = now.getUTCHours();
 
   // Sun = 0, Mon, 1, ... Sat = 6
-  const isNotWorkingDay = dayOfWeek >= 1 && dayOfWeek <= 5;
-  if (isNotWorkingDay) {
+  const isWeekDay = dayOfWeek >= 1 && dayOfWeek <= 5;
+  if (!isWeekDay) {
     return false;
   }
 
