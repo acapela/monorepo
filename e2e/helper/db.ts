@@ -17,15 +17,6 @@ export const db = new PrismaClient({
     },
   },
 });
-
-// Make sure we disconnect previous instance
-if (globalThis.dbInstance) {
-  globalThis.dbInstance.$disconnect();
-  globalThis.dbInstance = null;
-}
-
-globalThis.dbInstance = db;
-
 const PREFIX = "__TESTING__";
 
 const createJWTForUser = (userId: string): string => signJWT(createJWT({ sub: userId, userId: userId }));
@@ -55,14 +46,6 @@ async function createUser(name: string, email: string, currentTeam: string | nul
 
 export async function setupDatabase(key: string) {
   const fullPrefix = PREFIX + key;
-  try {
-    await db.$connect();
-    await db.$executeRaw`DELETE FROM "team" WHERE slug ILIKE ${PREFIX + "%"}`;
-    await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
-    await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${PREFIX + "%"}`;
-  } catch (error) {
-    console.error(error);
-  }
 
   const user1 = await createUser("u1", fullPrefix + "user-1@acape.la", null);
   const team = await db.team.create({
@@ -79,18 +62,11 @@ export async function setupDatabase(key: string) {
   });
 
   return {
-    data: { user1, user2 },
+    data: { prefix: fullPrefix, user1, user2 },
     async cleanup() {
       const userIds = Prisma.join([user1.id, user2.id]);
-      try {
-        await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
-
-        await db.$disconnect();
-      } catch (error) {
-        console.error(`Database cleanup failed`);
-        console.error(error);
-        throw error;
-      }
+      await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
+      await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
     },
   };
 }
