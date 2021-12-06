@@ -49,7 +49,15 @@ async function shouldSendNotificationDirectly(teamId: string, user: User): Promi
     return true;
   }
 
-  const currentUtcHour = new Date().getUTCHours();
+  const now = new Date();
+  const dayOfWeek = now.getUTCDate();
+  const currentUtcHour = now.getUTCHours();
+
+  // Sun = 0, Mon, 1, ... Sat = 6
+  const isWeekDay = dayOfWeek >= 1 && dayOfWeek <= 5;
+  if (!isWeekDay) {
+    return false;
+  }
 
   // e.g Start 9am - end 6pm, Start 1pm - end 10pm, etc
   if (work_start_hour_in_utc < work_end_hour_in_utc) {
@@ -64,6 +72,8 @@ async function sendOrEnqueueSlackNotification(teamId: string, user: User, payloa
   if (await shouldSendNotificationDirectly(teamId, user)) {
     return trySendSlackNotification(teamId, user, payload);
   }
+
+  // Look at dailyMessageNotification for whole flow explanation
   return await enqueueSlackNotification(teamId, user, payload);
 }
 

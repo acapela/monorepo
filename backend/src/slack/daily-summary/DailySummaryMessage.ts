@@ -18,6 +18,7 @@ function getEarliestDueDate(topic: TopicVM) {
   return min(topic.message.map((m) => m.message_task_due_date?.due_at));
 }
 
+// Look at dailyMessageNotification for whole flow explanation
 export function DailySummaryMessage({
   topicsDueToday,
   otherReceivedTopics,

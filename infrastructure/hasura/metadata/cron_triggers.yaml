@@ -12,6 +12,20 @@
   headers:
   - name: Authorization
     value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+- name: daily-message-notification
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: 5 * * * 1-5
+  include_in_metadata: true
+  payload:
+    handler: daily-message-notification
+  retry_conf:
+    num_retries: 1
+    timeout_seconds: 60
+    tolerance_seconds: 21600
+    retry_interval_seconds: 10
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: delayed-topic-requests-done-notification
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '*/15 * * * *'
