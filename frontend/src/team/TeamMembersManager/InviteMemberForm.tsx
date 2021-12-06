@@ -10,6 +10,7 @@ import { isNotNullish } from "~shared/nullish";
 import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
 import { IconPlusSquare } from "~ui/icons";
+import { theme } from "~ui/theme";
 
 interface Props {
   team: TeamEntity;
@@ -21,6 +22,7 @@ const getTeamEmails = cachedComputed((team: TeamEntity) => {
 
 export const InviteMemberForm = observer(({ team }: Props) => {
   const [inviteUser] = useInviteUser();
+  const [error, setError] = useState<string | null>(null);
 
   const teamEmails = getTeamEmails(team);
 
@@ -30,17 +32,25 @@ export const InviteMemberForm = observer(({ team }: Props) => {
 
   const isAlreadyInvited = teamEmails.has(email);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError(null);
+
     if (isAlreadyInvited) {
-      alert(`This user is already invited`);
+      setError(`This user is already invited`);
+      return;
     }
 
-    inviteUser({ variables: { input: { email, team_id: team.id } } });
-    setEmail("");
+    try {
+      await inviteUser({ variables: { input: { email, team_id: team.id } } });
+      setEmail("");
+    } catch (error) {
+      setError(`Failed to invite user`);
+    }
   };
 
   return (
     <UIHolder>
+      {error && <UIError>{error}</UIError>}
       <TextInput placeholder="user@company.com" name="invite-email" value={email} onChangeText={setEmail} />
       <Button
         iconAtStart
@@ -59,4 +69,8 @@ const UIHolder = styled.div<{}>`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
+`;
+
+const UIError = styled.div`
+  ${theme.colors.status.danger.asColor};
 `;
