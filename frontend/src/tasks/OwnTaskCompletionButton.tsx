@@ -5,7 +5,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
 import { COMPLETED_REQUEST_LABEL, MentionType, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
-import { IconUndo } from "~ui/icons";
+import { IconCheckboxCircle, IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
@@ -42,7 +42,7 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
         },
       ]}
     >
-      <Button key="done" kind="secondary" size="compact" indicateDropdown>
+      <Button key="done" kind="secondary" size="compact" icon={<IconCheckboxCircle />} indicateDropdown>
         {COMPLETED_REQUEST_LABEL[task.type as RequestType]}
       </Button>
     </PopoverMenuTrigger>
