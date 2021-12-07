@@ -59,7 +59,7 @@ export const Modal = styled(function Modal({
   );
 
   return (
-    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
+    <ScreenCoverWithPadding isTransparent={false} onCloseRequest={onCloseRequest}>
       {/* Modal is attached to some element instead of center of the screen. */}
       {anchor && (
         <Popover anchorRef={anchor.ref} placement={anchor.placement}>
@@ -68,11 +68,15 @@ export const Modal = styled(function Modal({
       )}
 
       {!anchor && modalBodyNode}
-    </ScreenCover>
+    </ScreenCoverWithPadding>
   );
 })``;
 
 const background = theme.colors.layout.background;
+
+const ScreenCoverWithPadding = styled(ScreenCover)`
+  padding: 15px;
+`;
 
 const UIModal = styled(PopPresenceAnimator)<{}>`
   min-width: 368px;

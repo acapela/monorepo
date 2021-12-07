@@ -27,7 +27,6 @@ import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
@@ -287,10 +286,6 @@ const UIHolder = styled.div<{}>`
   align-items: center;
   justify-content: center;
   min-height: 0;
-
-  ${phone(css`
-    margin-top: 60px;
-  `)}
 `;
 
 const UIContentHolder = styled.div<{ isExpanded: boolean }>`
