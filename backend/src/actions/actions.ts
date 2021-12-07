@@ -16,9 +16,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
 
-  logger.info(`Handling action (${hasuraAction.action.name})`, {
-    userId,
-  });
+  logger.info({ userId }, `Handling action (${hasuraAction.action.name})`);
 
   const handler = actionHandlers.get(hasuraAction.action.name);
   if (!handler) {
@@ -28,9 +26,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   try {
     const response = await handler.handle(userId, hasuraAction.input);
     res.status(HttpStatus.OK).json(response);
-    logger.info(`Action handled (${hasuraAction.action.name})`, {
-      userId,
-    });
+    logger.info({ userId }, `Action handled (${hasuraAction.action.name})`);
   } catch (error) {
     isHttpError(error);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,12 +36,15 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
       message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
-    logger.info("Failed handling action", {
-      actionName: hasuraAction.action.name,
-      userId,
-      failureReason: anyError.message,
-      status: status,
-    });
+    logger.info(
+      {
+        actionName: hasuraAction.action.name,
+        userId,
+        failureReason: anyError.message,
+        status: status,
+      },
+      "Failed handling action"
+    );
   }
 });
 
