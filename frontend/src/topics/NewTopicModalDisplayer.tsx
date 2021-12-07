@@ -32,6 +32,7 @@ export const NewTopicModalDisplayer = observer(function NewTopicModalDisplayer()
         >
           <NewRequestView
             topicToDuplicate={getTopicToDuplicateFrom() ?? undefined}
+            alwaysExpanded
             onTopicCreated={() => {
               appState.creatingNewTopic = null;
             }}

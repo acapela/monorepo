@@ -76,11 +76,16 @@ async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
 export interface NewRequestProps {
   topicToDuplicate?: TopicEntity;
   onTopicCreated?: (newTopic: TopicEntity) => void;
+  alwaysExpanded?: boolean;
 }
 
 type CreatingRequestStage = "empty" | "has-any-content" | "valid";
 
-export const NewRequest = observer(function NewRequest({ topicToDuplicate, onTopicCreated }: NewRequestProps) {
+export const NewRequest = observer(function NewRequest({
+  topicToDuplicate,
+  onTopicCreated,
+  alwaysExpanded = false,
+}: NewRequestProps) {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
@@ -133,7 +138,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate, onTop
 
   const canSubmit = stage === "valid";
 
-  const isUIExpanded = true;
+  const isUIExpanded = alwaysExpanded || stage !== "empty";
 
   function getHint() {
     if (stage === "has-any-content") {
@@ -188,16 +193,18 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate, onTop
     <UIHolder>
       <UIContentHolder isExpanded={isUIExpanded}>
         <div>
-          <UIFlyingCreateARequestLabel
-            layout="position"
-            layoutId="UIFlyingCreateARequestLabel"
-            animate={{
-              opacity: isUIExpanded ? 0 : 1,
-              x: isUIExpanded ? -50 : 0,
-              y: isUIExpanded ? -50 : 0,
-            }}
-            transition={POP_ANIMATION_CONFIG}
-          />
+          {!alwaysExpanded && (
+            <UIFlyingCreateARequestLabel
+              layout="position"
+              layoutId="UIFlyingCreateARequestLabel"
+              animate={{
+                opacity: isUIExpanded ? 0 : 1,
+                x: isUIExpanded ? -50 : 0,
+                y: isUIExpanded ? -50 : 0,
+              }}
+              transition={POP_ANIMATION_CONFIG}
+            />
+          )}
         </div>
 
         <UIEditableParts isExpanded={isUIExpanded}>
@@ -229,7 +236,6 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate, onTop
             <UINextStepPrompt
               // Next step label can be empty so make sure we use some key
               key={stageHint?.toString() || "no-step"}
-              layoutId="UINextStepPrompt"
               layout="position"
               initial={{ opacity: 0 }}
               animate={{ opacity: isUIExpanded ? 1 : 0 }}
