@@ -131,7 +131,7 @@ export function listenToViewWithMetadata<
 
 export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
   [REQUEST_ACTION]: "🎬",
-  [REQUEST_RESPONSE]: "✍️",
+  [REQUEST_RESPONSE]: "📝",
   [REQUEST_READ]: "👀",
 };
 
