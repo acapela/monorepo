@@ -1,6 +1,7 @@
 import { radius } from "./borderRadius";
 import { box } from "./box";
 import { colors } from "./colors";
+import { common } from "./common";
 import { gradients } from "./gradients";
 import { shadow } from "./shadow";
 import { spacing } from "./spacing";
@@ -19,8 +20,9 @@ export const defaultTheme = {
   shadow,
   radius,
   zIndex: zIndexValues,
-  box: box,
+  box,
   gradients,
+  common: common,
 };
 
 export const [theme, AppThemeProvider] = buildStyledTheme(defaultTheme);
