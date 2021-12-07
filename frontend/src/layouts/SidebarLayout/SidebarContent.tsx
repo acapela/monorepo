@@ -1,11 +1,11 @@
+import { action } from "mobx";
 import { observer } from "mobx-react";
-import Link from "next/link";
 import React, { useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
+import { useAppStateStore } from "~frontend/appState/AppStateStore";
 import { UserMenu } from "~frontend/layouts/UserMenu";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross, IconPlus } from "~ui/icons";
@@ -25,6 +25,7 @@ interface Props {
 export const SidebarContent = observer(function SidebarContent({ onMobileCloseRequest }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const appState = useAppStateStore();
 
   const debouncedSearchTerm = useDebouncedValue(searchTerm, { timeFactory: () => 30 });
   const finalSearchTerm = DEBOUNCE_SEARCH ? debouncedSearchTerm : searchTerm;
@@ -38,13 +39,13 @@ export const SidebarContent = observer(function SidebarContent({ onMobileCloseRe
           <UserMenu />
         </UIHeaderUser>
 
-        <Link href={routes.newRequest}>
-          <a>
-            <Button kind="secondary" icon={<IconPlus />} iconAtStart>
-              New Request
-            </Button>
-          </a>
-        </Link>
+        <Button
+          kind="secondary"
+          icon={<IconPlus />}
+          onClick={action(() => (appState.creatingNewTopic = { enabled: true }))}
+        >
+          New Request
+        </Button>
       </UIHeader>
 
       <UISearch>
