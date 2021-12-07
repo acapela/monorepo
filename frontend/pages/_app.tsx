@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
+import { AppStateStoreProvider } from "~frontend/appState/AppStateStore";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { ClientDbProvider } from "~frontend/clientdb";
@@ -115,10 +116,12 @@ export default function App({
               <AppThemeProvider theme={theme}>
                 <CurrentTeamProvider>
                   <ClientDbProvider>
-                    <PromiseUIRenderer />
-                    <TooltipsRenderer />
-                    <ToastsRenderer />
-                    <Component {...{ appConfig, ...pageProps }} />
+                    <AppStateStoreProvider>
+                      <PromiseUIRenderer />
+                      <TooltipsRenderer />
+                      <ToastsRenderer />
+                      <Component {...{ appConfig, ...pageProps }} />
+                    </AppStateStoreProvider>
                   </ClientDbProvider>
                 </CurrentTeamProvider>
               </AppThemeProvider>

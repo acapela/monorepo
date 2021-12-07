@@ -25,6 +25,7 @@ const UIHolder = styled(motion.div)<{}>`
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  pointer-events: none !important;
 `;
 
 const UICreateATopicLabel = styled.div<{}>`

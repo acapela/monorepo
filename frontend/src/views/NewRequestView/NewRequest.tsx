@@ -16,7 +16,6 @@ import { MessageContentEditor } from "~frontend/message/composer/MessageContentC
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
-import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
@@ -28,7 +27,6 @@ import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
@@ -74,13 +72,19 @@ async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
   });
 }
 
-interface Props {
+export interface NewRequestProps {
   topicToDuplicate?: TopicEntity;
+  onTopicCreated?: (newTopic: TopicEntity) => void;
+  alwaysExpanded?: boolean;
 }
 
 type CreatingRequestStage = "empty" | "has-any-content" | "valid";
 
-export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Props) {
+export const NewRequest = observer(function NewRequest({
+  topicToDuplicate,
+  onTopicCreated,
+  alwaysExpanded = false,
+}: NewRequestProps) {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
@@ -133,7 +137,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
 
   const canSubmit = stage === "valid";
 
-  const isEmpty = stage === "empty";
+  const isUIExpanded = alwaysExpanded || stage !== "empty";
 
   function getHint() {
     if (stage === "has-any-content") {
@@ -176,6 +180,8 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
 
+      onTopicCreated?.(topic);
+
       router.push(topic.href);
     });
     clearPersistedContent();
@@ -184,21 +190,23 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
 
   return (
     <UIHolder>
-      <UIContentHolder isEmpty={isEmpty}>
+      <UIContentHolder isExpanded={isUIExpanded}>
         <div>
-          <UIFlyingCreateARequestLabel
-            layout="position"
-            layoutId="UIFlyingCreateARequestLabel"
-            animate={{
-              opacity: !isEmpty ? 0 : 1,
-              x: !isEmpty ? -50 : 0,
-              y: !isEmpty ? -50 : 0,
-            }}
-            transition={POP_ANIMATION_CONFIG}
-          />
+          {!alwaysExpanded && (
+            <UIFlyingCreateARequestLabel
+              layout="position"
+              layoutId="UIFlyingCreateARequestLabel"
+              animate={{
+                opacity: isUIExpanded ? 0 : 1,
+                x: isUIExpanded ? -50 : 0,
+                y: isUIExpanded ? -50 : 0,
+              }}
+              transition={POP_ANIMATION_CONFIG}
+            />
+          )}
         </div>
 
-        <UIEditableParts isEmpty={isEmpty}>
+        <UIEditableParts isExpanded={isUIExpanded}>
           <PageLayoutAnimator layoutId={layoutAnimations.newTopic.title(newTopicId)}>
             <UITopicNameInput
               value={topicName}
@@ -227,10 +235,9 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
             <UINextStepPrompt
               // Next step label can be empty so make sure we use some key
               key={stageHint?.toString() || "no-step"}
-              layoutId="UINextStepPrompt"
               layout="position"
               initial={{ opacity: 0 }}
-              animate={{ opacity: hasAnyTextContent ? 1 : 0 }}
+              animate={{ opacity: isUIExpanded ? 1 : 0 }}
               exit={{ opacity: 0 }}
             >
               {/* Avoid height flicker if there is no next prompt by adding nbsp */}
@@ -239,7 +246,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
           </AnimatePresence>
         </UIEditableParts>
         <UIActions
-          animate={{ opacity: !isEmpty ? 1 : 0 }}
+          animate={{ opacity: isUIExpanded ? 1 : 0 }}
           initial={{ opacity: 0 }}
           layoutId={layoutAnimations.newTopic.messageTools(newTopicId)}
         >
@@ -269,7 +276,7 @@ export const NewRequest = observer(function NewRequest({ topicToDuplicate }: Pro
   );
 });
 
-const UIHolder = styled(HorizontalSpacingContainer)<{}>`
+const UIHolder = styled.div<{}>`
   position: relative;
   height: 100%;
   width: 100%;
@@ -278,14 +285,10 @@ const UIHolder = styled(HorizontalSpacingContainer)<{}>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 20px;
-
-  ${phone(css`
-    margin-top: 60px;
-  `)}
+  min-height: 0;
 `;
 
-const UIContentHolder = styled.div<{ isEmpty: boolean }>`
+const UIContentHolder = styled.div<{ isExpanded: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -296,7 +299,7 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   ${theme.spacing.actionsSection.asGap};
 
   ${(props) => {
-    if (props.isEmpty) {
+    if (!props.isExpanded) {
       return css`
         max-width: 500px;
       `;
@@ -307,18 +310,11 @@ const UIContentHolder = styled.div<{ isEmpty: boolean }>`
   }}
 `;
 
-const UIEditableParts = styled.div<{ isEmpty: boolean }>`
+const UIEditableParts = styled.div<{ isExpanded: boolean }>`
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  ${theme.common.flexDiv}
 
   ${theme.spacing.actionsSection.asGap}
-
-  ${(props) =>
-    !props.isEmpty &&
-    css`
-      min-height: 160px;
-    `}
 `;
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
@@ -333,7 +329,7 @@ const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
 `;
 
 const UITopicNameInput = styled(TransparentTextInput)<{}>`
-  ${theme.typo.pageTitle};
+  ${theme.typo.secondaryTitle};
   padding: 0;
 `;
 
