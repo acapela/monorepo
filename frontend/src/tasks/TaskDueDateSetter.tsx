@@ -5,7 +5,11 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useDb } from "~frontend/clientdb";
+import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { getZonedHour } from "~frontend/views/SettingsView/TeamMemberWorkHoursSettings";
+import { DEFAULT_END_OF_WORK_DAY, getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { ButtonSize } from "~ui/buttons/variants";
@@ -22,17 +26,30 @@ interface Props {
 }
 
 export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size = "compact" }: Props) => {
+  const db = useDb();
+  const userTokenData = useAssertCurrentUser();
+  const teamInfo = useAssertCurrentTeam();
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
+
+  const getCurrentUserEndOfDay = (): number => {
+    const currentTeamMember = db.teamMember.query({
+      user_id: userTokenData.id,
+      team_id: teamInfo.id,
+    }).first;
+    const currentUserTimezone = currentTeamMember?.timezone;
+    const startOfWorkInUTC = currentTeamMember?.work_start_hour_in_utc;
+    return getZonedHour(startOfWorkInUTC, currentUserTimezone) ?? DEFAULT_END_OF_WORK_DAY;
+  };
 
   const handleSubmit = async (dueDate: Date | null) => {
     closeCalendar();
     onChange(dueDate);
   };
 
-  const calendarInitialValue = dueDate ?? getNextWorkDayEndOfDay();
+  const calendarInitialValue = dueDate ?? getNextWorkDayEndOfDay(getCurrentUserEndOfDay());
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -62,12 +79,12 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size
                 {
                   key: "today",
                   label: "Today, End of day",
-                  onSelect: () => handleSubmit(getTodayEndOfDay()),
+                  onSelect: () => handleSubmit(getTodayEndOfDay(getCurrentUserEndOfDay())),
                 },
                 {
                   key: "tomorrow",
                   label: isLastDayOfWorkWeek ? "Next monday, End of day" : "Tomorrow, End of day",
-                  onSelect: () => handleSubmit(getNextWorkDayEndOfDay()),
+                  onSelect: () => handleSubmit(getNextWorkDayEndOfDay(getCurrentUserEndOfDay())),
                 },
                 {
                   key: "other",

@@ -4,6 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
+import { routes } from "~shared/routes";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconChevronLeft } from "~ui/icons";
 import { theme } from "~ui/theme";
@@ -32,7 +33,7 @@ export const SettingsView = observer(function SettingsView({
             kind="secondary"
             tooltip="Go back"
             onClick={() => {
-              router.back();
+              router.push(routes.home);
             }}
           />
           Settings
