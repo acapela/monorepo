@@ -55,7 +55,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const normalizedEvent = normalizeHasuraEvent(event);
 
     if (!normalizedEvent) {
-      logger.warn(`Failed to normalize hasura event`, { event });
+      logger.warn({ event }, `Failed to normalize hasura event`);
       return;
     }
 
@@ -75,11 +75,14 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     if (IS_DEV) {
       logger.info(`Handling event (${hasuraEvent.trigger.name})`);
     } else {
-      logger.info("Handling event", {
-        eventId: hasuraEvent.id,
-        triggerName: hasuraEvent.trigger.name,
-        userId,
-      });
+      logger.info(
+        {
+          eventId: hasuraEvent.id,
+          triggerName: hasuraEvent.trigger.name,
+          userId,
+        },
+        "Handling event"
+      );
     }
 
     await handleHasuraEvent(hasuraEvent);
