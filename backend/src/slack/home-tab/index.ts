@@ -142,10 +142,38 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        await RequestsList("🔥 Received", currentUserId, received, unreadMessagesByTopicId),
-        await RequestsList("📤 Sent", currentUserId, sent, unreadMessagesByTopicId),
-        await RequestsList("⏳ Open", currentUserId, open, unreadMessagesByTopicId),
-        await RequestsList("✅ Closed", currentUserId, closed, unreadMessagesByTopicId)
+        await RequestsList({
+          title: "🔥 Received",
+          explainer: "Requests assigned to you",
+          currentUserId,
+          topics: received,
+          unreadMessagesByTopicId,
+          emptyText: "You are all caught up 🎉",
+        }),
+        await RequestsList({
+          title: "📤 Sent",
+          explainer: "Requests you have sent to other people",
+          currentUserId,
+          topics: sent,
+          unreadMessagesByTopicId,
+        }),
+        await RequestsList({
+          title: "⏳ Open",
+          explainer: "Open topics without outstanding requests",
+          currentUserId,
+          topics: open,
+          unreadMessagesByTopicId,
+        }),
+        await RequestsList({
+          title: "✅ Closed",
+          explainer: `Closed topics will be archived after a day. You can still find them ${createSlackLink(
+            process.env.FRONTEND_URL,
+            "in the web app"
+          )}.`,
+          currentUserId,
+          topics: closed,
+          unreadMessagesByTopicId,
+        })
       )
       .buildToObject()
   );
