@@ -37,3 +37,11 @@ export function convertUTCHourToZonedHour(utcHour: number, timeZone: string) {
   // Most risky part of the operation. We convert this into a decimal number.
   return Number.parseInt(hoursInTimezoneAsString, 10);
 }
+
+export function getZonedHour(utcHour?: number | null, timeZone?: string | null) {
+  if (!utcHour || !timeZone) {
+    return;
+  }
+
+  return convertUTCHourToZonedHour(utcHour, timeZone);
+}

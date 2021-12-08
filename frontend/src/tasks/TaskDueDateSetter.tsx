@@ -8,8 +8,8 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { getZonedHour } from "~frontend/views/SettingsView/TeamMemberWorkHoursSettings";
 import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
+import { convertUTCHourToZonedHour } from "~shared/dates/utcUtils";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { ButtonSize } from "~ui/buttons/variants";
@@ -41,7 +41,9 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size
     }).first;
     const currentUserTimezone = currentTeamMember?.timezone;
     const endOfWorkInUTC = currentTeamMember?.work_end_hour_in_utc;
-    return getZonedHour(endOfWorkInUTC, currentUserTimezone);
+    if (currentUserTimezone && endOfWorkInUTC) {
+      return convertUTCHourToZonedHour(endOfWorkInUTC, currentUserTimezone);
+    }
   };
 
   const handleSubmit = async (dueDate: Date | null) => {

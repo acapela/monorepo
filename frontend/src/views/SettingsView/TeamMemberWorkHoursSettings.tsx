@@ -8,7 +8,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
 import { assert } from "~shared/assert";
-import { convertUTCHourToZonedHour, convertZonedHourToUTCHour } from "~shared/dates/utcUtils";
+import { convertZonedHourToUTCHour, getZonedHour } from "~shared/dates/utcUtils";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { theme } from "~ui/theme";
 
@@ -27,14 +27,6 @@ function getHourLabel(hour: number, startOfRange?: number): string {
   }
 
   return `${hour - 12}:00 PM${nextDay}`;
-}
-
-export function getZonedHour(utcHour?: number | null, timeZone?: string | null) {
-  if (!utcHour || !timeZone) {
-    return;
-  }
-
-  return convertUTCHourToZonedHour(utcHour, timeZone);
 }
 
 export const TeamMemberWorkHoursSettings = observer(function TeamMemberWorkHoursSettings() {
