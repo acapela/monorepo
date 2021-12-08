@@ -98,15 +98,18 @@ export function setupSlackActionHandlers(slackApp: App) {
     const token = assertToken(context);
     const origin = getViewOrigin(body.view);
 
-    if (origin === "slack-view-request-modal") {
-      await slackClient.views.update({
-        token,
-        view_id: body.view?.id,
-        view: await ViewRequestModal(token, {
-          slackUserId: body.user.id,
-          topicId,
-        }),
-      });
+    const isFromViewRequestModal = origin === "slack-view-request-modal";
+    if (isFromViewRequestModal || origin === "slack-home-tab") {
+      if (isFromViewRequestModal) {
+        await slackClient.views.update({
+          token,
+          view_id: body.view?.id,
+          view: await ViewRequestModal(token, {
+            slackUserId: body.user.id,
+            topicId,
+          }),
+        });
+      }
 
       // Move task back into list
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
@@ -143,7 +146,11 @@ export function setupSlackActionHandlers(slackApp: App) {
       },
     });
 
-    await say(`*${topic.name}* has been closed.`);
+    if (getViewOrigin(body.view) == "slack-home-tab") {
+      await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
+    } else {
+      await say(`*${topic.name}* has been closed.`);
+    }
   });
 
   slackApp.action<BlockButtonAction>(SlackActionIds.ArchiveTopic, async ({ action, say, ack, body, context }) => {
@@ -184,15 +191,18 @@ export function setupSlackActionHandlers(slackApp: App) {
     const token = assertToken(context);
     const origin = getViewOrigin(body.view);
 
-    if (origin === "slack-view-request-modal") {
-      await slackClient.views.update({
-        token,
-        view_id: body.view?.id,
-        view: await ViewRequestModal(token, {
-          slackUserId: body.user.id,
-          topicId,
-        }),
-      });
+    const isFromViewRequestModal = origin === "slack-view-request-modal";
+    if (origin == "slack-home-tab" || isFromViewRequestModal) {
+      if (isFromViewRequestModal) {
+        await slackClient.views.update({
+          token,
+          view_id: body.view?.id,
+          view: await ViewRequestModal(token, {
+            slackUserId: body.user.id,
+            topicId,
+          }),
+        });
+      }
 
       // Excluding task from list
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
@@ -254,7 +264,9 @@ export function setupSlackActionHandlers(slackApp: App) {
 
     const slackOrigin = getViewOrigin(body.view);
 
-    if (slackOrigin === "slack-view-request-modal") {
+    const isFromViewRequestModal = slackOrigin === "slack-view-request-modal";
+
+    if (isFromViewRequestModal) {
       await slackClient.views.update({
         token,
         view_id: body.view?.id,
@@ -263,7 +275,9 @@ export function setupSlackActionHandlers(slackApp: App) {
           topicId: task.message.topic_id,
         }),
       });
+    }
 
+    if (isFromViewRequestModal || slackOrigin == "slack-home-tab") {
       // Updating homeview as task may have moved to open
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
     }
