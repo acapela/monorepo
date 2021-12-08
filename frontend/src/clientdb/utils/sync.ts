@@ -9,6 +9,9 @@ import {
   Attachment_Constraint,
   Attachment_Insert_Input,
   Attachment_Set_Input,
+  Decision_Option_Bool_Exp,
+  Decision_Option_Insert_Input,
+  Decision_Option_Set_Input,
   Decision_Vote_Bool_Exp,
   Decision_Vote_Insert_Input,
   Decision_Vote_Set_Input,
@@ -123,6 +126,7 @@ type InsertTypeMap = {
   user_group: User_Group_Insert_Input;
   user_group_member: User_Group_Member_Insert_Input;
   decision_vote: Decision_Vote_Insert_Input;
+  decision_option: Decision_Option_Insert_Input;
 };
 
 type UpdateTypeMap = {
@@ -139,6 +143,7 @@ type UpdateTypeMap = {
   user_group: User_Group_Set_Input;
   user_group_member: never;
   decision_vote: Decision_Vote_Set_Input;
+  decision_option: Decision_Option_Set_Input;
 };
 
 type WhereTypeMap = {
@@ -158,6 +163,7 @@ type WhereTypeMap = {
   user_group: User_Group_Bool_Exp;
   user_group_member: User_Group_Member_Bool_Exp;
   decision_vote: Decision_Vote_Bool_Exp;
+  decision_option: Decision_Option_Bool_Exp;
 };
 
 /**
