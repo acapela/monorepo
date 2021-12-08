@@ -61,7 +61,7 @@ export const useDecisionController = function ({
     }
 
     sortBy(options, "index").forEach((option) => {
-      db.decisionOption.createOrUpdate({
+      db.decisionOption.create({
         index: option.index,
         option: option.option,
         message_id: messageId,
