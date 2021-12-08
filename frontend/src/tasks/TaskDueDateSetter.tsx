@@ -40,8 +40,8 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size
       team_id: teamInfo.id,
     }).first;
     const currentUserTimezone = currentTeamMember?.timezone;
-    const startOfWorkInUTC = currentTeamMember?.work_start_hour_in_utc;
-    return getZonedHour(startOfWorkInUTC, currentUserTimezone) ?? DEFAULT_END_OF_WORK_DAY;
+    const endOfWorkInUTC = currentTeamMember?.work_end_hour_in_utc;
+    return getZonedHour(endOfWorkInUTC, currentUserTimezone) ?? DEFAULT_END_OF_WORK_DAY;
   };
 
   const handleSubmit = async (dueDate: Date | null) => {
