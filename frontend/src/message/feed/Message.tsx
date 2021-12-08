@@ -170,7 +170,7 @@ export const Message = styledObserver<Props>(
               </UIMessageContent>
             )}
 
-            {message.tasks.all.some(({ type }) => type === REQUEST_DECISION) && <DecisionVoting message={message} />}
+            {message.tasks.query({ type: REQUEST_DECISION }).hasItems && <DecisionVoting message={message} />}
 
             {message.tasks.hasItems && <MessageTasks message={message} />}
           </UIMessageBody>

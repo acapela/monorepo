@@ -1,4 +1,15 @@
 
+alter table "public"."decision_option" drop constraint "decision_option_id_key";
+
+alter table "public"."decision_vote" drop column "id" cascade
+alter table "public"."decision_vote" drop column "id";
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+ALTER TABLE "public"."decision_option" ALTER COLUMN "index" TYPE numeric;
+
+
 alter table "public"."decision_vote" alter column "updated_at" drop not null;
 
 alter table "public"."decision_vote" alter column "created_at" drop not null;

@@ -1,6 +1,7 @@
 
 
 
+
 CREATE TABLE "public"."decision_option" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "message_id" uuid NOT NULL, "index" numeric NOT NULL, "option" text NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("message_id") REFERENCES "public"."message"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("id"));
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -53,3 +54,11 @@ FOR EACH ROW
 EXECUTE PROCEDURE "public"."set_current_timestamp_updated_at"();
 COMMENT ON TRIGGER "set_public_decision_vote_updated_at" ON "public"."decision_vote" 
 IS 'trigger to set value of column "updated_at" to current timestamp on row update';
+
+ALTER TABLE "public"."decision_option" ALTER COLUMN "index" TYPE int4;
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+alter table "public"."decision_vote" add column "id" uuid
+ not null unique default gen_random_uuid();
+
+alter table "public"."decision_option" add constraint "decision_option_id_key" unique ("id");
