@@ -22,7 +22,7 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
-import { DecisionEditor, useDecisionController } from "./DecisionEditor";
+import { DecisionEditor, useDecisionController } from "./Decision/DecisionEditor";
 import { SubmitMessageButton } from "./SubmitMessageButton";
 
 interface Props {

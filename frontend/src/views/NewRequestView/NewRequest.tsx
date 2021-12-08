@@ -29,7 +29,7 @@ import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
-import { DecisionEditor, useDecisionController } from "../RequestView/TopicWithMessages/DecisionEditor";
+import { DecisionEditor, useDecisionController } from "../RequestView/TopicWithMessages/Decision/DecisionEditor";
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
 
 /**
