@@ -7,7 +7,13 @@ import { db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
 import { Maybe } from "~shared/types";
-import { MENTION_OBSERVER, MENTION_TYPE_PICKER_LABELS, REQUEST_ACTION, RequestType } from "~shared/types/mention";
+import {
+  MENTION_OBSERVER,
+  MENTION_TYPE_PICKER_LABELS,
+  REQUEST_ACTION,
+  REQUEST_DECISION,
+  RequestType,
+} from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
@@ -76,7 +82,8 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
           .initialOption(buildOptionFromRequestType(REQUEST_ACTION))
           .options(
             Object.keys(MENTION_TYPE_PICKER_LABELS)
-              .filter((value) => value !== MENTION_OBSERVER)
+              //TODO: Decisions are still not supported in slack
+              .filter((value) => value !== MENTION_OBSERVER && value !== REQUEST_DECISION)
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .map(buildOptionFromRequestType as any)
           )
