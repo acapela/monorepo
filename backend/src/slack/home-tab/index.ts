@@ -1,7 +1,8 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { orderBy, sumBy } from "lodash";
+import { differenceInHours } from "date-fns";
+import { orderBy, partition, sumBy } from "lodash";
 import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
@@ -105,7 +106,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ).map((where) => findAndCountTopics(teamMember, where))
   );
 
-  const received = orderBy(unsortedReceived, (topic) => getMostUrgentMessage(topic)?.message_task_due_date?.due_at);
+  const allReceived = orderBy(unsortedReceived, (topic) => getMostUrgentMessage(topic)?.message_task_due_date?.due_at);
 
   const unreadMessagesByTopic: UnreadMessage[] =
     await db.$queryRaw`SELECT topic_id, unread_messages FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
@@ -123,6 +124,18 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     {},
     ...unreadMessagesByTopic.map((um) => ({ [um.topic_id]: um.unread_messages }))
   );
+
+  const [highlights, received] = partition(allReceived, (topic) => {
+    const mostUrgentMessage = getMostUrgentMessage(topic);
+    if (!mostUrgentMessage) {
+      return false;
+    }
+    const userTask = mostUrgentMessage.task.find((task) => task.user_id == currentUserId);
+    const dueAt = mostUrgentMessage.message_task_due_date?.due_at;
+    topic.isUnread = userTask && !userTask.seen_at;
+    topic.isDueSoon = dueAt && differenceInHours(dueAt, new Date()) <= 24;
+    return topic.isUnread || topic.isDueSoon;
+  });
 
   await publishView(
     HomeTab()
@@ -142,14 +155,26 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        await RequestsList({
-          title: "⁉️ Received",
-          explainer: "Requests assigned to you",
-          currentUserId,
-          topics: received,
-          unreadMessagesByTopicId,
-          emptyText: "You are all caught up 🎉",
-        }),
+        highlights.length == 0
+          ? undefined
+          : await RequestsList({
+              title: "✨️ Highlights",
+              explainer: "Requests assigned to you which deserve special attention",
+              currentUserId,
+              topics: highlights,
+              unreadMessagesByTopicId,
+              showHighlightContext: true,
+            }),
+        highlights.length > 0 && received.length == 0
+          ? undefined
+          : await RequestsList({
+              title: "⁉️ Received",
+              explainer: "Requests assigned to you",
+              currentUserId,
+              topics: received,
+              unreadMessagesByTopicId,
+              emptyText: "You are all caught up 🎉",
+            }),
         await RequestsList({
           title: "📤 Sent",
           explainer: "Requests you have sent to other people",
