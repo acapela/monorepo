@@ -8,6 +8,7 @@ import { logger } from "~shared/logger";
 import { HttpStatus } from "../http";
 import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";
 import { delayedTopicRequestsDoneNotifications } from "./delayedTopicRequestsDoneNotifications";
+import { proactiveNotifications } from "./proactiveNotifications";
 
 export const router = Router();
 
@@ -15,6 +16,7 @@ const handlers: Record<string, Function> = {
   "auto-archive-or-close-topics": autoArchiveOrCloseTopics,
   "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
   "daily-message-notification": dailyMessageNotification,
+  "proactive-notifications": proactiveNotifications,
 };
 
 interface CronPayload {
