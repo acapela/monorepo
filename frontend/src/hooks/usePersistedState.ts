@@ -10,6 +10,7 @@ interface Input<S> {
   key?: string;
   initialValue: S;
   persistDebounce?: number;
+  isDetachedFromTeam?: boolean;
 }
 
 function useTeamMemberHash() {
@@ -39,29 +40,30 @@ function setLocalStorageJSON<S>(key: string, value: S) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-export function usePersistedState<S>({ key, initialValue, persistDebounce }: Input<S>) {
-  const userBoundKey = key + useTeamMemberHash();
+export function usePersistedState<S>({ key, initialValue, persistDebounce, isDetachedFromTeam }: Input<S>) {
+  const teamBoundKey = key + useTeamMemberHash();
+  const accessKey = isDetachedFromTeam ? key : teamBoundKey;
 
   function getInitialValue() {
-    if (typeof localStorage === "undefined" || !userBoundKey) {
+    if (typeof localStorage === "undefined" || !accessKey) {
       return initialValue;
     }
 
-    return readLocalStorageJSON<S>(userBoundKey) ?? initialValue;
+    return readLocalStorageJSON<S>(accessKey) ?? initialValue;
   }
 
   const [value, setValue] = useState<S>(getInitialValue);
 
   const clear = useCallback(() => {
-    if (!userBoundKey) return;
+    if (!accessKey) return;
 
-    localStorage.removeItem(userBoundKey);
-  }, [userBoundKey]);
+    localStorage.removeItem(accessKey);
+  }, [accessKey]);
 
   useDependencyChangeEffect(() => {
     function persist() {
-      if (!userBoundKey) return;
-      setLocalStorageJSON(userBoundKey, value);
+      if (!accessKey) return;
+      setLocalStorageJSON(accessKey, value);
     }
 
     if (!persistDebounce) {
@@ -70,7 +72,7 @@ export function usePersistedState<S>({ key, initialValue, persistDebounce }: Inp
     }
 
     return createTimeout(persist, persistDebounce);
-  }, [value, userBoundKey, clear, initialValue, persistDebounce]);
+  }, [value, accessKey, clear, initialValue, persistDebounce]);
 
   return [value, setValue, clear] as const;
 }

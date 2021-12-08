@@ -29,6 +29,8 @@ const lightGray = color("hsl(220, 33%, 98%)", {
 
 const blue = color("hsl(204, 100%, 50%)");
 
+const green = color("hsl(169,100%,37%)");
+
 const divider = color("#E0E0E0");
 
 export const colors = {
@@ -76,6 +78,7 @@ export const colors = {
     action: primary,
     feedback: secondary,
     read: blue,
+    decision: green,
     observe: black.opacity(0.5),
   },
   functional: {
