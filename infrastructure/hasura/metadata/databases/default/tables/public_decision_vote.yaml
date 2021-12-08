@@ -22,6 +22,7 @@ insert_permissions:
                 _eq: X-Hasura-User-Id
     columns:
     - decision_option_id
+    - id
     - user_id
   role: user
 select_permissions:
@@ -61,8 +62,11 @@ update_permissions:
 delete_permissions:
 - permission:
     filter:
-      decision_option:
-        message:
-          user_id:
-            _eq: X-Hasura-User-Id
+      _or:
+      - user_id:
+          _eq: X-Hasura-User-Id
+      - decision_option:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
