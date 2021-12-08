@@ -1,4 +1,3 @@
-import { App } from "@slack/bolt";
 import { Blocks, Elements, Md } from "slack-block-builder";
 
 import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "~backend/src/slack/utils";
@@ -9,7 +8,7 @@ import { MENTION_TYPE_LABELS, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~sh
 
 import { mdDate } from "../md/utils";
 import { MessageWithOpenTask, TopicWithOpenTask } from "./types";
-import { getMostUrgentMessage } from "./utils";
+import { Padding, getMostUrgentMessage } from "./utils";
 
 const TaskLabel = (type: RequestType) =>
   Md.codeInline(REQUEST_TYPE_EMOJIS[type] + " " + MENTION_TYPE_LABELS[type] + " requested");
@@ -33,21 +32,23 @@ const TopicInfo = (userId: string, topic: TopicWithOpenTask) => [
   `${UserName(userId, topic.user)}${getOthersLabel(topic.topic_member.length - 1)}`,
 ];
 
-const Spacer = Blocks.Section({ text: " " });
-
-export function setupRequestItem(app: App) {
-  app.action("mar");
-}
-
-export async function RequestItem(userId: string, topic: TopicWithOpenTask, unreadMessages: number) {
+export async function RequestItem(
+  userId: string,
+  topic: TopicWithOpenTask,
+  unreadMessages: number,
+  showHighlightContext: boolean
+) {
   const mostUrgentMessage = getMostUrgentMessage(topic);
   const userTask = mostUrgentMessage?.task.find((t) => t.user_id == userId);
   const requestType = userTask ? (userTask.type as RequestType) : null;
   return [
+    showHighlightContext
+      ? Blocks.Context().elements(topic.isDueSoon ? "🔥 Due soon" : undefined, topic.isUnread ? "🔵 Unread" : undefined)
+      : undefined,
     Blocks.Section({
       text: Md.bold(topic.name) + (requestType ? "\n" + TaskLabel(requestType) : ""),
     }),
-    userTask && Spacer,
+    userTask && Padding,
     Blocks.Context().elements(
       mostUrgentMessage ? TaskInfo(userId, mostUrgentMessage) : TopicInfo(userId, topic),
       unreadMessages

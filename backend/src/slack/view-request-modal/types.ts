@@ -27,4 +27,5 @@ export interface TopicInfo {
   isClosed: boolean;
   messages: MessageInfo[];
   slackMessagePermalink?: string;
+  teamId: string;
 }
