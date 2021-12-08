@@ -29,6 +29,7 @@ select_permissions:
     columns:
     - created_at
     - decision_option_id
+    - id
     - updated_at
     - user_id
     filter:

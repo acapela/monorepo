@@ -9,6 +9,9 @@ import {
   Attachment_Constraint,
   Attachment_Insert_Input,
   Attachment_Set_Input,
+  Decision_Vote_Bool_Exp,
+  Decision_Vote_Insert_Input,
+  Decision_Vote_Set_Input,
   Last_Seen_Message_Bool_Exp,
   Last_Seen_Message_Constraint,
   Last_Seen_Message_Insert_Input,
@@ -119,6 +122,7 @@ type InsertTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Insert_Input;
   user_group: User_Group_Insert_Input;
   user_group_member: User_Group_Member_Insert_Input;
+  decision_vote: Decision_Vote_Insert_Input;
 };
 
 type UpdateTypeMap = {
@@ -134,6 +138,7 @@ type UpdateTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Set_Input;
   user_group: User_Group_Set_Input;
   user_group_member: never;
+  decision_vote: Decision_Vote_Set_Input;
 };
 
 type WhereTypeMap = {
@@ -152,6 +157,7 @@ type WhereTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Bool_Exp;
   user_group: User_Group_Bool_Exp;
   user_group_member: User_Group_Member_Bool_Exp;
+  decision_vote: Decision_Vote_Bool_Exp;
 };
 
 /**
