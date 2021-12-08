@@ -29,6 +29,7 @@ import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
+import { DecisionEditor, useDecisionController } from "../RequestView/TopicWithMessages/DecisionEditor";
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
 
 /**
@@ -180,6 +181,8 @@ export const NewRequest = observer(function NewRequest({
         db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
 
+      createDecision(newMessage.id);
+
       onTopicCreated?.(topic);
 
       router.push(topic.href);
@@ -187,6 +190,8 @@ export const NewRequest = observer(function NewRequest({
     clearPersistedContent();
     clearTopicName();
   }
+
+  const [shouldShowDecision, { controller, submit: createDecision }] = useDecisionController({ content });
 
   return (
     <UIHolder>
@@ -226,6 +231,7 @@ export const NewRequest = observer(function NewRequest({
               onAttachmentRemoveRequest={removeAttachmentById}
               onFilesSelected={uploadAttachments}
               uploadingAttachments={uploadingAttachments}
+              additionalContent={shouldShowDecision ? <DecisionEditor controller={controller} /> : null}
               capturePastedFiles
               autofocusKey="new-request"
             />
