@@ -1,6 +1,6 @@
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 
-export const DEFAULT_END_OF_WORK_DAY = 18;
+export const DEFAULT_END_OF_WORK_DAY = 18; // setting default end of work day to 6pm
 
 export function getTodayEndOfDay(currentUserEndOfWorkDay: number): Date {
   return setHours(startOfToday(), currentUserEndOfWorkDay);
