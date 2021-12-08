@@ -29,7 +29,7 @@ function getHourLabel(hour: number, startOfRange?: number): string {
   return `${hour - 12}:00 PM${nextDay}`;
 }
 
-function getZonedHour(utcHour?: number | null, timeZone?: string | null) {
+export function getZonedHour(utcHour?: number | null, timeZone?: string | null) {
   if (!utcHour || !timeZone) {
     return;
   }
