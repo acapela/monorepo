@@ -22,6 +22,7 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
 import { theme } from "~ui/theme";
 
+import { DecisionEditor, useDecisionController } from "./Decision/DecisionEditor";
 import { SubmitMessageButton } from "./SubmitMessageButton";
 
 interface Props {
@@ -98,6 +99,8 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
     }
 
+    createDecision(newMessage.id);
+
     setContent(getEmptyRichContent());
 
     handleStopReplyingToMessage();
@@ -133,6 +136,8 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
     }
   });
 
+  const [shouldShowDecision, { controller, submit: createDecision }] = useDecisionController({ content });
+
   return (
     <UIHolder>
       <>
@@ -158,6 +163,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
             onAttachmentRemoveRequest={(attachmentId) => {
               removeAttachmentById(attachmentId);
             }}
+            additionalContent={shouldShowDecision ? <DecisionEditor controller={controller} /> : null}
             placeholder={`Reply to ${topic.name}`}
             capturePastedFiles={!isEditingAnyMessage}
           />

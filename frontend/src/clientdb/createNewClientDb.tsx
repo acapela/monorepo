@@ -9,6 +9,8 @@ import { IS_DEV, devAssignWindowVariable } from "~shared/dev";
 import { isClient } from "~shared/document";
 
 import { attachmentEntity } from "./attachment";
+import { decisionOptionEntity } from "./decisionOption";
+import { decisionVoteEntity } from "./decisionVote";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
@@ -55,6 +57,8 @@ export const appClientDbEntities = {
   messageTaskDueDate: messageTaskDueDateEntity,
   userGroup: userGroupEntity,
   userGroupMember: userGroupMemberEntity,
+  decisionOption: decisionOptionEntity,
+  decisionVote: decisionVoteEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {

@@ -103,6 +103,8 @@ export function getMentionColor(mentionType: MentionType) {
       return theme.colors.tags.feedback;
     case "request-read":
       return theme.colors.tags.read;
+    case "request-decision":
+      return theme.colors.tags.decision;
     case "observer":
       return theme.colors.tags.observe;
     default:

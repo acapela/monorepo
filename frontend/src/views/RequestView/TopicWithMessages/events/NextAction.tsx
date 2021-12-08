@@ -10,7 +10,7 @@ import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { relativeFormatDate } from "~shared/dates/format";
-import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
+import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { theme } from "~ui/theme";
@@ -36,9 +36,12 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
     <TopicEventTemplate>
       Please{" "}
       {
-        { [REQUEST_ACTION]: "complete", [REQUEST_RESPONSE]: "respond to", [REQUEST_READ]: "read and confirm" }[
-          nextTask.type as never
-        ]
+        {
+          [REQUEST_ACTION]: "complete",
+          [REQUEST_RESPONSE]: "respond to",
+          [REQUEST_READ]: "read and confirm",
+          [REQUEST_DECISION]: "make a decision",
+        }[nextTask.type as never]
       }
       &nbsp;
       <TextAction

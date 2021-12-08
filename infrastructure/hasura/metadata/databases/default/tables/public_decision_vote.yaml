@@ -1,0 +1,72 @@
+table:
+  name: decision_vote
+  schema: public
+object_relationships:
+- name: decision_option
+  using:
+    foreign_key_constraint_on: decision_option_id
+- name: user
+  using:
+    foreign_key_constraint_on: user_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      decision_option:
+        message:
+          tasks:
+            _and:
+            - type:
+                _eq: request-decision
+            - user_id:
+                _eq: X-Hasura-User-Id
+    columns:
+    - decision_option_id
+    - id
+    - user_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - decision_option_id
+    - id
+    - updated_at
+    - user_id
+    filter:
+      decision_option:
+        message:
+          topic:
+            _or:
+            - owner_id:
+                _eq: X-Hasura-User-Id
+            - members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - decision_option_id
+    filter:
+      decision_option:
+        message:
+          tasks:
+            _and:
+            - type:
+                _eq: request-decision
+            - user_id:
+                _eq: X-Hasura-User-Id
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      _or:
+      - user_id:
+          _eq: X-Hasura-User-Id
+      - decision_option:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user
