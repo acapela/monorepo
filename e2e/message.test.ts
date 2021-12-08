@@ -105,10 +105,10 @@ test("set due dates", async ({ page, auth, db }) => {
 
   await page.click(`text="Add due date"`);
   await page.click(`text=Today, End of day`);
-  await expect(page.locator("[data-due-date-picker]")).toContainText("Today at 5:00 PM");
-  await page.click(`text=Today at 5:00 PM`);
+  await expect(page.locator("[data-due-date-picker]")).toContainText("Today at 6:00 PM");
+  await page.click(`text=Today at 6:00 PM`);
   await page.click(`text=Remove due date`);
-  await expect(page.locator("[data-due-date-picker]")).not.toContainText("Today at 5:00 PM");
+  await expect(page.locator("[data-due-date-picker]")).not.toContainText("Today at 6:00 PM");
 });
 
 test("add and remove reaction", async ({ page, auth, db }) => {
