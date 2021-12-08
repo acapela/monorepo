@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { DecisionOptionFragment } from "~gql";
 
+import { decisionVoteEntity } from "./decisionVote";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
@@ -28,10 +29,17 @@ export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DecisionOptionFragment>(decisionOptionFragment, {
-    insertColumns: ["option", "message_id", "index"],
+    insertColumns: ["id", "option", "message_id", "index"],
     updateColumns: ["option"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
+}).addConnections((decisionOption, { getEntity }) => {
+  const connections = {
+    get votes() {
+      return getEntity(decisionVoteEntity).query({ decision_option_id: decisionOption.id });
+    },
+  };
+  return connections;
 });
 
 export type DecisionOption = EntityByDefinition<typeof decisionOptionEntity>;

@@ -14,6 +14,7 @@ import {
   Decision_Option_Insert_Input,
   Decision_Option_Set_Input,
   Decision_Vote_Bool_Exp,
+  Decision_Vote_Constraint,
   Decision_Vote_Insert_Input,
   Decision_Vote_Set_Input,
   Last_Seen_Message_Bool_Exp,
@@ -95,6 +96,7 @@ type ConstraintsTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Constraint;
   user_group: User_Group_Constraint;
   decision_option: Decision_Option_Constraint;
+  decision_vote: Decision_Vote_Constraint;
 };
 
 type ConstraintsValueMap = {
@@ -113,6 +115,7 @@ const upsertConstraints: ConstraintsValueMap = {
   message_task_due_date: "message_task_due_date_pkey",
   user_group: "user_group_pkey",
   decision_option: "decision_option_pkey",
+  decision_vote: "decision_vote_pkey",
 };
 
 type InsertTypeMap = {
