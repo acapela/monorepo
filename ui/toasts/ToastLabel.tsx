@@ -38,7 +38,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       layoutId={getObjectKey(toast)}
       presenceStyles={POP_PRESENCE_STYLES}
       type={type}
-      isDetailed={isDetailed}
+      $isDetailed={isDetailed}
       className={className}
     >
       {icon && (
@@ -70,13 +70,13 @@ const UIIconHolder = styled.div<{ size: "small" | "medium"; type: ToastType; isC
   color: ${({ type, isColored }) => (isColored ? toastColors[type] : theme.colors.text)};
 `;
 
-const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; type: ToastType }>`
+const UIHolder = styled(PresenceAnimator)<{ $isDetailed: boolean; type: ToastType }>`
   display: grid;
   grid-template-columns: auto 1fr auto;
-  align-items: ${({ isDetailed }) => (isDetailed ? "start" : "center")};
+  align-items: ${({ $isDetailed }) => ($isDetailed ? "start" : "center")};
   gap: 4px 12px;
   width: 100%;
-  padding: 16px ${({ isDetailed }) => (isDetailed ? 12 : 16)}px;
+  padding: 16px ${({ $isDetailed }) => ($isDetailed ? 12 : 16)}px;
   ${theme.radius.secondaryItem};
   ${theme.colors.primary.withBorder.asBgWithReadableText};
   ${theme.shadow.popover};
