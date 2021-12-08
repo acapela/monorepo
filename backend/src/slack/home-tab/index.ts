@@ -143,7 +143,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
         await RequestsList({
-          title: "🔥 Received",
+          title: "⁉️ Received",
           explainer: "Requests assigned to you",
           currentUserId,
           topics: received,

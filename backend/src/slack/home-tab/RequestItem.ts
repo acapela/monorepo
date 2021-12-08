@@ -1,10 +1,11 @@
+import { App } from "@slack/bolt";
 import { Blocks, Elements, Md } from "slack-block-builder";
 
-import { REQUEST_TYPE_EMOJIS } from "~backend/src/slack/utils";
+import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "~backend/src/slack/utils";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { User } from "~db";
 import { pluralize } from "~shared/text/pluralize";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
 import { mdDate } from "../md/utils";
 import { MessageWithOpenTask, TopicWithOpenTask } from "./types";
@@ -34,12 +35,17 @@ const TopicInfo = (userId: string, topic: TopicWithOpenTask) => [
 
 const Spacer = Blocks.Section({ text: " " });
 
+export function setupRequestItem(app: App) {
+  app.action("mar");
+}
+
 export async function RequestItem(userId: string, topic: TopicWithOpenTask, unreadMessages: number) {
   const mostUrgentMessage = getMostUrgentMessage(topic);
   const userTask = mostUrgentMessage?.task.find((t) => t.user_id == userId);
+  const requestType = userTask ? (userTask.type as RequestType) : null;
   return [
     Blocks.Section({
-      text: Md.bold(topic.name) + (userTask ? "\n" + TaskLabel(userTask.type as RequestType) : ""),
+      text: Md.bold(topic.name) + (requestType ? "\n" + TaskLabel(requestType) : ""),
     }),
     userTask && Spacer,
     Blocks.Context().elements(
@@ -54,7 +60,20 @@ export async function RequestItem(userId: string, topic: TopicWithOpenTask, unre
         value: topic.id,
         text: "View Request",
       }).primary(true),
-      Elements.Button({ text: "Open in Acapela", url: await backendGetTopicUrl(topic) })
+      Elements.Button({ text: "Open in Acapela", url: await backendGetTopicUrl(topic) }),
+      userTask && requestType
+        ? Elements.Button({
+            text: REQUEST_TYPE_EMOJIS[requestType] + " " + UNCOMPLETED_REQUEST_LABEL[requestType],
+            actionId: "toggle_task_done_at:" + userTask.id,
+            value: userTask.id,
+          })
+        : Elements.Button(
+            topic.closed_at
+              ? { text: "Reopen", actionId: SlackActionIds.ReOpenTopic }
+              : { text: "Close", actionId: SlackActionIds.CloseTopic }
+          )
+            .value(topic.id)
+            .danger(true)
     ),
   ];
 }
