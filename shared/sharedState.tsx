@@ -3,6 +3,7 @@ import { PropsWithChildren, createContext, useContext, useEffect } from "react";
 
 import { useConst } from "~shared/hooks/useConst";
 
+import { MessageOrError, assert } from "./assert";
 import { useMethod } from "./hooks/useMethod";
 
 export function select<T>(selector: () => T): T {
@@ -39,6 +40,14 @@ export function createStoreContext<T extends object, P = {}>(
     return rawContextValue;
   }
 
+  function useAssertSharedStateContext(message: MessageOrError = "Using shared store context outside of its provider") {
+    const context = useSharedStateContext();
+
+    assert(context, message);
+
+    return context;
+  }
+
   function createStore(props: P) {
     const rawResult = initialValueInitializator(props);
 
@@ -51,5 +60,5 @@ export function createStoreContext<T extends object, P = {}>(
     return <context.Provider value={initialValue}>{children}</context.Provider>;
   }
 
-  return [SharedStateContextProvider, useSharedStateContext] as const;
+  return [SharedStateContextProvider, useSharedStateContext, useAssertSharedStateContext] as const;
 }

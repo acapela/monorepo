@@ -24,7 +24,7 @@ async function prepareMessagePlainTextData(message: Message) {
 
     await db.message.update({ where: { id: message.id }, data: { content_text: plainText } });
   } catch (error) {
-    logger.warn("Failed to prepare message plain text content", message);
+    logger.warn({ message }, "Failed to prepare message plain text content");
   }
 }
 

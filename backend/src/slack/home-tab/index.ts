@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { App } from "@slack/bolt";
 import { View } from "@slack/types";
-import { flattenDeep, orderBy, sumBy, uniq } from "lodash";
+import { orderBy, sumBy } from "lodash";
 import { Blocks, Elements, HomeTab } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
@@ -11,12 +11,11 @@ import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 
 import { slackClient } from "../app";
-import { GenerateContext } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
 import { RequestsList } from "./RequestList";
 import { TopicWithOpenTask, UnreadMessage } from "./types";
-import { getMostUrgentTask } from "./utils";
+import { getMostUrgentMessage } from "./utils";
 
 type TopicWhereInput = Prisma.topicWhereInput;
 
@@ -42,13 +41,7 @@ async function findAndCountTopics(
       user: true,
       message: {
         where: { task: { some: whereOpenUserTask } },
-        include: {
-          user: true,
-          message_task_due_date: true,
-          task: {
-            where: whereOpenUserTask,
-          },
-        },
+        include: { user: true, message_task_due_date: true, task: true },
       },
       topic_member: true,
     },
@@ -112,51 +105,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ).map((where) => findAndCountTopics(teamMember, where))
   );
 
-  const received = orderBy(unsortedReceived, (topic) => {
-    const { mostUrgentDueDate } = getMostUrgentTask(topic);
-    return mostUrgentDueDate;
-  });
-
-  const mentionedUserIds = uniq(
-    flattenDeep([received, sent, open, closed].map((e) => e.map((r) => r.topic_member.map((tm) => tm.user_id))))
-  );
-
-  const [teamMemberSlack, teamMemberTopic] = await Promise.all([
-    db.team_member_slack.findMany({
-      where: {
-        team_member: {
-          user_id: {
-            in: mentionedUserIds,
-          },
-          team_id: teamMember.team_id,
-        },
-      },
-      include: {
-        team_member: true,
-      },
-    }),
-    db.team_member.findMany({
-      where: {
-        user_id: {
-          in: mentionedUserIds,
-        },
-        team_id: teamMember.team_id,
-      },
-      include: { user: true },
-    }),
-  ]);
-
-  const mentionedSlackIdByUsersId = Object.assign(
-    {},
-    ...teamMemberTopic.map((tm) => ({ [tm.user_id]: { name: tm.user.name } })),
-    ...teamMemberSlack.map((tm) => ({
-      [tm.team_member.user_id]: { slackId: tm.slack_user_id },
-    }))
-  );
-
-  const generatorContext: GenerateContext = {
-    mentionedSlackIdByUsersId,
-  };
+  const received = orderBy(unsortedReceived, (topic) => getMostUrgentMessage(topic)?.message_task_due_date?.due_at);
 
   const unreadMessagesByTopic: UnreadMessage[] =
     await db.$queryRaw`SELECT topic_id, unread_messages FROM unread_messages WHERE user_id=${teamMember.user_id} AND team_id=${teamMember.team_id};`;
@@ -193,10 +142,38 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        await RequestsList("🔥 Received", received, generatorContext, unreadMessagesByTopicId),
-        await RequestsList("📤 Sent", sent, generatorContext, unreadMessagesByTopicId),
-        await RequestsList("⏳ Open", open, generatorContext, unreadMessagesByTopicId),
-        await RequestsList("✅ Closed", closed, generatorContext, unreadMessagesByTopicId)
+        await RequestsList({
+          title: "🔥 Received",
+          explainer: "Requests assigned to you",
+          currentUserId,
+          topics: received,
+          unreadMessagesByTopicId,
+          emptyText: "You are all caught up 🎉",
+        }),
+        await RequestsList({
+          title: "📤 Sent",
+          explainer: "Requests you have sent to other people",
+          currentUserId,
+          topics: sent,
+          unreadMessagesByTopicId,
+        }),
+        await RequestsList({
+          title: "⏳ Open",
+          explainer: "Open topics without outstanding requests",
+          currentUserId,
+          topics: open,
+          unreadMessagesByTopicId,
+        }),
+        await RequestsList({
+          title: "✅ Closed",
+          explainer: `Closed topics will be archived after a day. You can still find them ${createSlackLink(
+            process.env.FRONTEND_URL,
+            "in the web app"
+          )}.`,
+          currentUserId,
+          topics: closed,
+          unreadMessagesByTopicId,
+        })
       )
       .buildToObject()
   );

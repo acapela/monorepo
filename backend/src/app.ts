@@ -50,14 +50,17 @@ function setupMiddleware(app: Application): void {
     const startTime = process.hrtime();
     res.once("finish", () => {
       const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
-      if (!IS_DEV) {
-        logger.info(`Request finished - ${requestStatusDescription}`, {
-          host: req.hostname,
-          userAgent: req.get("user-agent"),
-          timeInMilliseconds: process.hrtime(startTime)[1] / NANOSECONDS_IN_MILLISECOND,
-        });
-      } else {
+      if (IS_DEV) {
         logger.info(`Request finished - ${requestStatusDescription}`);
+      } else {
+        logger.info(
+          {
+            host: req.hostname,
+            userAgent: req.get("user-agent"),
+            timeInMilliseconds: process.hrtime(startTime)[1] / NANOSECONDS_IN_MILLISECOND,
+          },
+          `Request finished - ${requestStatusDescription}`
+        );
       }
     });
     next();

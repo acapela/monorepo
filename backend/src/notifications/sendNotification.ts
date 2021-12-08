@@ -50,7 +50,7 @@ async function shouldSendNotificationDirectly(teamId: string, user: User): Promi
   }
 
   const now = new Date();
-  const dayOfWeek = now.getUTCDate();
+  const dayOfWeek = now.getUTCDay();
   const currentUtcHour = now.getUTCHours();
 
   // Sun = 0, Mon, 1, ... Sat = 6

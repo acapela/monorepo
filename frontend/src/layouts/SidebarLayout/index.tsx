@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect } from "react";
 import styled, { css } from "styled-components";
 
 import { LoadingScreen } from "~frontend/clientdb/LoadingScreen";
+import { NewTopicModalDisplayer } from "~frontend/topics/NewTopicModalDisplayer";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { useWindowEvent } from "~shared/domEvents";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -45,6 +46,7 @@ export const SidebarLayout = observer(({ children }: Props) => {
 
   return (
     <UIHolder>
+      <NewTopicModalDisplayer />
       <UISidebar mobileIsOpened={mobileIsOpened}>
         <SidebarContent onMobileCloseRequest={closeMobileMenu} />
       </UISidebar>

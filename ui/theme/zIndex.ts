@@ -1,6 +1,6 @@
 export enum zIndexValues {
-  popover = 1000,
-  overlay,
+  overlay = 1000,
   toast,
+  popover,
   tooltip,
 }

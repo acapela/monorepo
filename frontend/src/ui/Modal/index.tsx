@@ -1,5 +1,5 @@
 import { ReactNode, RefObject, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
@@ -27,7 +27,14 @@ interface Props {
   anchor?: ModalAnchor;
 }
 
-export function Modal({ head, hasCloseButton = true, children, onCloseRequest, anchor, className }: Props) {
+export const Modal = styled(function Modal({
+  head,
+  hasCloseButton = true,
+  children,
+  onCloseRequest,
+  anchor,
+  className,
+}: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useShortcut("Escape", onCloseRequest);
@@ -40,9 +47,9 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
       onClick={(event) => event.stopPropagation()}
       role="dialog"
     >
-      <UIToolbar>
+      <UIToolbar isFlying={!head}>
         <UIHead>
-          {head?.title && <UITitle>{head.title}</UITitle>}
+          <UITitle>{head?.title}</UITitle>
           {hasCloseButton && <CloseIconButton kind="primarySubtle" onClick={onCloseRequest} />}
         </UIHead>
         {head?.description && <UIDescription>{head.description}</UIDescription>}
@@ -52,7 +59,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   );
 
   return (
-    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
+    <ScreenCoverWithPadding isTransparent={false} onCloseRequest={onCloseRequest}>
       {/* Modal is attached to some element instead of center of the screen. */}
       {anchor && (
         <Popover anchorRef={anchor.ref} placement={anchor.placement}>
@@ -61,16 +68,21 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
       )}
 
       {!anchor && modalBodyNode}
-    </ScreenCover>
+    </ScreenCoverWithPadding>
   );
-}
+})``;
 
 const background = theme.colors.layout.background;
+
+const ScreenCoverWithPadding = styled(ScreenCover)`
+  padding: 15px;
+`;
 
 const UIModal = styled(PopPresenceAnimator)<{}>`
   min-width: 368px;
   width: 420px;
   max-width: 100vw;
+  ${theme.common.flexDiv}
 
   ${background.asBg};
 
@@ -90,9 +102,11 @@ const UIHead = styled.div<{}>`
 const UIBody = styled.div<{}>`
   align-items: center;
   padding: 24px;
+  min-height: 0;
+  ${theme.common.flexDiv}
 `;
 
-const UIToolbar = styled.div<{}>`
+const UIToolbar = styled.div<{ isFlying: boolean }>`
   display: flex;
   flex-direction: column;
   ${theme.spacing.actions.asGap}
@@ -102,6 +116,8 @@ const UIToolbar = styled.div<{}>`
     align-self: flex-end;
     position: relative;
   }
+
+  ${(props) => props.isFlying && css`position: absolute; top; 0; left: 0; right: 0;`}
 `;
 
 const UITitle = styled.h3`

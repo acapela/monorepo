@@ -1,10 +1,10 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
+import { useAppStateStore } from "~frontend/appState/AppStateStore";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -23,6 +23,7 @@ interface Props {
 }
 
 export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
+  const appState = useAppStateStore();
   function handleCloseTopic() {
     topic.close();
   }
@@ -42,7 +43,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
   });
 
   const handleTopicDuplicateRequest = action(async () => {
-    router.push(topic.duplicateHref);
+    appState.creatingNewTopic = { enabled: true, duplicateFromTopicId: topic.id };
   });
 
   const handleTopicArchive = action(async () => {
