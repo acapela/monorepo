@@ -35,7 +35,7 @@ export const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
 export const UNCOMPLETED_REQUEST_LABEL: Record<RequestType, string> = {
   [REQUEST_READ]: "Mark as read",
   [REQUEST_ACTION]: "Mark as done",
-  [REQUEST_DECISION]: "Mark as done",
+  [REQUEST_DECISION]: "Make Decision",
   [REQUEST_RESPONSE]: "Mark as replied",
 };
 
