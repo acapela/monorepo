@@ -92,7 +92,7 @@ export const NewRequest = observer(function NewRequest({
   const updateMessageTasks = useUpdateMessageTasks();
   const [tasksDueDate, setTasksDueDate] = useState<Date | null>(null);
 
-  const newTopicId = useConst(() => getUUID());
+  const newTopicId = useConst(getUUID);
 
   const {
     content,
