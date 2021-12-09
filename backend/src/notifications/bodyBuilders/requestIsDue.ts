@@ -78,3 +78,39 @@ export function createRequestIsDue({
     ),
   };
 }
+
+export function createShortDueDate({
+  taskCreatorName,
+  topicId,
+  topicName,
+  topicURL,
+  deadline,
+}: {
+  topicId: string;
+  topicName: string;
+  topicURL: string;
+  taskCreatorName: string;
+  deadline: string;
+}): Partial<NotificationMessage> {
+  const messageSlack = `We noticed there is a new deadline added to a task in ${createSlackLink(
+    topicURL,
+    topicName
+  )}. The task should be finished by ${deadline}. Can you make that work or should you let ${taskCreatorName} know you need more time?`;
+  const messageHtml = `We noticed there is a new deadline added to a task in <a href="${topicURL}">${topicName}</a>. The task should be finished by ${deadline}. Can you make that work or should you let ${taskCreatorName} know you need more time?`;
+  return {
+    email: {
+      subject: `You have uncompleted tasks in ${topicName}.`,
+      html: messageHtml,
+    },
+    slack: BlockCollection(
+      Blocks.Section({ text: messageSlack }),
+      Blocks.Actions().elements(
+        Elements.Button({
+          actionId: "open_view_request_modal",
+          value: topicId,
+          text: "View Request",
+        }).primary(true)
+      )
+    ),
+  };
+}

@@ -2,6 +2,8 @@ import { addMinutes } from "date-fns";
 
 import { db } from "~db";
 import { assert } from "~shared/assert";
+import { logger } from "~shared/logger";
+import { Sentry } from "~shared/sentry";
 
 import { createAllRequestsDoneNotificationMessage } from "../notifications/bodyBuilders/allRequestsDone";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
@@ -39,10 +41,15 @@ export async function delayedTopicRequestsDoneNotifications() {
 
     const topicURL = await backendGetTopicUrl(topic);
 
-    sendNotificationPerPreference(
-      topicOwner,
-      topic.team_id,
-      createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL })
-    );
+    try {
+      await sendNotificationPerPreference(
+        topicOwner,
+        topic.team_id,
+        createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL })
+      );
+    } catch (e) {
+      Sentry.captureException(e);
+      logger.error(e);
+    }
   }
 }
