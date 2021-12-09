@@ -23,7 +23,7 @@ export const UserPicker = observer(({ alreadyPickedIds, onPick }: UserPickerProp
 
   const anchorRef = useRef(null);
 
-  const users = team.members
+  const users = team.memberships
     .query((member) => !alreadyPickedIds.has(member.user_id))
     .all.map((member) => member.user)
     .filter(isNotNullish);

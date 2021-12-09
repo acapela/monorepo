@@ -1,6 +1,6 @@
 import { sortBy } from "lodash";
 
-import { createLocalStorageValueManager } from "~shared/localStorage";
+import { getLocalStorageValueManager } from "~shared/localStorage";
 
 type EmojiUseageMap = Record<string, number>;
 
@@ -14,7 +14,7 @@ const initialFrequentlyUsed: EmojiUseageMap = {
   "🙂": 1,
 };
 
-const frequentlyUsedEmojiManager = createLocalStorageValueManager("frequently-used-emoji", initialFrequentlyUsed);
+const frequentlyUsedEmojiManager = getLocalStorageValueManager("frequently-used-emoji", initialFrequentlyUsed);
 
 function getOrderedFrequentlyUsedEmoji(useageMap: EmojiUseageMap) {
   const entries = Object.entries(useageMap);

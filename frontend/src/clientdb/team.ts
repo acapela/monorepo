@@ -54,7 +54,13 @@ export const teamEntity = defineEntity<TeamFragment>({
     get isCurrentUserCurrentTeam() {
       return team.id === getContextValue(teamIdContext);
     },
-    members: getEntity(teamMemberEntity).query({ team_id: team.id }),
+    memberships: getEntity(teamMemberEntity).query((membership) => {
+      if (membership.team_id !== team.id) return false;
+
+      if (membership.user?.is_bot) return false;
+
+      return true;
+    }),
   };
 });
 

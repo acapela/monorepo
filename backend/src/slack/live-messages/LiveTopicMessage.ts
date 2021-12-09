@@ -4,7 +4,7 @@ import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-build
 import { Message, Task, Topic, TopicAccessToken, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
+import { REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
@@ -20,7 +20,7 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
   Object.entries(groupBy(tasks, (task) => task.type))
     .map(([type, tasks]) => {
       const isTaskTypeDone = tasks.every((t) => t.done_at);
-      const taskText = `${Md.bold(MENTION_TYPE_LABELS[type as RequestType])} requested by ${tasks
+      const taskText = `${Md.bold(REQUEST_NOTIFICATION_LABELS[type as RequestType])} created for ${tasks
         .map(({ user, done_at }) => {
           const userText = slackUsers[user.id] ? Md.user(slackUsers[user.id]) : Md.italic(user.name);
           return !isTaskTypeDone && done_at ? Md.strike(userText) : userText;

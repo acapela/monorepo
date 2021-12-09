@@ -1,6 +1,6 @@
-import { createLocalStorageValueManager } from "~shared/localStorage";
+import { getLocalStorageValueManager } from "~shared/localStorage";
 
-export const clientdbForceRefreshCount = createLocalStorageValueManager("clientdb-force-refresh-hash", 0);
+export const clientdbForceRefreshCount = getLocalStorageValueManager("clientdb-force-refresh-hash", 0);
 
 export function increaseClientDBForceRefreshCount() {
   clientdbForceRefreshCount.set(clientdbForceRefreshCount.get() + 1);

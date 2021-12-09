@@ -32,7 +32,7 @@ export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): 
     const topicToDuplicate = topicToDuplicateId ? db.topic.findById(topicToDuplicateId) : null;
     return (
       <SidebarLayout>
-        <NewRequestView topicToDuplicate={topicToDuplicate ?? undefined} />
+        <NewRequestView _legacyHideIfCreatingInModal topicToDuplicate={topicToDuplicate ?? undefined} />
       </SidebarLayout>
     );
   }

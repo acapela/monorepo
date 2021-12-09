@@ -3,18 +3,19 @@ import { App } from "@slack/bolt";
 import { View } from "@slack/types";
 import { differenceInHours } from "date-fns";
 import { orderBy, partition, sumBy } from "lodash";
-import { Blocks, Elements, HomeTab } from "slack-block-builder";
+import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { TeamMember, db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { backendUserEventToJSON } from "~shared/backendAnalytics";
+import { isNotNullish } from "~shared/nullish";
 import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 
 import { slackClient } from "../app";
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds } from "../utils";
-import { RequestsList } from "./RequestList";
+import { RequestListParams, RequestsList } from "./RequestList";
 import { TopicWithOpenTask, UnreadMessage } from "./types";
 import { getMostUrgentMessage } from "./utils";
 
@@ -62,6 +63,15 @@ const MissingAuthHomeTab = HomeTab()
     })
   )
   .buildToObject();
+
+/*
+ This arbitrary number is estimated based on Slack's 100 max block limit, minus the 4 header blocks, so 96 left.
+ RequestList needs up to 5 blocks and then 5 blocks per RequestItem in it.
+ So if we show all our 5 categories that gives us: 96 - 5 * 5 = 71 blocks left
+ For a total number of 71 / 5 = 14 topics
+ And then to make sure it renders and there's some slack (pardon the pun) in the system 14 - 2 = 12
+*/
+const MAX_TOTAL_TOPICS = 12;
 
 export async function updateHomeView(botToken: string, slackUserId: string) {
   const publishView = (view: View) => slackClient.views.publish({ token: botToken, user_id: slackUserId, view });
@@ -120,9 +130,8 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
       )}.`
     : ":envelope: You are all caught up. :tada:";
 
-  const unreadMessagesByTopicId = Object.assign(
-    {},
-    ...unreadMessagesByTopic.map((um) => ({ [um.topic_id]: um.unread_messages }))
+  const unreadMessagesByTopicId = Object.fromEntries(
+    unreadMessagesByTopic.map((um) => [um.topic_id, um.unread_messages])
   );
 
   const [highlights, received] = partition(allReceived, (topic) => {
@@ -137,15 +146,77 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     return topic.isUnread || topic.isDueSoon;
   });
 
+  const requestListsParams: RequestListParams[] = [
+    highlights.length == 0
+      ? null
+      : {
+          title: "✨️ Highlights",
+          explainer: "Requests assigned to you which deserve special attention",
+          currentUserId,
+          topics: highlights,
+          unreadMessagesByTopicId,
+          showHighlightContext: true,
+        },
+    highlights.length > 0 && received.length == 0
+      ? null
+      : {
+          title: "⁉️ Received",
+          explainer: "Requests assigned to you",
+          currentUserId,
+          topics: received,
+          unreadMessagesByTopicId,
+          emptyText: "You are all caught up 🎉",
+        },
+    {
+      title: "📤 Sent",
+      explainer: "Requests you have sent to other people",
+      currentUserId,
+      topics: sent,
+      unreadMessagesByTopicId,
+    },
+    {
+      title: "⏳ Open",
+      explainer: "Open topics without outstanding requests",
+      currentUserId,
+      topics: open,
+      unreadMessagesByTopicId,
+    },
+    {
+      title: "✅ Closed",
+      explainer: `Closed topics will be archived after a day. You can still find them ${createSlackLink(
+        process.env.FRONTEND_URL,
+        "in the web app"
+      )}.`,
+      currentUserId,
+      topics: closed,
+      unreadMessagesByTopicId,
+    },
+  ].filter(isNotNullish);
+  const { listPromises, hiddenCategories } = requestListsParams.reduce<{
+    listPromises: ReturnType<typeof RequestsList>[];
+    freeSlots: number;
+    hiddenCategories: string[];
+  }>(
+    ({ listPromises, freeSlots, hiddenCategories }, listParams) => {
+      const topicCount = listParams.topics.length;
+      if (freeSlots > 0 || topicCount == 0) {
+        listPromises = listPromises.concat(RequestsList({ ...listParams, maxShownTopics: freeSlots }));
+        freeSlots = Math.max(freeSlots - topicCount, 0);
+      } else {
+        hiddenCategories = hiddenCategories.concat(`${listParams.title} (${Md.bold(String(topicCount))})`);
+      }
+      return { listPromises, freeSlots, hiddenCategories };
+    },
+    { listPromises: [], freeSlots: MAX_TOTAL_TOPICS, hiddenCategories: [] }
+  );
+
+  const inTheWebAppLink = createSlackLink(process.env.FRONTEND_URL, "in the web app");
   await publishView(
     HomeTab()
       .blocks(
         WelcomeHeader,
         Blocks.Section({
-          text: `This is an overview of your tasks, you can find more details ${createSlackLink(
-            process.env.FRONTEND_URL,
-            "in the web app"
-          )}.`,
+          text: `This is an overview of your tasks, you can find more details ${inTheWebAppLink}.`,
         }),
         Blocks.Section({ text: allUnreadMessagesText }),
         Blocks.Actions().elements(
@@ -155,50 +226,12 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
             .actionId(SlackActionIds.TrackEvent)
             .value(backendUserEventToJSON(teamMember.user_id, "Opened Webapp From Slack Home Tab"))
         ),
-        highlights.length == 0
+        ...(await Promise.all(listPromises)),
+        hiddenCategories.length == 0
           ? undefined
-          : await RequestsList({
-              title: "✨️ Highlights",
-              explainer: "Requests assigned to you which deserve special attention",
-              currentUserId,
-              topics: highlights,
-              unreadMessagesByTopicId,
-              showHighlightContext: true,
-            }),
-        highlights.length > 0 && received.length == 0
-          ? undefined
-          : await RequestsList({
-              title: "⁉️ Received",
-              explainer: "Requests assigned to you",
-              currentUserId,
-              topics: received,
-              unreadMessagesByTopicId,
-              emptyText: "You are all caught up 🎉",
-            }),
-        await RequestsList({
-          title: "📤 Sent",
-          explainer: "Requests you have sent to other people",
-          currentUserId,
-          topics: sent,
-          unreadMessagesByTopicId,
-        }),
-        await RequestsList({
-          title: "⏳ Open",
-          explainer: "Open topics without outstanding requests",
-          currentUserId,
-          topics: open,
-          unreadMessagesByTopicId,
-        }),
-        await RequestsList({
-          title: "✅ Closed",
-          explainer: `Closed topics will be archived after a day. You can still find them ${createSlackLink(
-            process.env.FRONTEND_URL,
-            "in the web app"
-          )}.`,
-          currentUserId,
-          topics: closed,
-          unreadMessagesByTopicId,
-        })
+          : Blocks.Context().elements(
+              `There are more topics for these categories ${inTheWebAppLink}:\n${Md.listBullet(hiddenCategories)}`
+            )
       )
       .buildToObject()
   );

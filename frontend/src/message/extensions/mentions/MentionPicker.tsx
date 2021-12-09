@@ -35,7 +35,7 @@ const convertSearchableItemToMentionData = (item: SearchableItem, type: MentionT
 export const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
   const db = useDb();
   const team = useAssertCurrentTeam();
-  const teamMemberUsers = team.members.all.map((member) => member.user).filter(isNotNullish);
+  const teamMemberUsers = team.memberships.all.map((member) => member.user).filter(isNotNullish);
   const userGroups = db.userGroup.query({ team_id: team.id }).all;
 
   const [selectedItem, setSelectedItem] = useState<SearchableItem | null>(null);
