@@ -1,15 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { getHash } from "~shared/hash";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { createTimeout } from "~shared/time";
+import { getLocalStorageValueManager } from "~shared/localStorage";
 
 interface Input<S> {
   key?: string;
   initialValue: S;
-  persistDebounce?: number;
   isDetachedFromTeam?: boolean;
 }
 
@@ -26,53 +24,13 @@ function useTeamMemberHash() {
   }, [user, team]);
 }
 
-function readLocalStorageJSON<S>(key: string) {
-  const storedValue = localStorage.getItem(key);
-
-  if (storedValue === null) {
-    return null;
-  }
-
-  return JSON.parse(storedValue) as S;
-}
-
-function setLocalStorageJSON<S>(key: string, value: S) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-export function usePersistedState<S>({ key, initialValue, persistDebounce, isDetachedFromTeam }: Input<S>) {
+export function usePersistedState<S>({ key, initialValue, isDetachedFromTeam }: Input<S>) {
   const teamBoundKey = key + useTeamMemberHash();
   const accessKey = isDetachedFromTeam ? key : teamBoundKey;
 
-  function getInitialValue() {
-    if (typeof localStorage === "undefined" || !accessKey) {
-      return initialValue;
-    }
+  const valueManager = getLocalStorageValueManager<S>(accessKey ?? null, initialValue);
 
-    return readLocalStorageJSON<S>(accessKey) ?? initialValue;
-  }
+  const currentValue = valueManager.useValue();
 
-  const [value, setValue] = useState<S>(getInitialValue);
-
-  const clear = useCallback(() => {
-    if (!accessKey) return;
-
-    localStorage.removeItem(accessKey);
-  }, [accessKey]);
-
-  useDependencyChangeEffect(() => {
-    function persist() {
-      if (!accessKey) return;
-      setLocalStorageJSON(accessKey, value);
-    }
-
-    if (!persistDebounce) {
-      persist();
-      return;
-    }
-
-    return createTimeout(persist, persistDebounce);
-  }, [value, accessKey, clear, initialValue, persistDebounce]);
-
-  return [value, setValue, clear] as const;
+  return [currentValue, valueManager.set, valueManager.clear] as const;
 }
