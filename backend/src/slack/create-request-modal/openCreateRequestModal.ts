@@ -1,5 +1,5 @@
 import type { View } from "@slack/types";
-import { compact, uniq, without } from "lodash";
+import { without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
 import { getTeamSlackInstallURL, getUserSlackInstallURL } from "~backend/src/slack/install";
@@ -25,6 +25,7 @@ import {
   checkHasSlackInstallationAllBotScopes,
   findUserBySlackId,
 } from "../utils";
+import { excludeBotUsers, pickOtherRealUsersFromMessageText } from "./utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -139,21 +140,6 @@ async function checkHasChannelAccess(token: string, channelId: string, slackUser
   }
 }
 
-async function excludeBotUsers(token: string, userIds: string[]): Promise<string[]> {
-  return compact(
-    (
-      await Promise.all(
-        userIds.map((userId) =>
-          slackClient.users.info({
-            token,
-            user: userId,
-          })
-        )
-      )
-    ).map((res) => res.ok && !res.user?.is_bot && res.user?.id)
-  );
-}
-
 async function getChannelInfo(token: string, channelId: string | undefined): Promise<ChannelInfo> {
   if (!channelId) return null;
 
@@ -202,15 +188,7 @@ export async function openCreateRequestModal(
     return { user };
   }
 
-  const slackUserIdsFromMessage = await excludeBotUsers(
-    token,
-    messageText
-      ? without(
-          uniq(Array.from(messageText.matchAll(/<@([^|>]+)(\|([^>]*))?>/gm)).map(({ 1: slackUserId }) => slackUserId)),
-          slackUserId
-        )
-      : []
-  );
+  const slackUserIdsFromMessage = await pickOtherRealUsersFromMessageText(token, slackUserId, messageText);
 
   const channelInfo = await getChannelInfo(token, channelId);
   if (channelInfo) channelInfo.members = without(channelInfo.members, slackUserId);
