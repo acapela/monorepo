@@ -1,6 +1,5 @@
 import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { difference } from "lodash";
 import { Blocks, Md, Modal } from "slack-block-builder";
 
@@ -8,12 +7,17 @@ import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
 
 import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import { assertToken, createTeamMemberUserFromSlack, findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import {
+  assertToken,
+  buildDateTimePerUserTimezone,
+  createTeamMemberUserFromSlack,
+  findUserBySlackId,
+  listenToViewWithMetadata,
+} from "../utils";
 import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 
@@ -183,14 +187,10 @@ export function setupCreateRequestModal(app: App) {
 
     await ack({ response_action: "clear" });
 
-    let dueAt: Date | null = null;
-    if (dueAtDate || dueAtHour) {
-      const { user: slackUser } = await client.users.info({ user: ownerSlackUserId });
-      const date = dueAtDate ?? getNextWorkDayEndOfDay().toISOString().split("T")[0];
-      const hour = dueAtHour ?? "12";
-      const timeZone = slackUser?.tz ?? "Europe/Berlin";
-      dueAt = zonedTimeToUtc(`${date} ${hour}:00`, timeZone);
-    }
+    const dueAt: Date | null =
+      dueAtDate || dueAtHour
+        ? await buildDateTimePerUserTimezone(client as never, ownerSlackUserId, dueAtDate, dueAtHour)
+        : null;
 
     const topic = await createTopicForSlackUsers({
       token,

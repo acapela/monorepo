@@ -6,7 +6,7 @@ import { Sentry } from "~shared/sentry";
 
 import { slackClient } from "../app";
 import { assertToken } from "../utils";
-import { ViewRequestModal } from "./ViewRequestModal";
+import { ViewRequestModal, setupViewRequestModalActions } from "./ViewRequestModal";
 
 export function setupViewRequestModal(slackApp: App) {
   slackApp.action<BlockButtonAction>("open_view_request_modal", async ({ ack, context, body, action }) => {
@@ -30,4 +30,6 @@ export function setupViewRequestModal(slackApp: App) {
       Sentry.captureException(e);
     }
   });
+
+  setupViewRequestModalActions(slackApp);
 }
