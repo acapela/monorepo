@@ -21,7 +21,7 @@ export const TeamMembersManager = observer(({ team }: Props) => {
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
   const handleRemoveTeamMember = (userId: string) => {
-    const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
+    const teamMember = team.memberships.query((teamMember) => teamMember.user_id === userId).all[0];
     assert(teamMember, `did not find teamMember for user ${userId}`);
     teamMember.remove();
   };
@@ -29,28 +29,34 @@ export const TeamMembersManager = observer(({ team }: Props) => {
   return (
     <UIPanel>
       <InviteMemberForm team={team} />
-      {team.members.hasItems && (
+      {team.memberships.hasItems && (
         <UISelectGridContainer>
-          {team.members.all.map((teamMember) => (
-            <UIItemHolder key={teamMember.id}>
-              <TeamMemberBasicInfo teamMember={teamMember} />
+          {team.memberships.all.map((teamMembership) => {
+            const isBot = teamMembership.user?.is_bot;
 
-              <UIActionsHolder>
-                {!(teamMember.user?.has_account && teamMember.has_joined) && (
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  <ResendInviteButton user={teamMember.user!} teamId={team.id} />
-                )}
-                {isCurrentUserTeamOwner && (
-                  <CloseIconButton
-                    isDisabled={false}
-                    onClick={() => teamMember.user && handleRemoveTeamMember(teamMember.user.id)}
-                    title={`Remove ${teamMember.user?.name} from team`}
-                    tooltip="Remove user from your team"
-                  />
-                )}
-              </UIActionsHolder>
-            </UIItemHolder>
-          ))}
+            if (isBot) return null;
+
+            return (
+              <UIItemHolder key={teamMembership.id}>
+                <TeamMemberBasicInfo teamMembership={teamMembership} />
+
+                <UIActionsHolder>
+                  {!(teamMembership.user?.has_account && teamMembership.has_joined) && (
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    <ResendInviteButton user={teamMembership.user!} teamId={team.id} />
+                  )}
+                  {isCurrentUserTeamOwner && (
+                    <CloseIconButton
+                      isDisabled={false}
+                      onClick={() => teamMembership.user && handleRemoveTeamMember(teamMembership.user.id)}
+                      title={`Remove ${teamMembership.user?.name} from team`}
+                      tooltip="Remove user from your team"
+                    />
+                  )}
+                </UIActionsHolder>
+              </UIItemHolder>
+            );
+          })}
         </UISelectGridContainer>
       )}
     </UIPanel>

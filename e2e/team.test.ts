@@ -35,7 +35,7 @@ async function inviteUser(page: Page, email: string) {
 test("invite a new user", async ({ page, auth, db, browser }) => {
   await auth.login(db.user2);
 
-  const element = await inviteUser(page, "__TESTING__greenhorn@acape.la");
+  const element = await inviteUser(page, `${db.prefix}greenhorn@acape.la`);
   const invitedUserId = await element.getAttribute("data-test-user-id");
   expect(typeof invitedUserId).toBe("string");
 
