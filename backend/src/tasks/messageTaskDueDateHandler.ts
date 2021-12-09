@@ -9,8 +9,6 @@ import { MessageTaskDueDate, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { niceFormatDateTime } from "~shared/dates/format";
-import { logger } from "~shared/logger";
-import { Sentry } from "~shared/sentry";
 
 import { HasuraEvent } from "../hasura";
 
@@ -51,12 +49,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
         taskCreatorName: task.message.user.name,
         deadline: niceFormatDateTime(dueAt),
       });
-      try {
-        await sendNotificationPerPreference(task.user, topic.team_id, message);
-      } catch (e) {
-        Sentry.captureException(e);
-        logger.error(e);
-      }
+      sendNotificationPerPreference(task.user, topic.team_id, message);
     }
   }
 
