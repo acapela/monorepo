@@ -51,6 +51,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
 
 const UIFullscreenBackground = styled(ScreenCover)`
   z-index: ${theme.zIndex.overlay};
+  padding: 0 16px;
 `;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
@@ -64,6 +65,7 @@ const UIInlineAttachmentHolder = styled.div<{}>`
 const ImageWrapper = styled.img<{}>`
   /* Image doesn't fill whole screen when in fullscreen */
   max-height: 80vh;
+  max-width: 100%;
 
   /* Don't allow image to extend over space of the parent */
   min-width: 0;
@@ -71,7 +73,7 @@ const ImageWrapper = styled.img<{}>`
 
   user-select: none;
 
-  ${theme.radius.secondaryItem};
+  ${theme.radius.primaryItem};
   will-change: transform, opacity;
 
   /* Safari fix - make sure image always keeps its aspect ratio. */
