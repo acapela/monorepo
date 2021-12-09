@@ -18,6 +18,7 @@ import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";
 import { router as authenticationRoutes } from "./authentication";
 import { router as cronRoutes } from "./cron/cron";
+import { router as devRouter } from "./dev/router";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
@@ -81,6 +82,11 @@ function setupRoutes(app: Application): void {
     waitlistRoutes,
     tracking
   );
+
+  if (IS_DEV) {
+    app.use("/api", devRouter);
+  }
+
   app.use(attachmentsRoutes);
   app.use(sentryTunnel);
 }
