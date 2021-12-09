@@ -53,7 +53,7 @@ export const NotificationSettings = observer(() => {
 
   const db = useDb();
   const team = useCurrentTeam();
-  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).all[0];
+  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
 
   const { data, loading: isLoadingSlackUser } = useQuery<SlackUserQuery, SlackUserQueryVariables>(
     gql`
@@ -63,7 +63,7 @@ export const NotificationSettings = observer(() => {
         }
       }
     `,
-    team && !teamMember.teamMemberSlack ? { variables: { teamId: team.id } } : { skip: true }
+    team && teamMember && !teamMember.teamMemberSlack ? { variables: { teamId: team.id } } : { skip: true }
   );
 
   if (!team || !teamMember) {

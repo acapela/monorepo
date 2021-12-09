@@ -1,13 +1,23 @@
+import * as Sentry from "@sentry/node";
 import { sortBy } from "lodash";
 import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 
+import { updateHomeView } from "~backend/src/slack/home-tab";
+import { db } from "~db";
 import { assert } from "~shared/assert";
 import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
 import { mdDate } from "../md/utils";
-import { REQUEST_TYPE_EMOJIS, SlackActionIds, ViewMetadata, attachToViewWithMetadata } from "../utils";
+import {
+  REQUEST_TYPE_EMOJIS,
+  SlackActionIds,
+  ViewMetadata,
+  attachToViewWithMetadata,
+  fetchTeamBotToken,
+  findUserBySlackId,
+} from "../utils";
 import { getViewRequestViewModel } from "./getTopicInfo";
-import { MessageInfo, TaskInfo } from "./types";
+import { MessageInfo, TaskInfo, TopicInfo } from "./types";
 
 const Padding = (amountOfSpaces = 1) => [...new Array(amountOfSpaces)].map(() => Blocks.Section({ text: " " }));
 
@@ -130,9 +140,41 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
   ];
 };
 
+async function markAsSeenAndUpdateHomeView(token: string, slackUserId: string, topic: TopicInfo) {
+  try {
+    const user = await findUserBySlackId(token, slackUserId, topic.teamId);
+    const [{ message: lastMessage }] = topic.messages.slice(-1);
+
+    if (user && lastMessage) {
+      await db.$transaction([
+        db.last_seen_message.upsert({
+          where: { user_id_topic_id: { user_id: user.id, topic_id: topic.id } },
+          create: { user_id: user.id, topic_id: topic.id, message_id: lastMessage.id },
+          update: { message_id: lastMessage.id },
+        }),
+        db.task.updateMany({
+          where: { message: { topic_id: topic.id }, user_id: user.id },
+          data: { seen_at: new Date().toISOString() },
+        }),
+      ]);
+      const botToken = await fetchTeamBotToken(topic.teamId);
+      if (botToken) {
+        await updateHomeView(botToken, slackUserId);
+      }
+    }
+  } catch (error) {
+    Sentry.captureException(error);
+  }
+}
+
 export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"]) => {
-  const topic = await getViewRequestViewModel(token, metadata.topicId, metadata.slackUserId);
+  const slackUserId = metadata.slackUserId;
+  const topic = await getViewRequestViewModel(token, metadata.topicId, slackUserId);
   const [mainRequest, ...otherMessages] = topic.messages;
+
+  // This does need to be awaited as its side effects are not needed for rendering the request modal, and it does its
+  // own error handling
+  markAsSeenAndUpdateHomeView(token, slackUserId, topic);
 
   const RequestOrMessageBlock = (message: MessageInfo) =>
     message.tasks?.length ? RequestBlock(message, topic.slackUserId, topic.url) : MessageBlock(message, topic.url);

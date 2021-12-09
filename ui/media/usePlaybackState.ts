@@ -3,14 +3,14 @@ import { RefObject, useEffect, useState } from "react";
 import { createCleanupObject } from "~shared/cleanup";
 import { createElementEvent } from "~shared/domEvents";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { createLocalStorageValueManager } from "~shared/localStorage";
+import { getLocalStorageValueManager } from "~shared/localStorage";
 
 import { MediaElement } from "./types";
 
 /**
  * Let's remember user settings for playback rate and also automatically set it for all other players
  */
-const playbackRateSettingManager = createLocalStorageValueManager("media-playback-rate", 1);
+const playbackRateSettingManager = getLocalStorageValueManager("media-playback-rate", 1);
 
 export function usePlaybackState(ref: RefObject<MediaElement>) {
   const [time, setTimeState] = useState(0);

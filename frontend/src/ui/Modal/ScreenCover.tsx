@@ -1,8 +1,7 @@
-import { ReactNode } from "react";
+import { MouseEvent, ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useUnmountPresence } from "~frontend/ui/presence";
-import { handleWithStopPropagation } from "~shared/events";
 import { BodyPortal } from "~ui/BodyPortal";
 import { theme } from "~ui/theme";
 import { zIndexValues } from "~ui/theme/zIndex";
@@ -23,13 +22,21 @@ export const ScreenCover = styled(function ScreenCover({
   className,
 }: Props) {
   const isMounted = useUnmountPresence(200);
+  const bodyCoverRef = useRef<HTMLDivElement>(null);
+
+  function handleBodyCoverClick(event: MouseEvent) {
+    if (event.target !== bodyCoverRef.current) return;
+
+    onCloseRequest?.();
+  }
 
   return (
     <BodyPortal>
       <UIBodyCover
+        ref={bodyCoverRef}
         className={className}
         isCovering={isMounted && !isTransparent}
-        onClick={handleWithStopPropagation(onCloseRequest)}
+        onClick={handleBodyCoverClick}
         enableBlur={isTransparent}
       >
         {children}

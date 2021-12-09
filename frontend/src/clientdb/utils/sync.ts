@@ -9,6 +9,14 @@ import {
   Attachment_Constraint,
   Attachment_Insert_Input,
   Attachment_Set_Input,
+  Decision_Option_Bool_Exp,
+  Decision_Option_Constraint,
+  Decision_Option_Insert_Input,
+  Decision_Option_Set_Input,
+  Decision_Vote_Bool_Exp,
+  Decision_Vote_Constraint,
+  Decision_Vote_Insert_Input,
+  Decision_Vote_Set_Input,
   Last_Seen_Message_Bool_Exp,
   Last_Seen_Message_Constraint,
   Last_Seen_Message_Insert_Input,
@@ -87,6 +95,8 @@ type ConstraintsTypeMap = {
   last_seen_message: Last_Seen_Message_Constraint;
   message_task_due_date: Message_Task_Due_Date_Constraint;
   user_group: User_Group_Constraint;
+  decision_option: Decision_Option_Constraint;
+  decision_vote: Decision_Vote_Constraint;
 };
 
 type ConstraintsValueMap = {
@@ -104,6 +114,8 @@ const upsertConstraints: ConstraintsValueMap = {
   last_seen_message: "last_seen_message_pkey",
   message_task_due_date: "message_task_due_date_pkey",
   user_group: "user_group_pkey",
+  decision_option: "decision_option_pkey",
+  decision_vote: "decision_vote_pkey",
 };
 
 type InsertTypeMap = {
@@ -119,6 +131,8 @@ type InsertTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Insert_Input;
   user_group: User_Group_Insert_Input;
   user_group_member: User_Group_Member_Insert_Input;
+  decision_vote: Decision_Vote_Insert_Input;
+  decision_option: Decision_Option_Insert_Input;
 };
 
 type UpdateTypeMap = {
@@ -134,6 +148,8 @@ type UpdateTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Set_Input;
   user_group: User_Group_Set_Input;
   user_group_member: never;
+  decision_vote: Decision_Vote_Set_Input;
+  decision_option: Decision_Option_Set_Input;
 };
 
 type WhereTypeMap = {
@@ -152,6 +168,8 @@ type WhereTypeMap = {
   message_task_due_date: Message_Task_Due_Date_Bool_Exp;
   user_group: User_Group_Bool_Exp;
   user_group_member: User_Group_Member_Bool_Exp;
+  decision_vote: Decision_Vote_Bool_Exp;
+  decision_option: Decision_Option_Bool_Exp;
 };
 
 /**

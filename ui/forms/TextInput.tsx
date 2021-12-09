@@ -3,8 +3,8 @@ import { ChangeEvent, ReactNode } from "react";
 import styled from "styled-components";
 
 import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
+import { styledForwardRef } from "~shared/component";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { theme } from "~ui/theme";
 
 import { FieldWithLabel } from "./FieldWithLabel";
@@ -15,7 +15,7 @@ export interface TextInputProps extends HTMLMotionProps<"input"> {
   icon?: ReactNode;
 }
 
-export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(function TextInput(props, ref) {
+export const TextInput = styledForwardRef<HTMLInputElement, TextInputProps>(function TextInput(props, ref) {
   const inputRef = useSharedRef<HTMLInputElement | null>(null, [ref]);
   const { onChangeText, errorMessage, placeholder, icon, ...regularProps } = props;
 
@@ -43,7 +43,7 @@ export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(funct
       {errorMessage && <UIErrorMessage>{errorMessage}</UIErrorMessage>}
     </UIHolder>
   );
-});
+})``;
 
 const UIHolder = styled.div<{}>`
   display: flex;

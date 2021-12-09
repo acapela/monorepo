@@ -30,9 +30,12 @@ async function start(): Promise<void> {
 
   if (IS_DEV) {
     const tunnelURL = await getDevPublicTunnelURL(3000);
-    logger.info("Public dev tunnel set up", {
-      url: `${tunnelURL}/api/backend`,
-    });
+    logger.info(
+      {
+        url: `${tunnelURL}/api/backend`,
+      },
+      "Public dev tunnel set up"
+    );
   }
 }
 

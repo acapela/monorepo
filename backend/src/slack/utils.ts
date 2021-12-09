@@ -4,7 +4,7 @@ import { User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { checkHasAllSlackBotScopes } from "~shared/slack";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
-import { REQUEST_ACTION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
+import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
@@ -131,7 +131,8 @@ export function listenToViewWithMetadata<
 
 export const REQUEST_TYPE_EMOJIS: Record<RequestType, string> = {
   [REQUEST_ACTION]: "🎬",
-  [REQUEST_RESPONSE]: "✍️",
+  [REQUEST_RESPONSE]: "📝",
+  [REQUEST_DECISION]: "🤔",
   [REQUEST_READ]: "👀",
 };
 

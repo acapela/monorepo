@@ -1,33 +1,68 @@
 import { Blocks, Md } from "slack-block-builder";
 
-import { GenerateContext } from "../md/generator";
+import { createSlackLink } from "~backend/src/slack/md/utils";
+import { pluralize } from "~shared/text/pluralize";
+
 import { RequestItem } from "./RequestItem";
 import { TopicWithOpenTask } from "./types";
+import { Padding } from "./utils";
 
-const Padding = [Blocks.Section({ text: " " }), Blocks.Section({ text: " " })];
+export type RequestListParams = {
+  title: string;
+  explainer: string;
+  currentUserId: string;
+  topics: TopicWithOpenTask[];
+  unreadMessagesByTopicId: { [topicId: string]: number };
+  emptyText?: string;
+  showHighlightContext?: boolean;
+  maxShownTopics?: number;
+};
 
-export async function RequestsList(
-  title: string,
-  topics: TopicWithOpenTask[],
-  context: GenerateContext,
-  unreadMessagesByTopicId: { [topicId: string]: number }
-) {
-  const header = [...Padding, Blocks.Header({ text: title })];
+export async function RequestsList({
+  title,
+  explainer,
+  currentUserId,
+  topics,
+  unreadMessagesByTopicId,
+  emptyText = "No requests here",
+  showHighlightContext = false,
+  maxShownTopics = 2,
+}: RequestListParams) {
+  const header = [Padding, Padding, Blocks.Header({ text: title }), Blocks.Context().elements(explainer), Padding];
 
   if (topics.length === 0) {
-    return [...header, Blocks.Section({ text: Md.italic("No requests here") })];
+    return [...header, Blocks.Section({ text: Md.italic(emptyText) })];
   }
 
+  const extraTopicsCount = Math.max(topics.length - maxShownTopics, 0);
+
   const nestedTopicsBlocks = await Promise.all(
-    topics.map(async (topic, i) => {
-      return [
-        ...(await RequestItem(topic, context, unreadMessagesByTopicId[topic.id] || 0)),
+    topics
+      .slice(0, maxShownTopics)
+      .map(async (topic, i) => [
+        ...(await RequestItem(currentUserId, topic, unreadMessagesByTopicId[topic.id] || 0, showHighlightContext)),
         i < topics.length - 1 ? Blocks.Divider() : undefined,
-      ];
-    })
+      ])
   );
 
   const topicBlocks = nestedTopicsBlocks.flat();
 
-  return [...header, ...topicBlocks];
+  const extraCountLabel = Md.bold(String(extraTopicsCount));
+  return [
+    ...header,
+    ...topicBlocks,
+    extraTopicsCount > 0
+      ? Blocks.Context().elements(
+          `There ${pluralize(
+            extraTopicsCount,
+            `is ${extraCountLabel} other topic`,
+            `are ${extraCountLabel} more topics`
+          )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
+            extraTopicsCount,
+            "it",
+            "them"
+          )}.`
+        )
+      : undefined,
+  ];
 }

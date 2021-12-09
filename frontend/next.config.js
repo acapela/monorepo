@@ -155,6 +155,8 @@ module.exports = withPlugins(
     experimental: {
       // Enables the styled-components SWC transform
       styledComponents: true,
+      // Workaround for OOM issues caused by dependencies https://github.com/vercel/next.js/issues/30330#issuecomment-952172377
+      esmExternals: false,
     },
 
     generateBuildId: async () => {

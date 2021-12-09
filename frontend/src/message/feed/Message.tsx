@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
+import { REQUEST_DECISION } from "~frontend/../../shared/types/mention";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/message/display/MessageMedia";
@@ -15,6 +16,7 @@ import { ReplyingToMessage } from "~frontend/message/reply/ReplyingToMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { DecisionVoting } from "~frontend/views/RequestView/TopicWithMessages/Decision/DecisionVoting";
 import { assert } from "~shared/assert";
 import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
@@ -167,6 +169,8 @@ export const Message = styledObserver<Props>(
                 <MessageReactions message={message} />
               </UIMessageContent>
             )}
+
+            {message.tasks.query({ type: REQUEST_DECISION }).hasItems && <DecisionVoting message={message} />}
 
             {message.tasks.hasItems && <MessageTasks message={message} />}
           </UIMessageBody>

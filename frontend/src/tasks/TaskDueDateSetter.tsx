@@ -5,7 +5,11 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useDb } from "~frontend/clientdb";
+import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
 import { getNextWorkDayEndOfDay, getTodayEndOfDay } from "~shared/dates/times";
+import { convertUTCHourToZonedHour } from "~shared/dates/utcUtils";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { ButtonSize } from "~ui/buttons/variants";
@@ -22,17 +26,32 @@ interface Props {
 }
 
 export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size = "compact" }: Props) => {
+  const db = useDb();
+  const userTokenData = useAssertCurrentUser();
+  const teamInfo = useAssertCurrentTeam();
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
+
+  const getCurrentUserEndOfDay = (): number | undefined => {
+    const currentTeamMember = db.teamMember.query({
+      user_id: userTokenData.id,
+      team_id: teamInfo.id,
+    }).first;
+    const currentUserTimezone = currentTeamMember?.timezone;
+    const endOfWorkInUTC = currentTeamMember?.work_end_hour_in_utc;
+    if (currentUserTimezone && endOfWorkInUTC) {
+      return convertUTCHourToZonedHour(endOfWorkInUTC, currentUserTimezone);
+    }
+  };
 
   const handleSubmit = async (dueDate: Date | null) => {
     closeCalendar();
     onChange(dueDate);
   };
 
-  const calendarInitialValue = dueDate ?? getNextWorkDayEndOfDay();
+  const calendarInitialValue = dueDate ?? getNextWorkDayEndOfDay(getCurrentUserEndOfDay());
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -62,12 +81,12 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size
                 {
                   key: "today",
                   label: "Today, End of day",
-                  onSelect: () => handleSubmit(getTodayEndOfDay()),
+                  onSelect: () => handleSubmit(getTodayEndOfDay(getCurrentUserEndOfDay())),
                 },
                 {
                   key: "tomorrow",
                   label: isLastDayOfWorkWeek ? "Next monday, End of day" : "Tomorrow, End of day",
-                  onSelect: () => handleSubmit(getNextWorkDayEndOfDay()),
+                  onSelect: () => handleSubmit(getNextWorkDayEndOfDay(getCurrentUserEndOfDay())),
                 },
                 {
                   key: "other",
