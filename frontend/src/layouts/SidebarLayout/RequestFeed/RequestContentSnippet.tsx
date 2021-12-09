@@ -104,4 +104,5 @@ export const RequestContentSnippet = styledObserver(({ topic, className }: Props
 
 const UIHolder = styled.div`
   ${theme.typo.label};
+  pointer-events: none;
 `;
