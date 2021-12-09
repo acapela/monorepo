@@ -35,5 +35,11 @@ export async function handleTeamMemberAdded({ type, item: teamMember }: HasuraEv
 
   if (user.is_bot) return;
 
+  // TODO: We had quite complex problems with e2e tests if creating onboarding for each test in e2e.
+  // We should address it in some solid way.
+  if (process.env.CI) {
+    return;
+  }
+
   await createOnboardingTopicsWithBot(teamMember.user_id, teamMember.team_id);
 }
