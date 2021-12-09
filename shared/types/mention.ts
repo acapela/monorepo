@@ -17,9 +17,9 @@ export const MENTION_TYPES = [...REQUEST_TYPES, MENTION_OBSERVER] as const;
 export type MentionType = typeof MENTION_TYPES[number];
 
 export const MENTION_TYPE_LABELS: Record<MentionType, string> = {
+  [REQUEST_ACTION]: "Action",
   [REQUEST_RESPONSE]: "Response",
   [REQUEST_READ]: "Read Confirmation",
-  [REQUEST_ACTION]: "Action",
   [REQUEST_DECISION]: "Decision",
   [MENTION_OBSERVER]: "Observer",
 };
@@ -28,20 +28,27 @@ export const MENTION_TYPE_PICKER_LABELS: Record<MentionType, string> = {
   [REQUEST_ACTION]: "Request action",
   [REQUEST_RESPONSE]: "Request response",
   [REQUEST_READ]: "Request read confirmation",
-  [REQUEST_DECISION]: "Request Decision",
+  [REQUEST_DECISION]: "Request decision",
   [MENTION_OBSERVER]: "Add as observer",
 };
 
+export const REQUEST_NOTIFICATION_LABELS: Record<RequestType, string> = {
+  [REQUEST_ACTION]: "Action item",
+  [REQUEST_RESPONSE]: "Response request",
+  [REQUEST_READ]: "Read Confirmation request",
+  [REQUEST_DECISION]: "Decision request",
+};
+
 export const UNCOMPLETED_REQUEST_LABEL: Record<RequestType, string> = {
-  [REQUEST_READ]: "Mark as read",
   [REQUEST_ACTION]: "Mark as done",
-  [REQUEST_DECISION]: "Make Decision",
   [REQUEST_RESPONSE]: "Mark as replied",
+  [REQUEST_READ]: "Mark as read",
+  [REQUEST_DECISION]: "Make decision",
 };
 
 export const COMPLETED_REQUEST_LABEL: Record<RequestType, string> = {
-  [REQUEST_READ]: "Marked as read",
   [REQUEST_ACTION]: "Marked as done",
-  [REQUEST_DECISION]: "Decision done",
   [REQUEST_RESPONSE]: "Marked as replied",
+  [REQUEST_READ]: "Marked as read",
+  [REQUEST_DECISION]: "Marked as decided",
 };
