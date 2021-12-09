@@ -89,6 +89,21 @@ async function onTaskCreation(task: Task) {
   await sendTaskNotification(topic, task, toUser, fromUser);
 }
 
+async function getTopicHasOnlySelfAssignedTasks(topic: Topic) {
+  const ownerId = topic.owner_id;
+
+  const notTopicOwnerTasksCount = await db.task.count({
+    where: {
+      user_id: { not: ownerId },
+      message: {
+        topic_id: topic.id,
+      },
+    },
+  });
+
+  return notTopicOwnerTasksCount === 0;
+}
+
 async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: UpdateHasuraEvent<Task>) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
@@ -121,6 +136,19 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
       },
     },
   });
+
+  // If topic had only self assigned tasks and all of them are done - automatically close the topic
+  if (amountOfOpenTasksLeft === 0 && !topic.closed_at) {
+    if (await getTopicHasOnlySelfAssignedTasks(topic)) {
+      await db.topic.update({
+        where: { id: topic.id },
+        data: {
+          closed_at: new Date().toISOString(),
+          closed_by_user_id: topic.owner_id,
+        },
+      });
+    }
+  }
 
   // HACK: This is  workaround until prisma supports `PG Generated Columns`
   // `all_tasks_done_at` should be one
