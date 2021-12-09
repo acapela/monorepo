@@ -1,4 +1,4 @@
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { sortBy } from "lodash";
 import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 
