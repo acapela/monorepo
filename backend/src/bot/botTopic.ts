@@ -1,9 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
 
-import { db } from "~db";
+import { Topic, db } from "~db";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
-import { getUUID } from "~shared/uuid";
 
 import { ensureBotIsTeamMember } from "./botTeamMembership";
 import { ensureBotUserExists } from "./botUser";
@@ -26,53 +25,41 @@ export async function createTopicByBot({
   const bot = await ensureBotUserExists();
   await ensureBotIsTeamMember(teamId);
 
-  const topicId = getUUID();
+  const tasksInfo = getUniqueRequestMentionDataFromContent(messageContent);
 
-  const topicPromise = db.topic.create({
+  const topicWithDetails = await db.topic.create({
     data: {
-      id: topicId,
       name: topicName,
       owner_id: bot.id,
       slug: await slugify(topicName),
       team_id: teamId,
       index: "0",
       created_at: createdAt,
-    },
-  });
-
-  const messageId = getUUID();
-
-  const messagePromise = db.message.create({
-    data: {
-      id: messageId,
-      topic_id: topicId,
-      type: "TEXT",
-      user_id: bot.id,
-      content: messageContent,
-    },
-  });
-
-  const reactionPromise = emojiReaction
-    ? db.message_reaction.create({ data: { message_id: messageId, user_id: bot.id, emoji: emojiReaction } })
-    : null;
-
-  const tasksInfo = getUniqueRequestMentionDataFromContent(messageContent);
-
-  const tasksPromises = tasksInfo.map((taskInfo) => {
-    return db.task.create({
-      data: {
-        message_id: messageId,
-        user_id: taskInfo.userId,
-        type: taskInfo.type,
+      message: {
+        create: {
+          type: "TEXT",
+          user_id: bot.id,
+          content: messageContent,
+          message_reaction: emojiReaction ? { create: { user_id: bot.id, emoji: emojiReaction } } : undefined,
+          task: {
+            createMany: {
+              data: tasksInfo.map((taskInfo) => ({
+                user_id: taskInfo.userId,
+                type: taskInfo.type,
+              })),
+            },
+          },
+        },
       },
-    });
+    },
+    include: { message: { include: { task: true } } },
   });
 
-  const [topic, message, ...tasks] = await db.$transaction([topicPromise, messagePromise, ...tasksPromises]);
+  const topic = topicWithDetails as Topic;
 
-  if (reactionPromise) {
-    await reactionPromise;
-  }
+  const message = topicWithDetails.message[0];
+
+  const tasks = message.task;
 
   return { topic, message, tasks };
 }
