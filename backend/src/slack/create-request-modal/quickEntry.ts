@@ -4,10 +4,10 @@ import { typedKeys } from "~shared/object";
 import { RequestType } from "~shared/types/mention";
 import { createTypeGuard } from "~shared/typeUtils/typeGuard";
 
-import { findUserBySlackId } from "../utils";
-import { createRequestInSlack } from "./createRequestInSlack";
+import { assertToken, findUserBySlackId } from "../utils";
+import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { SlashCommandRequest } from "./types";
-import { pickOtherRealUsersFromMessageText } from "./utils";
+import { pickRealUsersFromMessageText } from "./utils";
 
 const quickEntryAliases = createTypeGuard<Record<string, RequestType>>()({
   reply: "request-response",
@@ -34,12 +34,14 @@ export function getQuickEntryCommandFromMessageBody(body: string) {
 
 export async function handleSlackCommandAsQuickEntry(request: SlashCommandRequest) {
   const { user_id: slackUserId, team_id: slackTeamId } = request.command;
-
+  //
   const {
-    payload: { token, trigger_id: triggerId, channel_id: channelId },
+    payload: { trigger_id: triggerId, channel_id: channelId },
     client,
     context: { botToken },
   } = request;
+
+  const token = assertToken(request.context);
 
   const messageBody = request.body.text;
 
@@ -47,7 +49,12 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
 
   assert(requestType, "Cannot handle quick entry if message does not start with request type");
 
-  const mentionedPeopleSlackIds = await pickOtherRealUsersFromMessageText(token, slackUserId, request.body.text);
+  const mentionedPeopleSlackIds = await pickRealUsersFromMessageText(token, request.body.text);
+
+  if (mentionedPeopleSlackIds.length === 0) {
+    // In case no one is mentioned - assume self request
+    mentionedPeopleSlackIds.push(slackUserId);
+  }
 
   const [owner, team] = await Promise.all([
     findUserBySlackId(token, slackUserId),
@@ -60,7 +67,7 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
   assert(team, "No team");
   assert(owner, "No owner");
 
-  await createRequestInSlack({
+  await createAndTrackRequestInSlack({
     messageText: messageBody,
     slackTeamId: slackTeamId,
     creatorSlackUserId: slackUserId,

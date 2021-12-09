@@ -1,24 +1,13 @@
-import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
-import { WebClient } from "@slack/web-api";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { difference } from "lodash";
-import { Blocks, Md, Modal } from "slack-block-builder";
+import { Md } from "slack-block-builder";
 
-import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { getNextWorkDayEndOfDay } from "~shared/dates/times";
-import { Maybe } from "~shared/types";
-import { Origin } from "~shared/types/analytics";
-import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
+import { MentionType } from "~shared/types/mention";
 
-import { isWebAPIErrorType } from "../errors";
-import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import { assertToken, createTeamMemberUserFromSlack, findUserBySlackId, listenToViewWithMetadata } from "../utils";
-import { createRequestInSlack } from "./createRequestInSlack";
-import { SlackUserIdWithRequestType, createTopicForSlackUsers } from "./createTopicForSlackUsers";
+import { assertToken, listenToViewWithMetadata } from "../utils";
+import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
 
@@ -156,15 +145,15 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
-    const obserersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
+    const observersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
 
-    createRequestInSlack({
+    createAndTrackRequestInSlack({
       messageText,
       slackTeamId: body.user.team_id,
       creatorSlackUserId: body.user.id,
       requestType: requestType?.value as MentionType,
       requestForSlackUserIds: metadata.slackUserIdsFromMessage ?? [],
-      obserersSlackUserIds,
+      observersSlackUserIds,
       origin: metadata.origin,
       token,
       channelId: metadata.channelId,

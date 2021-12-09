@@ -23,7 +23,7 @@ interface CreateRequestInSlackInput {
   creatorSlackUserId: string;
   requestType: MentionType;
   requestForSlackUserIds: string[];
-  obserersSlackUserIds?: Maybe<string[]>;
+  observersSlackUserIds?: Maybe<string[]>;
   origin?: Origin;
   token: string;
   channelId?: Maybe<string>;
@@ -36,13 +36,14 @@ interface CreateRequestInSlackInput {
   topicName?: Maybe<string>;
 }
 
-export async function createRequestInSlack({
+// TODO: Split this function to require prepared data and only handle creating and tracking slack message instead of doing all request preparation
+export async function createAndTrackRequestInSlack({
   messageText,
   slackTeamId,
   creatorSlackUserId,
   requestType,
   requestForSlackUserIds,
-  obserersSlackUserIds = [],
+  observersSlackUserIds = [],
   origin = "unknown",
   token,
   channelId,
@@ -61,6 +62,7 @@ export async function createRequestInSlack({
   const ownerSlackUserId = creatorSlackUserId;
 
   const team = await db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } });
+
   assert(team, `must have a team for slack team ${slackTeamId}`);
 
   const owner =
@@ -73,7 +75,7 @@ export async function createRequestInSlack({
   }));
 
   // add mentioned users from message as observers
-  obserersSlackUserIds?.forEach((id) => {
+  observersSlackUserIds?.forEach((id) => {
     slackUserIdsWithMentionType.push({
       slackUserId: id,
       mentionType: MENTION_OBSERVER,

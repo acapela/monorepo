@@ -25,7 +25,7 @@ import {
   checkHasSlackInstallationAllBotScopes,
   findUserBySlackId,
 } from "../utils";
-import { excludeBotUsers, pickOtherRealUsersFromMessageText } from "./utils";
+import { excludeBotUsers, pickRealUsersFromMessageText } from "./utils";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -188,12 +188,13 @@ export async function openCreateRequestModal(
     return { user };
   }
 
-  const slackUserIdsFromMessage = await pickOtherRealUsersFromMessageText(token, slackUserId, messageText);
+  const slackUserIdsFromMessage = await pickRealUsersFromMessageText(token, messageText);
+  const slackUserIdsFromMessageWithoutSelf = without(slackUserIdsFromMessage, slackUserId);
 
   const channelInfo = await getChannelInfo(token, channelId);
   if (channelInfo) channelInfo.members = without(channelInfo.members, slackUserId);
 
-  let requestToSlackUserIds = slackUserIdsFromMessage;
+  let requestToSlackUserIds = slackUserIdsFromMessageWithoutSelf;
 
   // if there is no real user mentioned prefill all channel members
   if (requestToSlackUserIds.length === 0 && channelInfo && channelInfo.isPrivate) {
@@ -209,7 +210,7 @@ export async function openCreateRequestModal(
       origin,
       fromMessageBelongingToSlackUserId,
       requestToSlackUserIds,
-      slackUserIdsFromMessage,
+      slackUserIdsFromMessage: slackUserIdsFromMessageWithoutSelf,
     })
   );
 

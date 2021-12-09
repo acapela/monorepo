@@ -1,4 +1,4 @@
-import { compact, uniq, without } from "lodash";
+import { compact, uniq } from "lodash";
 
 import { slackClient } from "../app";
 
@@ -21,14 +21,10 @@ export async function excludeBotUsers(token: string, userIds: string[]): Promise
   );
 }
 
-export async function pickOtherRealUsersFromMessageText(
-  token: string,
-  creatorSlackUserId: string,
-  messageText?: string
-) {
+export async function pickRealUsersFromMessageText(token: string, messageText?: string) {
   const slackUserIdsFromMessage = await excludeBotUsers(
     token,
-    messageText ? without(pickSlackUserIdsFromMessageText(messageText), creatorSlackUserId) : []
+    messageText ? pickSlackUserIdsFromMessageText(messageText) : []
   );
 
   return slackUserIdsFromMessage;
