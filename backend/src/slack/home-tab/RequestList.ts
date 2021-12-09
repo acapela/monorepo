@@ -7,6 +7,17 @@ import { RequestItem } from "./RequestItem";
 import { TopicWithOpenTask } from "./types";
 import { Padding } from "./utils";
 
+export type RequestListParams = {
+  title: string;
+  explainer: string;
+  currentUserId: string;
+  topics: TopicWithOpenTask[];
+  unreadMessagesByTopicId: { [topicId: string]: number };
+  emptyText?: string;
+  showHighlightContext?: boolean;
+  maxShownTopics?: number;
+};
+
 export async function RequestsList({
   title,
   explainer,
@@ -16,16 +27,7 @@ export async function RequestsList({
   emptyText = "No requests here",
   showHighlightContext = false,
   maxShownTopics = 2,
-}: {
-  title: string;
-  explainer: string;
-  currentUserId: string;
-  topics: TopicWithOpenTask[];
-  unreadMessagesByTopicId: { [topicId: string]: number };
-  emptyText?: string;
-  showHighlightContext?: boolean;
-  maxShownTopics?: number;
-}) {
+}: RequestListParams) {
   const header = [Padding, Padding, Blocks.Header({ text: title }), Blocks.Context().elements(explainer), Padding];
 
   if (topics.length === 0) {
