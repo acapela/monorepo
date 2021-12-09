@@ -42,6 +42,7 @@ select_permissions:
     - created_at
     - email
     - id
+    - is_bot
     - name
     - updated_at
     computed_fields:

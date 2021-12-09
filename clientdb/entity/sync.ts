@@ -6,6 +6,7 @@ import { createResolvablePromise } from "~shared/promises";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityStore } from "./store";
+import { getChangedData } from "./utils/getChangedData";
 import { createPushQueue } from "./utils/pushQueue";
 
 interface UpdatesSyncManager<Data> extends DatabaseUtilities {
@@ -25,8 +26,13 @@ type SyncCleanup = () => void;
 export interface EntitySyncConfig<Data> {
   initPromise?: () => Promise<void>;
   pullUpdated?: (manager: UpdatesSyncManager<Data>) => SyncCleanup | void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  push?: (entityToSync: Entity<Data, any>, utils: DatabaseUtilities) => Promise<Data | false>;
+
+  push?: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    entityToSync: Entity<Data, any>,
+    changedData: Partial<Data>,
+    utils: DatabaseUtilities
+  ) => Promise<Data | false>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   remove?: (entityToSync: Entity<Data, any>, utils: DatabaseUtilities) => Promise<boolean>;
   pullRemoves?: (manager: RemovesSyncManager<Data>) => SyncCleanup | void;
@@ -98,12 +104,25 @@ export function createEntitySyncManager<Data, Connections>(
 
   // Watch for all local changes and as a side effect - push them to remote.
   function initializePushSync() {
-    async function handleEntityCreatedOrUpdatedByUser(entity: Entity<Data, Connections>) {
+    async function handleEntityCreatedOrUpdatedByUser(entity: Entity<Data, Connections>, changedData: Partial<Data>) {
       if (!store.definition.config.sync.push) {
         return;
       }
 
-      const entityDataFromServer = await store.definition.config.sync.push?.(entity, databaseUtilities);
+      const entityDataFromServer = await store.definition.config.sync.push?.(entity, changedData, databaseUtilities);
+
+      /**
+       * s d
+       *
+       * 2x
+       *
+       * local data is ok
+       * s > pushed > server data > d = null
+       *
+       * > d
+       *
+       *
+       */
 
       if (!entityDataFromServer) {
         console.warn(`Sync push failed`);
@@ -136,10 +155,12 @@ export function createEntitySyncManager<Data, Connections>(
     const cancelUpdates = store.events.on("itemUpdated", async (entity, dataBefore, source) => {
       if (source !== "user") return;
 
+      const changedData = getChangedData(entity.getData(), dataBefore);
+
       try {
         await addAwaitingOperationToEntity(
           entity,
-          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity))
+          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity, changedData))
         );
       } catch (error) {
         entity.update(dataBefore, "sync");
@@ -151,7 +172,7 @@ export function createEntitySyncManager<Data, Connections>(
       try {
         await addAwaitingOperationToEntity(
           entity,
-          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity))
+          pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity, {}))
         );
       } catch (error) {
         entity.remove("sync");

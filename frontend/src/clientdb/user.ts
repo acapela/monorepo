@@ -20,6 +20,7 @@ const userFragment = gql`
     updated_at
     has_account
     created_at
+    is_bot
   }
 `;
 
@@ -31,6 +32,7 @@ export const userEntity = defineEntity<UserFragment>({
   getDefaultValues() {
     return {
       __typename: "user",
+      is_bot: false,
       ...getGenericDefaultData(),
     };
   },
