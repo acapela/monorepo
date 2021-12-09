@@ -1,6 +1,7 @@
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
+import { removePrefix } from "~shared/text/substring";
 import { RequestType } from "~shared/types/mention";
 import { createTypeGuard } from "~shared/typeUtils/typeGuard";
 
@@ -20,16 +21,32 @@ const quickEntryAliases = createTypeGuard<Record<string, RequestType>>()({
   decision: "request-decision",
 });
 
-export function getQuickEntryCommandFromMessageBody(body: string) {
+export function getQuickEntryAliasFromMessageBody(body: string) {
   const preparedBody = body.toLowerCase().trim();
 
   for (const possibleAlias of typedKeys(quickEntryAliases)) {
     if (preparedBody.startsWith(possibleAlias)) {
-      return quickEntryAliases[possibleAlias];
+      return possibleAlias;
     }
   }
 
   return null;
+}
+
+export function getQuickEntryCommandFromMessageBody(body: string) {
+  const commandAlias = getQuickEntryAliasFromMessageBody(body);
+
+  if (!commandAlias) return null;
+
+  return quickEntryAliases[commandAlias];
+}
+
+function removeQuickEntryAliasFromMessageBody(body: string) {
+  const commandAlias = getQuickEntryAliasFromMessageBody(body);
+
+  if (!commandAlias) return body;
+
+  return removePrefix(body, commandAlias);
 }
 
 export async function handleSlackCommandAsQuickEntry(request: SlashCommandRequest) {
@@ -49,7 +66,14 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
 
   assert(requestType, "Cannot handle quick entry if message does not start with request type");
 
-  const mentionedPeopleSlackIds = await pickRealUsersFromMessageText(token, request.body.text);
+  /**
+   * For /acapela action Please reply @adam:
+   *
+   * assume content to be "Please reply @adam", not "action Please reply @adam"
+   */
+  const messageBodyWithoutCommandAlias = removeQuickEntryAliasFromMessageBody(messageBody);
+
+  const mentionedPeopleSlackIds = await pickRealUsersFromMessageText(token, messageBodyWithoutCommandAlias);
 
   if (mentionedPeopleSlackIds.length === 0) {
     // In case no one is mentioned - assume self request
@@ -68,7 +92,7 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
   assert(owner, "No owner");
 
   await createAndTrackRequestInSlack({
-    messageText: messageBody,
+    messageText: messageBodyWithoutCommandAlias,
     slackTeamId: slackTeamId,
     creatorSlackUserId: slackUserId,
     requestType,
