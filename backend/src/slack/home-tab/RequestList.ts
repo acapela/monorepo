@@ -7,8 +7,6 @@ import { RequestItem } from "./RequestItem";
 import { TopicWithOpenTask } from "./types";
 import { Padding } from "./utils";
 
-const MAX_SHOWN_TOPICS = 10;
-
 export async function RequestsList({
   title,
   explainer,
@@ -17,6 +15,7 @@ export async function RequestsList({
   unreadMessagesByTopicId,
   emptyText = "No requests here",
   showHighlightContext = false,
+  maxShownTopics = 2,
 }: {
   title: string;
   explainer: string;
@@ -25,6 +24,7 @@ export async function RequestsList({
   unreadMessagesByTopicId: { [topicId: string]: number };
   emptyText?: string;
   showHighlightContext?: boolean;
+  maxShownTopics?: number;
 }) {
   const header = [Padding, Padding, Blocks.Header({ text: title }), Blocks.Context().elements(explainer), Padding];
 
@@ -32,11 +32,11 @@ export async function RequestsList({
     return [...header, Blocks.Section({ text: Md.italic(emptyText) })];
   }
 
-  const extraTopicsCount = Math.max(topics.length - MAX_SHOWN_TOPICS, 0);
+  const extraTopicsCount = Math.max(topics.length - maxShownTopics, 0);
 
   const nestedTopicsBlocks = await Promise.all(
     topics
-      .slice(0, MAX_SHOWN_TOPICS)
+      .slice(0, maxShownTopics)
       .map(async (topic, i) => [
         ...(await RequestItem(currentUserId, topic, unreadMessagesByTopicId[topic.id] || 0, showHighlightContext)),
         i < topics.length - 1 ? Blocks.Divider() : undefined,
@@ -45,6 +45,7 @@ export async function RequestsList({
 
   const topicBlocks = nestedTopicsBlocks.flat();
 
+  const extraCountLabel = Md.bold(String(extraTopicsCount));
   return [
     ...header,
     ...topicBlocks,
@@ -52,8 +53,8 @@ export async function RequestsList({
       ? Blocks.Context().elements(
           `There ${pluralize(
             extraTopicsCount,
-            "is another topic",
-            `are ${Md.bold(String(extraTopicsCount))} more topics`
+            `is ${extraCountLabel} other topic`,
+            `are ${extraCountLabel} more topics`
           )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
             extraTopicsCount,
             "it",
