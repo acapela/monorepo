@@ -164,6 +164,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
               topics: highlights,
               unreadMessagesByTopicId,
               showHighlightContext: true,
+              maxShownTopics: 3,
             }),
         highlights.length > 0 && received.length == 0
           ? undefined
@@ -174,6 +175,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
               topics: received,
               unreadMessagesByTopicId,
               emptyText: "You are all caught up 🎉",
+              maxShownTopics: 3,
             }),
         await RequestsList({
           title: "📤 Sent",
