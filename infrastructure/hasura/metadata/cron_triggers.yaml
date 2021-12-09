@@ -42,7 +42,7 @@
     value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: proactive-notifications
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * * * *'
+  schedule: '*/15 * * * *'
   include_in_metadata: true
   payload:
     handler: proactive-notifications
