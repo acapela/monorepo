@@ -42,7 +42,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
   assert(topic, `must have topic for message ${messageId}`);
 
   const dueAt = parseISO(event.item.due_at.toString());
-  if (tasks.length && event.type === "create" && differenceInHours(dueAt, new Date()) < 24) {
+  if (tasks.length && ["create", "update"].includes(event.type) && differenceInHours(dueAt, new Date()) < 24) {
     for (const task of tasks) {
       const message = createShortDueDate({
         topicId: topic.id,
