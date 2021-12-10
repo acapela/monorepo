@@ -6,10 +6,11 @@ import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { MentionType } from "~shared/types/mention";
 
-import { assertToken, listenToViewWithMetadata } from "../utils";
+import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
+import { requestSlackAuthorizedOrOpenAuthModal } from "./requestSlackAuthorized";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
@@ -34,13 +35,19 @@ export function setupCreateRequestModal(app: App) {
 
     await ack();
 
+    const authData = await requestSlackAuthorizedOrOpenAuthModal(req);
+
+    if (!authData) {
+      return;
+    }
+
     if (getQuickEntryCommandFromMessageBody(body.text)) {
       await handleSlackCommandAsQuickEntry(req);
 
       return;
     }
 
-    const { user } = await openCreateRequestModal(assertToken(context), triggerId, {
+    await openCreateRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
       slackTeamId,
@@ -48,18 +55,18 @@ export function setupCreateRequestModal(app: App) {
       messageText: body.text,
     });
 
-    if (user) {
-      trackBackendUserEvent(user.id, "Used Slack Slash Command", {
-        slackUserName: command.user_name,
-        commandName: SLASH_COMMAND,
-      });
-    }
+    trackBackendUserEvent(authData.user.id, "Used Slack Slash Command", {
+      slackUserName: command.user_name,
+      commandName: SLASH_COMMAND,
+    });
   });
 
-  app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
+  app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context, payload }) => {
     await ack();
 
-    const { user } = await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
+    const user = await findUserBySlackId(payload.token, body.user.id);
+
+    await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
@@ -70,7 +77,7 @@ export function setupCreateRequestModal(app: App) {
     }
   });
 
-  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client }) => {
+  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client, payload }) => {
     await ack();
 
     const { channel, message, trigger_id } = shortcut;
@@ -91,7 +98,9 @@ export function setupCreateRequestModal(app: App) {
       `\n> from <${slackUrl.permalink}|slack message>` +
       (isOriginalMessageCreatedByAnotherUser ? ` by ${messageAuthorInfo.user?.real_name}` : "");
 
-    const { user } = await openCreateRequestModal(assertToken(context), trigger_id, {
+    const user = await findUserBySlackId(payload.token, body.user.id);
+
+    await openCreateRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
       messageTs: message.thread_ts ?? message.ts,
       slackUserId: body.user.id,

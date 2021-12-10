@@ -2,11 +2,6 @@ import type { View } from "@slack/types";
 import { without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { getTeamSlackInstallURL, getUserSlackInstallURL } from "~backend/src/slack/install";
-import { db } from "~db";
-import { routes } from "~shared/routes";
-import { checkHasAllSlackUserScopes } from "~shared/slack";
-import { Maybe } from "~shared/types";
 import {
   MENTION_OBSERVER,
   MENTION_TYPE_PICKER_LABELS,
@@ -15,60 +10,9 @@ import {
   RequestType,
 } from "~shared/types/mention";
 
-import { SlackInstallation, slackClient } from "../app";
-import { isChannelNotFoundError } from "../errors";
-import { createSlackLink } from "../md/utils";
-import {
-  ChannelInfo,
-  ViewMetadata,
-  attachToViewWithMetadata,
-  checkHasSlackInstallationAllBotScopes,
-  findUserBySlackId,
-} from "../utils";
+import { slackClient } from "../app";
+import { ChannelInfo, ViewMetadata, attachToViewWithMetadata } from "../utils";
 import { excludeBotUsers, pickRealUsersFromMessageText } from "./utils";
-
-const MissingTeamModal = Modal({ title: "Four'O'Four" })
-  .blocks(
-    Blocks.Section({
-      text: [
-        "Your team's Slack is not connected with Acapela yet.",
-        `Head to your team's <${process.env.FRONTEND_URL + routes.settings}|settings page> to change that.`,
-      ].join(" "),
-    })
-  )
-  .buildToObject();
-
-const AuthForCreateRequestModal = async (
-  token: string,
-  viewData: ViewMetadata["open_create_request_modal"],
-  teamId: string,
-  hasAllBotScopes: boolean
-) => {
-  const user = await findUserBySlackId(token, viewData.slackUserId, teamId);
-  return Modal({
-    title: "Please authorize Acapela",
-    submit: "Try again",
-    ...attachToViewWithMetadata("open_create_request_modal", viewData),
-  })
-    .blocks(
-      Blocks.Section({
-        text: [
-          "It's not you, it's us! We added some new functionality to our Acapela Slack app which requires authorizing the app.",
-          "This is a normal step of the process when permissions change.",
-        ].join(" "),
-      }),
-      Blocks.Section({
-        text: `${createSlackLink(
-          await (hasAllBotScopes ? getUserSlackInstallURL : getTeamSlackInstallURL)({ teamId, userId: user?.id }),
-          ":arrow_right:  Link your Account (again)"
-        )} to authorize it and then try again.`,
-      }),
-      viewData.messageText
-        ? [Blocks.Divider(), Blocks.Section().text("Your Request Message:\n" + Md.blockquote(viewData.messageText))]
-        : undefined
-    )
-    .buildToObject();
-};
 
 const buildOptionFromRequestType = (value: RequestType) =>
   Bits.Option({ value, text: MENTION_TYPE_PICKER_LABELS[value] });
@@ -120,26 +64,6 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
     .buildToObject();
 };
 
-async function checkHasTeamMemberAllSlackUserScopes(slackUserId: string) {
-  const teamMemberSlack = await db.team_member_slack.findFirst({ where: { slack_user_id: slackUserId } });
-  const installationData = teamMemberSlack?.installation_data as Maybe<SlackInstallation["user"]>;
-  return checkHasAllSlackUserScopes(installationData?.scopes ?? []);
-}
-
-async function checkHasChannelAccess(token: string, channelId: string, slackUserId: string) {
-  try {
-    const { channel } = await slackClient.conversations.info({ token, channel: channelId });
-    const isPublic = channel?.is_channel && !channel.is_private;
-    return isPublic || checkHasTeamMemberAllSlackUserScopes(slackUserId);
-  } catch (error) {
-    if (isChannelNotFoundError(error)) {
-      return false;
-    } else {
-      throw error;
-    }
-  }
-}
-
 async function getChannelInfo(token: string, channelId: string | undefined): Promise<ChannelInfo> {
   if (!channelId) return null;
 
@@ -164,29 +88,8 @@ export async function openCreateRequestModal(
   triggerId: string,
   data: ViewMetadata["open_create_request_modal"]
 ) {
-  const { channelId, messageTs, slackUserId, slackTeamId, messageText, origin, fromMessageBelongingToSlackUserId } =
-    data;
+  const { channelId, messageTs, slackUserId, messageText, origin, fromMessageBelongingToSlackUserId } = data;
   const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
-
-  const [user, team] = await Promise.all([
-    findUserBySlackId(token, slackUserId),
-    db.team.findFirst({
-      where: { team_slack_installation: { slack_team_id: slackTeamId } },
-      include: { team_slack_installation: true },
-    }),
-  ]);
-  if (!team) {
-    await openView(MissingTeamModal);
-    return { user };
-  }
-
-  const hasChannelAccess = !channelId || (await checkHasChannelAccess(token, channelId, slackUserId));
-
-  const hasAllBotScopes = checkHasSlackInstallationAllBotScopes(team.team_slack_installation?.data);
-  if (!hasChannelAccess || !hasAllBotScopes) {
-    await openView(await AuthForCreateRequestModal(token, data, team.id, hasAllBotScopes));
-    return { user };
-  }
 
   const slackUserIdsFromMessage = await pickRealUsersFromMessageText(token, messageText);
   const slackUserIdsFromMessageWithoutSelf = without(slackUserIdsFromMessage, slackUserId);
@@ -213,6 +116,4 @@ export async function openCreateRequestModal(
       slackUserIdsFromMessage: slackUserIdsFromMessageWithoutSelf,
     })
   );
-
-  return { user };
 }
