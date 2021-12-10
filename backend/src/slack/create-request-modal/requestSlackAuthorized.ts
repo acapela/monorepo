@@ -10,7 +10,7 @@ import { Maybe } from "~shared/types";
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
 import { createSlackLink } from "../md/utils";
-import { checkHasSlackInstallationAllBotScopes, findUserBySlackId } from "../utils";
+import { assertToken, checkHasSlackInstallationAllBotScopes, findUserBySlackId } from "../utils";
 import { SlashCommandRequest } from "./types";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
@@ -83,13 +83,17 @@ export async function requestSlackAuthorizedOrOpenAuthModal(request: SlashComman
     payload: {
       //
       channel_id: channelId,
-      token,
       user_id: slackUserId,
       trigger_id: triggerId,
       team_id: slackTeamId,
     },
+    context,
   } = request;
-  const openView = (view: View) => slackClient.views.open({ token, trigger_id: triggerId, view });
+  const token = assertToken(context);
+
+  const openView = async (view: View) => {
+    await slackClient.views.open({ token, trigger_id: triggerId, view });
+  };
 
   const [user, team] = await Promise.all([
     findUserBySlackId(token, slackUserId),
@@ -98,6 +102,7 @@ export async function requestSlackAuthorizedOrOpenAuthModal(request: SlashComman
       include: { team_slack_installation: true },
     }),
   ]);
+
   if (!team) {
     await openView(MissingTeamModal);
     return false;
