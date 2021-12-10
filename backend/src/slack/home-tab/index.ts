@@ -128,7 +128,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
         "message",
         "messages"
       )}.`
-    : ":envelope: You are all caught up. :tada:";
+    : ":envelope: You're all caught up. :tada:";
 
   const unreadMessagesByTopicId = Object.fromEntries(
     unreadMessagesByTopic.map((um) => [um.topic_id, um.unread_messages])
@@ -151,7 +151,7 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
       ? null
       : {
           title: "✨️ Highlights",
-          explainer: "Requests assigned to you which deserve special attention",
+          explainer: "Requests assigned to you that deserve special attention",
           currentUserId,
           topics: highlights,
           unreadMessagesByTopicId,
@@ -169,21 +169,21 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
         },
     {
       title: "📤 Sent",
-      explainer: "Requests you have sent to other people",
+      explainer: "Requests you've sent to others",
       currentUserId,
       topics: sent,
       unreadMessagesByTopicId,
     },
     {
       title: "⏳ Open",
-      explainer: "Open topics without outstanding requests",
+      explainer: "Topics where you've completed your task(s) but others haven't yet",
       currentUserId,
       topics: open,
       unreadMessagesByTopicId,
     },
     {
       title: "✅ Closed",
-      explainer: `Closed topics will be archived after a day. You can still find them ${createSlackLink(
+      explainer: `Topics where all tasks are completed by everyone. Closed topics are archived after one day. You can still find them ${createSlackLink(
         process.env.FRONTEND_URL,
         "in the web app"
       )}.`,
@@ -210,13 +210,13 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     { listPromises: [], freeSlots: MAX_TOTAL_TOPICS, hiddenCategories: [] }
   );
 
-  const inTheWebAppLink = createSlackLink(process.env.FRONTEND_URL, "in the web app");
+  const inTheWebAppLink = createSlackLink(process.env.FRONTEND_URL, "in the Acapela web app");
   await publishView(
     HomeTab()
       .blocks(
         WelcomeHeader,
         Blocks.Section({
-          text: `This is an overview of your tasks, you can find more details ${inTheWebAppLink}.`,
+          text: `This is an overview of all your tasks. You can find more details ${inTheWebAppLink}.`,
         }),
         Blocks.Section({ text: allUnreadMessagesText }),
         Blocks.Actions().elements(
