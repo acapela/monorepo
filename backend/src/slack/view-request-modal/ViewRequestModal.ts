@@ -249,7 +249,8 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
         perPage: 5,
         items: otherMessages,
         page: page ?? 1,
-        actionId: ({ page }) => `${SlackActionIds.OpenViewRequestModal}:${JSON.stringify({ page, topicId: topic.id })}`,
+        actionId: ({ page, buttonId }) =>
+          `${SlackActionIds.OpenViewRequestModal}:${JSON.stringify({ page, topicId: topic.id, buttonId })}`,
         blocksForEach: ({ item }) => [...RequestOrMessageBlock(item), ...Padding(2)],
       }).getBlocks(),
 
