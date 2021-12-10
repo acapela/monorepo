@@ -21,7 +21,7 @@ export function createSlackClosureMessage({ closedBy, topicName, topicId }: Prop
       Blocks.Section({ text: sectionText }),
       Blocks.Actions().elements(
         Elements.Button({
-          actionId: "open_view_request_modal",
+          actionId: SlackActionIds.OpenViewRequestModal,
           value: topicId,
           text: "View Request",
         }).primary(true),
