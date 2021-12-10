@@ -56,7 +56,7 @@ export function createRequestIsDue({
     "tasks"
   )} left. Bummer 😭. Don't worry though, we've let your team know they're overdue 🤓. If you want to extend the deadline or follow-up with them personally, click`;
   const messageSlack = `${message} ${createSlackLink(topicURL, "here")}.`;
-  const messageHtml = `${message} <a href="${topicURL}">${topicName}</a>.`;
+  const messageHtml = `${message} <a href="${topicURL}">here</a>.`;
   return {
     email: {
       subject: `Your request has overdue tasks in ${topicName}.`,
