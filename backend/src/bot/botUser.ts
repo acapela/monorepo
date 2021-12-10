@@ -11,7 +11,7 @@ export const BOT_USER_ID = "690f446b-716a-42da-a27c-70a95be7df39";
 
 const BOT_NAME = "Einstein the Alpaca";
 
-const BOT_AVATAR_URL = `${process.env.FRONTEND_URL}/static/bot/avatar.png`;
+const BOT_AVATAR_URL = `${process.env.FRONTEND_URL}/bot/avatar.png`;
 
 export async function ensureBotUserExists() {
   const botUser = await db.user.upsert({
