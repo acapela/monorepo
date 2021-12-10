@@ -163,7 +163,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  logger.error(error.original ?? error, "Error occurred during a slack flow:", JSON.stringify(error, null, 2));
+  logger.error(error.original ?? error, "Error occurred during a slack flow:\n" + JSON.stringify(error, null, 2));
 });
 
 export const slackClient = slackApp.client;

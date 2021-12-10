@@ -8,7 +8,7 @@ import { REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention"
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
-import { fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
+import { SlackActionIds, fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
 
 const makeSlackMessageTextWithContent = async (topic: Topic, message: Message, accessToken?: string) =>
@@ -59,7 +59,7 @@ export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMess
     .blocks(
       Blocks.Section({ text }).accessory(
         Elements.Button({
-          actionId: "open_view_request_modal",
+          actionId: SlackActionIds.OpenViewRequestModal,
           value: topic.id,
           text: "View Request",
         }).primary(true)

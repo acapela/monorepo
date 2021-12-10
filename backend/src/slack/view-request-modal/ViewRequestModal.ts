@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node";
 import { App, BlockDatepickerAction } from "@slack/bolt";
 import { format } from "date-fns";
 import { sortBy } from "lodash";
-import { Blocks, Elements, Md, Modal } from "slack-block-builder";
+import { Blocks, EasyPaginator, Elements, Md, Modal } from "slack-block-builder";
 
 import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
@@ -216,7 +216,7 @@ export function setupViewRequestModalActions(app: App) {
   });
 }
 
-export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"]) => {
+export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"], page?: number) => {
   const slackUserId = metadata.slackUserId;
   const topic = await getViewRequestViewModel(token, metadata.topicId, slackUserId);
   const [mainRequest, ...otherMessages] = topic.messages;
@@ -245,7 +245,13 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
         ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]
         : []),
 
-      ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(2)]),
+      EasyPaginator({
+        perPage: 5,
+        items: otherMessages,
+        page: page ?? 1,
+        actionId: ({ page }) => `${SlackActionIds.OpenViewRequestModal}:${JSON.stringify({ page, topicId: topic.id })}`,
+        blocksForEach: ({ item }) => [...RequestOrMessageBlock(item), ...Padding(2)],
+      }).getBlocks(),
 
       Blocks.Divider(),
 

@@ -4,6 +4,7 @@ import { Blocks, Elements, Md, Message } from "slack-block-builder";
 import { SlackNotificationQueue } from "~db";
 
 import { mdDate } from "../md/utils";
+import { SlackActionIds } from "../utils";
 import { TopicVM } from "./types";
 
 interface DailySummaryMessageProps {
@@ -57,7 +58,7 @@ function TasksDueSoon(topicsDueToday: TopicVM[]) {
         text: `${Md.bold(topic.name)}\nDue at ${mdDate(earliestDueDate!, "time")}`,
       }).accessory(
         Elements.Button({
-          actionId: "open_view_request_modal",
+          actionId: SlackActionIds.OpenViewRequestModal,
           value: topic.id,
           text: "View",
         })
@@ -85,7 +86,7 @@ function TasksInputStillNeeded(otherReceivedTopics: TopicVM[]) {
         text: `${Md.bold(topic.name)}\n${subTitle}`,
       }).accessory(
         Elements.Button({
-          actionId: "open_view_request_modal",
+          actionId: SlackActionIds.OpenViewRequestModal,
           value: topic.id,
           text: "View",
         })
