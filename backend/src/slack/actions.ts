@@ -40,7 +40,10 @@ function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
-    const { user } = await openCreateRequestModal(assertToken(context), body.trigger_id, {
+    const token = assertToken(context);
+
+    const user = await findUserBySlackId(token, body.user.id);
+    await openCreateRequestModal(assertToken(context), body.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-home-tab",

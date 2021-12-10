@@ -1,32 +1,24 @@
-import * as Sentry from "@sentry/node";
 import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
 import { difference } from "lodash";
-import { Blocks, Md, Modal } from "slack-block-builder";
+import { Md } from "slack-block-builder";
 
-import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
+import { MentionType } from "~shared/types/mention";
 
-import { isWebAPIErrorType } from "../errors";
-import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import {
-  assertToken,
-  buildDateTimePerUserTimezone,
-  createTeamMemberUserFromSlack,
-  findUserBySlackId,
-  listenToViewWithMetadata,
-} from "../utils";
-import { createTopicForSlackUsers } from "./createTopicForSlackUsers";
+import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { openCreateRequestModal } from "./openCreateRequestModal";
+import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
+import { requestSlackAuthorizedOrOpenAuthModal } from "./requestSlackAuthorized";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
 
 export function setupCreateRequestModal(app: App) {
-  app.command(SLASH_COMMAND, async ({ command, ack, context, body }) => {
+  app.command(SLASH_COMMAND, async (req) => {
+    const { command, ack, context, body } = req;
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
 
     if (body.text.toLowerCase() == "help") {
@@ -43,7 +35,19 @@ export function setupCreateRequestModal(app: App) {
 
     await ack();
 
-    const { user } = await openCreateRequestModal(assertToken(context), triggerId, {
+    const authData = await requestSlackAuthorizedOrOpenAuthModal(req);
+
+    if (!authData) {
+      return;
+    }
+
+    if (getQuickEntryCommandFromMessageBody(body.text)) {
+      await handleSlackCommandAsQuickEntry(req);
+
+      return;
+    }
+
+    await openCreateRequestModal(assertToken(context), triggerId, {
       channelId,
       slackUserId,
       slackTeamId,
@@ -51,18 +55,18 @@ export function setupCreateRequestModal(app: App) {
       messageText: body.text,
     });
 
-    if (user) {
-      trackBackendUserEvent(user.id, "Used Slack Slash Command", {
-        slackUserName: command.user_name,
-        commandName: SLASH_COMMAND,
-      });
-    }
+    trackBackendUserEvent(authData.user.id, "Used Slack Slash Command", {
+      slackUserName: command.user_name,
+      commandName: SLASH_COMMAND,
+    });
   });
 
-  app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context }) => {
+  app.shortcut(SHORTCUT, async ({ shortcut, ack, body, context, payload }) => {
     await ack();
 
-    const { user } = await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
+    const user = await findUserBySlackId(payload.token, body.user.id);
+
+    await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       origin: "slack-shortcut",
@@ -73,7 +77,7 @@ export function setupCreateRequestModal(app: App) {
     }
   });
 
-  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client }) => {
+  app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client, payload }) => {
     await ack();
 
     const { channel, message, trigger_id } = shortcut;
@@ -94,7 +98,9 @@ export function setupCreateRequestModal(app: App) {
       `\n> from <${slackUrl.permalink}|slack message>` +
       (isOriginalMessageCreatedByAnotherUser ? ` by ${messageAuthorInfo.user?.real_name}` : "");
 
-    const { user } = await openCreateRequestModal(assertToken(context), trigger_id, {
+    const user = await findUserBySlackId(payload.token, body.user.id);
+
+    await openCreateRequestModal(assertToken(context), trigger_id, {
       channelId: channel.id,
       messageTs: message.thread_ts ?? message.ts,
       slackUserId: body.user.id,
@@ -135,8 +141,10 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
+    const token = assertToken(context);
+
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
-    assert(messageText, "create_request called with wrong arguments");
+
     if (!(members && requestType && messageText && members.length > 0)) {
       return await ack({
         response_action: "errors",
@@ -146,119 +154,29 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
-    const token = assertToken(context);
+    const observersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
 
-    const slackTeamId = body.user.team_id;
-    assert(slackTeamId, "must have slack team id");
-
-    const ownerSlackUserId = body.user.id;
-
-    const team = await db.team.findFirst({ where: { team_slack_installation: { slack_team_id: slackTeamId } } });
-    assert(team, `must have a team for slack team ${slackTeamId}`);
-
-    const owner =
-      (await findUserBySlackId(token, ownerSlackUserId, team.id)) ??
-      (await createTeamMemberUserFromSlack(token, ownerSlackUserId, team.id)).user;
-
-    const slackUserIdsWithMentionType: { slackUserId: string; mentionType?: MentionType }[] = members.map((id) => ({
-      slackUserId: id,
-      mentionType: requestType.value as MentionType,
-    }));
-
-    // add mentioned users from message as observers
-    difference(metadata.slackUserIdsFromMessage, members || []).forEach((id) => {
-      slackUserIdsWithMentionType.push({
-        slackUserId: id,
-        mentionType: MENTION_OBSERVER,
-      });
+    createAndTrackRequestInSlack({
+      messageText,
+      slackTeamId: body.user.team_id,
+      creatorSlackUserId: body.user.id,
+      requestType: requestType?.value as MentionType,
+      requestForSlackUserIds: metadata.slackUserIdsFromMessage ?? [],
+      observersSlackUserIds,
+      origin: metadata.origin,
+      token,
+      channelId: metadata.channelId,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
+      client,
+      triggerId: body.trigger_id,
+      dueAtDate,
+      dueAtHour,
+      messageTs: metadata.messageTs,
+      botToken: context.botToken,
+      topicName,
     });
-
-    // When a request is created from a message, add message author as observer
-    const hasRequestOriginatedFromMessageAction = metadata.origin === "slack-message-action";
-    if (hasRequestOriginatedFromMessageAction && metadata.fromMessageBelongingToSlackUserId) {
-      slackUserIdsWithMentionType.push({
-        slackUserId: metadata.fromMessageBelongingToSlackUserId,
-        mentionType: MENTION_OBSERVER,
-      });
-    }
-
-    const conversationId =
-      metadata.channelId ?? view.state.values.conversation_block.conversation_select.selected_conversation;
 
     await ack({ response_action: "clear" });
-
-    const dueAt: Date | null =
-      dueAtDate || dueAtHour
-        ? await buildDateTimePerUserTimezone(client as never, ownerSlackUserId, dueAtDate, dueAtHour)
-        : null;
-
-    const topic = await createTopicForSlackUsers({
-      token,
-      teamId: team.id,
-      ownerId: owner.id,
-      ownerSlackUserId,
-      slackTeamId,
-      rawTopicMessage: messageText,
-      topicName,
-      dueAt,
-      slackUserIdsWithMentionType,
-    });
-
-    if (!metadata.channelId) {
-      const topicURL = await backendGetTopicUrl(topic);
-      await client.views.open({
-        trigger_id: body.trigger_id,
-        view: Modal({ title: "Request created" })
-          .blocks(
-            Blocks.Section({ text: `You can find your request in you sidebar or behind this link:\n${topicURL}` })
-          )
-          .buildToObject(),
-      });
-    }
-
-    if (!conversationId) {
-      return;
-    }
-
-    try {
-      if (conversationId && context.botToken == token) {
-        // try to join the channel in case the bot is not in it already
-        await client.conversations.join({ token, channel: conversationId });
-      }
-    } catch (error) {
-      if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
-        throw error;
-      }
-    }
-    const response = await client.chat.postMessage({
-      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
-      token,
-      channel: conversationId,
-      thread_ts: metadata.messageTs,
-    });
-
-    if (!response.ok) {
-      assert(response.error, "non-ok response without an error");
-      Sentry.captureException(response.error);
-      return;
-    }
-
-    const { channel, message } = response;
-    assert(channel && message?.ts, "ok response without channel or message_ts");
-    await db.topic_slack_message.create({
-      data: {
-        topic_id: topic.id,
-        slack_channel_id: channel,
-        slack_message_ts: message.ts,
-        is_excluding_content: hasRequestOriginatedFromMessageAction,
-      },
-    });
-
-    if (owner) {
-      trackBackendUserEvent(owner.id, "Created Request", {
-        origin: metadata.origin,
-        topicName: topic.name,
-      });
-    }
   });
 }

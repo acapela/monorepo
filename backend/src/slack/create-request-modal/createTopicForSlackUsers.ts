@@ -71,7 +71,7 @@ async function createAndInviteMissingUsers(
 
 type UserWithMaybeMentionType = { userId: string; mentionType?: MentionType; slackUserId: string };
 
-type SlackUserIdWithRequestType = { slackUserId: string; mentionType?: MentionType };
+export type SlackUserIdWithRequestType = { slackUserId: string; mentionType?: MentionType };
 
 export async function findOrInviteUsers({
   slackToken,
