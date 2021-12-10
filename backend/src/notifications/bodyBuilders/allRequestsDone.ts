@@ -20,7 +20,7 @@ export function createSlackAllRequestsDoneMessage({ topicId, topicName }: Props)
       Blocks.Section({ text: sectionText }),
       Blocks.Actions().elements(
         Elements.Button({
-          actionId: "open_view_request_modal",
+          actionId: SlackActionIds.OpenViewRequestModal,
           value: topicId,
           text: "View Request",
         }).primary(true),

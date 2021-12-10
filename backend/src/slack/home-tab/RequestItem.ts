@@ -57,7 +57,7 @@ export async function RequestItem(
     ),
     Blocks.Actions().elements(
       Elements.Button({
-        actionId: "open_view_request_modal",
+        actionId: SlackActionIds.OpenViewRequestModal,
         value: topic.id,
         text: "View Request",
       }).primary(true),

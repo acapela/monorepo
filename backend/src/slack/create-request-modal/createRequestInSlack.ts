@@ -1,20 +1,18 @@
 import * as Sentry from "@sentry/node";
 import { WebClient } from "@slack/web-api";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { Maybe } from "~shared/types";
 import { Origin } from "~shared/types/analytics";
 import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
 
 import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import { createTeamMemberUserFromSlack, findUserBySlackId } from "../utils";
+import { buildDateTimePerUserTimezone, createTeamMemberUserFromSlack, findUserBySlackId } from "../utils";
 import { SlackUserIdWithRequestType, createTopicForSlackUsers } from "./createTopicForSlackUsers";
 
 interface CreateRequestInSlackInput {
@@ -85,14 +83,10 @@ export async function createAndTrackRequestInSlack({
   // When a request is created from a message, add message author as observer
   const hasRequestOriginatedFromMessageAction = origin === "slack-message-action";
 
-  let dueAt: Date | null = null;
-  if (dueAtDate || dueAtHour) {
-    const { user: slackUser } = await client.users.info({ user: ownerSlackUserId });
-    const date = dueAtDate ?? getNextWorkDayEndOfDay().toISOString().split("T")[0];
-    const hour = dueAtHour ?? "12";
-    const timeZone = slackUser?.tz ?? "Europe/Berlin";
-    dueAt = zonedTimeToUtc(`${date} ${hour}:00`, timeZone);
-  }
+  const dueAt: Date | null =
+    dueAtDate || dueAtHour
+      ? await buildDateTimePerUserTimezone(client as never, ownerSlackUserId, dueAtDate, dueAtHour)
+      : null;
 
   const topic = await createTopicForSlackUsers({
     token,

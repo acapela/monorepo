@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/node";
+import { App, BlockDatepickerAction } from "@slack/bolt";
+import { format } from "date-fns";
 import { sortBy } from "lodash";
-import { Blocks, Elements, Md, Modal } from "slack-block-builder";
+import { Blocks, EasyPaginator, Elements, Md, Modal } from "slack-block-builder";
 
 import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
@@ -12,12 +14,16 @@ import {
   REQUEST_TYPE_EMOJIS,
   SlackActionIds,
   ViewMetadata,
+  assertToken,
   attachToViewWithMetadata,
+  buildDateTimePerUserTimezone,
   fetchTeamBotToken,
   findUserBySlackId,
 } from "../utils";
 import { getViewRequestViewModel } from "./getTopicInfo";
 import { MessageInfo, TaskInfo, TopicInfo } from "./types";
+
+const ActionIds = { UpdateMessageDueAt: "request-view-update-message-due-date" };
 
 const Padding = (amountOfSpaces = 1) => [...new Array(amountOfSpaces)].map(() => Blocks.Section({ text: " " }));
 
@@ -105,16 +111,23 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
     Blocks.Section({ text: message.content }),
     MessageActionsBlocks(messageInfo, slackUserId, topicURL),
     Blocks.Divider(),
-    Blocks.Section()
-      .fields([
-        Md.bold(`${tasks.length} recipients`),
-        dueDate ? Md.bold("Due " + mdDate(dueDate, "date_short_pretty")) : " ",
-        // Only 10 fields supported, 2 fields go into the header area
-        ...(taskStatusByUsers.length > 8
-          ? [...taskStatusByUsers.slice(0, 6), `...and ${Math.floor(taskStatusByUsers.length / 2 - 3)} more`]
-          : taskStatusByUsers),
-      ])
-      .end(),
+    Blocks.Section().fields(
+      Md.bold(`${tasks.length} recipients`),
+      " ",
+      // Only 10 fields supported, 2 fields go into the header area
+      ...(taskStatusByUsers.length > 8
+        ? [...taskStatusByUsers.slice(0, 6), `...and ${Math.floor(taskStatusByUsers.length / 2 - 3)} more`]
+        : taskStatusByUsers)
+    ),
+    Blocks.Section({ text: Md.bold("Due date") }),
+    Blocks.Actions().elements(
+      Elements.DatePicker()
+        .actionId(ActionIds.UpdateMessageDueAt + ":date:" + message.id)
+        .initialDate(dueDate),
+      Elements.TimePicker()
+        .actionId(ActionIds.UpdateMessageDueAt + ":time:" + message.id)
+        .initialTime(dueDate ? format(dueDate, "HH:mm") : undefined)
+    ),
     ...Padding(),
   ];
 };
@@ -167,7 +180,43 @@ async function markAsSeenAndUpdateHomeView(token: string, slackUserId: string, t
   }
 }
 
-export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"]) => {
+export function setupViewRequestModalActions(app: App) {
+  const updateMessageDueAtId = new RegExp(ActionIds.UpdateMessageDueAt + ":(date|time):*");
+  app.action<BlockDatepickerAction>(updateMessageDueAtId, async ({ ack, client, context, action, body }) => {
+    await ack();
+
+    const [, , messageId] = action.action_id.split(":");
+    const oldMessageTaskDueAt = await db.message_task_due_date.findUnique({ where: { message_id: messageId } });
+
+    const oldDueAt = oldMessageTaskDueAt?.due_at;
+    const dueAt = await buildDateTimePerUserTimezone(
+      client as never,
+      body.user.id,
+      action.selected_date ?? oldDueAt?.toISOString().split("T")[0],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (action as any).selected_time ?? (oldDueAt ? format(oldDueAt, "HH:mm") : undefined)
+    );
+
+    const messageTaskDueDate = await db.message_task_due_date.upsert({
+      where: { message_id: messageId },
+      create: { message_id: messageId, due_at: dueAt },
+      update: { due_at: dueAt },
+      include: { message: true },
+    });
+
+    const token = assertToken(context);
+    await client.views.update({
+      token,
+      view_id: body.view?.id,
+      view: await ViewRequestModal(token, {
+        slackUserId: body.user.id,
+        topicId: messageTaskDueDate.message.topic_id,
+      }),
+    });
+  });
+}
+
+export const ViewRequestModal = async (token: string, metadata: ViewMetadata["view_request_modal"], page?: number) => {
   const slackUserId = metadata.slackUserId;
   const topic = await getViewRequestViewModel(token, metadata.topicId, slackUserId);
   const [mainRequest, ...otherMessages] = topic.messages;
@@ -196,7 +245,13 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
         ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]
         : []),
 
-      ...otherMessages.flatMap((message) => [RequestOrMessageBlock(message), ...Padding(2)]),
+      EasyPaginator({
+        perPage: 5,
+        items: otherMessages,
+        page: page ?? 1,
+        actionId: ({ page }) => `${SlackActionIds.OpenViewRequestModal}:${JSON.stringify({ page, topicId: topic.id })}`,
+        blocksForEach: ({ item }) => [...RequestOrMessageBlock(item), ...Padding(2)],
+      }).getBlocks(),
 
       Blocks.Divider(),
 
