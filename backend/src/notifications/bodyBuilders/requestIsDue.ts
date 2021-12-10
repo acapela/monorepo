@@ -16,11 +16,11 @@ export function createRequestIsDueIn3Hours({
   topicURL: string;
   taskCreatorName: string;
 }): Partial<NotificationMessage> {
-  const messageSlack = `We noticed your task in ${createSlackLink(
+  const messageSlack = `You have three hours left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click ${createSlackLink(
     topicURL,
-    topicName
-  )} is due in the next 3 hours. Can you finish it before that or should you let ${taskCreatorName} know you need more time?`;
-  const messageHtml = `We noticed your task in  <a href="${topicURL}">${topicName}</a> is due in the next 3 hours. Can you finish it before that or should you let ${taskCreatorName} know you need more time?`;
+    "here"
+  )} to let ${taskCreatorName} know you need more time ⏰.`;
+  const messageHtml = `You have three hours left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click <a href="${topicURL}">here</a> to let ${taskCreatorName} know you need more time ⏰.`;
   return {
     email: {
       subject: `You have uncompleted tasks in ${topicName}.`,
@@ -50,15 +50,11 @@ export function createRequestIsDue({
   topicURL: string;
   openTasks: number;
 }): Partial<NotificationMessage> {
-  const message = `We noticed the request you created in ${topicName} is now overdue and there ${pluralize(
+  const message = `The request you sent (${topicName}) still has ${openTasks} outstanding ${pluralize(
     openTasks,
-    "is",
-    "are"
-  )} still ${openTasks} ${pluralize(openTasks, "task", "tasks")} that ${pluralize(
-    openTasks,
-    "has",
-    "have"
-  )} not been completed. You can extend the deadline or follow up`;
+    "task",
+    "tasks"
+  )} left. Bummer 😭. Don't worry though, we've let your team know they're overdue 🤓. If you want to extend the deadline or follow-up with them personally, click`;
   const messageSlack = `${message} ${createSlackLink(topicURL, "here")}.`;
   const messageHtml = `${message} <a href="${topicURL}">${topicName}</a>.`;
   return {
@@ -92,11 +88,9 @@ export function createShortDueDate({
   taskCreatorName: string;
   deadline: string;
 }): Partial<NotificationMessage> {
-  const messageSlack = `We noticed there is a new deadline added to a task in ${createSlackLink(
-    topicURL,
-    topicName
-  )}. The task should be finished by ${deadline}. Can you make that work or should you let ${taskCreatorName} know you need more time?`;
-  const messageHtml = `We noticed there is a new deadline added to a task in <a href="${topicURL}">${topicName}</a>. The task should be finished by ${deadline}. Can you make that work or should you let ${taskCreatorName} know you need more time?`;
+  const message = `A new deadline has been added to a task in ${topicName} 📆. The new deadline is ${deadline}. If that's not going to work, let ${taskCreatorName} know.`;
+  const messageSlack = `${message} ${createSlackLink(topicURL, "here")}`;
+  const messageHtml = `${message} <a href="${topicURL}">here</a>`;
   return {
     email: {
       subject: `You have uncompleted tasks in ${topicName}.`,
