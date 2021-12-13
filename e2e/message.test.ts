@@ -62,7 +62,7 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   await page.waitForSelector(`[data-test-task-assignee="${db.user2.id}"]:has-text("✓")`);
 
-  await appPage.waitForRequestInGroup(requestName, "Sent");
+  await appPage.waitForRequestInGroup(requestName, "Open");
 });
 
 test("reply to a message", async ({ page, auth, db }) => {
