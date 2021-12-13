@@ -1,11 +1,9 @@
-import { addMonths, format, isSameMonth, startOfMonth, subMonths } from "date-fns";
-import { AnimatePresence } from "framer-motion";
+import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { PopPresenceAnimator } from "~ui/animations";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconCalendar, IconChevronLeft, IconChevronRight } from "~ui/icons";
+import { IconChevronLeft, IconChevronRight } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -15,30 +13,12 @@ interface Props {
 
 export function Header({ currentMonthDate, onMonthChange }: Props) {
   const monthLabel = format(currentMonthDate, "MMMM Y");
-  const now = new Date();
-
-  const canReturnToCurrentMonth = !isSameMonth(now, currentMonthDate);
 
   const endOfPrevious = startOfMonth(subMonths(currentMonthDate, 1));
   const startOfNext = startOfMonth(addMonths(currentMonthDate, 1));
   return (
     <UIHeader>
       <UIDateTitle>{monthLabel}</UIDateTitle>
-      <AnimatePresence>
-        {canReturnToCurrentMonth && (
-          <PopPresenceAnimator key="fo">
-            <IconButton
-              kind="primarySubtle"
-              tooltip={`Current month - ${format(now, "MMMM")}`}
-              icon={<IconCalendar />}
-              onClick={() => {
-                onMonthChange(startOfMonth(new Date()));
-              }}
-            />
-          </PopPresenceAnimator>
-        )}
-      </AnimatePresence>
-
       <IconButton
         kind="primarySubtle"
         tooltip={format(endOfPrevious, "MMMM")}
@@ -68,7 +48,7 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UIDateTitle = styled.div<{}>`
-  ${theme.typo.secondaryTitle};
+  ${theme.typo.content.bold};
   flex: 17;
   display: inline-block;
 `;

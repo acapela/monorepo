@@ -1,4 +1,4 @@
-import { eachWeekOfInterval, endOfMonth, startOfMonth } from "date-fns";
+import { addWeeks, eachWeekOfInterval, endOfMonth, startOfMonth } from "date-fns";
 import React from "react";
 import styled, { css } from "styled-components";
 
@@ -10,6 +10,11 @@ interface Props {
   selectedDayDate: Date;
   onDaySelected: (dayDate: Date) => void;
 }
+
+/**
+ * To avoid flickering of calendar height we'll always make it display max number of week rows a month can have - 6
+ */
+const MAX_WEEKS_IN_MONTH = 6;
 
 export function MonthDays({ date, selectedDayDate, onDaySelected }: Props) {
   const firstDayMonth = startOfMonth(date);
@@ -23,6 +28,8 @@ export function MonthDays({ date, selectedDayDate, onDaySelected }: Props) {
     { weekStartsOn: 1 }
   );
 
+  const missingWeeksForEqualHeight = MAX_WEEKS_IN_MONTH - weeks.length;
+
   return (
     <UIMonth>
       <WeekDaysNames />
@@ -35,6 +42,22 @@ export function MonthDays({ date, selectedDayDate, onDaySelected }: Props) {
           currentMonthDate={date}
         />
       ))}
+      {missingWeeksForEqualHeight > 0 && (
+        <UIHiddenWeeks>
+          {Array.from({ length: missingWeeksForEqualHeight }).map((_, index) => {
+            const date = addWeeks(firstDayMonth, weeks.length + index);
+            return (
+              <Week
+                key={date.getTime()}
+                weekDate={date}
+                onDaySelected={onDaySelected}
+                selectedDayDate={selectedDayDate}
+                currentMonthDate={firstDayMonth}
+              />
+            );
+          })}
+        </UIHiddenWeeks>
+      )}
     </UIMonth>
   );
 }
@@ -87,4 +110,8 @@ const UIMonth = styled.div<{}>`
   flex: 5;
 
   ${sideAlignOffset}
+`;
+
+const UIHiddenWeeks = styled.div`
+  opacity: 0.2;
 `;

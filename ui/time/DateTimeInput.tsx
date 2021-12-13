@@ -34,7 +34,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipC
     <>
       <AnimatePresence>
         {isPickerOpen && (
-          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
+          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom"} anchorRef={ref}>
             <DateTimePicker
               shouldSkipConfirmation={shouldSkipConfirmation}
               onSubmit={handleSubmit}
