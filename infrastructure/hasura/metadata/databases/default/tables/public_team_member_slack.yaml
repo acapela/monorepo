@@ -28,9 +28,9 @@ select_permissions:
   role: user
 event_triggers:
 - definition:
-    delete:
-      columns: "*"
     enable_manual: false
+    insert:
+      columns: "*"
   headers:
   - name: Authorization
     value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
