@@ -27,6 +27,12 @@
         "description": "Creates a new request"
       },
       {
+        "name": "Create self request",
+        "type": "message",
+        "callback_id": "message_self_request_acapela",
+        "description": "Instantly creates a new self request from this message"
+      },
+      {
         "name": "Turn into request",
         "type": "message",
         "callback_id": "message_acapela",
