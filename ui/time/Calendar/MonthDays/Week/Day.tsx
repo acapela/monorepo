@@ -44,6 +44,7 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
             $isSelected={isSelected}
             onClick={handleDayClick}
             isDisabled={!isThisDayInCurrentMonth}
+            size="compact"
           >
             {format(dayDate, "d")}
           </UIDayButton>
