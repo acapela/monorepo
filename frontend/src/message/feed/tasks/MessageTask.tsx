@@ -50,7 +50,6 @@ export const MessageTask = styledObserver(({ task, className }: Props) => {
 })``;
 
 const UISingleTask = styled.div<{}>`
-  overflow-y: hidden;
   display: flex;
   align-items: center;
   ${theme.spacing.actions.asGap};
