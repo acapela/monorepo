@@ -61,8 +61,7 @@ const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.actions.asGap}
-  overflow-y: hidden;
+  ${theme.spacing.actions.asGap};
 `;
 
 const UIDivider = styled.div<{}>`
