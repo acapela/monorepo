@@ -4,6 +4,7 @@ import { assertToken } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { requestSlackAuthorizedOrOpenAuthModalForMessageShortcut } from "./requestSlackAuthorized";
 import { MessageShortcutRequest } from "./types";
+import { createRequestTitleFromMessageText } from "./utils";
 
 export async function handleMessageSelfRequestShortcut(request: MessageShortcutRequest) {
   const {
@@ -38,6 +39,9 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
 
   const messageBodyWithMessageLink = message.text + `\n\n> from <${messageUrl.permalink}|slack message>`;
 
+  // We dont want to include 'from message' in title
+  const requestTitle = createRequestTitleFromMessageText(messageBody);
+
   await createAndTrackRequestInSlack({
     messageText: messageBodyWithMessageLink,
     slackTeamId: slackTeamId,
@@ -52,8 +56,8 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     client,
     triggerId,
     botToken: context.botToken,
+    topicName: requestTitle,
   });
 
-  // TODO Wrong event
-  trackBackendUserEvent(authInfo.user.id, "Used Slack Message Action", { slackUserName });
+  trackBackendUserEvent(authInfo.user.id, "Used Slack Self Request Message Action", { slackUserName });
 }

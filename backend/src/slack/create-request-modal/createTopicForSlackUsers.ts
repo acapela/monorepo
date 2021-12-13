@@ -7,7 +7,6 @@ import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { Maybe } from "~shared/types";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType, REQUEST_TYPES, RequestType } from "~shared/types/mention";
@@ -16,6 +15,7 @@ import { slackClient } from "../app";
 import { updateHomeView } from "../home-tab";
 import { parseAndTransformToTipTapJSON } from "../md/parser";
 import { fetchTeamBotToken, findUserBySlackId } from "../utils";
+import { createRequestTitleFromMessageText } from "./utils";
 
 async function createAndInviteMissingUsers(
   slackToken: string,
@@ -208,8 +208,8 @@ export async function createTopicForSlackUsers({
   const messageContentText = convertMessageContentToPlainText(messageContent);
   const userIds = uniq(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
 
-  topicName =
-    topicName || truncateTextWithEllipsis(messageContentText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH).replaceAll("\n", "");
+  topicName = topicName || createRequestTitleFromMessageText(messageContentText);
+
   const topic = await db.topic.create({
     data: {
       team_id: teamId,

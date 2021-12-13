@@ -86,6 +86,7 @@ export type AnalyticsEventsMap = {
   "Added User Slack Integration": { slackTeamId: string; teamId: string };
   "Used Slack Global Shortcut": { slackUserName: string };
   "Used Slack Message Action": { slackUserName: string };
+  "Used Slack Self Request Message Action": { slackUserName: string };
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
   "Used Slack Home Tab New Request": { slackUserName: string };
   "Opened Webapp From Slack Home Tab": void;
