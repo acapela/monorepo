@@ -1,8 +1,7 @@
 import type { View } from "@slack/types";
-import { without } from "lodash";
+import { upperFirst, without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { upperCaseFirst } from "~shared/text/casing";
 import {
   MENTION_OBSERVER,
   MENTION_TYPE_PICKER_LABELS,
@@ -48,7 +47,7 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
         .element(
           Elements.StaticSelect({ actionId: "priority", placeholder: "No priority" }).options(
             ["critical", "high", "medium", "low"].map((priority) =>
-              Bits.Option({ value: priority, text: upperCaseFirst(priority) })
+              Bits.Option({ value: priority, text: upperFirst(priority) })
             )
           )
         )

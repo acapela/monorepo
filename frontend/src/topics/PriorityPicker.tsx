@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
+import { upperFirst } from "lodash";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { upperCaseFirst } from "~shared/text/casing";
 import { Button } from "~ui/buttons/Button";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Popover } from "~ui/popovers/Popover";
@@ -31,7 +31,7 @@ export function PriorityPicker({
                 items={[null, ...["critical", "high", "medium", "low"]] as Priority[]}
                 dividerIndexes={[1]}
                 iconGetter={(value) => <PriorityIcon priority={value} $invert />}
-                labelGetter={(value) => (value ? upperCaseFirst(value) : "No priority")}
+                labelGetter={(value) => (value ? upperFirst(value) : "No priority")}
                 keyGetter={(value) => value as never}
                 selectedItems={[priority]}
                 onItemSelected={(value) => {
@@ -46,7 +46,7 @@ export function PriorityPicker({
       <UITriggerHolder ref={ref} onClick={openMenu}>
         {children ?? (
           <Button kind="secondary" icon={<PriorityIcon priority={priority} />} iconAtStart>
-            {priority ? priority[0].toUpperCase() + priority.slice(1) : "Set priority"}
+            {priority ? upperFirst(priority) : "Set priority"}
           </Button>
         )}
       </UITriggerHolder>

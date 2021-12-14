@@ -12,16 +12,15 @@ import {
 
 export type Priority = Priority_Enum | null;
 
-export const PriorityIcon = styled<{ priority: Priority; $invert?: boolean }>(({ priority, ...props }) => {
-  const Icon = priority
-    ? {
-        critical: PriorityCriticalIcon,
-        high: PriorityHighIcon,
-        medium: PriorityMediumIcon,
-        low: PriorityLowIcon,
-      }[priority]
-    : PriorityNoneIcon;
+const PRIORITY_ICONS = {
+  critical: PriorityCriticalIcon,
+  high: PriorityHighIcon,
+  medium: PriorityMediumIcon,
+  low: PriorityLowIcon,
+};
 
+export const PriorityIcon = styled<{ priority: Priority; $invert?: boolean }>(({ priority, ...props }) => {
+  const Icon = priority ? PRIORITY_ICONS[priority] : PriorityNoneIcon;
   return <Icon {...props} />;
 })`
   ${(props) =>
