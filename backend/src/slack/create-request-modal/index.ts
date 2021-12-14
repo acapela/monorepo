@@ -157,7 +157,7 @@ export function setupCreateRequestModal(app: App) {
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
 
-    if (!(members && requestType && messageText && members.length > 0 && selectedPriority)) {
+    if (!(members && requestType && messageText && members.length > 0)) {
       return await ack({
         response_action: "errors",
         errors: {
