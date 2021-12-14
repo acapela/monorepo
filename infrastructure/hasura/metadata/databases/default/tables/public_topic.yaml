@@ -66,6 +66,7 @@ insert_permissions:
     - index
     - name
     - owner_id
+    - priority
     - slug
     - team_id
   role: user
@@ -81,6 +82,7 @@ select_permissions:
     - index
     - name
     - owner_id
+    - priority
     - slug
     - team_id
     - updated_at
@@ -102,6 +104,7 @@ update_permissions:
     - index
     - name
     - owner_id
+    - priority
     - slug
     filter:
       _or:

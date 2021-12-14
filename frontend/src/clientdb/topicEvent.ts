@@ -31,6 +31,9 @@ const topicEventFragment = gql`
     message_task_due_date_message_id
     message_task_due_date_from_due_at
     message_task_due_date_to_due_at
+
+    topic_from_priority
+    topic_to_priority
   }
 `;
 
@@ -52,6 +55,8 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
     message_task_due_date_message_id: null,
     message_task_due_date_from_due_at: null,
     message_task_due_date_to_due_at: null,
+    topic_from_priority: null,
+    topic_to_priority: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
@@ -68,6 +73,8 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
       "message_task_due_date_message_id",
       "message_task_due_date_from_due_at",
       "message_task_due_date_to_due_at",
+      "topic_from_priority",
+      "topic_to_priority",
     ],
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),

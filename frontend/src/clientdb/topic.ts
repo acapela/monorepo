@@ -35,6 +35,7 @@ const topicFragment = gql`
     name
     slug
     team_id
+    priority
   }
 `;
 
@@ -54,6 +55,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       team_id: getContextValue(teamIdContext) ?? undefined,
       owner_id: getContextValue(userIdContext) ?? undefined,
       index: "0",
+      priority: null,
       ...getGenericDefaultData(),
     };
   },
@@ -68,8 +70,9 @@ export const topicEntity = defineEntity<TopicFragment>({
       "closed_by_user_id",
       "owner_id",
       "team_id",
+      "priority",
     ],
-    updateColumns: ["archived_at", "closed_at", "closed_by_user_id", "index", "name", "owner_id", "slug"],
+    updateColumns: ["archived_at", "closed_at", "closed_by_user_id", "index", "name", "owner_id", "slug", "priority"],
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
   search: { fields: { name: true } },
@@ -212,9 +215,9 @@ export const topicEntity = defineEntity<TopicFragment>({
   })
   .addEventHandlers({
     itemUpdated: (topicNow, topicBefore, { getEntity }) => {
-      const isNameChanged = topicNow.name !== topicBefore.name;
       const topicEventClient = getEntity(topicEventEntity);
 
+      const isNameChanged = topicNow.name !== topicBefore.name;
       if (isNameChanged) {
         topicEventClient.create({
           topic_id: topicNow.id,
@@ -238,6 +241,15 @@ export const topicEntity = defineEntity<TopicFragment>({
           topic_id: topicNow.id,
           topic_from_archived_at: topicBefore.archived_at,
           topic_to_archived_at: topicNow.archived_at,
+        });
+      }
+
+      const isPriorityChanged = topicNow.priority !== topicBefore.priority;
+      if (isPriorityChanged) {
+        topicEventClient.create({
+          topic_id: topicNow.id,
+          topic_from_priority: topicBefore.priority,
+          topic_to_priority: topicNow.priority,
         });
       }
     },

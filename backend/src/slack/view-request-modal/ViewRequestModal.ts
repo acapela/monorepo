@@ -11,6 +11,7 @@ import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from 
 
 import { mdDate } from "../md/utils";
 import {
+  PriorityLabel,
   REQUEST_TYPE_EMOJIS,
   SlackActionIds,
   ViewMetadata,
@@ -84,7 +85,9 @@ function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
   return `${getIsOwnTaskIndicator(reorderedTasks[0])} and ${reorderedTasks.length - 1} others`;
 }
 
-const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: string) => {
+type TopicBlockOptions = { isFirst: boolean };
+
+const RequestBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: TopicBlockOptions) => {
   const { message, dueDate, tasks } = messageInfo;
 
   assert(tasks, "tasks must always present in request");
@@ -102,14 +105,15 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
         message.fromUserImage
           ? Blocks.Image({ imageUrl: message.fromUserImage, altText: message.fromUser.name })
           : undefined,
-        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks, slackUserId)}   ${mdDate(
+        `${Md.bold(message.fromUser.name)} to ${getTaskRecipientsLabel(tasks, topic.slackUserId)}   ${mdDate(
           message.createdAt,
           "time"
         )}`,
+        isFirst ? PriorityLabel(topic.priority) : undefined,
       ])
       .end(),
     Blocks.Section({ text: message.content }),
-    MessageActionsBlocks(messageInfo, slackUserId, topicURL),
+    MessageActionsBlocks(messageInfo, topic.slackUserId, topic.url),
     Blocks.Divider(),
     Blocks.Section().fields(
       Md.bold(`${tasks.length} recipients`),
@@ -132,7 +136,7 @@ const RequestBlock = (messageInfo: MessageInfo, slackUserId: string, topicURL: s
   ];
 };
 
-const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
+const MessageBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: TopicBlockOptions) => {
   const { message } = messageInfo;
   return [
     Blocks.Context()
@@ -141,13 +145,14 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
           ? Blocks.Image({ imageUrl: message.fromUserImage, altText: message.fromUser.name })
           : undefined,
         `${Md.bold(message.fromUser.name)}   ${mdDate(message.createdAt, "time")}`,
+        isFirst ? PriorityLabel(topic.priority) : undefined,
       ])
       .end(),
     Blocks.Section({ text: message.content }).accessory(
       Elements.Button({
         text: `Reply`,
         actionId: `open-external-url-reply-button:${message.id}`,
-        url: `${topicURL}#${message.id}`,
+        url: `${topic.url}#${message.id}`,
       })
     ),
   ];
@@ -155,7 +160,7 @@ const MessageBlock = (messageInfo: MessageInfo, topicURL: string) => {
 
 async function markAsSeenAndUpdateHomeView(token: string, slackUserId: string, topic: TopicInfo) {
   try {
-    const user = await findUserBySlackId(token, slackUserId, topic.teamId);
+    const user = await findUserBySlackId(token, slackUserId, topic.team_id);
     const [{ message: lastMessage }] = topic.messages.slice(-1);
 
     if (user && lastMessage) {
@@ -170,7 +175,7 @@ async function markAsSeenAndUpdateHomeView(token: string, slackUserId: string, t
           data: { seen_at: new Date().toISOString() },
         }),
       ]);
-      const botToken = await fetchTeamBotToken(topic.teamId);
+      const botToken = await fetchTeamBotToken(topic.team_id);
       if (botToken) {
         await updateHomeView(botToken, slackUserId);
       }
@@ -225,8 +230,8 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
   // own error handling
   markAsSeenAndUpdateHomeView(token, slackUserId, topic);
 
-  const RequestOrMessageBlock = (message: MessageInfo) =>
-    message.tasks?.length ? RequestBlock(message, topic.slackUserId, topic.url) : MessageBlock(message, topic.url);
+  const RequestOrMessageBlock = (message: MessageInfo, opts: TopicBlockOptions = { isFirst: false }) =>
+    message.tasks?.length ? RequestBlock(message, topic, opts) : MessageBlock(message, topic, opts);
 
   return Modal({
     title: "View Request",
@@ -239,7 +244,7 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
       ...Padding(1),
 
       // Main Request may have no tasks if only observers are mentioned
-      RequestOrMessageBlock(mainRequest),
+      RequestOrMessageBlock(mainRequest, { isFirst: true }),
 
       ...(otherMessages.length > 0
         ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]

@@ -26,10 +26,12 @@ insert_permissions:
     - topic_from_archived_at
     - topic_from_closed_at
     - topic_from_name
+    - topic_from_priority
     - topic_id
     - topic_to_archived_at
     - topic_to_closed_at
     - topic_to_name
+    - topic_to_priority
   role: user
 select_permissions:
 - permission:
@@ -43,10 +45,12 @@ select_permissions:
     - topic_from_archived_at
     - topic_from_closed_at
     - topic_from_name
+    - topic_from_priority
     - topic_id
     - topic_to_archived_at
     - topic_to_closed_at
     - topic_to_name
+    - topic_to_priority
     - updated_at
     filter:
       _or:
