@@ -2,6 +2,7 @@ import type { View } from "@slack/types";
 import { without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
+import { upperCaseFirst } from "~shared/text/casing";
 import {
   MENTION_OBSERVER,
   MENTION_TYPE_PICKER_LABELS,
@@ -43,6 +44,15 @@ const CreateRequestModal = (metadata: ViewMetadata["create_request"]) => {
         : Blocks.Input({ label: "Your Message", blockId: "message_block" }).element(
             Elements.TextInput({ actionId: "message_text" }).multiline(true)
           ),
+      Blocks.Input({ blockId: "priority_block", label: "Priority" })
+        .element(
+          Elements.StaticSelect({ actionId: "priority", placeholder: "No priority" }).options(
+            ["critical", "high", "medium", "low"].map((priority) =>
+              Bits.Option({ value: priority, text: upperCaseFirst(priority) })
+            )
+          )
+        )
+        .optional(true),
       Blocks.Input({ blockId: "due_at_date_block", label: "Due Date" })
         .element(Elements.DatePicker({ actionId: "due_at_date" }))
         .optional(true),

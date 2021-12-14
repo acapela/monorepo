@@ -8,7 +8,7 @@ import { theme } from "~ui/theme";
 
 interface TopicEventRenderer {
   isMatch(event: TopicEventEntity): boolean;
-  render(event?: TopicEventEntity): ReactNode;
+  render(event: TopicEventEntity): ReactNode;
 }
 
 const UserClosedTopicEvent: TopicEventRenderer = {
@@ -176,16 +176,37 @@ const RemoveDueDateTopicEvent: TopicEventRenderer = {
   },
 };
 
+const ChangedPriorityTopicEvent: TopicEventRenderer = {
+  isMatch: ({ topic_from_priority, topic_to_priority }) => Boolean(topic_from_priority || topic_to_priority),
+  render: ({ actor, topic_to_priority: priority }) => (
+    <>
+      <UIBold>{actor?.name}</UIBold>{" "}
+      {priority ? (
+        <>
+          changed priority to <UIBold>{priority}</UIBold>
+        </>
+      ) : (
+        <>removed priority</>
+      )}
+    </>
+  ),
+};
+
 const topicEventRenderers = {
   UserClosedTopicEvent,
   AutomaticClosedTopicEvent,
   ReopenedTopicEvent,
+
   ArchivedTopicEvent,
   UnarchivedTopicEvent,
+
   RenamedTopicEvent,
+
   AddedDueDateTopicEvent,
   ChangedDueDateTopicEvent,
   RemoveDueDateTopicEvent,
+
+  ChangedPriorityTopicEvent,
 } as const;
 
 export function renderTopicEventBody(topicEvent: TopicEventEntity): ReactNode | null {

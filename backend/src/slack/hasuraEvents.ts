@@ -1,9 +1,10 @@
 import { HasuraEvent } from "~backend/src/hasura";
 import { extractInstallationDataBotToken, fetchTeamBotToken } from "~backend/src/slack/utils";
-import { TaskSlackMessage, TeamSlackInstallation, db } from "~db";
+import { TaskSlackMessage, TeamMemberSlack, TeamSlackInstallation, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 
 import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "./app";
+import { NewUserOnboardingMessage } from "./onboarding";
 
 export async function handleTaskSlackMessageChanges(event: HasuraEvent<TaskSlackMessage>) {
   if (event.type == "delete") {
@@ -27,5 +28,29 @@ export async function handleTeamSlackInstallationUpdates(event: HasuraEvent<Team
     token: botToken,
     client_id: SLACK_CLIENT_ID,
     client_secret: SLACK_CLIENT_SECRET,
+  });
+}
+
+export async function handleUserSlackInstallation(event: HasuraEvent<TeamMemberSlack>) {
+  if (event.type !== "create") {
+    return;
+  }
+  const { team_member_id, slack_user_id: slackUserId } = event.item;
+  const team = await db.team.findFirst({
+    where: {
+      team_member: { some: { id: team_member_id } },
+    },
+    include: { team_slack_installation: true },
+  });
+  assert(team, "team member must belong to a team");
+  assert(team.team_slack_installation, "team installation must exist since user installation succeeded");
+  const botToken = extractInstallationDataBotToken(team.team_slack_installation);
+  assert(botToken, "must have bot token");
+  const onboardingMessage = NewUserOnboardingMessage(team.team_slack_installation.slack_team_id);
+  await slackClient.chat.postMessage({
+    botToken,
+    channel: slackUserId,
+    text: "Welcome to Acapela 🎉 Here is a short summary how to get started",
+    blocks: onboardingMessage.blocks,
   });
 }

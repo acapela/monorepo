@@ -6,10 +6,13 @@ import styled from "styled-components";
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
 import { useAppStateStore } from "~frontend/appState/AppStateStore";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { PriorityIcon } from "~frontend/topics/priority";
+import { PriorityPicker } from "~frontend/topics/PriorityPicker";
 import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { upperCaseFirst } from "~shared/text/casing";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -52,14 +55,29 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
 
   return (
     <UIHolder>
-      <UITitle
-        data-test-id="topic-title"
-        data-tooltip="Rename..."
-        layoutId={layoutAnimations.newTopic.title(topic.id)}
-        onClick={handleTopicRename}
-      >
-        {topic.name}
-      </UITitle>
+      <div>
+        <UITitle
+          data-test-id="topic-title"
+          data-tooltip="Rename..."
+          layoutId={layoutAnimations.newTopic.title(topic.id)}
+          onClick={handleTopicRename}
+        >
+          {topic.name}
+        </UITitle>
+        <PriorityPicker priority={topic.priority ?? null} onChange={(priority) => topic.update({ priority })}>
+          <UIPriority data-tooltip="Change priority...">
+            <UIPriorityIcon priority={topic.priority ?? null} />
+            {topic.priority ? (
+              <>
+                <UIPriorityTitle>Priority</UIPriorityTitle> {upperCaseFirst(topic.priority)}
+              </>
+            ) : (
+              "No priority"
+            )}
+          </UIPriority>
+        </PriorityPicker>
+      </div>
+
       <UITopicTools>
         <TopicCloseButton topic={topic} />
         <AvatarList users={topic.members} maxVisibleCount={5} />
@@ -107,8 +125,26 @@ const UIHolder = styled(HorizontalSpacingContainer)`
 `;
 
 const UITitle = styled(PageLayoutAnimator)`
+  margin-bottom: 5px;
   ${theme.typo.pageTitle};
   cursor: pointer;
+`;
+
+const UIPriority = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${theme.typo.content};
+  cursor: pointer;
+`;
+
+const UIPriorityTitle = styled.div`
+  margin-right: 5px;
+  ${theme.typo.content.semibold};
+`;
+
+const UIPriorityIcon = styled(PriorityIcon)`
+  margin-right: 10px;
 `;
 
 const UITopicTools = styled.div`

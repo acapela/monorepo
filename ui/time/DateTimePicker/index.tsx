@@ -50,15 +50,18 @@ export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation 
         <UICalendarHolder>
           <Calendar date={dirtyDate} onDateChange={handleDayChange} />
         </UICalendarHolder>
-
-        <UITimePickerWrapper>
-          <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
-        </UITimePickerWrapper>
+        <UITimePickerHeightLimiter>
+          <UITimePickerWrapper>
+            <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
+          </UITimePickerWrapper>
+        </UITimePickerHeightLimiter>
       </UIPickers>
       {!shouldSkipConfirmation && (
-        <Button kind="primary" type="button" onClick={handleSubmit} shortcut="Enter">
-          Confirm
-        </Button>
+        <UIFooter>
+          <Button isWide kind="primary" type="button" onClick={handleSubmit} shortcut="Enter">
+            Confirm
+          </Button>
+        </UIFooter>
       )}
     </UIDateTimePickerForm>
   );
@@ -68,25 +71,39 @@ const UIDateTimePickerForm = styled(PopPresenceAnimator)<{}>`
   ${theme.colors.layout.background.asBgWithReadableText};
   ${theme.shadow.popover};
   ${theme.radius.panel};
-  display: grid;
-  grid-gap: 24px;
-  grid-template-columns: 1fr;
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  ${theme.spacing.actionsSection.asGap}
+
+  padding: 24px;
 `;
 
 const UIPickers = styled.div<{}>`
-  display: grid;
-  grid-template-columns: minmax(320px, 1fr) auto;
-  gap: 10px;
+  display: flex;
+  ${theme.spacing.sections.asGap}
+`;
+
+const UITimePickerHeightLimiter = styled.div`
+  min-height: 0;
+  flex-basis: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UITimePickerWrapper = styled.div<{}>`
-  padding: 16px;
   border-left: 1px solid ${theme.colors.layout.background.border};
   overflow: auto;
-  max-height: 300px;
+  min-height: 0;
+  flex-basis: 0;
+  flex-grow: 1;
+  padding-left: 10px;
+  padding-right: 5px;
 `;
 
 const UICalendarHolder = styled.div<{}>`
-  padding: 16px;
+  padding-bottom: 0;
+  width: 220px;
 `;
+
+const UIFooter = styled.div``;

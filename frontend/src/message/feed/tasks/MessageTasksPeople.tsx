@@ -74,7 +74,6 @@ const UICollapsedTasks = styled(UIDropdownPanelBody)<{}>`
   flex-direction: column;
 
   max-height: 400px;
-  overflow-y: auto;
 
   ${MessageTask} {
     ${theme.transitions.hover("all")};

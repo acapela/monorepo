@@ -148,13 +148,16 @@ export function setupCreateRequestModal(app: App) {
       due_at_hour_block: {
         due_at_hour: { selected_time: dueAtHour },
       },
+      priority_block: {
+        priority: { selected_option: selectedPriority },
+      },
     } = view.state.values;
 
     const token = assertToken(context);
 
     const messageText = metadata.messageText || view.state.values.message_block.message_text.value;
 
-    if (!(members && requestType && messageText && members.length > 0)) {
+    if (!(members && requestType && messageText && members.length > 0 && selectedPriority)) {
       return await ack({
         response_action: "errors",
         errors: {
@@ -170,7 +173,7 @@ export function setupCreateRequestModal(app: App) {
       slackTeamId: body.user.team_id,
       creatorSlackUserId: body.user.id,
       requestType: requestType?.value as MentionType,
-      requestForSlackUserIds: metadata.slackUserIdsFromMessage ?? [],
+      requestForSlackUserIds: members,
       observersSlackUserIds,
       origin: metadata.origin,
       token,
@@ -184,6 +187,7 @@ export function setupCreateRequestModal(app: App) {
       messageTs: metadata.messageTs,
       botToken: context.botToken,
       topicName,
+      priority: selectedPriority?.value,
     });
 
     await ack({ response_action: "clear" });

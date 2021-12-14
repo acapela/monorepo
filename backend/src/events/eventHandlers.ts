@@ -7,6 +7,7 @@ import {
   TaskSlackMessage,
   Team,
   TeamMember,
+  TeamMemberSlack,
   TeamSlackInstallation,
   Topic,
   TopicMember,
@@ -24,6 +25,7 @@ export const hasuraEvents = createHasuraEventsHandler<{
   message_reaction_updates: MessageReaction;
   team_updates: Team;
   team_slack_installation_updates: TeamSlackInstallation;
+  team_member_slack_updates: TeamMemberSlack;
   topic_updates: Topic;
   topic_member_updates: TopicMember;
   attachment_updates: Attachment;

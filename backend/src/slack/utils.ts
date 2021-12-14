@@ -1,11 +1,13 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 import { zonedTimeToUtc } from "date-fns-tz";
+import { Md } from "slack-block-builder";
 
 import { User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { checkHasAllSlackBotScopes } from "~shared/slack";
+import { upperCaseFirst } from "~shared/text/casing";
 import { Maybe } from "~shared/types";
 import { AnalyticsEventsMap } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
@@ -181,3 +183,6 @@ export async function buildDateTimePerUserTimezone(
   const timeZone = slackUser?.tz ?? "Europe/Berlin";
   return zonedTimeToUtc(`${date} ${hour}:00`, timeZone);
 }
+
+export const PriorityLabel = (priority: null | string) =>
+  priority ? `🚩 ${Md.bold("Priority")} ${upperCaseFirst(priority)}` : undefined;
