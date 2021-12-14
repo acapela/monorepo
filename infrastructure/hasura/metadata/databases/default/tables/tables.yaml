@@ -7,6 +7,7 @@
 - "!include public_message_reaction.yaml"
 - "!include public_message_task_due_date.yaml"
 - "!include public_message_type.yaml"
+- "!include public_priority.yaml"
 - "!include public_slack_notification_queue.yaml"
 - "!include public_sync_request.yaml"
 - "!include public_task.yaml"

@@ -125,13 +125,11 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
 
   const topicUrl = await backendGetTopicUrl(topic);
   const topicInfo: TopicInfo = {
-    id: topic.id,
+    ...topic,
     url: topicUrl,
-    name: topic.name,
     isClosed: !!topic.closed_at,
     slackUserId,
     slackMessagePermalink,
-    teamId: team.id,
     messages: await Promise.all(
       topic.message.map(async (message) => {
         const content =

@@ -181,6 +181,7 @@ export async function createTopicForSlackUsers({
   dueAt,
   rawTopicMessage,
   slackUserIdsWithMentionType,
+  priority,
 }: {
   token: string;
   teamId: string;
@@ -191,6 +192,7 @@ export async function createTopicForSlackUsers({
   dueAt: Maybe<Date>;
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
+  priority: Maybe<string>;
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -216,6 +218,7 @@ export async function createTopicForSlackUsers({
       name: topicName,
       slug: await slugify(topicName),
       index: "a",
+      priority,
       owner_id: ownerId,
       topic_access_token: { create: {} },
       topic_member: { createMany: { data: Array.from(userIds).map((user_id) => ({ user_id })) } },

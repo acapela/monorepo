@@ -1,3 +1,4 @@
+import { Topic } from "~db";
 import { RequestType } from "~shared/types/mention";
 
 export interface SlackMember {
@@ -19,13 +20,10 @@ export interface MessageInfo {
   tasks?: TaskInfo[];
 }
 
-export interface TopicInfo {
-  id: string;
+export type TopicInfo = Topic & {
   url: string;
   slackUserId: string;
-  name: string;
   isClosed: boolean;
   messages: MessageInfo[];
   slackMessagePermalink?: string;
-  teamId: string;
-}
+};

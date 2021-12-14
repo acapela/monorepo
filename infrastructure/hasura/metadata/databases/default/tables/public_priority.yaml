@@ -1,0 +1,4 @@
+table:
+  name: priority
+  schema: public
+is_enum: true

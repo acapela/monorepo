@@ -1,6 +1,6 @@
 import { Blocks, Elements, Md } from "slack-block-builder";
 
-import { REQUEST_TYPE_EMOJIS, SlackActionIds } from "~backend/src/slack/utils";
+import { PriorityLabel, REQUEST_TYPE_EMOJIS, SlackActionIds } from "~backend/src/slack/utils";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { User } from "~db";
 import { pluralize } from "~shared/text/pluralize";
@@ -51,6 +51,7 @@ export async function RequestItem(
     userTask && Padding,
     Blocks.Context().elements(
       mostUrgentMessage ? TaskInfo(userId, mostUrgentMessage) : TopicInfo(userId, topic),
+      PriorityLabel(topic.priority),
       unreadMessages
         ? `✉️ ${Md.bold(unreadMessages + " New " + pluralize(unreadMessages, "reply", "replies"))}`
         : undefined

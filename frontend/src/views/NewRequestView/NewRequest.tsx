@@ -16,6 +16,8 @@ import { MessageContentEditor } from "~frontend/message/composer/MessageContentC
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
+import { PriorityPicker } from "~frontend/topics/PriorityPicker";
+import { Priority_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
 import { runUntracked } from "~shared/mobxUtils";
@@ -91,6 +93,7 @@ export const NewRequest = observer(function NewRequest({
   const messageContentExample = useMessageContentExamplePlaceholder();
   const updateMessageTasks = useUpdateMessageTasks();
   const [tasksDueDate, setTasksDueDate] = useState<Date | null>(null);
+  const [priority, setPriority] = useState<null | Priority_Enum>(null);
 
   const newTopicId = useConst(getUUID);
 
@@ -168,7 +171,7 @@ export const NewRequest = observer(function NewRequest({
     const topicNameSlug = await getAvailableSlugForTopicName(db, finalTitle);
 
     runInAction(() => {
-      const topic = db.topic.create({ id: newTopicId, name: finalTitle, slug: topicNameSlug });
+      const topic = db.topic.create({ id: newTopicId, name: finalTitle, slug: topicNameSlug, priority });
       const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
       updateMessageTasks(newMessage);
@@ -259,9 +262,14 @@ export const NewRequest = observer(function NewRequest({
           <UIAdditionalActions>
             <AnimatePresence>
               {stage === "valid" && (
-                <FadePresenceAnimator>
-                  <TaskDueDateSetter dueDate={tasksDueDate} onChange={setTasksDueDate} size="regular" />
-                </FadePresenceAnimator>
+                <>
+                  <FadePresenceAnimator>
+                    <TaskDueDateSetter dueDate={tasksDueDate} onChange={setTasksDueDate} size="regular" />
+                  </FadePresenceAnimator>
+                  <FadePresenceAnimator>
+                    <PriorityPicker priority={priority} onChange={setPriority} />
+                  </FadePresenceAnimator>
+                </>
               )}
             </AnimatePresence>
           </UIAdditionalActions>
@@ -357,6 +365,9 @@ const UIActions = styled(PageLayoutAnimator)<{}>`
 
 const UIAdditionalActions = styled.div`
   flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 `;
 
 const UIComposerHolder = styled(PageLayoutAnimator)`
