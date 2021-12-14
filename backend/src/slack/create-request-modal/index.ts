@@ -161,7 +161,7 @@ export function setupCreateRequestModal(app: App) {
       slackTeamId: body.user.team_id,
       creatorSlackUserId: body.user.id,
       requestType: requestType?.value as MentionType,
-      requestForSlackUserIds: metadata.slackUserIdsFromMessage ?? [],
+      requestForSlackUserIds: members,
       observersSlackUserIds,
       origin: metadata.origin,
       token,
