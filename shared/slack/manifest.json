@@ -27,16 +27,16 @@
         "description": "Creates a new request"
       },
       {
-        "name": "Create self request",
+        "name": "Create a personal task",
         "type": "message",
-        "callback_id": "message_self_request_acapela",
-        "description": "Instantly creates a new self request from this message"
+        "callback_id": "quick_message_acapela",
+        "description": "Creates a new task for yourself from this message"
       },
       {
-        "name": "Turn into request",
+        "name": "Create group request...",
         "type": "message",
         "callback_id": "message_acapela",
-        "description": "Creates a new request from this message"
+        "description": "Create a new group request from this message"
       }
     ],
     "slash_commands": [

@@ -17,7 +17,7 @@ const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
 const MESSAGE_SELF_REQUEST_ACTION = {
-  callback_id: "message_self_request_acapela",
+  callback_id: "quick_message_acapela",
   type: "message_action",
 } as const as MessageShortcut;
 
