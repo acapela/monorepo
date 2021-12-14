@@ -15,7 +15,10 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
       user: { id: slackUserId, team_id: slackTeamId, name: slackUserName },
       trigger_id: triggerId,
     },
+    ack,
   } = request;
+
+  await ack();
 
   const channelId = channel.id;
 
