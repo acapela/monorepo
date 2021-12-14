@@ -8,13 +8,18 @@ import { MentionType } from "~shared/types/mention";
 
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
+import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
 import { openCreateRequestModal } from "./openCreateRequestModal";
 import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
-import { requestSlackAuthorizedOrOpenAuthModal } from "./requestSlackAuthorized";
+import { requestSlackAuthorizedOrOpenAuthModalForSlashCommand } from "./requestSlackAuthorized";
 
 const SLASH_COMMAND = "/" + process.env.SLACK_SLASH_COMMAND;
 const SHORTCUT = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const MESSAGE_ACTION = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
+const MESSAGE_SELF_REQUEST_ACTION = {
+  callback_id: "quick_message_acapela",
+  type: "message_action",
+} as const as MessageShortcut;
 
 export function setupCreateRequestModal(app: App) {
   app.command(SLASH_COMMAND, async (req) => {
@@ -35,7 +40,7 @@ export function setupCreateRequestModal(app: App) {
 
     await ack();
 
-    const authData = await requestSlackAuthorizedOrOpenAuthModal(req);
+    const authData = await requestSlackAuthorizedOrOpenAuthModalForSlashCommand(req);
 
     if (!authData) {
       return;
@@ -75,6 +80,10 @@ export function setupCreateRequestModal(app: App) {
     if (user) {
       trackBackendUserEvent(user.id, "Used Slack Global Shortcut", { slackUserName: body.user.username });
     }
+  });
+
+  app.shortcut(MESSAGE_SELF_REQUEST_ACTION, async (req) => {
+    await handleMessageSelfRequestShortcut(req);
   });
 
   app.shortcut(MESSAGE_ACTION, async ({ shortcut, ack, body, context, client, payload }) => {

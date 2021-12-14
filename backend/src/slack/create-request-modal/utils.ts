@@ -1,5 +1,7 @@
 import { compact, uniq } from "lodash";
 
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+
 import { slackClient } from "../app";
 
 export function pickSlackUserIdsFromMessageText(messageText: string) {
@@ -28,4 +30,8 @@ export async function pickRealUsersFromMessageText(token: string, messageText?: 
   );
 
   return slackUserIdsFromMessage;
+}
+
+export function createRequestTitleFromMessageText(messageText: string) {
+  return truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH).replaceAll("\n", "");
 }

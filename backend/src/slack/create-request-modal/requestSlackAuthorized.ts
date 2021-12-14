@@ -1,8 +1,9 @@
+import { Context } from "@slack/bolt";
 import type { View } from "@slack/types";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { getTeamSlackInstallURL, getUserSlackInstallURL } from "~backend/src/slack/install";
-import { db } from "~db";
+import { Team, User, db } from "~db";
 import { routes } from "~shared/routes";
 import { checkHasAllSlackUserScopes } from "~shared/slack";
 import { Maybe } from "~shared/types";
@@ -11,7 +12,7 @@ import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";
 import { createSlackLink } from "../md/utils";
 import { assertToken, checkHasSlackInstallationAllBotScopes, findUserBySlackId } from "../utils";
-import { SlashCommandRequest } from "./types";
+import { MessageShortcutRequest, SlashCommandRequest } from "./types";
 
 const MissingTeamModal = Modal({ title: "Four'O'Four" })
   .blocks(
@@ -78,17 +79,26 @@ async function checkHasChannelAccess(token: string, channelId: string, slackUser
   }
 }
 
-export async function requestSlackAuthorizedOrOpenAuthModal(request: SlashCommandRequest) {
-  const {
-    payload: {
-      //
-      channel_id: channelId,
-      user_id: slackUserId,
-      trigger_id: triggerId,
-      team_id: slackTeamId,
-    },
-    context,
-  } = request;
+interface RequestSlackAuthorizedOrOpenAuthModalInput {
+  channelId?: string;
+  slackUserId: string;
+  triggerId: string;
+  slackTeamId?: string;
+  context: Context;
+}
+
+export interface SlackAuthorizedData {
+  user: User;
+  team: Team;
+}
+
+export async function requestSlackAuthorizedOrOpenAuthModal({
+  channelId,
+  slackTeamId,
+  slackUserId,
+  triggerId,
+  context,
+}: RequestSlackAuthorizedOrOpenAuthModalInput): Promise<SlackAuthorizedData | false> {
   const token = assertToken(context);
 
   const openView = async (view: View) => {
@@ -122,4 +132,35 @@ export async function requestSlackAuthorizedOrOpenAuthModal(request: SlashComman
   }
 
   return { user, team };
+}
+
+export async function requestSlackAuthorizedOrOpenAuthModalForSlashCommand(req: SlashCommandRequest) {
+  return requestSlackAuthorizedOrOpenAuthModal({
+    channelId: req.body.channel_id,
+    slackUserId: req.body.user_id,
+    triggerId: req.body.trigger_id,
+    context: req.context,
+    slackTeamId: req.body.team_id,
+  });
+}
+
+export async function requestSlackAuthorizedOrOpenAuthModalForMessageShortcut(request: MessageShortcutRequest) {
+  const {
+    shortcut: { channel },
+    context,
+    body: {
+      user: { id: slackUserId, team_id: slackTeamId },
+      trigger_id: triggerId,
+    },
+  } = request;
+
+  const channelId = channel.id;
+
+  return await requestSlackAuthorizedOrOpenAuthModal({
+    context,
+    triggerId,
+    slackUserId,
+    slackTeamId,
+    channelId,
+  });
 }

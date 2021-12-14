@@ -1,11 +1,10 @@
-import { db } from "~db";
 import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
 import { removePrefix } from "~shared/text/substring";
 import { RequestType } from "~shared/types/mention";
 import { createTypeGuard } from "~shared/typeUtils/typeGuard";
 
-import { assertToken, findUserBySlackId } from "../utils";
+import { assertToken } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { SlashCommandRequest } from "./types";
 import { pickRealUsersFromMessageText } from "./utils";
@@ -79,17 +78,6 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
     // In case no one is mentioned - assume self request
     mentionedPeopleSlackIds.push(slackUserId);
   }
-
-  const [owner, team] = await Promise.all([
-    findUserBySlackId(token, slackUserId),
-    db.team.findFirst({
-      where: { team_slack_installation: { slack_team_id: slackTeamId } },
-      include: { team_slack_installation: true },
-    }),
-  ]);
-
-  assert(team, "No team");
-  assert(owner, "No owner");
 
   await createAndTrackRequestInSlack({
     messageText: messageBodyWithoutCommandAlias,
