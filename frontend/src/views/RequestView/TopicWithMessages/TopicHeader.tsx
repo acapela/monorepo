@@ -64,9 +64,9 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
         >
           {topic.name}
         </UITitle>
-        <PriorityPicker priority={topic.priority} onChange={(priority) => topic.update({ priority })}>
+        <PriorityPicker priority={topic.priority ?? null} onChange={(priority) => topic.update({ priority })}>
           <UIPriority data-tooltip="Change priority...">
-            <UIPriorityIcon priority={topic.priority} />
+            <UIPriorityIcon priority={topic.priority ?? null} />
             {topic.priority ? (
               <>
                 <UIPriorityTitle>Priority</UIPriorityTitle> {upperCaseFirst(topic.priority)}

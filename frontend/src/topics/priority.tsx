@@ -2,7 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { Priority_Enum } from "~gql";
-import { Maybe } from "~shared/types";
 import {
   PriorityCriticalIcon,
   PriorityHighIcon,
@@ -11,7 +10,7 @@ import {
   PriorityNoneIcon,
 } from "~ui/icons/priorities";
 
-export type Priority = Maybe<Priority_Enum>;
+export type Priority = Priority_Enum | null;
 
 export const PriorityIcon = styled<{ priority: Priority; $invert?: boolean }>(({ priority, ...props }) => {
   const Icon = priority
