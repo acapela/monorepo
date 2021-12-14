@@ -1,15 +1,24 @@
-import { App, GlobalShortcut, MessageShortcut, ViewSubmitAction } from "@slack/bolt";
+import {
+  App,
+  BlockButtonAction,
+  BlockStaticSelectAction,
+  GlobalShortcut,
+  MessageShortcut,
+  ViewSubmitAction,
+} from "@slack/bolt";
 import { difference } from "lodash";
 import { Md } from "slack-block-builder";
 
+import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack/create-request-modal/utils";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { MentionType } from "~shared/types/mention";
+import { isNotNullish } from "~shared/nullish";
+import { MentionType, REQUEST_DECISION } from "~shared/types/mention";
 
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
-import { openCreateRequestModal } from "./openCreateRequestModal";
+import { CreateRequestModal, openCreateRequestModal } from "./openCreateRequestModal";
 import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
 import { requestSlackAuthorizedOrOpenAuthModalForSlashCommand } from "./requestSlackAuthorized";
 
@@ -130,6 +139,33 @@ export function setupCreateRequestModal(app: App) {
     await openCreateRequestModal(assertToken(context), (body as any).trigger_id, metadata);
   });
 
+  app.action<BlockStaticSelectAction>("request_type_select", async ({ ack, client, body, context }) => {
+    await ack();
+    const view = assertDefined(body.view, "missing view");
+    const token = assertToken(context);
+    await client.views.update({
+      token,
+      view_id: view.id,
+      view: await CreateRequestModal(token, JSON.parse(view.private_metadata), view.state.values),
+    });
+  });
+
+  app.action<BlockButtonAction>("request-modal-add-option", async ({ ack, client, body, context }) => {
+    await ack();
+    const view = assertDefined(body.view, "missing view");
+    const token = assertToken(context);
+    const stateValues = view.state.values;
+    const n = getDecisionBlockCount(stateValues);
+    stateValues[DECISION_BLOCK_ID_PRE + n] = {
+      ["decision_input_" + n]: { type: "plain_text_input", value: "" },
+    };
+    await client.views.update({
+      token,
+      view_id: view.id,
+      view: await CreateRequestModal(token, JSON.parse(view.private_metadata), stateValues),
+    });
+  });
+
   listenToViewWithMetadata<ViewSubmitAction, "create_request">(app, "create_request", async (args) => {
     const { ack, view, body, client, context, metadata } = args;
     const {
@@ -166,6 +202,14 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
+    let decisionOptions: string[] = [];
+    if (requestType.value === REQUEST_DECISION) {
+      decisionOptions = Object.entries(view.state.values)
+        .filter(([key]) => key.startsWith(DECISION_BLOCK_ID_PRE))
+        .map(([, value]) => Object.values(value)[0].value)
+        .filter(isNotNullish);
+    }
+
     const observersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
 
     createAndTrackRequestInSlack({
@@ -188,6 +232,7 @@ export function setupCreateRequestModal(app: App) {
       botToken: context.botToken,
       topicName,
       priority: selectedPriority?.value,
+      decisionOptions,
     });
 
     await ack({ response_action: "clear" });
