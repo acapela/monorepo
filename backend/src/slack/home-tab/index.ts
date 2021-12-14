@@ -93,10 +93,18 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
 
   const whereHasOpenSentTask: TopicWhereInput = {
     OR: [
-      // Any message  that is created by user and with task(s) that are not done
+      // Any message that is created by user and with task(s) for other people that are not done
       {
         message: {
-          some: { user_id: currentUserId, task: { some: { done_at: null } } },
+          some: {
+            user_id: currentUserId,
+            task: {
+              some: {
+                done_at: null,
+                user_id: { not: currentUserId },
+              },
+            },
+          },
         },
       },
       {
