@@ -104,6 +104,13 @@ Setting Slack up is optional in development, but if you want to work on it you h
 4. Fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. Also add `SLACK_STATE_SECRET` which can be any random string.
 5. To start using Slack's actions, open the frontend, navigate to a team's settings page and click the button for linking the team to Slack.
 
+### Updating staging/production Slack App manifest
+
+1. Copy the manifest
+   1. **For staging:** Run `yarn shared clone-slack-manifest --staging`
+   1. **For production:** Just copy `shared/slack/manifest.json`
+2. Paste the manifest into the [staging](https://app.slack.com/app-settings/T01DBMUNM5H/A02CFBKDZMZ/app-manifest) or the [production](https://app.slack.com/app-settings/T01DBMUNM5H/A012VTBSTNV/app-manifest) app and save it.
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
