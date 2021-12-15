@@ -221,7 +221,9 @@ export function setupCreateRequestModal(app: App) {
       observersSlackUserIds,
       origin: metadata.origin,
       token,
-      channelId: metadata.channelId,
+      originalChannelId: metadata.channelId,
+      conversationId:
+        metadata.channelId ?? view.state.values.conversation_block.conversation_select.selected_conversation,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
       client,

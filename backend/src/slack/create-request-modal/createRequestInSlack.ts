@@ -24,7 +24,8 @@ interface CreateRequestInSlackInput {
   observersSlackUserIds?: Maybe<string[]>;
   origin?: Origin;
   token: string;
-  channelId?: Maybe<string>;
+  originalChannelId?: Maybe<string>;
+  conversationId?: Maybe<string>;
   client: WebClient;
   triggerId: string;
   dueAtDate?: Maybe<string>;
@@ -46,7 +47,8 @@ export async function createAndTrackRequestInSlack({
   observersSlackUserIds = [],
   origin = "unknown",
   token,
-  channelId,
+  originalChannelId,
+  conversationId,
   client,
   triggerId,
   dueAtDate,
@@ -106,7 +108,7 @@ export async function createAndTrackRequestInSlack({
     decisionOptions,
   });
 
-  if (!channelId) {
+  if (!originalChannelId) {
     const topicURL = await backendGetTopicUrl(topic);
     await client.views.open({
       trigger_id: triggerId,
@@ -116,14 +118,14 @@ export async function createAndTrackRequestInSlack({
     });
   }
 
-  if (!channelId) {
+  if (!conversationId) {
     return;
   }
 
   try {
-    if (channelId && botToken == token) {
+    if (conversationId && botToken == token) {
       // try to join the channel in case the bot is not in it already
-      await client.conversations.join({ token, channel: channelId });
+      await client.conversations.join({ token, channel: conversationId });
     }
   } catch (error) {
     if (!isWebAPIErrorType(error, "method_not_supported_for_channel_type")) {
@@ -134,7 +136,7 @@ export async function createAndTrackRequestInSlack({
   const response = await client.chat.postMessage({
     ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
     token,
-    channel: channelId,
+    channel: conversationId,
     thread_ts: messageTs ?? undefined,
   });
 

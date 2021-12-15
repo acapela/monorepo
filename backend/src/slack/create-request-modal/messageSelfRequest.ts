@@ -53,7 +53,8 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     requestForSlackUserIds: requestForSlackUserIds,
     origin: "slack-command",
     token,
-    channelId,
+    originalChannelId: channelId,
+    conversationId: channelId,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
     client,
