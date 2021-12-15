@@ -1,5 +1,3 @@
-import { isPrimitive } from "utility-types";
-
 import { EqualValueReuser, createReuseValueGroup } from "./createEqualReuser";
 
 const targetSymbol = Symbol("target");
@@ -20,9 +18,6 @@ interface Options {
 
 type AnyMap = Map<unknown, unknown>;
 
-let deepMapResued = 0;
-let deepMapNotReused = 0;
-
 /**
  * Creates map that can hold value arbitrarily deep.
  *
@@ -37,8 +32,7 @@ let deepMapNotReused = 0;
  */
 export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
   const root = new Map<unknown, unknown>();
-  const reuseValue = createReuseValueGroup();
-  root.set(equalReuserSymbol, reuseValue);
+  root.set(equalReuserSymbol, createReuseValueGroup());
 
   function getFinalTargetMap(path: unknown[]) {
     let currentTarget = root;
@@ -57,7 +51,7 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
       const nestedMap = new Map();
 
-      nestedMap.set(equalReuserSymbol, reuseValue);
+      nestedMap.set(equalReuserSymbol, createReuseValueGroup());
 
       currentTarget.set(part, nestedMap);
 
@@ -71,11 +65,8 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
     const targetMap = getFinalTargetMap(path);
 
     if (targetMap.has(targetSymbol)) {
-      deepMapResued++;
       return targetMap.get(targetSymbol) as V;
     }
-
-    deepMapNotReused++;
 
     const newResult = factory();
 
@@ -86,38 +77,3 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
   return { get };
 }
-
-let i = 0;
-
-function createMaybeWeakMap<K, V>() {
-  const weak = new WeakMap<K & object, V>();
-  const primitive = new Map<K, V>();
-
-  function get(key: K) {
-    if (isPrimitive(key)) {
-      return primitive.get(key);
-    }
-    return weak.get(key as K & object);
-  }
-
-  function set(key: K, value: V) {
-    if (isPrimitive(key)) {
-      i++;
-      return primitive.set(key, value);
-    }
-    return weak.set(key as K & object, value);
-  }
-
-  function has(key: K) {
-    if (isPrimitive(key)) {
-      return primitive.has(key);
-    }
-    return weak.has(key as K & object);
-  }
-
-  return { get, set, has };
-}
-
-setInterval(() => {
-  console.log("i", { deepMapNotReused, deepMapResued });
-}, 1000);

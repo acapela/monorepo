@@ -2,6 +2,15 @@ import "focus-visible";
 
 // Polyfill for :focus-visible pseudo-selector.
 import * as Sentry from "@sentry/react";
+import { MotionConfig } from "framer-motion";
+import { NextPageContext } from "next";
+import { Session } from "next-auth";
+import { AppContext, AppProps } from "next/app";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { createGlobalStyle } from "styled-components";
+
 import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { AppStateStoreProvider } from "~frontend/appState/AppStateStore";
 import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
@@ -17,14 +26,6 @@ import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "~ui/theme";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
-import { MotionConfig } from "framer-motion";
-import { NextPageContext } from "next";
-import { Session } from "next-auth";
-import { AppContext, AppProps } from "next/app";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { createGlobalStyle } from "styled-components";
 
 export interface AppConfig {
   session: Session | null;
@@ -52,16 +53,6 @@ function initSentry(appConfig: AppConfig) {
 const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
-
-class FooTest {
-  superFoo() {
-    console.log("super super foo");
-  }
-}
-
-const foo = new FooTest();
-
-console.log(foo.superFoo());
 
 export default function App({
   Component,
@@ -200,8 +191,6 @@ App.getInitialProps = async (context: AppContext) => {
   }
 
   const session = await getUserFromRequest(context.ctx.req);
-
-  console.log({ session });
 
   // this is how we populate environment configurations to the frontend
   return {

@@ -1,7 +1,7 @@
+import { IComputedValueOptions, Reaction, createAtom } from "mobx";
+
 import { IS_DEV } from "~shared/dev";
 import { mapGetOrCreate } from "~shared/map";
-import { createTimeoutBatcher } from "~shared/timeouts";
-import { IComputedValueOptions, Reaction, computed, createAtom } from "mobx";
 
 import { createBiddableTimeout } from "./biddableTimeout";
 
@@ -24,8 +24,6 @@ export const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
  */
 let isDisposalCascadeRunning = false;
 
-const disposeBatcher = createTimeoutBatcher(0);
-
 const namesMap = new Map<string, number>();
 /**
  * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
@@ -38,11 +36,8 @@ const namesMap = new Map<string, number>();
 export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputedValueOptions<T> = {}): LazyComputed<T> {
   const { name = "LazyComputed", equals } = options;
 
+  // This is dev for debugging what sort of computed values are created
   namesMap.set(name, mapGetOrCreate(namesMap, name, () => 0) + 1);
-
-  if (namesMap.get(name)! > 1) {
-    // console.warn(name);
-  }
 
   // return computed(getter, options);
 
