@@ -183,6 +183,7 @@ export async function createTopicForSlackUsers({
   slackUserIdsWithMentionType,
   priority,
   decisionOptions,
+  firstReplyEnough,
 }: {
   token: string;
   teamId: string;
@@ -195,6 +196,7 @@ export async function createTopicForSlackUsers({
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
   priority: Maybe<string>;
   decisionOptions: string[];
+  firstReplyEnough: boolean;
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -224,6 +226,7 @@ export async function createTopicForSlackUsers({
       owner_id: ownerId,
       topic_access_token: { create: {} },
       topic_member: { createMany: { data: Array.from(userIds).map((user_id) => ({ user_id })) } },
+      is_first_reply_enough: firstReplyEnough,
       message: {
         create: {
           type: "TEXT",

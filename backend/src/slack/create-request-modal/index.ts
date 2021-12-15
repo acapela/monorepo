@@ -6,7 +6,7 @@ import {
   MessageShortcut,
   ViewSubmitAction,
 } from "@slack/bolt";
-import { difference } from "lodash";
+import { difference, find } from "lodash";
 import { Md } from "slack-block-builder";
 
 import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack/create-request-modal/utils";
@@ -187,7 +187,12 @@ export function setupCreateRequestModal(app: App) {
       priority_block: {
         priority: { selected_option: selectedPriority },
       },
+      settings_block: {
+        settings_checkbox: { selected_options: selectedSettings },
+      },
     } = view.state.values;
+
+    const firstReplyEnough = !!find(selectedSettings, ["value", "first_reply_enough"]);
 
     const token = assertToken(context);
 
@@ -233,6 +238,7 @@ export function setupCreateRequestModal(app: App) {
       topicName,
       priority: selectedPriority?.value,
       decisionOptions,
+      firstReplyEnough,
     });
 
     await ack({ response_action: "clear" });
