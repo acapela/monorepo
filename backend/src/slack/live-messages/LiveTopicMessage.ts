@@ -1,5 +1,5 @@
 import { App, BlockButtonAction } from "@slack/bolt";
-import { groupBy } from "lodash";
+import { groupBy, orderBy } from "lodash";
 import { Blocks, Elements, Md, Modal, Message as SlackMessage } from "slack-block-builder";
 
 import { DecisionOption, DecisionVote, Message, Task, Topic, TopicAccessToken, User, db } from "~db";
@@ -32,7 +32,7 @@ export function setupLiveTopicMessage(app: App) {
     const decisionOption = user
       ? await db.decision_option.findFirst({
           where: { id: action.value, message: { task: { some: { user_id: user.id, type: REQUEST_DECISION } } } },
-          include: { decision_vote: { where: { user_id: user.id } } },
+          include: { message: { include: { topic: true } }, decision_vote: { where: { user_id: user.id } } },
         })
       : null;
 
@@ -58,8 +58,22 @@ export function setupLiveTopicMessage(app: App) {
     }
 
     await db.$transaction(async (db) => {
-      await db.decision_vote.deleteMany({
+      const votes = await db.decision_vote.findMany({
         where: { user_id: user.id, decision_option: { message_id: decisionOption.message_id } },
+      });
+      await db.decision_vote.deleteMany({ where: { id: { in: votes.map((vote) => vote.id) } } });
+
+      // our deletion sync system can not automatically handle entities deleted through the backend at the moment
+      // so we have to manually create a sync request
+      await db.sync_request.createMany({
+        data: votes.map((vote) => ({
+          entity_name: "decision_vote",
+          entity_id: vote.id,
+          change_type: "delete",
+          team_id: decisionOption.message.topic.team_id,
+          user_id: user.id,
+          date: new Date().toISOString(),
+        })),
       });
       if (decisionOption.decision_vote.length == 0) {
         await db.decision_vote.create({
@@ -117,7 +131,7 @@ const DecisionVotes = (
   options: (DecisionOption & { decision_vote: (DecisionVote & { user: User })[] })[],
   slackUsers: Record<string, string>
 ) =>
-  options.map(({ id, option, index, decision_vote }) => {
+  orderBy(options, "index").map(({ id, option, index, decision_vote }) => {
     const emojiNo = emojifyNumber(index + 1);
     return Blocks.Section({
       text:

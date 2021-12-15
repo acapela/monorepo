@@ -24,6 +24,7 @@ export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<DecisionOptionFragment>(decisionOptionFragment),
+  defaultSort: (option) => option.index,
   getDefaultValues: () => ({
     __typename: "decision_option",
     ...getGenericDefaultData(),
