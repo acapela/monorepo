@@ -1,6 +1,7 @@
-import { IComputedValueOptions, Reaction, createAtom } from "mobx";
-
 import { IS_DEV } from "~shared/dev";
+import { mapGetOrCreate } from "~shared/map";
+import { createTimeoutBatcher } from "~shared/timeouts";
+import { IComputedValueOptions, Reaction, computed, createAtom } from "mobx";
 
 import { createBiddableTimeout } from "./biddableTimeout";
 
@@ -23,6 +24,9 @@ export const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
  */
 let isDisposalCascadeRunning = false;
 
+const disposeBatcher = createTimeoutBatcher(0);
+
+const namesMap = new Map<string, number>();
 /**
  * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
  *
@@ -31,10 +35,13 @@ let isDisposalCascadeRunning = false;
  *
  * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
  */
-export function cachedComputedWithoutArgs<T>(
-  getter: () => T,
-  { name = "LazyComputed", equals }: IComputedValueOptions<T> = {}
-): LazyComputed<T> {
+export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputedValueOptions<T> = {}): LazyComputed<T> {
+  const { name = "LazyComputed", equals } = options;
+
+  namesMap.set(name, mapGetOrCreate(namesMap, name, () => 0) + 1);
+
+  // return computed(getter, options);
+
   let latestValue: T;
   let needsRecomputing = true;
   let currentReaction: Reaction | null;
@@ -53,8 +60,10 @@ export function cachedComputedWithoutArgs<T>(
 
   function handleBecameUnobserved() {
     aliveLazyReactions--;
+    // console.log("1");
     // It became unobserved as result of other lazyComputed disposing. We don't need to wait for 'keep alive' time
     if (isDisposalCascadeRunning) {
+      // console.log("1");
       // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
 
       setTimeout(dispose, 0);
@@ -156,10 +165,10 @@ export function cachedComputedWithoutArgs<T>(
 let aliveLazyReactions = 0;
 
 // As those are not auto disposed by mobx - we need to be careful with memory leaks - aliveLazyReactions should always fall to 0 after a while if no more reactions are running
-const DEBUG_MEMORY_LEAKS = false;
+const DEBUG_MEMORY_LEAKS = true;
 
 if (typeof document !== "undefined" && DEBUG_MEMORY_LEAKS && IS_DEV) {
   setInterval(() => {
-    console.info("alive lazy reactions", aliveLazyReactions);
+    console.info("alive lazy reactions", aliveLazyReactions, namesMap);
   }, 250);
 }

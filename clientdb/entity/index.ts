@@ -5,3 +5,5 @@ export * from "./context";
 export * from "./sync";
 export { cachedComputedWithoutArgs } from "./utils/cachedComputedWithoutArgs";
 export { cachedComputed } from "./utils/cachedComputed";
+
+import "./dev";

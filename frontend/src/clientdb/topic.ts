@@ -1,13 +1,12 @@
-import gql from "graphql-tag";
-import { uniqBy } from "lodash";
-
+import { EntityByDefinition, cachedComputed, cachedComputedWithoutArgs, defineEntity } from "~clientdb";
 import { slugifySync } from "~frontend/../../shared/slugify";
-import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
 import { isNotNullish } from "~shared/nullish";
 import { routes } from "~shared/routes";
 import { getTopicSlug } from "~shared/routes/topicSlug";
+import gql from "graphql-tag";
+import { uniqBy } from "lodash";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
@@ -80,7 +79,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   .addConnections((topic, { getEntity, getContextValue, updateSelf }) => {
     const currentUserId = getContextValue(userIdContext);
     const messages = getEntity(messageEntity).query({ topic_id: topic.id });
-    const getMessageIds = cachedComputed(() => {
+    const getMessageIds = cachedComputedWithoutArgs(() => {
       return messages.all.map((message) => message.id);
     });
 
@@ -102,7 +101,7 @@ export const topicEntity = defineEntity<TopicFragment>({
     }
 
     const tasks = getEntity(taskEntity).query({
-      message_id: () => getMessageIds(),
+      message_id: () => getMessageIds.get(),
     });
 
     const unreadMessages = getEntity(messageEntity)

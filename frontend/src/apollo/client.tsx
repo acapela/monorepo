@@ -1,19 +1,17 @@
 import {
   ApolloClient,
+  ApolloLink,
   ApolloProvider,
   FieldMergeFunction,
   HttpLink,
   InMemoryCache,
+  from,
   split as splitLinks,
 } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { GraphQLError } from "graphql";
-import { memoize } from "lodash";
-import React, { ReactNode } from "react";
-
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { isClient } from "~shared/document";
@@ -21,6 +19,9 @@ import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
 import { Maybe } from "~shared/types";
 import { addToast } from "~ui/toasts/data";
+import { GraphQLError } from "graphql";
+import { memoize } from "lodash";
+import React, { ReactNode } from "react";
 
 import { createDateParseLink } from "./dateStringParseLink";
 
@@ -72,8 +73,14 @@ interface ApolloClientOptions {
   websocketEndpoint?: string;
 }
 
+const DEBUG_PRODUCTION_LOCALLY = true;
+
 function getGraphqlUrl() {
   const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
+
+  if (DEBUG_PRODUCTION_LOCALLY) {
+    return `https://app.acape.la/graphql`;
+  }
 
   return `${rootUrl}/graphql`;
 }
@@ -107,8 +114,10 @@ if (isClient) {
  * they might be resolved by hasura and sent in one go, resulting in overall faster response
  */
 const httpRawLink = ENABLE_REQUEST_BATCHING
-  ? new BatchHttpLink({ uri: getGraphqlUrl(), batchMax: 20 })
-  : new HttpLink({ uri: getGraphqlUrl() });
+  ? new BatchHttpLink({ uri: getGraphqlUrl(), batchMax: 20, credentials: "include" })
+  : new HttpLink({
+      uri: getGraphqlUrl(),
+    });
 const parseDatesLink = createDateParseLink();
 
 const httpLink = parseDatesLink.concat(httpRawLink);

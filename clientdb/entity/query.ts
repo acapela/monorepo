@@ -1,8 +1,7 @@
+import { reuseValue } from "~shared/createEqualReuser";
+import { createDeepMap } from "~shared/deepMap";
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
-
-import { createEqualValueReuser } from "~shared/createEqualReuser";
-import { createDeepMap } from "~shared/deepMap";
 
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
@@ -88,43 +87,67 @@ export function createEntityQuery<Data, Connections>(
 
   const sortConfig = resolveSortInput(sort);
 
-  function isEntityPassingFilter(item: Entity<Data, Connections>): boolean {
-    if (!filter) return true;
-
-    if (typeof filter === "function") return filter(item);
-
-    return store.simpleQuery(filter).includes(item);
-  }
-
-  const cachedFilter = cachedComputed(isEntityPassingFilter, {
-    name: `${entityName}filter${JSON.stringify(filter)}`,
-  });
-  const cachedSortFunction = sortConfig ? cachedComputed(sortConfig.sort, { name: `${entityName}sort` }) : null;
+  /**
+   * Create filter cache only for functional filter.
+   *
+   * Simple query filter eg { user_id: "foo" } does not require it as simpleQuery is already cached
+   * and observable.
+   *
+   * Also it is very often used resulting easily in 100k+ calls on production data (we really dont want so many cached functions
+   * created for already cached list)
+   */
+  const cachedFilterForFunctionalFilter =
+    typeof filter === "function"
+      ? /**
+         * Important! Do not do cachedComputed(filter) - it might look the same, but native .filter function of
+         * array is using 3 arguments (item, index, array), not one. In such case cache would be created for all of those arguments.
+         */
+        cachedComputed((item: Entity<Data, Connections>) => {
+          return filter(item);
+        })
+      : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
   const passingItems = cachedComputedWithoutArgs(
     () => {
-      const passedItems = getSource().filter(cachedFilter);
+      let items = getSource();
 
-      if (cachedSortFunction) {
-        const descSortedResults = sortBy(passedItems, cachedSortFunction);
-
-        if (sortConfig?.direction === "desc") {
-          return descSortedResults;
-        }
-
-        return descSortedResults.reverse();
+      /**
+       * Important!
+       *
+       * Do not create 'cachedComputed' of (item: Entity) => boolean to filter those here.
+       *
+       * This can easily create 100k+ computed as it would be created by any combination of queries.
+       */
+      if (cachedFilterForFunctionalFilter) {
+        items = items.filter((item) => cachedFilterForFunctionalFilter(item));
       }
 
-      return passedItems;
+      if (filter && typeof filter !== "function") {
+        const simpleQueryPassingItems = store.simpleQuery(filter);
+
+        items = simpleQueryPassingItems.filter((item) => items.includes(item));
+      }
+
+      if (sortConfig) {
+        items = sortBy(items, sortConfig.sort);
+
+        if (sortConfig?.direction === "desc") {
+          return items;
+        }
+
+        return items.reverse();
+      }
+
+      return items;
     },
     { name: `${entityName}QueryItems` }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(
     () => {
-      return getSource().some(cachedFilter);
+      return passingItems.get().length > 0;
     },
     { name: `${entityName}HasItems` }
   );
@@ -168,14 +191,12 @@ export function createEntityQuery<Data, Connections>(
 
   const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>();
 
-  const reuseInput = createEqualValueReuser();
-
   function createOrReuseQuery(
     filter?: EntityFilterInput<Data, Connections>,
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const query = reuseQueriesMap.get([reuseInput(filter), reuseInput(resolvedSort)], () => {
+    const query = reuseQueriesMap.get([reuseValue(filter), reuseValue(resolvedSort)], () => {
       const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
 
       return query;
