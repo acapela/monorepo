@@ -86,7 +86,7 @@ interface ApolloClientOptions {
  * In dev tools of local app > paste session token and set SameOriginPolicy to none (by default is LEX)
  * Reload the app locally. You should be able to see production data.
  */
-const DEBUG_PRODUCTION_LOCALLY = IS_DEV && true;
+const DEBUG_PRODUCTION_LOCALLY = IS_DEV && false;
 
 function getGraphqlUrl() {
   const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
