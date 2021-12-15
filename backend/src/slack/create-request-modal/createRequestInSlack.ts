@@ -35,6 +35,7 @@ interface CreateRequestInSlackInput {
   topicName?: Maybe<string>;
   priority?: Maybe<string>;
   decisionOptions: string[];
+  firstReplyEnough: boolean;
 }
 
 // TODO: Split this function to require prepared data and only handle creating and tracking slack message instead of doing all request preparation
@@ -58,6 +59,7 @@ export async function createAndTrackRequestInSlack({
   topicName,
   priority,
   decisionOptions = [],
+  firstReplyEnough,
 }: CreateRequestInSlackInput) {
   assert(messageText, "create_request called with wrong arguments");
 
@@ -106,6 +108,7 @@ export async function createAndTrackRequestInSlack({
     slackUserIdsWithMentionType,
     priority,
     decisionOptions,
+    firstReplyEnough,
   });
 
   if (!originalChannelId) {

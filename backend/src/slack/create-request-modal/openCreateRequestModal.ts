@@ -109,7 +109,17 @@ export const CreateRequestModal = async (
             .element(
               Elements.ConversationSelect({ actionId: "conversation_select" }).defaultToCurrentConversation(true)
             )
-            .optional(true)
+            .optional(true),
+      Blocks.Input({ blockId: "settings_block", label: "Settings" })
+        .element(
+          Elements.Checkboxes({ actionId: "settings_checkbox" }).options(
+            Bits.Option({
+              value: "first_reply_enough",
+              text: "First reply is enough.",
+            })
+          )
+        )
+        .optional(true)
     )
     .submit("Create")
     .buildToObject();
