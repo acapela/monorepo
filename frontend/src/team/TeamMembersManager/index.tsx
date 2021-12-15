@@ -1,10 +1,11 @@
+import { observer } from "mobx-react";
+import styled from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { assert } from "~shared/assert";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { theme } from "~ui/theme";
-import { observer } from "mobx-react";
-import styled from "styled-components";
 
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";

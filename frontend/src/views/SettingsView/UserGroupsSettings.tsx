@@ -1,3 +1,10 @@
+import { AnimatePresence } from "framer-motion";
+import { isEqual } from "lodash";
+import { observer } from "mobx-react";
+import React, { useMemo, useState } from "react";
+import { useList } from "react-use";
+import styled from "styled-components";
+
 import { useDb } from "~frontend/clientdb";
 import { TeamEntity } from "~frontend/clientdb/team";
 import { UserGroupEntity } from "~frontend/clientdb/userGroup";
@@ -7,12 +14,6 @@ import { PopPresenceAnimator } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
 import { TextButton } from "~ui/buttons/TextButton";
 import { theme } from "~ui/theme";
-import { AnimatePresence } from "framer-motion";
-import { isEqual } from "lodash";
-import { observer } from "mobx-react";
-import React, { useMemo, useState } from "react";
-import { useList } from "react-use";
-import styled from "styled-components";
 
 import { Panel } from "./ui";
 import { UIAt, UIMention, UIMentionInput, UserPicker } from "./UserPicker";

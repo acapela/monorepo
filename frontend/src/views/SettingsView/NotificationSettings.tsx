@@ -1,14 +1,15 @@
 import { gql, useQuery } from "@apollo/client";
+import { noop } from "lodash";
+import { observer } from "mobx-react";
+import React from "react";
+import styled from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
-import { noop } from "lodash";
-import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
 
 import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
 import { Panel } from "./ui";

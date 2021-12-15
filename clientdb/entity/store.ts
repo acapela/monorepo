@@ -1,10 +1,11 @@
+import { memoize } from "lodash";
+import { IObservableArray, computed, observable, runInAction } from "mobx";
+
 import { MessageOrError, assert } from "~shared/assert";
 import { createReuseValueGroup } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
 import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
-import { memoize } from "lodash";
-import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";

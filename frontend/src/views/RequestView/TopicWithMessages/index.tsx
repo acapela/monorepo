@@ -1,3 +1,9 @@
+import { isBefore } from "date-fns";
+import { action, computed } from "mobx";
+import { observer } from "mobx-react";
+import React, { useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -8,11 +14,6 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
-import { isBefore } from "date-fns";
-import { action, computed } from "mobx";
-import { observer } from "mobx-react";
-import React, { useEffect, useRef } from "react";
-import styled, { css } from "styled-components";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { NextAction } from "./events/NextAction";
