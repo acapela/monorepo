@@ -24,8 +24,8 @@ export const PriorityIcon = styled<{ priority: Priority; $invert?: boolean }>(({
   return <Icon {...props} />;
 })`
   ${(props) =>
-    !props.$invert &&
+    props.$invert &&
     css`
-      filter: invert(100%);
+      color: white !important;
     `}
 `;
