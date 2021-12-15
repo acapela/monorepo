@@ -137,6 +137,20 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     },
   });
 
+  if (amountOfOpenTasksLeft > 0 && topic.is_first_reply_enough && task.done_at) {
+    await db.task.updateMany({
+      where: {
+        message: { topic_id: { equals: topic.id } },
+        done_at: {
+          equals: null,
+        },
+      },
+      data: {
+        done_at: new Date().toISOString(),
+      },
+    });
+  }
+
   // If topic had only self assigned tasks and all of them are done - automatically close the topic
   if (amountOfOpenTasksLeft === 0 && !topic.closed_at) {
     if (await getTopicHasOnlySelfAssignedTasks(topic)) {
