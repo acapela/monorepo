@@ -90,9 +90,5 @@
     "entrypoints": [
       "pages"
     ]
-  },
-  "targets": "Chrome >= 94",
-  "browserslist": [
-    "last 2 years"
-  ]
+  }
 }

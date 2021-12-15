@@ -188,9 +188,5 @@
       "~"
     ]
   },
-  "packageManager": "yarn@3.1.0",
-  "targets": "Chrome >= 94",
-  "browserslist": [
-    "last 2 years"
-  ]
+  "packageManager": "yarn@3.1.0"
 }
