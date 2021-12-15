@@ -1,3 +1,4 @@
+import { upperFirst } from "lodash";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
@@ -12,7 +13,6 @@ import { HorizontalSpacingContainer } from "~frontend/ui/layout";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { upperCaseFirst } from "~shared/text/casing";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -69,7 +69,7 @@ export const TopicHeader = observer(function TopicHeader({ topic }: Props) {
             <UIPriorityIcon priority={topic.priority ?? null} />
             {topic.priority ? (
               <>
-                <UIPriorityTitle>Priority</UIPriorityTitle> {upperCaseFirst(topic.priority)}
+                <UIPriorityTitle>Priority</UIPriorityTitle> {upperFirst(topic.priority)}
               </>
             ) : (
               "No priority"
