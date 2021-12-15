@@ -68,13 +68,13 @@ async function shouldSendNotificationDirectly(teamId: string, user: User): Promi
   return work_start_hour_in_utc <= currentUtcHour || currentUtcHour < work_end_hour_in_utc;
 }
 
-async function sendOrEnqueueSlackNotification(teamId: string, user: User, payload: SlackPayload) {
+async function sendOrEnqueueSlackNotification(teamId: string, user: User, payload: SlackPayload, topicId?: string) {
   if (await shouldSendNotificationDirectly(teamId, user)) {
     return trySendSlackNotification(teamId, user, payload);
   }
 
   // Look at dailyMessageNotification for whole flow explanation
-  return await enqueueSlackNotification(teamId, user, payload);
+  return await enqueueSlackNotification(teamId, topicId, user, payload);
 }
 
 export type NotificationMessage = { slack: SlackPayload; email: EmailData };
@@ -82,11 +82,12 @@ export type NotificationMessage = { slack: SlackPayload; email: EmailData };
 async function sendNotification(
   user: User,
   teamId: string,
-  message: Partial<NotificationMessage>
+  message: Partial<NotificationMessage>,
+  topicId?: string
 ): Promise<{ slackMessage?: ChatPostMessageResponse }> {
   try {
     const [slackMessage] = await Promise.all([
-      message.slack ? sendOrEnqueueSlackNotification(teamId, user, message.slack) : undefined,
+      message.slack ? sendOrEnqueueSlackNotification(teamId, user, message.slack, topicId) : undefined,
       message.email ? sendEmail(message.email, user.email) : undefined,
     ]);
     return slackMessage?.ok ? { slackMessage } : {};
@@ -99,12 +100,18 @@ async function sendNotification(
 export async function sendNotificationIgnoringPreference(
   user: User,
   teamId: string,
-  message: Partial<NotificationMessage>
+  message: Partial<NotificationMessage>,
+  topicId?: string
 ) {
-  return sendNotification(user, teamId, message);
+  return sendNotification(user, teamId, message, topicId);
 }
 
-export async function sendNotificationPerPreference(user: User, teamId: string, message: Partial<NotificationMessage>) {
+export async function sendNotificationPerPreference(
+  user: User,
+  teamId: string,
+  message: Partial<NotificationMessage>,
+  topicId?: string
+) {
   const teamMember = assertDefined(
     await db.team_member.findFirst({ where: { user_id: user.id, team_id: teamId } }),
     `missing team_member for user ${user.id} in team ${teamId}`
@@ -116,5 +123,5 @@ export async function sendNotificationPerPreference(user: User, teamId: string, 
   if (teamMember.notify_slack) {
     notificationChannels.push("slack");
   }
-  return sendNotification(user, teamId, pick(message, ...notificationChannels));
+  return sendNotification(user, teamId, pick(message, ...notificationChannels), topicId);
 }

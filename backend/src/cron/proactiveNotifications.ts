@@ -28,7 +28,7 @@ async function requestIsDueIn3Hours(now: Date) {
       taskCreatorName: task.message.user.name,
       topicURL: await backendGetTopicUrl(task.message.topic),
     });
-    sendNotificationPerPreference(task.user, task.message.topic.team_id, message);
+    sendNotificationPerPreference(task.user, task.message.topic.team_id, message, task.message.topic_id);
   }
 }
 
@@ -46,7 +46,7 @@ async function requestIsDue(now: Date) {
       topicId,
       topicURL: await backendGetTopicUrl(topicTasks[0].message.topic),
     });
-    sendNotificationPerPreference(topicTasks[0].message.user, topicTasks[0].message.topic.team_id, message);
+    sendNotificationPerPreference(topicTasks[0].message.user, topicTasks[0].message.topic.team_id, message, topicId);
   }
 }
 

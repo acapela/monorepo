@@ -6,7 +6,12 @@ import { User, db } from "~db";
 import { fetchTeamBotToken } from "../slack/utils";
 import { SlackPayload } from "./sendNotification";
 
-export async function enqueueSlackNotification(teamId: string, user: User, payload: SlackPayload) {
+export async function enqueueSlackNotification(
+  teamId: string,
+  topicId: string | undefined,
+  user: User,
+  payload: SlackPayload
+) {
   const [token, teamMemberSlack] = await Promise.all([
     fetchTeamBotToken(teamId),
     await db.team_member_slack.findFirst({
@@ -26,6 +31,7 @@ export async function enqueueSlackNotification(teamId: string, user: User, paylo
     data: {
       team_member_slack_id: teamMemberSlack?.id,
       payload: payloadAsText,
+      topic_id: topicId,
     },
   });
 }
