@@ -9,6 +9,7 @@ import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { JoinTopicMutation, JoinTopicMutationVariables } from "~gql";
+import { devAssignWindowVariable } from "~shared/dev";
 import { useIsMountedRef } from "~shared/hooks/useIsMountedRef";
 import { phone } from "~ui/responsive";
 
@@ -70,6 +71,7 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
 }
 
 export const RequestView = observer(({ topic }: Props) => {
+  devAssignWindowVariable("topic", topic);
   const [joinTopic] = useMutation<JoinTopicMutation, JoinTopicMutationVariables>(
     gql`
       mutation JoinTopic($accessToken: uuid!) {
