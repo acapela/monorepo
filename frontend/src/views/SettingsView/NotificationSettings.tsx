@@ -1,15 +1,14 @@
 import { gql, useQuery } from "@apollo/client";
-import { noop } from "lodash";
-import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
-
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useCurrentTeam } from "~frontend/team/CurrentTeam";
 import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
+import { noop } from "lodash";
+import { observer } from "mobx-react";
+import React from "react";
+import styled from "styled-components";
 
 import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
 import { Panel } from "./ui";
@@ -53,7 +52,7 @@ export const NotificationSettings = observer(() => {
 
   const db = useDb();
   const team = useCurrentTeam();
-  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
+  const teamMember = db.teamMember.query({ user_id: currentUser.id }).first;
 
   const { data, loading: isLoadingSlackUser } = useQuery<SlackUserQuery, SlackUserQueryVariables>(
     gql`

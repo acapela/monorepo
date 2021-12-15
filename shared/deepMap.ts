@@ -1,6 +1,6 @@
 import { isPrimitive } from "utility-types";
 
-import { EqualValueReuser, reuseValue } from "./createEqualReuser";
+import { EqualValueReuser, createReuseValueGroup } from "./createEqualReuser";
 
 const targetSymbol = Symbol("target");
 const equalReuserSymbol = Symbol("equalReuserSymbol");
@@ -37,6 +37,7 @@ let deepMapNotReused = 0;
  */
 export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
   const root = new Map<unknown, unknown>();
+  const reuseValue = createReuseValueGroup();
   root.set(equalReuserSymbol, reuseValue);
 
   function getFinalTargetMap(path: unknown[]) {

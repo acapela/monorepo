@@ -40,6 +40,10 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
 
   namesMap.set(name, mapGetOrCreate(namesMap, name, () => 0) + 1);
 
+  if (namesMap.get(name)! > 1) {
+    // console.warn(name);
+  }
+
   // return computed(getter, options);
 
   let latestValue: T;

@@ -17,12 +17,8 @@ import { isPlainObjectEqual } from "./isPlainObjectEqual";
  * a === b // ! false
  *
  */
-export function createEqualValueReuser() {
+export function createReuseValueGroup() {
   const values = new Set<unknown>();
-
-  setInterval(() => {
-    console.log(values.size, "size");
-  }, 1000);
 
   function getOrReuse<T>(value: T): T {
     for (const existingValue of values) {
@@ -39,6 +35,4 @@ export function createEqualValueReuser() {
   return getOrReuse;
 }
 
-export type EqualValueReuser = ReturnType<typeof createEqualValueReuser>;
-
-export const reuseValue = createEqualValueReuser();
+export type EqualValueReuser = ReturnType<typeof createReuseValueGroup>;

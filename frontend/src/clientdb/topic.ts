@@ -104,11 +104,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       message_id: () => getMessageIds.get(),
     });
 
-    const unreadMessages = getEntity(messageEntity)
-      .query({ topic_id: topic.id })
-      .query((message) => {
-        return message.isUnread;
-      });
+    const unreadMessages = getEntity(messageEntity).query({ topic_id: topic.id, isUnread: true });
 
     const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
 

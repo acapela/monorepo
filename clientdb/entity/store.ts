@@ -1,5 +1,5 @@
 import { MessageOrError, assert } from "~shared/assert";
-import { reuseValue } from "~shared/createEqualReuser";
+import { createReuseValueGroup } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
 import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
@@ -16,6 +16,8 @@ import {
   EntityQuerySortInput,
   createEntityQuery,
   resolveSortInput,
+  reuseQueryFilter,
+  reuseQuerySort,
 } from "./query";
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
@@ -153,8 +155,8 @@ export function createEntityStore<Data, Connections>(
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const reusedFilter = reuseValue(filter);
-    const reusedSort = reuseValue(resolvedSort);
+    const reusedFilter = reuseQueryFilter(filter);
+    const reusedSort = reuseQuerySort(resolvedSort);
     const query = reuseQueriesMap.get([reusedFilter, reusedSort], () => {
       const query = createEntityQuery(() => existingItems.get(), { filter: reusedFilter, sort: reusedSort }, store);
 
@@ -163,6 +165,8 @@ export function createEntityStore<Data, Connections>(
 
     return query;
   }
+
+  const reuseSimpleQueryInput = createReuseValueGroup();
 
   const store: EntityStore<Data, Connections> = {
     definition,
@@ -192,7 +196,7 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     simpleQuery(input: IndexQueryInput<Data & Connections>): Entity<Data, Connections>[] {
-      const reusedInput = reuseValue(input);
+      const reusedInput = reuseSimpleQueryInput(input);
       return getSimpleQuery(reusedInput as typeof input).get();
     },
     findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(

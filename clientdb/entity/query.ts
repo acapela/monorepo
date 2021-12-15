@@ -1,4 +1,4 @@
-import { reuseValue } from "~shared/createEqualReuser";
+import { createReuseValueGroup } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
@@ -33,6 +33,7 @@ export type EntityFilterInput<Data, Connections> =
 export type EntityQueryConfig<Data, Connections> = {
   filter?: EntityFilterInput<Data, Connections>;
   sort?: EntityQuerySortInput<Data, Connections>;
+  name?: string;
 };
 
 export function resolveSortInput<Data, Connections>(
@@ -77,7 +78,11 @@ export function createEntityQuery<Data, Connections>(
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
   const entityName = definition.config.name;
-  const { filter, sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections> } = config;
+  const {
+    filter,
+    sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections>,
+    name: queryName,
+  } = config;
 
   if (!filter && !sort) {
     throw new Error(
@@ -86,6 +91,30 @@ export function createEntityQuery<Data, Connections>(
   }
 
   const sortConfig = resolveSortInput(sort);
+
+  function getQueryKeyBase() {
+    const parts: string[] = [definition.config.name];
+
+    if (queryName) {
+      parts.push(queryName);
+    }
+
+    if (filter) {
+      if (typeof filter === "function") {
+        parts.push(`filter()`);
+      } else {
+        parts.push(`filter({${Object.keys(filter).join(",")}})`);
+      }
+    }
+
+    if (sortConfig) {
+      parts.push(`sort()[${sortConfig.direction}]`);
+    }
+
+    return parts.join("__");
+  }
+
+  const queryKeyBase = getQueryKeyBase();
 
   /**
    * Create filter cache only for functional filter.
@@ -125,9 +154,11 @@ export function createEntityQuery<Data, Connections>(
       }
 
       if (filter && typeof filter !== "function") {
-        const simpleQueryPassingItems = store.simpleQuery(filter);
+        if (Object.keys(filter).length > 0) {
+          const simpleQueryPassingItems = store.simpleQuery(filter);
 
-        items = simpleQueryPassingItems.filter((item) => items.includes(item));
+          items = simpleQueryPassingItems.filter((item) => items.includes(item));
+        }
       }
 
       if (sortConfig) {
@@ -142,29 +173,29 @@ export function createEntityQuery<Data, Connections>(
 
       return items;
     },
-    { name: `${entityName}QueryItems` }
+    { name: `${queryKeyBase}.passingItems` }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(
     () => {
       return passingItems.get().length > 0;
     },
-    { name: `${entityName}HasItems` }
+    { name: `${queryKeyBase}.hasItems` }
   );
 
   function getAll() {
     return passingItems.get();
   }
 
-  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${entityName}QueryCount` });
-  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${entityName}firstComputed` });
+  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${queryKeyBase}.count` });
+  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${queryKeyBase}.first` });
   const lastComputed = cachedComputedWithoutArgs(
     () => {
       const all = getAll();
 
       return all[all.length - 1] ?? null;
     },
-    { name: `${entityName}lastComputed` }
+    { name: `${queryKeyBase}.last` }
   );
 
   const byIdMapComputed = cachedComputedWithoutArgs(
@@ -179,14 +210,14 @@ export function createEntityQuery<Data, Connections>(
 
       return record;
     },
-    { name: `${entityName}byIdMapComputed` }
+    { name: `${queryKeyBase}.idMap` }
   );
 
   const getById = cachedComputed(
     (id: string) => {
       return byIdMapComputed.get()[id] ?? null;
     },
-    { name: `${entityName}getById` }
+    { name: `${queryKeyBase}.getById` }
   );
 
   const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>();
@@ -196,11 +227,17 @@ export function createEntityQuery<Data, Connections>(
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const query = reuseQueriesMap.get([reuseValue(filter), reuseValue(resolvedSort)], () => {
+    let didReuse = true;
+    const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
+      didReuse = false;
       const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
 
       return query;
     });
+
+    if (!didReuse) {
+      console.warn("not resued", filter, sort);
+    }
 
     return query;
   }
@@ -229,3 +266,6 @@ export function createEntityQuery<Data, Connections>(
     },
   };
 }
+
+export const reuseQueryFilter = createReuseValueGroup();
+export const reuseQuerySort = createReuseValueGroup();
