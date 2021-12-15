@@ -70,3 +70,26 @@ delete_permissions:
             user_id:
               _eq: X-Hasura-User-Id
   role: user
+event_triggers:
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+    insert:
+      columns: "*"
+    update:
+      columns:
+      - created_at
+      - decision_option_id
+      - updated_at
+      - id
+      - user_id
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: decision_vote_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

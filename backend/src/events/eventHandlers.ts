@@ -1,5 +1,6 @@
 import {
   Attachment,
+  DecisionVote,
   Message,
   MessageReaction,
   MessageTaskDueDate,
@@ -18,6 +19,7 @@ import {
 import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{
+  decision_vote_updates: DecisionVote;
   message_updates: Message;
   task_updates: Task;
   task_slack_message_updates: TaskSlackMessage;

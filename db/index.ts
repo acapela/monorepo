@@ -4,6 +4,8 @@ import { assert } from "~shared/assert";
 
 export type {
   account as Account,
+  decision_option as DecisionOption,
+  decision_vote as DecisionVote,
   message as Message,
   message_type as MessageType,
   message_reaction as MessageReaction,
