@@ -1,27 +1,27 @@
 import {
   ApolloClient,
-  ApolloLink,
   ApolloProvider,
   FieldMergeFunction,
   HttpLink,
   InMemoryCache,
-  from,
   split as splitLinks,
 } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { GraphQLError } from "graphql";
+import { memoize } from "lodash";
+import React, { ReactNode } from "react";
+
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
+import { IS_DEV } from "~shared/dev";
 import { isClient } from "~shared/document";
 import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
 import { Maybe } from "~shared/types";
 import { addToast } from "~ui/toasts/data";
-import { GraphQLError } from "graphql";
-import { memoize } from "lodash";
-import React, { ReactNode } from "react";
 
 import { createDateParseLink } from "./dateStringParseLink";
 
@@ -73,7 +73,20 @@ interface ApolloClientOptions {
   websocketEndpoint?: string;
 }
 
-const DEBUG_PRODUCTION_LOCALLY = true;
+/**
+ * This flag can be enabled in dev to debug locally with production data.
+ *
+ * The flow is:
+ * Enable this flag.
+ * App will crash saying JWT is incorrect or user is null.
+ * Click log out locally
+ * Log in again (locally)
+ * Open acapela app (production) and login (or do nothing if logged in)
+ * In dev tools > copy session token
+ * In dev tools of local app > paste session token and set SameOriginPolicy to none (by default is LEX)
+ * Reload the app locally. You should be able to see production data.
+ */
+const DEBUG_PRODUCTION_LOCALLY = IS_DEV && true;
 
 function getGraphqlUrl() {
   const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
@@ -114,9 +127,14 @@ if (isClient) {
  * they might be resolved by hasura and sent in one go, resulting in overall faster response
  */
 const httpRawLink = ENABLE_REQUEST_BATCHING
-  ? new BatchHttpLink({ uri: getGraphqlUrl(), batchMax: 20, credentials: "include" })
+  ? new BatchHttpLink({
+      uri: getGraphqlUrl(),
+      batchMax: 20,
+      credentials: DEBUG_PRODUCTION_LOCALLY ? "include" : undefined,
+    })
   : new HttpLink({
       uri: getGraphqlUrl(),
+      credentials: DEBUG_PRODUCTION_LOCALLY ? "include" : undefined,
     });
 const parseDatesLink = createDateParseLink();
 

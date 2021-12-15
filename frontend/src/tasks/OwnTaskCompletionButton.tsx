@@ -2,7 +2,6 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { PopoverMenuOption } from "~frontend/../../ui/popovers/PopoverMenu";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { TaskEntity } from "~frontend/clientdb/task";
@@ -16,6 +15,7 @@ import {
 } from "~shared/types/mention";
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
 import { IconCheck, IconCheckboxCircle, IconChevronDown, IconUndo } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 

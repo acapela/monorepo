@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
-import { REQUEST_DECISION } from "~frontend/../../shared/types/mention";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageLinksPreviews } from "~frontend/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/message/display/MessageMedia";
@@ -22,6 +21,7 @@ import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { useIsHashActive } from "~shared/hooks/useHashChangeEffect";
 import { select } from "~shared/sharedState";
+import { REQUEST_DECISION } from "~shared/types/mention";
 import { highlightOnceStyles } from "~ui/highlight";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";

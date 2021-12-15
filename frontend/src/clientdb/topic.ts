@@ -1,12 +1,13 @@
-import { EntityByDefinition, cachedComputed, cachedComputedWithoutArgs, defineEntity } from "~clientdb";
-import { slugifySync } from "~frontend/../../shared/slugify";
+import gql from "graphql-tag";
+import { uniqBy } from "lodash";
+
+import { EntityByDefinition, cachedComputedWithoutArgs, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
 import { TopicFragment } from "~gql";
 import { isNotNullish } from "~shared/nullish";
 import { routes } from "~shared/routes";
 import { getTopicSlug } from "~shared/routes/topicSlug";
-import gql from "graphql-tag";
-import { uniqBy } from "lodash";
+import { slugifySync } from "~shared/slugify";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";

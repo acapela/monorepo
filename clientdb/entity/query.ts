@@ -1,7 +1,8 @@
-import { createReuseValueGroup } from "~shared/createEqualReuser";
-import { createDeepMap } from "~shared/deepMap";
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
+
+import { createReuseValueGroup } from "~shared/createEqualReuser";
+import { createDeepMap } from "~shared/deepMap";
 
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
@@ -77,7 +78,6 @@ export function createEntityQuery<Data, Connections>(
   store: EntityStore<Data, Connections>
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
-  const entityName = definition.config.name;
   const {
     filter,
     sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections>,
@@ -227,17 +227,11 @@ export function createEntityQuery<Data, Connections>(
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    let didReuse = true;
     const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
-      didReuse = false;
       const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
 
       return query;
     });
-
-    if (!didReuse) {
-      console.warn("not resued", filter, sort);
-    }
 
     return query;
   }
