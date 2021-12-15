@@ -32,6 +32,11 @@ export async function pickRealUsersFromMessageText(token: string, messageText?: 
   return slackUserIdsFromMessage;
 }
 
+export const DECISION_BLOCK_ID_PRE = "decision_block_";
+
+export const getDecisionBlockCount = (values: object) =>
+  Math.max(Object.keys(values).filter((key) => key.startsWith(DECISION_BLOCK_ID_PRE)).length, 2);
+
 export function createRequestTitleFromMessageText(messageText: string) {
   return truncateTextWithEllipsis(messageText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH).replaceAll("\n", "");
 }

@@ -182,6 +182,7 @@ export async function createTopicForSlackUsers({
   rawTopicMessage,
   slackUserIdsWithMentionType,
   priority,
+  decisionOptions,
 }: {
   token: string;
   teamId: string;
@@ -193,6 +194,7 @@ export async function createTopicForSlackUsers({
   rawTopicMessage: string;
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
   priority: Maybe<string>;
+  decisionOptions: string[];
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -239,6 +241,7 @@ export async function createTopicForSlackUsers({
                 })),
             },
           },
+          decision_option: { createMany: { data: decisionOptions.map((option, index) => ({ option, index })) } },
         },
       },
     },
