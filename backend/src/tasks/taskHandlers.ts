@@ -27,25 +27,30 @@ async function sendTaskNotification(topic: Topic, task: Task, toUser: User, from
   const teamId = topic.team_id;
   const topicURL = await backendGetTopicUrl(topic);
   const taskLabel = MENTION_TYPE_LABELS[task.type as MentionType] ?? "attention";
-  const { slackMessage } = await sendNotificationPerPreference(toUser, teamId, {
-    email: {
-      subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
-      html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
-    },
-    slack: async () =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (
-        await LiveTaskMessage(
-          assertDefined(
-            await db.task.findUnique({
-              where: { id: task.id },
-              include: { message: { include: { topic: true, message_task_due_date: true } } },
-            }),
-            "must still find the task"
+  const { slackMessage } = await sendNotificationPerPreference(
+    toUser,
+    teamId,
+    {
+      email: {
+        subject: `${fromUser.name} has asked for your ${taskLabel} in ${topic.name}`,
+        html: `Click <a href="${topicURL}">here</a> to find out what they need.`,
+      },
+      slack: async () =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (
+          await LiveTaskMessage(
+            assertDefined(
+              await db.task.findUnique({
+                where: { id: task.id },
+                include: { message: { include: { topic: true, message_task_due_date: true } } },
+              }),
+              "must still find the task"
+            )
           )
-        )
-      ).blocks!,
-  });
+        ).blocks!,
+    },
+    topic.id
+  );
 
   if (slackMessage && slackMessage.channel && slackMessage.ts) {
     await db.task_slack_message.create({

@@ -173,7 +173,8 @@ async function notifyOwnerOfTopicClosure(ownerId: string, userIdThatClosedTopic:
       topicId: topic.id,
       topicName: topic.name,
       topicURL: await backendGetTopicUrl(topic),
-    })
+    }),
+    topic.id
   );
 }
 

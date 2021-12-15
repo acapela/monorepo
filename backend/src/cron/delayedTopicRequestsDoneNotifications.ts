@@ -42,7 +42,8 @@ export async function delayedTopicRequestsDoneNotifications() {
     sendNotificationPerPreference(
       topicOwner,
       topic.team_id,
-      createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL })
+      createAllRequestsDoneNotificationMessage({ topicId: topic.id, topicName: topic.name, topicURL }),
+      topic.id
     );
   }
 }

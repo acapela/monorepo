@@ -49,7 +49,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
         taskCreatorName: task.message.user.name,
         deadline: niceFormatDateTime(dueAt),
       });
-      sendNotificationPerPreference(task.user, topic.team_id, message);
+      sendNotificationPerPreference(task.user, topic.team_id, message, topic.id);
     }
   }
 
