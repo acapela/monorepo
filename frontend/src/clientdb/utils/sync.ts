@@ -520,15 +520,11 @@ export function createHasuraSyncSetupFromFragment<T>(
           }
         });
 
-        if (idsToCheckAccess.length === 0) {
-          return;
+        if (idsToCheckAccess.length !== 0) {
+          idsToRemove.push(...((await getLostAccessIds(idsToCheckAccess, apollo)) ?? []));
         }
 
-        const itemsWithLostAccess = (await getLostAccessIds(idsToCheckAccess, apollo)) ?? [];
-
-        const allItemsToRemove = [...idsToRemove, ...itemsWithLostAccess];
-
-        removeItems(allItemsToRemove, lastSyncRequestDate);
+        removeItems(idsToRemove, lastSyncRequestDate);
       });
 
       return () => {
