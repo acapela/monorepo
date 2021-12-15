@@ -1,4 +1,4 @@
-import { EqualValueReuser, createEqualValueReuser } from "./createEqualReuser";
+import { EqualValueReuser, createReuseValueGroup } from "./createEqualReuser";
 
 const targetSymbol = Symbol("target");
 const equalReuserSymbol = Symbol("equalReuserSymbol");
@@ -32,8 +32,7 @@ type AnyMap = Map<unknown, unknown>;
  */
 export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
   const root = new Map<unknown, unknown>();
-  const rootReuser = createEqualValueReuser();
-  root.set(equalReuserSymbol, rootReuser);
+  root.set(equalReuserSymbol, createReuseValueGroup());
 
   function getFinalTargetMap(path: unknown[]) {
     let currentTarget = root;
@@ -50,9 +49,9 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
         continue;
       }
 
-      const nestedMap: AnyMap = new Map();
+      const nestedMap = new Map();
 
-      nestedMap.set(equalReuserSymbol, createEqualValueReuser());
+      nestedMap.set(equalReuserSymbol, createReuseValueGroup());
 
       currentTarget.set(part, nestedMap);
 

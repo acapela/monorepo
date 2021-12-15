@@ -1,7 +1,7 @@
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
 
-import { createEqualValueReuser } from "~shared/createEqualReuser";
+import { createReuseValueGroup } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
 
 import { Entity } from "./entity";
@@ -34,6 +34,7 @@ export type EntityFilterInput<Data, Connections> =
 export type EntityQueryConfig<Data, Connections> = {
   filter?: EntityFilterInput<Data, Connections>;
   sort?: EntityQuerySortInput<Data, Connections>;
+  name?: string;
 };
 
 export function resolveSortInput<Data, Connections>(
@@ -77,8 +78,11 @@ export function createEntityQuery<Data, Connections>(
   store: EntityStore<Data, Connections>
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
-  const entityName = definition.config.name;
-  const { filter, sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections> } = config;
+  const {
+    filter,
+    sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections>,
+    name: queryName,
+  } = config;
 
   if (!filter && !sort) {
     throw new Error(
@@ -88,60 +92,110 @@ export function createEntityQuery<Data, Connections>(
 
   const sortConfig = resolveSortInput(sort);
 
-  function isEntityPassingFilter(item: Entity<Data, Connections>): boolean {
-    if (!filter) return true;
+  function getQueryKeyBase() {
+    const parts: string[] = [definition.config.name];
 
-    if (typeof filter === "function") return filter(item);
+    if (queryName) {
+      parts.push(queryName);
+    }
 
-    return store.simpleQuery(filter).includes(item);
+    if (filter) {
+      if (typeof filter === "function") {
+        parts.push(`filter()`);
+      } else {
+        parts.push(`filter({${Object.keys(filter).join(",")}})`);
+      }
+    }
+
+    if (sortConfig) {
+      parts.push(`sort()[${sortConfig.direction}]`);
+    }
+
+    return parts.join("__");
   }
 
-  const cachedFilter = cachedComputed(isEntityPassingFilter, {
-    name: `${entityName}filter${JSON.stringify(filter)}`,
-  });
-  const cachedSortFunction = sortConfig ? cachedComputed(sortConfig.sort, { name: `${entityName}sort` }) : null;
+  const queryKeyBase = getQueryKeyBase();
+
+  /**
+   * Create filter cache only for functional filter.
+   *
+   * Simple query filter eg { user_id: "foo" } does not require it as simpleQuery is already cached
+   * and observable.
+   *
+   * Also it is very often used resulting easily in 100k+ calls on production data (we really dont want so many cached functions
+   * created for already cached list)
+   */
+  const cachedFilterForFunctionalFilter =
+    typeof filter === "function"
+      ? /**
+         * Important! Do not do cachedComputed(filter) - it might look the same, but native .filter function of
+         * array is using 3 arguments (item, index, array), not one. In such case cache would be created for all of those arguments.
+         */
+        cachedComputed((item: Entity<Data, Connections>) => {
+          return filter(item);
+        })
+      : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
   const passingItems = cachedComputedWithoutArgs(
     () => {
-      const passedItems = getSource().filter(cachedFilter);
+      let items = getSource();
 
-      if (cachedSortFunction) {
-        const descSortedResults = sortBy(passedItems, cachedSortFunction);
-
-        if (sortConfig?.direction === "desc") {
-          return descSortedResults;
-        }
-
-        return descSortedResults.reverse();
+      /**
+       * Important!
+       *
+       * Do not create 'cachedComputed' of (item: Entity) => boolean to filter those here.
+       *
+       * This can easily create 100k+ computed as it would be created by any combination of queries.
+       */
+      if (cachedFilterForFunctionalFilter) {
+        items = items.filter((item) => cachedFilterForFunctionalFilter(item));
       }
 
-      return passedItems;
+      if (filter && typeof filter !== "function") {
+        if (Object.keys(filter).length > 0) {
+          const simpleQueryPassingItems = store.simpleQuery(filter);
+
+          items = simpleQueryPassingItems.filter((item) => items.includes(item));
+        }
+      }
+
+      if (sortConfig) {
+        items = sortBy(items, sortConfig.sort);
+
+        if (sortConfig?.direction === "desc") {
+          return items;
+        }
+
+        return items.reverse();
+      }
+
+      return items;
     },
-    { name: `${entityName}QueryItems` }
+    { name: `${queryKeyBase}.passingItems` }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(
     () => {
-      return getSource().some(cachedFilter);
+      return passingItems.get().length > 0;
     },
-    { name: `${entityName}HasItems` }
+    { name: `${queryKeyBase}.hasItems` }
   );
 
   function getAll() {
     return passingItems.get();
   }
 
-  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${entityName}QueryCount` });
-  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${entityName}firstComputed` });
+  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${queryKeyBase}.count` });
+  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${queryKeyBase}.first` });
   const lastComputed = cachedComputedWithoutArgs(
     () => {
       const all = getAll();
 
       return all[all.length - 1] ?? null;
     },
-    { name: `${entityName}lastComputed` }
+    { name: `${queryKeyBase}.last` }
   );
 
   const byIdMapComputed = cachedComputedWithoutArgs(
@@ -156,26 +210,24 @@ export function createEntityQuery<Data, Connections>(
 
       return record;
     },
-    { name: `${entityName}byIdMapComputed` }
+    { name: `${queryKeyBase}.idMap` }
   );
 
   const getById = cachedComputed(
     (id: string) => {
       return byIdMapComputed.get()[id] ?? null;
     },
-    { name: `${entityName}getById` }
+    { name: `${queryKeyBase}.getById` }
   );
 
   const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>();
-
-  const reuseInput = createEqualValueReuser();
 
   function createOrReuseQuery(
     filter?: EntityFilterInput<Data, Connections>,
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const query = reuseQueriesMap.get([reuseInput(filter), reuseInput(resolvedSort)], () => {
+    const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
       const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
 
       return query;
@@ -208,3 +260,6 @@ export function createEntityQuery<Data, Connections>(
     },
   };
 }
+
+export const reuseQueryFilter = createReuseValueGroup();
+export const reuseQuerySort = createReuseValueGroup();

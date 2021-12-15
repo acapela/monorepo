@@ -17,7 +17,7 @@ import { isPlainObjectEqual } from "./isPlainObjectEqual";
  * a === b // ! false
  *
  */
-export function createEqualValueReuser() {
+export function createReuseValueGroup() {
   const values = new Set<unknown>();
 
   function getOrReuse<T>(value: T): T {
@@ -35,4 +35,4 @@ export function createEqualValueReuser() {
   return getOrReuse;
 }
 
-export type EqualValueReuser = ReturnType<typeof createEqualValueReuser>;
+export type EqualValueReuser = ReturnType<typeof createReuseValueGroup>;

@@ -16,6 +16,7 @@ import React, { ReactNode } from "react";
 
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
+import { IS_DEV } from "~shared/dev";
 import { isClient } from "~shared/document";
 import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
@@ -72,8 +73,27 @@ interface ApolloClientOptions {
   websocketEndpoint?: string;
 }
 
+/**
+ * This flag can be enabled in dev to debug locally with production data.
+ *
+ * The flow is:
+ * Enable this flag.
+ * App will crash saying JWT is incorrect or user is null.
+ * Click log out locally
+ * Log in again (locally)
+ * Open acapela app (production) and login (or do nothing if logged in)
+ * In dev tools > copy session token
+ * In dev tools of local app > paste session token and set SameOriginPolicy to none (by default is LEX)
+ * Reload the app locally. You should be able to see production data.
+ */
+const DEBUG_PRODUCTION_LOCALLY = IS_DEV && false;
+
 function getGraphqlUrl() {
   const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
+
+  if (DEBUG_PRODUCTION_LOCALLY) {
+    return `https://app.acape.la/graphql`;
+  }
 
   return `${rootUrl}/graphql`;
 }
@@ -107,8 +127,15 @@ if (isClient) {
  * they might be resolved by hasura and sent in one go, resulting in overall faster response
  */
 const httpRawLink = ENABLE_REQUEST_BATCHING
-  ? new BatchHttpLink({ uri: getGraphqlUrl(), batchMax: 20 })
-  : new HttpLink({ uri: getGraphqlUrl() });
+  ? new BatchHttpLink({
+      uri: getGraphqlUrl(),
+      batchMax: 20,
+      credentials: DEBUG_PRODUCTION_LOCALLY ? "include" : undefined,
+    })
+  : new HttpLink({
+      uri: getGraphqlUrl(),
+      credentials: DEBUG_PRODUCTION_LOCALLY ? "include" : undefined,
+    });
 const parseDatesLink = createDateParseLink();
 
 const httpLink = parseDatesLink.concat(httpRawLink);

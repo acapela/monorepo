@@ -21,7 +21,7 @@ export const TeamMembersManager = observer(({ team }: Props) => {
   const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
   const handleRemoveTeamMember = (userId: string) => {
-    const teamMember = team.memberships.query((teamMember) => teamMember.user_id === userId).all[0];
+    const teamMember = team.memberships.query({ user_id: userId }).first;
     assert(teamMember, `did not find teamMember for user ${userId}`);
     teamMember.remove();
   };

@@ -53,7 +53,7 @@ export const NotificationSettings = observer(() => {
 
   const db = useDb();
   const team = useCurrentTeam();
-  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
+  const teamMember = db.teamMember.query({ user_id: currentUser.id }).first;
 
   const { data, loading: isLoadingSlackUser } = useQuery<SlackUserQuery, SlackUserQueryVariables>(
     gql`

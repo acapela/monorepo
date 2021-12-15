@@ -2,7 +2,7 @@ import { memoize } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { MessageOrError, assert } from "~shared/assert";
-import { createEqualValueReuser } from "~shared/createEqualReuser";
+import { createReuseValueGroup } from "~shared/createEqualReuser";
 import { createDeepMap } from "~shared/deepMap";
 import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
@@ -17,6 +17,8 @@ import {
   EntityQuerySortInput,
   createEntityQuery,
   resolveSortInput,
+  reuseQueryFilter,
+  reuseQuerySort,
 } from "./query";
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
@@ -154,8 +156,10 @@ export function createEntityStore<Data, Connections>(
     sort?: EntityQuerySortInput<Data, Connections>
   ) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const query = reuseQueriesMap.get([filter, resolvedSort], () => {
-      const query = createEntityQuery(() => existingItems.get(), { filter, sort: resolvedSort }, store);
+    const reusedFilter = reuseQueryFilter(filter);
+    const reusedSort = reuseQuerySort(resolvedSort);
+    const query = reuseQueriesMap.get([reusedFilter, reusedSort], () => {
+      const query = createEntityQuery(() => existingItems.get(), { filter: reusedFilter, sort: reusedSort }, store);
 
       return query;
     });
@@ -163,7 +167,7 @@ export function createEntityStore<Data, Connections>(
     return query;
   }
 
-  const reuseSimpleQueryInput = createEqualValueReuser();
+  const reuseSimpleQueryInput = createReuseValueGroup();
 
   const store: EntityStore<Data, Connections> = {
     definition,
