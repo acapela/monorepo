@@ -20,6 +20,7 @@ export async function trySendDailySummary(teamMember: TeamMemberWithSlack, token
   );
 
   const notificationsSentOutsideOfWorkHours = await getNotificationsSentOutsideOfWorkHours(
+    teamMember.user_id,
     teamMember.team_member_slack.id
   );
 
@@ -159,10 +160,22 @@ async function getReceivedTopics(userId: string, teamId: string, excludedTopics:
   });
 }
 
-async function getNotificationsSentOutsideOfWorkHours(teamMemberSlackId: string) {
+async function getNotificationsSentOutsideOfWorkHours(userId: string, teamMemberSlackId: string) {
   return await db.slack_notification_queue.findMany({
     where: {
       team_member_slack_id: teamMemberSlackId,
+      topic: {
+        message: {
+          some: {
+            task: {
+              some: {
+                done_at: null,
+                user_id: userId,
+              },
+            },
+          },
+        },
+      },
     },
   });
 }
