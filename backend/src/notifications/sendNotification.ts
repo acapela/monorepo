@@ -106,6 +106,11 @@ export async function sendNotificationIgnoringPreference(
   return sendNotification(user, teamId, message, topicId);
 }
 
+/*
+ * If the notification is sent during non-work-hours it is enqueued
+ * and eventually delivered within the next daily summary only if the topic
+ * is still open, or has unfinished tasks or the topic owner is the recipient.
+ */
 export async function sendNotificationPerPreference(
   user: User,
   teamId: string,
