@@ -7,6 +7,7 @@ import {
   MENTION_TYPE_PICKER_LABELS,
   REQUEST_ACTION,
   REQUEST_DECISION,
+  REQUEST_RESPONSE,
   RequestType,
 } from "~shared/types/mention";
 
@@ -46,6 +47,8 @@ export const CreateRequestModal = async (
   }
 
   const isDecision = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_DECISION;
+  const isAction = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_ACTION;
+  const isResponse = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_RESPONSE;
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
@@ -110,16 +113,18 @@ export const CreateRequestModal = async (
               Elements.ConversationSelect({ actionId: "conversation_select" }).defaultToCurrentConversation(true)
             )
             .optional(true),
-      Blocks.Input({ blockId: "settings_block", label: "Settings" })
-        .element(
-          Elements.Checkboxes({ actionId: "settings_checkbox" }).options(
-            Bits.Option({
-              value: "first_reply_enough",
-              text: "First reply is enough.",
-            })
-          )
-        )
-        .optional(true)
+      isDecision || isAction || isResponse
+        ? Blocks.Input({ blockId: "settings_block", label: "Settings" })
+            .element(
+              Elements.Checkboxes({ actionId: "settings_checkbox" }).options(
+                Bits.Option({
+                  value: "first_reply_enough",
+                  text: "First reply is enough.",
+                })
+              )
+            )
+            .optional(true)
+        : undefined
     )
     .submit("Create")
     .buildToObject();
