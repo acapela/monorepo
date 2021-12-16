@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TaskEntity } from "~frontend/clientdb/task";
 import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
 import {
@@ -20,7 +21,8 @@ interface Props {
 }
 
 export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton({ task }: Props) {
-  if (task.type === REQUEST_DECISION) {
+  const currentUser = useAssertCurrentUser();
+  if (task.type === REQUEST_DECISION && !task.isDone) {
     return null;
   }
 
@@ -45,6 +47,10 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
           label: "Undo",
           onSelect: () => {
             task.update({ done_at: null });
+            task.message?.decisionOptions.all
+              .flatMap((option) => option.votes.all)
+              .find((vote) => vote.user_id == currentUser.id)
+              ?.remove();
           },
           icon: <IconUndo />,
         },
