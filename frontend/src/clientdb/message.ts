@@ -4,6 +4,7 @@ import { memoize } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
+import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
@@ -149,6 +150,10 @@ export const messageEntity = defineEntity<MessageFragment>({
 
     get dueDate() {
       return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
+    },
+
+    get decisionOptions() {
+      return getEntity(decisionOptionEntity).query({ message_id: message.id });
     },
   };
 
