@@ -9,7 +9,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { Maybe } from "~shared/types";
 import { Origin } from "~shared/types/analytics";
-import { MENTION_OBSERVER, MentionType } from "~shared/types/mention";
+import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention";
 
 import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
@@ -141,10 +141,11 @@ export async function createAndTrackRequestInSlack({
   }
 
   if (isSelfRequest) {
+    const mentionType = slackUserIdsWithMentionType[0].mentionType;
     const response = await client.chat.postEphemeral({
       text:
         Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
-        "\nAction item created for " +
+        `\n${Md.bold(REQUEST_NOTIFICATION_LABELS[mentionType as RequestType])} created for ` +
         Md.user(ownerSlackUserId),
       token,
       user: ownerSlackUserId,
