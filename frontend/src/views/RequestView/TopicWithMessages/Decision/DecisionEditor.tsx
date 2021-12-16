@@ -8,9 +8,9 @@ import { useDb } from "~frontend/clientdb";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { REQUEST_DECISION } from "~shared/types/mention";
 import { Button } from "~ui/buttons/Button";
-import { CloseIconButton } from "~ui/buttons/CloseIconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 import { TextInput } from "~ui/forms/TextInput";
-import { IconPlus } from "~ui/icons";
+import { IconMinusCircle, IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 interface DecisionOptionValue {
@@ -60,18 +60,20 @@ export const useDecisionController = function ({
       return;
     }
 
-    sortBy(options, "index").forEach((option) => {
-      db.decisionOption.create({
-        index: option.index,
-        option: option.option,
-        message_id: messageId,
+    sortBy(options, "index")
+      .filter((option) => !!option.option)
+      .forEach((option) => {
+        db.decisionOption.create({
+          index: option.index,
+          option: option.option,
+          message_id: messageId,
+        });
       });
-    });
   }
 
   function addOption() {
     const maxIndex = Math.max(...options.map((option) => option.index));
-    setOptions([...options, { index: maxIndex + 1, option: `Option ${maxIndex + 2}` }]);
+    setOptions([...options, { index: maxIndex + 1, option: "" }]);
   }
 
   function removeOption(index: number) {
@@ -99,33 +101,33 @@ export const useDecisionController = function ({
   ];
 };
 
-export const DecisionEditor = observer(function DecisionEditor({ controller }: DecisionEditorProps) {
-  return (
-    <UIHolder>
-      <UITitle>@Decision Options</UITitle>
-      <UIOptions>
-        {controller.options.map((option) => (
-          <UIOption key={option.index}>
-            <TextInput
-              value={option.option}
-              onChangeText={(text: string) => controller.updateOption({ index: option.index, option: text })}
-            />
-            {option.index >= 2 && <CloseIconButton onClick={() => controller.removeOption(option.index)} />}
-          </UIOption>
-        ))}
-        <Button icon={<IconPlus />} iconAtStart={true} onClick={() => controller.addOption()}>
-          Add option
-        </Button>
-      </UIOptions>
-    </UIHolder>
-  );
-});
+export const DecisionEditor = observer(({ controller }: DecisionEditorProps) => (
+  <UIHolder>
+    <UITitle>New decision poll</UITitle>
+    <UIOptions>
+      {controller.options.map((option) => (
+        <UIOption key={option.index}>
+          <TextInput
+            value={option.option}
+            placeholder={`Option ${option.index + 1}`}
+            onChangeText={(text: string) => controller.updateOption({ index: option.index, option: text })}
+          />
+          {option.index >= 2 && <UIMinusIconButton onClick={() => controller.removeOption(option.index)} />}
+        </UIOption>
+      ))}
+      <Button icon={<IconPlus />} iconAtStart={true} onClick={() => controller.addOption()}>
+        Add option
+      </Button>
+    </UIOptions>
+  </UIHolder>
+));
 
 const UIHolder = styled.div<{}>`
-  background-color: ${theme.colors.tags.decision.opacity(0.1)};
-  min-height: 60px;
+  border: 1px solid ${theme.colors.layout.background.border};
+  ${theme.radius.panel};
   padding: 20px;
-  max-width: 300px;
+  max-width: 400px;
+  min-height: 60px;
 `;
 
 const UITitle = styled.h6<{}>`
@@ -141,8 +143,21 @@ const UIOptions = styled.div<{}>`
 `;
 
 const UIOption = styled.div<{}>`
+  width: 100%;
+
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  gap: 10px;
+
+  > * {
+    width: 100%;
+  }
+`;
+
+const UIMinusIconButton = styled<Omit<React.ComponentProps<typeof IconButton>, "icon" | "kind">>((props) => (
+  <IconButton kind="secondary" icon={<IconMinusCircle />} {...props} />
+))`
+  padding: 15px;
+  width: auto;
 `;
