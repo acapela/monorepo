@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/node";
 import { WebClient } from "@slack/web-api";
-import { Blocks, Modal } from "slack-block-builder";
+import { Blocks, Md, Modal } from "slack-block-builder";
 
+import { createTopicLink } from "~backend/src/slack/live-messages/utils";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert } from "~shared/assert";
@@ -111,6 +112,9 @@ export async function createAndTrackRequestInSlack({
     isFirstReplyEnough,
   });
 
+  const isSelfRequest =
+    slackUserIdsWithMentionType.length === 1 && slackUserIdsWithMentionType[0].slackUserId === ownerSlackUserId;
+
   if (!originalChannelId) {
     const topicURL = await backendGetTopicUrl(topic);
     await client.views.open({
@@ -136,29 +140,47 @@ export async function createAndTrackRequestInSlack({
     }
   }
 
-  const response = await client.chat.postMessage({
-    ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
-    token,
-    channel: conversationId,
-    thread_ts: messageTs ?? undefined,
-  });
+  if (isSelfRequest) {
+    const response = await client.chat.postEphemeral({
+      text:
+        Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
+        "\nAction item created for " +
+        Md.user(ownerSlackUserId),
+      token,
+      user: ownerSlackUserId,
+      channel: conversationId,
+      thread_ts: messageTs ?? undefined,
+    });
+    if (!response.ok) {
+      assert(response.error, "non-ok response without an error");
+      Sentry.captureException(response.error);
+      return;
+    }
+  } else {
+    const response = await client.chat.postMessage({
+      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
+      token,
+      channel: conversationId,
+      thread_ts: messageTs ?? undefined,
+    });
 
-  if (!response.ok) {
-    assert(response.error, "non-ok response without an error");
-    Sentry.captureException(response.error);
-    return;
+    if (!response.ok) {
+      assert(response.error, "non-ok response without an error");
+      Sentry.captureException(response.error);
+      return;
+    }
+
+    const { channel, message } = response;
+    assert(channel && message?.ts, "ok response without channel or message_ts");
+    await db.topic_slack_message.create({
+      data: {
+        topic_id: topic.id,
+        slack_channel_id: channel,
+        slack_message_ts: message.ts,
+        is_excluding_content: hasRequestOriginatedFromMessageAction,
+      },
+    });
   }
-
-  const { channel, message } = response;
-  assert(channel && message?.ts, "ok response without channel or message_ts");
-  await db.topic_slack_message.create({
-    data: {
-      topic_id: topic.id,
-      slack_channel_id: channel,
-      slack_message_ts: message.ts,
-      is_excluding_content: hasRequestOriginatedFromMessageAction,
-    },
-  });
 
   if (owner) {
     trackBackendUserEvent(owner.id, "Created Request", {
