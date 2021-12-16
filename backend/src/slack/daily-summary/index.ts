@@ -165,16 +165,7 @@ async function getNotificationsSentOutsideOfWorkHours(userId: string, teamMember
     where: {
       team_member_slack_id: teamMemberSlackId,
       topic: {
-        message: {
-          some: {
-            task: {
-              some: {
-                done_at: null,
-                user_id: userId,
-              },
-            },
-          },
-        },
+        OR: [{ owner_id: userId }, { message: { some: { task: { some: { done_at: null, user_id: userId } } } } }],
       },
     },
   });
