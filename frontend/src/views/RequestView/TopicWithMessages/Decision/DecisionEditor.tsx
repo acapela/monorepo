@@ -1,28 +1,20 @@
-import { JSONContent } from "@tiptap/core/dist/packages/core/src/types";
-import { sortBy } from "lodash";
 import { observer } from "mobx-react";
-import React, { useMemo, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { REQUEST_DECISION } from "~shared/types/mention";
+import { DecisionOptionDraft } from "~frontend/topics/createRequest";
 import { Button } from "~ui/buttons/Button";
 import { CloseIconButton } from "~ui/buttons/CloseIconButton";
 import { TextInput } from "~ui/forms/TextInput";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-interface DecisionOptionValue {
-  index: number;
-  option: string;
-}
-
 interface DecisionEditorProps {
-  controller: Controller;
+  options: DecisionOptionDraft[];
+  onOptionsChange: (newOptions: DecisionOptionDraft[]) => void;
 }
 
-const INITIAL_OPTIONS = [
+export const INITIAL_DECISION_OPTIONS: DecisionOptionDraft[] = [
   {
     index: 0,
     option: "Yes",
@@ -33,87 +25,36 @@ const INITIAL_OPTIONS = [
   },
 ];
 
-interface DecisionControllerProps {
-  content: JSONContent;
-}
-
-interface Controller {
-  options: DecisionOptionValue[];
-  addOption: () => void;
-  removeOption: (index: number) => void;
-  updateOption: (option: DecisionOptionValue) => void;
-}
-
-export const useDecisionController = function ({
-  content,
-}: DecisionControllerProps): [boolean, { controller: Controller; submit: (messageId: string) => void }] {
-  const [options, setOptions] = useState<DecisionOptionValue[]>(INITIAL_OPTIONS);
-  const db = useDb();
-
-  const shouldShowDecision = useMemo(
-    () => getUniqueRequestMentionDataFromContent(content).some((mention) => mention.type === REQUEST_DECISION),
-    [content]
-  );
-
-  function submit(messageId: string) {
-    if (!shouldShowDecision) {
-      return;
-    }
-
-    sortBy(options, "index").forEach((option) => {
-      db.decisionOption.create({
-        index: option.index,
-        option: option.option,
-        message_id: messageId,
-      });
-    });
-  }
-
+export const DecisionEditor = observer(function DecisionEditor({ options, onOptionsChange }: DecisionEditorProps) {
   function addOption() {
     const maxIndex = Math.max(...options.map((option) => option.index));
-    setOptions([...options, { index: maxIndex + 1, option: `Option ${maxIndex + 2}` }]);
+    onOptionsChange([...options, { index: maxIndex + 1, option: `Option ${maxIndex + 2}` }]);
   }
 
   function removeOption(index: number) {
-    setOptions(options.filter((option) => option.index !== index));
+    onOptionsChange(options.filter((option) => option.index !== index));
   }
 
-  function updateOption(optionToUpdate: DecisionOptionValue) {
+  function updateOption(optionToUpdate: DecisionOptionDraft) {
     const before = options.filter((option) => option.index < optionToUpdate.index);
     const after = options.filter((option) => option.index > optionToUpdate.index);
 
-    setOptions([...before, optionToUpdate, ...after]);
+    onOptionsChange([...before, optionToUpdate, ...after]);
   }
-
-  return [
-    shouldShowDecision,
-    {
-      controller: {
-        options,
-        addOption,
-        removeOption,
-        updateOption,
-      },
-      submit,
-    },
-  ];
-};
-
-export const DecisionEditor = observer(function DecisionEditor({ controller }: DecisionEditorProps) {
   return (
     <UIHolder>
       <UITitle>@Decision Options</UITitle>
       <UIOptions>
-        {controller.options.map((option) => (
+        {options.map((option) => (
           <UIOption key={option.index}>
             <TextInput
               value={option.option}
-              onChangeText={(text: string) => controller.updateOption({ index: option.index, option: text })}
+              onChangeText={(text: string) => updateOption({ index: option.index, option: text })}
             />
-            {option.index >= 2 && <CloseIconButton onClick={() => controller.removeOption(option.index)} />}
+            {option.index >= 2 && <CloseIconButton onClick={() => removeOption(option.index)} />}
           </UIOption>
         ))}
-        <Button icon={<IconPlus />} iconAtStart={true} onClick={() => controller.addOption()}>
+        <Button icon={<IconPlus />} iconAtStart={true} onClick={() => addOption()}>
           Add option
         </Button>
       </UIOptions>

@@ -98,6 +98,15 @@ export const Message = styledObserver<Props>(
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
       }
 
+      if (!message.isTopicMainMessage && message.tasks.hasItems) {
+        options.push({
+          label: "Create new request from message",
+          onSelect() {
+            //
+          },
+        });
+      }
+
       if (message.isOwn && !isRemoveDisabled) {
         options.push({
           label: "Delete message",

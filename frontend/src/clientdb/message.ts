@@ -129,6 +129,10 @@ export const messageEntity = defineEntity<MessageFragment>({
       return currentUserId === message.user_id;
     },
 
+    get isTopicMainMessage() {
+      return connections.topic?.messages.first?.id === message.id;
+    },
+
     setTasksDueDate(dueDate: Date | null) {
       const messageTaskDueDate = getEntity(messageTaskDueDateEntity);
       const previouslyStoredDueDate = messageTaskDueDate.query({ message_id: message.id }).first;
