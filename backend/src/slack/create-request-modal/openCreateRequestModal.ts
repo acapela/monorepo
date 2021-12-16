@@ -46,9 +46,8 @@ export const CreateRequestModal = async (
     }
   }
 
-  const isDecision = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_DECISION;
-  const isAction = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_ACTION;
-  const isResponse = stateValues?.request_type_block?.request_type_select?.selected_option?.value == REQUEST_RESPONSE;
+  const requestType = stateValues?.request_type_block?.request_type_select?.selected_option?.value || "";
+  const isDecision = requestType === REQUEST_DECISION;
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
     .blocks(
@@ -76,7 +75,7 @@ export const CreateRequestModal = async (
             label: isDecision ? "Decision to be made" : "Your Message",
             blockId: "message_block",
           }).element(Elements.TextInput({ actionId: "message_text" }).multiline(true)),
-      isDecision
+      isDecision && stateValues
         ? [
             ...Array.from({ length: getDecisionBlockCount(stateValues) }, (_, i) =>
               Blocks.Input({ blockId: DECISION_BLOCK_ID_PRE + i, label: "Option " + (i + 1) })
@@ -113,7 +112,7 @@ export const CreateRequestModal = async (
               Elements.ConversationSelect({ actionId: "conversation_select" }).defaultToCurrentConversation(true)
             )
             .optional(true),
-      isDecision || isAction || isResponse
+      [REQUEST_DECISION, REQUEST_ACTION, REQUEST_RESPONSE].includes(requestType)
         ? Blocks.Input({ blockId: "settings_block", label: "Settings" })
             .element(
               Elements.Checkboxes({ actionId: "settings_checkbox" }).options(

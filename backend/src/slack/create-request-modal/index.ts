@@ -192,7 +192,7 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    const firstReplyEnough = !!find(selectedSettings, ["value", "first_reply_enough"]);
+    const isFirstReplyEnough = !!find(selectedSettings, ["value", "first_reply_enough"]);
 
     const token = assertToken(context);
 
@@ -238,7 +238,7 @@ export function setupCreateRequestModal(app: App) {
       topicName,
       priority: selectedPriority?.value,
       decisionOptions,
-      firstReplyEnough,
+      isFirstReplyEnough,
     });
 
     await ack({ response_action: "clear" });
