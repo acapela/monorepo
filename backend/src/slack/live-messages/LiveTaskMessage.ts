@@ -4,7 +4,7 @@ import { Blocks, Md, Message as SlackMessage } from "slack-block-builder";
 import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
@@ -42,7 +42,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
         ? Blocks.Section({ text: "The topic has been closed ✅️" })
         : [
             dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
-            Blocks.Actions().elements(ToggleTaskDoneAtButton(task)),
+            task.type === REQUEST_DECISION ? undefined : Blocks.Actions().elements(ToggleTaskDoneAtButton(task)),
           ]
     )
     .buildToObject();

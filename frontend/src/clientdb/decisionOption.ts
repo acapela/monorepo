@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
+import { messageEntity } from "~frontend/clientdb/message";
 import { DecisionOptionFragment } from "~gql";
 
 import { decisionVoteEntity } from "./decisionVote";
@@ -36,6 +37,9 @@ export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
   }),
 }).addConnections((decisionOption, { getEntity }) => {
   const connections = {
+    get message() {
+      return getEntity(messageEntity).findById(decisionOption.message_id);
+    },
     get votes() {
       return getEntity(decisionVoteEntity).query({ decision_option_id: decisionOption.id });
     },
