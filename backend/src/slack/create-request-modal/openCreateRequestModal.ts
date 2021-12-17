@@ -30,6 +30,7 @@ export const CreateRequestModal = async (
   const { channelId, slackUserId, messageText } = metadata;
 
   let requestToSlackUserIds: string[] = [];
+  let requestType = stateValues?.request_type_block?.request_type_select?.selected_option?.value || "";
   if (!stateValues) {
     // we only need to do the following for setting initial values, where stateValues is not set yet
     const slackUserIdsFromMessage = await pickRealUsersFromMessageText(token, messageText);
@@ -44,9 +45,9 @@ export const CreateRequestModal = async (
     if (requestToSlackUserIds.length === 0 && channelInfo && channelInfo.isPrivate) {
       requestToSlackUserIds = channelInfo.members;
     }
+    if (!requestType) requestType = REQUEST_ACTION;
   }
 
-  const requestType = stateValues?.request_type_block?.request_type_select?.selected_option?.value || "";
   const isDecision = requestType === REQUEST_DECISION;
 
   return Modal({ title: "Create a new request", ...attachToViewWithMetadata("create_request", metadata) })
