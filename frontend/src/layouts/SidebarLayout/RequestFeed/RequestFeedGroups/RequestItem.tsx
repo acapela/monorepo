@@ -53,13 +53,12 @@ const getRelativeDueTimeLabel = (dueDate: Date) => {
 };
 
 export const RequestItem = observer(function RequestItem({ topic }: Props) {
-  const topicRouteParams = useRouteParams(routes._deprecated_topic);
   const topicRouteByHandleParams = useRouteParams(routes.topicByHandle);
   const elementRef = useRef<HTMLAnchorElement>(null);
   const isHovered = useIsElementOrChildHovered(elementRef);
 
   // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
-  const isHighlighted = topicRouteParams.topicSlug === topic.slug || topicRouteByHandleParams.topicId === topic.id;
+  const isHighlighted = topicRouteByHandleParams.topicId === topic.id;
 
   const unreadMessagesCount = topic.unreadMessages.count;
 
