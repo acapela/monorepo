@@ -187,12 +187,12 @@ export function setupCreateRequestModal(app: App) {
       priority_block: {
         priority: { selected_option: selectedPriority },
       },
-      settings_block: {
-        settings_checkbox: { selected_options: selectedSettings },
-      },
     } = view.state.values;
 
-    const isFirstReplyEnough = !!find(selectedSettings, ["value", "first_reply_enough"]);
+    const isFirstReplyEnough = find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
+      "value",
+      "first_reply_enough",
+    ]);
 
     const token = assertToken(context);
 
