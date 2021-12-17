@@ -189,7 +189,7 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    const isFirstReplyEnough = find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
+    const isFirstReplyEnough = !!find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
       "value",
       "first_reply_enough",
     ]);
