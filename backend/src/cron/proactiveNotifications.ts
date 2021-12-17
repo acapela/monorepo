@@ -1,4 +1,4 @@
-import { addMinutes } from "date-fns";
+import { addMinutes, differenceInMinutes } from "date-fns";
 import { groupBy } from "lodash";
 
 import { createRequestIsDue, createRequestIsDueIn3Hours } from "~backend/src/notifications/bodyBuilders/requestIsDue";
@@ -22,11 +22,14 @@ async function requestIsDueIn3Hours(now: Date) {
   const tasks = await findTasksDueBetween(inTwoHoursAnd45Minutes, inThreeHours);
 
   for (const task of tasks) {
+    const dueDate = task.message.message_task_due_date?.due_at;
+    if (!dueDate) continue;
     const message = createRequestIsDueIn3Hours({
       topicId: task.message.topic_id,
       topicName: task.message.topic.name,
       taskCreatorName: task.message.user.name,
       topicURL: await backendGetTopicUrl(task.message.topic),
+      minutesLeft: differenceInMinutes(dueDate, now),
     });
     sendNotificationPerPreference(task.user, task.message.topic.team_id, message, task.message.topic_id);
   }

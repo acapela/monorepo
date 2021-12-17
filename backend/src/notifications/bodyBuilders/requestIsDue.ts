@@ -1,6 +1,7 @@
 import { BlockCollection, Blocks, Elements } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/slack/md/utils";
+import { niceFormatMinutes } from "~shared/dates/format";
 import { pluralize } from "~shared/text/pluralize";
 
 import { NotificationMessage } from "../sendNotification";
@@ -10,17 +11,23 @@ export function createRequestIsDueIn3Hours({
   topicId,
   topicName,
   topicURL,
+  minutesLeft,
 }: {
   topicId: string;
   topicName: string;
   topicURL: string;
   taskCreatorName: string;
+  minutesLeft: number;
 }): Partial<NotificationMessage> {
-  const messageSlack = `You have three hours left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click ${createSlackLink(
+  const messageSlack = `You have ${niceFormatMinutes(
+    minutesLeft
+  )} left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click ${createSlackLink(
     topicURL,
     "here"
   )} to let ${taskCreatorName} know you need more time ⏰.`;
-  const messageHtml = `You have three hours left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click <a href="${topicURL}">here</a> to let ${taskCreatorName} know you need more time ⏰.`;
+  const messageHtml = `You have ${niceFormatMinutes(
+    minutesLeft
+  )} left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click <a href="${topicURL}">here</a> to let ${taskCreatorName} know you need more time ⏰.`;
   return {
     email: {
       subject: `You have uncompleted tasks in ${topicName}.`,
