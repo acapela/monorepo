@@ -1,4 +1,4 @@
-import { Topic } from "~db";
+import { DecisionOptionWithVotes } from "~backend/src/slack/decision";
 import { RequestType } from "~shared/types/mention";
 
 export interface SlackMember {
@@ -18,12 +18,5 @@ export interface MessageInfo {
   message: { id: string; content: string; fromUser: SlackMember; createdAt: Date; fromUserImage?: string };
   dueDate?: Date;
   tasks?: TaskInfo[];
+  decisionOptions: DecisionOptionWithVotes[];
 }
-
-export type TopicInfo = Topic & {
-  url: string;
-  slackUserId: string;
-  isClosed: boolean;
-  messages: MessageInfo[];
-  slackMessagePermalink?: string;
-};
