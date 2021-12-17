@@ -207,6 +207,8 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
+    await ack({ response_action: "clear" });
+
     let decisionOptions: string[] = [];
     if (requestType.value === REQUEST_DECISION) {
       decisionOptions = Object.entries(view.state.values)
@@ -217,7 +219,7 @@ export function setupCreateRequestModal(app: App) {
 
     const observersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
 
-    createAndTrackRequestInSlack({
+    await createAndTrackRequestInSlack({
       messageText,
       slackTeamId: body.user.team_id,
       creatorSlackUserId: body.user.id,
@@ -242,7 +244,5 @@ export function setupCreateRequestModal(app: App) {
       decisionOptions,
       isFirstReplyEnough,
     });
-
-    await ack({ response_action: "clear" });
   });
 }
