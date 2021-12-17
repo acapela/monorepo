@@ -52,3 +52,9 @@ function isBeforeThisWeek(date: Date): boolean {
   // 0 if dates are equal.
   return compareAsc(date, startOfThisWeek) === -1;
 }
+
+export function niceFormatMinutes(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const minutesLeft = minutes % 60;
+  return `${hours}h${minutesLeft}m`;
+}
