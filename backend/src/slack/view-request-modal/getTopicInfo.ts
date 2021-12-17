@@ -9,7 +9,7 @@ import { RequestType } from "~shared/types/mention";
 import { slackClient } from "../app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink } from "../md/utils";
-import { SlackMember, TopicInfo } from "./types";
+import { SlackMember } from "./types";
 
 export async function getViewRequestViewModel(token: string, topicId: string, slackUserId: string) {
   const team = await db.team.findFirst({
@@ -53,6 +53,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
         include: {
           message_task_due_date: true,
           task: true,
+          decision_option: { include: { decision_vote: { include: { user: true } } } },
           attachment: {
             select: {
               id: true,
@@ -124,7 +125,7 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
     : undefined;
 
   const topicUrl = await backendGetTopicUrl(topic);
-  const topicInfo: TopicInfo = {
+  return {
     ...topic,
     url: topicUrl,
     isClosed: !!topic.closed_at,
@@ -157,10 +158,11 @@ export async function getViewRequestViewModel(token: string, topicId: string, sl
               doneAt: t.done_at ? new Date(t.done_at) : undefined,
             }))
           ),
+          decisionOptions: message.decision_option,
         };
       })
     ),
   };
-
-  return topicInfo;
 }
+
+export type TopicInfo = Awaited<ReturnType<typeof getViewRequestViewModel>>;

@@ -4,10 +4,16 @@ import { format } from "date-fns";
 import { sortBy } from "lodash";
 import { Blocks, EasyPaginator, Elements, Md, Modal } from "slack-block-builder";
 
+import { DecisionOptionVoting } from "~backend/src/slack/decision";
 import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
 import { assert } from "~shared/assert";
-import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
+import {
+  COMPLETED_REQUEST_LABEL,
+  REQUEST_DECISION,
+  RequestType,
+  UNCOMPLETED_REQUEST_LABEL,
+} from "~shared/types/mention";
 
 import { mdDate } from "../md/utils";
 import {
@@ -21,8 +27,8 @@ import {
   fetchTeamBotToken,
   findUserBySlackId,
 } from "../utils";
-import { getViewRequestViewModel } from "./getTopicInfo";
-import { MessageInfo, TaskInfo, TopicInfo } from "./types";
+import { TopicInfo, getViewRequestViewModel } from "./getTopicInfo";
+import { MessageInfo, TaskInfo } from "./types";
 
 const ActionIds = { UpdateMessageDueAt: "request-view-update-message-due-date" };
 
@@ -35,25 +41,37 @@ function getTaskLabel(task: TaskInfo): string {
   return `${REQUEST_TYPE_EMOJIS[task.type as RequestType]} ${UNCOMPLETED_REQUEST_LABEL[task.type as RequestType]}`;
 }
 
-function MessageActionsBlocks({ tasks, message }: MessageInfo, currentSlackUserId: string, topicURL: string) {
-  const taskAssignedToUser = tasks?.find((t) => t.user.slackUserId === currentSlackUserId);
+function MessageActionsBlocks(topic: TopicInfo, { tasks, message, decisionOptions }: MessageInfo) {
+  const taskAssignedToUser = tasks?.find(
+    (t) => t.user.slackUserId === topic.slackUserId && t.type !== REQUEST_DECISION
+  );
 
-  return Blocks.Actions().elements([
-    taskAssignedToUser
-      ? Elements.Button({
-          actionId: "toggle_task_done_at:" + taskAssignedToUser.id,
-          value: taskAssignedToUser.id,
-          text: getTaskLabel(taskAssignedToUser),
-        })
-          .primary(!taskAssignedToUser.doneAt)
-          .danger(!!taskAssignedToUser.doneAt)
-      : undefined,
-    Elements.Button({
-      text: `💬 Reply to ${message.fromUser.name}`,
-      actionId: `open-external-url-reply-button:${message.id}`,
-      url: `${topicURL}#${message.id}`,
-    }),
-  ]);
+  return [
+    ...DecisionOptionVoting(
+      decisionOptions,
+      Object.fromEntries(
+        topic.topic_member
+          .map((member) => [member.user_id, member.user.team_member[0]?.team_member_slack?.slack_user_id])
+          .filter(([, slackUserId]) => slackUserId)
+      )
+    ),
+    Blocks.Actions().elements([
+      taskAssignedToUser
+        ? Elements.Button({
+            actionId: "toggle_task_done_at:" + taskAssignedToUser.id,
+            value: taskAssignedToUser.id,
+            text: getTaskLabel(taskAssignedToUser),
+          })
+            .primary(!taskAssignedToUser.doneAt)
+            .danger(!!taskAssignedToUser.doneAt)
+        : undefined,
+      Elements.Button({
+        text: `💬 Reply to ${message.fromUser.name}`,
+        actionId: `open-external-url-reply-button:${message.id}`,
+        url: `${topic.url}#${message.id}`,
+      }),
+    ]),
+  ];
 }
 
 function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
@@ -87,7 +105,7 @@ function getTaskRecipientsLabel(tasks: TaskInfo[], slackUserId: string) {
 
 type TopicBlockOptions = { isFirst: boolean };
 
-const RequestBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: TopicBlockOptions) => {
+const RequestBlock = (topic: TopicInfo, messageInfo: MessageInfo, { isFirst }: TopicBlockOptions) => {
   const { message, dueDate, tasks } = messageInfo;
 
   assert(tasks, "tasks must always present in request");
@@ -113,7 +131,7 @@ const RequestBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: T
       ])
       .end(),
     Blocks.Section({ text: message.content }),
-    MessageActionsBlocks(messageInfo, topic.slackUserId, topic.url),
+    ...MessageActionsBlocks(topic, messageInfo),
     Blocks.Divider(),
     Blocks.Section().fields(
       Md.bold(`${tasks.length} recipients`),
@@ -136,7 +154,7 @@ const RequestBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: T
   ];
 };
 
-const MessageBlock = (messageInfo: MessageInfo, topic: TopicInfo, { isFirst }: TopicBlockOptions) => {
+const MessageBlock = (topic: TopicInfo, messageInfo: MessageInfo, { isFirst }: TopicBlockOptions) => {
   const { message } = messageInfo;
   return [
     Blocks.Context()
@@ -230,8 +248,11 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
   // own error handling
   markAsSeenAndUpdateHomeView(token, slackUserId, topic);
 
-  const RequestOrMessageBlock = (message: MessageInfo, opts: TopicBlockOptions = { isFirst: false }) =>
-    message.tasks?.length ? RequestBlock(message, topic, opts) : MessageBlock(message, topic, opts);
+  const RequestOrMessageBlock = (
+    topic: TopicInfo,
+    message: MessageInfo,
+    opts: TopicBlockOptions = { isFirst: false }
+  ) => (message.tasks?.length ? RequestBlock(topic, message, opts) : MessageBlock(topic, message, opts));
 
   return Modal({
     title: "View Request",
@@ -244,7 +265,7 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
       ...Padding(1),
 
       // Main Request may have no tasks if only observers are mentioned
-      RequestOrMessageBlock(mainRequest, { isFirst: true }),
+      ...RequestOrMessageBlock(topic, mainRequest, { isFirst: true }),
 
       ...(otherMessages.length > 0
         ? [Blocks.Divider(), Blocks.Section({ text: Md.bold("Replies") }), ...Padding()]
@@ -256,7 +277,7 @@ export const ViewRequestModal = async (token: string, metadata: ViewMetadata["vi
         page: page ?? 1,
         actionId: ({ page, buttonId }) =>
           `${SlackActionIds.OpenViewRequestModal}:${JSON.stringify({ page, topicId: topic.id, buttonId })}`,
-        blocksForEach: ({ item }) => [...RequestOrMessageBlock(item), ...Padding(2)],
+        blocksForEach: ({ item }) => [...RequestOrMessageBlock(topic, item), ...Padding(2)],
       }).getBlocks(),
 
       Blocks.Divider(),
