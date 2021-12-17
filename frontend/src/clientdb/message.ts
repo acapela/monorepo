@@ -31,6 +31,7 @@ const messageFragment = gql`
     topic_id
     type
     user_id
+    is_first_completion_enough
   }
 `;
 
@@ -45,12 +46,13 @@ export const messageEntity = defineEntity<MessageFragment>({
       __typename: "message",
       user_id: getContextValue(userIdContext) ?? undefined,
       replied_to_message_id: null,
+      is_first_completion_enough: false,
       ...getGenericDefaultData(),
     };
   },
   sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
-    insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
-    updateColumns: ["content"],
+    insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type", "is_first_completion_enough"],
+    updateColumns: ["content", "is_first_completion_enough"],
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
   customObservableAnnotations: {

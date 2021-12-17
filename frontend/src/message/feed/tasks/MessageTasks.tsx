@@ -8,6 +8,7 @@ import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { styledObserver } from "~shared/component";
 import { groupByFilter } from "~shared/groupByFilter";
+import { MENTION_TYPE_LABELS, RequestType } from "~shared/requests";
 import { theme } from "~ui/theme";
 
 import { MessageTasksPeople } from "./MessageTasksPeople";
@@ -47,7 +48,16 @@ export const MessageTasks = styledObserver(({ message }: Props) => {
 
         <UIParticipantsGroups layout="position">
           <AnimatePresence>
-            {pendingTasks.length > 0 && <MessageTasksPeople tasks={pendingTasks} label="Pending" />}
+            {pendingTasks.length > 0 && (
+              <MessageTasksPeople
+                tasks={pendingTasks}
+                label={
+                  completedTasks.length == 0 && message.is_first_completion_enough
+                    ? "Waiting for 1st " + MENTION_TYPE_LABELS[pendingTasks[0].type as RequestType]
+                    : "Pending"
+                }
+              />
+            )}
             {completedTasks.length > 0 && <MessageTasksPeople tasks={completedTasks} label="✓ Completed" isPrimary />}
           </AnimatePresence>
         </UIParticipantsGroups>

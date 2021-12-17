@@ -3,8 +3,8 @@ import { uniqBy } from "lodash";
 
 import { getIsContentNodeOfType, getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNodeWithAttributes } from "~richEditor/content/types";
+import { REQUEST_TYPES, RequestType } from "~shared/requests";
 import { EditorMentionData } from "~shared/types/editor";
-import { REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
 export const MENTION_TYPE_KEY = "mention";
 

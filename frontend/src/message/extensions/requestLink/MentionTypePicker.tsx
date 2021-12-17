@@ -1,7 +1,7 @@
 import { toPairs } from "lodash";
 import React from "react";
 
-import { MENTION_TYPE_PICKER_LABELS, MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_PICKER_LABELS, MentionType } from "~shared/requests";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 
 interface Props {

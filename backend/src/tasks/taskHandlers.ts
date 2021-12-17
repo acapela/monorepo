@@ -6,7 +6,7 @@ import { Task, Topic, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isEqualForPick } from "~shared/object";
-import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/requests";
 
 import { backendGetTopicUrl } from "../topics/url";
 
@@ -121,7 +121,8 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     });
   }
 
-  if (userId && task.done_at && task.done_at !== taskBefore.done_at) {
+  const isNewlyDone = task.done_at && task.done_at !== taskBefore.done_at;
+  if (userId && isNewlyDone) {
     // userId is null when the update is not triggered through the frontend
     const wasTaskCompleteBeforeToggle = taskBefore.done_at;
     trackBackendUserEvent(userId, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
@@ -142,10 +143,15 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     },
   });
 
-  if (amountOfOpenTasksLeft > 0 && topic.is_first_reply_enough && task.done_at) {
+  const message = assertDefined(
+    await db.message.findUnique({ where: { id: task.message_id } }),
+    `missing message ${task.message_id}`
+  );
+
+  if (amountOfOpenTasksLeft > 0 && message.is_first_completion_enough && isNewlyDone) {
     await db.task.updateMany({
       where: {
-        message: { topic_id: { equals: topic.id } },
+        message_id: message.id,
         done_at: {
           equals: null,
         },

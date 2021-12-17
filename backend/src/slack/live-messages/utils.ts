@@ -3,7 +3,7 @@ import { Elements } from "slack-block-builder";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { Message, Task, Topic, User, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
-import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
+import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/requests";
 
 import { generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink } from "../md/utils";

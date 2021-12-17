@@ -1,4 +1,4 @@
-import { MentionType } from "./mention";
+import { MentionType } from "../requests";
 
 export interface EditorMentionData<T = MentionType> {
   userId: string;

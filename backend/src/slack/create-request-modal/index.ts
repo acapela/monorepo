@@ -13,7 +13,7 @@ import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
-import { MentionType, REQUEST_DECISION } from "~shared/types/mention";
+import { MentionType, REQUEST_DECISION } from "~shared/requests";
 
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
@@ -189,9 +189,9 @@ export function setupCreateRequestModal(app: App) {
       },
     } = view.state.values;
 
-    const isFirstReplyEnough = !!find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
+    const isFirstCompletionEnough = !!find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
       "value",
-      "first_reply_enough",
+      "first_completion_enough",
     ]);
 
     const token = assertToken(context);
@@ -242,7 +242,7 @@ export function setupCreateRequestModal(app: App) {
       topicName,
       priority: selectedPriority?.value,
       decisionOptions,
-      isFirstReplyEnough,
+      isFirstCompletionEnough,
     });
   });
 }

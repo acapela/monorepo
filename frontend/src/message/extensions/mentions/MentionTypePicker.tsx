@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
-import { MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
+import { MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_DECISION } from "~shared/requests";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 
 interface Props {

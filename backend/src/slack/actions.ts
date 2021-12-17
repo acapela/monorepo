@@ -6,9 +6,9 @@ import { Blocks, Modal } from "slack-block-builder";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { RequestType } from "~shared/requests";
 import { routes } from "~shared/routes";
 import { Sentry } from "~shared/sentry";
-import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { openCreateRequestModal } from "./create-request-modal/openCreateRequestModal";

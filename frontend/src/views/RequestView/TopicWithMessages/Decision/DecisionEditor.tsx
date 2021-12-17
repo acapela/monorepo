@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { REQUEST_DECISION } from "~shared/types/mention";
+import { REQUEST_DECISION } from "~shared/requests";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
 import { TextInput } from "~ui/forms/TextInput";

@@ -9,9 +9,9 @@ import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { isNotNullish } from "~shared/nullish";
+import { REQUEST_DECISION } from "~shared/requests";
 import { pluralize } from "~shared/text/pluralize";
-import { REQUEST_DECISION } from "~shared/types/mention";
-import { PopPresenceAnimator } from "~ui/animations";
+import { FadePresenceAnimator } from "~ui/animations";
 import { IconCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
 
@@ -38,12 +38,16 @@ export const DecisionVoting = observer(function DecisionVoting({ message }: Prop
     "desc"
   );
   const highestVoteOptionId = top1 && top1.votes > (top2?.votes ?? 0) ? top1.optionId : null;
-  const isComplete = decisionRequestsCount === votesCastCount;
+  const isComplete =
+    decisionRequestsCount === votesCastCount || (message.is_first_completion_enough && votesCastCount >= 1);
   const winningOption = isComplete && highestVoteOptionId ? db.decisionOption.findById(highestVoteOptionId) : null;
 
   const currentUserVote = computed(() =>
     options.flatMap((options) => options.votes.query({ user_id: currentUser.id }).first).find(Boolean)
   ).get();
+  const currentUserDecisionTask = message.tasks?.query({ user_id: currentUser.id, type: REQUEST_DECISION }).first;
+
+  const canVote = currentUserDecisionTask && !message.topic?.isClosed;
 
   return (
     <UIHolder>
@@ -56,6 +60,7 @@ export const DecisionVoting = observer(function DecisionVoting({ message }: Prop
             <UIOption
               key={option.index}
               $highlight={isUserChoice}
+              disabled={!canVote}
               onClick={action(() => {
                 if (currentUserVote) {
                   currentUserVote.remove();
@@ -65,12 +70,10 @@ export const DecisionVoting = observer(function DecisionVoting({ message }: Prop
                 if (didUserVote) {
                   db.decisionVote.create({ decision_option_id: option.id, user_id: currentUser.id });
                 }
-                option.message?.tasks
-                  ?.query({ user_id: currentUser.id, type: REQUEST_DECISION })
-                  .first?.update({ done_at: didUserVote ? new Date().toISOString() : null });
+                currentUserDecisionTask?.update({ done_at: didUserVote ? new Date().toISOString() : null });
               })}
             >
-              <CheckBox status={isWinner ? "full" : isUserChoice ? "partial" : "empty"} />
+              <CheckBox status={isWinner ? "full" : isUserChoice ? "partial" : canVote ? "empty" : "hidden"} />
               <div>
                 <UIOptionText>{option.option}</UIOptionText>
                 <UIOptionVotes>
@@ -90,17 +93,23 @@ export const DecisionVoting = observer(function DecisionVoting({ message }: Prop
         })}
         <AnimatePresence>
           {winningOption && (
-            <PopPresenceAnimator>
+            <FadePresenceAnimator>
               <UIWinner>
                 <div>
                   <UIBold>
-                    {top1.votes} of {votesCastCount} participants
+                    {message.is_first_completion_enough ? (
+                      <UIBold>
+                        {allVotes.length == 1 ? allVotes[0].user?.name : `${votesCastCount} participants`}
+                      </UIBold>
+                    ) : (
+                      `${top1.votes} of ${votesCastCount} participants`
+                    )}
                   </UIBold>{" "}
                   decided <UIBold>{winningOption.option}</UIBold>
                 </div>
                 <UICheck />
               </UIWinner>
-            </PopPresenceAnimator>
+            </FadePresenceAnimator>
           )}
         </AnimatePresence>
       </UIOptions>
@@ -138,16 +147,36 @@ const UIOption = styled.button<{ $highlight: boolean }>`
   flex-direction: row;
   align-items: center;
 
+  color: ${theme.colors.text};
   background: none;
   text-align: start;
-  cursor: pointer;
 
-  &:hover {
-    ${theme.colors.layout.background.hover.opacity(0.5).asBg};
+  &:not([disabled]) {
+    cursor: pointer;
+    &:hover {
+      ${theme.colors.layout.background.hover.opacity(0.5).asBg};
+    }
   }
 `;
 
-const CheckBox = styled<{ status: "full" | "partial" | "empty" }>((props) => (
+type CheckBoxStatus = "full" | "partial" | "empty" | "hidden";
+
+const CHECK_BOX_STYLES: Partial<Record<CheckBoxStatus, ReturnType<typeof css>>> = {
+  full: css`
+    ${theme.colors.tags.decision.asBg};
+    ${theme.colors.tags.decision.asStyle("borderColor")};
+    stroke: white;
+
+    & path {
+      fill: white;
+    }
+  `,
+  hidden: css`
+    visibility: hidden;
+  `,
+};
+
+const CheckBox = styled<{ status: CheckBoxStatus }>((props) => (
   <div {...props}>{props.status !== "empty" && <IconCheck />}</div>
 ))`
   border: 2px solid ${theme.colors.layout.background.border};
@@ -159,17 +188,7 @@ const CheckBox = styled<{ status: "full" | "partial" | "empty" }>((props) => (
 
   stroke: black;
 
-  ${(props) =>
-    props.status == "full" &&
-    css`
-      ${theme.colors.tags.decision.asBg};
-      ${theme.colors.tags.decision.asStyle("borderColor")};
-      stroke: white;
-
-      & path {
-        fill: white;
-      }
-    `}
+  ${({ status }) => (status in CHECK_BOX_STYLES ? CHECK_BOX_STYLES[status] : null)}
 `;
 
 const UIOptionText = styled.div<{}>`

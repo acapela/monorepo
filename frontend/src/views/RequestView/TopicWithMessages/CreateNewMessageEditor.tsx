@@ -1,7 +1,8 @@
 import { useApolloClient } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
@@ -13,6 +14,11 @@ import { MessageContentEditor } from "~frontend/message/composer/MessageContentC
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
+import {
+  FirstCompletionEnoughToggle,
+  isRequestTypeCompletableBySingleUser,
+  useSingleRequestTypeForManyUsers,
+} from "~frontend/tasks/single-completion";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
@@ -20,6 +26,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
+import { FadePresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 import { DecisionEditor, useDecisionController } from "./Decision/DecisionEditor";
@@ -64,6 +71,9 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
+  const [isFirstCompletionEnough, setIsFirstCompletionEnough] = useState(false);
+  const singleRequestTypeForManyUsers = useSingleRequestTypeForManyUsers(content);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     action(() => {
@@ -91,6 +101,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
+      is_first_completion_enough: singleRequestTypeForManyUsers && isFirstCompletionEnough,
     });
 
     updateMessageTasks(newMessage);
@@ -170,6 +181,17 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
         </UIEditorScroller>
 
         <UIRequestControls layoutId={layoutAnimations.newTopic.messageTools(topic.id)}>
+          <AnimatePresence>
+            {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
+              <FadePresenceAnimator>
+                <FirstCompletionEnoughToggle
+                  requestType={singleRequestTypeForManyUsers}
+                  isSet={isFirstCompletionEnough}
+                  onChange={(value) => setIsFirstCompletionEnough(value)}
+                />
+              </FadePresenceAnimator>
+            )}
+          </AnimatePresence>
           <MessageTools
             onRecordingReady={
               hasAnyTextContent

@@ -11,7 +11,7 @@ import { slugifySync } from "~shared/slugify";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
-import { TaskEntity, taskEntity } from "./task";
+import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { topicEventEntity } from "./topicEvent";
 import { UserEntity, userEntity } from "./user";
@@ -19,8 +19,6 @@ import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
-
-export const sortByEarliestTaskDueDate = (task: TaskEntity) => task.message?.dueDate;
 
 const topicFragment = gql`
   fragment Topic on topic {

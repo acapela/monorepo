@@ -15,6 +15,11 @@ import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import {
+  FirstCompletionEnoughToggle,
+  isRequestTypeCompletableBySingleUser,
+  useSingleRequestTypeForManyUsers,
+} from "~frontend/tasks/single-completion";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { PriorityPicker } from "~frontend/topics/PriorityPicker";
 import { Priority_Enum } from "~gql";
@@ -156,6 +161,10 @@ export const NewRequest = observer(function NewRequest({
 
   const stageHint = getHint();
 
+  const [isFirstCompletionEnough, setIsFirstCompletionEnough] = useState(false);
+
+  const singleRequestTypeForManyUsers = useSingleRequestTypeForManyUsers(content);
+
   async function submit() {
     if (!canSubmit) {
       return;
@@ -172,7 +181,12 @@ export const NewRequest = observer(function NewRequest({
 
     runInAction(() => {
       const topic = db.topic.create({ id: newTopicId, name: finalTitle, slug: topicNameSlug, priority });
-      const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
+      const newMessage = db.message.create({
+        content,
+        topic_id: topic.id,
+        type: "TEXT",
+        is_first_completion_enough: isFirstCompletionEnough,
+      });
 
       updateMessageTasks(newMessage);
 
@@ -269,21 +283,33 @@ export const NewRequest = observer(function NewRequest({
                   <FadePresenceAnimator>
                     <PriorityPicker priority={priority} onChange={setPriority} />
                   </FadePresenceAnimator>
+                  {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
+                    <FadePresenceAnimator>
+                      <FirstCompletionEnoughToggle
+                        requestType={singleRequestTypeForManyUsers}
+                        isSet={isFirstCompletionEnough}
+                        onChange={(value) => setIsFirstCompletionEnough(value)}
+                      />
+                    </FadePresenceAnimator>
+                  )}
                 </>
               )}
             </AnimatePresence>
           </UIAdditionalActions>
-          <MessageTools onFilesPicked={uploadAttachments} />
 
-          <Button
-            isDisabled={!canSubmit}
-            kind="primary"
-            tooltip="Send request"
-            onClick={submit}
-            shortcut={["Mod", "Enter"]}
-          >
-            Send request
-          </Button>
+          <UIBottom>
+            <MessageTools onFilesPicked={uploadAttachments} />
+
+            <Button
+              isDisabled={!canSubmit}
+              kind="primary"
+              tooltip="Send request"
+              onClick={submit}
+              shortcut={["Mod", "Enter"]}
+            >
+              Send request
+            </Button>
+          </UIBottom>
         </UIActions>
       </UIContentHolder>
     </UIHolder>
@@ -367,7 +393,16 @@ const UIAdditionalActions = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
+`;
+
+const UIBottom = styled.div<{}>`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-self: flex-end;
 `;
 
 const UIComposerHolder = styled(PageLayoutAnimator)`

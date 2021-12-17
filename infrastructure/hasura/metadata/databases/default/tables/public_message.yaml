@@ -59,6 +59,7 @@ insert_permissions:
     - id
     - is_draft
     - is_draft
+    - is_first_completion_enough
     - replied_to_message_id
     - topic_id
     - type
@@ -74,6 +75,7 @@ select_permissions:
     - created_at
     - id
     - is_draft
+    - is_first_completion_enough
     - replied_to_message_id
     - topic_id
     - type
@@ -90,8 +92,9 @@ update_permissions:
 - permission:
     check: null
     columns:
-    - is_draft
     - content
+    - is_draft
+    - is_first_completion_enough
     filter:
       user_id:
         _eq: X-Hasura-User-Id
