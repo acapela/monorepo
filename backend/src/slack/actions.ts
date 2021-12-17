@@ -12,6 +12,7 @@ import { Origin } from "~shared/types/analytics";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
+import { createLiveMessage } from "./create-request-modal/createRequestInSlack";
 import { openCreateRequestModal } from "./create-request-modal/openCreateRequestModal";
 import { updateHomeView } from "./home-tab";
 import { createSlackLink } from "./md/utils";
@@ -303,4 +304,29 @@ export function setupSlackActionHandlers(slackApp: App) {
       }),
     ]);
   });
+
+  slackApp.action<BlockButtonAction>(
+    SlackActionIds.PostSelfRequestInChannel,
+    async ({ action, respond, ack, context, client }) => {
+      await ack();
+      // delete ephemeral message
+      await respond({ replace_original: true, delete_original: true, text: "" });
+
+      const [topicId, hasRequestOriginatedFromMessageActionStr, conversationId, messageTs] = action.value.split("/");
+      const topic = await db.topic.findFirst({
+        where: { id: topicId },
+        include: { message: true, topic_access_token: true },
+      });
+      await createLiveMessage({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
+        client,
+        topic: assertDefined(topic, "must have topic"),
+        hasRequestOriginatedFromMessageAction: hasRequestOriginatedFromMessageActionStr === "true",
+        conversationId,
+        token: assertToken(context),
+        messageTs: messageTs || undefined,
+      });
+    }
+  );
 }

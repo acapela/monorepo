@@ -81,6 +81,7 @@ export const SlackActionIds = {
   ArchiveTopic: "archive-topic",
   TrackEvent: "track-event",
   OpenViewRequestModal: "open_view_request_modal",
+  PostSelfRequestInChannel: "post-self-request-in-channel",
 } as const;
 
 export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];

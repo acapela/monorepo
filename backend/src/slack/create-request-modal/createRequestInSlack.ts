@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { WebClient } from "@slack/web-api";
-import { Blocks, Md, Modal } from "slack-block-builder";
+import { Blocks, Elements, Md, Modal, Message as SlackMessage } from "slack-block-builder";
 
 import { createTopicLink } from "~backend/src/slack/live-messages/utils";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
@@ -12,9 +12,54 @@ import { Origin } from "~shared/types/analytics";
 import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention";
 
 import { isWebAPIErrorType } from "../errors";
-import { LiveTopicMessage } from "../live-messages/LiveTopicMessage";
-import { buildDateTimePerUserTimezone, createTeamMemberUserFromSlack, findUserBySlackId } from "../utils";
+import { LiveTopicMessage, TopicWithToken } from "../live-messages/LiveTopicMessage";
+import {
+  SlackActionIds,
+  buildDateTimePerUserTimezone,
+  createTeamMemberUserFromSlack,
+  findUserBySlackId,
+} from "../utils";
 import { SlackUserIdWithRequestType, createTopicForSlackUsers } from "./createTopicForSlackUsers";
+
+export async function createLiveMessage({
+  client,
+  topic,
+  hasRequestOriginatedFromMessageAction,
+  conversationId,
+  token,
+  messageTs,
+}: {
+  client: WebClient;
+  topic: TopicWithToken;
+  hasRequestOriginatedFromMessageAction: boolean;
+  conversationId: string;
+  token: string;
+  messageTs?: string;
+}) {
+  const response = await client.chat.postMessage({
+    ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
+    token,
+    channel: conversationId,
+    thread_ts: messageTs,
+  });
+
+  if (!response.ok) {
+    assert(response.error, "non-ok response without an error");
+    Sentry.captureException(response.error);
+    return;
+  }
+
+  const { channel, message } = response;
+  assert(channel && message?.ts, "ok response without channel or message_ts");
+  await db.topic_slack_message.create({
+    data: {
+      topic_id: topic.id,
+      slack_channel_id: channel,
+      slack_message_ts: message.ts,
+      is_excluding_content: hasRequestOriginatedFromMessageAction,
+    },
+  });
+}
 
 interface CreateRequestInSlackInput {
   messageText?: Maybe<string>;
@@ -142,11 +187,23 @@ export async function createAndTrackRequestInSlack({
 
   if (isSelfRequest) {
     const mentionType = slackUserIdsWithMentionType[0].mentionType;
+    const messageText =
+      Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
+      `\n${Md.bold(REQUEST_NOTIFICATION_LABELS[mentionType as RequestType])} created for ` +
+      Md.user(ownerSlackUserId);
     const response = await client.chat.postEphemeral({
-      text:
-        Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
-        `\n${Md.bold(REQUEST_NOTIFICATION_LABELS[mentionType as RequestType])} created for ` +
-        Md.user(ownerSlackUserId),
+      ...SlackMessage({ text: messageText })
+        .blocks([
+          Blocks.Section({ text: messageText }),
+          Blocks.Actions().elements(
+            Elements.Button({
+              actionId: SlackActionIds.PostSelfRequestInChannel,
+              value: `${topic.id}/${hasRequestOriginatedFromMessageAction}/${conversationId}/${messageTs || ""}`,
+              text: "Post in channel",
+            }).primary(true)
+          ),
+        ])
+        .buildToObject(),
       token,
       user: ownerSlackUserId,
       channel: conversationId,
@@ -158,28 +215,13 @@ export async function createAndTrackRequestInSlack({
       return;
     }
   } else {
-    const response = await client.chat.postMessage({
-      ...(await LiveTopicMessage(topic, { isMessageContentExcluded: hasRequestOriginatedFromMessageAction })),
+    await createLiveMessage({
+      client,
+      topic,
+      hasRequestOriginatedFromMessageAction,
+      conversationId,
       token,
-      channel: conversationId,
-      thread_ts: messageTs ?? undefined,
-    });
-
-    if (!response.ok) {
-      assert(response.error, "non-ok response without an error");
-      Sentry.captureException(response.error);
-      return;
-    }
-
-    const { channel, message } = response;
-    assert(channel && message?.ts, "ok response without channel or message_ts");
-    await db.topic_slack_message.create({
-      data: {
-        topic_id: topic.id,
-        slack_channel_id: channel,
-        slack_message_ts: message.ts,
-        is_excluding_content: hasRequestOriginatedFromMessageAction,
-      },
+      messageTs: messageTs ?? undefined,
     });
   }
 
