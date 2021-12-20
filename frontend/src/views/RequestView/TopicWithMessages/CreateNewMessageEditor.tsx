@@ -102,7 +102,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       replyToMessageId: topicContext?.currentlyReplyingToMessageId ?? undefined,
       attachments,
       decisionOptions,
-      isFirstCompletionEnough: singleRequestTypeForManyUsers && isFirstCompletionEnough,
+      isFirstCompletionEnough: !!(singleRequestTypeForManyUsers && isFirstCompletionEnough),
     });
 
     setContent(getEmptyRichContent());
