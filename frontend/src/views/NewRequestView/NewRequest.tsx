@@ -1,28 +1,24 @@
 import type { Editor } from "@tiptap/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { sampleSize } from "lodash";
-import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import router from "next/router";
 import React, { useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
-import { ClientDb, useDb } from "~frontend/clientdb";
+import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { usePersistedState } from "~frontend/hooks/usePersistedState";
-import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
+import { createNewRequest } from "~frontend/topics/createRequest";
 import { PriorityPicker } from "~frontend/topics/PriorityPicker";
 import { Priority_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { useConst } from "~shared/hooks/useConst";
-import { runUntracked } from "~shared/mobxUtils";
-import { getTopicNameFromContent } from "~shared/routes/topicSlug";
-import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 import { FadePresenceAnimator, POP_ANIMATION_CONFIG } from "~ui/animations";
 import { Button } from "~ui/buttons/Button";
@@ -31,49 +27,9 @@ import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";
 
-import { DecisionEditor, useDecisionController } from "../RequestView/TopicWithMessages/Decision/DecisionEditor";
+import { DecisionEditor, INITIAL_DECISION_OPTIONS } from "../RequestView/TopicWithMessages/Decision/DecisionEditor";
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
-
-/**
- * Creates a placeholder with up to 2 random team members mentioned
- * The current user won't be included
- */
-function useMessageContentExamplePlaceholder(): string {
-  const db = useDb();
-
-  const exampleRequestBodyWithTeamMemberNamesMentioned = useMemo(() => {
-    const otherTeamMembers = db.user.query({ isMemberOfCurrentTeam: true, isCurrentUser: false }).all;
-
-    if (!otherTeamMembers.length) {
-      return `@Name Could you give me feedback on this Figma file?`;
-    }
-
-    const exampleUsers = sampleSize(otherTeamMembers, 2);
-
-    const sampleMentionText = exampleUsers.map((user) => `@${user.name || "???"} `);
-
-    return `${sampleMentionText.join(" ")} Could you give me feedback on this Figma file?`;
-  }, [db]);
-
-  return exampleRequestBodyWithTeamMemberNamesMentioned;
-}
-
-async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
-  const optimisticSlug = await slugify(topicName);
-
-  return runUntracked(() => {
-    if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
-      return optimisticSlug;
-    }
-    let suffixIndex = 2;
-
-    while (db.topic.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
-      suffixIndex++;
-    }
-
-    return `${optimisticSlug}-${suffixIndex}`;
-  });
-}
+import { useMessageContentExamplePlaceholder } from "./useMessageContentExamplePlaceholder";
 
 export interface NewRequestProps {
   topicToDuplicate?: TopicEntity;
@@ -91,16 +47,16 @@ export const NewRequest = observer(function NewRequest({
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const messageContentExample = useMessageContentExamplePlaceholder();
-  const updateMessageTasks = useUpdateMessageTasks();
   const [tasksDueDate, setTasksDueDate] = useState<Date | null>(null);
   const [priority, setPriority] = useState<null | Priority_Enum>(null);
+  const [decisionOptions, setDecisionOptions] = useState(INITIAL_DECISION_OPTIONS);
 
   const newTopicId = useConst(getUUID);
 
   const {
     content,
     setContent,
-    attachments,
+    attachmentsDrafts,
     removeAttachmentById,
     uploadingAttachments,
     uploadAttachments,
@@ -112,6 +68,8 @@ export const NewRequest = observer(function NewRequest({
     persistanceKey: `message-draft-for-new-request-${topicToDuplicate?.id}`,
     initialValue: topicToDuplicate?.messages.first?.content,
   });
+
+  const shouldShowDecision = useMemo(() => getDoesMessageContentIncludeDecisionRequests(content), [content]);
 
   // Submitting can be done from the editor or from the topic input box
   useShortcut(["Mod", "Enter"], () => {
@@ -161,40 +119,24 @@ export const NewRequest = observer(function NewRequest({
       return;
     }
 
-    // If no title is provided - we'll auto generate it from content
-    let finalTitle = topicName;
-
-    if (!finalTitle.trim().length) {
-      finalTitle = getTopicNameFromContent(content) ?? "New topic";
-    }
-
-    const topicNameSlug = await getAvailableSlugForTopicName(db, finalTitle);
-
-    runInAction(() => {
-      const topic = db.topic.create({ id: newTopicId, name: finalTitle, slug: topicNameSlug, priority });
-      const newMessage = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
-
-      updateMessageTasks(newMessage);
-
-      if (tasksDueDate) {
-        newMessage.setTasksDueDate(tasksDueDate);
-      }
-
-      attachments.forEach((attachment) => {
-        db.attachment.update(attachment.uuid, { message_id: newMessage.id });
-      });
-
-      createDecision(newMessage.id);
-
-      onTopicCreated?.(topic);
-
-      router.push(topic.href);
+    const { topic } = await createNewRequest({
+      db: db.linker,
+      tasksDueDate: tasksDueDate ?? undefined,
+      priority,
+      content,
+      attachmentsDrafts,
+      decisionOptionsDrafts: decisionOptions,
+      id: newTopicId,
+      name: topicName,
     });
+
+    router.push(topic.href);
+
     clearPersistedContent();
     clearTopicName();
-  }
 
-  const [shouldShowDecision, { controller, submit: createDecision }] = useDecisionController({ content });
+    onTopicCreated?.(topic);
+  }
 
   return (
     <UIHolder>
@@ -230,11 +172,15 @@ export const NewRequest = observer(function NewRequest({
               placeholder={messageContentExample}
               content={content}
               onContentChange={setContent}
-              attachments={attachments}
+              attachmentDrafts={attachmentsDrafts}
               onAttachmentRemoveRequest={removeAttachmentById}
               onFilesSelected={uploadAttachments}
               uploadingAttachments={uploadingAttachments}
-              additionalContent={shouldShowDecision ? <DecisionEditor controller={controller} /> : null}
+              additionalContent={
+                shouldShowDecision ? (
+                  <DecisionEditor options={decisionOptions} onOptionsChange={setDecisionOptions} />
+                ) : null
+              }
               capturePastedFiles
               autofocusKey="new-request"
             />

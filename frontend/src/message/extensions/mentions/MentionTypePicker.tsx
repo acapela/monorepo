@@ -2,7 +2,8 @@ import { omit, toPairs } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
 
-import { usePersistedState } from "~frontend/hooks/usePersistedState";
+import { IS_DEV, devAssignWindowVariable } from "~shared/dev";
+import { getLocalStorageValueManager } from "~shared/localStorage";
 import { MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 
@@ -13,12 +14,14 @@ interface Props {
 
 const ENABLE_REQUEST_DECISION = "ENABLE_REQUEST_DECISION";
 
+const isDecisionFeatureFlagEnabledStorage = getLocalStorageValueManager(ENABLE_REQUEST_DECISION, false);
+
+devAssignWindowVariable("enableDecisions", () => {
+  isDecisionFeatureFlagEnabledStorage.set(true);
+});
+
 export const MentionTypePicker = observer(function MentionTypePicker({ selected, onSelect }: Props) {
-  const [isDecisionFeatureFlagEnabled] = usePersistedState<boolean>({
-    key: ENABLE_REQUEST_DECISION,
-    initialValue: false,
-    isDetachedFromTeam: true,
-  });
+  const isDecisionFeatureFlagEnabled = isDecisionFeatureFlagEnabledStorage.useValue() || IS_DEV;
 
   const availableMentionTypePickerLabels = isDecisionFeatureFlagEnabled
     ? MENTION_TYPE_PICKER_LABELS

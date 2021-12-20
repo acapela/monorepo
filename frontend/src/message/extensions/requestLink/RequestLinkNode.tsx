@@ -15,10 +15,20 @@ export const RequestLinkNode = observer((props: PropsWithChildren<AutocompleteNo
   const db = useDb();
   const request = db.topic.findById(requestId);
 
+  const hasAccess = !!request;
+
+  if (!hasAccess) {
+    return (
+      <UIRequestLink data-tooltip="You're not member of this topic. Please ask other team members to add you to discussion in order to be able to see it.">
+        <IconComments /> {data.originalTopicName ?? "Unknown request"} (no access)
+      </UIRequestLink>
+    );
+  }
+
   return (
     <Link href={request?.href ?? "/"} passHref>
-      <UIRequestLink>
-        <IconComments /> {request?.name ?? "Unknown request"}
+      <UIRequestLink data-tooltip="Open linked request">
+        <IconComments /> {request?.name ?? data.originalTopicName ?? "Unknown request"}
       </UIRequestLink>
     </Link>
   );

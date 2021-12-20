@@ -1,5 +1,7 @@
 import { runInAction } from "mobx";
 
+import { IS_DEV } from "~shared/dev";
+
 type EventHandler<T extends unknown[]> = (...args: T) => void;
 
 type Unsubscribe = () => void;
@@ -9,8 +11,10 @@ export type EventsEmmiter<EventsMap extends Record<string, unknown[]>> = {
   emit<N extends keyof EventsMap>(name: N, ...data: EventsMap[N]): void;
 };
 
+const DEV_DEBUG_EVENTS = false;
+
 export function createEventsEmmiter<EventsMap extends Record<string, unknown[]>>(
-  debug = false
+  debug?: string
 ): EventsEmmiter<EventsMap> {
   const subscribersMap = new Map<keyof EventsMap, Set<EventHandler<unknown[]>>>();
 
@@ -36,8 +40,8 @@ export function createEventsEmmiter<EventsMap extends Record<string, unknown[]>>
   }
 
   function emit<N extends keyof EventsMap>(name: N, ...data: EventsMap[N]) {
-    if (debug) {
-      console.info(`Event`, name, data);
+    if (IS_DEV && DEV_DEBUG_EVENTS && debug) {
+      console.warn(`Event [${debug}]`, name, data);
     }
     const listeners = getHandlersForEvent(name);
 

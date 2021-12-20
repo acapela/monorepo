@@ -1,9 +1,13 @@
 import { runInAction } from "mobx";
 
 import { assert } from "~shared/assert";
+import { IS_DEV } from "~shared/dev";
 import { ResolvablePromise, createResolvablePromise } from "~shared/promises";
+import { wait } from "~shared/time";
 
 type Task<T> = () => T;
+
+const DEV_ARTIFICIAL_DELAY = 0;
 
 /**
  * Will create queue of async tasks.
@@ -68,6 +72,10 @@ export function createPushQueue() {
     assert(flushPromise, "No flush promise for task added");
 
     try {
+      if (IS_DEV && DEV_ARTIFICIAL_DELAY > 0) {
+        await wait(DEV_ARTIFICIAL_DELAY);
+      }
+
       // Try to execute
       const result = await nextTask();
       // Only if successful - delete task for queue to allow next tasks to be executed.

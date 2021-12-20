@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/core";
 import { uniqBy } from "lodash";
 
 import { getIsContentNodeOfType, getNodesFromContentByType } from "~richEditor/content/helper";
-import { RichEditorNodeWithAttributes } from "~richEditor/content/types";
+import { RichEditorNodeTypedNode } from "~richEditor/content/types";
 import { EditorMentionData } from "~shared/types/editor";
 import { REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
@@ -19,7 +19,7 @@ export const getRequestMentionDataFromContent = (content: JSONContent) =>
 export const getUniqueRequestMentionDataFromContent = (content: JSONContent) =>
   uniqBy(getRequestMentionDataFromContent(content), (data) => data.userId);
 
-export function getIsMentionNode(content: JSONContent): content is RichEditorNodeWithAttributes<{
+export function getIsMentionNode(content: JSONContent): content is RichEditorNodeTypedNode<{
   data: EditorMentionData;
 }> {
   return getIsContentNodeOfType<{ data: EditorMentionData }>(content, "mention");

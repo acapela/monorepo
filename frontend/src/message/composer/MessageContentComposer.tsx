@@ -15,7 +15,7 @@ interface Props {
   content: RichEditorNode;
   onContentChange?: (content: RichEditorNode) => void;
   uploadingAttachments?: EditorUploadingAttachmentInfo[];
-  attachments: EditorAttachmentInfo[];
+  attachmentDrafts: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
   additionalContent?: React.ReactNode;
@@ -32,7 +32,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
     content,
     onContentChange,
     uploadingAttachments = [],
-    attachments,
+    attachmentDrafts,
     onFilesSelected,
     onAttachmentRemoveRequest,
     additionalContent = null,
@@ -61,9 +61,9 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
         additionalBottomContent={
           <>
             {additionalContent}
-            {(uploadingAttachments.length > 0 || attachments.length > 0) && (
+            {(uploadingAttachments.length > 0 || attachmentDrafts.length > 0) && (
               <UIAttachmentsPreviews>
-                {attachments.map((attachment) => (
+                {attachmentDrafts.map((attachment) => (
                   <AttachmentPreview
                     id={attachment.uuid}
                     key={attachment.uuid}

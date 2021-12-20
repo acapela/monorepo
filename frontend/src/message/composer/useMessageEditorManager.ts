@@ -21,7 +21,7 @@ export function useMessageEditorManager({
   persistanceKey,
   initialValue = getEmptyRichContent(),
 }: UseMessageEditorManagerInput) {
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
+  const [attachmentsDrafts, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
@@ -33,7 +33,7 @@ export function useMessageEditorManager({
 
   const hasAnyTextContent = useMemo(() => !isRichEditorContentEmpty(content), [content]);
 
-  const isEmptyWithNoAttachments = !hasAnyTextContent && attachments.length === 0;
+  const isEmptyWithNoAttachments = !hasAnyTextContent && attachmentsDrafts.length === 0;
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -49,7 +49,7 @@ export function useMessageEditorManager({
     clearPersistedContent,
     isEmptyWithNoAttachments,
     hasAnyTextContent,
-    attachments,
+    attachmentsDrafts,
     uploadAttachments,
     uploadingAttachments,
     content,

@@ -1,5 +1,5 @@
 import { createClientDb, defineEntity } from "~clientdb";
-import { DatabaseUtilities } from "~clientdb/entity/entitiesConnections";
+import { DatabaseLinker } from "~clientdb/entity/entitiesConnections";
 
 import { TestOwnerEntity, createPersistanceAdapterMock, getDefaultCommonData, getSyncConfig } from "./utils";
 
@@ -24,7 +24,7 @@ function createTestDb() {
   return createClientDb({ db: createPersistanceAdapterMock() }, { owner });
 }
 
-const mockDbUtilities: DatabaseUtilities = {
+const mockDbLinker: DatabaseLinker = {
   entityCache: {
     getCached: expect.any(Function),
   },
@@ -45,7 +45,7 @@ describe("Event listeners", () => {
     const createdEntity = db.owner.create({ name: "Rasputin" });
 
     expect(itemAdded).toBeCalledTimes(1);
-    expect(itemAdded).toBeCalledWith(createdEntity, expect.objectContaining(mockDbUtilities));
+    expect(itemAdded).toBeCalledWith(createdEntity, expect.objectContaining(mockDbLinker));
   });
 
   it("calls the item updated method when item is updated", async () => {
@@ -60,7 +60,7 @@ describe("Event listeners", () => {
     expect(itemUpdated).toBeCalledWith(
       entity,
       expect.objectContaining(nameOnCreation),
-      expect.objectContaining(mockDbUtilities)
+      expect.objectContaining(mockDbLinker)
     );
   });
 
@@ -73,6 +73,6 @@ describe("Event listeners", () => {
     entity.remove();
 
     expect(itemRemoved).toBeCalledTimes(1);
-    expect(itemRemoved).toBeCalledWith(entity, expect.objectContaining(mockDbUtilities));
+    expect(itemRemoved).toBeCalledWith(entity, expect.objectContaining(mockDbLinker));
   });
 });
