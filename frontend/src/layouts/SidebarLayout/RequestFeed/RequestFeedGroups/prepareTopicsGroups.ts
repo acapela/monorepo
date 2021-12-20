@@ -2,6 +2,7 @@ import { min } from "date-fns";
 import { orderBy, sortBy } from "lodash";
 
 import { cachedComputed } from "~clientdb";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { groupByFilter } from "~shared/groupByFilter";
 import { isNotNullish } from "~shared/nullish";
@@ -15,16 +16,18 @@ const hasTopicOpenTasksForCurrentUser = cachedComputed(
   { name: "hasTopicOpenTasksForCurrentUser" }
 );
 
+const isTaskSelfCreated = cachedComputed((task: TaskEntity) => task.isSelfCreated);
+
 const hasTopicSentTasksByCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
-    return topic.tasks.query({ isSelfCreated: true, isDone: false }).hasItems;
+    return topic.tasks.query({ isDone: false }).query(isTaskSelfCreated).hasItems;
   },
   { name: "hasTopicSentTasksByCurrentUser" }
 );
 
 const getNearestTaskDueDateCreatedByCurrentUser = cachedComputed(
   (topic: TopicEntity) => {
-    const createdTasks = topic.tasks.query({ isDone: false, isSelfCreated: true }).all;
+    const createdTasks = topic.tasks.query({ isDone: false }).query(isTaskSelfCreated).all;
 
     if (!createdTasks.length) return null;
 
