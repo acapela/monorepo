@@ -34,7 +34,7 @@ type ClientDbExtra = {
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
 export async function createClientDb<Entities extends EntitiesMap>(
-  { db, contexts, onDestroyRequest, disableSync }: ClientDbConfig,
+  { db, contexts, onDestroyRequest, disableSync = false }: ClientDbConfig,
   definitionsMap: Entities
 ): Promise<ClientDb<Entities>> {
   const definitions = Object.values(definitionsMap);
@@ -80,6 +80,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
     const entityClient = createEntityClient(definition, {
       linker: databaseLinker,
       persistanceDb,
+      disableSync,
     });
 
     return entityClient;

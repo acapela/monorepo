@@ -36,6 +36,7 @@ export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unkno
 interface EntityClientConfig {
   linker: DatabaseLinker;
   persistanceDb: PersistanceDB;
+  disableSync: boolean;
 }
 
 const truePredicate = () => true;
@@ -47,7 +48,7 @@ const truePredicate = () => true;
  */
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { linker, persistanceDb }: EntityClientConfig
+  { linker, persistanceDb, disableSync }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition, linker);
 
@@ -143,6 +144,10 @@ export function createEntityClient<Data, Connections>(
      *
      * Note: this could be solved in 'priority' in listeners, but I thought it would be even more confusing than attaching it here
      */
+    entityEventsCleanup = attachEntityEvents();
+  }
+
+  if (disableSync) {
     entityEventsCleanup = attachEntityEvents();
   }
 
