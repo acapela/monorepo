@@ -1,11 +1,11 @@
 import { action, runInAction } from "mobx";
 
 import { ClientDb } from "~frontend/clientdb";
-import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
+import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
 import { DecisionOptionDraft, createDecisionsForMessage } from "~frontend/message/decisions";
-import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
+import { updateMessageAttachments } from "~frontend/message/updateAttachments";
 import { TopicFragment } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { runUntracked } from "~shared/mobxUtils";
@@ -70,29 +70,22 @@ export const createNewRequest = action(
 
     const createdEntities = runInAction(() => {
       const topic = db.topic.create({ id, name: finalTitle, slug: topicNameSlug, priority });
-      const message = db.message.create({ content, topic_id: topic.id, type: "TEXT" });
 
-      const tasks = updateMessageTasks(db, message);
+      const message = createMessageAndAttachMeta({
+        topic,
+        content,
+        type: "TEXT",
+        decisionOptions: decisionOptionsDrafts,
+        attachments: attachmentsDrafts,
+      });
 
       if (tasksDueDate) {
         message.setTasksDueDate(tasksDueDate);
       }
 
-      const attachments: AttachmentEntity[] = [];
-
-      attachmentsDrafts?.forEach((attachmentDraft) => {
-        const attachment = db.attachment.update(attachmentDraft.uuid, { message_id: message.id });
-        attachments.push(attachment);
-      });
-
-      const decisionOptions = createDecisionsForMessage(db, message, decisionOptionsDrafts ?? []);
-
       return {
         topic,
         message,
-        tasks,
-        attachments,
-        decisionOptions,
       };
     });
 

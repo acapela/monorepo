@@ -82,7 +82,7 @@ export function createEntityStore<Data, Connections>(
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
   // Allow listening to CRUD updates in the store
-  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
+  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
   const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 

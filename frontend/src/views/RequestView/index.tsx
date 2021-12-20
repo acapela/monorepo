@@ -65,7 +65,12 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
         return;
       }
 
-      db.lastSeenMessage.create({ topic_id: topic.id, message_id: lastMessage?.id, seen_at: nowISO });
+      if (!lastMessage) {
+        console.warn(`Topic has no messages - skipping setting last seen message`);
+        return;
+      }
+
+      db.lastSeenMessage.create({ topic_id: topic.id, message_id: lastMessage.id, seen_at: nowISO });
     });
   }, [topic, db]);
 }

@@ -11,9 +11,9 @@ import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/at
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { createDecisionsForMessage, getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
+import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
+import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
 import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
-import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
@@ -86,20 +86,15 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const submitMessage = action((params: SubmitMessageParams) => {
     const { type, content, attachments } = params;
-    const newMessage = db.message.create({
-      topic_id: topic.id,
+
+    createMessageAndAttachMeta({
+      topic,
       type,
       content,
-      replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
+      replyToMessageId: topicContext?.currentlyReplyingToMessageId ?? undefined,
+      attachments,
+      decisionOptions,
     });
-
-    updateMessageTasks(db, newMessage);
-
-    for (const attachment of attachments) {
-      db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
-    }
-
-    createDecisionsForMessage(db, newMessage, decisionOptions);
 
     setContent(getEmptyRichContent());
 

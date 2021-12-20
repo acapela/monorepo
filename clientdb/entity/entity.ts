@@ -20,6 +20,7 @@ type EntityMethods<Data, Connections> = {
   remove(source?: EntityChangeSource): void;
   waitForSync(): Promise<void>;
   definition: EntityDefinition<Data, Connections>;
+  db: DatabaseUtilities;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -106,6 +107,7 @@ export function createEntity<D, C>({
 
   const entityMethods: EntityMethods<D, C> = {
     definition,
+    db: databaseUtilities,
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
     },
@@ -176,6 +178,7 @@ export function createEntity<D, C>({
     waitForSync: false,
     remove: action,
     update: action,
+    db: false,
   });
 
   return entity;

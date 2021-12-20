@@ -51,21 +51,29 @@ export function createEntityClient<Data, Connections>(
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
 
-  const cleanupItemAdded = store.events.on("itemAdded", (entity, source) => {
-    if (source === "user") {
-      definition.config.events?.itemAdded?.(entity, databaseUtilities);
-    }
-  });
-  const cleanupItemUpdated = store.events.on("itemUpdated", (entity, dataBefore, source) => {
-    if (source === "user") {
-      definition.config.events?.itemUpdated?.(entity, dataBefore, databaseUtilities);
-    }
-  });
-  const cleanupItemRemoved = store.events.on("itemRemoved", (entity, source) => {
-    if (source === "user") {
-      definition.config.events?.itemRemoved?.(entity, databaseUtilities);
-    }
-  });
+  function attachEntityEvents() {
+    const cleanupItemAdded = store.events.on("itemAdded", (entity, source) => {
+      if (source === "user") {
+        definition.config.events?.itemAdded?.(entity, databaseUtilities);
+      }
+    });
+    const cleanupItemUpdated = store.events.on("itemUpdated", (entity, dataBefore, source) => {
+      if (source === "user") {
+        definition.config.events?.itemUpdated?.(entity, dataBefore, databaseUtilities);
+      }
+    });
+    const cleanupItemRemoved = store.events.on("itemRemoved", (entity, source) => {
+      if (source === "user") {
+        definition.config.events?.itemRemoved?.(entity, databaseUtilities);
+      }
+    });
+
+    return function cleanup() {
+      cleanupItemAdded();
+      cleanupItemUpdated();
+      cleanupItemRemoved();
+    };
+  }
 
   const { query, findById, findByUniqueIndex, assertFindById, removeById, assertFindByUniqueIndex, sort } = store;
 
@@ -112,8 +120,30 @@ export function createEntityClient<Data, Connections>(
     persistanceManager.startPersistingChanges();
   }
 
+  let entityEventsCleanup: () => void;
+
   async function startSync() {
     await syncManager.start();
+
+    /**
+     * This is important that we attach listeners after sync manager attaches theirs.
+     *
+     * Otherwise - if entity events are also creating entities, order of operations will be bottom-up resulting
+     * in pushing changes in incorrect order.
+     *
+     * Example:
+     * message has event > create tasks
+     * Message is created
+     * message 'created' event is fired
+     * if events are first to pick it, order of execution would be
+     * message events "created" > create task > task is pushed to create queue
+     * message sync picked event > pushes message to sync
+     *
+     * Thus task create sync is first - would return in error 'message does not exist'.
+     *
+     * Note: this could be solved in 'priority' in listeners, but I thought it would be even more confusing than attaching it here
+     */
+    entityEventsCleanup = attachEntityEvents();
   }
 
   const hasItemsComputed = computed(() => {
@@ -170,9 +200,7 @@ export function createEntityClient<Data, Connections>(
       syncManager.cancel();
       store.destroy();
       searchEngine?.destroy();
-      cleanupItemAdded();
-      cleanupItemUpdated();
-      cleanupItemRemoved();
+      entityEventsCleanup?.();
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,

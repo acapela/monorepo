@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
@@ -11,7 +10,7 @@ import { useMessageEditorManager } from "~frontend/message/composer/useMessageEd
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 
-import { updateMessageTasks } from "../updateMessageTasks";
+import { updateMessageAndMeta } from "../createNewMessage";
 
 interface Props {
   message: MessageEntity;
@@ -20,7 +19,6 @@ interface Props {
 }
 
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
-  const db = useDb();
   const editorRef = useRef<Editor>(null);
 
   const {
@@ -39,27 +37,12 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
   });
 
   function handleSubmit() {
-    const attachmentsToAdd = attachmentsDrafts.filter(
-      (attachmentNow) => !message.attachments.findById(attachmentNow.uuid)
-    );
-
-    for (const { uuid } of attachmentsToAdd) {
-      db.attachment.findById(uuid)?.update({ message_id: message.id });
-    }
-
-    const existingAttachmentsToRemove = message.attachments.query(
-      (existingMessageAttachment) =>
-        !attachmentsDrafts.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id)
-    ).all;
-
-    for (const attachment of existingAttachmentsToRemove) {
-      attachment.remove();
-    }
-
-    const contentBefore = message.content;
-    message.update({ content });
-
-    updateMessageTasks(db, message, contentBefore);
+    updateMessageAndMeta(message, {
+      attachments: attachmentsDrafts,
+      // TODO!
+      decisionOptions: [],
+      newContent: content,
+    });
 
     clearPersistedContent();
     onSaved?.();

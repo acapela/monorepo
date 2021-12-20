@@ -1,7 +1,7 @@
 import { JSONContent } from "@tiptap/core";
 import { sortBy } from "lodash";
 
-import { ClientDb } from "~frontend/clientdb";
+import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { REQUEST_DECISION } from "~shared/types/mention";
@@ -15,7 +15,7 @@ export interface DecisionOptionDraft {
   option: string;
 }
 
-export function createDecisionsForMessage(db: ClientDb, message: MessageEntity, options: DecisionOptionDraft[]) {
+export function createDecisionsForMessage(message: MessageEntity, options: DecisionOptionDraft[]) {
   if (!options.length) return;
 
   if (!getDoesMessageContentIncludeDecisionRequests(message.content)) return;
@@ -23,7 +23,7 @@ export function createDecisionsForMessage(db: ClientDb, message: MessageEntity, 
   // TODO PR: Check if it is needed (decision mention in content)
 
   const createdDecisionOptions = sortBy(options, "index").map((option) => {
-    return db.decisionOption.create({
+    return message.db.getEntity(decisionOptionEntity).create({
       index: option.index,
       option: option.option,
       message_id: message.id,
