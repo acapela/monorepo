@@ -4,13 +4,13 @@ import { memoize } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
+import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
 import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
-import { decisionOptionEntity } from "./decisionOption";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageReactionEntity } from "./messageReaction";
 import { messageTaskDueDateEntity } from "./messageTaskDueDate";
@@ -154,7 +154,6 @@ export const messageEntity = defineEntity<MessageFragment>({
           });
         }
       },
-
       get dueDate() {
         return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
       },

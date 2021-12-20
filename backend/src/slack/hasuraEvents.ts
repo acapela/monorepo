@@ -48,7 +48,7 @@ export async function handleUserSlackInstallation(event: HasuraEvent<TeamMemberS
   assert(botToken, "must have bot token");
   const onboardingMessage = NewUserOnboardingMessage(team.team_slack_installation.slack_team_id);
   await slackClient.chat.postMessage({
-    botToken,
+    token: botToken,
     channel: slackUserId,
     text: "Welcome to Acapela 🎉 Here is a short summary how to get started",
     blocks: onboardingMessage.blocks,

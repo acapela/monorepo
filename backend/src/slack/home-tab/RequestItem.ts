@@ -1,17 +1,12 @@
 import { Blocks, Elements, Md } from "slack-block-builder";
 
-import { PriorityLabel, REQUEST_TYPE_EMOJIS, SlackActionIds } from "~backend/src/slack/utils";
-import { backendGetTopicUrl } from "~backend/src/topics/url";
+import { mdDate } from "~backend/src/slack/md/utils";
+import { PriorityLabel, SlackActionIds } from "~backend/src/slack/utils";
 import { User } from "~db";
 import { pluralize } from "~shared/text/pluralize";
-import { MENTION_TYPE_LABELS, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/types/mention";
 
-import { mdDate } from "../md/utils";
 import { MessageWithOpenTask, TopicWithOpenTask } from "./types";
-import { Padding, getMostUrgentMessage } from "./utils";
-
-const TaskLabel = (type: RequestType) =>
-  Md.codeInline(REQUEST_TYPE_EMOJIS[type] + " " + MENTION_TYPE_LABELS[type] + " requested");
+import { getMostUrgentMessage } from "./utils";
 
 const Avatar = (user: User) =>
   user.avatar_url ? Elements.Img({ imageUrl: user.avatar_url ?? undefined, altText: user.name }) : undefined;
@@ -21,10 +16,9 @@ const UserName = (currentUserId: string, user: User) => Md.bold(currentUserId ==
 const getOthersLabel = (othersCount: number) =>
   othersCount == 0 ? "" : ` and ${Md.bold(othersCount + " " + pluralize(othersCount, "other", "others"))}`;
 
-const TaskInfo = (userId: string, { user, task: tasks, message_task_due_date: dueDate }: MessageWithOpenTask) => [
+const TaskInfo = (userId: string, { user, task: tasks }: MessageWithOpenTask) => [
   Avatar(user),
-  `${UserName(userId, user)} to ${Md.bold("You")}${getOthersLabel(tasks.length - 1)}`,
-  dueDate ? `🗓 Due ${Md.bold(mdDate(dueDate?.due_at))}` : undefined,
+  UserName(userId, user) + (tasks.length == 1 ? "" : " to " + Md.bold("You") + getOthersLabel(tasks.length - 1)),
 ];
 
 const TopicInfo = (userId: string, topic: TopicWithOpenTask) => [
@@ -39,43 +33,26 @@ export async function RequestItem(
   showHighlightContext: boolean
 ) {
   const mostUrgentMessage = getMostUrgentMessage(topic);
-  const userTask = mostUrgentMessage?.task.find((t) => t.user_id == userId);
-  const requestType = userTask ? (userTask.type as RequestType) : null;
+  const dueAt = mostUrgentMessage?.message_task_due_date?.due_at;
   return [
     showHighlightContext
       ? Blocks.Context().elements(topic.isDueSoon ? "🔥 Due soon" : undefined, topic.isUnread ? "🔵 Unread" : undefined)
       : undefined,
     Blocks.Section({
-      text: Md.bold(topic.name) + (requestType ? "\n" + TaskLabel(requestType) : ""),
-    }),
-    userTask && Padding,
+      text: Md.bold(topic.name) + "\n" + (dueAt ? `Due ${mdDate(dueAt)}` : Md.italic("No due date set yet")),
+    }).accessory(
+      Elements.Button({
+        actionId: SlackActionIds.OpenViewRequestModal,
+        value: topic.id,
+        text: "View Request",
+      }).primary(true)
+    ),
     Blocks.Context().elements(
       mostUrgentMessage ? TaskInfo(userId, mostUrgentMessage) : TopicInfo(userId, topic),
       PriorityLabel(topic.priority),
       unreadMessages
         ? `✉️ ${Md.bold(unreadMessages + " New " + pluralize(unreadMessages, "reply", "replies"))}`
         : undefined
-    ),
-    Blocks.Actions().elements(
-      Elements.Button({
-        actionId: SlackActionIds.OpenViewRequestModal,
-        value: topic.id,
-        text: "View Request",
-      }).primary(true),
-      Elements.Button({ text: "Open in Acapela", url: await backendGetTopicUrl(topic) }),
-      userTask && requestType
-        ? Elements.Button({
-            text: REQUEST_TYPE_EMOJIS[requestType] + " " + UNCOMPLETED_REQUEST_LABEL[requestType],
-            actionId: "toggle_task_done_at:" + userTask.id,
-            value: userTask.id,
-          })
-        : Elements.Button(
-            topic.closed_at
-              ? { text: "Reopen", actionId: SlackActionIds.ReOpenTopic }
-              : { text: "Close", actionId: SlackActionIds.CloseTopic }
-          )
-            .value(topic.id)
-            .danger(true)
     ),
   ];
 }

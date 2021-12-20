@@ -1,4 +1,4 @@
-import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
+import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs, ViewOutput } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { upperFirst } from "lodash";
@@ -9,7 +9,7 @@ import { assert, assertDefined } from "~shared/assert";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { checkHasAllSlackBotScopes } from "~shared/slack";
 import { Maybe } from "~shared/types";
-import { AnalyticsEventsMap } from "~shared/types/analytics";
+import { AnalyticsEventsMap, Origin } from "~shared/types/analytics";
 import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "./app";
@@ -81,6 +81,7 @@ export const SlackActionIds = {
   ArchiveTopic: "archive-topic",
   TrackEvent: "track-event",
   OpenViewRequestModal: "open_view_request_modal",
+  PostSelfRequestInChannel: "post-self-request-in-channel",
 } as const;
 
 export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];
@@ -186,3 +187,23 @@ export async function buildDateTimePerUserTimezone(
 
 export const PriorityLabel = (priority: null | string) =>
   priority ? `🚩 ${Md.bold("Priority")} ${upperFirst(priority)}` : undefined;
+
+type SlackViewOrigin = Extract<
+  Origin,
+  "slack-live-message" | "slack-home-tab" | "slack-view-request-modal" | "unknown"
+>;
+
+export function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
+  if (!view) {
+    return "slack-live-message";
+  }
+
+  if (view.type === "home") {
+    return "slack-home-tab";
+  }
+  if (view.type === "modal" && view.callback_id === "view_request_modal") {
+    return "slack-view-request-modal";
+  }
+
+  return "unknown";
+}

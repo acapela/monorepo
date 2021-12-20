@@ -29,6 +29,10 @@ handle_path /healthz {
 	reverse_proxy {$FRONTEND_HOST}
 }
 
+# this regexp matches /[teamSlug]/topic/[topicSlug]/[topicId]
+@legacyTopic path_regexp topic ^\/(?P<teamSlug>.*)\/topic\/(?P<topicSlug>.*)\/(?P<topicId>.*)$
+redir @legacyTopic /{re.topic.teamSlug}/{re.topic.topicSlug}/{re.topic.topicId}
+
 reverse_proxy {$FRONTEND_HOST}
 
 log {

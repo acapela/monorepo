@@ -66,12 +66,12 @@ const MissingAuthHomeTab = HomeTab()
 
 /*
  This arbitrary number is estimated based on Slack's 100 max block limit, minus the 4 header blocks, so 96 left.
- RequestList needs up to 5 blocks and then 5 blocks per RequestItem in it.
- So if we show all our 5 categories that gives us: 96 - 5 * 5 = 71 blocks left
- For a total number of 71 / 5 = 14 topics
- And then to make sure it renders and there's some slack (pardon the pun) in the system 14 - 2 = 12
+ RequestList needs up to 5 blocks and then 3 blocks per RequestItem in it.
+ So if we show all our 5 categories that gives us: 96 - 5 * 3 = 81 blocks left
+ For a total number of 81 / 5 = 16 topics
+ And then to make sure it renders and there's some slack (pardon the pun) in the system 16 - 2 = 14
 */
-const MAX_TOTAL_TOPICS = 12;
+const MAX_TOTAL_TOPICS = 14;
 
 export async function updateHomeView(botToken: string, slackUserId: string) {
   const publishView = (view: View) => slackClient.views.publish({ token: botToken, user_id: slackUserId, view });
@@ -113,13 +113,11 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
     ],
   };
 
-  const [unsortedReceived, sent, open, closed] = await Promise.all(
+  const [unsortedReceived, sent] = await Promise.all(
     (
       [
         { AND: [whereIsOpen, whereHasOpenTask] },
         { AND: [whereIsOpen, { NOT: whereHasOpenTask }, whereHasOpenSentTask] },
-        { AND: [whereIsOpen, { NOT: [whereHasOpenTask, whereHasOpenSentTask] }] },
-        { NOT: whereIsOpen },
       ] as TopicWhereInput[]
     ).map((where) => findAndCountTopics(teamMember, where))
   );
@@ -180,23 +178,6 @@ export async function updateHomeView(botToken: string, slackUserId: string) {
       explainer: "Requests you've sent to others",
       currentUserId,
       topics: sent,
-      unreadMessagesByTopicId,
-    },
-    {
-      title: "⏳ Open",
-      explainer: "Topics where you've completed your task(s) but others haven't yet",
-      currentUserId,
-      topics: open,
-      unreadMessagesByTopicId,
-    },
-    {
-      title: "✅ Closed",
-      explainer: `Topics where all tasks are completed by everyone. Closed topics are archived after one day. You can still find them ${createSlackLink(
-        process.env.FRONTEND_URL,
-        "in the web app"
-      )}.`,
-      currentUserId,
-      topics: closed,
       unreadMessagesByTopicId,
     },
   ].filter(isNotNullish);

@@ -2,7 +2,7 @@ import { omit, toPairs } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
 
-import { devAssignWindowVariable } from "~shared/dev";
+import { IS_DEV, devAssignWindowVariable } from "~shared/dev";
 import { getLocalStorageValueManager } from "~shared/localStorage";
 import { MENTION_TYPE_PICKER_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
@@ -21,7 +21,7 @@ devAssignWindowVariable("enableDecisions", () => {
 });
 
 export const MentionTypePicker = observer(function MentionTypePicker({ selected, onSelect }: Props) {
-  const isDecisionFeatureFlagEnabled = isDecisionFeatureFlagEnabledStorage.useValue();
+  const isDecisionFeatureFlagEnabled = isDecisionFeatureFlagEnabledStorage.useValue() || IS_DEV;
 
   const availableMentionTypePickerLabels = isDecisionFeatureFlagEnabled
     ? MENTION_TYPE_PICKER_LABELS

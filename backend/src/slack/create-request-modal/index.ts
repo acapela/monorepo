@@ -187,12 +187,12 @@ export function setupCreateRequestModal(app: App) {
       priority_block: {
         priority: { selected_option: selectedPriority },
       },
-      settings_block: {
-        settings_checkbox: { selected_options: selectedSettings },
-      },
     } = view.state.values;
 
-    const isFirstReplyEnough = !!find(selectedSettings, ["value", "first_reply_enough"]);
+    const isFirstReplyEnough = !!find(view.state.values.settings_block?.settings_checkbox?.selected_options, [
+      "value",
+      "first_reply_enough",
+    ]);
 
     const token = assertToken(context);
 
@@ -207,6 +207,8 @@ export function setupCreateRequestModal(app: App) {
       });
     }
 
+    await ack({ response_action: "clear" });
+
     let decisionOptions: string[] = [];
     if (requestType.value === REQUEST_DECISION) {
       decisionOptions = Object.entries(view.state.values)
@@ -217,7 +219,7 @@ export function setupCreateRequestModal(app: App) {
 
     const observersSlackUserIds = difference(metadata.slackUserIdsFromMessage, members || []);
 
-    createAndTrackRequestInSlack({
+    await createAndTrackRequestInSlack({
       messageText,
       slackTeamId: body.user.team_id,
       creatorSlackUserId: body.user.id,
@@ -242,7 +244,5 @@ export function setupCreateRequestModal(app: App) {
       decisionOptions,
       isFirstReplyEnough,
     });
-
-    await ack({ response_action: "clear" });
   });
 }

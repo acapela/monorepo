@@ -101,7 +101,7 @@ export function getLocalStorageValueManager<T>(name: string | null, defaultValue
     return createLocalStorageValueManager<T>(name, defaultValue);
   }
 
-  const newOrExistingValueManager = mapGetOrCreate(localStorageValueManagers, name, () =>
+  const newOrExistingValueManager = mapGetOrCreate(localStorageValueManagers, name + JSON.stringify(defaultValue), () =>
     createLocalStorageValueManager<unknown>(name, defaultValue)
   );
 

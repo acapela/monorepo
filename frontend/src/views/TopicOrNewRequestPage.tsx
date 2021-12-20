@@ -9,7 +9,6 @@ import { RequestView } from "~frontend/views/RequestView";
 import { routes } from "~shared/routes";
 
 export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): JSX.Element {
-  const topicRouteParams = useRouteParamsIfRouteActive(routes._deprecated_topic);
   const duplicateRouteParams = useRouteParamsIfRouteActive(routes.topicDuplicate);
   const topicByHandleParams = useRouteParamsIfRouteActive(routes.topicByHandle);
 
@@ -25,23 +24,11 @@ export const TopicOrNewRequestPage = observer(function TopicOrNewRequestPage(): 
     );
   }
 
-  const topicSlug = topicRouteParams?.topicSlug;
   const topicToDuplicateId = duplicateRouteParams?.topicId;
-
-  if (!topicSlug) {
-    const topicToDuplicate = topicToDuplicateId ? db.topic.findById(topicToDuplicateId) : null;
-    return (
-      <SidebarLayout>
-        <NewRequestView _legacyHideIfCreatingInModal topicToDuplicate={topicToDuplicate ?? undefined} />
-      </SidebarLayout>
-    );
-  }
-
-  const topic = db.topic.findByUniqueIndex("slug", topicSlug);
-
+  const topicToDuplicate = topicToDuplicateId ? db.topic.findById(topicToDuplicateId) : null;
   return (
     <SidebarLayout>
-      <RequestView topic={topic} />
+      <NewRequestView _legacyHideIfCreatingInModal topicToDuplicate={topicToDuplicate ?? undefined} />
     </SidebarLayout>
   );
 });

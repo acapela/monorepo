@@ -1,14 +1,14 @@
 import { Prisma } from "@prisma/client";
-import { Blocks, Md, Message as SlackMessage } from "slack-block-builder";
+import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
 import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
-import { fetchTeamBotToken } from "../utils";
+import { SlackActionIds, fetchTeamBotToken } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
 
 type TaskDetail = Task & {
@@ -42,7 +42,14 @@ export async function LiveTaskMessage(task: TaskDetail) {
         ? Blocks.Section({ text: "The topic has been closed ✅️" })
         : [
             dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
-            Blocks.Actions().elements(ToggleTaskDoneAtButton(task)),
+            Blocks.Actions().elements(
+              task.type === REQUEST_DECISION ? undefined : ToggleTaskDoneAtButton(task),
+              Elements.Button({
+                actionId: SlackActionIds.OpenViewRequestModal,
+                value: topic.id,
+                text: "View Request",
+              })
+            ),
           ]
     )
     .buildToObject();

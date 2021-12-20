@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import { App, BlockButtonAction, ViewOutput } from "@slack/bolt";
+import { App, BlockButtonAction } from "@slack/bolt";
 import { Blocks, Modal } from "slack-block-builder";
 
 import { db } from "~db";
@@ -8,35 +8,15 @@ import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { routes } from "~shared/routes";
 import { Sentry } from "~shared/sentry";
-import { Origin } from "~shared/types/analytics";
 import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
+import { createLiveMessage } from "./create-request-modal/createRequestInSlack";
 import { openCreateRequestModal } from "./create-request-modal/openCreateRequestModal";
 import { updateHomeView } from "./home-tab";
 import { createSlackLink } from "./md/utils";
-import { SlackActionIds, assertToken, findUserBySlackId } from "./utils";
+import { SlackActionIds, assertToken, findUserBySlackId, getViewOrigin } from "./utils";
 import { ViewRequestModal } from "./view-request-modal/ViewRequestModal";
-
-type SlackViewOrigin = Extract<
-  Origin,
-  "slack-live-message" | "slack-home-tab" | "slack-view-request-modal" | "unknown"
->;
-
-function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
-  if (!view) {
-    return "slack-live-message";
-  }
-
-  if (view.type === "home") {
-    return "slack-home-tab";
-  }
-  if (view.type === "modal" && view.callback_id === "view_request_modal") {
-    return "slack-view-request-modal";
-  }
-
-  return "unknown";
-}
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
@@ -303,4 +283,29 @@ export function setupSlackActionHandlers(slackApp: App) {
       }),
     ]);
   });
+
+  slackApp.action<BlockButtonAction>(
+    SlackActionIds.PostSelfRequestInChannel,
+    async ({ action, respond, ack, context, client }) => {
+      await ack();
+      // delete ephemeral message
+      await respond({ replace_original: true, delete_original: true, text: "" });
+
+      const [topicId, hasRequestOriginatedFromMessageActionStr, conversationId, messageTs] = action.value.split("/");
+      const topic = await db.topic.findFirst({
+        where: { id: topicId },
+        include: { message: true, topic_access_token: true },
+      });
+      await createLiveMessage({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
+        client,
+        topic: assertDefined(topic, "must have topic"),
+        hasRequestOriginatedFromMessageAction: hasRequestOriginatedFromMessageActionStr === "true",
+        conversationId,
+        token: assertToken(context),
+        messageTs: messageTs || undefined,
+      });
+    }
+  );
 }
