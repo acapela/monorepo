@@ -8,7 +8,7 @@ import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";
 import {
   EntityFilterInput,
@@ -71,7 +71,7 @@ export type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntitySt
  */
 export function createEntityStore<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  utilities: DatabaseUtilities
+  linker: DatabaseLinker
 ): EntityStore<Data, Connections> {
   type StoreEntity = Entity<Data, Connections>;
   const { config } = definition;
@@ -82,7 +82,7 @@ export function createEntityStore<Data, Connections>(
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
   // Allow listening to CRUD updates in the store
-  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
+  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
   const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
@@ -97,7 +97,7 @@ export function createEntityStore<Data, Connections>(
 
     if (getIsDeleted && !getIsDeleted(entity)) return false;
 
-    if (accessValidator && !accessValidator(entity, utilities)) return false;
+    if (accessValidator && !accessValidator(entity, linker)) return false;
 
     return true;
   }

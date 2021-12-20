@@ -27,7 +27,7 @@ export default function DevContentPage() {
         <MessageContentEditor
           content={content}
           onContentChange={setContent}
-          attachments={[]}
+          attachmentDrafts={[]}
           onAttachmentRemoveRequest={noop}
           onFilesSelected={noop}
         />

@@ -2,17 +2,17 @@ import { useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
-import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { useUpdateMessageTasks } from "~frontend/hooks/useUpdateMessageTasks";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
+import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
+import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
 import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
 import {
   FirstCompletionEnoughToggle,
@@ -29,7 +29,7 @@ import { select } from "~shared/sharedState";
 import { FadePresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
-import { DecisionEditor, useDecisionController } from "./Decision/DecisionEditor";
+import { DecisionEditor, INITIAL_DECISION_OPTIONS } from "./Decision/DecisionEditor";
 import { SubmitMessageButton } from "./SubmitMessageButton";
 
 interface Props {
@@ -47,13 +47,11 @@ interface SubmitMessageParams {
 
 export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, onClosePendingTasks }: Props) => {
   const apolloClient = useApolloClient();
-  const db = useDb();
-  const updateMessageTasks = useUpdateMessageTasks();
 
   const editorRef = useRef<Editor>(null);
 
   const {
-    attachments,
+    attachmentsDrafts,
     content,
     setContent,
     focusEditor,
@@ -96,21 +94,16 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
 
   const submitMessage = action((params: SubmitMessageParams) => {
     const { type, content, attachments } = params;
-    const newMessage = db.message.create({
-      topic_id: topic.id,
+
+    createMessageAndAttachMeta({
+      topic,
       type,
       content,
-      replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
-      is_first_completion_enough: singleRequestTypeForManyUsers && isFirstCompletionEnough,
+      replyToMessageId: topicContext?.currentlyReplyingToMessageId ?? undefined,
+      attachments,
+      decisionOptions,
+      isFirstCompletionEnough: singleRequestTypeForManyUsers && isFirstCompletionEnough,
     });
-
-    updateMessageTasks(newMessage);
-
-    for (const attachment of attachments) {
-      db.attachment.findById(attachment.uuid)?.update({ message_id: newMessage.id });
-    }
-
-    createDecision(newMessage.id);
 
     setContent(getEmptyRichContent());
 
@@ -135,19 +128,21 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       await submitMessage({
         type: "TEXT",
         content: content,
-        attachments,
+        attachments: attachmentsDrafts,
       });
 
       attachmentsList.clear();
     } catch (error) {
       console.error("error while submitting message", error);
       // In case of error - restore attachments and content you were trying to send
-      attachmentsList.set(attachments);
+      attachmentsList.set(attachmentsDrafts);
       setContent(content);
     }
   });
 
-  const [shouldShowDecision, { controller, submit: createDecision }] = useDecisionController({ content });
+  const [decisionOptions, setDecisionOptions] = useState(INITIAL_DECISION_OPTIONS);
+
+  const shouldShowDecision = useMemo(() => getDoesMessageContentIncludeDecisionRequests(content), [content]);
 
   return (
     <UIHolder>
@@ -168,13 +163,17 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
             onContentChange={setContent}
             onFilesSelected={uploadAttachments}
             uploadingAttachments={uploadingAttachments}
-            attachments={attachments}
+            attachmentDrafts={attachmentsDrafts}
             onEditorReady={focusEditor}
             customEditFieldStyles={messageEditorSpacing}
             onAttachmentRemoveRequest={(attachmentId) => {
               removeAttachmentById(attachmentId);
             }}
-            additionalContent={shouldShowDecision ? <DecisionEditor controller={controller} /> : null}
+            additionalContent={
+              shouldShowDecision ? (
+                <DecisionEditor options={decisionOptions} onOptionsChange={setDecisionOptions} />
+              ) : null
+            }
             placeholder={`Reply to ${topic.name}`}
             capturePastedFiles={!isEditingAnyMessage}
           />

@@ -5,6 +5,7 @@ import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
 import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
+import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
@@ -69,98 +70,107 @@ export const messageEntity = defineEntity<MessageFragment>({
       },
     },
   },
-}).addConnections((message, { getEntity, getContextValue, createCache }) => {
-  const currentUserId = getContextValue(userIdContext);
+})
+  .addConnections((message, { getEntity, getContextValue, createCache }) => {
+    const currentUserId = getContextValue(userIdContext);
 
-  const tasks = getEntity(taskEntity).query({ message_id: message.id });
+    const tasks = getEntity(taskEntity).query({ message_id: message.id });
 
-  const mentionedUserIds = createCache("mentionedUserIds", () => getMentionedUserIdsInContent(message.content));
+    const mentionedUserIds = createCache("mentionedUserIds", () => getMentionedUserIdsInContent(message.content));
 
-  const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
+    const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
 
-  const lastUnreadInTheSameTopic = currentUserId
-    ? getEntity(lastSeenMessageEntity).query({
-        topic_id: message.topic_id,
-        user_id: currentUserId,
-      })
-    : null;
+    const lastUnreadInTheSameTopic = currentUserId
+      ? getEntity(lastSeenMessageEntity).query({
+          topic_id: message.topic_id,
+          user_id: currentUserId,
+        })
+      : null;
 
-  const getTasksForUser = cachedComputed((userId: string) => {
-    return tasks.query({ user_id: userId });
+    const getTasksForUser = cachedComputed((userId: string) => {
+      return tasks.query({ user_id: userId });
+    });
+
+    const getIsUserParticipating = cachedComputed((userId: string) => {
+      if (message.user_id === userId) return true;
+
+      if (getTasksForUser(userId).hasItems) return true;
+
+      if (getIsUserMentionedInContent(userId)) return true;
+
+      return false;
+    });
+
+    const getIsUserMentionedInContent = cachedComputed((userId: string) => {
+      return mentionedUserIds.get().has(userId);
+    });
+
+    const connections = {
+      get topic() {
+        return getEntity(topicEntity).findById(message.topic_id);
+      },
+      get user() {
+        return getEntity(userEntity).assertFindById(message.user_id);
+      },
+      tasks,
+      decisionOptions: getEntity(decisionOptionEntity).query({ message_id: message.id }),
+      getIsUserParticipating,
+      reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
+      attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
+      get isUnread() {
+        if (!currentUserId || message.user_id == currentUserId) return false;
+
+        const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
+
+        if (!lastUnreadMessage) return true;
+
+        return new Date(message.updated_at) >= new Date(lastUnreadMessage.seen_at);
+      },
+      get repliedToMessage() {
+        if (!message.replied_to_message_id) return null;
+
+        return getEntity(messageEntity).findById(message.replied_to_message_id);
+      },
+      get isOwn() {
+        return currentUserId === message.user_id;
+      },
+
+      get isTopicMainMessage() {
+        return connections.topic?.messages.first?.id === message.id;
+      },
+
+      setTasksDueDate(dueDate: Date | null) {
+        const messageTaskDueDate = getEntity(messageTaskDueDateEntity);
+        const previouslyStoredDueDate = messageTaskDueDate.query({ message_id: message.id }).first;
+
+        if (!dueDate && previouslyStoredDueDate) {
+          previouslyStoredDueDate.remove();
+        } else if (dueDate && previouslyStoredDueDate) {
+          previouslyStoredDueDate.update({
+            due_at: dueDate.toISOString(),
+          });
+        } else if (dueDate && !previouslyStoredDueDate) {
+          messageTaskDueDate.create({
+            message_id: message.id,
+            due_at: dueDate.toISOString(),
+          });
+        }
+      },
+      get dueDate() {
+        return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
+      },
+    };
+
+    return connections;
+  })
+  .addEventHandlers({
+    itemAdded(message) {
+      updateMessageTasks(message);
+    },
+    itemUpdated(message, dataBefore) {
+      updateMessageTasks(message, dataBefore.content);
+    },
   });
-
-  const getIsUserParticipating = cachedComputed((userId: string) => {
-    if (message.user_id === userId) return true;
-
-    if (getTasksForUser(userId).hasItems) return true;
-
-    if (getIsUserMentionedInContent(userId)) return true;
-
-    return false;
-  });
-
-  const getIsUserMentionedInContent = cachedComputed((userId: string) => {
-    return mentionedUserIds.get().has(userId);
-  });
-
-  const connections = {
-    get topic() {
-      return getEntity(topicEntity).findById(message.topic_id);
-    },
-    get user() {
-      return getEntity(userEntity).assertFindById(message.user_id);
-    },
-    tasks,
-    getIsUserParticipating,
-    reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
-    attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
-    get isUnread() {
-      if (!currentUserId || message.user_id == currentUserId) return false;
-
-      const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
-
-      if (!lastUnreadMessage) return true;
-
-      return new Date(message.updated_at) >= new Date(lastUnreadMessage.seen_at);
-    },
-    get repliedToMessage() {
-      if (!message.replied_to_message_id) return null;
-
-      return getEntity(messageEntity).findById(message.replied_to_message_id);
-    },
-    get isOwn() {
-      return currentUserId === message.user_id;
-    },
-
-    setTasksDueDate(dueDate: Date | null) {
-      const messageTaskDueDate = getEntity(messageTaskDueDateEntity);
-      const previouslyStoredDueDate = messageTaskDueDate.query({ message_id: message.id }).first;
-
-      if (!dueDate && previouslyStoredDueDate) {
-        previouslyStoredDueDate.remove();
-      } else if (dueDate && previouslyStoredDueDate) {
-        previouslyStoredDueDate.update({
-          due_at: dueDate.toISOString(),
-        });
-      } else if (dueDate && !previouslyStoredDueDate) {
-        messageTaskDueDate.create({
-          message_id: message.id,
-          due_at: dueDate.toISOString(),
-        });
-      }
-    },
-
-    get dueDate() {
-      return taskDueDate.first?.due_at ? new Date(taskDueDate.first.due_at) : null;
-    },
-
-    get decisionOptions() {
-      return getEntity(decisionOptionEntity).query({ message_id: message.id });
-    },
-  };
-
-  return connections;
-});
 
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;
 

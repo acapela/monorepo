@@ -1,3 +1,5 @@
+import { isEqual } from "lodash";
+
 export function removeElementFromArray<T>(arr: T[], element: T) {
   const index = arr.indexOf(element);
   if (index > -1) {
@@ -104,4 +106,8 @@ export function getNextItemInArray<T>(items: T[], activeItem: T) {
  */
 export function insertAtIndexIntoArray<T>(items: T[], item: T, index: number) {
   return [...items.slice(0, index), item, ...items.slice(index)];
+}
+
+export function getArrayIncludesEqual<T>(items: T[], itemToCheck: T) {
+  return items.some((existingItem) => isEqual(existingItem, itemToCheck));
 }

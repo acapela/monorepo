@@ -46,6 +46,7 @@ update_permissions:
 - permission:
     check: null
     columns:
+    - message_id
     - option
     filter:
       message:

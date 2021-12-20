@@ -3,20 +3,20 @@ import { runInAction } from "mobx";
 import { runUntracked } from "~shared/mobxUtils";
 import { createResolvablePromise } from "~shared/promises";
 
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityStore } from "./store";
 import { getChangedData } from "./utils/getChangedData";
 import { createPushQueue } from "./utils/pushQueue";
 
-interface UpdatesSyncManager<Data> extends DatabaseUtilities {
+interface UpdatesSyncManager<Data> extends DatabaseLinker {
   updateItems(items: Data[], isReloadNeeded?: boolean): void;
   lastSyncDate: Date;
   isFirstSync: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface RemovesSyncManager<Data> extends DatabaseUtilities {
+interface RemovesSyncManager<Data> extends DatabaseLinker {
   removeItems(idsToRemove: string[], lastUpdateDate?: Date): void;
   lastSyncDate: Date;
 }
@@ -31,10 +31,10 @@ export interface EntitySyncConfig<Data> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     entityToSync: Entity<Data, any>,
     changedData: Partial<Data>,
-    utils: DatabaseUtilities
+    utils: DatabaseLinker
   ) => Promise<Data | false>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  remove?: (entityToSync: Entity<Data, any>, utils: DatabaseUtilities) => Promise<boolean>;
+  remove?: (entityToSync: Entity<Data, any>, utils: DatabaseLinker) => Promise<boolean>;
   pullRemoves?: (manager: RemovesSyncManager<Data>) => SyncCleanup | void;
 }
 
@@ -96,7 +96,7 @@ export async function waitForAllSyncToFlush() {
 export function createEntitySyncManager<Data, Connections>(
   store: EntityStore<Data, Connections>,
   config: EntitySyncManagerConfig<Data>,
-  databaseUtilities: DatabaseUtilities
+  linker: DatabaseLinker
 ): EntitySyncManager<Data> {
   const syncConfig = store.definition.config.sync;
 
@@ -109,20 +109,7 @@ export function createEntitySyncManager<Data, Connections>(
         return;
       }
 
-      const entityDataFromServer = await store.definition.config.sync.push?.(entity, changedData, databaseUtilities);
-
-      /**
-       * s d
-       *
-       * 2x
-       *
-       * local data is ok
-       * s > pushed > server data > d = null
-       *
-       * > d
-       *
-       *
-       */
+      const entityDataFromServer = await store.definition.config.sync.push?.(entity, changedData, linker);
 
       if (!entityDataFromServer) {
         console.warn(`Sync push failed`);
@@ -142,7 +129,7 @@ export function createEntitySyncManager<Data, Connections>(
       }
 
       try {
-        const result = await pushQueue.add(() => config.entitySyncConfig.remove?.(entity, databaseUtilities));
+        const result = await pushQueue.add(() => config.entitySyncConfig.remove?.(entity, linker));
         if (result !== true) {
           restoreEntity();
           // TODO: Handle restore local entity in case of failure
@@ -208,7 +195,7 @@ export function createEntitySyncManager<Data, Connections>(
   // Start waiting for new 'updates' data.
   function startNextUpdatesSync() {
     const maybeCleanup = syncConfig.pullUpdated?.({
-      ...databaseUtilities,
+      ...linker,
       lastSyncDate: getLastSyncDate(),
       isFirstSync,
       updateItems(items, isReloadNeeded) {
@@ -244,7 +231,7 @@ export function createEntitySyncManager<Data, Connections>(
       lastRemoveSyncDate = getLastSyncDate();
     }
     const maybeCleanup = syncConfig.pullRemoves?.({
-      ...databaseUtilities,
+      ...linker,
       lastSyncDate: lastRemoveSyncDate,
       removeItems(itemsIds, lastUpdateDate = new Date()) {
         if (!itemsIds.length) return;

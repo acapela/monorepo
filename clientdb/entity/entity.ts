@@ -6,7 +6,7 @@ import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { EntityStore } from "./store";
 import { EntityChangeSource } from "./types";
 
@@ -20,6 +20,7 @@ type EntityMethods<Data, Connections> = {
   remove(source?: EntityChangeSource): void;
   waitForSync(): Promise<void>;
   definition: EntityDefinition<Data, Connections>;
+  db: DatabaseLinker;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -36,17 +37,12 @@ interface CreateEntityInput<D, C> {
   data: Partial<D>;
   definition: EntityDefinition<D, C>;
   store: EntityStore<D, C>;
-  databaseUtilities: DatabaseUtilities;
+  linker: DatabaseLinker;
 }
 
-export function createEntity<D, C>({
-  data,
-  definition,
-  store,
-  databaseUtilities,
-}: CreateEntityInput<D, C>): Entity<D, C> {
+export function createEntity<D, C>({ data, definition, store, linker }: CreateEntityInput<D, C>): Entity<D, C> {
   const { config } = definition;
-  const dataWithDefaults: D = { ...config.getDefaultValues?.(databaseUtilities), ...data } as D;
+  const dataWithDefaults: D = { ...config.getDefaultValues?.(linker), ...data } as D;
 
   const rawDataKeys = typedKeys(dataWithDefaults);
 
@@ -69,13 +65,13 @@ export function createEntity<D, C>({
 
   const connections =
     config.getConnections?.(observableData, {
-      ...databaseUtilities,
+      ...linker,
       createCache(key, getter) {
         const id = observableData[config.keyField] as unknown as string;
         const updatedAt = new Date(observableData[config.updatedAtField] as unknown as string);
 
         return computed(() => {
-          return databaseUtilities.entityCache.getCached(key, id, config.name, updatedAt, observableData, getter);
+          return linker.entityCache.getCached(key, id, config.name, updatedAt, observableData, getter);
         });
       },
       updateSelf(data) {
@@ -106,6 +102,7 @@ export function createEntity<D, C>({
 
   const entityMethods: EntityMethods<D, C> = {
     definition,
+    db: linker,
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
     },
@@ -176,6 +173,7 @@ export function createEntity<D, C>({
     waitForSync: false,
     remove: action,
     update: action,
+    db: false,
   });
 
   return entity;

@@ -23,7 +23,7 @@ export const RequestPicker = observer(({ keyword, onSelect }: AutocompletePicker
       noItemsPlaceholder={<EmptyStatePlaceholder description="No requests found" noSpacing icon={<IconComments />} />}
       keyGetter={(topic) => topic.id}
       onItemSelected={(topic) => {
-        onSelect([{ requestId: topic.id }]);
+        onSelect([{ requestId: topic.id, originalTopicName: topic.name }]);
       }}
       renderItem={(item) => <UISelectItem>{item.name}</UISelectItem>}
     />
