@@ -32,7 +32,11 @@ export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
   }),
   sync: createHasuraSyncSetupFromFragment<DecisionOptionFragment>(decisionOptionFragment, {
     insertColumns: ["id", "option", "message_id", "index"],
-    updateColumns: ["option"],
+    updateColumns: [
+      "option",
+      // In case message is converted to new request we move all options instead of creating new ones to avoid losing votes
+      "message_id",
+    ],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((decisionOption, { getEntity }) => {

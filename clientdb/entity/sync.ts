@@ -111,19 +111,6 @@ export function createEntitySyncManager<Data, Connections>(
 
       const entityDataFromServer = await store.definition.config.sync.push?.(entity, changedData, linker);
 
-      /**
-       * s d
-       *
-       * 2x
-       *
-       * local data is ok
-       * s > pushed > server data > d = null
-       *
-       * > d
-       *
-       *
-       */
-
       if (!entityDataFromServer) {
         console.warn(`Sync push failed`);
         return;
