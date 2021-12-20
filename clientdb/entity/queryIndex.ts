@@ -40,15 +40,39 @@ function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter
 // Note: spy event type is not exported in mobx, let's pick it from signature spy(listener: (change: SpyEvent) => void): Lambda
 type SpyEvent = Parameters<Parameters<typeof spy>[0]>[0];
 
+/**
+ * This function will check if given mobx operation reads from other entity than given one.
+ * Only reads from current entity are allowed during simple query.
+ * Spy event docs - https://mobx.js.org/analyzing-reactivity.html#spy
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function devIsNotReadingFromSelf(event: SpyEvent, entity: Entity<any, any>) {
+  // Update operation happens if computed value is calculated.
   if (event.type === "update") {
-    // We're reading other computed value from the same object. It is ok.
-    // Note: this other field might read from other object, but we'll then check it as it'll also emit spy event
+    /**
+     * Entity is reading from itself eg.
+     * // task.ts
+     * const connections = {
+     *   get isOwn() {
+     *     return task.user_id === currentUserId
+     *   },
+     *   get isActionable() {
+     *     return connections.isOwn
+     *   }
+     * }
+     *
+     * Having such keys in task - reading from both of them is safe, even tho they are computed (but no reading from other entity happens)
+     */
     if (event.object === entity) return false;
+
+    /**
+     * At any point - we started to read properties from other entity - this is forbidden.
+     */
     if (event.object && event.object !== entity) return true;
   }
 
+  // Reaction happens eg. if you create new query inside value getter. This is forbidden.
+  // example of created reaction: `new Reaction` in cachedComputedWithoutArgs.ts
   if (event.type === "reaction") return true;
 
   return false;
