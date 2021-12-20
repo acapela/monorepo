@@ -31,7 +31,7 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
     })
     .join("\n");
 
-type TopicWithToken = Topic & { topic_access_token?: TopicAccessToken[] };
+export type TopicWithToken = Topic & { topic_access_token?: TopicAccessToken[] };
 
 export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMessageContentExcluded?: boolean }) {
   const [message, accessToken] = await Promise.all([
