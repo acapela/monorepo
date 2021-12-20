@@ -8,7 +8,7 @@ import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
 import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
 import { MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
@@ -175,5 +175,5 @@ export const messageEntity = defineEntity<MessageFragment>({
 export type MessageEntity = EntityByDefinition<typeof messageEntity>;
 
 const getMentionedUserIdsInContent = memoize(
-  (content: JSONContent) => new Set(getUniqueRequestMentionDataFromContent(content).map((data) => data.userId))
+  (content: JSONContent) => new Set(getPerUserRequestMentionDataFromContent(content).map((data) => data.userId))
 );

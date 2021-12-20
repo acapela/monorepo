@@ -3,11 +3,11 @@ import { sortBy } from "lodash";
 
 import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { REQUEST_DECISION } from "~shared/requests";
 
 export function getDoesMessageContentIncludeDecisionRequests(content: JSONContent) {
-  return getUniqueRequestMentionDataFromContent(content).some((mention) => mention.type === REQUEST_DECISION);
+  return getPerUserRequestMentionDataFromContent(content).some((mention) => mention.type === REQUEST_DECISION);
 }
 
 export interface DecisionOptionDraft {

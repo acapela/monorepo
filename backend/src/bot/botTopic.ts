@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 
 import { Topic, db } from "~db";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { slugify } from "~shared/slugify";
 
 import { ensureBotIsTeamMember } from "./botTeamMembership";
@@ -25,7 +25,7 @@ export async function createTopicByBot({
   const bot = await ensureBotUserExists();
   await ensureBotIsTeamMember(teamId);
 
-  const tasksInfo = getUniqueRequestMentionDataFromContent(messageContent);
+  const tasksInfo = getPerUserRequestMentionDataFromContent(messageContent);
 
   const topicWithDetails = await db.topic.create({
     data: {

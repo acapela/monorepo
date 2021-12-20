@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/react";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
 import { MENTION_TYPE_LABELS, REQUEST_ACTION, REQUEST_DECISION, REQUEST_RESPONSE, RequestType } from "~shared/requests";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
@@ -16,10 +16,18 @@ export const isRequestTypeCompletableBySingleUser = (
   REQUEST_TYPES_COMPLETABLE_BY_SINGLE_USER.includes(value as never);
 
 export const getSingleRequestTypeIfSameForManyUsers = (content: JSONContent): RequestType | null => {
-  const mentionData = getUniqueRequestMentionDataFromContent(content);
-  return (
-    (mentionData.length > 1 && new Set(mentionData.map((data) => data.type)).size == 1 && mentionData[0].type) || null
-  );
+  const requestData = getPerUserRequestMentionDataFromContent(content);
+
+  // If there is only one user requested, we do not have a case of "single request type for multiple users"
+  if (requestData.length <= 1) {
+    return null;
+  }
+
+  const [firstRequestType, ...otherRequestTypes] = new Set(requestData.map((data) => data.type));
+  if (firstRequestType && otherRequestTypes.length == 0) {
+    return firstRequestType;
+  }
+  return null;
 };
 
 export const useSingleRequestTypeForManyUsers = (content: JSONContent) =>
