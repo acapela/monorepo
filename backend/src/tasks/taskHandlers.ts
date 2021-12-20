@@ -143,25 +143,6 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     },
   });
 
-  const message = assertDefined(
-    await db.message.findUnique({ where: { id: task.message_id } }),
-    `missing message ${task.message_id}`
-  );
-
-  if (amountOfOpenTasksLeft > 0 && message.is_first_completion_enough && isNewlyDone) {
-    await db.task.updateMany({
-      where: {
-        message_id: message.id,
-        done_at: {
-          equals: null,
-        },
-      },
-      data: {
-        done_at: new Date().toISOString(),
-      },
-    });
-  }
-
   // If topic had only self assigned tasks and all of them are done - automatically close the topic
   if (amountOfOpenTasksLeft === 0 && !topic.closed_at) {
     if (await getTopicHasOnlySelfAssignedTasks(topic)) {
