@@ -41,49 +41,57 @@ export const taskEntity = defineEntity<TaskFragment>({
     updateColumns: ["done_at", "seen_at"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
-}).addConnections((task, { getEntity, getContextValue }) => {
-  const message = getEntity(messageEntity).findById(task.message_id);
-  const connections = {
-    get message() {
-      return message;
-    },
-    get topic() {
-      const message = getEntity(messageEntity).findById(task.message_id);
+})
+  .addConnections((task, { getEntity, getContextValue }) => {
+    const message = getEntity(messageEntity).findById(task.message_id);
+    const connections = {
+      get message() {
+        return message;
+      },
+      get topic() {
+        const message = getEntity(messageEntity).findById(task.message_id);
 
-      if (!message) return null;
+        if (!message) return null;
 
-      return message.topic;
-    },
-    get hasDueDate() {
-      return !!connections.message?.dueDate;
-    },
-    get dueDate() {
-      return connections.message?.dueDate;
-    },
-    get assignedUser() {
-      if (!task.user_id) {
-        return null;
+        return message.topic;
+      },
+      get hasDueDate() {
+        return !!connections.message?.dueDate;
+      },
+      get dueDate() {
+        return connections.message?.dueDate;
+      },
+      get assignedUser() {
+        if (!task.user_id) {
+          return null;
+        }
+
+        return getEntity(userEntity).findById(task.user_id);
+      },
+      get creatingUser() {
+        return connections.message?.user ?? null;
+      },
+      get isAssignedToSelf() {
+        return task.user_id === getContextValue(userIdContext);
+      },
+      get isSelfCreated() {
+        const createdByUserId = connections.creatingUser?.id;
+        if (!createdByUserId) return false;
+        return createdByUserId === getContextValue(userIdContext);
+      },
+      get isDone() {
+        return !!task.done_at;
+      },
+    };
+
+    return connections;
+  })
+  .addEventHandlers({
+    itemUpdated: (task, taskBefore) => {
+      if (task.isDone && !taskBefore.done_at && task.message?.is_first_completion_enough) {
+        task.message?.topic?.close();
       }
-
-      return getEntity(userEntity).findById(task.user_id);
     },
-    get creatingUser() {
-      return connections.message?.user ?? null;
-    },
-    get isAssignedToSelf() {
-      return task.user_id === getContextValue(userIdContext);
-    },
-    get isSelfCreated() {
-      const createdByUserId = connections.creatingUser?.id;
-      if (!createdByUserId) return false;
-      return createdByUserId === getContextValue(userIdContext);
-    },
-    get isDone() {
-      return !!task.done_at;
-    },
-  };
-
-  return connections;
-});
+  });
 
 export type TaskEntity = EntityByDefinition<typeof taskEntity>;

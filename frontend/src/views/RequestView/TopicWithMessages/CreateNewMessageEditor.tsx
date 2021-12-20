@@ -1,4 +1,5 @@
 import { useApolloClient } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -13,6 +14,11 @@ import { useMessageEditorManager } from "~frontend/message/composer/useMessageEd
 import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
 import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
 import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
+import {
+  FirstCompletionEnoughToggle,
+  isRequestTypeCompletableBySingleUser,
+  useSingleRequestTypeForManyUsers,
+} from "~frontend/tasks/single-completion";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
@@ -20,6 +26,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
+import { FadePresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 import { DecisionEditor, INITIAL_DECISION_OPTIONS } from "./Decision/DecisionEditor";
@@ -62,6 +69,9 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
   const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
   const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
+  const [isFirstCompletionEnough, setIsFirstCompletionEnough] = useState(false);
+  const singleRequestTypeForManyUsers = useSingleRequestTypeForManyUsers(content);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     action(() => {
@@ -92,6 +102,7 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
       replyToMessageId: topicContext?.currentlyReplyingToMessageId ?? undefined,
       attachments,
       decisionOptions,
+      isFirstCompletionEnough: !!(singleRequestTypeForManyUsers && isFirstCompletionEnough),
     });
 
     setContent(getEmptyRichContent());
@@ -195,6 +206,19 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           />
         </UIRequestControls>
       </UIEditorContainer>
+      <AnimatePresence>
+        {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
+          <FadePresenceAnimator>
+            <UIBar>
+              <FirstCompletionEnoughToggle
+                requestType={singleRequestTypeForManyUsers}
+                isSet={isFirstCompletionEnough}
+                onChange={(value) => setIsFirstCompletionEnough(value)}
+              />
+            </UIBar>
+          </FadePresenceAnimator>
+        )}
+      </AnimatePresence>
     </UIHolder>
   );
 });
@@ -206,7 +230,6 @@ const messageEditorSpacing = css`
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.sections.asGap};
 `;
 
 const UIEditorContainer = styled.div<{}>`
@@ -232,4 +255,8 @@ const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   align-items: center;
   ${theme.spacing.actionsSection.asGap};
   min-height: 50px;
+`;
+
+const UIBar = styled.div<{}>`
+  ${theme.spacing.actionsSection.asPadding()};
 `;

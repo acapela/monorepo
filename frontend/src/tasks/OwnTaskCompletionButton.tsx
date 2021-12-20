@@ -10,7 +10,7 @@ import {
   REQUEST_DECISION,
   RequestType,
   UNCOMPLETED_REQUEST_LABEL,
-} from "~shared/types/mention";
+} from "~shared/requests";
 import { Button, baseButtonStyles } from "~ui/buttons/Button";
 import { IconCheckboxCircle, IconUndo } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";

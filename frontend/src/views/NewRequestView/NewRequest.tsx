@@ -13,6 +13,11 @@ import { MessageContentEditor } from "~frontend/message/composer/MessageContentC
 import { MessageTools } from "~frontend/message/composer/Tools";
 import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
 import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
+import {
+  FirstCompletionEnoughToggle,
+  isRequestTypeCompletableBySingleUser,
+  useSingleRequestTypeForManyUsers,
+} from "~frontend/tasks/single-completion";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { createNewRequest } from "~frontend/topics/createRequest";
 import { PriorityPicker } from "~frontend/topics/PriorityPicker";
@@ -114,6 +119,10 @@ export const NewRequest = observer(function NewRequest({
 
   const stageHint = getHint();
 
+  const [isFirstCompletionEnough, setIsFirstCompletionEnough] = useState(false);
+
+  const singleRequestTypeForManyUsers = useSingleRequestTypeForManyUsers(content);
+
   async function submit() {
     if (!canSubmit) {
       return;
@@ -128,6 +137,7 @@ export const NewRequest = observer(function NewRequest({
       decisionOptionsDrafts: decisionOptions,
       id: newTopicId,
       name: topicName,
+      isFirstCompletionEnough,
     });
 
     router.push(topic.href);
@@ -215,21 +225,33 @@ export const NewRequest = observer(function NewRequest({
                   <FadePresenceAnimator>
                     <PriorityPicker priority={priority} onChange={setPriority} />
                   </FadePresenceAnimator>
+                  {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
+                    <FadePresenceAnimator>
+                      <FirstCompletionEnoughToggle
+                        requestType={singleRequestTypeForManyUsers}
+                        isSet={isFirstCompletionEnough}
+                        onChange={(value) => setIsFirstCompletionEnough(value)}
+                      />
+                    </FadePresenceAnimator>
+                  )}
                 </>
               )}
             </AnimatePresence>
           </UIAdditionalActions>
-          <MessageTools onFilesPicked={uploadAttachments} />
 
-          <Button
-            isDisabled={!canSubmit}
-            kind="primary"
-            tooltip="Send request"
-            onClick={submit}
-            shortcut={["Mod", "Enter"]}
-          >
-            Send request
-          </Button>
+          <UIBottom>
+            <MessageTools onFilesPicked={uploadAttachments} />
+
+            <Button
+              isDisabled={!canSubmit}
+              kind="primary"
+              tooltip="Send request"
+              onClick={submit}
+              shortcut={["Mod", "Enter"]}
+            >
+              Send request
+            </Button>
+          </UIBottom>
         </UIActions>
       </UIContentHolder>
     </UIHolder>
@@ -313,7 +335,16 @@ const UIAdditionalActions = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
+`;
+
+const UIBottom = styled.div<{}>`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-self: flex-end;
 `;
 
 const UIComposerHolder = styled(PageLayoutAnimator)`

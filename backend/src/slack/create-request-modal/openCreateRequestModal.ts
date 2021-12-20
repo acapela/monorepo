@@ -9,7 +9,7 @@ import {
   REQUEST_DECISION,
   REQUEST_RESPONSE,
   RequestType,
-} from "~shared/types/mention";
+} from "~shared/requests";
 
 import { slackClient } from "../app";
 import { ChannelInfo, ViewMetadata, attachToViewWithMetadata } from "../utils";
@@ -118,8 +118,8 @@ export const CreateRequestModal = async (
             .element(
               Elements.Checkboxes({ actionId: "settings_checkbox" }).options(
                 Bits.Option({
-                  value: "first_reply_enough",
-                  text: "First reply is enough.",
+                  value: "first_completion_enough",
+                  text: "First completion is enough.",
                 })
               )
             )

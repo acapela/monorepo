@@ -1,5 +1,5 @@
 import { DecisionOptionWithVotes } from "~backend/src/slack/decision";
-import { RequestType } from "~shared/types/mention";
+import { RequestType } from "~shared/requests";
 
 export interface SlackMember {
   slackUserId?: string;

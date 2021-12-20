@@ -7,7 +7,7 @@ import { MessageText } from "~frontend/message/display/types/TextMessageContent"
 import { getStyledMentionForUserSelector } from "~frontend/message/extensions/mentions/TypedMention";
 import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
 import { styledObserver } from "~shared/component";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType } from "~shared/requests";
 import { PopPresenceAnimator } from "~ui/animations";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";

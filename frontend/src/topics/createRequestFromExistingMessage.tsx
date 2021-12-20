@@ -55,6 +55,7 @@ export const createNewRequestFromExistingMessage = action(async (message: Messag
     db: message.db,
     priority,
     tasksDueDate: dueDate ?? undefined,
+    isFirstCompletionEnough: message.is_first_completion_enough,
   });
 
   runInAction(() => {

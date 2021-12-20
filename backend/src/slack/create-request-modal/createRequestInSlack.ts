@@ -7,9 +7,9 @@ import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/requests";
 import { Maybe } from "~shared/types";
 import { Origin } from "~shared/types/analytics";
-import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention";
 
 import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage, TopicWithToken } from "../live-messages/LiveTopicMessage";
@@ -81,7 +81,7 @@ interface CreateRequestInSlackInput {
   topicName?: Maybe<string>;
   priority?: Maybe<string>;
   decisionOptions: string[];
-  isFirstReplyEnough: boolean;
+  isFirstCompletionEnough: boolean;
 }
 
 // TODO: Split this function to require prepared data and only handle creating and tracking slack message instead of doing all request preparation
@@ -105,7 +105,7 @@ export async function createAndTrackRequestInSlack({
   topicName,
   priority,
   decisionOptions = [],
-  isFirstReplyEnough,
+  isFirstCompletionEnough,
 }: CreateRequestInSlackInput) {
   assert(messageText, "create_request called with wrong arguments");
 
@@ -154,7 +154,7 @@ export async function createAndTrackRequestInSlack({
     slackUserIdsWithMentionType,
     priority,
     decisionOptions,
-    isFirstReplyEnough,
+    isFirstCompletionEnough,
   });
 
   const isSelfRequest =

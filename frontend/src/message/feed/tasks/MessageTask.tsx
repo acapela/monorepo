@@ -6,7 +6,7 @@ import { Avatar } from "~frontend/ui/users/Avatar";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { styledObserver } from "~shared/component";
 import { niceFormatDateTime } from "~shared/dates/format";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, RequestType } from "~shared/requests";
 import { theme } from "~ui/theme";
 
 interface Props {

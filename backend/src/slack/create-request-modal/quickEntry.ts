@@ -1,7 +1,7 @@
 import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
+import { RequestType } from "~shared/requests";
 import { removePrefix } from "~shared/text/substring";
-import { RequestType } from "~shared/types/mention";
 import { createTypeGuard } from "~shared/typeUtils/typeGuard";
 
 import { assertToken } from "../utils";
