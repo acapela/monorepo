@@ -15,10 +15,15 @@ export const isRequestTypeCompletableBySingleUser = (
 ): value is typeof REQUEST_TYPES_COMPLETABLE_BY_SINGLE_USER[number] =>
   REQUEST_TYPES_COMPLETABLE_BY_SINGLE_USER.includes(value as never);
 
-export function useSingleRequestTypeForManyUsers(content: JSONContent) {
-  const mentionData = useMemo(() => getUniqueRequestMentionDataFromContent(content), [content]);
-  return mentionData.length > 1 && new Set(mentionData.map((data) => data.type)).size == 1 && mentionData[0].type;
-}
+export const getSingleRequestTypeIfSameForManyUsers = (content: JSONContent): RequestType | null => {
+  const mentionData = getUniqueRequestMentionDataFromContent(content);
+  return (
+    (mentionData.length > 1 && new Set(mentionData.map((data) => data.type)).size == 1 && mentionData[0].type) || null
+  );
+};
+
+export const useSingleRequestTypeForManyUsers = (content: JSONContent) =>
+  useMemo(() => getSingleRequestTypeIfSameForManyUsers(content), [content]);
 
 export const FirstCompletionEnoughToggle = ({ requestType, ...props }: Props) => (
   <UIToggleLabel>

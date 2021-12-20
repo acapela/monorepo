@@ -5,6 +5,7 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
 import { DecisionOptionDraft, createDecisionsForMessage } from "~frontend/message/decisions";
 import { updateMessageAttachments } from "~frontend/message/updateAttachments";
+import { getSingleRequestTypeIfSameForManyUsers } from "~frontend/tasks/single-completion";
 import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 
@@ -44,7 +45,11 @@ interface EditMessageParams {
 
 export const updateMessageAndMeta = action(
   (message: MessageEntity, { newContent, attachments, decisionOptions }: EditMessageParams) => {
-    message.update({ content: newContent });
+    message.update({
+      content: newContent,
+      is_first_completion_enough:
+        message.is_first_completion_enough && !!getSingleRequestTypeIfSameForManyUsers(newContent),
+    });
 
     updateMessageAttachments(message, attachments ?? []);
 
