@@ -16,6 +16,7 @@ const testFn = shouldRunSuite ? test : test.skip;
 
 async function ensureSlackSession(page: Page) {
   await page.goto("https://alepaca.slack.com/");
+  // slack's login form needs a moment
   await page.waitForTimeout(200);
   await page.fill('[data-qa="login_email"]', testSlackEmail);
   await page.fill('[data-qa="login_password"]', testSlackPassword);

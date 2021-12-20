@@ -4,7 +4,7 @@ import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-build
 import { Message, Task, Topic, TopicAccessToken, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
-import { REQUEST_DECISION, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/types/mention";
+import { REQUEST_DECISION, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/requests";
 
 import { slackClient } from "../app";
 import { DecisionOptionVoting } from "../decision";

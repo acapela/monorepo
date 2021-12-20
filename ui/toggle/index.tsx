@@ -37,21 +37,16 @@ interface Props {
   isSet?: boolean;
   size?: ToggleSize;
   isDisabled?: boolean;
-  onSet?: () => void;
-  onUnset?: () => void;
+  onChange?: (value: boolean) => void;
 }
 
-export const Toggle = ({ isSet, size = "large", isDisabled, onSet, onUnset }: Props) => {
+export const Toggle = ({ isSet, size = "large", isDisabled, onChange }: Props) => {
   const id = useId();
 
   function onSwitch(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation();
 
-    if (e.target.checked) {
-      onSet?.();
-    } else {
-      onUnset?.();
-    }
+    onChange?.(e.target.checked);
   }
 
   return (

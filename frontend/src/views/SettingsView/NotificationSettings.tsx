@@ -34,13 +34,7 @@ const LabeledToggle = ({
       <UILabeledToggleTitle>{title}</UILabeledToggleTitle>
       <UIByline>{description}</UIByline>
     </div>
-    <Toggle
-      size="small"
-      isSet={isSet}
-      isDisabled={isDisabled}
-      onSet={() => onChange(true)}
-      onUnset={() => onChange(false)}
-    />
+    <Toggle size="small" isSet={isSet} isDisabled={isDisabled} onChange={(value) => onChange(value)} />
   </UILabel>
 );
 

@@ -7,10 +7,10 @@ import { Md } from "slack-block-builder";
 import { User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
+import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/requests";
 import { checkHasAllSlackBotScopes } from "~shared/slack";
 import { Maybe } from "~shared/types";
 import { AnalyticsEventsMap, Origin } from "~shared/types/analytics";
-import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/types/mention";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
