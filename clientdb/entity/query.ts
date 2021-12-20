@@ -63,6 +63,7 @@ export type EntityQuery<Data, Connections> = {
     filter: EntityFilterInput<Data, Connections>,
     sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
+  sort(sort: EntityQuerySortFunction<Data, Connections>): EntityQuery<Data, Connections>;
 };
 
 /**
@@ -257,6 +258,9 @@ export function createEntityQuery<Data, Connections>(
     },
     query(filter, sort) {
       return createOrReuseQuery(filter, sort);
+    },
+    sort(sort) {
+      return createOrReuseQuery(undefined, sort);
     },
   };
 }

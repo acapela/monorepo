@@ -11,7 +11,7 @@ export function useMessageContentExamplePlaceholder(): string {
   const db = useDb();
 
   const exampleRequestBodyWithTeamMemberNamesMentioned = useMemo(() => {
-    const otherTeamMembers = db.user.query({ isMemberOfCurrentTeam: true, isCurrentUser: false }).all;
+    const otherTeamMembers = db.user.query({ isCurrentUser: false }).query((user) => user.isMemberOfCurrentTeam).all;
 
     if (!otherTeamMembers.length) {
       return `@Name Could you give me feedback on this Figma file?`;

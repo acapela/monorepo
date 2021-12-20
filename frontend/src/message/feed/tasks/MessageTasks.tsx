@@ -16,22 +16,18 @@ interface Props {
   message: MessageEntity;
 }
 
-const allTasksInMessageFilter = () => true;
-
-const sortCurrentUserInFront = (item: TaskEntity) => (item.assignedUser?.isCurrentUser ? -1 : 0);
+const sortCurrentUserInFront = (item: TaskEntity) => (item.isAssignedToSelf ? -1 : 0);
 
 export const MessageTasks = styledObserver(({ message }: Props) => {
-  const tasks = message.tasks.query(allTasksInMessageFilter, sortCurrentUserInFront);
-
-  const allTasks = tasks.all;
-
-  const [completedTasks, pendingTasks] = groupByFilter(allTasks, (task) => task.isDone);
-
   if (!message.tasks.hasItems) {
     return null;
   }
 
-  const selfTask = tasks.query({ isAssignedToSelf: true }).first;
+  const sortedTasks = message.tasks.sort(sortCurrentUserInFront).all;
+
+  const [completedTasks, pendingTasks] = groupByFilter(sortedTasks, (task) => task.isDone);
+
+  const selfTask = sortedTasks.find((task) => task.isAssignedToSelf);
 
   return (
     <UIHolder data-test-message-tasks>

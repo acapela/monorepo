@@ -1,7 +1,8 @@
-import { IObservableArray, ObservableMap, observable, runInAction } from "mobx";
+import { IObservableArray, ObservableMap, observable, runInAction, spy } from "mobx";
 import { Primitive } from "utility-types";
 
 import { Entity } from "~clientdb";
+import { IS_DEV } from "~shared/dev";
 import { Thunk, resolveThunk } from "~shared/thunk";
 
 import { EntityStore } from "./store";
@@ -36,6 +37,23 @@ function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter
   return newValue;
 }
 
+// Note: spy event type is not exported in mobx, let's pick it from signature spy(listener: (change: SpyEvent) => void): Lambda
+type SpyEvent = Parameters<Parameters<typeof spy>[0]>[0];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function devIsNotReadingFromSelf(event: SpyEvent, entity: Entity<any, any>) {
+  if (event.type === "update") {
+    // We're reading other computed value from the same object. It is ok.
+    // Note: this other field might read from other object, but we'll then check it as it'll also emit spy event
+    if (event.object === entity) return false;
+    if (event.object && event.object !== entity) return true;
+  }
+
+  if (event.type === "reaction") return true;
+
+  return false;
+}
+
 /**
  * Will create unique key index for entity store that will automatically add/update/delete items from the index on changes.
  */
@@ -59,7 +77,41 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
   const observableIndex = observable.map<TargetValue, IObservableArray<TargetEntity>>({});
 
   function getCurrentIndexValue(entity: TargetEntity): TargetValue {
-    return entity[key];
+    if (!IS_DEV) {
+      return entity[key];
+    }
+
+    /**
+     * We'll throw if reading from other entities during getting getting current value.
+     *
+     * This is unsafe as index only updates is target entity updates, not when its relations are updated.
+     *
+     * Example: task.hasAssigneeWithNameBob: boolean, then you do task.query({ hasAssigneeWithNameBob: true })
+     *
+     * In such case, result depends on user entities, not on task entities, thus index can easily become outdated.
+     */
+
+    let didReadFromOtherEntities = false;
+
+    // Start spying on mobx before we read data
+    const stopSpy = spy((change) => {
+      // If any step in reading did read from other entities, report it.
+      if (devIsNotReadingFromSelf(change, entity)) {
+        didReadFromOtherEntities = true;
+      }
+    });
+
+    // Finally perform read operation.
+    const value = entity[key];
+
+    if (didReadFromOtherEntities) {
+      throw new Error(
+        `Forbidden '.query({${key}})' ussage on entity "${entity.definition.config.name}". Fields that read from other entities or use queries are not allowed in simple query. Either check "${key}" implementation to avoid such operations or convert ".query({${key}: value})" to ".query((item) => item.${key} === value)"`
+      );
+    }
+    stopSpy();
+
+    return value;
   }
 
   function addItemToIndex(entity: TargetEntity) {
