@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import { uniqBy } from "lodash";
+import router from "next/router";
 
 import { EntityByDefinition, cachedComputedWithoutArgs, defineEntity } from "~clientdb";
 import { topicMemberEntity } from "~frontend/clientdb/topicMember";
@@ -197,6 +198,10 @@ export const topicEntity = defineEntity<TopicFragment>({
 
       open() {
         return updateSelf({ closed_at: null, closed_by_user_id: null, archived_at: null });
+      },
+
+      navigateTo() {
+        router.push(connections.href);
       },
 
       unreadMessages,

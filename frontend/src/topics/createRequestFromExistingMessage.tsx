@@ -31,7 +31,7 @@ function moveAllMetadataBetweenMessages(source: MessageEntity, destination: Mess
 function convertMessageContentToLinkToTopic(message: MessageEntity, topicToLink: TopicEntity) {
   const node: EditorRequestLinkNode = {
     type: "request-link",
-    attrs: { data: { requestId: topicToLink.id } },
+    attrs: { data: { requestId: topicToLink.id, originalTopicName: topicToLink.name } },
     text: "Foo",
   };
 
@@ -61,4 +61,6 @@ export const createNewRequestFromExistingMessage = action(async (message: Messag
     moveAllMetadataBetweenMessages(message, newMessage);
     convertMessageContentToLinkToTopic(message, newTopic);
   });
+
+  return newTopic;
 });

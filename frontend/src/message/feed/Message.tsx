@@ -103,8 +103,10 @@ export const Message = styledObserver<Props>(
         options.push({
           label: "Convert to new request",
           icon: <IconComments />,
-          onSelect() {
-            createNewRequestFromExistingMessage(message);
+          async onSelect() {
+            const newRequest = await createNewRequestFromExistingMessage(message);
+
+            newRequest?.navigateTo();
           },
         });
       }

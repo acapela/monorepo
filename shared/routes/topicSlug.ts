@@ -52,7 +52,7 @@ export function getTopicNameFromContent(firstMessageContent: RichEditorNode) {
 
   const shortSnippet = trimLengthWithoutBreakingWords(snippet, 50);
 
-  return shortSnippet;
+  return shortSnippet.trim();
 }
 
 const DEFAULT_TOPIC_SLUG = "untitled-request";
