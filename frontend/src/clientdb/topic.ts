@@ -85,18 +85,11 @@ export const topicEntity = defineEntity<TopicFragment>({
       return messages.all.map((message) => message.id);
     });
 
-    const unseenMessages = getEntity(lastSeenMessageEntity).query({
+    const lastSeenMessageByCurrentUserQuery = getEntity(lastSeenMessageEntity).query({
       // We have to provide this value, otherwise it would find only by topic_id. Let's give non existing id if there is no user.
       user_id: currentUserId ?? "no-user",
       topic_id: topic.id,
     });
-
-    function getLastSeenMessageByCurrentUserInfo() {
-      if (!currentUserId) return null;
-
-      // There is unique index so we know there is only one 'last_seen_message' per user per topic
-      return unseenMessages.first ?? null;
-    }
 
     function getOwner() {
       return getEntity(userEntity).findById(topic.owner_id);
@@ -106,7 +99,18 @@ export const topicEntity = defineEntity<TopicFragment>({
       message_id: () => getMessageIds.get(),
     });
 
-    const unreadMessages = getEntity(messageEntity).query({ topic_id: topic.id, isUnread: true });
+    const unreadMessages = getEntity(messageEntity)
+      .query({ topic_id: topic.id })
+      .query((message) => {
+        // Don't consider self made messages as unread
+        if (message.user_id === currentUserId) return false;
+
+        const lastUnreadMessageInfo = lastSeenMessageByCurrentUserQuery.first;
+
+        if (!lastUnreadMessageInfo) return true;
+
+        return new Date(message.updated_at) >= new Date(lastUnreadMessageInfo.seen_at);
+      });
 
     const topicMembers = getEntity(topicMemberEntity).query({ topic_id: topic.id });
 
@@ -179,7 +183,10 @@ export const topicEntity = defineEntity<TopicFragment>({
         return getEntity(userEntity).findById(topic.closed_by_user_id);
       },
       get lastSeenMessageByCurrentUserInfo() {
-        return getLastSeenMessageByCurrentUserInfo();
+        if (!currentUserId) return null;
+
+        // There is unique index so we know there is only one 'last_seen_message' per user per topic
+        return lastSeenMessageByCurrentUserQuery.first ?? null;
       },
 
       close() {

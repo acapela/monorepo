@@ -57,16 +57,16 @@ function useUpdateTopicLastSeenMessage(topic: TopicEntity | null) {
       const lastSeenMessageInfo = topic.lastSeenMessageByCurrentUserInfo;
       const lastMessage = topic.messages.last;
 
+      if (!lastMessage) {
+        console.warn(`Topic has no messages - skipping setting last seen message`);
+        return;
+      }
+
       const nowISO = new Date().toISOString();
 
       if (lastSeenMessageInfo) {
         lastSeenMessageInfo.update({ seen_at: nowISO, message_id: lastMessage?.id });
 
-        return;
-      }
-
-      if (!lastMessage) {
-        console.warn(`Topic has no messages - skipping setting last seen message`);
         return;
       }
 

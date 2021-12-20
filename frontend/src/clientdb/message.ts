@@ -11,7 +11,6 @@ import { convertMessageContentToPlainText } from "~richEditor/content/plainText"
 import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
-import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageReactionEntity } from "./messageReaction";
 import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { taskEntity } from "./task";
@@ -78,13 +77,6 @@ export const messageEntity = defineEntity<MessageFragment>({
 
     const taskDueDate = getEntity(messageTaskDueDateEntity).query({ message_id: message.id });
 
-    const lastUnreadInTheSameTopic = currentUserId
-      ? getEntity(lastSeenMessageEntity).query({
-          topic_id: message.topic_id,
-          user_id: currentUserId,
-        })
-      : null;
-
     const getTasksForUser = cachedComputed((userId: string) => {
       return tasks.query({ user_id: userId });
     });
@@ -116,13 +108,7 @@ export const messageEntity = defineEntity<MessageFragment>({
       reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
       attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
       get isUnread() {
-        if (!currentUserId || message.user_id == currentUserId) return false;
-
-        const lastUnreadMessage = lastUnreadInTheSameTopic?.first;
-
-        if (!lastUnreadMessage) return true;
-
-        return new Date(message.updated_at) >= new Date(lastUnreadMessage.seen_at);
+        return !!connections.topic?.unreadMessages.findById(message.id);
       },
       get repliedToMessage() {
         if (!message.replied_to_message_id) return null;
