@@ -46,6 +46,8 @@ const manifestDataFilePath = path.join(__dirname, ".manifest-data.json");
 
 if (process.argv.includes("--staging")) {
   cloneManifestIntoClipboard({ name: "Alepaca", domain: "https://app-staging.acape.la" });
+} else if (process.argv.includes("--testing")) {
+  cloneManifestIntoClipboard({ name: "Testapela", domain: "https://testapela.ngrok.io" });
 } else if (!process.argv.includes("--prompt") && fs.existsSync(manifestDataFilePath)) {
   cloneManifestIntoClipboard(JSON.parse(fs.readFileSync(manifestDataFilePath, "utf-8")));
 } else {

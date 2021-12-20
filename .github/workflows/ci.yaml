@@ -68,7 +68,21 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: npx playwright install
       - name: Setup dotenv
-        run: cp .env.sample .env
+        env:
+          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
+          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+          SLACK_STATE_SECRET: ${{ secrets.SLACK_STATE_SECRET }}
+        run: |
+          cat .env.sample > .env
+          {
+            echo "SLACK_CLIENT_ID=1453742769187.2863472186114"
+            echo "SLACK_CLIENT_SECRET=$SLACK_CLIENT_SECRET"
+            echo "SLACK_SIGNING_SECRET=$SLACK_SIGNING_SECRET"
+            echo "SLACK_STATE_SECRET=$SLACK_STATE_SECRET"
+            echo "SLACK_SLASH_COMMAND=testapela"
+          } >> .env
+
+          cat .env
       - name: Run hasura migrations
         run: |
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
@@ -76,6 +90,9 @@ jobs:
           yarn hasura:update
           yarn generate
       - name: Start backend
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+          NGROK_SUBDOMAIN: testapela
         run: |
           cd backend/
           ./start-ci.sh
@@ -97,6 +114,9 @@ jobs:
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
       - run: yarn e2e test
+        env:
+          TEST_SLACK_EMAIL: ${{ secrets.TEST_SLACK_EMAIL }}
+          TEST_SLACK_PASSWORD: ${{ secrets.TEST_SLACK_PASSWORD }}
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:

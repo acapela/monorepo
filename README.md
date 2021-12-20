@@ -1,30 +1,5 @@
 # Acapela
 
-- [Getting started](#getting-started)
-  - [Dependencies](#dependencies)
-  - [`.env`](#-env-)
-  - [Install](#install)
-- [Hasura setup](#hasura-setup)
-- [Slack integration](#slack-integration)
-- [Commit Message Convention](#commit-message-convention)
-  - [How to trigger releases?](#how-to-trigger-releases-)
-    - [Patch Release](#patch-release)
-    - [~~Minor~~ Feature Release](#--minor---feature-release)
-    - [~~Major~~ Breaking Release](#--major---breaking-release)
-  - [Using commitizen](#using-commitizen)
-- [Monorepo setup](#monorepo-setup)
-  - [Terms](#terms)
-  - [Shared dependencies](#shared-dependencies)
-  - [Versioning](#versioning)
-  - [Using one package inside another package.](#using-one-package-inside-another-package)
-  - [Dependencies typescript build pipeline](#dependencies-typescript-build-pipeline)
-  - [Running commands in scope of single package](#running-commands-in-scope-of-single-package)
-- [Shared configuration](#shared-configuration)
-  - [tsconfig](#tsconfig)
-  - [eslint](#eslint)
-  - [gitignore](#gitignore)
-  - [prettier](#prettier)
-
 Before setting up this repo, please read https://github.com/weareacapela/onboarding to get some better idea about our values and practices related to creating software.
 
 Now, please head to Getting started guide in order to set up this repo on your machine.
@@ -104,12 +79,13 @@ Setting Slack up is optional in development, but if you want to work on it you h
 4. Fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. Also add `SLACK_STATE_SECRET` which can be any random string.
 5. To start using Slack's actions, open the frontend, navigate to a team's settings page and click the button for linking the team to Slack.
 
-### Updating staging/production Slack App manifest
+### Updating testing/staging/production Slack App manifest
 
 1. Copy the manifest
+   1. **For testing:** Run `yarn shared clone-slack-manifest --testing`
    1. **For staging:** Run `yarn shared clone-slack-manifest --staging`
    1. **For production:** Just copy `shared/slack/manifest.json`
-2. Paste the manifest into the [staging](https://app.slack.com/app-settings/T01DBMUNM5H/A02CFBKDZMZ/app-manifest) or the [production](https://app.slack.com/app-settings/T01DBMUNM5H/A012VTBSTNV/app-manifest) app and save it.
+2. Paste the manifest into the [testing](https://app.slack.com/app-settings/T01DBMUNM5H/A02RDDW5G3C/app-manifest), [staging](https://app.slack.com/app-settings/T01DBMUNM5H/A02CFBKDZMZ/app-manifest) or the [production](https://app.slack.com/app-settings/T01DBMUNM5H/A012VTBSTNV/app-manifest) app and save it.
 
 ## Commit Message Convention
 
