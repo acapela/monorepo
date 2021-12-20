@@ -181,17 +181,6 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
         </UIEditorScroller>
 
         <UIRequestControls layoutId={layoutAnimations.newTopic.messageTools(topic.id)}>
-          <AnimatePresence>
-            {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
-              <FadePresenceAnimator>
-                <FirstCompletionEnoughToggle
-                  requestType={singleRequestTypeForManyUsers}
-                  isSet={isFirstCompletionEnough}
-                  onChange={(value) => setIsFirstCompletionEnough(value)}
-                />
-              </FadePresenceAnimator>
-            )}
-          </AnimatePresence>
           <MessageTools
             onRecordingReady={
               hasAnyTextContent
@@ -218,6 +207,19 @@ export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSe
           />
         </UIRequestControls>
       </UIEditorContainer>
+      <AnimatePresence>
+        {isRequestTypeCompletableBySingleUser(singleRequestTypeForManyUsers) && (
+          <FadePresenceAnimator>
+            <UIBar>
+              <FirstCompletionEnoughToggle
+                requestType={singleRequestTypeForManyUsers}
+                isSet={isFirstCompletionEnough}
+                onChange={(value) => setIsFirstCompletionEnough(value)}
+              />
+            </UIBar>
+          </FadePresenceAnimator>
+        )}
+      </AnimatePresence>
     </UIHolder>
   );
 });
@@ -229,7 +231,6 @@ const messageEditorSpacing = css`
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
-  ${theme.spacing.sections.asGap};
 `;
 
 const UIEditorContainer = styled.div<{}>`
@@ -255,4 +256,8 @@ const UIRequestControls = styled(PageLayoutAnimator)<{}>`
   align-items: center;
   ${theme.spacing.actionsSection.asGap};
   min-height: 50px;
+`;
+
+const UIBar = styled.div<{}>`
+  ${theme.spacing.actionsSection.asPadding()};
 `;
