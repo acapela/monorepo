@@ -2187,50 +2187,50 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura-darwin-arm64@npm:2.1.0-beta.1"
+"@install-binary/hasura-darwin-arm64@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura-darwin-arm64@npm:2.1.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura-darwin-x64@npm:2.1.0-beta.1"
+"@install-binary/hasura-darwin-x64@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura-darwin-x64@npm:2.1.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura-linux-arm64@npm:2.1.0-beta.1"
+"@install-binary/hasura-linux-arm64@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura-linux-arm64@npm:2.1.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-linux-x64@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura-linux-x64@npm:2.1.0-beta.1"
+"@install-binary/hasura-linux-x64@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura-linux-x64@npm:2.1.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@install-binary/hasura-win32-x64@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura-win32-x64@npm:2.1.0-beta.1"
+"@install-binary/hasura-win32-x64@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura-win32-x64@npm:2.1.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@install-binary/hasura@npm:2.1.0-beta.1":
-  version: 2.1.0-beta.1
-  resolution: "@install-binary/hasura@npm:2.1.0-beta.1"
+"@install-binary/hasura@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@install-binary/hasura@npm:2.1.0"
   dependencies:
-    "@install-binary/hasura-darwin-arm64": 2.1.0-beta.1
-    "@install-binary/hasura-darwin-x64": 2.1.0-beta.1
-    "@install-binary/hasura-linux-arm64": 2.1.0-beta.1
-    "@install-binary/hasura-linux-x64": 2.1.0-beta.1
-    "@install-binary/hasura-win32-x64": 2.1.0-beta.1
+    "@install-binary/hasura-darwin-arm64": 2.1.0
+    "@install-binary/hasura-darwin-x64": 2.1.0
+    "@install-binary/hasura-linux-arm64": 2.1.0
+    "@install-binary/hasura-linux-x64": 2.1.0
+    "@install-binary/hasura-win32-x64": 2.1.0
   dependenciesMeta:
     "@install-binary/hasura-darwin-arm64":
       optional: true
@@ -2244,7 +2244,7 @@ __metadata:
       optional: true
   bin:
     hasura: run.js
-  checksum: 73572bc79d6e2bc4702dccd3b18c617755e9be81efc3e51975298df3799214e61859fedc389fe8dfb477612be85934e0ed62b2b2864569cda19897693f250130
+  checksum: 44a82ebf0576879ef542b744d5f3cae37ace0376b9c5d1cd26736ab7caca16b6eccb41e77e21497ce6b1f9ad8e9a3ae52eea0398fd8b3e5d27a43abb6b48642e
   languageName: node
   linkType: hard
 
@@ -20792,7 +20792,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "~root@workspace:."
   dependencies:
-    "@install-binary/hasura": 2.1.0-beta.1
+    "@install-binary/hasura": 2.1.0
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/express": ^4.17.13
     "@types/glob": ^7.2.0
