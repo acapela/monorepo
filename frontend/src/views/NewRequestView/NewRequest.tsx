@@ -120,7 +120,7 @@ export const NewRequest = observer(function NewRequest({
     }
 
     const { topic } = await createNewRequest({
-      db,
+      db: db.linker,
       tasksDueDate: tasksDueDate ?? undefined,
       priority,
       content,

@@ -1,11 +1,10 @@
 import { action, runInAction } from "mobx";
 
-import { ClientDb } from "~frontend/clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
+import { DatabaseLinker } from "~clientdb/entity/entitiesConnections";
+import { TopicEntity, topicEntity } from "~frontend/clientdb/topic";
 import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
 import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
-import { DecisionOptionDraft, createDecisionsForMessage } from "~frontend/message/decisions";
-import { updateMessageAttachments } from "~frontend/message/updateAttachments";
+import { DecisionOptionDraft } from "~frontend/message/decisions";
 import { TopicFragment } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { runUntracked } from "~shared/mobxUtils";
@@ -13,16 +12,18 @@ import { getTopicNameFromContent } from "~shared/routes/topicSlug";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 
-async function getAvailableSlugForTopicName(db: ClientDb, topicName: string) {
+async function getAvailableSlugForTopicName(db: DatabaseLinker, topicName: string) {
   const optimisticSlug = await slugify(topicName);
 
+  const topicClient = db.getEntity(topicEntity);
+
   return runUntracked(() => {
-    if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
+    if (!topicClient.findByUniqueIndex("slug", optimisticSlug)) {
       return optimisticSlug;
     }
     let suffixIndex = 2;
 
-    while (db.topic.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
+    while (topicClient.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
       suffixIndex++;
     }
 
@@ -37,7 +38,7 @@ export interface NewRequestProps {
 }
 
 interface CreateNewRequestInput {
-  db: ClientDb;
+  db: DatabaseLinker;
   name?: string;
   content: RichEditorNode;
   id?: string;
@@ -66,10 +67,12 @@ export const createNewRequest = action(
       finalTitle = getTopicNameFromContent(content) ?? "New topic";
     }
 
+    const topicClient = db.getEntity(topicEntity);
+
     const topicNameSlug = await getAvailableSlugForTopicName(db, finalTitle);
 
     const createdEntities = runInAction(() => {
-      const topic = db.topic.create({ id, name: finalTitle, slug: topicNameSlug, priority });
+      const topic = topicClient.create({ id, name: finalTitle, slug: topicNameSlug, priority });
 
       const message = createMessageAndAttachMeta({
         topic,

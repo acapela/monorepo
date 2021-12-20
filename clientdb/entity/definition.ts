@@ -3,15 +3,12 @@ import { AnnotationsMap, IComputedValue } from "mobx";
 import { Entity } from "~clientdb";
 import { getHash } from "~shared/hash";
 
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { SortResult } from "./query";
 import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
 
-type EntityAccessValidator<Data, Connections> = (
-  entity: Entity<Data, Connections>,
-  utilities: DatabaseUtilities
-) => boolean;
+type EntityAccessValidator<Data, Connections> = (entity: Entity<Data, Connections>, linker: DatabaseLinker) => boolean;
 
 interface DefineEntityConfig<Data, Connections> {
   name: string;
@@ -20,7 +17,7 @@ interface DefineEntityConfig<Data, Connections> {
   updatedAtField: keyof Data;
   uniqueIndexes?: Array<keyof Data>;
   getIsDeleted?: (item: Data) => boolean;
-  getDefaultValues?: (utilities: DatabaseUtilities) => Partial<Data>;
+  getDefaultValues?: (linker: DatabaseLinker) => Partial<Data>;
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
   customObservableAnnotations?: AnnotationsMap<Data, never>;
@@ -38,9 +35,9 @@ interface DefineEntityConfig<Data, Connections> {
 }
 
 export type EntityUserEvents<Data, Connections> = {
-  itemAdded?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
-  itemUpdated?: (entity: Entity<Data, Connections>, dataBefore: Data, utilities: DatabaseUtilities) => void;
-  itemRemoved?: (entity: Entity<Data, Connections>, utilities: DatabaseUtilities) => void;
+  itemAdded?: (entity: Entity<Data, Connections>, linker: DatabaseLinker) => void;
+  itemUpdated?: (entity: Entity<Data, Connections>, dataBefore: Data, linker: DatabaseLinker) => void;
+  itemRemoved?: (entity: Entity<Data, Connections>, linker: DatabaseLinker) => void;
 };
 
 export interface EntityDefinition<Data, Connections> {
@@ -53,7 +50,7 @@ export interface EntityDefinition<Data, Connections> {
   addEventHandlers(events: EntityUserEvents<Data, Connections>): EntityDefinition<Data, Connections>;
 }
 
-export interface ConnectionsManager<Data> extends DatabaseUtilities {
+export interface ConnectionsManager<Data> extends DatabaseLinker {
   createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
   updateSelf(data: Partial<Data>): void;
 }

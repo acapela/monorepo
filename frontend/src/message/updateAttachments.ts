@@ -3,12 +3,6 @@ import { MessageEntity } from "~frontend/clientdb/message";
 
 import { EditorAttachmentInfo } from "./composer/attachments";
 
-interface Props {
-  message: MessageEntity;
-  onCancelRequest?: () => void;
-  onSaved?: () => void;
-}
-
 export function updateMessageAttachments(message: MessageEntity, attachmentsDrafts: EditorAttachmentInfo[]) {
   const attachmentsToAdd = attachmentsDrafts.filter(
     (attachmentNow) => !message.attachments.findById(attachmentNow.uuid)

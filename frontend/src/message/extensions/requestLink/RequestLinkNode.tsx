@@ -17,7 +17,7 @@ export const RequestLinkNode = observer((props: PropsWithChildren<AutocompleteNo
 
   return (
     <Link href={request?.href ?? "/"} passHref>
-      <UIRequestLink>
+      <UIRequestLink data-tooltip="Open linked request">
         <IconComments /> {request?.name ?? "Unknown request"}
       </UIRequestLink>
     </Link>

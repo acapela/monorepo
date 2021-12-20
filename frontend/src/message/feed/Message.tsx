@@ -12,6 +12,7 @@ import { MakeReactionButton } from "~frontend/message/reactions/MakeReactionButt
 import { MessageReactions } from "~frontend/message/reactions/MessageReactions";
 import { ReplyButton } from "~frontend/message/reply/ReplyButton";
 import { ReplyingToMessage } from "~frontend/message/reply/ReplyingToMessage";
+import { createNewRequestFromExistingMessage } from "~frontend/topics/createRequestFromExistingMessage";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -23,7 +24,7 @@ import { useIsHashActive } from "~shared/hooks/useHashChangeEffect";
 import { select } from "~shared/sharedState";
 import { REQUEST_DECISION } from "~shared/types/mention";
 import { highlightOnceStyles } from "~ui/highlight";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconComments, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
@@ -100,9 +101,10 @@ export const Message = styledObserver<Props>(
 
       if (!message.isTopicMainMessage && message.tasks.hasItems) {
         options.push({
-          label: "Create new request from message",
+          label: "Convert to new request",
+          icon: <IconComments />,
           onSelect() {
-            //
+            createNewRequestFromExistingMessage(message);
           },
         });
       }

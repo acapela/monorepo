@@ -1,12 +1,14 @@
-import { RichEditorNode, RichEditorNodeWithAttributes } from "~richEditor/content/types";
+import { JSONContent } from "@tiptap/react";
+
+import { RichEditorNode, RichEditorNodeTypedNode } from "~richEditor/content/types";
 
 function getNodesFromContentByTypeInner<AttributesType = unknown>(
   node: RichEditorNode,
   type: string,
-  collectArray: RichEditorNodeWithAttributes<AttributesType>[]
-): RichEditorNodeWithAttributes<AttributesType>[] {
+  collectArray: RichEditorNodeTypedNode<AttributesType>[]
+): RichEditorNodeTypedNode<AttributesType>[] {
   if (node.type === type) {
-    collectArray.push(node as RichEditorNodeWithAttributes<AttributesType>);
+    collectArray.push(node as RichEditorNodeTypedNode<AttributesType>);
   }
 
   if (!node.content) return collectArray;
@@ -20,13 +22,29 @@ function getNodesFromContentByTypeInner<AttributesType = unknown>(
 export function getNodesFromContentByType<AttributesType = unknown>(
   node: RichEditorNode,
   type: string
-): RichEditorNodeWithAttributes<AttributesType>[] {
+): RichEditorNodeTypedNode<AttributesType>[] {
   return getNodesFromContentByTypeInner(node, type, []);
 }
 
 export function getIsContentNodeOfType<AttributesType = unknown>(
   node: RichEditorNode,
   type: string
-): node is RichEditorNodeWithAttributes<AttributesType> {
+): node is RichEditorNodeTypedNode<AttributesType> {
   return node.type === type;
+}
+
+export function getNewRichContentWithNodes(nodes: JSONContent[]): JSONContent {
+  return {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: nodes,
+      },
+    ],
+  };
+}
+
+export function createRichEditorTextNode(text: string): JSONContent {
+  return { type: "text", text };
 }

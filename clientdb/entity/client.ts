@@ -4,7 +4,7 @@ import { assert } from "~shared/assert";
 
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
 import { createEntityPersistanceManager } from "./persistance";
 import { createEntitySearch } from "./search";
@@ -34,7 +34,7 @@ export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unkno
   : never;
 
 interface EntityClientConfig {
-  databaseUtilities: DatabaseUtilities;
+  linker: DatabaseLinker;
   persistanceDb: PersistanceDB;
 }
 
@@ -47,24 +47,24 @@ const truePredicate = () => true;
  */
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { databaseUtilities, persistanceDb }: EntityClientConfig
+  { linker, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
-  const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
+  const store = createEntityStore<Data, Connections>(definition, linker);
 
   function attachEntityEvents() {
     const cleanupItemAdded = store.events.on("itemAdded", (entity, source) => {
       if (source === "user") {
-        definition.config.events?.itemAdded?.(entity, databaseUtilities);
+        definition.config.events?.itemAdded?.(entity, linker);
       }
     });
     const cleanupItemUpdated = store.events.on("itemUpdated", (entity, dataBefore, source) => {
       if (source === "user") {
-        definition.config.events?.itemUpdated?.(entity, dataBefore, databaseUtilities);
+        definition.config.events?.itemUpdated?.(entity, dataBefore, linker);
       }
     });
     const cleanupItemRemoved = store.events.on("itemRemoved", (entity, source) => {
       if (source === "user") {
-        definition.config.events?.itemRemoved?.(entity, databaseUtilities);
+        definition.config.events?.itemRemoved?.(entity, linker);
       }
     });
 
@@ -80,7 +80,7 @@ export function createEntityClient<Data, Connections>(
   const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
 
   function createEntityWithData(input: Partial<Data>) {
-    return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });
+    return createEntity<Data, Connections>({ data: input, definition, store, linker });
   }
 
   const persistanceManager = createEntityPersistanceManager(definition, {
@@ -112,7 +112,7 @@ export function createEntityClient<Data, Connections>(
         });
       },
     },
-    databaseUtilities
+    linker
   );
 
   async function initialize() {

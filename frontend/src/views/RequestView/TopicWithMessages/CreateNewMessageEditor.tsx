@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
-import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
@@ -41,7 +40,6 @@ interface SubmitMessageParams {
 
 export const CreateNewMessageEditor = observer(({ topic, isDisabled, onMessageSent, onClosePendingTasks }: Props) => {
   const apolloClient = useApolloClient();
-  const db = useDb();
 
   const editorRef = useRef<Editor>(null);
 

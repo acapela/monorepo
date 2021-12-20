@@ -8,7 +8,7 @@ import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
-import { DatabaseUtilities } from "./entitiesConnections";
+import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";
 import {
   EntityFilterInput,
@@ -71,7 +71,7 @@ export type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntitySt
  */
 export function createEntityStore<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  utilities: DatabaseUtilities
+  linker: DatabaseLinker
 ): EntityStore<Data, Connections> {
   type StoreEntity = Entity<Data, Connections>;
   const { config } = definition;
@@ -97,7 +97,7 @@ export function createEntityStore<Data, Connections>(
 
     if (getIsDeleted && !getIsDeleted(entity)) return false;
 
-    if (accessValidator && !accessValidator(entity, utilities)) return false;
+    if (accessValidator && !accessValidator(entity, linker)) return false;
 
     return true;
   }

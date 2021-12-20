@@ -1,9 +1,10 @@
-import { action } from "mobx";
+import { action, runInAction } from "mobx";
 
-import { ClientDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { getMessageContentIncludesAnyRequests } from "~frontend/message/extractRequestsFromMessage";
+import { createRichEditorTextNode, getNewRichContentWithNodes } from "~richEditor/content/helper";
+import { EditorRequestLinkNode } from "~shared/types/editor";
 
 import { createNewRequest } from "./createRequest";
 
@@ -28,11 +29,22 @@ function moveAllMetadataBetweenMessages(source: MessageEntity, destination: Mess
 }
 
 function convertMessageContentToLinkToTopic(message: MessageEntity, topicToLink: TopicEntity) {
-  // TODO
+  const node: EditorRequestLinkNode = {
+    type: "request-link",
+    attrs: { data: { requestId: topicToLink.id } },
+    text: "Foo",
+  };
+
+  const newContentWithLinkOnly = getNewRichContentWithNodes([
+    createRichEditorTextNode("Discussion continued in: "),
+    node,
+  ]);
+
+  message.update({ content: newContentWithLinkOnly });
 }
 
-export const createNewRequestFromExistingMessage = action(async (db: ClientDb, message: MessageEntity) => {
-  const { content, attachments, decisionOptions, dueDate } = message;
+export const createNewRequestFromExistingMessage = action(async (message: MessageEntity) => {
+  const { content, dueDate } = message;
 
   const priority = message.topic?.priority;
 
@@ -40,12 +52,13 @@ export const createNewRequestFromExistingMessage = action(async (db: ClientDb, m
 
   const { topic: newTopic, message: newMessage } = await createNewRequest({
     content,
-    db,
+    db: message.db,
     priority,
     tasksDueDate: dueDate ?? undefined,
   });
 
-  moveAllMetadataBetweenMessages(message, newMessage);
-
-  convertMessageContentToLinkToTopic(message, newTopic);
+  runInAction(() => {
+    moveAllMetadataBetweenMessages(message, newMessage);
+    convertMessageContentToLinkToTopic(message, newTopic);
+  });
 });

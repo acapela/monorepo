@@ -7,7 +7,7 @@ import { EntityClient, EntityClientByDefinition, createEntityClient } from "./en
 import { DbContext, DbContextInstance } from "./entity/context";
 import { PersistanceAdapterInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
-import { DatabaseUtilities } from "./entity/entitiesConnections";
+import { DatabaseLinker } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
 import { createEntitiesPersistedCache } from "./entity/entityPersistedCache";
 import { initializePersistance } from "./entity/initializePersistance";
@@ -28,6 +28,7 @@ type EntitiesClientsMap<Entities extends EntitiesMap> = {
 
 type ClientDbExtra = {
   destroy: () => void;
+  linker: DatabaseLinker;
 };
 
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
@@ -45,7 +46,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
 
-  const databaseUtilities: DatabaseUtilities = {
+  const databaseLinker: DatabaseLinker = {
     entityCache: entityPersistedCacheManager,
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
@@ -77,7 +78,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   const entityClients = mapValues(definitionsMap, (definition) => {
     const entityClient = createEntityClient(definition, {
-      databaseUtilities: databaseUtilities,
+      linker: databaseLinker,
       persistanceDb,
     });
 
@@ -115,6 +116,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   const clientDbMethods: ClientDbExtra = {
     destroy,
+    linker: databaseLinker,
   };
 
   return { ...entityClients, ...clientDbMethods };

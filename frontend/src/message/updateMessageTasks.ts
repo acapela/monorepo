@@ -16,7 +16,6 @@ export const updateMessageTasks = action(function updateMessageTasks(
   const tasksToRemove = oldRequests.filter((oldRequest) => !getArrayIncludesEqual(newRequests, oldRequest));
   const tasksToAdd = newRequests.filter((oldRequest) => !getArrayIncludesEqual(oldRequests, oldRequest));
 
-  console.log({ oldRequests, newRequests, tasksToRemove, tasksToAdd });
   // There is no need to change anything
   if (tasksToRemove.length === 0 && tasksToAdd.length === 0) {
     return false;
