@@ -33,13 +33,10 @@ export const CreateRequestModal = async (
   let requestType = stateValues?.request_type_block?.request_type_select?.selected_option?.value || "";
   if (!stateValues) {
     // we only need to do the following for setting initial values, where stateValues is not set yet
-    const slackUserIdsFromMessage = await pickRealUsersFromMessageText(token, messageText);
-    const slackUserIdsFromMessageWithoutSelf = without(slackUserIdsFromMessage, slackUserId);
+    requestToSlackUserIds = await pickRealUsersFromMessageText(token, messageText);
 
     const channelInfo = await getChannelInfo(token, channelId);
     if (channelInfo) channelInfo.members = without(channelInfo.members, slackUserId);
-
-    requestToSlackUserIds = slackUserIdsFromMessageWithoutSelf;
 
     // if there is no real user mentioned prefill all channel members
     if (requestToSlackUserIds.length === 0 && channelInfo && channelInfo.isPrivate) {
