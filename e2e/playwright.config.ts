@@ -1,11 +1,12 @@
 import { PlaywrightTestConfig } from "@playwright/test";
 
+const isCI = Boolean(process.env.CI) && process.env.CI !== "false";
 const config: PlaywrightTestConfig = {
-  retries: 1, // We still have some flakiness, but hopefully this number will go to 0 at some point.
+  retries: isCI ? 1 : 0, // We still have some flakiness, but hopefully this number will go to 0 at some point.
   use: {
     video: "retain-on-failure",
     trace: "retain-on-failure",
   },
-  forbidOnly: Boolean(process.env.CI) && process.env.CI !== "false",
+  forbidOnly: isCI,
 };
 export default config;

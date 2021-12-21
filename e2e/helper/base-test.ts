@@ -1,8 +1,7 @@
 import { test as rootTest } from "@playwright/test";
 
-import { domain } from "./constants";
 import { TestUser, setupDatabase } from "./db";
-import { isSentryStoreURL } from "./utils";
+import { addSessionCookie, isSentryStoreURL } from "./utils";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -26,15 +25,7 @@ export const test = rootTest.extend<{
   async auth({ page }, use) {
     await use({
       async login(user) {
-        await page.context().addCookies([
-          {
-            name: "next-auth.session-token",
-            value: user.jwt,
-            domain,
-            path: "/",
-            sameSite: "Lax",
-          },
-        ]);
+        await addSessionCookie(page, user.jwt);
       },
     });
   },
