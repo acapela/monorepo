@@ -41,6 +41,15 @@ export function NewUserOnboardingMessage(slackTeamId: string) {
       ),
       Blocks.Divider(),
       Blocks.Section({
+        text: "3️⃣ *Visit our Requests showcase*\nGet inspired by ways you can use Acapela",
+      }).accessory(
+        Elements.Button({
+          text: "Visit gallery",
+          url: `https://acapela.notion.site/Request-Templates-eb11cbaa62324203b0e1534b16f9f959`,
+        }).primary(true)
+      ),
+      Blocks.Divider(),
+      Blocks.Section({
         text: "*Need help or have suggestions?* <mailto:customer@acape.la|Contact us>",
       })
     )
