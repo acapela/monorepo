@@ -1,11 +1,9 @@
 import { Elements } from "slack-block-builder";
 
 import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { Message, Task, Topic, User, db } from "~db";
-import { RichEditorNode } from "~richEditor/content/types";
+import { Task, Topic, User } from "~db";
 import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/requests";
 
-import { generateMarkdownFromTipTapJson } from "../md/generator";
 import { createSlackLink } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS } from "../utils";
 
@@ -24,19 +22,3 @@ export const ToggleTaskDoneAtButton = (task: Task, user?: User) => {
       (task.done_at ? COMPLETED_REQUEST_LABEL : UNCOMPLETED_REQUEST_LABEL)[type],
   });
 };
-
-export async function generateMessageTextWithMentions(topic: Topic, message: Message) {
-  const teamMembersForTopic = await db.team_member.findMany({
-    where: { team_id: topic.team_id },
-    include: { user: true, team_member_slack: true },
-  });
-  const mentionedSlackIdByUsersId = Object.fromEntries(
-    teamMembersForTopic.map(({ user, team_member_slack }) => [
-      user.id,
-      team_member_slack ? { slackId: team_member_slack.slack_user_id } : { name: user.name },
-    ])
-  );
-  return generateMarkdownFromTipTapJson(message.content as RichEditorNode, {
-    mentionedSlackIdByUsersId,
-  });
-}

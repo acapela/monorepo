@@ -9,8 +9,9 @@ import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/requ
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
+import { convertDbMessageToSlackMessage } from "../message/convertToSlack";
 import { SlackActionIds, fetchTeamBotToken } from "../utils";
-import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
+import { ToggleTaskDoneAtButton, createTopicLink } from "./utils";
 
 type TaskDetail = Task & {
   message: Message & { topic: Topic; message_task_due_date: MessageTaskDueDate | null };
@@ -25,7 +26,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
       where: { team_id: topic.team_id, user: { id: message.user_id, topic_member: { some: { topic_id: topic.id } } } },
       include: { user: true, team_member_slack: true },
     }),
-    generateMessageTextWithMentions(topic, message),
+    convertDbMessageToSlackMessage(message),
   ]);
   assert(author, `missing author for message ${message.id}`);
   const authorLabel = author.team_member_slack ? Md.user(author.team_member_slack.slack_user_id) : author.user.name;

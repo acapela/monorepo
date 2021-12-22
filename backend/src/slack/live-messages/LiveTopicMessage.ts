@@ -9,13 +9,14 @@ import { REQUEST_DECISION, REQUEST_NOTIFICATION_LABELS, RequestType } from "~sha
 import { slackClient } from "../app";
 import { DecisionOptionVoting } from "../decision";
 import { mdDate } from "../md/utils";
+import { convertDbMessageToSlackMessage } from "../message/convertToSlack";
 import { SlackActionIds, fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
-import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
+import { ToggleTaskDoneAtButton, createTopicLink } from "./utils";
 
 const makeSlackMessageTextWithContent = async (topic: Topic, message: Message, accessToken?: string) =>
   Md.bold(`[Acapela request] ${await createTopicLink(topic, accessToken)}`) +
   "\n" +
-  (await generateMessageTextWithMentions(topic, message));
+  (await convertDbMessageToSlackMessage(message));
 
 const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<string, string>) =>
   Object.entries(groupBy(tasks, (task) => task.type))

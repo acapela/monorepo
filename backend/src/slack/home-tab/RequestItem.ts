@@ -3,11 +3,10 @@ import { Blocks, Elements, Md } from "slack-block-builder";
 import { mdDate } from "~backend/src/slack/md/utils";
 import { PriorityLabel, SlackActionIds } from "~backend/src/slack/utils";
 import { User } from "~db";
-import { RichEditorNode } from "~richEditor/content/types";
 import { isNotNullish } from "~shared/nullish";
 import { pluralize } from "~shared/text/pluralize";
 
-import { generateSlackMarkdownSnippetFromMessage } from "../md/generator";
+import { convertDbMessageToSlackMessageSnippet } from "../message/convertToSlack";
 import { TopicWithOpenTask } from "./types";
 import { getMostUrgentMessage } from "./utils";
 
@@ -58,10 +57,7 @@ export async function RequestItemHeader(topic: TopicWithOpenTask, unreadMessages
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const mostUrgentMessage = getMostUrgentMessage(topic)!;
 
-  const messageSnippet = await generateSlackMarkdownSnippetFromMessage(
-    mostUrgentMessage.content as RichEditorNode,
-    mostUrgentMessage.id
-  );
+  const messageSnippet = await convertDbMessageToSlackMessageSnippet(mostUrgentMessage);
 
   function getNameNode() {
     const topicName = Md.bold(topic.name);
