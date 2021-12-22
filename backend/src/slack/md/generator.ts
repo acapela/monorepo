@@ -128,7 +128,13 @@ export function generateMarkdownFromTipTapJson(root: RichEditorNode | null, cont
   return removeEndingNewline(renderNodes(contentNodesToRender, context));
 }
 
+/**
+ * To prepare slack markdown from message, we need map of our user id <> slack user id.
+ *
+ * This function prepares such map for any message
+ */
 async function createSlackUsersContextForMessage(messageId: string): Promise<GenerateContext | null> {
+  // Get message, doing joins all the way to team member slack info.
   const mentionsInfo = await db.message.findFirst({
     where: { id: messageId },
     include: {
