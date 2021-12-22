@@ -1,7 +1,9 @@
 import { compact, get, isArray, isString, isUndefined } from "lodash";
 import { Md } from "slack-block-builder";
 
+import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
+import { isNotNullish } from "~shared/nullish";
 
 import { createSlackLink } from "./utils";
 
@@ -111,6 +113,7 @@ export type SlackMentionContext =
     };
 
 export type GenerateContext = {
+  rootNodesLimit?: number;
   mentionedSlackIdByUsersId?: {
     [userId: string]: SlackMentionContext;
   };
@@ -120,5 +123,62 @@ export function generateMarkdownFromTipTapJson(root: RichEditorNode | null, cont
   if (!root) return "";
   // don't render if no root doc element
   if (root.type !== "doc") return "";
-  return removeEndingNewline(renderNodes(root.content, context));
+
+  const contentNodesToRender = context.rootNodesLimit ? root.content?.slice(0, context.rootNodesLimit) : root.content;
+  return removeEndingNewline(renderNodes(contentNodesToRender, context));
+}
+
+async function createSlackUsersContextForMessage(messageId: string): Promise<GenerateContext | null> {
+  const mentionsInfo = await db.message.findFirst({
+    where: { id: messageId },
+    include: {
+      topic: {
+        include: {
+          team: {
+            include: {
+              team_member: {
+                include: {
+                  user: true,
+                  team_member_slack: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!mentionsInfo) return null;
+
+  const userIdToSlackIdEntries = mentionsInfo.topic.team.team_member
+    .map((member): [userId: string, context: SlackMentionContext] => {
+      const userId = member.user_id;
+      const slackUserId = member.team_member_slack?.slack_user_id;
+
+      if (!slackUserId) {
+        return [userId, { name: member.user.name }];
+      }
+
+      return [userId, { slackId: slackUserId }];
+    })
+    .filter(isNotNullish);
+
+  const mentionedSlackIdByUsersId = Object.fromEntries(userIdToSlackIdEntries);
+
+  return {
+    mentionedSlackIdByUsersId,
+  };
+}
+
+export async function generateSlackMarkdownFromMessage(messageContent: RichEditorNode, messageId: string) {
+  const slackMentionsContext = await createSlackUsersContextForMessage(messageId);
+
+  return generateMarkdownFromTipTapJson(messageContent, { ...slackMentionsContext });
+}
+
+export async function generateSlackMarkdownSnippetFromMessage(messageContent: RichEditorNode, messageId: string) {
+  const slackMentionsContext = await createSlackUsersContextForMessage(messageId);
+
+  return generateMarkdownFromTipTapJson(messageContent, { ...slackMentionsContext, rootNodesLimit: 1 });
 }

@@ -7,7 +7,7 @@ import {
   ViewSubmitAction,
 } from "@slack/bolt";
 import { difference, find } from "lodash";
-import { Md } from "slack-block-builder";
+import { Md, Message } from "slack-block-builder";
 
 import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack/create-request-modal/utils";
 import { assertDefined } from "~shared/assert";
@@ -15,6 +15,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 import { MentionType, REQUEST_DECISION } from "~shared/types/mention";
 
+import { buildSummaryBlocksForSlackUserSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
@@ -35,6 +36,8 @@ export function setupCreateRequestModal(app: App) {
     const { command, ack, context, body } = req;
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
 
+    const possibleCommand = body.text.toLowerCase();
+
     if (body.text.toLowerCase() == "help") {
       await ack({
         response_type: "ephemeral",
@@ -44,6 +47,20 @@ export function setupCreateRequestModal(app: App) {
           `For example:\n${Md.codeBlock(`/acapela can you forward the documentation to me, ${Md.user(slackUserId)}?`)}`,
         ].join(" "),
       });
+      return;
+    }
+
+    if (["today", "t"].includes(possibleCommand)) {
+      const summaryBlocks = await buildSummaryBlocksForSlackUserSlackUser(slackUserId, { includeWelcome: false });
+
+      const blocksToShow = summaryBlocks ?? missingAuthSlackBlocks;
+
+      const blocks = Message()
+        .blocks(...blocksToShow)
+        .buildToObject().blocks;
+
+      await ack({ response_type: "ephemeral", blocks });
+
       return;
     }
 

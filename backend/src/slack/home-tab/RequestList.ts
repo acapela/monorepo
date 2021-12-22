@@ -1,6 +1,8 @@
-import { Blocks, Md } from "slack-block-builder";
+import { Blocks, Divider, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/slack/md/utils";
+import { flattenWithDivider } from "~shared/array";
+import { isNotFalsy, isNotNullish } from "~shared/nullish";
 import { pluralize } from "~shared/text/pluralize";
 
 import { RequestItem } from "./RequestItem";
@@ -24,14 +26,12 @@ export async function RequestsList({
   currentUserId,
   topics,
   unreadMessagesByTopicId,
-  emptyText = "No requests here",
-  showHighlightContext = false,
   maxShownTopics = 2,
 }: RequestListParams) {
-  const header = [Padding, Padding, Blocks.Header({ text: title }), Blocks.Context().elements(explainer), Padding];
+  const header = [Blocks.Header({ text: title }), Blocks.Context().elements(explainer)];
 
   if (topics.length === 0) {
-    return [...header, Blocks.Section({ text: Md.italic(emptyText) })];
+    return [];
   }
 
   const extraTopicsCount = Math.max(topics.length - maxShownTopics, 0);
@@ -39,30 +39,31 @@ export async function RequestsList({
   const nestedTopicsBlocks = await Promise.all(
     topics
       .slice(0, maxShownTopics)
-      .map(async (topic, i) => [
-        ...(await RequestItem(currentUserId, topic, unreadMessagesByTopicId[topic.id] || 0, showHighlightContext)),
-        i < topics.length - 1 ? Blocks.Divider() : undefined,
-      ])
+      .map(async (topic) => [...(await RequestItem(currentUserId, topic, unreadMessagesByTopicId[topic.id] || 0))])
   );
 
-  const topicBlocks = nestedTopicsBlocks.flat();
+  const topicBlocks = flattenWithDivider(nestedTopicsBlocks, () => Divider()).filter(isNotNullish);
 
   const extraCountLabel = Md.bold(String(extraTopicsCount));
+
   return [
     ...header,
     ...topicBlocks,
-    extraTopicsCount > 0
-      ? Blocks.Context().elements(
-          `There ${pluralize(
-            extraTopicsCount,
-            `is ${extraCountLabel} other topic`,
-            `are ${extraCountLabel} more topics`
-          )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
-            extraTopicsCount,
-            "it",
-            "them"
-          )}.`
-        )
-      : undefined,
-  ];
+    extraTopicsCount > 0 &&
+      Blocks.Context().elements(
+        `There ${pluralize(
+          extraTopicsCount,
+          `is ${extraCountLabel} other topic`,
+          `are ${extraCountLabel} more topics`
+        )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
+          extraTopicsCount,
+          "it",
+          "them"
+        )}.`
+      ),
+    Padding,
+    Padding,
+    Padding,
+    Padding,
+  ].filter(isNotFalsy);
 }
