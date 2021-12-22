@@ -111,3 +111,17 @@ export function insertAtIndexIntoArray<T>(items: T[], item: T, index: number) {
 export function getArrayIncludesEqual<T>(items: T[], itemToCheck: T) {
   return items.some((existingItem) => isEqual(existingItem, itemToCheck));
 }
+
+export function flattenWithDivider<T, D>(input: T[][], dividerGetter: () => D): Array<T | D> {
+  return input.reduce((result, nextBatch, index) => {
+    const isLastItem = index === input.length - 1;
+
+    result.push(...nextBatch);
+
+    if (!isLastItem) {
+      result.push(dividerGetter());
+    }
+
+    return result;
+  }, [] as Array<T | D>);
+}

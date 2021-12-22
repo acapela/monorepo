@@ -1,4 +1,4 @@
-import { BlockCollection, Blocks, Elements } from "slack-block-builder";
+import { BlockCollection, Blocks, Elements, Md } from "slack-block-builder";
 
 import { createSlackLink } from "~backend/src/slack/md/utils";
 import { niceFormatMinutes } from "~shared/dates/format";
@@ -19,9 +19,9 @@ export function createRequestIsDueIn3Hours({
   taskCreatorName: string;
   minutesLeft: number;
 }): Partial<NotificationMessage> {
-  const messageSlack = `You have ${niceFormatMinutes(
-    minutesLeft
-  )} left to complete your task in ${topicName}. It's getting tight 😅! If that's too soon, click ${createSlackLink(
+  const messageSlack = `You have ${niceFormatMinutes(minutesLeft)} left to complete your task in ${Md.bold(
+    topicName
+  )}. If that's too soon, click ${createSlackLink(
     topicURL,
     "here"
   )} to let ${taskCreatorName} know you need more time ⏰.`;
@@ -40,7 +40,7 @@ export function createRequestIsDueIn3Hours({
           actionId: "open_view_request_modal",
           value: topicId,
           text: "View Request",
-        }).primary(true)
+        })
       )
     ),
   };
@@ -95,7 +95,9 @@ export function createShortDueDate({
   taskCreatorName: string;
   deadline: string;
 }): Partial<NotificationMessage> {
-  const message = `A new deadline has been added to a task in ${topicName} 📆. The new deadline is ${deadline}. If that's not going to work, let ${taskCreatorName} know.`;
+  const message = `A new deadline has been added to a task in ${Md.bold(topicName)} 📆. The new deadline is ${Md.bold(
+    deadline
+  )}. If that's not going to work, let ${Md.bold(taskCreatorName)} know.`;
   const messageSlack = `${message} ${createSlackLink(topicURL, "here")}`;
   const messageHtml = `${message} <a href="${topicURL}">here</a>`;
   return {

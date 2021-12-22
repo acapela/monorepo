@@ -31,7 +31,8 @@ export function createAuthorizedEndpointHandler<Input, Output>(
   handler: (input: JsonValue<Input> & AuthorizedRequestAdditionalData, request: Request) => Promise<Output>
 ) {
   return createEndpointHandler<Input & AuthorizedRequestAdditionalData, Output>(async (input, request) => {
-    const token = extractAndAssertBearerToken(request.get("Authorization") || "");
+    const token: string =
+      request.cookies["next-auth.session-token"] || extractAndAssertBearerToken(request.get("Authorization") || "");
 
     const user = verifyAndParseUserJWT(token);
 

@@ -111,6 +111,7 @@ export type SlackMentionContext =
     };
 
 export type GenerateContext = {
+  rootNodesLimit?: number;
   mentionedSlackIdByUsersId?: {
     [userId: string]: SlackMentionContext;
   };
@@ -120,5 +121,7 @@ export function generateMarkdownFromTipTapJson(root: RichEditorNode | null, cont
   if (!root) return "";
   // don't render if no root doc element
   if (root.type !== "doc") return "";
-  return removeEndingNewline(renderNodes(root.content, context));
+
+  const contentNodesToRender = context.rootNodesLimit ? root.content?.slice(0, context.rootNodesLimit) : root.content;
+  return removeEndingNewline(renderNodes(contentNodesToRender, context));
 }

@@ -46,7 +46,7 @@ function TasksDueSoon(topicsDueToday: TopicVM[]) {
     return [];
   }
 
-  const Header = [Blocks.Header({ text: "🔥 Requires Attention" }), Blocks.Divider()];
+  const Header = [Blocks.Header({ text: "Requires Attention" }), Blocks.Divider()];
 
   const sortedTopics = sortBy(topicsDueToday, getEarliestDueDate);
 
@@ -72,7 +72,7 @@ function TasksInputStillNeeded(otherReceivedTopics: TopicVM[]) {
     return [];
   }
 
-  const Header = [Blocks.Header({ text: "👀 Your input is still needed" }), Blocks.Divider()];
+  const Header = [Blocks.Header({ text: "Your input is still needed" }), Blocks.Divider()];
 
   const sortedTopics = sortBy(otherReceivedTopics, getEarliestDueDate);
 
@@ -100,7 +100,7 @@ function Notifications(notificationsSentOutsideOfWorkHours: SlackNotificationQue
     return [];
   }
 
-  const Header = [Blocks.Header({ text: "🌙  While you were away..." }), Blocks.Divider()];
+  const Header = [Blocks.Header({ text: "While you were away..." }), Blocks.Divider()];
 
   return Header.concat(
     notificationsSentOutsideOfWorkHours.map((notification) => {

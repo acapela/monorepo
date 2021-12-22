@@ -15,7 +15,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 import { MentionType, REQUEST_DECISION } from "~shared/requests";
 
-import { buildSummaryBlocksForSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
+import { buildSummaryBlocksForSlackUserSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
@@ -36,9 +36,9 @@ export function setupCreateRequestModal(app: App) {
     const { command, ack, context, body } = req;
     const { trigger_id: triggerId, channel_id: channelId, user_id: slackUserId, team_id: slackTeamId } = command;
 
-    const possibleCommand = body.text.toLowerCase().trim();
+    const possibleCommand = body.text.toLowerCase();
 
-    if (possibleCommand == "help") {
+    if (body.text.toLowerCase() == "help") {
       await ack({
         response_type: "ephemeral",
         text: [
@@ -51,7 +51,7 @@ export function setupCreateRequestModal(app: App) {
     }
 
     if (["today", "t"].includes(possibleCommand)) {
-      const summaryBlocks = await buildSummaryBlocksForSlackUser(slackUserId, { includeWelcome: false });
+      const summaryBlocks = await buildSummaryBlocksForSlackUserSlackUser(slackUserId, { includeWelcome: false });
 
       const blocksToShow = summaryBlocks ?? missingAuthSlackBlocks;
 

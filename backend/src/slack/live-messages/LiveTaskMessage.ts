@@ -4,12 +4,14 @@ import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-build
 import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
+import { isNotFalsy } from "~shared/nullish";
 import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/requests";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";
+import { convertDbMessageToSlackMessage } from "../message/convertToSlack";
 import { SlackActionIds, fetchTeamBotToken } from "../utils";
-import { ToggleTaskDoneAtButton, createTopicLink, generateMessageTextWithMentions } from "./utils";
+import { ToggleTaskDoneAtButton, createTopicLink } from "./utils";
 
 type TaskDetail = Task & {
   message: Message & { topic: Topic; message_task_due_date: MessageTaskDueDate | null };
@@ -24,14 +26,15 @@ export async function LiveTaskMessage(task: TaskDetail) {
       where: { team_id: topic.team_id, user: { id: message.user_id, topic_member: { some: { topic_id: topic.id } } } },
       include: { user: true, team_member_slack: true },
     }),
-    generateMessageTextWithMentions(topic, message),
+    convertDbMessageToSlackMessage(message),
   ]);
   assert(author, `missing author for message ${message.id}`);
   const authorLabel = author.team_member_slack ? Md.user(author.team_member_slack.slack_user_id) : author.user.name;
   const requestType = Md.bold(MENTION_TYPE_LABELS[task.type as MentionType]);
-  const text =
-    `${authorLabel} has asked for your ${requestType} in ${await createTopicLink(topic)}:\n` +
-    Md.blockquote(messageText);
+  const text = [
+    `${authorLabel} has asked for your ${requestType} in ${await createTopicLink(topic)}:`,
+    Md.blockquote(messageText),
+  ].join("\n");
 
   const dueAt = message.message_task_due_date?.due_at;
   return SlackMessage({ text })
@@ -41,7 +44,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
       topic.closed_at
         ? Blocks.Section({ text: "The topic has been closed ✅️" })
         : [
-            dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
+            !!dueAt && Blocks.Context().elements(`Due ${mdDate(dueAt)}`),
             Blocks.Actions().elements(
               task.type === REQUEST_DECISION ? undefined : ToggleTaskDoneAtButton(task),
               Elements.Button({
@@ -50,7 +53,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
                 text: "View Request",
               })
             ),
-          ]
+          ].filter(isNotFalsy)
     )
     .buildToObject();
 }
