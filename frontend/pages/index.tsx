@@ -1,3 +1,3 @@
-import { TopicOrNewRequestPage } from "~frontend/views/TopicOrNewRequestPage";
+import { InboxView } from "~frontend/views/InboxView";
 
-export default TopicOrNewRequestPage;
+export default InboxView;

@@ -1,7 +1,8 @@
 import { ViewStateValue } from "@slack/bolt";
-import { upperFirst, without } from "lodash";
+import { without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
+import { getLabelForPriority } from "~shared/priorities";
 import {
   MENTION_OBSERVER,
   MENTION_TYPE_PICKER_LABELS,
@@ -89,7 +90,7 @@ export const CreateRequestModal = async (
         .element(
           Elements.StaticSelect({ actionId: "priority", placeholder: "No priority" }).options(
             ["critical", "high", "medium", "low"].map((priority) =>
-              Bits.Option({ value: priority, text: upperFirst(priority) })
+              Bits.Option({ value: priority, text: getLabelForPriority(priority) })
             )
           )
         )
