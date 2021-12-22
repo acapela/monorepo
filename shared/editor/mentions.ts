@@ -3,8 +3,8 @@ import { uniqBy } from "lodash";
 
 import { getIsContentNodeOfType, getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNodeTypedNode } from "~richEditor/content/types";
+import { REQUEST_TYPES, RequestType } from "~shared/requests";
 import { EditorMentionData } from "~shared/types/editor";
-import { REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
 export const MENTION_TYPE_KEY = "mention";
 
@@ -16,7 +16,7 @@ export const getRequestMentionDataFromContent = (content: JSONContent) =>
     .map((node) => node.attrs.data)
     .filter((mention) => REQUEST_TYPES.includes(mention.type as never)) as EditorMentionData<RequestType>[];
 
-export const getUniqueRequestMentionDataFromContent = (content: JSONContent) =>
+export const getPerUserRequestMentionDataFromContent = (content: JSONContent) =>
   uniqBy(getRequestMentionDataFromContent(content), (data) => data.userId);
 
 export function getIsMentionNode(content: JSONContent): content is RichEditorNodeTypedNode<{

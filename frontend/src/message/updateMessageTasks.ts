@@ -4,14 +4,14 @@ import { action } from "mobx";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { taskEntity } from "~frontend/clientdb/task";
 import { getArrayIncludesEqual } from "~shared/array";
-import { getUniqueRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
 
 export const updateMessageTasks = action(function updateMessageTasks(
   message: MessageEntity,
   contentBefore: JSONContent | null = null
 ): boolean {
-  const oldRequests = contentBefore ? getUniqueRequestMentionDataFromContent(contentBefore) : [];
-  const newRequests = getUniqueRequestMentionDataFromContent(message.content);
+  const oldRequests = contentBefore ? getPerUserRequestMentionDataFromContent(contentBefore) : [];
+  const newRequests = getPerUserRequestMentionDataFromContent(message.content);
 
   const tasksToRemove = oldRequests.filter((oldRequest) => !getArrayIncludesEqual(newRequests, oldRequest));
   const tasksToAdd = newRequests.filter((oldRequest) => !getArrayIncludesEqual(oldRequests, oldRequest));

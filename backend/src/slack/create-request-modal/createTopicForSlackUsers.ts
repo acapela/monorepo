@@ -6,10 +6,10 @@ import { convertMessageContentToPlainText } from "~richEditor/content/plainText"
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
+import { MentionType, REQUEST_TYPES, RequestType } from "~shared/requests";
 import { slugify } from "~shared/slugify";
 import { Maybe } from "~shared/types";
 import { EditorMentionData } from "~shared/types/editor";
-import { MentionType, REQUEST_TYPES, RequestType } from "~shared/types/mention";
 
 import { slackClient } from "../app";
 import { updateHomeView } from "../home-tab";
@@ -183,7 +183,7 @@ export async function createTopicForSlackUsers({
   slackUserIdsWithMentionType,
   priority,
   decisionOptions,
-  isFirstReplyEnough,
+  isFirstCompletionEnough,
 }: {
   token: string;
   teamId: string;
@@ -196,7 +196,7 @@ export async function createTopicForSlackUsers({
   slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
   priority: Maybe<string>;
   decisionOptions: string[];
-  isFirstReplyEnough: boolean;
+  isFirstCompletionEnough: boolean;
 }) {
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -226,13 +226,13 @@ export async function createTopicForSlackUsers({
       owner_id: ownerId,
       topic_access_token: { create: {} },
       topic_member: { createMany: { data: Array.from(userIds).map((user_id) => ({ user_id })) } },
-      is_first_reply_enough: isFirstReplyEnough,
       message: {
         create: {
           type: "TEXT",
           user_id: ownerId,
           content: messageContent,
           content_text: messageContentText,
+          is_first_completion_enough: isFirstCompletionEnough,
           message_task_due_date: dueAt ? { create: { due_at: dueAt } } : undefined,
           task: {
             createMany: {

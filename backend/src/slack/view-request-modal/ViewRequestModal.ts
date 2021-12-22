@@ -8,12 +8,7 @@ import { DecisionOptionVoting } from "~backend/src/slack/decision";
 import { updateHomeView } from "~backend/src/slack/home-tab";
 import { db } from "~db";
 import { assert } from "~shared/assert";
-import {
-  COMPLETED_REQUEST_LABEL,
-  REQUEST_DECISION,
-  RequestType,
-  UNCOMPLETED_REQUEST_LABEL,
-} from "~shared/types/mention";
+import { COMPLETED_REQUEST_LABEL, REQUEST_DECISION, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/requests";
 
 import { mdDate } from "../md/utils";
 import {

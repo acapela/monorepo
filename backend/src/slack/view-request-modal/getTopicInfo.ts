@@ -4,7 +4,7 @@ import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
-import { RequestType } from "~shared/types/mention";
+import { RequestType } from "~shared/requests";
 
 import { slackClient } from "../app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";

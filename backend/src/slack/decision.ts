@@ -5,8 +5,8 @@ import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 import { slackClient } from "~backend/src/slack/app";
 import { ViewRequestModal } from "~backend/src/slack/view-request-modal/ViewRequestModal";
 import { DecisionOption, DecisionVote, User, db } from "~db";
+import { REQUEST_DECISION } from "~shared/requests";
 import { routes } from "~shared/routes";
-import { REQUEST_DECISION } from "~shared/types/mention";
 
 import { createSlackLink } from "./md/utils";
 import { assertToken, findUserBySlackId, getViewOrigin } from "./utils";
@@ -57,7 +57,6 @@ export function setupDecision(app: App) {
 
       // our deletion sync system can not automatically handle entities deleted through the backend at the moment
       // so we have to manually create a sync request
-
       await db.sync_request.createMany({
         data: votes.map((vote) => ({
           entity_name: "decision_vote",
@@ -68,7 +67,9 @@ export function setupDecision(app: App) {
           date: new Date().toISOString(),
         })),
       });
-      if (decisionOption.decision_vote.length == 0) {
+
+      const shouldAddVote = decisionOption.decision_vote.length == 0; // whether they have not voted for this option yet
+      if (shouldAddVote) {
         await db.decision_vote.create({
           data: {
             user_id: user.id,
@@ -76,17 +77,19 @@ export function setupDecision(app: App) {
           },
         });
       }
-    });
-    await db.task.updateMany({
-      where: { user_id: user.id, message_id: decisionOption.message_id },
-      data: {
-        done_at:
-          (await db.decision_vote.count({
-            where: { user_id: user.id, decision_option: { message_id: decisionOption.message_id } },
-          })) == 0
-            ? null
-            : new Date().toISOString(),
-      },
+
+      await db.task.updateMany({
+        where: { user_id: user.id, message_id: decisionOption.message_id },
+        data: {
+          done_at: shouldAddVote ? new Date().toISOString() : null,
+        },
+      });
+      if (decisionOption.message.is_first_completion_enough) {
+        await db.topic.update({
+          where: { id: topic.id },
+          data: { closed_at: new Date().toISOString(), closed_by_user_id: user.id },
+        });
+      }
     });
 
     if (getViewOrigin(body.view) == "slack-view-request-modal") {

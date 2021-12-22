@@ -5,7 +5,7 @@ import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
 import { isNotFalsy } from "~shared/nullish";
-import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/types/mention";
+import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/requests";
 
 import { slackClient } from "../app";
 import { mdDate } from "../md/utils";

@@ -46,6 +46,7 @@ interface CreateNewRequestInput {
   tasksDueDate?: Date;
   attachmentsDrafts?: EditorAttachmentInfo[];
   decisionOptionsDrafts?: DecisionOptionDraft[];
+  isFirstCompletionEnough: boolean;
 }
 /**
  * This is central place creating new requests
@@ -60,6 +61,7 @@ export const createNewRequest = action(
     tasksDueDate,
     attachmentsDrafts,
     decisionOptionsDrafts,
+    isFirstCompletionEnough,
   }: CreateNewRequestInput) => {
     let finalTitle = name;
 
@@ -80,6 +82,7 @@ export const createNewRequest = action(
         type: "TEXT",
         decisionOptions: decisionOptionsDrafts,
         attachments: attachmentsDrafts,
+        isFirstCompletionEnough,
       });
 
       if (tasksDueDate) {

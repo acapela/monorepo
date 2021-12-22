@@ -6,9 +6,9 @@ import { Blocks, Modal } from "slack-block-builder";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { RequestType } from "~shared/requests";
 import { routes } from "~shared/routes";
 import { Sentry } from "~shared/sentry";
-import { RequestType } from "~shared/types/mention";
 
 import { slackClient } from "./app";
 import { createLiveMessage } from "./create-request-modal/createRequestInSlack";
@@ -240,10 +240,15 @@ export function setupSlackActionHandlers(slackApp: App) {
       return;
     }
     const wasTaskCompleteBeforeToggle = task.done_at;
-    await db.task.update({
-      where: { id: taskId },
-      data: { done_at: wasTaskCompleteBeforeToggle ? null : new Date().toISOString() },
-    });
+    const doneAt = wasTaskCompleteBeforeToggle ? null : new Date().toISOString();
+    await db.task.update({ where: { id: taskId }, data: { done_at: doneAt } });
+
+    if (task.message.is_first_completion_enough && doneAt) {
+      await db.topic.update({
+        where: { id: task.message.topic_id },
+        data: { closed_at: doneAt, closed_by_user_id: user.id },
+      });
+    }
 
     const slackOrigin = getViewOrigin(body.view);
 

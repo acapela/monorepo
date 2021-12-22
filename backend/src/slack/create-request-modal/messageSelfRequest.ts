@@ -55,6 +55,7 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     token,
     originalChannelId: channelId,
     conversationId: channelId,
+    messageTs: message.thread_ts,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
     client,

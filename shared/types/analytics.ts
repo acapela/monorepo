@@ -1,7 +1,7 @@
 import { Message_Type_Enum } from "~gql";
 
+import { RequestType } from "../requests";
 import { Maybe } from "../types";
-import { RequestType } from "./mention";
 
 export type Origin =
   | "slack-command"
