@@ -1,5 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 
+import { routes } from "~shared/routes";
+
 import { basePath } from "./constants";
 
 export class AppDevPage {
@@ -12,7 +14,7 @@ export class AppDevPage {
   }
 
   async goToNewRequestPage() {
-    await this.page.goto(basePath);
+    await this.page.goto(basePath + routes.newRequest);
   }
 
   async makeNewRequest({
