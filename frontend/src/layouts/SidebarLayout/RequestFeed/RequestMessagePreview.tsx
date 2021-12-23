@@ -6,6 +6,7 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageText } from "~frontend/message/display/types/TextMessageContent";
 import { getStyledMentionForUserSelector } from "~frontend/message/extensions/mentions/TypedMention";
 import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
+import { UIMessagePreview } from "~frontend/message/UIMessagePreview";
 import { styledObserver } from "~shared/component";
 import { MENTION_TYPE_LABELS, MentionType } from "~shared/requests";
 import { PopPresenceAnimator } from "~ui/animations";
@@ -76,14 +77,6 @@ const UIHolder = styled(PopPresenceAnimator)<{ $currentUserId: string }>`
       }
     `;
   }}
-`;
-
-const UIMessagePreview = styled.div<{ $maxLines: number }>`
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: ${(props) => props.$maxLines};
-  line-clamp: ${(props) => props.$maxLines};
-  overflow: hidden;
 `;
 
 const UIHint = styled.div`

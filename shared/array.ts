@@ -1,5 +1,7 @@
 import { isEqual } from "lodash";
 
+import { None } from "~shared/none";
+
 export function removeElementFromArray<T>(arr: T[], element: T) {
   const index = arr.indexOf(element);
   if (index > -1) {
@@ -124,4 +126,17 @@ export function flattenWithDivider<T, D>(input: T[][], dividerGetter: () => D): 
 
     return result;
   }, [] as Array<T | D>);
+}
+
+/**
+ * Applies function to elements of the given array and returns the first non-none result
+ * @see None
+ */
+export function findAndMap<I, R>(input: I[], finderAndMapper: (item: I) => R | typeof None): R | undefined {
+  for (const item of input) {
+    const result = finderAndMapper(item);
+    if (result !== None) {
+      return result;
+    }
+  }
 }

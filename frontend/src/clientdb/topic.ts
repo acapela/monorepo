@@ -120,9 +120,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       },
       messages,
       tasks,
-      get openSelfAssignedTasks() {
-        return tasks.query((task) => task.isAssignedToSelf && !task.isDone);
-      },
+      selfAssignedOpenTasks: tasks.query({ isAssignedToSelf: true, isDone: false }),
       get members(): UserEntity[] {
         return uniqBy(
           [getOwner(), ...topicMembers.all.map((topicMember) => topicMember.user)].filter(isNotNullish),

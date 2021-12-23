@@ -4,12 +4,14 @@ import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageText } from "~frontend/message/display/types/TextMessageContent";
+import { UIMessagePreview } from "~frontend/message/UIMessagePreview";
 import { PriorityIcon } from "~frontend/topics/priority";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { findAndMap } from "~shared/array";
+import { None } from "~shared/none";
 import { getLabelForPriority } from "~shared/priorities";
 import { pluralize } from "~shared/text/pluralize";
 import { IconCalendar, IconMessage } from "~ui/icons";
@@ -18,21 +20,18 @@ import { theme } from "~ui/theme";
 import { highlighters } from "./highlighers";
 
 export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
-  const highlighted = highlighters.reduce<null | { task: TaskEntity | null; icon: React.ReactNode }>(
-    (acc, { icon, check }) => {
-      if (acc) {
-        return acc;
-      }
-      const taskOrStatus = check(topic);
-      if (!taskOrStatus) {
-        return null;
-      }
-      return { task: typeof taskOrStatus == "boolean" ? null : taskOrStatus, icon };
-    },
-    null
-  );
+  const highlighted = findAndMap(highlighters, ({ check, icon }) => {
+    const taskOrStatus = check(topic);
+    if (!taskOrStatus) {
+      return None;
+    }
+    return {
+      task: typeof taskOrStatus == "object" && taskOrStatus.__typename == "task" ? taskOrStatus : null,
+      icon,
+    };
+  });
 
-  const nextTask = highlighted?.task ?? topic.openSelfAssignedTasks.last;
+  const nextTask = highlighted?.task ?? topic.selfAssignedOpenTasks.last;
   const message = nextTask?.message ?? topic.lastSeenMessageByCurrentUserInfo?.message ?? topic.messages.last;
 
   const extraMembers = topic.members.filter((member) => !member.isCurrentUser && member.id !== topic.owner_id);
@@ -41,6 +40,7 @@ export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
     <Link href={`${topic.href}#${message?.id}`} passHref>
       <UIFeedItem>
         <UIImagery>
+          {/*This needs to have a fixed width, to hold the space even if there is no icon*/}
           <span style={{ width: 10 }}>{highlighted?.icon}</span>
           {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
           <UserAvatar user={topic.owner!} size={36} />
@@ -116,14 +116,6 @@ const UIImagery = styled.div`
   ${theme.spacing.actionsSection.asGap};
 `;
 
-const UIMessagePreview = styled.div<{ $maxLines: number }>`
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: ${(props) => props.$maxLines};
-  line-clamp: ${(props) => props.$maxLines};
-  overflow: hidden;
-`;
-
 const UIExtraInfo = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -142,5 +134,5 @@ const UICenteredExtras = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  ${theme.spacing.close.asGap};
+  ${theme.spacing.actions.asGap};
 `;

@@ -18,7 +18,7 @@ const RequestsStream = observer(({ topics }: { topics: TopicEntity[] }) => {
   }
   const [assignedTopics, stillOpenTopics] = partition(
     orderBy(topics, (topic) => highlighters.map(({ check }) => !check(topic))),
-    (topic) => topic.openSelfAssignedTasks.count > 0
+    (topic) => topic.selfAssignedOpenTasks.count > 0
   );
   return (
     <RequestTabs
@@ -32,9 +32,9 @@ const RequestsStream = observer(({ topics }: { topics: TopicEntity[] }) => {
 
 export const InboxView = observer(() => {
   const db = useDb();
-  const openTopics = db.topic.query((topic) => !topic.isArchived && !topic.isClosed);
+  const openTopics = db.topic.query({ isArchived: false, isClosed: false });
   const unreadTasksCount = openTopics.query(
-    (topic) => topic.openSelfAssignedTasks.query({ seen_at: null }).hasItems
+    (topic) => topic.selfAssignedOpenTasks.query({ seen_at: null }).hasItems
   ).count;
   return (
     <SidebarLayout>
@@ -42,9 +42,10 @@ export const InboxView = observer(() => {
         <div>
           <UITitle>Inbox</UITitle>
           <UIWelcome>
-            Hi there 👋{" "}
+            Hi there 👋
             {unreadTasksCount > 0 && (
               <>
+                {" "}
                 You have <UIUnreadIndicator>{unreadTasksCount} new unread</UIUnreadIndicator>{" "}
                 {pluralize(unreadTasksCount, "request", "requests")}.
               </>
