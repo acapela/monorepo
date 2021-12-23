@@ -116,7 +116,7 @@ export const CreateRequestModal = async (
               Elements.Checkboxes({ actionId: "settings_checkbox" }).options(
                 Bits.Option({
                   value: "first_completion_enough",
-                  text: "First completion is enough.",
+                  text: "Close request after receiving first response",
                 })
               )
             )

@@ -10,6 +10,28 @@ export function getWelcomeToAcapelaMessage(userId: string): JSONContent {
         content: [
           {
             type: "text",
+            text: "Hey ",
+          },
+          {
+            type: "mention",
+            attrs: {
+              data: {
+                userId,
+                type: "request-read",
+              },
+            },
+          },
+          {
+            type: "text",
+            text: "!",
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
             text: "What better way to onboard you ",
           },
           {
