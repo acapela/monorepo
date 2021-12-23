@@ -3,8 +3,16 @@ import styled from "styled-components";
 
 import { theme } from "~ui/theme";
 
-export const Panel = ({ title, children }: { title?: string; children: React.ReactNode }) => (
-  <UIPanel>
+export const Panel = ({
+  title,
+  panelId,
+  children,
+}: {
+  title?: string;
+  panelId?: string;
+  children: React.ReactNode;
+}) => (
+  <UIPanel id={panelId}>
     <UITitle>{title}</UITitle>
     {children}
   </UIPanel>

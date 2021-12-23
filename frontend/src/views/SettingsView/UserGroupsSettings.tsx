@@ -140,7 +140,7 @@ export const UserGroupsSettings = observer(({ team }: { team: TeamEntity }) => {
   const db = useDb();
   const userGroups = db.userGroup.query({ team_id: team.id });
   return (
-    <Panel title="Groups">
+    <Panel title="Groups" panelId="groups">
       <UIGroupRows>
         <AnimatePresence>
           {userGroups.all.map((group) => (

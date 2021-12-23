@@ -65,7 +65,7 @@ export function getWelcomeToAcapelaMessage(userId: string): JSONContent {
                         type: "bold",
                       },
                     ],
-                    text: "Mark this Request as done",
+                    text: "Mark this Request as read",
                   },
                   {
                     type: "text",
@@ -368,7 +368,7 @@ export function getSlackIntegrationTipsMessage(userId: string): JSONContent {
               {
                 type: "link",
                 attrs: {
-                  href: "/settings",
+                  href: "/settings#slack",
                 },
               },
             ],
