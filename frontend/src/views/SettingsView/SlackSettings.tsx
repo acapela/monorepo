@@ -30,7 +30,7 @@ export const SlackSettings = observer(() => {
   const needsRelinking = userScopes.length > 0 && hasMissingScopes;
 
   return (
-    <Panel title="Slack">
+    <Panel title="Slack" panelId="slack">
       {needsRelinking && (
         <UINoteParagraph>
           Note: You have linked your Slack account before but the permissions have changed. To use Acapela in Slack,

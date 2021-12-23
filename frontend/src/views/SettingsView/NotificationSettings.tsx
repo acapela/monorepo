@@ -65,7 +65,7 @@ export const NotificationSettings = observer(() => {
   }
 
   return (
-    <Panel title="Notifications">
+    <Panel title="Notifications" panelId="notifications">
       <LabeledToggle
         title="Email"
         description={getNotificationChannelDescription("email")}

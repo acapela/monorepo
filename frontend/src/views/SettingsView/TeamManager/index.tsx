@@ -14,7 +14,7 @@ interface Props {
 
 export const TeamManagerSettingsPanel = observer(({ team }: Props) => {
   return (
-    <Panel>
+    <Panel panelId="team">
       <UIHeader>
         <UITitle>
           {team.name} <span>team</span>
