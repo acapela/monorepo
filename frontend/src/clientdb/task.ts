@@ -82,6 +82,9 @@ export const taskEntity = defineEntity<TaskFragment>({
       get isDone() {
         return !!task.done_at;
       },
+      get isSeen() {
+        return !!task.seen_at;
+      },
     };
 
     return connections;

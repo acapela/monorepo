@@ -20,7 +20,7 @@ import { useArchivedGroups } from "./useArchivedGroups";
 
 interface Props {
   topics: TopicEntity[];
-  showArchived?: boolean;
+  showAll?: boolean;
 }
 
 const ANIMATION_DURATION = 0.55;
@@ -89,7 +89,7 @@ function useVirtualRowConverter(
   return [dataRows, heightRows];
 }
 
-export const RequestFeedGroups = observer(({ topics, showArchived = false }: Props) => {
+export const RequestFeedGroups = observer(({ topics, showAll = false }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const boundingBox = useBoundingBox(containerRef);
 
@@ -109,7 +109,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
 
   const unarchivedGroups: RequestsGroupProps[] = computed(() => {
     const groups: RequestsGroupProps[] = [];
-    if (receivedTasks.length > 0) {
+    if (showAll && receivedTasks.length > 0) {
       groups.push({
         groupName: "Received",
         topics: receivedTasks,
@@ -133,7 +133,7 @@ export const RequestFeedGroups = observer(({ topics, showArchived = false }: Pro
         topics: closedTopics,
       });
     }
-    if (showArchived && archived.length > 0) {
+    if (showAll && archived.length > 0) {
       groups.push({
         groupName: "Archived",
         topics: archived,

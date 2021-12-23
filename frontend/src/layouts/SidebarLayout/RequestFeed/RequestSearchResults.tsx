@@ -17,5 +17,5 @@ export const RequestSearchResults = observer(({ searchTerm }: Props) => {
 
   const allFoundTopics = uniq([...topics, ...messages.map((message) => message.topic)]).filter(isNotNullish);
 
-  return <RequestFeedGroups topics={allFoundTopics} showArchived />;
+  return <RequestFeedGroups topics={allFoundTopics} showAll />;
 });
