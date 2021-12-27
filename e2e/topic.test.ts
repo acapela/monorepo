@@ -16,7 +16,9 @@ test("can close a topic", async ({ page, auth, db }) => {
     title,
   });
 
-  await appPage.waitForRequestInGroup(title, "Received");
+  await page.click("text=Inbox");
+  await page.click("text=For you");
+  await page.click(`text="${title}"`);
 
   await appPage.selectTopicOption("Close");
   await page.waitForSelector("text=closed the request");
@@ -61,15 +63,10 @@ test("can archive topic", async ({ page, auth, db }) => {
     title: requestTitle,
   });
 
-  // Added to sidebar
-  await appPage.waitForRequestInSidebar(requestTitle);
+  await page.click("text=Inbox");
+  await page.click(`text="${requestTitle}"`);
 
   await appPage.selectTopicOption("Archive");
 
   await page.waitForSelector(`text=archived the request`);
-
-  // Removed from sidebar
-  await appPage.waitForRequestInSidebar(requestTitle, {
-    state: "detached",
-  });
 });
