@@ -55,7 +55,7 @@ const UITab = styled.button<{ $isSelected: boolean }>`
     props.$isSelected &&
     css`
       border-radius: 48px;
-      background-color: #f3f4f6;
+      ${theme.colors.panels.selectedTab.asBg};
     `}
 `;
 

@@ -23,7 +23,7 @@ const UIIconComment = styled(IconComment)`
 `;
 
 const getSelfAssignedUnseenTask = cachedComputed(
-  (topic: TopicEntity) => topic.selfAssignedOpenTasks.query((task) => !task.seen_at).first
+  (topic: TopicEntity) => topic.selfAssignedOpenTasks.query({ isSeen: false }).first
 );
 
 const getSelfAssignedTaskDueSoon = cachedComputed(

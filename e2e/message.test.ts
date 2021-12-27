@@ -54,7 +54,8 @@ test("mark own request as read", async ({ page, auth, db }) => {
 
   expect(await page.$$("[data-test-message-tasks]")).toHaveLength(1);
 
-  await appPage.waitForRequestInGroup(requestName, "Received");
+  await page.click("text=Inbox");
+  await page.click(`text="${requestName}"`);
 
   await page.click("text=Mark as read");
 

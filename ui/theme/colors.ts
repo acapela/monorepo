@@ -33,6 +33,8 @@ const green = color("hsl(169,100%,37%)");
 
 const divider = color("#E0E0E0");
 
+const selectedTab = color("#f3f4f6");
+
 export const colors = {
   primary,
   secondary,
@@ -66,6 +68,7 @@ export const colors = {
     tooltip: black,
     notification: primary,
     modal: white,
+    selectedTab,
   },
   status: {
     // TODO: Adjust
