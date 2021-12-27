@@ -5,7 +5,6 @@ import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
 import { pluralize } from "~shared/text/pluralize";
 import { theme } from "~ui/theme";
 
@@ -37,24 +36,22 @@ export const InboxView = observer(() => {
     (topic) => topic.selfAssignedOpenTasks.query({ seen_at: null }).hasItems
   ).count;
   return (
-    <SidebarLayout>
-      <UILayout>
-        <div>
-          <UITitle>Inbox</UITitle>
-          <UIWelcome>
-            Hi there 👋
-            {unreadTasksCount > 0 && (
-              <>
-                {" "}
-                You have <UIUnreadIndicator>{unreadTasksCount} new unread</UIUnreadIndicator>{" "}
-                {pluralize(unreadTasksCount, "request", "requests")}.
-              </>
-            )}
-          </UIWelcome>
-        </div>
-        <RequestsStream topics={openTopics.all} />
-      </UILayout>
-    </SidebarLayout>
+    <UILayout>
+      <div>
+        <UITitle>Inbox</UITitle>
+        <UIWelcome>
+          Hi there 👋
+          {unreadTasksCount > 0 && (
+            <>
+              {" "}
+              You have <UIUnreadIndicator>{unreadTasksCount} new unread</UIUnreadIndicator>{" "}
+              {pluralize(unreadTasksCount, "request", "requests")}.
+            </>
+          )}
+        </UIWelcome>
+      </div>
+      <RequestsStream topics={openTopics.all} />
+    </UILayout>
   );
 });
 
