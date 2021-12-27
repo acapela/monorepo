@@ -65,12 +65,12 @@ export const MissingAuthHomeTab = HomeTab()
 
 /*
  This arbitrary number is estimated based on Slack's 100 max block limit, minus the 4 header blocks, so 96 left.
- RequestList needs up to 5 blocks and then 3 blocks per RequestItem in it.
- So if we show all our 5 categories that gives us: 96 - 5 * 3 = 81 blocks left
- For a total number of 81 / 5 = 16 topics
- And then to make sure it renders and there's some slack (pardon the pun) in the system 16 - 2 = 14
+ RequestList needs up to 7 blocks and then 2 (+ 1 Divider) blocks per RequestItem in it.
+ So if we show all our 5 categories that gives us: 96 - 5 * 7 = 61 blocks left
+ For a total number of 61 / 3 = 20 topics
+ And then to make sure it renders and there's some slack (pardon the pun) in the system 20 * 90% = 18
 */
-const MAX_TOTAL_TOPICS = 14;
+const MAX_TOTAL_TOPICS = 18;
 
 interface SummaryBuilderInput {
   includeWelcome?: boolean;

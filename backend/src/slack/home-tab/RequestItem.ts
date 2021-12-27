@@ -54,29 +54,14 @@ const RequestFooter = (userId: string, topic: TopicWithOpenTask) => {
 };
 
 export async function RequestItemHeader(topic: TopicWithOpenTask, unreadMessages: number) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const mostUrgentMessage = getMostUrgentMessage(topic)!;
+  const mostUrgentMessage = getMostUrgentMessage(topic);
 
-  const messageSnippet = await convertDbMessageToSlackMessageSnippet(mostUrgentMessage);
+  const messageSnippet = mostUrgentMessage && (await convertDbMessageToSlackMessageSnippet(mostUrgentMessage));
 
-  function getNameNode() {
-    const topicName = Md.bold(topic.name);
-    const parts: Array<string | null> = [topicName];
+  const topicName = Md.bold(topic.name);
+  const nameLine = unreadMessages ? `${topicName} ✉️ ${Md.bold(unreadMessages.toString())}` : topicName;
 
-    if (unreadMessages) {
-      parts.push(`✉️ ${Md.bold(unreadMessages.toString())}`);
-    }
-
-    return parts.filter(isNotNullish).join(" ");
-  }
-
-  function getTaskLines() {
-    const name = getNameNode();
-
-    return [name, messageSnippet];
-  }
-
-  return getTaskLines().join("\n");
+  return messageSnippet ? [nameLine, messageSnippet].join("\n") : nameLine;
 }
 
 export async function RequestItem(userId: string, topic: TopicWithOpenTask, unreadMessages: number) {
