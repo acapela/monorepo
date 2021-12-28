@@ -299,7 +299,7 @@ export function setupSlackActionHandlers(slackApp: App) {
       const [topicId, hasRequestOriginatedFromMessageActionStr, conversationId, messageTs] = action.value.split("/");
       const topic = await db.topic.findFirst({
         where: { id: topicId },
-        include: { message: true, topic_access_token: true },
+        include: { message: true, topic_access_token: true, user: true, topic_member: true },
       });
       await createLiveMessage({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
