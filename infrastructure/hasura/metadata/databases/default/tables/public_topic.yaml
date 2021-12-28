@@ -131,6 +131,7 @@ event_triggers:
       columns:
       - index
       - name
+      - priority
       - slug
       - archived_at
       - closed_at

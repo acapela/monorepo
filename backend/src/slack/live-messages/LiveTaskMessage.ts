@@ -21,6 +21,18 @@ type TaskDetail = Task & {
   };
 };
 
+const TaskAction = (task: TaskDetail) =>
+  task.type === REQUEST_DECISION
+    ? DecisionOptionVoting(task.message.decision_option, {})
+    : Blocks.Actions().elements(
+        ToggleTaskDoneAtButton(task),
+        Elements.Button({
+          actionId: SlackActionIds.OpenViewRequestModal,
+          value: task.message.topic_id,
+          text: "View Request",
+        })
+      );
+
 export async function LiveTaskMessage(task: TaskDetail) {
   const message = task.message;
   const topic = message.topic;
@@ -45,18 +57,7 @@ export async function LiveTaskMessage(task: TaskDetail) {
       Blocks.Section({ text }),
       RequestFooter(topic, message, task.user_id),
       Blocks.Divider(),
-      topic.closed_at
-        ? Blocks.Section({ text: "The topic has been closed ✅️" })
-        : task.type === REQUEST_DECISION
-        ? DecisionOptionVoting(task.message.decision_option, {})
-        : Blocks.Actions().elements(
-            ToggleTaskDoneAtButton(task),
-            Elements.Button({
-              actionId: SlackActionIds.OpenViewRequestModal,
-              value: topic.id,
-              text: "View Request",
-            })
-          )
+      topic.closed_at ? Blocks.Section({ text: "The topic has been closed ✅️" }) : TaskAction(task)
     )
     .buildToObject();
 }
