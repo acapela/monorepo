@@ -1,21 +1,19 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useAppStateStore } from "~frontend/appState/AppStateStore";
 import { UserMenu } from "~frontend/layouts/UserMenu";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { routes } from "~shared/routes";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconCross, IconInboxIn, IconPlus } from "~ui/icons";
+import { IconCross, IconPlus } from "~ui/icons";
 import { Shortcut } from "~ui/keyboard/Shortcut";
 import { phone } from "~ui/responsive";
 import { theme } from "~ui/theme";
 
+import { InboxLink } from "./InboxLink";
 import { RequestFeed } from "./RequestFeed";
 import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
@@ -26,7 +24,6 @@ interface Props {
 }
 
 export const SidebarContent = observer(function SidebarContent({ onMobileCloseRequest }: Props) {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const appState = useAppStateStore();
@@ -67,11 +64,7 @@ export const SidebarContent = observer(function SidebarContent({ onMobileCloseRe
         />
       </UISearch>
 
-      <Link href={routes.home}>
-        <UISidebarNavItem $isActive={router.pathname == routes.home}>
-          <IconInboxIn style={{ width: 20, height: 20 }} /> Inbox
-        </UISidebarNavItem>
-      </Link>
+      <InboxLink />
 
       <UIRequestFeed>
         {!isInSearchMode && <RequestFeed />}
@@ -147,24 +140,4 @@ const UISearchPlaceholder = styled.input<{}>`
   width: 100%;
   outline: none;
   background: transparent;
-`;
-
-const UISidebarNavItem = styled.div<{ $isActive: boolean }>`
-  padding: 15px 20px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  ${theme.spacing.actions.asGap};
-  ${theme.typo.content.semibold};
-  cursor: pointer;
-
-  ${(props) =>
-    props.$isActive &&
-    css`
-      ${theme.colors.layout.backgroundAccent.active.asBg};
-    `}
-
-  &:hover {
-    ${theme.colors.layout.backgroundAccent.hover.asBg};
-  }
 `;
