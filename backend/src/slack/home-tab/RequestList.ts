@@ -1,13 +1,39 @@
-import { Blocks, Divider, Md } from "slack-block-builder";
+import { Blocks, Divider, Elements, Md } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/slack/md/utils";
 import { flattenWithDivider } from "~shared/array";
 import { isNotFalsy, isNotNullish } from "~shared/nullish";
 import { pluralize } from "~shared/text/pluralize";
 
-import { RequestItem } from "./RequestItem";
+import { createSlackLink } from "../md/utils";
+import { convertDbMessageToSlackMessageSnippet } from "../message/convertToSlack";
+import { RequestFooter } from "../RequestFooter";
+import { SlackActionIds } from "../utils";
 import { TopicWithOpenTask } from "./types";
-import { Padding } from "./utils";
+import { Padding, getMostUrgentMessage } from "./utils";
+
+async function RequestItemHeader(topic: TopicWithOpenTask, unreadMessages: number) {
+  const mostUrgentMessage = getMostUrgentMessage(topic.message);
+
+  const messageSnippet = mostUrgentMessage && (await convertDbMessageToSlackMessageSnippet(mostUrgentMessage));
+
+  const topicName = Md.bold(topic.name);
+  const nameLine = unreadMessages ? `${topicName} ✉️ ${Md.bold(unreadMessages.toString())}` : topicName;
+
+  return messageSnippet ? [nameLine, messageSnippet].join("\n") : nameLine;
+}
+
+export const RequestItem = async (userId: string, topic: TopicWithOpenTask, unreadMessages: number) => [
+  Blocks.Section({
+    text: await RequestItemHeader(topic, unreadMessages),
+  }).accessory(
+    Elements.Button({
+      actionId: SlackActionIds.OpenViewRequestModal,
+      value: topic.id,
+      text: "Details",
+    })
+  ),
+  RequestFooter(topic, getMostUrgentMessage(topic.message), userId),
+];
 
 export type RequestListParams = {
   title: string;

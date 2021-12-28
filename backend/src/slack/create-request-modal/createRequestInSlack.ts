@@ -12,7 +12,7 @@ import { Maybe } from "~shared/types";
 import { Origin } from "~shared/types/analytics";
 
 import { isWebAPIErrorType } from "../errors";
-import { LiveTopicMessage, TopicWithToken } from "../live-messages/LiveTopicMessage";
+import { LiveTopicMessage, LiveTopicMessageTopic } from "../live-messages/LiveTopicMessage";
 import {
   SlackActionIds,
   buildDateTimePerUserTimezone,
@@ -30,7 +30,7 @@ export async function createLiveMessage({
   messageTs,
 }: {
   client: WebClient;
-  topic: TopicWithToken;
+  topic: LiveTopicMessageTopic;
   hasRequestOriginatedFromMessageAction: boolean;
   conversationId: string;
   token: string;

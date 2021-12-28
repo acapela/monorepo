@@ -1,6 +1,7 @@
 import { groupBy } from "lodash";
 import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
+import { RequestFooter, RequestFooterTopic } from "~backend/src/slack/RequestFooter";
 import { Message, Task, Topic, TopicAccessToken, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
@@ -8,7 +9,6 @@ import { REQUEST_DECISION, REQUEST_NOTIFICATION_LABELS, RequestType } from "~sha
 
 import { slackClient } from "../app";
 import { DecisionOptionVoting } from "../decision";
-import { mdDate } from "../md/utils";
 import { convertDbMessageToSlackMessage } from "../message/convertToSlack";
 import { SlackActionIds, fetchTeamBotToken, fetchTeamMemberToken, findSlackUserId } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink } from "./utils";
@@ -32,9 +32,8 @@ const getTasksText = (tasks: (Task & { user: User })[], slackUsers: Record<strin
     })
     .join("\n");
 
-export type TopicWithToken = Topic & { topic_access_token?: TopicAccessToken[] };
-
-export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMessageContentExcluded?: boolean }) {
+export type LiveTopicMessageTopic = Topic & { topic_access_token?: TopicAccessToken[] } & RequestFooterTopic;
+export async function LiveTopicMessage(topic: LiveTopicMessageTopic, options?: { isMessageContentExcluded?: boolean }) {
   const [message, accessToken] = await Promise.all([
     db.message.findFirst({
       where: { topic_id: topic.id },
@@ -60,7 +59,6 @@ export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMess
   const slackUsers: Record<string, string> = Object.fromEntries(
     await Promise.all(tasks.map(async ({ user }) => [user.id, await findSlackUserId(topic.team_id, user)]))
   );
-  const dueAt = message.message_task_due_date?.due_at;
   const nonDecisionTasks = tasks.filter((task) => task.type !== REQUEST_DECISION);
   return SlackMessage({ text })
     .blocks(
@@ -71,6 +69,7 @@ export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMess
           text: "View Request",
         }).primary(true)
       ),
+      RequestFooter(topic, message, topic.user.id),
       Blocks.Divider(),
       message.decision_option.length == 0
         ? undefined
@@ -79,7 +78,6 @@ export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMess
         ? Blocks.Section({ text: "All tasks have been completed 🎉" })
         : [
             Blocks.Section({ text: getTasksText(tasks, slackUsers) }),
-            dueAt ? Blocks.Section({ text: Md.italic(`Due ${mdDate(dueAt)}`) }) : undefined,
             nonDecisionTasks.length == 0
               ? undefined
               : Blocks.Actions().elements(nonDecisionTasks.map((task) => ToggleTaskDoneAtButton(task, task.user))),
@@ -88,9 +86,13 @@ export async function LiveTopicMessage(topic: TopicWithToken, options?: { isMess
     .buildToObject();
 }
 
-export async function tryUpdateTopicSlackMessage(topic: TopicWithToken) {
-  const topicSlackMessage = await db.topic_slack_message.findUnique({ where: { topic_id: topic.id } });
-  if (!topicSlackMessage) {
+export async function tryUpdateTopicSlackMessage(topicId: string) {
+  const topic = await db.topic.findUnique({
+    where: { id: topicId },
+    include: { topic_slack_message: true, user: true, topic_member: true },
+  });
+  const topicSlackMessage = topic?.topic_slack_message;
+  if (!topic || !topicSlackMessage) {
     return;
   }
   const [teamMemberToken, teamToken] = await Promise.all([

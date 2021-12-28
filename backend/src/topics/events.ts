@@ -144,7 +144,7 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
 
   if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
     await Promise.all([
-      tryUpdateTopicSlackMessage(topic),
+      tryUpdateTopicSlackMessage(topic.id),
       tryUpdateTaskSlackMessages({
         taskSlackMessage: { task: { message: { topic_id: topic.id } } },
         message: { topic_id: topic.id },

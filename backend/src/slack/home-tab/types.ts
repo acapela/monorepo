@@ -15,6 +15,4 @@ export type TopicWithOpenTask = Topic & {
   user: User;
   message: MessageWithOpenTask[];
   topic_member: TopicMember[];
-  isDueSoon?: boolean;
-  isUnread?: boolean;
 };
