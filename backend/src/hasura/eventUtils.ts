@@ -8,7 +8,7 @@ type CommonHasuraEventData = {
   tableName: string;
 };
 
-export type CrateHasuraEvent<T> = {
+export type CreateHasuraEvent<T> = {
   type: "create";
   item: T;
   itemBefore: null;
@@ -26,7 +26,7 @@ export type UpdateHasuraEvent<T> = {
   itemBefore: T;
 } & CommonHasuraEventData;
 
-export type HasuraEvent<T> = CrateHasuraEvent<T> | DeleteHasuraEvent<T> | UpdateHasuraEvent<T>;
+export type HasuraEvent<T> = CreateHasuraEvent<T> | DeleteHasuraEvent<T> | UpdateHasuraEvent<T>;
 
 export function getUserIdFromRawHasuraEvent<T>(rawEvent: RawHasuraEvent<T>) {
   return rawEvent.event.session_variables?.["x-hasura-user-id"] ?? null;
