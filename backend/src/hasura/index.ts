@@ -1,2 +1,2 @@
 export { createHasuraEventsHandler } from "./eventHandlers";
-export type { HasuraEvent, CrateHasuraEvent, DeleteHasuraEvent, UpdateHasuraEvent } from "./eventUtils";
+export type { HasuraEvent, CreateHasuraEvent, DeleteHasuraEvent, UpdateHasuraEvent } from "./eventUtils";
