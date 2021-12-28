@@ -34,7 +34,10 @@ export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
   const nextTask = highlighted?.task ?? topic.selfAssignedOpenTasks.last;
   const message = nextTask?.message ?? topic.lastSeenMessageByCurrentUserInfo?.message ?? topic.messages.last;
 
-  const extraMembers = topic.members.filter((member) => !member.isCurrentUser && member.id !== topic.owner_id);
+  // User used for the avatar, and thus not needing to be shown in the extra members list
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const mainUser = message?.user ?? topic.owner!;
+  const extraMembers = topic.members.filter((member) => !member.isCurrentUser && member.id !== mainUser.id);
   const unreadMessagesCount = topic.unreadMessages.count;
   return (
     <Link href={`${topic.href}#${message?.id}`} passHref>
@@ -42,8 +45,7 @@ export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
         <UIImagery>
           {/*This needs to have a fixed width, to hold the space even if there is no icon*/}
           <span style={{ width: 10 }}>{highlighted?.icon}</span>
-          {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-          <UserAvatar user={topic.owner!} size={36} />
+          <UserAvatar user={mainUser} size={36} />
         </UIImagery>
         <UIFeedItemContent>
           <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
