@@ -90,6 +90,8 @@ export type AnalyticsEventsMap = {
   "Used Slack Slash Command": { slackUserName: string; commandName: string };
   "Used Slack Home Tab New Request": { slackUserName: string };
   "Opened Webapp From Slack Home Tab": void;
+  "Opened Gallery From Slack Onboarding": void;
+  "Opened Home Tab From Slack Onboarding": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

@@ -1,8 +1,10 @@
 import { Blocks, Elements, Message as SlackMessage } from "slack-block-builder";
 
+import { backendUserEventToJSON } from "~shared/backendAnalytics";
+
 import { SlackActionIds } from "../utils";
 
-export function NewUserOnboardingMessage(slackTeamId: string) {
+export function NewUserOnboardingMessage(slackTeamId: string, currentUserId: string) {
   return SlackMessage()
     .blocks(
       Blocks.Section({ text: "Hi there 🤗" }),
@@ -37,7 +39,10 @@ export function NewUserOnboardingMessage(slackTeamId: string) {
         Elements.Button({
           text: "View Home tab",
           url: `https://slack.com/app_redirect?team=${slackTeamId}&app=A012VTBSTNV`,
-        }).primary(true)
+        })
+          .primary(true)
+          .actionId(SlackActionIds.TrackEvent)
+          .value(backendUserEventToJSON(currentUserId, "Opened Home Tab From Slack Onboarding"))
       ),
       Blocks.Divider(),
       Blocks.Section({
@@ -46,7 +51,10 @@ export function NewUserOnboardingMessage(slackTeamId: string) {
         Elements.Button({
           text: "Visit gallery",
           url: `https://acapela.notion.site/Request-Templates-eb11cbaa62324203b0e1534b16f9f959`,
-        }).primary(true)
+        })
+          .primary(true)
+          .actionId(SlackActionIds.TrackEvent)
+          .value(backendUserEventToJSON(currentUserId, "Opened Gallery From Slack Onboarding"))
       ),
       Blocks.Divider(),
       Blocks.Section({
