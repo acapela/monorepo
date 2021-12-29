@@ -44,7 +44,7 @@ const UITab = styled.button<{ $isSelected: boolean }>`
   padding: 10px;
 
   display: flex;
-  ${theme.spacing.close.asGap};
+  ${theme.spacing.actions.asGap};
 
   ${theme.typo.content.resetLineHeight};
 

@@ -7,7 +7,7 @@ import {
   ViewSubmitAction,
 } from "@slack/bolt";
 import { difference, find } from "lodash";
-import { Md, Message } from "slack-block-builder";
+import { Message } from "slack-block-builder";
 
 import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack/create-request-modal/utils";
 import { assertDefined } from "~shared/assert";
@@ -18,6 +18,7 @@ import { MentionType, REQUEST_DECISION } from "~shared/requests";
 import { buildSummaryBlocksForSlackUserSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
 import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
+import { createHelpMessageForUser } from "./help";
 import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
 import { CreateRequestModal, openCreateRequestModal } from "./openCreateRequestModal";
 import { getQuickEntryCommandFromMessageBody, handleSlackCommandAsQuickEntry } from "./quickEntry";
@@ -39,13 +40,10 @@ export function setupCreateRequestModal(app: App) {
     const possibleCommand = body.text.toLowerCase();
 
     if (body.text.toLowerCase() == "help") {
+      const helpMessage = await createHelpMessageForUser(slackUserId);
       await ack({
         response_type: "ephemeral",
-        text: [
-          `To create a request type ${Md.codeInline("/acapela")} with the text for the initial message.`,
-          "You can also @-tag people that should receive the request.",
-          `For example:\n${Md.codeBlock(`/acapela can you forward the documentation to me, ${Md.user(slackUserId)}?`)}`,
-        ].join(" "),
+        blocks: helpMessage.buildToObject().blocks,
       });
       return;
     }
