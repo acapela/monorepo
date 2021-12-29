@@ -69,7 +69,7 @@ export async function LiveTopicMessage(topic: LiveTopicMessageTopic, options?: {
           text: "View Request",
         }).primary(true)
       ),
-      RequestFooter(topic, message, topic.user.id),
+      RequestFooter(topic, message),
       Blocks.Divider(),
       message.decision_option.length == 0
         ? undefined

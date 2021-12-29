@@ -53,8 +53,5 @@ export const RequestFooter = (
 
   const contextHighlightNode = getContextHighlight() ?? [];
 
-  return Blocks.Context().elements(
-    ...(topic.user.id == currentUserId ? [] : TopicUserInfo(topic, currentUserId)),
-    ...contextHighlightNode
-  );
+  return Blocks.Context().elements(...TopicUserInfo(topic, currentUserId), ...contextHighlightNode);
 };

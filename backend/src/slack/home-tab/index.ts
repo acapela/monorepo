@@ -5,12 +5,12 @@ import { HomeTab } from "slack-block-builder";
 import { assertDefined } from "~shared/assert";
 
 import { slackClient } from "../app";
-import { buildSummaryBlocksForSlackUserSlackUser, missingAuthSlackBlocks } from "./content";
+import { buildSummaryBlocksForSlackUser, missingAuthSlackBlocks } from "./content";
 
 export async function updateHomeView(botToken: string, slackUserId: string) {
   const publishView = (view: View) => slackClient.views.publish({ token: botToken, user_id: slackUserId, view });
 
-  const homeTabBlocks = await buildSummaryBlocksForSlackUserSlackUser(slackUserId, { includeWelcome: true });
+  const homeTabBlocks = await buildSummaryBlocksForSlackUser(slackUserId, { includeWelcome: true });
 
   if (!homeTabBlocks) {
     await publishView(

@@ -75,7 +75,7 @@ interface SummaryBuilderInput {
   includeWelcome?: boolean;
 }
 
-export async function buildSummaryBlocksForSlackUserSlackUser(slackUserId: string, params: SummaryBuilderInput) {
+export async function buildSummaryBlocksForSlackUser(slackUserId: string, params: SummaryBuilderInput) {
   const teamMember = await db.team_member.findFirst({ where: { team_member_slack: { slack_user_id: slackUserId } } });
   if (!teamMember) {
     return null;

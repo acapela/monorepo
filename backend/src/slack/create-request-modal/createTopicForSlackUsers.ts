@@ -1,20 +1,16 @@
-import { compact, map, uniq } from "lodash";
+import { JSONContent } from "@tiptap/core";
+import { uniq } from "lodash";
 
 import { sendInviteNotification } from "~backend/src/inviteUser";
 import { Account, User, db } from "~db";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { MentionType, REQUEST_TYPES, RequestType } from "~shared/requests";
 import { slugify } from "~shared/slugify";
 import { Maybe } from "~shared/types";
-import { EditorMentionData } from "~shared/types/editor";
 
 import { slackClient } from "../app";
-import { updateHomeView } from "../home-tab";
-import { parseAndTransformToTipTapJSON } from "../md/parser";
-import { fetchTeamBotToken, findUserBySlackId } from "../utils";
+import { findUserBySlackId } from "../utils";
 import { createRequestTitleFromMessageText } from "./utils";
 
 async function createAndInviteMissingUsers(
@@ -69,7 +65,7 @@ async function createAndInviteMissingUsers(
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));
 }
 
-type UserWithMaybeMentionType = { userId: string; mentionType?: MentionType; slackUserId: string };
+export type UserWithMaybeMentionType = { userId: string; mentionType?: MentionType; slackUserId: string };
 
 export type SlackUserIdWithRequestType = { slackUserId: string; mentionType?: MentionType };
 
@@ -122,97 +118,29 @@ export async function findOrInviteUsers({
   return [...userIds, ...newUserIds];
 }
 
-function transformMessage(
-  rawMessage: string,
-  slackTeamId: string,
-  usersWithRequestType: (UserWithMaybeMentionType & { mentionType: MentionType })[]
-) {
-  const mentionedUsersBySlackId = Object.fromEntries(
-    usersWithRequestType.map((u) => [
-      u.slackUserId,
-      {
-        type: u.mentionType,
-        userId: u.userId,
-      },
-    ])
-  );
-
-  const messageContent = parseAndTransformToTipTapJSON(rawMessage, {
-    slackTeamId,
-    mentionedUsersBySlackId,
-  });
-
-  const alreadyMentionedUsers = new Set(
-    uniq(compact(map(getMentionNodesFromContent(messageContent), "attrs.data.userId")))
-  );
-
-  const extraMentionNodes = usersWithRequestType
-    .filter(({ userId }) => !alreadyMentionedUsers.has(userId))
-    .flatMap(({ userId, mentionType }) => {
-      const data: EditorMentionData = { userId, type: mentionType };
-      return [
-        { type: MENTION_TYPE_KEY, attrs: { data } },
-        { type: "text", text: " " },
-      ];
-    });
-
-  if (extraMentionNodes.length) {
-    messageContent.content.unshift(
-      {
-        type: "paragraph",
-        content: extraMentionNodes,
-      },
-      {
-        type: "paragraph",
-        content: [],
-      }
-    );
-  }
-  return messageContent;
-}
-
 export async function createTopicForSlackUsers({
-  token,
   teamId,
   ownerId,
-  ownerSlackUserId,
-  slackTeamId,
   topicName,
   dueAt,
-  rawTopicMessage,
-  slackUserIdsWithMentionType,
   priority,
+  messageContent,
   decisionOptions,
   isFirstCompletionEnough,
+  usersWithMentionType,
 }: {
-  token: string;
   teamId: string;
   ownerId: string;
-  ownerSlackUserId: string;
-  slackTeamId: string;
   topicName: Maybe<string>;
   dueAt: Maybe<Date>;
-  rawTopicMessage: string;
-  slackUserIdsWithMentionType: SlackUserIdWithRequestType[];
+  messageContent: JSONContent;
   priority: Maybe<string>;
   decisionOptions: string[];
   isFirstCompletionEnough: boolean;
+  usersWithMentionType: UserWithMaybeMentionType[];
 }) {
-  const usersWithMentionType = await findOrInviteUsers({
-    slackToken: token,
-    teamId,
-    invitingUserId: ownerId,
-    slackUserIdsWithMentionType,
-  });
-
-  const messageContent = transformMessage(
-    rawTopicMessage,
-    slackTeamId,
-    usersWithMentionType.filter((u) => u.mentionType) as never
-  );
-
-  const messageContentText = convertMessageContentToPlainText(messageContent);
   const userIds = uniq(usersWithMentionType.map(({ userId }) => userId).concat(ownerId));
+  const messageContentText = convertMessageContentToPlainText(messageContent);
 
   topicName = topicName || createRequestTitleFromMessageText(messageContentText);
 
@@ -250,9 +178,6 @@ export async function createTopicForSlackUsers({
     },
     include: { message: true, topic_access_token: true, user: true, topic_member: true },
   });
-
-  const botToken = assertDefined(await fetchTeamBotToken(teamId), `must have bot token for team ${teamId}`);
-  await updateHomeView(botToken, ownerSlackUserId);
 
   return topic;
 }

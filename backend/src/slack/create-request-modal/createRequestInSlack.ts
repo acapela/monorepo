@@ -1,25 +1,79 @@
 import * as Sentry from "@sentry/node";
 import { WebClient } from "@slack/web-api";
+import { compact, map, uniq } from "lodash";
 import { Blocks, Elements, Md, Modal, Message as SlackMessage } from "slack-block-builder";
 
+import { updateHomeView } from "~backend/src/slack/home-tab";
 import { createTopicLink } from "~backend/src/slack/live-messages/utils";
+import { parseAndTransformToTipTapJSON } from "~backend/src/slack/md/parser";
 import { backendGetTopicUrl } from "~backend/src/topics/url";
 import { db } from "~db";
-import { assert } from "~shared/assert";
+import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "~shared/requests";
 import { Maybe } from "~shared/types";
 import { Origin } from "~shared/types/analytics";
+import { EditorMentionData } from "~shared/types/editor";
 
 import { isWebAPIErrorType } from "../errors";
 import { LiveTopicMessage, LiveTopicMessageTopic } from "../live-messages/LiveTopicMessage";
+import { SlackActionIds, createTeamMemberUserFromSlack, fetchTeamBotToken, findUserBySlackId } from "../utils";
 import {
-  SlackActionIds,
-  buildDateTimePerUserTimezone,
-  createTeamMemberUserFromSlack,
-  findUserBySlackId,
-} from "../utils";
-import { SlackUserIdWithRequestType, createTopicForSlackUsers } from "./createTopicForSlackUsers";
+  SlackUserIdWithRequestType,
+  UserWithMaybeMentionType,
+  createTopicForSlackUsers,
+  findOrInviteUsers,
+} from "./createTopicForSlackUsers";
+
+function transformSlackMessageIntoTipTapWithMentions(
+  rawMessage: string,
+  slackTeamId: string,
+  usersWithRequestType: (UserWithMaybeMentionType & { mentionType: MentionType })[]
+) {
+  const mentionedUsersBySlackId = Object.fromEntries(
+    usersWithRequestType.map((u) => [
+      u.slackUserId,
+      {
+        type: u.mentionType,
+        userId: u.userId,
+      },
+    ])
+  );
+
+  const messageContent = parseAndTransformToTipTapJSON(rawMessage, {
+    slackTeamId,
+    mentionedUsersBySlackId,
+  });
+
+  const alreadyMentionedUsers = new Set(
+    uniq(compact(map(getMentionNodesFromContent(messageContent), "attrs.data.userId")))
+  );
+
+  const extraMentionNodes = usersWithRequestType
+    .filter(({ userId }) => !alreadyMentionedUsers.has(userId))
+    .flatMap(({ userId, mentionType }) => {
+      const data: EditorMentionData = { userId, type: mentionType };
+      return [
+        { type: MENTION_TYPE_KEY, attrs: { data } },
+        { type: "text", text: " " },
+      ];
+    });
+
+  if (extraMentionNodes.length) {
+    messageContent.content.unshift(
+      {
+        type: "paragraph",
+        content: extraMentionNodes,
+      },
+      {
+        type: "paragraph",
+        content: [],
+      }
+    );
+  }
+  return messageContent;
+}
 
 export async function createLiveMessage({
   client,
@@ -74,8 +128,7 @@ interface CreateRequestInSlackInput {
   conversationId?: Maybe<string>;
   client: WebClient;
   triggerId: string;
-  dueAtDate?: Maybe<string>;
-  dueAtHour?: Maybe<string>;
+  dueAt?: Maybe<Date>;
   botToken?: Maybe<string>;
   messageTs?: Maybe<string>;
   topicName?: Maybe<string>;
@@ -98,8 +151,7 @@ export async function createAndTrackRequestInSlack({
   conversationId,
   client,
   triggerId,
-  dueAtDate,
-  dueAtHour,
+  dueAt,
   messageTs,
   botToken,
   topicName,
@@ -137,25 +189,33 @@ export async function createAndTrackRequestInSlack({
   // When a request is created from a message, add message author as observer
   const hasRequestOriginatedFromMessageAction = origin === "slack-message-action";
 
-  const dueAt: Date | null =
-    dueAtDate || dueAtHour
-      ? await buildDateTimePerUserTimezone(client as never, ownerSlackUserId, dueAtDate, dueAtHour)
-      : null;
-
+  const usersWithMentionType = await findOrInviteUsers({
+    slackToken: token,
+    teamId: team.id,
+    invitingUserId: owner.id,
+    slackUserIdsWithMentionType,
+  });
+  const messageContent = transformSlackMessageIntoTipTapWithMentions(
+    messageText,
+    slackTeamId,
+    usersWithMentionType.filter((u) => u.mentionType) as never
+  );
   const topic = await createTopicForSlackUsers({
-    token,
     teamId: team.id,
     ownerId: owner.id,
-    ownerSlackUserId,
-    slackTeamId,
-    rawTopicMessage: messageText,
     topicName,
     dueAt,
-    slackUserIdsWithMentionType,
+    messageContent,
     priority,
     decisionOptions,
     isFirstCompletionEnough,
+    usersWithMentionType,
   });
+
+  await updateHomeView(
+    botToken ?? assertDefined(await fetchTeamBotToken(team.id), `must have bot token for team ${team.id}`),
+    ownerSlackUserId
+  );
 
   const isSelfRequest =
     slackUserIdsWithMentionType.length === 1 && slackUserIdsWithMentionType[0].slackUserId === ownerSlackUserId;

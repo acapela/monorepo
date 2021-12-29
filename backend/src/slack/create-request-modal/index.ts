@@ -15,8 +15,8 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 import { MentionType, REQUEST_DECISION } from "~shared/requests";
 
-import { buildSummaryBlocksForSlackUserSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
-import { assertToken, findUserBySlackId, listenToViewWithMetadata } from "../utils";
+import { buildSummaryBlocksForSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
+import { assertToken, buildDateTimePerUserTimezone, findUserBySlackId, listenToViewWithMetadata } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { createHelpMessageForUser } from "./help";
 import { handleMessageSelfRequestShortcut } from "./messageSelfRequest";
@@ -49,7 +49,7 @@ export function setupCreateRequestModal(app: App) {
     }
 
     if (["today", "t"].includes(possibleCommand)) {
-      const summaryBlocks = await buildSummaryBlocksForSlackUserSlackUser(slackUserId, { includeWelcome: false });
+      const summaryBlocks = await buildSummaryBlocksForSlackUser(slackUserId, { includeWelcome: false });
 
       const blocksToShow = summaryBlocks ?? missingAuthSlackBlocks;
 
@@ -250,8 +250,10 @@ export function setupCreateRequestModal(app: App) {
       // @ts-ignore WebClient has different version of typings and is not directly exported from slack-bolt
       client,
       triggerId: body.trigger_id,
-      dueAtDate,
-      dueAtHour,
+      dueAt:
+        dueAtDate || dueAtHour
+          ? await buildDateTimePerUserTimezone(client as never, body.user.id, dueAtDate, dueAtHour)
+          : null,
       messageTs: metadata.messageTs,
       botToken: context.botToken,
       topicName,
