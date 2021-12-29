@@ -12,12 +12,7 @@ services:
     ports:
       - "5432:5432"
   hasura:
-    # image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
-    # TEMP: This is modified version of hasura  engine that works on M1 macs.
-    # TODO: Not sure what to do about it. For sure we dont need it in production so it'll have to be resolved somehow
-    # when we'll plan to deploy it
-    image: fedormelexin/graphql-engine-arm64:v2.0.7
-    command: ["/srv/graphql-engine", "serve"]
+    image: hasura/graphql-engine:v2.1.1
 
     ports:
       - "8080:8080"
