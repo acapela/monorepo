@@ -20,14 +20,14 @@
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",
-    "@google-cloud/storage": "^5.16.0",
-    "@install-binary/berglas": "^0.6.1",
-    "@sentry/node": "^6.15.0",
+    "@google-cloud/storage": "^5.16.1",
+    "@install-binary/berglas": "^0.6.2",
+    "@sentry/node": "^6.16.1",
     "@slack/bolt": "^3.8.1",
     "@slack/web-api": "^6.5.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "date-fns-tz": "^1.1.6",
+    "date-fns-tz": "^1.2.2",
     "deep-object-diff": "^1.1.0",
     "express-async-errors": "^3.1.1",
     "googleapis": "^92.0.0",
@@ -35,7 +35,7 @@
     "mime-types": "^2.1.34",
     "ngrok": "^4.2.2",
     "pg": "^8.7.1",
-    "slack-block-builder": "^2.3.1",
+    "slack-block-builder": "^2.4.2",
     "ts-node": "^10.4.0",
     "uuid": "^8.3.2",
     "~config": "0.1.0"
@@ -49,11 +49,11 @@
     "@types/mime-types": "^2.1.1",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.3",
-    "jest": "27.4.1",
+    "jest": "27.4.5",
     "localtunnel": "^2.0.2",
     "supertest": "^6.1.6",
-    "ts-jest": "^27.0.7",
+    "ts-jest": "^27.1.2",
     "ts-node-dev": "^1.1.8",
-    "tsc-watch": "^4.5.0"
+    "tsc-watch": "^4.6.0"
   }
 }

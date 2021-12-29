@@ -40,7 +40,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     secret: process.env.AUTH_SECRET,
     jwt: {
       secret: process.env.AUTH_JWT_TOKEN_SECRET,
-      encryption: false,
       // By default the JSON Web Token is signed with SHA256 and encrypted with AES.
       // We use HS256 token signature in order to make it compatible with hasura JWT
       async encode(tokenData) {
@@ -57,8 +56,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
     },
     session: {
-      // Use JSON Web Tokens for session instead of database sessions.
-      jwt: true,
+      strategy: "jwt",
     },
     pages: {
       signIn: "/login",
