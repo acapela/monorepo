@@ -18,7 +18,7 @@ spec:
       serviceAccountName: gsm
       containers:
         - name: caddy
-          image: eu.gcr.io/meetnomoreapp/caddy:3.133.1
+          image: eu.gcr.io/meetnomoreapp/caddy:3.187.0
           ports:
             - containerPort: 3000
           envFrom:
@@ -35,45 +35,8 @@ spec:
             periodSeconds: 5
             successThreshold: 3
             timeoutSeconds: 5
-        - name: cloudsql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.27.0
-          command:
-            [
-              "/cloud_sql_proxy",
-              "-ip_address_types=PRIVATE",
-              "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432",
-              "-structured_logs",
-              "-use_http_health_check",
-            ]
-          envFrom:
-            - configMapRef:
-                name: frontend-default
-          securityContext:
-            runAsNonRoot: true
-          livenessProbe:
-            httpGet:
-              path: /liveness
-              port: 8090
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 1
-          readinessProbe:
-            httpGet:
-              path: /readiness
-              port: 8090
-            periodSeconds: 10
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 1
-          startupProbe:
-            httpGet:
-              path: /startup
-              port: 8090
-            periodSeconds: 1
-            timeoutSeconds: 5
-            failureThreshold: 20
         - name: frontend
-          image: eu.gcr.io/meetnomoreapp/monorepo:3.133.1
+          image: eu.gcr.io/meetnomoreapp/monorepo:3.187.0
           command: ["yarn", "run", "start:frontend"]
           envFrom:
             - configMapRef:
