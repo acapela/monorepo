@@ -1,4 +1,4 @@
-FROM hasura/graphql-engine:v2.0.7
+FROM hasura/graphql-engine:v2.1.1
 
 RUN apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/*
 RUN wget https://storage.googleapis.com/berglas/main/linux_amd64/berglas -O /bin/berglas && chmod +x /bin/berglas
