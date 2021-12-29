@@ -1,21 +1,37 @@
 import { Prisma } from "@prisma/client";
 import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
+import { DecisionOptionVoting, DecisionOptionWithVotes } from "~backend/src/slack/decision";
 import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { logger } from "~shared/logger";
-import { isNotFalsy } from "~shared/nullish";
 import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/requests";
 
 import { slackClient } from "../app";
-import { mdDate } from "../md/utils";
 import { convertDbMessageToSlackMessage } from "../message/convertToSlack";
+import { RequestFooter, RequestFooterTopic } from "../RequestFooter";
 import { SlackActionIds, fetchTeamBotToken } from "../utils";
 import { ToggleTaskDoneAtButton, createTopicLink } from "./utils";
 
 type TaskDetail = Task & {
-  message: Message & { topic: Topic; message_task_due_date: MessageTaskDueDate | null };
+  message: Message & {
+    topic: Topic & RequestFooterTopic;
+    message_task_due_date: MessageTaskDueDate | null;
+    decision_option: DecisionOptionWithVotes[];
+  };
 };
+
+const TaskAction = (task: TaskDetail) =>
+  task.type === REQUEST_DECISION
+    ? DecisionOptionVoting(task.message.decision_option, {})
+    : Blocks.Actions().elements(
+        ToggleTaskDoneAtButton(task),
+        Elements.Button({
+          actionId: SlackActionIds.OpenViewRequestModal,
+          value: task.message.topic_id,
+          text: "View Request",
+        })
+      );
 
 export async function LiveTaskMessage(task: TaskDetail) {
   const message = task.message;
@@ -36,24 +52,12 @@ export async function LiveTaskMessage(task: TaskDetail) {
     Md.blockquote(messageText),
   ].join("\n");
 
-  const dueAt = message.message_task_due_date?.due_at;
   return SlackMessage({ text })
     .blocks(
       Blocks.Section({ text }),
+      RequestFooter(topic, message, task.user_id),
       Blocks.Divider(),
-      topic.closed_at
-        ? Blocks.Section({ text: "The topic has been closed ✅️" })
-        : [
-            !!dueAt && Blocks.Context().elements(`Due ${mdDate(dueAt)}`),
-            Blocks.Actions().elements(
-              task.type === REQUEST_DECISION ? undefined : ToggleTaskDoneAtButton(task),
-              Elements.Button({
-                actionId: SlackActionIds.OpenViewRequestModal,
-                value: topic.id,
-                text: "View Request",
-              })
-            ),
-          ].filter(isNotFalsy)
+      topic.closed_at ? Blocks.Section({ text: "The topic has been closed ✅️" }) : TaskAction(task)
     )
     .buildToObject();
 }
@@ -65,7 +69,14 @@ export async function tryUpdateTaskSlackMessages(where: {
   const [taskSlackMessages, messages] = await Promise.all([
     db.task_slack_message.findMany({ where: where.taskSlackMessage, include: { task: true } }),
     // fetch messages separately as topic/message changes can cause many updates for the same message with multiple tasks
-    db.message.findMany({ where: where.message, include: { topic: true, message_task_due_date: true } }),
+    db.message.findMany({
+      where: where.message,
+      include: {
+        topic: { include: { user: true, topic_member: true } },
+        message_task_due_date: true,
+        decision_option: { include: { decision_vote: { include: { user: true } } } },
+      },
+    }),
   ]);
 
   const [firstMessage] = messages;

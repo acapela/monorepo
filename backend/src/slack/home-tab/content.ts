@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { differenceInHours } from "date-fns";
 import { orderBy, partition, sumBy } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
@@ -10,7 +9,7 @@ import { routes } from "~shared/routes";
 import { pluralize } from "~shared/text/pluralize";
 
 import { createSlackLink } from "../md/utils";
-import { SlackActionIds } from "../utils";
+import { SlackActionIds, isRequestDueSoon, isRequestUnread } from "../utils";
 import { RequestListParams, RequestsList } from "./RequestList";
 import { TopicWithOpenTask, UnreadMessage } from "./types";
 import { Padding, getMostUrgentMessage } from "./utils";
@@ -76,7 +75,7 @@ interface SummaryBuilderInput {
   includeWelcome?: boolean;
 }
 
-export async function buildSummaryBlocksForSlackUserSlackUser(slackUserId: string, params: SummaryBuilderInput) {
+export async function buildSummaryBlocksForSlackUser(slackUserId: string, params: SummaryBuilderInput) {
   const teamMember = await db.team_member.findFirst({ where: { team_member_slack: { slack_user_id: slackUserId } } });
   if (!teamMember) {
     return null;
@@ -121,15 +120,12 @@ async function buildSummaryListsBlocks(requestListsParams: RequestListParams[]) 
 }
 
 function isTopicAHighlight(topic: TopicWithOpenTask, currentUserId: string) {
-  const mostUrgentMessage = getMostUrgentMessage(topic);
-  if (!mostUrgentMessage) {
-    return false;
-  }
-  const userTask = mostUrgentMessage.task.find((task) => task.user_id == currentUserId);
-  const dueAt = mostUrgentMessage.message_task_due_date?.due_at;
-  topic.isUnread = userTask && !userTask.seen_at;
-  topic.isDueSoon = dueAt && differenceInHours(dueAt, new Date()) <= 24;
-  return topic.isUnread || topic.isDueSoon;
+  const mostUrgentMessage = getMostUrgentMessage(topic.message);
+  return (
+    mostUrgentMessage &&
+    (isRequestUnread(mostUrgentMessage.task, currentUserId) ||
+      isRequestDueSoon(mostUrgentMessage.message_task_due_date))
+  );
 }
 
 export async function buildSummaryBlocksForUser(
@@ -188,7 +184,10 @@ export async function buildSummaryBlocksForUser(
   );
 
   // Sort, so items with due date are first
-  const allReceived = orderBy(unsortedReceived, (topic) => getMostUrgentMessage(topic)?.message_task_due_date?.due_at);
+  const allReceived = orderBy(
+    unsortedReceived,
+    (topic) => getMostUrgentMessage(topic.message)?.message_task_due_date?.due_at
+  );
 
   const unreadMessagesByTopic: UnreadMessage[] =
     await db.$queryRaw`SELECT topic_id, unread_messages FROM unread_messages WHERE user_id=${currentUserId} AND team_id=${inputTeamId};`;

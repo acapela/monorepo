@@ -46,9 +46,7 @@ async function maybeUpdateSlackMessage(message: Message) {
   if (!isFirstMessage) {
     return;
   }
-  const topic = await db.topic.findFirst({ where: { id: message.topic_id } });
-  assert(topic, `must have topic ${message.topic_id}`);
-  await tryUpdateTopicSlackMessage(topic);
+  await tryUpdateTopicSlackMessage(message.topic_id);
 }
 
 export async function handleMessageChanges(event: HasuraEvent<Message>) {

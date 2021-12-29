@@ -42,7 +42,15 @@ async function sendTaskNotification(topic: Topic, task: Task, toUser: User, from
             assertDefined(
               await db.task.findUnique({
                 where: { id: task.id },
-                include: { message: { include: { topic: true, message_task_due_date: true } } },
+                include: {
+                  message: {
+                    include: {
+                      topic: { include: { user: true, topic_member: true } },
+                      message_task_due_date: true,
+                      decision_option: { include: { decision_vote: { include: { user: true } } } },
+                    },
+                  },
+                },
               }),
               "must still find the task"
             )
@@ -132,7 +140,7 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
     });
   }
 
-  await tryUpdateTopicSlackMessage(topic);
+  await tryUpdateTopicSlackMessage(topic.id);
 
   const amountOfOpenTasksLeft = await db.task.count({
     where: {

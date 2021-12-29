@@ -1,9 +1,10 @@
 import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs, ViewOutput } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
+import { differenceInHours } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { Md } from "slack-block-builder";
 
-import { User, db } from "~db";
+import { MessageTaskDueDate, Task, User, db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { getNextWorkDayEndOfDay } from "~shared/dates/times";
 import { getLabelForPriority } from "~shared/priorities";
@@ -207,3 +208,9 @@ export function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
 
   return "unknown";
 }
+
+export const isRequestDueSoon = (dueDate: MessageTaskDueDate | null) =>
+  Boolean(dueDate && differenceInHours(dueDate.due_at, new Date()) <= 24);
+
+export const isRequestUnread = (tasks: Task[], currentUserId: string) =>
+  tasks.find((task) => task.user_id == currentUserId)?.seen_at == null;

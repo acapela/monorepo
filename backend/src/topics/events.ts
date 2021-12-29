@@ -142,9 +142,9 @@ async function notifyTopicUpdates(event: HasuraEvent<Topic>) {
 
   assert(event.itemBefore, `Updated topic ${topic.id} didn't contain previous topic data`);
 
-  if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at"])) {
+  if (!isEqualForPick(topic, event.itemBefore, ["name", "closed_at", "priority"])) {
     await Promise.all([
-      tryUpdateTopicSlackMessage(topic),
+      tryUpdateTopicSlackMessage(topic.id),
       tryUpdateTaskSlackMessages({
         taskSlackMessage: { task: { message: { topic_id: topic.id } } },
         message: { topic_id: topic.id },

@@ -65,7 +65,7 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
       origin: "web-app",
     });
     await Promise.all([
-      tryUpdateTopicSlackMessage(topic),
+      tryUpdateTopicSlackMessage(topic.id),
       tryUpdateTaskSlackMessages({
         taskSlackMessage: { task: { message_id: messageId } },
         message: { id: messageId },
