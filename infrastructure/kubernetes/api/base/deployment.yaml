@@ -21,6 +21,7 @@ spec:
         app: api
     spec:
       serviceAccountName: gsm
+      terminationGracePeriodSeconds: 15
       containers:
         - name: backend
           image: eu.gcr.io/meetnomoreapp/monorepo:3.133.1
@@ -37,17 +38,22 @@ spec:
             httpGet:
               port: 8080
               path: /healthz
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
               port: 8080
               path: /healthz
-            initialDelaySeconds: 20
             periodSeconds: 5
             successThreshold: 3
             timeoutSeconds: 10
+          startupProbe:
+            httpGet:
+              port: 8080
+              path: /healthz
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 15
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.27.0
           command:

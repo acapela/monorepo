@@ -6,7 +6,7 @@ resources:
   - ../base
 replicas:
   - name: api
-    count: 4
+    count: 6
 configMapGenerator:
   - name: api-default
     envs:
