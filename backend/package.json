@@ -6,12 +6,12 @@
   "scripts": {
     "test": "APP=backend jest src --runInBand",
     "test:watch": "APP=backend jest src --runInBand --watch",
-    "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
+    "start": "yarn hasura:migrate && berglas exec -- node -r ts-node/register/transpile-only dist/index.js",
     "start:ci": "./start-ci.sh",
     "dev:inspect": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh",
-    "build": "swc -f ./src/* --out-dir dist"
+    "build": "swc src --out-dir dist --delete-dir-on-start"
   },
   "peerDependencies": {
     "axios": "*",
