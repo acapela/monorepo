@@ -7,7 +7,7 @@
       "dynamicImport": true
     },
     "transform": null,
-    "target": "es2020",
+    "target": "es2019",
     "loose": false,
     "externalHelpers": false,
     "keepClassNames": false
