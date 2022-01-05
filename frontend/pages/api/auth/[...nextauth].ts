@@ -148,10 +148,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           access_type: "offline", // !!! Get new refresh token each time user gives content for our access scopes
           scope: GOOGLE_AUTH_SCOPES.map((scopeName) => `https://www.googleapis.com/auth/${scopeName}`).join(" "),
         })}`,
+        allowDangerousEmailAccountLinking: true,
       }),
       SlackProvider({
         clientId: process.env.SLACK_CLIENT_ID,
         clientSecret: process.env.SLACK_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true,
       }),
     ],
 

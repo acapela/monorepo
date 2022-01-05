@@ -14457,9 +14457,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.0.6":
-  version: 4.0.6
-  resolution: "next-auth@npm:4.0.6"
+"next-auth@npm:next-auth-danger-link@4.0.6-1":
+  version: 4.0.6-1
+  resolution: "next-auth-danger-link@npm:4.0.6-1"
   dependencies:
     "@babel/runtime": ^7.16.3
     "@panva/hkdf": ^1.0.1
@@ -14477,7 +14477,7 @@ fsevents@^1.2.7:
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: bd2ec3ae9ee01e0ddfcd5544cf8387feb464820743380f79201d1075ce7fbd97bfce6415a0a98371995c5b8c3c1011ffaf24e857f9cbbb6add81b5fa993903be
+  checksum: 454188836e2fec50677f9ea2a6c436869ea900eedb99f101c8e8ffec7dd0ed4a335faa6fc0a218093c0a237ced5cf1bbe4d75ae1b012ba8377792d0f42c42510
   languageName: node
   linkType: hard
 
@@ -20959,7 +20959,7 @@ fsevents@^1.2.7:
     mobx-react: ^7.2.1
     msw: ^0.36.3
     next: ^12.0.7
-    next-auth: ^4.0.6
+    next-auth: "npm:next-auth-danger-link@4.0.6-1"
     next-compose-plugins: ^2.2.1
     next-transpile-modules: ^9.0.0
     next-unused: ^0.0.6
