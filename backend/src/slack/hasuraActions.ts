@@ -26,7 +26,14 @@ export const getTeamSlackInstallationURLHandler: ActionHandler<
   async handle(userId, { input: { team_id, redirectURL } }) {
     assert(userId, "userId is required");
     const team = await db.team.findFirst({
-      where: { id: team_id, team_member: { some: { user_id: userId } } },
+      where: {
+        id: team_id,
+        OR: [
+          // During the initial setup flow the owner might not have been added as a team_member yet
+          { owner_id: userId },
+          { team_member: { some: { user_id: userId } } },
+        ],
+      },
       include: { team_member: true, team_slack_installation: true },
     });
     assert(team, new UnprocessableEntityError(`Team ${team_id} for member ${userId} not found`));
