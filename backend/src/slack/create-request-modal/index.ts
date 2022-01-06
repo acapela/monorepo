@@ -80,7 +80,7 @@ export function setupCreateRequestModal(app: App) {
       channelId,
       slackUserId,
       slackTeamId,
-      origin: "slack-command",
+      origin: "slack-modal-slash-command",
       messageText: body.text,
     });
 
@@ -98,7 +98,7 @@ export function setupCreateRequestModal(app: App) {
     await openCreateRequestModal(assertToken(context), shortcut.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
-      origin: "slack-shortcut",
+      origin: "slack-global-shortcut",
     });
 
     if (user) {
@@ -139,7 +139,7 @@ export function setupCreateRequestModal(app: App) {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
       messageText: messageBody,
-      origin: "slack-message-action",
+      origin: "slack-modal-message-action",
       fromMessageBelongingToSlackUserId: isOriginalMessageCreatedByAnotherUser ? userFromOriginalMessage : undefined,
     });
 

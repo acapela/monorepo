@@ -85,7 +85,7 @@ export async function handleSlackCommandAsQuickEntry(request: SlashCommandReques
     creatorSlackUserId: slackUserId,
     requestType,
     requestForSlackUserIds: mentionedPeopleSlackIds,
-    origin: "slack-command",
+    origin: "slack-quick-message-action",
     token,
     originalChannelId: channelId,
     conversationId: channelId,

@@ -187,7 +187,8 @@ export async function createAndTrackRequestInSlack({
   });
 
   // When a request is created from a message, add message author as observer
-  const hasRequestOriginatedFromMessageAction = origin === "slack-message-action";
+  const hasRequestOriginatedFromMessageAction =
+    origin === "slack-quick-message-action" || origin === "slack-modal-message-action";
 
   const usersWithMentionType = await findOrInviteUsers({
     slackToken: token,
@@ -217,9 +218,6 @@ export async function createAndTrackRequestInSlack({
     ownerSlackUserId
   );
 
-  const isSelfRequest =
-    slackUserIdsWithMentionType.length === 1 && slackUserIdsWithMentionType[0].slackUserId === ownerSlackUserId;
-
   if (!originalChannelId) {
     const topicURL = await backendGetTopicUrl(topic);
     await client.views.open({
@@ -244,8 +242,9 @@ export async function createAndTrackRequestInSlack({
       throw error;
     }
   }
+  const isPrivateTask = origin === "slack-quick-message-action";
 
-  if (isSelfRequest) {
+  if (isPrivateTask) {
     const mentionType = slackUserIdsWithMentionType[0].mentionType;
     const messageText =
       Md.bold(`[Acapela request] ${await createTopicLink(topic)}`) +
