@@ -3,8 +3,8 @@ import { APIClient, RegionEU, SendEmailRequest } from "customerio-node";
 import { assertDefined } from "./assert";
 
 const customerioApiKey = assertDefined(
-  process.env.CUSTOMERIO_API_KEY,
-  "Cannot use mailer if there is no CUSTOMERIO_API_KEY env variable."
+  process.env.CUSTOMERIO_APP_API_KEY,
+  "Cannot use mailer if there is no CUSTOMERIO_APP_API_KEY env variable."
 );
 
 const customerioClient = new APIClient(customerioApiKey, { region: RegionEU });

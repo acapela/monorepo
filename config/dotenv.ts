@@ -51,6 +51,8 @@ const requiredEnvVarNamesBackend = [
   "SONIX_API_KEY",
   "SONIX_CALLBACK_SECRET",
   "FRONTEND_URL",
+  "CUSTOMERIO_CLIENT_API_KEY",
+  "CUSTOMERIO_CLIENT_SITE_ID",
 ] as const;
 
 const requiredEnvVarNamesFrontend = [
@@ -62,7 +64,7 @@ const requiredEnvVarNamesFrontend = [
   "FRONTEND_URL",
 ] as const;
 
-const optionalEnvVarNames = ["SEGMENT_API_KEY", "USERBACK_ACCESS_TOKEN", "CUSTOMERIO_API_KEY"] as const;
+const optionalEnvVarNames = ["SEGMENT_API_KEY", "USERBACK_ACCESS_TOKEN", "CUSTOMERIO_APP_API_KEY"] as const;
 
 // Out of array of variable names, prepare types for process.env
 

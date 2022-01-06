@@ -4,7 +4,7 @@ import { Request, Response, Router } from "express";
 import { logger } from "~shared/logger";
 
 import { HttpStatus } from "../http";
-import { addUserToCustomerio } from "./mailchimp";
+import { addUserToCustomerio } from "./customerio";
 
 export const router = Router();
 
