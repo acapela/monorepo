@@ -47,7 +47,7 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     creatorSlackUserId: slackUserId,
     requestType: "request-action",
     requestForSlackUserIds: requestForSlackUserIds,
-    origin: "slack-quick-slash-command",
+    origin: "slack-quick-message-action",
     token,
     originalChannelId: channelId,
     conversationId: channelId,
