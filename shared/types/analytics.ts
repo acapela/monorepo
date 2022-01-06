@@ -13,6 +13,7 @@ export type Origin =
   | "slack-home-tab"
   | "slack-view-request-modal"
   | "web-app"
+  | "landing-page"
   | "unknown";
 
 /**
