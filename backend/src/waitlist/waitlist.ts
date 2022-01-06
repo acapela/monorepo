@@ -1,11 +1,10 @@
 import cors from "cors";
 import { Request, Response, Router } from "express";
 
-import { db } from "~db";
 import { logger } from "~shared/logger";
 
 import { HttpStatus } from "../http";
-import { addUserToMailchimp } from "./mailchimp";
+import { addUserToCustomerio } from "./mailchimp";
 
 export const router = Router();
 
@@ -35,7 +34,7 @@ router.use(
  * This endpoint handles user signup calls from the landing page
  */
 router.post("/v1/waitlist", async (req: Request, res: Response) => {
-  const { email, firstName } = req.body as SignupPayload;
+  const { email } = req.body as SignupPayload;
 
   if (!email) {
     logger.info("Waitlist endpoint called with missing parameters");
@@ -44,10 +43,8 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
   logger.info(`Handling waitlist signup for ${email}`);
 
   try {
-    await db.whitelist.create({ data: { email } });
-    // we want to respond with success even when the mailchimp API call fails
     res.status(HttpStatus.CREATED).end();
-    await addUserToMailchimp(email, firstName);
+    await addUserToCustomerio(email);
     logger.info(`User waitlist signup successful`);
   } catch (error) {
     logger.error(error, "Adding a new subscriber failed");

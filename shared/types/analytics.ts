@@ -4,10 +4,12 @@ import { RequestType } from "../requests";
 import { Maybe } from "../types";
 
 export type Origin =
-  | "slack-command"
-  | "slack-shortcut"
+  | "slack-modal-slash-command"
+  | "slack-quick-slash-command"
+  | "slack-global-shortcut"
   | "slack-live-message"
-  | "slack-message-action"
+  | "slack-quick-message-action"
+  | "slack-modal-message-action"
   | "slack-home-tab"
   | "slack-view-request-modal"
   | "web-app"
