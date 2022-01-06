@@ -82,3 +82,21 @@ kkstaging describe deployments api
 # show the staging ingress configuration
 kkstaging describe ingress default
 ```
+
+# Handling production infrastructure issues
+
+We have often seen issues with particular nodes affecting the uptime of production infrastructure. The first step is to
+identify the failing deployment over in the [Kubernetes Engine Workloads overview](https://console.cloud.google.com/kubernetes/workload/overview?project=meetnomoreapp).
+Once identified, click into it to see the _Deployment details_, you can click into it and try manually deleting the
+failing pod (no worries, a new one should be re-created soon thereafter). To do that scroll to the _Managed pods_
+section and click on the pod which is indicated as failing in the _Status_ column. On the _Pod details_ page you can
+then click on the _Delete_ button: ![pod-details](./docs/pod-details.png)
+
+If deleting the pod does not work, or it takes to long, you can also navigate back to the _Deployment details_ page and
+delete the whole deployment. **This action will not lead to auto-recovery**, but instead you will have to trigger a new
+release from the [_Deploy_ action over in GitHub](https://github.com/weareacapela/monorepo/actions/workflows/deploy.yaml).
+You can choose the same version that was already deployed, if you don't want to upgrade.
+
+From both the _Deployment details_ and _Pod details_ page you can also see the _Logs_ section which is invaluable to
+identify the exact cause of the failure, and a must both for learning from the failure and hopefully preventing it from
+reoccurring.
