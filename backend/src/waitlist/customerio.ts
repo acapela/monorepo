@@ -1,4 +1,5 @@
 import { RegionEU, TrackClient } from "customerio-node";
+import { getUnixTime } from "date-fns";
 
 import { assertDefined } from "~shared/assert";
 import { Origin } from "~shared/types/analytics";
@@ -15,7 +16,7 @@ const customerioClientSiteId = assertDefined(
 export async function addUserToCustomerio(email: string): Promise<void> {
   const cio = new TrackClient(customerioClientSiteId, customerioClientApiKey, { region: RegionEU });
   cio.identify(email, {
-    created_at: Date.now(),
+    created_at: getUnixTime(Date.now()),
     origin: "landing-page" as Origin,
   });
 }
