@@ -5,7 +5,7 @@ on:
       stage:
         description: "the stage for the deployment"
         required: true
-        default: "staging"
+        default: "production"
       app:
         description: "the application that should be deployed (frontend, backend, all)"
         required: true
