@@ -18,7 +18,8 @@
       "richEditor",
       "gql",
       "e2e",
-      "clientdb"
+      "clientdb",
+      "desktop"
     ]
   },
   "scripts": {
@@ -40,6 +41,7 @@
     "docker:down": "docker-compose down -v",
     "frontend": "yarn workspace ~frontend",
     "backend": "yarn workspace ~backend",
+    "desktop": "yarn workspace ~desktop",
     "tooling": "yarn workspace ~tooling",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
