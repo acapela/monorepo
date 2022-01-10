@@ -28,18 +28,6 @@ import { $ } from "zx";
 const ELECTRON_DIR = path.resolve(__dirname, "electron");
 const CLIENT_DIR = path.resolve(__dirname, "client");
 
-/**
- * The flow is as follows:
- *
- * - we bundle both electron and client code into 'dist' folder
- * - for 'client' code
- *  - we setup dev server on port 3000 with fast-refresh.
- *    - you can open localhost:3000 technically to see the output
- * - for 'electron' code
- *  - we bundle the code and then open electron pointing for bundled code (electron requires js, not ts file)
- *    - after each change of 'electron' code - we restart electron app (electron app cannot be hot-reloaded - it is more like node.js server code)
- */
-
 // Let's create 2 independent bundlers
 
 // Electron code bundler
