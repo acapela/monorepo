@@ -5,8 +5,8 @@ import IS_DEV from "electron-is-dev";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
-const BUILD_PATH = path.resolve(__dirname, "../build");
-const INDEX_HTML_FILE = path.resolve(BUILD_PATH, "index.html");
+const DIST_PATH = path.resolve(__dirname, "../dist");
+const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
 
 // Note - in case we'll use multiple windows, create some solid abstraction on setting and unsetting open windows.
 // Reference to main, opened window
