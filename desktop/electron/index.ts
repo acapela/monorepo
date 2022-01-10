@@ -52,7 +52,3 @@ app.on("activate", () => {
     initializeMainWindow();
   }
 });
-
-2;
-
-3;
