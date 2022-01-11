@@ -21,7 +21,7 @@ function initializeMainWindow() {
   mainWindow.loadURL(
     IS_DEV
       ? // In dev mode - load from local dev server
-        "http://localhost:3000"
+        "http://localhost:4000"
       : // In production - load static, bundled file
         `file://${INDEX_HTML_FILE}`
   );

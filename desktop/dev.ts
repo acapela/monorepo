@@ -11,6 +11,10 @@ import { $ } from "zx";
  * Before you continue, strongly recommended read https://www.electronjs.org/docs/latest/tutorial/quick-start
  * (especially understanding what is main and renderer process)
  *
+ * Nomenclature - we're using changed nomenclature from default Electron one (https://github.com/weareacapela/monorepo/pull/893#discussion_r781890805)
+ * electron's main process = electron
+ * electron's renderer process = client
+ *
  * Overview:
  * - we bundle both 'electron' and 'client' code
  * - we watch for changes and re-bundle
@@ -52,10 +56,10 @@ const clientBundler = new Parcel({
   defaultConfig: "@parcel/config-default",
   // Enable hot reloading and dev server on localhost
   serveOptions: {
-    port: 3000,
+    port: 4000,
   },
   hmrOptions: {
-    port: 3000,
+    port: 4000,
   },
   defaultTargetOptions: {
     distDir: path.resolve(__dirname, "dist/client"),
