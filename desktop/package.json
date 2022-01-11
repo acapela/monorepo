@@ -1,0 +1,23 @@
+{
+  "name": "~desktop",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "react": "*",
+    "styled-components": "*"
+  },
+  "scripts": {
+    "dev": "ts-node dev.ts"
+  },
+  "dependencies": {
+    "@parcel/config-default": "^2.1.1",
+    "@parcel/core": "^2.1.1",
+    "@types/node-cleanup": "^2.1.2",
+    "electron": "^16.0.6",
+    "electron-is-dev": "^2.0.0",
+    "node-cleanup": "^2.1.2"
+  },
+  "devDependencies": {
+    "parcel": "^2.1.1"
+  }
+}
