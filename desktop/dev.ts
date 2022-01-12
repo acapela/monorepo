@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import { Parcel } from "@parcel/core";
+import nodeCleanup from "node-cleanup";
 import { $ } from "zx";
 
 /**
@@ -41,11 +42,10 @@ const electronBundler = new Parcel({
   defaultConfig: "@parcel/config-default",
   targets: {
     default: {
-      // !Important - this code runs in node.js (not browser) env - we don't want to include node_modules in the bundle.
-      includeNodeModules: false,
       distDir: path.resolve(__dirname, "dist/electron"),
       // It is never loaded remotely - we can disable all sort of optimizations of the bundle
       optimize: false,
+      context: "electron-main",
     },
   },
 });
@@ -63,6 +63,16 @@ const clientBundler = new Parcel({
   },
   defaultTargetOptions: {
     distDir: path.resolve(__dirname, "dist/client"),
+  },
+  targets: {
+    default: {
+      // !Important - this code runs in node.js (not browser) env - we don't want to include node_modules in the bundle.
+      // includeNodeModules: true,
+      distDir: path.resolve(__dirname, "dist/client"),
+      context: "browser",
+      scopeHoist: true,
+      outputFormat: "commonjs",
+    },
   },
 });
 
@@ -82,6 +92,7 @@ async function start() {
 
     if (event.type === "buildFailure") {
       console.info(event.diagnostics);
+      return;
     }
 
     console.info("Client code compiled successfully");
@@ -133,6 +144,15 @@ async function startOrRestartElectron() {
     console.info("Electron process error", error);
   });
 }
+
+nodeCleanup(() => {
+  console.log("cleanup");
+  if (currentElectronInstance) {
+    currentElectronInstance.kill().then(() => {
+      console.log("done");
+    });
+  }
+});
 
 function removeDirectory(dir: string) {
   if (fs.existsSync(dir)) {
