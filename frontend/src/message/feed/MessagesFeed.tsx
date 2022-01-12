@@ -3,11 +3,11 @@ import { observer } from "mobx-react";
 import React, { Fragment, useRef } from "react";
 import styled from "styled-components";
 
-import { layoutAnimations } from "~frontend/animations/layout";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
-import { niceFormatDate } from "~shared/dates/format";
-import { theme } from "~ui/theme";
+import { layoutAnimations } from "@aca/frontend/animations/layout";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { TopicEventEntity } from "@aca/frontend/clientdb/topicEvent";
+import { niceFormatDate } from "@aca/shared/dates/format";
+import { theme } from "@aca/ui/theme";
 
 import { Message } from "./Message";
 import { TopicEventFeedItem } from "./TopicEventFeedItem";

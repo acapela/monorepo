@@ -3,13 +3,13 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
-import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { isNotNullish } from "~shared/nullish";
-import { FadePresenceAnimator } from "~ui/animations";
-import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
-import { Popover } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { AvatarList } from "@aca/frontend/ui/users/AvatarList";
+import { isNotNullish } from "@aca/shared/nullish";
+import { FadePresenceAnimator } from "@aca/ui/animations";
+import { UIDropdownPanelBody } from "@aca/ui/popovers/DropdownPanelBody";
+import { Popover } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
 
 import { MessageTask } from "./MessageTask";
 

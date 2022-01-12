@@ -2,14 +2,14 @@ import React from "react";
 import { useRef } from "react";
 import styled from "styled-components";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
-import { styledObserver } from "~shared/component";
-import { groupByFilter } from "~shared/groupByFilter";
-import { formatNumberWithMaxValue } from "~shared/numbers";
-import { CircleLabel } from "~ui/icons/CircleLabel";
-import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { Avatar, AvatarSize } from "@aca/frontend/ui/users/Avatar";
+import { styledObserver } from "@aca/shared/component";
+import { groupByFilter } from "@aca/shared/groupByFilter";
+import { formatNumberWithMaxValue } from "@aca/shared/numbers";
+import { CircleLabel } from "@aca/ui/icons/CircleLabel";
+import { PopoverMenuOption } from "@aca/ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "@aca/ui/popovers/PopoverMenuTrigger";
 
 import { UserAvatar } from "./UserAvatar";
 

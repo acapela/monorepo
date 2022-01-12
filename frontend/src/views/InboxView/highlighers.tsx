@@ -2,10 +2,10 @@ import { differenceInHours } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { cachedComputed } from "~clientdb";
-import { TaskEntity } from "~frontend/clientdb/task";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { IconBell, IconComment, IconDot } from "~ui/icons";
+import { cachedComputed } from "@aca/clientdb";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { IconBell, IconComment, IconDot } from "@aca/ui/icons";
 
 const checkDueWithinNextDay = (task: TaskEntity) =>
   task.dueDate ? differenceInHours(task.dueDate, new Date()) <= 24 : false;

@@ -1,8 +1,8 @@
 import { Elements } from "slack-block-builder";
 
-import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { Task, Topic, User } from "~db";
-import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/requests";
+import { backendGetTopicUrl } from "@aca/backend/src/topics/url";
+import { Task, Topic, User } from "@aca/db";
+import { COMPLETED_REQUEST_LABEL, RequestType, UNCOMPLETED_REQUEST_LABEL } from "@aca/shared/requests";
 
 import { createSlackLink } from "../md/utils";
 import { REQUEST_TYPE_EMOJIS } from "../utils";

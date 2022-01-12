@@ -5,15 +5,15 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { relativeFormatDate } from "~shared/dates/format";
-import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/requests";
-import { wait } from "~shared/time";
-import { Button } from "~ui/buttons/Button";
-import { TextButton } from "~ui/buttons/TextButton";
-import { theme } from "~ui/theme";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { useTopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { relativeFormatDate } from "@aca/shared/dates/format";
+import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "@aca/shared/requests";
+import { wait } from "@aca/shared/time";
+import { Button } from "@aca/ui/buttons/Button";
+import { TextButton } from "@aca/ui/buttons/TextButton";
+import { theme } from "@aca/ui/theme";
 
 import { TopicEventTemplate } from "./TopicEventTemplate";
 

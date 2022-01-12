@@ -1,4 +1,4 @@
-import { EntitySyncConfig, defineEntity } from "~clientdb";
+import { EntitySyncConfig, defineEntity } from "@aca/clientdb";
 
 interface CommonData {
   id: string;

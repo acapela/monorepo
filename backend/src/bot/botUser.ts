@@ -1,4 +1,4 @@
-import { db } from "~db";
+import { db } from "@aca/db";
 
 /**
  * We hardcode bot user id. This is to avoid having to perform lookups to ensure bot is created in database already or not.

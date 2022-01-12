@@ -1,7 +1,7 @@
 import { RefObject, useEffect } from "react";
 
-import { createElementEvent } from "~shared/domEvents";
-import { createTimeout } from "~shared/time";
+import { createElementEvent } from "@aca/shared/domEvents";
+import { createTimeout } from "@aca/shared/time";
 
 interface Options {
   isEnabled?: boolean;

@@ -2,9 +2,9 @@ import { observer } from "mobx-react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { useListWithNavigation } from "@aca/shared/hooks/useListWithNavigation";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 interface Props<T> {
   items: T[];

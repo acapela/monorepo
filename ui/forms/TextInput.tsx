@@ -2,10 +2,10 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import { ChangeEvent, ReactNode } from "react";
 import styled from "styled-components";
 
-import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
-import { styledForwardRef } from "~shared/component";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
-import { theme } from "~ui/theme";
+import { combineCallbacks } from "@aca/shared/callbacks/combineCallbacks";
+import { styledForwardRef } from "@aca/shared/component";
+import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
+import { theme } from "@aca/ui/theme";
 
 import { FieldWithLabel } from "./FieldWithLabel";
 

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useCurrentTeam } from "~frontend/team/CurrentTeam";
-import { getHash } from "~shared/hash";
-import { getLocalStorageValueManager } from "~shared/localStorage";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { getHash } from "@aca/shared/hash";
+import { getLocalStorageValueManager } from "@aca/shared/localStorage";
 
 interface Input<S> {
   key?: string;

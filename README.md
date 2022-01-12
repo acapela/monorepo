@@ -178,7 +178,7 @@ eg.
 
 ```json
 {
-  "name": "~utils",
+  "name": "@aca/utils",
   "version": "0.1.0"
 }
 ```
@@ -188,14 +188,14 @@ and then `frontend/package.json`
 ```json
 {
   "dependencies": {
-    "~utils": "0.1.0"
+    "@aca/utils": "0.1.0"
   }
 }
 ```
 
-In such a setup, after calling `yarn install` - **symlink** will be created, meaning `./frontend/node_modules/~utils` is symlink to `./utils` (not clone!).
+In such a setup, after calling `yarn install` - **symlink** will be created, meaning `./frontend/node_modules/@aca/utils` is symlink to `./utils` (not clone!).
 
-It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/~utils`.
+It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/@aca/utils`.
 
 ### Dependencies typescript build pipeline
 

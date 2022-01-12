@@ -5,32 +5,32 @@ import router from "next/router";
 import React, { useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
-import { useDb } from "~frontend/clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { usePersistedState } from "~frontend/hooks/usePersistedState";
-import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
-import { MessageTools } from "~frontend/message/composer/Tools";
-import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
+import { PageLayoutAnimator, layoutAnimations } from "@aca/frontend/animations/layout";
+import { useDb } from "@aca/frontend/clientdb";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { usePersistedState } from "@aca/frontend/hooks/usePersistedState";
+import { MessageContentEditor } from "@aca/frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "@aca/frontend/message/composer/Tools";
+import { useMessageEditorManager } from "@aca/frontend/message/composer/useMessageEditorManager";
+import { getDoesMessageContentIncludeDecisionRequests } from "@aca/frontend/message/decisions";
 import {
   FirstCompletionEnoughToggle,
   isRequestTypeCompletableBySingleUser,
   useSingleRequestTypeForManyUsers,
-} from "~frontend/tasks/single-completion";
-import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
-import { createNewRequest } from "~frontend/topics/createRequest";
-import { PriorityPicker } from "~frontend/topics/PriorityPicker";
-import { Priority_Enum } from "~gql";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
-import { useConst } from "~shared/hooks/useConst";
-import { getUUID } from "~shared/uuid";
-import { FadePresenceAnimator, POP_ANIMATION_CONFIG } from "~ui/animations";
-import { Button } from "~ui/buttons/Button";
-import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
-import { onEnterPressed } from "~ui/forms/utils";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+} from "@aca/frontend/tasks/single-completion";
+import { TaskDueDateSetter } from "@aca/frontend/tasks/TaskDueDateSetter";
+import { createNewRequest } from "@aca/frontend/topics/createRequest";
+import { PriorityPicker } from "@aca/frontend/topics/PriorityPicker";
+import { Priority_Enum } from "@aca/gql";
+import { getNodesFromContentByType } from "@aca/richEditor/content/helper";
+import { useConst } from "@aca/shared/hooks/useConst";
+import { getUUID } from "@aca/shared/uuid";
+import { FadePresenceAnimator, POP_ANIMATION_CONFIG } from "@aca/ui/animations";
+import { Button } from "@aca/ui/buttons/Button";
+import { FreeTextInput as TransparentTextInput } from "@aca/ui/forms/FreeInputText";
+import { onEnterPressed } from "@aca/ui/forms/utils";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { DecisionEditor, INITIAL_DECISION_OPTIONS } from "../RequestView/TopicWithMessages/Decision/DecisionEditor";
 import { CreateRequestPrompt } from "./CreateRequestPrompt";

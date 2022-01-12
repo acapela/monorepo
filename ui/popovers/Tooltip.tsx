@@ -2,10 +2,10 @@ import { AnimatePresence } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { createChannel } from "~shared/channel";
-import { createDocumentEvent, createWindowEvent, useElementEvent } from "~shared/domEvents";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { useId } from "~shared/id";
+import { createChannel } from "@aca/shared/channel";
+import { createDocumentEvent, createWindowEvent, useElementEvent } from "@aca/shared/domEvents";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useId } from "@aca/shared/id";
 
 import { TooltipLabel, TooltipLabelProps } from "./TooltipLabel";
 

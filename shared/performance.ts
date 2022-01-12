@@ -1,5 +1,5 @@
-import { getNumbersAverage } from "~shared/numbers";
-import { startRequestAnimationFrameLoop } from "~shared/raf";
+import { getNumbersAverage } from "@aca/shared/numbers";
+import { startRequestAnimationFrameLoop } from "@aca/shared/raf";
 
 function getNow() {
   if (typeof performance === undefined) {

@@ -82,8 +82,8 @@
         "languageIdentifiers": ["typescriptreact", "typescriptreact", "ts", "tsx"],
         "rules": [
           {
-            "search": "~frontend/../../",
-            "replace": "~"
+            "search": "@aca/frontend/../../",
+            "replace": "@aca"
           }
         ]
       }

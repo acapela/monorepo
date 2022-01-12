@@ -1,4 +1,4 @@
-import { wait } from "~shared/time";
+import { wait } from "@aca/shared/time";
 
 export default function ObscureErrorTestPage() {
   const triggerMayhem = async () => {

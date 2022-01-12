@@ -2,7 +2,7 @@ import { App } from "@slack/bolt";
 import { View } from "@slack/types";
 import { HomeTab } from "slack-block-builder";
 
-import { assertDefined } from "~shared/assert";
+import { assertDefined } from "@aca/shared/assert";
 
 import { slackClient } from "../app";
 import { buildSummaryBlocksForSlackUser, missingAuthSlackBlocks } from "./content";

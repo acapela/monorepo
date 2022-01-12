@@ -1,6 +1,6 @@
 import { pick } from "lodash";
 
-import { isPlainObjectEqual } from "~shared/isPlainObjectEqual";
+import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 
 import { generateId } from "./id";
 

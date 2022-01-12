@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { getObjectKey } from "~shared/object";
-import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { CloseIconButton } from "~ui/buttons/CloseIconButton";
-import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "~ui/icons";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
+import { getObjectKey } from "@aca/shared/object";
+import { POP_PRESENCE_STYLES } from "@aca/ui/animations";
+import { CloseIconButton } from "@aca/ui/buttons/CloseIconButton";
+import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "@aca/ui/icons";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
 
 import { ToastData, ToastType } from "./data";
 

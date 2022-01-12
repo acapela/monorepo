@@ -1,4 +1,4 @@
-import { PersistanceAdapterInfo, PersistanceTableAdapter } from "~clientdb";
+import { PersistanceAdapterInfo, PersistanceTableAdapter } from "@aca/clientdb";
 
 import { TestDogEntity, TestOwnerEntity } from "./entities";
 

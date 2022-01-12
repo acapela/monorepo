@@ -1,4 +1,4 @@
-import { Message, MessageTaskDueDate, Task, Topic, TopicMember, User } from "~db";
+import { Message, MessageTaskDueDate, Task, Topic, TopicMember, User } from "@aca/db";
 
 export type UnreadMessage = {
   topic_id: string;

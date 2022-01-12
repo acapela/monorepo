@@ -1,16 +1,16 @@
 import { action, runInAction } from "mobx";
 
-import { DatabaseLinker } from "~clientdb/entity/entitiesConnections";
-import { TopicEntity, topicEntity } from "~frontend/clientdb/topic";
-import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
-import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
-import { DecisionOptionDraft } from "~frontend/message/decisions";
-import { TopicFragment } from "~gql";
-import { RichEditorNode } from "~richEditor/content/types";
-import { runUntracked } from "~shared/mobxUtils";
-import { getTopicNameFromContent } from "~shared/routes/topicSlug";
-import { slugify } from "~shared/slugify";
-import { getUUID } from "~shared/uuid";
+import { DatabaseLinker } from "@aca/clientdb/entity/entitiesConnections";
+import { TopicEntity, topicEntity } from "@aca/frontend/clientdb/topic";
+import { EditorAttachmentInfo } from "@aca/frontend/message/composer/attachments";
+import { createMessageAndAttachMeta } from "@aca/frontend/message/createNewMessage";
+import { DecisionOptionDraft } from "@aca/frontend/message/decisions";
+import { TopicFragment } from "@aca/gql";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { runUntracked } from "@aca/shared/mobxUtils";
+import { getTopicNameFromContent } from "@aca/shared/routes/topicSlug";
+import { slugify } from "@aca/shared/slugify";
+import { getUUID } from "@aca/shared/uuid";
 
 async function getAvailableSlugForTopicName(db: DatabaseLinker, topicName: string) {
   const optimisticSlug = await slugify(topicName);

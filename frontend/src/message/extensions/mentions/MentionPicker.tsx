@@ -3,22 +3,22 @@ import { observer } from "mobx-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { UserEntity } from "~frontend/clientdb/user";
-import { UserGroupEntity } from "~frontend/clientdb/userGroup";
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
-import { isNotNullish } from "~shared/nullish";
-import { MentionType } from "~shared/requests";
-import { useSearch } from "~shared/search";
-import { EditorMentionData } from "~shared/types/editor";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconUser } from "~ui/icons";
-import { SelectList } from "~ui/SelectList";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { UserGroupEntity } from "@aca/frontend/clientdb/userGroup";
+import { useAssertCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { Avatar } from "@aca/frontend/ui/users/Avatar";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { AutocompletePickerProps } from "@aca/richEditor/autocomplete/component";
+import { getMentionNodesFromContent } from "@aca/shared/editor/mentions";
+import { isNotNullish } from "@aca/shared/nullish";
+import { MentionType } from "@aca/shared/requests";
+import { useSearch } from "@aca/shared/search";
+import { EditorMentionData } from "@aca/shared/types/editor";
+import { EmptyStatePlaceholder } from "@aca/ui/empty/EmptyStatePlaceholder";
+import { IconUser } from "@aca/ui/icons";
+import { SelectList } from "@aca/ui/SelectList";
+import { theme } from "@aca/ui/theme";
 
 import { MentionTypePicker } from "./MentionTypePicker";
 

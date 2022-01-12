@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb/entity/entity";
-import { TeamSlackInstallationFragment } from "~gql";
+import { defineEntity } from "@aca/clientdb";
+import { EntityByDefinition } from "@aca/clientdb/entity/entity";
+import { TeamSlackInstallationFragment } from "@aca/gql";
 
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";

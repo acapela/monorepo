@@ -1,7 +1,7 @@
 import React from "react";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { styledObserver } from "~shared/component";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { styledObserver } from "@aca/shared/component";
 
 import { Avatar, AvatarSize } from "./Avatar";
 

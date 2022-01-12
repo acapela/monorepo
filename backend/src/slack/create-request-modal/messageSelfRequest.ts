@@ -1,4 +1,4 @@
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 
 import { assertToken } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";

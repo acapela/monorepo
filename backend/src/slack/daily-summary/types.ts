@@ -1,4 +1,4 @@
-import { MessageTaskDueDate, TeamMember, TeamMemberSlack, User } from "~db";
+import { MessageTaskDueDate, TeamMember, TeamMemberSlack, User } from "@aca/db";
 
 export type TeamMemberWithSlack = TeamMember & {
   team_member_slack: TeamMemberSlack;

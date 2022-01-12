@@ -1,4 +1,4 @@
-import { typedKeys } from "~shared/object";
+import { typedKeys } from "@aca/shared/object";
 
 export function getChangedData<D>(now: D, before: D): Partial<D> {
   const changedData: Partial<D> = {};

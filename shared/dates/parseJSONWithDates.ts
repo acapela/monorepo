@@ -1,4 +1,4 @@
-import { JsonValue } from "~shared/types";
+import { JsonValue } from "@aca/shared/types";
 
 export function tryParseStringDate(originalValue: unknown): Date | null {
   if (typeof originalValue !== "string") {

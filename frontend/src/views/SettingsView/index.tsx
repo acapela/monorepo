@@ -3,11 +3,11 @@ import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { routes } from "~shared/routes";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronLeft } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { useAssertCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { routes } from "@aca/shared/routes";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconChevronLeft } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { NotificationSettings } from "./NotificationSettings";
 import { SlackSettings } from "./SlackSettings";

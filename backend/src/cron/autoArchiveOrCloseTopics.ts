@@ -1,6 +1,6 @@
 import { addBusinessDays } from "date-fns";
 
-import { db } from "~db";
+import { db } from "@aca/db";
 
 export async function autoArchiveOrCloseTopics() {
   return Promise.all([autoCloseTopics(), autoArchiveTopics()]);

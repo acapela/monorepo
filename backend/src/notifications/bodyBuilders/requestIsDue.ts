@@ -1,8 +1,8 @@
 import { BlockCollection, Blocks, Elements, Md } from "slack-block-builder";
 
-import { createSlackLink } from "~backend/src/slack/md/utils";
-import { niceFormatMinutes } from "~shared/dates/format";
-import { pluralize } from "~shared/text/pluralize";
+import { createSlackLink } from "@aca/backend/src/slack/md/utils";
+import { niceFormatMinutes } from "@aca/shared/dates/format";
+import { pluralize } from "@aca/shared/text/pluralize";
 
 import { NotificationMessage } from "../sendNotification";
 

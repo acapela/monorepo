@@ -4,8 +4,8 @@ import React, { ReactNode, RefObject, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 
-import { openInNewTab } from "~frontend/src/utils/openInNewTab";
-import { theme } from "~ui/theme";
+import { openInNewTab } from "@aca/frontend/src/utils/openInNewTab";
+import { theme } from "@aca/ui/theme";
 
 import { UIDropdownPanelBody } from "./DropdownPanelBody";
 import { Popover, PopoverPlacement } from "./Popover";

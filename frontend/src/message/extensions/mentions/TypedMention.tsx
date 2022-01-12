@@ -3,16 +3,16 @@ import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { AutocompleteNodeProps } from "~richEditor/autocomplete/component";
-import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/requests";
-import { EditorMentionData } from "~shared/types/editor";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { Popover } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { AutocompleteNodeProps } from "@aca/richEditor/autocomplete/component";
+import { MENTION_TYPE_KEY } from "@aca/shared/editor/mentions";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { MENTION_TYPE_LABELS, MentionType } from "@aca/shared/requests";
+import { EditorMentionData } from "@aca/shared/types/editor";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { Popover } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
 
 import { MentionTypePicker } from "./MentionTypePicker";
 

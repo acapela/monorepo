@@ -1,5 +1,5 @@
-import { Attachment, Prisma, db } from "~db";
-import { assert } from "~shared/assert";
+import { Attachment, Prisma, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
 
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { SonixCustomData } from "./customData";

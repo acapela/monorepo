@@ -4,12 +4,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { useCurrentTeam } from "~frontend/team/CurrentTeam";
-import { SlackUserQuery, SlackUserQueryVariables } from "~gql";
-import { theme } from "~ui/theme";
-import { Toggle } from "~ui/toggle";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { useDb } from "@aca/frontend/clientdb";
+import { useCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { SlackUserQuery, SlackUserQueryVariables } from "@aca/gql";
+import { theme } from "@aca/ui/theme";
+import { Toggle } from "@aca/ui/toggle";
 
 import { TeamMemberWorkHoursSettings } from "./TeamMemberWorkHoursSettings";
 import { Panel } from "./ui";

@@ -1,8 +1,8 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-import { IconLoader } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { IconLoader } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   percentage: number;

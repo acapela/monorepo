@@ -11,22 +11,22 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
-import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
-import { AppStateStoreProvider } from "~frontend/appState/AppStateStore";
-import { RequiredSessionProvider } from "~frontend/auth/RequiredSessionProvider";
-import { getUserFromRequest } from "~frontend/authentication/request";
-import { ClientDbProvider } from "~frontend/clientdb";
-import { sentryFallbackErrorRenderer } from "~frontend/errors/sentryFallbackErrorRenderer";
-import initializeUserbackPlugin from "~frontend/scripts/userback";
-import { global } from "~frontend/styles/global";
-import { CurrentTeamProvider } from "~frontend/team/CurrentTeam";
-import { renderWithPageLayout } from "~frontend/utils/pageLayout";
-import { useConst } from "~shared/hooks/useConst";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
-import { PromiseUIRenderer } from "~ui/createPromiseUI";
-import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
-import { AppThemeProvider, theme } from "~ui/theme";
-import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
+import { ApolloClientProvider as ApolloProvider } from "@aca/frontend/apollo/client";
+import { AppStateStoreProvider } from "@aca/frontend/appState/AppStateStore";
+import { RequiredSessionProvider } from "@aca/frontend/auth/RequiredSessionProvider";
+import { getUserFromRequest } from "@aca/frontend/authentication/request";
+import { ClientDbProvider } from "@aca/frontend/clientdb";
+import { sentryFallbackErrorRenderer } from "@aca/frontend/errors/sentryFallbackErrorRenderer";
+import initializeUserbackPlugin from "@aca/frontend/scripts/userback";
+import { global } from "@aca/frontend/styles/global";
+import { CurrentTeamProvider } from "@aca/frontend/team/CurrentTeam";
+import { renderWithPageLayout } from "@aca/frontend/utils/pageLayout";
+import { useConst } from "@aca/shared/hooks/useConst";
+import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
+import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
+import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
+import { AppThemeProvider, theme } from "@aca/ui/theme";
+import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 export interface AppConfig {
   session: Session | null;

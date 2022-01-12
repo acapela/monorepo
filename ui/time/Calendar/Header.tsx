@@ -2,9 +2,9 @@ import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronLeft, IconChevronRight } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconChevronLeft, IconChevronRight } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   currentMonthDate: Date;

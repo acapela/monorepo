@@ -1,4 +1,4 @@
-import { Message_Type_Enum } from "~gql";
+import { Message_Type_Enum } from "@aca/gql";
 
 import { RequestType } from "../requests";
 import { Maybe } from "../types";

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 
-import { ErrorView } from "~frontend/views/ErrorView";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 
 import { isKnownError } from "./knownErrors";
 

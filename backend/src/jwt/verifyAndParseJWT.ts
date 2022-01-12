@@ -1,4 +1,4 @@
-import { UserTokenPayload, verifyJWT } from "~shared/jwt";
+import { UserTokenPayload, verifyJWT } from "@aca/shared/jwt";
 
 import { AuthenticationError } from "../errors/errorTypes";
 

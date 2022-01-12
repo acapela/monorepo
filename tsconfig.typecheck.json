@@ -4,13 +4,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "~frontend/*": ["./frontend/src/*"],
-      "~shared/*": ["./shared/*"],
-      "~ui/*": ["./ui/*"],
-      "~gql/*": ["./gql/*"],
-      "~db/*": ["./db/*"],
-      "~richEditor/*": ["./richEditor/*"],
-      "~config/*": ["./config/*"]
+      "@aca/frontend/*": ["./frontend/src/*"],
+      "@aca/shared/*": ["./shared/*"],
+      "@aca/ui/*": ["./ui/*"],
+      "@aca/gql/*": ["./gql/*"],
+      "@aca/db/*": ["./db/*"],
+      "@aca/richEditor/*": ["./richEditor/*"],
+      "@aca/config/*": ["./config/*"]
     }
   }
 }

@@ -1,11 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { Blocks, Elements, Md, Message as SlackMessage } from "slack-block-builder";
 
-import { DecisionOptionVoting, DecisionOptionWithVotes } from "~backend/src/slack/decision";
-import { Message, MessageTaskDueDate, Task, Topic, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
-import { logger } from "~shared/logger";
-import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "~shared/requests";
+import { DecisionOptionVoting, DecisionOptionWithVotes } from "@aca/backend/src/slack/decision";
+import { Message, MessageTaskDueDate, Task, Topic, db } from "@aca/db";
+import { assert, assertDefined } from "@aca/shared/assert";
+import { logger } from "@aca/shared/logger";
+import { MENTION_TYPE_LABELS, MentionType, REQUEST_DECISION } from "@aca/shared/requests";
 
 import { slackClient } from "../app";
 import { convertDbMessageToSlackMessage } from "../message/convertToSlack";

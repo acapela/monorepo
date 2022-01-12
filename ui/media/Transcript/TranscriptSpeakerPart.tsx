@@ -1,12 +1,12 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { useLastValue } from "~shared/hooks/useLastValue";
-import { useMethod } from "~shared/hooks/useMethod";
+import { useLastValue } from "@aca/shared/hooks/useLastValue";
+import { useMethod } from "@aca/shared/hooks/useMethod";
 import {
   TranscriptSpeakerPart as TranscriptSpeakerPartType,
   TranscriptWord as TranscriptWordType,
-} from "~shared/types/transcript";
+} from "@aca/shared/types/transcript";
 
 import { TranscriptWord } from "./TranscriptWord";
 

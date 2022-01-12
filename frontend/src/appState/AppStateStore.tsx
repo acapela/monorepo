@@ -1,4 +1,4 @@
-import { createStoreContext } from "~shared/sharedState";
+import { createStoreContext } from "@aca/shared/sharedState";
 
 interface CreatingNewTopicInfo {
   enabled: boolean;

@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import { pickUserFiles } from "~shared/files";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconPaperclip } from "~ui/icons";
-import { useIsPhone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { pickUserFiles } from "@aca/shared/files";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconPaperclip } from "@aca/ui/icons";
+import { useIsPhone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 import { AudioRecordingButton } from "./AudioRecordingButton";
 

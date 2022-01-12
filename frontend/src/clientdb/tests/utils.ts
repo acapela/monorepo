@@ -1,5 +1,5 @@
-import { MessageFragment, TaskFragment, TopicFragment, UserFragment } from "~gql";
-import { getUUID } from "~shared/uuid";
+import { MessageFragment, TaskFragment, TopicFragment, UserFragment } from "@aca/gql";
+import { getUUID } from "@aca/shared/uuid";
 
 import { ClientDb } from "..";
 

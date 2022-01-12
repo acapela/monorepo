@@ -1,7 +1,7 @@
 import { Context, Image, Md, Message, Section } from "slack-block-builder";
 
-import { getDevPublicTunnelURL } from "~backend/src/localtunnel";
-import { IS_DEV } from "~shared/dev";
+import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
+import { IS_DEV } from "@aca/shared/dev";
 
 function sentences(...list: string[]) {
   return list.join(" ");

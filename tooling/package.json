@@ -1,5 +1,5 @@
 {
-  "name": "~tooling",
+  "name": "@aca/tooling",
   "version": "0.1.0",
   "license": "UNLICENSED",
   "main": "cli-tooling.ts",
@@ -13,13 +13,13 @@
     "@types/temp": "^0.9.1"
   },
   "dependencies": {
+    "@aca/config": "0.1.0",
     "graphql": "^16.2.0",
     "ink": "^3.2.0",
     "temp": "^0.9.4",
     "temp-dir": "^2.0.0",
     "yargs": "^17.3.1",
-    "zx": "^4.2.0",
-    "~config": "0.1.0"
+    "zx": "^4.2.0"
   },
   "peerDependencies": {
     "axios": "*",

@@ -1,5 +1,5 @@
-import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { CreateTeamView } from "~frontend/views/CreateTeamView/CreateTeamView";
+import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { CreateTeamView } from "@aca/frontend/views/CreateTeamView/CreateTeamView";
 
 export default function TeamCreate() {
   return (

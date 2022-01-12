@@ -3,12 +3,12 @@ import gql from "graphql-tag";
 import { memoize } from "lodash";
 import { observable } from "mobx";
 
-import { EntityByDefinition, cachedComputed, defineEntity } from "~clientdb";
-import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
-import { updateMessageTasks } from "~frontend/message/updateMessageTasks";
-import { MessageFragment } from "~gql";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
+import { decisionOptionEntity } from "@aca/frontend/clientdb/decisionOption";
+import { updateMessageTasks } from "@aca/frontend/message/updateMessageTasks";
+import { MessageFragment } from "@aca/gql";
+import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
+import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
 
 import { attachmentEntity } from "./attachment";
 import { messageReactionEntity } from "./messageReaction";

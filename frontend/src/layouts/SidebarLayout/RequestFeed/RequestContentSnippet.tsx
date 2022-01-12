@@ -1,13 +1,13 @@
 import { JSONContent } from "@tiptap/react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { MessageText } from "~frontend/message/display/types/TextMessageContent";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { styledObserver } from "~shared/component";
-import { getIsMentionNode } from "~shared/editor/mentions";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { MessageText } from "@aca/frontend/message/display/types/TextMessageContent";
+import { isRichEditorContentEmpty } from "@aca/richEditor/content/isEmpty";
+import { styledObserver } from "@aca/shared/component";
+import { getIsMentionNode } from "@aca/shared/editor/mentions";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   topic: TopicEntity;

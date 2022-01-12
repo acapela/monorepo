@@ -1,11 +1,11 @@
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { HorizontalSpacingContainer } from "~frontend/ui/layout";
-import { styledObserver } from "~shared/component";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { select } from "~shared/sharedState";
+import { useTopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
+import { styledObserver } from "@aca/shared/component";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { select } from "@aca/shared/sharedState";
 
 import { ScrollHandle, ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
 import { MESSAGES_VIEW_MAX_WIDTH_PX } from "./ui";

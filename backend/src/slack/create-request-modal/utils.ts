@@ -1,6 +1,6 @@
 import { compact, uniq } from "lodash";
 
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "@aca/shared/text/ellipsis";
 
 import { slackClient } from "../app";
 

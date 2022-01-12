@@ -1,7 +1,7 @@
 import { KnownBlock } from "@slack/bolt";
 import { SlackBlockDto } from "slack-block-builder";
 
-import { User, db } from "~db";
+import { User, db } from "@aca/db";
 
 import { fetchTeamBotToken } from "../slack/utils";
 import { SlackPayload } from "./sendNotification";

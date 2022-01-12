@@ -1,7 +1,7 @@
 import React from "react";
 
-import { MessageEmbedPreviewConfig } from "~frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
-import { MessageLinkPreviewIFrame } from "~frontend/message/display/MessageLinksPreviews/MessageLinkPreviewIFrame";
+import { MessageEmbedPreviewConfig } from "@aca/frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
+import { MessageLinkPreviewIFrame } from "@aca/frontend/message/display/MessageLinksPreviews/MessageLinkPreviewIFrame";
 
 import { getLoomEmbedUrl } from "./getLoomEmbedUrl";
 

@@ -2,13 +2,13 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { SuggestionProps } from "@tiptap/suggestion";
 import { ComponentType, useRef, useState } from "react";
 
-import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { useComparingEffect } from "~shared/hooks/useComparingEffect";
-import { useResizeCallback } from "~shared/hooks/useResizeCallback";
-import { useValueRef } from "~shared/hooks/useValueRef";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { Popover } from "~ui/popovers/Popover";
+import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
+import { useComparingEffect } from "@aca/shared/hooks/useComparingEffect";
+import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
+import { useValueRef } from "@aca/shared/hooks/useValueRef";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { Popover } from "@aca/ui/popovers/Popover";
 
 import { AutocompletePickerProps } from "./component";
 import { waitForElementPossitionToSettle } from "./utils";

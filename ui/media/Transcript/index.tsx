@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-import { styledObserver } from "~shared/component";
-import { TranscriptData } from "~shared/types/transcript";
-import { theme } from "~ui/theme";
+import { styledObserver } from "@aca/shared/component";
+import { TranscriptData } from "@aca/shared/types/transcript";
+import { theme } from "@aca/ui/theme";
 
 import { TranscriptSpeakerPart } from "./TranscriptSpeakerPart";
 

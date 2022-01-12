@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { PopPresenceAnimator } from "~ui/animations";
-import { theme } from "~ui/theme";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { theme } from "@aca/ui/theme";
 
 export const UIDropdownPanelBody = styled(PopPresenceAnimator)<{}>`
   padding: 5px 0;

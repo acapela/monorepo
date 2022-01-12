@@ -1,7 +1,7 @@
-import { HasuraEvent } from "~backend/src/hasura";
-import { extractInstallationDataBotToken, fetchTeamBotToken } from "~backend/src/slack/utils";
-import { TaskSlackMessage, TeamMemberSlack, TeamSlackInstallation, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { HasuraEvent } from "@aca/backend/src/hasura";
+import { extractInstallationDataBotToken, fetchTeamBotToken } from "@aca/backend/src/slack/utils";
+import { TaskSlackMessage, TeamMemberSlack, TeamSlackInstallation, db } from "@aca/db";
+import { assert, assertDefined } from "@aca/shared/assert";
 
 import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, slackClient } from "./app";
 import { NewUserOnboardingMessage } from "./onboarding";

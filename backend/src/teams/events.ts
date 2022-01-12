@@ -1,6 +1,6 @@
-import { Team, db } from "~db";
-import { identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
-import { logger } from "~shared/logger";
+import { Team, db } from "@aca/db";
+import { identifyBackendUserTeam, trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { logger } from "@aca/shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";

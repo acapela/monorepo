@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "~frontend/*": ["./*"]
+      "@aca/frontend/*": ["./*"]
     },
     "jsx": "preserve"
   }

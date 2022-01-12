@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { routes } from "~shared/routes";
-import { IconInboxIn } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { routes } from "@aca/shared/routes";
+import { IconInboxIn } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 export const InboxLink = observer(() => {
   const router = useRouter();

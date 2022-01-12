@@ -1,13 +1,13 @@
 import { updatedDiff } from "deep-object-diff";
 import { get } from "lodash";
 
-import { updateHomeView } from "~backend/src/slack/home-tab";
-import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
-import { Topic, TopicMember, db } from "~db";
-import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isEqualForPick } from "~shared/object";
+import { updateHomeView } from "@aca/backend/src/slack/home-tab";
+import { tryUpdateTaskSlackMessages } from "@aca/backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
+import { Topic, TopicMember, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { isEqualForPick } from "@aca/shared/object";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";

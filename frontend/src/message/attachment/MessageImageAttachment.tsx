@@ -2,14 +2,14 @@ import { AnimatePresence, LayoutGroup } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { PopPresenceAnimator } from "~ui/animations";
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconCross } from "~ui/icons";
-import { useShortcuts } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { ScreenCover } from "@aca/frontend/ui/Modal/ScreenCover";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { CornerButtonWrapper } from "@aca/ui/buttons/CornerButtonWrapper";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconCross } from "@aca/ui/icons";
+import { useShortcuts } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 interface AttachmentProps {
   attachmentUrl: string;

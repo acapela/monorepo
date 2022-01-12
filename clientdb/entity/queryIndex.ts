@@ -1,9 +1,9 @@
 import { IObservableArray, ObservableMap, observable, runInAction, spy } from "mobx";
 import { Primitive } from "utility-types";
 
-import { Entity } from "~clientdb";
-import { IS_DEV } from "~shared/dev";
-import { Thunk, resolveThunk } from "~shared/thunk";
+import { Entity } from "@aca/clientdb";
+import { IS_DEV } from "@aca/shared/dev";
+import { Thunk, resolveThunk } from "@aca/shared/thunk";
 
 import { EntityStore } from "./store";
 import { computedArray } from "./utils/computedArray";

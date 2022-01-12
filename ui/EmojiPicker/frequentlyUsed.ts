@@ -1,6 +1,6 @@
 import { sortBy } from "lodash";
 
-import { getLocalStorageValueManager } from "~shared/localStorage";
+import { getLocalStorageValueManager } from "@aca/shared/localStorage";
 
 type EmojiUseageMap = Record<string, number>;
 

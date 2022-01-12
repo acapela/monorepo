@@ -1,13 +1,13 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { AcapelaAvatar } from "~frontend/utils/AcapelaAvatar";
-import { styledObserver } from "~shared/component";
-import { FadePresenceAnimator } from "~ui/animations";
-import { theme } from "~ui/theme";
-import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { AcapelaAvatar } from "@aca/frontend/utils/AcapelaAvatar";
+import { styledObserver } from "@aca/shared/component";
+import { FadePresenceAnimator } from "@aca/ui/animations";
+import { theme } from "@aca/ui/theme";
+import { TimeLabelWithDateTooltip } from "@aca/ui/time/DateLabel";
 
 interface Props {
   user?: UserEntity | null;

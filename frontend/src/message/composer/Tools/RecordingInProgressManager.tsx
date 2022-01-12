@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~shared/component";
-import { StreamRecording } from "~shared/recording/recordStream";
-import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
-import { theme } from "~ui/theme";
+import { styledObserver } from "@aca/shared/component";
+import { StreamRecording } from "@aca/shared/recording/recordStream";
+import { Button } from "@aca/ui/buttons/Button";
+import { HStack } from "@aca/ui/Stack";
+import { theme } from "@aca/ui/theme";
 
 import { VideoPreview } from "./VideoPreview";
 

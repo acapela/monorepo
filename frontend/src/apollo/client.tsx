@@ -14,14 +14,14 @@ import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
 import React, { ReactNode } from "react";
 
-import { readAppInitialPropByName } from "~frontend/utils/next";
-import { TypedTypePolicies } from "~gql";
-import { IS_DEV } from "~shared/dev";
-import { isClient } from "~shared/document";
-import { useConst } from "~shared/hooks/useConst";
-import { isServer } from "~shared/isServer";
-import { Maybe } from "~shared/types";
-import { addToast } from "~ui/toasts/data";
+import { readAppInitialPropByName } from "@aca/frontend/utils/next";
+import { TypedTypePolicies } from "@aca/gql";
+import { IS_DEV } from "@aca/shared/dev";
+import { isClient } from "@aca/shared/document";
+import { useConst } from "@aca/shared/hooks/useConst";
+import { isServer } from "@aca/shared/isServer";
+import { Maybe } from "@aca/shared/types";
+import { addToast } from "@aca/ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
 

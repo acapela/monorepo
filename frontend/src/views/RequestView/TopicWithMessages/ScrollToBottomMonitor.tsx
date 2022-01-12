@@ -4,9 +4,9 @@ import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef }
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { useElementEvent } from "~shared/domEvents";
-import { useResizeCallback } from "~shared/hooks/useResizeCallback";
+import { useTopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { useElementEvent } from "@aca/shared/domEvents";
+import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;

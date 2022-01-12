@@ -1,6 +1,6 @@
 import { Blocks, Elements, Message as SlackMessage } from "slack-block-builder";
 
-import { backendUserEventToJSON } from "~shared/backendAnalytics";
+import { backendUserEventToJSON } from "@aca/shared/backendAnalytics";
 
 import { SlackActionIds } from "../utils";
 

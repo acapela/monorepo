@@ -2,11 +2,11 @@ import { ErrorBoundary } from "@sentry/react";
 import { JSONContent } from "@tiptap/core";
 import styled from "styled-components";
 
-import { PageLayoutAnimator } from "~frontend/animations/layout";
-import { messageComposerExtensions } from "~frontend/message/extensions";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
-import { richEditorContentCss } from "~richEditor/Theme";
+import { PageLayoutAnimator } from "@aca/frontend/animations/layout";
+import { messageComposerExtensions } from "@aca/frontend/message/extensions";
+import { isRichEditorContentEmpty } from "@aca/richEditor/content/isEmpty";
+import { RichContentRenderer } from "@aca/richEditor/content/RichContentRenderer";
+import { richEditorContentCss } from "@aca/richEditor/Theme";
 
 type Props = {
   content: JSONContent;

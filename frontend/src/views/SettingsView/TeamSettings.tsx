@@ -2,10 +2,10 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { useCurrentTeam } from "~frontend/team/CurrentTeam";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { Button } from "~ui/buttons/Button";
-import { addToast } from "~ui/toasts/data";
+import { useCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { openUIPrompt } from "@aca/frontend/utils/prompt";
+import { Button } from "@aca/ui/buttons/Button";
+import { addToast } from "@aca/ui/toasts/data";
 
 import { Panel } from "./ui";
 

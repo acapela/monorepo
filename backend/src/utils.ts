@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
 
-import { verifyJWT } from "~shared/jwt";
+import { verifyJWT } from "@aca/shared/jwt";
 
 import { extractAndAssertBearerToken } from "./authentication";
 import { AuthenticationError, BadRequestError } from "./errors/errorTypes";

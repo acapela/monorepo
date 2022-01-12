@@ -3,7 +3,7 @@ import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 import { max, pick } from "lodash";
 
-import { Entity, EntitySyncConfig } from "~clientdb";
+import { Entity, EntitySyncConfig } from "@aca/clientdb";
 import {
   Attachment_Bool_Exp,
   Attachment_Constraint,
@@ -63,9 +63,9 @@ import {
   User_Group_Member_Insert_Input,
   User_Group_Set_Input,
   User_Set_Input,
-} from "~gql";
-import { assert } from "~shared/assert";
-import { runUntracked } from "~shared/mobxUtils";
+} from "@aca/gql";
+import { assert } from "@aca/shared/assert";
+import { runUntracked } from "@aca/shared/mobxUtils";
 
 import { analyzeFragment } from "./analyzeFragment";
 import { apolloContext, teamIdContext } from "./context";

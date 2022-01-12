@@ -1,4 +1,4 @@
-import { TopicEntity } from "~frontend/clientdb/topic";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
 
 export interface RequestsGroupProps {
   topics: TopicEntity[];

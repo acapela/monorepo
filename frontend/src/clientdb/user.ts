@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb";
-import { UserFragment } from "~gql";
+import { defineEntity } from "@aca/clientdb";
+import { EntityByDefinition } from "@aca/clientdb";
+import { UserFragment } from "@aca/gql";
 
 import { taskEntity } from "./task";
 import { teamMemberEntity } from "./teamMember";

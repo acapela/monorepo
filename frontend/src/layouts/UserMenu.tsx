@@ -3,12 +3,12 @@ import { signOut } from "next-auth/react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { routes } from "~shared/routes";
-import { IconExternalLink, IconGear, IconSignOut, IconUsers } from "~ui/icons";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { routes } from "@aca/shared/routes";
+import { IconExternalLink, IconGear, IconSignOut, IconUsers } from "@aca/ui/icons";
+import { PopoverMenuTrigger } from "@aca/ui/popovers/PopoverMenuTrigger";
+import { theme } from "@aca/ui/theme";
 
 export const UserMenu = observer(function UserMenu() {
   const user = useAssertCurrentUser();

@@ -1,11 +1,11 @@
 import { memoize } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
-import { MessageOrError, assert } from "~shared/assert";
-import { createReuseValueGroup } from "~shared/createEqualReuser";
-import { createDeepMap } from "~shared/deepMap";
-import { mapGetOrCreate } from "~shared/map";
-import { typedKeys } from "~shared/object";
+import { MessageOrError, assert } from "@aca/shared/assert";
+import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
+import { createDeepMap } from "@aca/shared/deepMap";
+import { mapGetOrCreate } from "@aca/shared/map";
+import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
 import { DatabaseLinker } from "./entitiesConnections";

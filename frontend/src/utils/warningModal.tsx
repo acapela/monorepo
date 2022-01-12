@@ -2,9 +2,9 @@ import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { Modal, ModalAnchor } from "@aca/frontend/ui/Modal";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   warning?: string;

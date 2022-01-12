@@ -1,12 +1,12 @@
-import { HasuraEvent, UpdateHasuraEvent } from "~backend/src/hasura";
-import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
-import { LiveTaskMessage, tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
-import { Task, Topic, User, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isEqualForPick } from "~shared/object";
-import { MENTION_TYPE_LABELS, MentionType, RequestType } from "~shared/requests";
+import { HasuraEvent, UpdateHasuraEvent } from "@aca/backend/src/hasura";
+import { sendNotificationPerPreference } from "@aca/backend/src/notifications/sendNotification";
+import { LiveTaskMessage, tryUpdateTaskSlackMessages } from "@aca/backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
+import { Task, Topic, User, db } from "@aca/db";
+import { assert, assertDefined } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { isEqualForPick } from "@aca/shared/object";
+import { MENTION_TYPE_LABELS, MentionType, RequestType } from "@aca/shared/requests";
 
 import { backendGetTopicUrl } from "../topics/url";
 

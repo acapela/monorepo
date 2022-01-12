@@ -1,6 +1,6 @@
-import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
-import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { InboxView } from "~frontend/views/InboxView";
+import { SidebarLayout } from "@aca/frontend/layouts/SidebarLayout";
+import { assignPageLayout } from "@aca/frontend/utils/pageLayout";
+import { InboxView } from "@aca/frontend/views/InboxView";
 
 export default function InboxPage() {
   return <InboxView />;

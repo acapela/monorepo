@@ -1,2 +1,2 @@
-// This is needed to allow resolving `~richEditor'
+// This is needed to allow resolving `@aca/richEditor'
 export default null;

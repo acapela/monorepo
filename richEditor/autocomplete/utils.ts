@@ -1,6 +1,6 @@
 import { noop } from "lodash";
 
-import { createInterval } from "~shared/time";
+import { createInterval } from "@aca/shared/time";
 
 /**
  * Will return promise that resolves when given element position or size stops animating

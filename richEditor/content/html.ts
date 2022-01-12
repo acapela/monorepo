@@ -1,6 +1,6 @@
 import { generateHTML } from "@tiptap/html";
 
-import { richEditorExtensions } from "~richEditor/preset";
+import { richEditorExtensions } from "@aca/richEditor/preset";
 
 import { RichEditorNode } from "./types";
 

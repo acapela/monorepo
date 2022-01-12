@@ -1,7 +1,7 @@
 import { ApolloClient, gql } from "@apollo/client";
 import axios from "axios";
 
-import { UploadUrlQuery, UploadUrlQueryVariables } from "~gql";
+import { UploadUrlQuery, UploadUrlQueryVariables } from "@aca/gql";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;

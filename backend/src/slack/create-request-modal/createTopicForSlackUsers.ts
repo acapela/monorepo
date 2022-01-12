@@ -1,13 +1,13 @@
 import { JSONContent } from "@tiptap/core";
 import { uniq } from "lodash";
 
-import { sendInviteNotification } from "~backend/src/inviteUser";
-import { Account, User, db } from "~db";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { MentionType, REQUEST_TYPES, RequestType } from "~shared/requests";
-import { slugify } from "~shared/slugify";
-import { Maybe } from "~shared/types";
+import { sendInviteNotification } from "@aca/backend/src/inviteUser";
+import { Account, User, db } from "@aca/db";
+import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { MentionType, REQUEST_TYPES, RequestType } from "@aca/shared/requests";
+import { slugify } from "@aca/shared/slugify";
+import { Maybe } from "@aca/shared/types";
 
 import { slackClient } from "../app";
 import { findUserBySlackId } from "../utils";

@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb/entity/entity";
-import { TeamFragment } from "~gql";
+import { defineEntity } from "@aca/clientdb";
+import { EntityByDefinition } from "@aca/clientdb/entity/entity";
+import { TeamFragment } from "@aca/gql";
 
 import { teamMemberEntity } from "./teamMember";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";

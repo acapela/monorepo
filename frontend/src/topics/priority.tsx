@@ -1,14 +1,14 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { Priority_Enum } from "~gql";
+import { Priority_Enum } from "@aca/gql";
 import {
   PriorityCriticalIcon,
   PriorityHighIcon,
   PriorityLowIcon,
   PriorityMediumIcon,
   PriorityNoneIcon,
-} from "~ui/icons/priorities";
+} from "@aca/ui/icons/priorities";
 
 export type Priority = Priority_Enum | null;
 

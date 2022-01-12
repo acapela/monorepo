@@ -1,8 +1,8 @@
 import { min } from "date-fns";
 
-import { cachedComputed } from "~clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { isNotNullish } from "~shared/nullish";
+import { cachedComputed } from "@aca/clientdb";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { isNotNullish } from "@aca/shared/nullish";
 
 export const getNearestTaskDueDateForCurrentUser = cachedComputed(
   (topic: TopicEntity) => {

@@ -1,7 +1,7 @@
 import { HTMLMotionProps, motion } from "framer-motion";
 import styled from "styled-components";
 
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 
 export const layoutAnimations = {
   newTopic: {

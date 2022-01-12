@@ -1,6 +1,6 @@
 import { App, BlockButtonAction } from "@slack/bolt";
 
-import { assert } from "~shared/assert";
+import { assert } from "@aca/shared/assert";
 
 import { slackClient } from "../app";
 import { SlackActionIds, assertToken } from "../utils";

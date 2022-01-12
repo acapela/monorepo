@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { DecisionVoteFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { DecisionVoteFragment } from "@aca/gql";
 
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";

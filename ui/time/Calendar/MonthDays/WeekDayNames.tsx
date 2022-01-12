@@ -2,7 +2,7 @@ import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 const now = new Date();
 const firstDay = startOfWeek(now, { weekStartsOn: 1 });

@@ -1,9 +1,9 @@
 import React from "react";
 
-import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
-import { renderTopicEventBody } from "~frontend/views/RequestView/TopicWithMessages/events/topicEventBodyRenderers";
-import { TopicEventTemplate } from "~frontend/views/RequestView/TopicWithMessages/events/TopicEventTemplate";
-import { styledObserver } from "~shared/component";
+import { TopicEventEntity } from "@aca/frontend/clientdb/topicEvent";
+import { renderTopicEventBody } from "@aca/frontend/views/RequestView/TopicWithMessages/events/topicEventBodyRenderers";
+import { TopicEventTemplate } from "@aca/frontend/views/RequestView/TopicWithMessages/events/TopicEventTemplate";
+import { styledObserver } from "@aca/shared/component";
 
 interface Props {
   topicEvent: TopicEventEntity;

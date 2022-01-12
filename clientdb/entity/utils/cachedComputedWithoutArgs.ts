@@ -1,7 +1,7 @@
 import { IComputedValueOptions, Reaction, createAtom } from "mobx";
 
-import { IS_DEV } from "~shared/dev";
-import { mapGetOrCreate } from "~shared/map";
+import { IS_DEV } from "@aca/shared/dev";
+import { mapGetOrCreate } from "@aca/shared/map";
 
 import { createBiddableTimeout } from "./biddableTimeout";
 

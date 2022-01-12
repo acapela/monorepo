@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 export const buttonKindMap = {
   primary: css`

@@ -2,9 +2,9 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconReply } from "~ui/icons";
+import { useTopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconReply } from "@aca/ui/icons";
 
 interface Props {
   messageId: string;

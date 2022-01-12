@@ -1,6 +1,6 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb";
 
-import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
+import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "@aca/clientdb";
 
 /**
  * This is IndexedDB adapter for clientdb that allows persisting all the data locally.

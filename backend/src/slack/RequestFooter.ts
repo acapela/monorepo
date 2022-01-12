@@ -1,8 +1,8 @@
 import { Blocks, Elements } from "slack-block-builder";
 
-import { Message, MessageTaskDueDate, Topic, TopicMember, User } from "~db";
-import { isNotNullish } from "~shared/nullish";
-import { pluralize } from "~shared/text/pluralize";
+import { Message, MessageTaskDueDate, Topic, TopicMember, User } from "@aca/db";
+import { isNotNullish } from "@aca/shared/nullish";
+import { pluralize } from "@aca/shared/text/pluralize";
 
 import { mdDate } from "./md/utils";
 import { PriorityLabel, isRequestDueSoon } from "./utils";

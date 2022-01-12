@@ -1,8 +1,8 @@
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
 
-import { createReuseValueGroup } from "~shared/createEqualReuser";
-import { createDeepMap } from "~shared/deepMap";
+import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
+import { createDeepMap } from "@aca/shared/deepMap";
 
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";

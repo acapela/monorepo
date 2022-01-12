@@ -2,11 +2,11 @@ import { App, BlockButtonAction } from "@slack/bolt";
 import { orderBy } from "lodash";
 import { Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { slackClient } from "~backend/src/slack/app";
-import { ViewRequestModal } from "~backend/src/slack/view-request-modal/ViewRequestModal";
-import { DecisionOption, DecisionVote, User, db } from "~db";
-import { REQUEST_DECISION } from "~shared/requests";
-import { routes } from "~shared/routes";
+import { slackClient } from "@aca/backend/src/slack/app";
+import { ViewRequestModal } from "@aca/backend/src/slack/view-request-modal/ViewRequestModal";
+import { DecisionOption, DecisionVote, User, db } from "@aca/db";
+import { REQUEST_DECISION } from "@aca/shared/requests";
+import { routes } from "@aca/shared/routes";
 
 import { createSlackLink } from "./md/utils";
 import { assertToken, findUserBySlackId, getViewOrigin } from "./utils";

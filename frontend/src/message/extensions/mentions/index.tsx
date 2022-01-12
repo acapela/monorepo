@@ -1,5 +1,5 @@
-import { createAutocompletePlugin } from "~richEditor/autocomplete";
-import { EditorMentionData } from "~shared/types/editor";
+import { createAutocompletePlugin } from "@aca/richEditor/autocomplete";
+import { EditorMentionData } from "@aca/shared/types/editor";
 
 import { MentionPicker } from "./MentionPicker";
 import { TypedMention } from "./TypedMention";

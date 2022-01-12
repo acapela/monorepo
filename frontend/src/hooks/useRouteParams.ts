@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 
-import { assert } from "~shared/assert";
-import { RouteBuilder } from "~shared/routes/utils";
+import { assert } from "@aca/shared/assert";
+import { RouteBuilder } from "@aca/shared/routes/utils";
 
 type RouteParams<Keys extends string> = { [Key in Keys]: string };
 

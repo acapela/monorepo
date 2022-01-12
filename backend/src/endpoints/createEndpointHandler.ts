@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-import { UserTokenPayload } from "~shared/jwt";
-import { logger } from "~shared/logger";
-import { JsonValue } from "~shared/types";
+import { UserTokenPayload } from "@aca/shared/jwt";
+import { logger } from "@aca/shared/logger";
+import { JsonValue } from "@aca/shared/types";
 
 import { extractAndAssertBearerToken } from "../authentication";
 import { HttpStatus } from "../http";

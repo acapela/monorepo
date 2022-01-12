@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { Logo } from "~frontend/ui/Logo";
-import { PopPresenceAnimator } from "~ui/animations";
-import { phone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { Logo } from "@aca/frontend/ui/Logo";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   children: ReactNode;

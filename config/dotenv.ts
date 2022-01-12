@@ -2,7 +2,7 @@ import path from "path";
 
 import dotenv from "dotenv";
 
-import { assertDefined } from "~shared/assert";
+import { assertDefined } from "@aca/shared/assert";
 
 function getDotEnvPath() {
   if (!__dirname) {

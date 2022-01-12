@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useConst } from "~shared/hooks/useConst";
+import { useConst } from "@aca/shared/hooks/useConst";
 
 type Cancel = () => void;
 

@@ -2,11 +2,11 @@ import { Prisma } from "@prisma/client";
 import { orderBy, partition, sumBy } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
-import { db } from "~db";
-import { backendUserEventToJSON } from "~shared/backendAnalytics";
-import { isNotFalsy } from "~shared/nullish";
-import { routes } from "~shared/routes";
-import { pluralize } from "~shared/text/pluralize";
+import { db } from "@aca/db";
+import { backendUserEventToJSON } from "@aca/shared/backendAnalytics";
+import { isNotFalsy } from "@aca/shared/nullish";
+import { routes } from "@aca/shared/routes";
+import { pluralize } from "@aca/shared/text/pluralize";
 
 import { createSlackLink } from "../md/utils";
 import { SlackActionIds, isRequestDueSoon, isRequestUnread } from "../utils";

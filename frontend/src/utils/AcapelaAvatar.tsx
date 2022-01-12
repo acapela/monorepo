@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { Logo } from "~frontend/ui/Logo";
-import { theme } from "~ui/theme";
+import { Logo } from "@aca/frontend/ui/Logo";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   className?: string;

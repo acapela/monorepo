@@ -2,9 +2,9 @@ import { observer } from "mobx-react";
 import React, { useMemo, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { HStack } from "~ui/Stack";
-import { theme } from "~ui/theme";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { HStack } from "@aca/ui/Stack";
+import { theme } from "@aca/ui/theme";
 
 import { RequestItem } from "./RequestItem";
 

@@ -1,8 +1,8 @@
 import { configure, _getGlobalState as getMobxSettingsObject } from "mobx";
 import React from "react";
 
-import { IS_DEV } from "~shared/dev";
-import { isServer } from "~shared/isServer";
+import { IS_DEV } from "@aca/shared/dev";
+import { isServer } from "@aca/shared/isServer";
 
 /**
  * Note: This is probably the most hacky part of the entire codebase, but it is only used in dev.

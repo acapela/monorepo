@@ -1,4 +1,4 @@
-import { AsyncReturnType } from "~shared/types";
+import { AsyncReturnType } from "@aca/shared/types";
 
 import { createDurationObservable } from "./createDurationObservable";
 

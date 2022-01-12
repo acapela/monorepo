@@ -1,9 +1,9 @@
 import React from "react";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { useInviteUser } from "~frontend/team/useInviteUser";
-import { Button } from "~ui/buttons/Button";
-import { addToast } from "~ui/toasts/data";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { useInviteUser } from "@aca/frontend/team/useInviteUser";
+import { Button } from "@aca/ui/buttons/Button";
+import { addToast } from "@aca/ui/toasts/data";
 
 export const ResendInviteButton = ({ user, teamId }: { user: UserEntity; teamId: string }) => {
   const [inviteUser, { loading, called }] = useInviteUser();

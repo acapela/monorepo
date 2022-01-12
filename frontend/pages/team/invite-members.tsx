@@ -1,5 +1,5 @@
-import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { InviteTeamMembersView } from "~frontend/views/InviteTeamMembersView/InviteTeamMembersView";
+import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { InviteTeamMembersView } from "@aca/frontend/views/InviteTeamMembersView/InviteTeamMembersView";
 
 export default function PageInviteMembers() {
   return (

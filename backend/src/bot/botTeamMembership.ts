@@ -1,4 +1,4 @@
-import { db } from "~db";
+import { db } from "@aca/db";
 
 import { BOT_USER_ID } from "./botUser";
 

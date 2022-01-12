@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 
-import { convertMaybeArrayToArray } from "~shared/array";
-import { IS_DEV } from "~shared/dev";
-import { logger } from "~shared/logger";
-import { mapGetOrCreate } from "~shared/map";
+import { convertMaybeArrayToArray } from "@aca/shared/array";
+import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
+import { mapGetOrCreate } from "@aca/shared/map";
 
 import { HasuraEvent, RawHasuraEvent, getUserIdFromRawHasuraEvent, normalizeHasuraEvent } from "./eventUtils";
 

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
-import { db } from "~db";
-import { sendEmail } from "~shared/email";
+import { db } from "@aca/db";
+import { sendEmail } from "@aca/shared/email";
 
 import { getInviteURL } from "./utils";
 

@@ -1,8 +1,8 @@
 import { RegionEU, TrackClient } from "customerio-node";
 import { getUnixTime } from "date-fns";
 
-import { assertDefined } from "~shared/assert";
-import { Origin } from "~shared/types/analytics";
+import { assertDefined } from "@aca/shared/assert";
+import { Origin } from "@aca/shared/types/analytics";
 
 const customerioClientApiKey = assertDefined(
   process.env.CUSTOMERIO_CLIENT_API_KEY,

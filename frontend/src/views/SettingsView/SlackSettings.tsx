@@ -3,12 +3,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { useCurrentTeam } from "~frontend/team/CurrentTeam";
-import { AddSlackInstallationButton } from "~frontend/team/SlackInstallationButton";
-import { checkHasAllSlackBotScopes, checkHasAllSlackUserScopes } from "~shared/slack";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { useDb } from "@aca/frontend/clientdb";
+import { useCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { AddSlackInstallationButton } from "@aca/frontend/team/SlackInstallationButton";
+import { checkHasAllSlackBotScopes, checkHasAllSlackUserScopes } from "@aca/shared/slack";
+import { theme } from "@aca/ui/theme";
 
 import { Panel } from "./ui";
 

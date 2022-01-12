@@ -1,7 +1,7 @@
 import { addMinutes } from "date-fns";
 
-import { db } from "~db";
-import { assert } from "~shared/assert";
+import { db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
 
 import { createAllRequestsDoneNotificationMessage } from "../notifications/bodyBuilders/allRequestsDone";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";

@@ -1,2 +1,2 @@
 require('ts-node').register({ transpileOnly: true, project: "tooling/tsconfig.json" })
-require("~tooling/scenario/cli.ts")
+require("@aca/tooling/scenario/cli.ts")

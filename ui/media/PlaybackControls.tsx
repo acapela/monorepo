@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { MouseEvent } from "react";
 import styled from "styled-components";
 
-import { handleWithStopPropagation } from "~shared/events";
-import { formatMsTimeToPlaybackTime } from "~shared/time";
-import { PopPresenceAnimator } from "~ui/animations";
-import { IconPause, IconPlay } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { handleWithStopPropagation } from "@aca/shared/events";
+import { formatMsTimeToPlaybackTime } from "@aca/shared/time";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { IconPause, IconPlay } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { PlaybackRateButton } from "./PlaybackRateButton";
 

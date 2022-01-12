@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { createTimeout } from "~shared/time";
+import { createTimeout } from "@aca/shared/time";
 
 export function useWait(time: number, isEnabled = true) {
   const [isCompleted, setIsCompleted] = useState(false);

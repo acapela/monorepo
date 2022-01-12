@@ -1,10 +1,10 @@
 import { JSONContent } from "@tiptap/core";
 import { sortBy } from "lodash";
 
-import { decisionOptionEntity } from "~frontend/clientdb/decisionOption";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { REQUEST_DECISION } from "~shared/requests";
+import { decisionOptionEntity } from "@aca/frontend/clientdb/decisionOption";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
+import { REQUEST_DECISION } from "@aca/shared/requests";
 
 export function getDoesMessageContentIncludeDecisionRequests(content: JSONContent) {
   return getPerUserRequestMentionDataFromContent(content).some((mention) => mention.type === REQUEST_DECISION);

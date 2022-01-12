@@ -1,13 +1,13 @@
 import { action } from "mobx";
 
-import { MessageEntity, messageEntity } from "~frontend/clientdb/message";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { EditorAttachmentInfo } from "~frontend/message/composer/attachments";
-import { DecisionOptionDraft, createDecisionsForMessage } from "~frontend/message/decisions";
-import { updateMessageAttachments } from "~frontend/message/updateAttachments";
-import { getSingleRequestTypeIfSameForManyUsers } from "~frontend/tasks/single-completion";
-import { Message_Type_Enum } from "~gql";
-import { RichEditorNode } from "~richEditor/content/types";
+import { MessageEntity, messageEntity } from "@aca/frontend/clientdb/message";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { EditorAttachmentInfo } from "@aca/frontend/message/composer/attachments";
+import { DecisionOptionDraft, createDecisionsForMessage } from "@aca/frontend/message/decisions";
+import { updateMessageAttachments } from "@aca/frontend/message/updateAttachments";
+import { getSingleRequestTypeIfSameForManyUsers } from "@aca/frontend/tasks/single-completion";
+import { Message_Type_Enum } from "@aca/gql";
+import { RichEditorNode } from "@aca/richEditor/content/types";
 
 interface SubmitMessageParams {
   type: Message_Type_Enum;

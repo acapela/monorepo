@@ -1,10 +1,10 @@
 import { useSession } from "next-auth/react";
 
-import { useDb } from "~frontend/clientdb";
-import { UserEntity } from "~frontend/clientdb/user";
-import { knownErrors } from "~frontend/errors/knownErrors";
-import { assertDefined } from "~shared/assert";
-import { UserTokenPayload } from "~shared/jwt";
+import { useDb } from "@aca/frontend/clientdb";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { knownErrors } from "@aca/frontend/errors/knownErrors";
+import { assertDefined } from "@aca/shared/assert";
+import { UserTokenPayload } from "@aca/shared/jwt";
 
 export function useCurrentUserTokenData(): UserTokenPayload | null {
   const { data } = useSession();

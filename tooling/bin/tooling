@@ -1,2 +1,2 @@
 require("ts-node/register/transpile-only")
-require("~tooling/gql/cli.ts")
+require("@aca/tooling/gql/cli.ts")

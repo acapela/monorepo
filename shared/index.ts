@@ -1,2 +1,2 @@
-// This is needed to allow resolving `~shared'
+// This is needed to allow resolving `@aca/shared'
 export default null;

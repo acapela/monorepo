@@ -11,13 +11,13 @@ const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 /**
  * Let's tell next.js to compile TypeScript files from other packages of monorepo.
- * eg. `frontend/node_modules/~some-acapela-package/file.ts` will be compiled the same way as any other ts file
+ * eg. `frontend/node_modules/@aca/some-acapela-package/file.ts` will be compiled the same way as any other ts file
  * included directly in frontend.
  *
  * This allows us to have hot-reloading experience of other packages working the same as with frontend files itself.
  */
 const createTsPackagesPlugin = () => {
-  // We'll read all dependencies starting with `~` and tell next.js to transpile them.
+  // We'll read all dependencies starting with `@aca` and tell next.js to transpile them.
 
   // Load and parse package.json file content as json
   const packageJsonPath = path.resolve(__dirname, "package.json");
@@ -27,13 +27,15 @@ const createTsPackagesPlugin = () => {
   // Get all dependencies and dev dependencies
   const dependenciesMap = { ...packageInfo.dependencies, ...packageInfo.devDependencies };
 
-  // Filter dependencies names to leave only starting with `~`
-  const monorepoDependencies = Object.keys(dependenciesMap).filter((dependencyName) => dependencyName.startsWith("~"));
+  // Filter dependencies names to leave only starting with `@aca`
+  const monorepoDependencies = Object.keys(dependenciesMap).filter((dependencyName) =>
+    dependencyName.startsWith("@aca")
+  );
 
   // Return plugin that will transpile those dependencies using default next.js config
   return withTranspileModules([
     ...monorepoDependencies,
-    // Add this package itself too to allow ~frontend imports inside this package
+    // Add this package itself too to allow @aca/frontend imports inside this package
     packageInfo.name,
   ]);
 };

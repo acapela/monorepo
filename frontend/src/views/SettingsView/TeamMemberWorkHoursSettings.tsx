@@ -4,13 +4,13 @@ import { useMemo, useState } from "react";
 import { useEffectOnce } from "react-use";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { assert } from "~shared/assert";
-import { convertZonedHourToUTCHour, getZonedHour } from "~shared/dates/utcUtils";
-import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { useDb } from "@aca/frontend/clientdb";
+import { useAssertCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { assert } from "@aca/shared/assert";
+import { convertZonedHourToUTCHour, getZonedHour } from "@aca/shared/dates/utcUtils";
+import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
+import { theme } from "@aca/ui/theme";
 
 function getHourLabel(hour: number, startOfRange?: number): string {
   const nextDay = startOfRange && hour <= startOfRange ? ", +1 day" : "";

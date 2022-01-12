@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import styled, { keyframes } from "styled-components";
 
-import { Logo } from "~frontend/ui/Logo";
-import { useUnmountPresence } from "~frontend/ui/presence";
-import { useWait } from "~shared/hooks/useWait";
-import { BodyPortal } from "~ui/BodyPortal";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
+import { Logo } from "@aca/frontend/ui/Logo";
+import { useUnmountPresence } from "@aca/frontend/ui/presence";
+import { useWait } from "@aca/shared/hooks/useWait";
+import { BodyPortal } from "@aca/ui/BodyPortal";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   loadingNotice?: string;

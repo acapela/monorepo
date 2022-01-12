@@ -1,4 +1,4 @@
-import { slugify } from "~shared/slugify";
+import { slugify } from "@aca/shared/slugify";
 
 describe("slugify", () => {
   const testCases = [

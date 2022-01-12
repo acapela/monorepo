@@ -1,4 +1,4 @@
-import { isMac } from "~frontend/src/utils/platformDetection";
+import { isMac } from "@aca/frontend/src/utils/platformDetection";
 
 import { Key } from "./codes";
 import { ShortcutDefinition, resolveShortcutsDefinition } from "./shortcutBase";

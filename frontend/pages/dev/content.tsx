@@ -3,11 +3,11 @@ import { noop } from "lodash";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
-import { getEmptyRichContent } from "~richEditor/RichEditor";
-import { useBase64SearchParam } from "~shared/hooks/useMutableSearchParam";
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
+import { MessageContentEditor } from "@aca/frontend/message/composer/MessageContentComposer";
+import { getEmptyRichContent } from "@aca/richEditor/RichEditor";
+import { useBase64SearchParam } from "@aca/shared/hooks/useMutableSearchParam";
+import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 function stringifyJSONWithIndent(input: unknown) {
   return JSON.stringify(input, undefined, 2);

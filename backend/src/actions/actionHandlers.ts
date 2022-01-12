@@ -1,7 +1,7 @@
-import { getUploadUrl } from "~backend/src/attachments/attachments";
-import { inviteUser } from "~backend/src/inviteUser";
-import { getTeamSlackInstallationURLHandler, slackUser, uninstallSlack } from "~backend/src/slack/hasuraActions";
-import { joinTopicHandler } from "~backend/src/topics/actions";
+import { getUploadUrl } from "@aca/backend/src/attachments/attachments";
+import { inviteUser } from "@aca/backend/src/inviteUser";
+import { getTeamSlackInstallationURLHandler, slackUser, uninstallSlack } from "@aca/backend/src/slack/hasuraActions";
+import { joinTopicHandler } from "@aca/backend/src/topics/actions";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;

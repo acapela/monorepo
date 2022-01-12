@@ -4,14 +4,14 @@ import { differenceInHours } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { Md } from "slack-block-builder";
 
-import { MessageTaskDueDate, Task, User, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
-import { getNextWorkDayEndOfDay } from "~shared/dates/times";
-import { getLabelForPriority } from "~shared/priorities";
-import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "~shared/requests";
-import { checkHasAllSlackBotScopes } from "~shared/slack";
-import { Maybe } from "~shared/types";
-import { AnalyticsEventsMap, Origin } from "~shared/types/analytics";
+import { MessageTaskDueDate, Task, User, db } from "@aca/db";
+import { assert, assertDefined } from "@aca/shared/assert";
+import { getNextWorkDayEndOfDay } from "@aca/shared/dates/times";
+import { getLabelForPriority } from "@aca/shared/priorities";
+import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "@aca/shared/requests";
+import { checkHasAllSlackBotScopes } from "@aca/shared/slack";
+import { Maybe } from "@aca/shared/types";
+import { AnalyticsEventsMap, Origin } from "@aca/shared/types/analytics";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";

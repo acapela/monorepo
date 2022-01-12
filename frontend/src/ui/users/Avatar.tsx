@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { getInitials } from "~frontend/utils";
-import { Maybe } from "~gql";
-import { theme } from "~ui/theme";
+import { getInitials } from "@aca/frontend/utils";
+import { Maybe } from "@aca/gql";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   name?: Maybe<string>;

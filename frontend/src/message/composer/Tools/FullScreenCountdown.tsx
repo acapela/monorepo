@@ -2,10 +2,10 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
-import { createTimeout } from "~shared/time";
-import { PopPresenceAnimator } from "~ui/animations";
-import { theme } from "~ui/theme";
+import { ScreenCover } from "@aca/frontend/ui/Modal/ScreenCover";
+import { createTimeout } from "@aca/shared/time";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { theme } from "@aca/ui/theme";
 
 interface CountdownParams {
   seconds: number;

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { HttpStatus } from "~backend/src/http";
-import { logger } from "~shared/logger";
+import { HttpStatus } from "@aca/backend/src/http";
+import { logger } from "@aca/shared/logger";
 
 import { HttpError, NotFoundError, isHttpError } from "./errorTypes";
 

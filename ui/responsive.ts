@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import { StylesPart, css } from "styled-components";
 
-import { createWindowEvent } from "~shared/domEvents";
+import { createWindowEvent } from "@aca/shared/domEvents";
 
 export const PHONE_MAX_WIDTH = 840;
 export const LARGE_DESKTOP_MIN_WIDTH = 1800;

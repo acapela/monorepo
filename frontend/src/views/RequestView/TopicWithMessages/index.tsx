@@ -4,16 +4,16 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
-import { MessagesFeed } from "~frontend/message/feed/MessagesFeed";
-import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { HorizontalSpacingContainer } from "~frontend/ui/layout";
-import { DropFileContext } from "~richEditor/DropFileContext";
-import { phone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { TopicEventEntity } from "@aca/frontend/clientdb/topicEvent";
+import { MessagesFeed } from "@aca/frontend/message/feed/MessagesFeed";
+import { TopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
+import { DropFileContext } from "@aca/richEditor/DropFileContext";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { NextAction } from "./events/NextAction";

@@ -1,6 +1,6 @@
-import { waitForAllSyncToFlush } from "~clientdb";
-import { createResolvablePromise } from "~shared/promises";
-import { wait } from "~shared/time";
+import { waitForAllSyncToFlush } from "@aca/clientdb";
+import { createResolvablePromise } from "@aca/shared/promises";
+import { wait } from "@aca/shared/time";
 
 import { DefaultEntitiesMap, TestOwnerEntity, createTestDb } from "./utils";
 

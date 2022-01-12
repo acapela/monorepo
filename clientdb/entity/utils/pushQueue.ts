@@ -1,9 +1,9 @@
 import { runInAction } from "mobx";
 
-import { assert } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
-import { ResolvablePromise, createResolvablePromise } from "~shared/promises";
-import { wait } from "~shared/time";
+import { assert } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
+import { ResolvablePromise, createResolvablePromise } from "@aca/shared/promises";
+import { wait } from "@aca/shared/time";
 
 type Task<T> = () => T;
 

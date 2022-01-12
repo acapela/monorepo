@@ -2,9 +2,9 @@ import { format, isSameDay, isSameMonth } from "date-fns";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { Button } from "~ui/buttons/Button";
-import { ButtonKind } from "~ui/buttons/variants";
-import { theme } from "~ui/theme";
+import { Button } from "@aca/ui/buttons/Button";
+import { ButtonKind } from "@aca/ui/buttons/variants";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   dayDate: Date;

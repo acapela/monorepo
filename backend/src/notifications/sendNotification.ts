@@ -3,12 +3,12 @@ import { ChatPostMessageResponse } from "@slack/web-api";
 import { pick } from "lodash";
 import { SlackBlockDto } from "slack-block-builder";
 
-import { slackClient } from "~backend/src/slack/app";
-import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
-import { User, db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
-import { EmailData, sendEmail } from "~shared/email";
-import { logger } from "~shared/logger";
+import { slackClient } from "@aca/backend/src/slack/app";
+import { fetchTeamBotToken, findSlackUserId } from "@aca/backend/src/slack/utils";
+import { User, db } from "@aca/db";
+import { assert, assertDefined } from "@aca/shared/assert";
+import { EmailData, sendEmail } from "@aca/shared/email";
+import { logger } from "@aca/shared/logger";
 
 import { enqueueSlackNotification } from "./enqueueNotification";
 

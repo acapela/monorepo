@@ -1,6 +1,6 @@
-import { PersistanceTableAdapter } from "~clientdb";
-import { AsyncReturnType } from "~shared/types";
-import { ValueUpdater, updateValue } from "~shared/updateValue";
+import { PersistanceTableAdapter } from "@aca/clientdb";
+import { AsyncReturnType } from "@aca/shared/types";
+import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 
 interface CacheItem<V> {
   key: string;

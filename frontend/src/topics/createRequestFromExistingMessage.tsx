@@ -1,10 +1,10 @@
 import { action, runInAction } from "mobx";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { getMessageContentIncludesAnyRequests } from "~frontend/message/extractRequestsFromMessage";
-import { createRichEditorTextNode, getNewRichContentWithNodes } from "~richEditor/content/helper";
-import { EditorRequestLinkNode } from "~shared/types/editor";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { getMessageContentIncludesAnyRequests } from "@aca/frontend/message/extractRequestsFromMessage";
+import { createRichEditorTextNode, getNewRichContentWithNodes } from "@aca/richEditor/content/helper";
+import { EditorRequestLinkNode } from "@aca/shared/types/editor";
 
 import { createNewRequest } from "./createRequest";
 

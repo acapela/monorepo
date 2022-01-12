@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
 
 import { groupReactionsByEmoji } from "./groupReactionsByEmoji";
 import { MessageReaction } from "./MessageReaction";

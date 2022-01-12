@@ -1,15 +1,15 @@
 import * as Sentry from "@sentry/node";
 
-import { db } from "~db";
+import { db } from "@aca/db";
 import {
   GetTeamSlackInstallationUrlInput,
   GetTeamSlackInstallationUrlOutput,
   SlackUserOutput,
   UninstallSlackOutput,
-} from "~gql";
-import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { Maybe } from "~shared/types";
+} from "@aca/gql";
+import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { Maybe } from "@aca/shared/types";
 
 import { ActionHandler } from "../actions/actionHandlers";
 import { UnprocessableEntityError } from "../errors/errorTypes";

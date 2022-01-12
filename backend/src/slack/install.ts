@@ -1,7 +1,7 @@
-import { getDevPublicTunnelURL } from "~backend/src/localtunnel";
-import { assertDefined } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
-import { botScopes, userScopes } from "~shared/slack";
+import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
+import { assertDefined } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
+import { botScopes, userScopes } from "@aca/shared/slack";
 
 import { slackReceiver } from "./app";
 import { InstallMetadata } from "./installMetadata";

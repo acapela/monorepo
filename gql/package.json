@@ -1,12 +1,12 @@
 {
-  "name": "~gql",
+  "name": "@aca/gql",
   "version": "0.1.0",
   "license": "UNLICENSED",
   "devDependencies": {
     "cross-env": "7.0.3"
   },
   "dependencies": {
-    "~config": "0.1.0",
-    "~shared": "0.1.0"
+    "@aca/config": "0.1.0",
+    "@aca/shared": "0.1.0"
   }
 }

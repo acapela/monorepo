@@ -3,10 +3,10 @@ import router from "next/router";
 import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useNullableDb } from "~frontend/clientdb";
-import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-import { routes } from "~shared/routes";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useNullableDb } from "@aca/frontend/clientdb";
+import { useCurrentTeamContext } from "@aca/frontend/team/CurrentTeam";
+import { routes } from "@aca/shared/routes";
 
 /**
  * Will manage redirecting user to proper page depending on app state.

@@ -4,15 +4,15 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-import { ActionWithAlternative } from "~frontend/ui/ButtonWithAlternative";
-import { routes } from "~shared/routes";
-import { slugify } from "~shared/slugify";
-import { Button } from "~ui/buttons/Button";
-import { TextButton } from "~ui/buttons/TextButton";
-import { TextInput } from "~ui/forms/TextInput";
-import { addToast } from "~ui/toasts/data";
+import { useDb } from "@aca/frontend/clientdb";
+import { useCurrentTeamContext } from "@aca/frontend/team/CurrentTeam";
+import { ActionWithAlternative } from "@aca/frontend/ui/ButtonWithAlternative";
+import { routes } from "@aca/shared/routes";
+import { slugify } from "@aca/shared/slugify";
+import { Button } from "@aca/ui/buttons/Button";
+import { TextButton } from "@aca/ui/buttons/TextButton";
+import { TextInput } from "@aca/ui/forms/TextInput";
+import { addToast } from "@aca/ui/toasts/data";
 
 export const CreateTeamView = observer(() => {
   const db = useDb();

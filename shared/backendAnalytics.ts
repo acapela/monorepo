@@ -1,7 +1,7 @@
 import Analytics from "analytics-node";
 
-import { User } from "~db";
-import { UserFragment } from "~gql";
+import { User } from "@aca/db";
+import { UserFragment } from "@aca/gql";
 
 import { Sentry } from "./sentry";
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";

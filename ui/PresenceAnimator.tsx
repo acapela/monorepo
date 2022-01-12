@@ -1,8 +1,8 @@
 import { HTMLMotionProps, Target as MotionAnimations, motion } from "framer-motion";
 import styled from "styled-components";
 
-import { objectMap } from "~shared/object";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { objectMap } from "@aca/shared/object";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 
 import { POP_ANIMATION_CONFIG } from "./animations";
 

@@ -3,8 +3,8 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useRendersCount } from "react-use";
 import styled from "styled-components";
 
-import { RadioOption } from "~ui/forms/RadioOption";
-import { theme } from "~ui/theme";
+import { RadioOption } from "@aca/ui/forms/RadioOption";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   value: number;

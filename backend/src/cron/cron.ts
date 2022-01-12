@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
 
-import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
-import { dailyMessageNotification } from "~backend/src/cron/dailyMessageNotification";
-import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
-import { logger } from "~shared/logger";
+import { middlewareAuthenticateHasura } from "@aca/backend/src/actions/actions";
+import { dailyMessageNotification } from "@aca/backend/src/cron/dailyMessageNotification";
+import { UnprocessableEntityError, isHttpError } from "@aca/backend/src/errors/errorTypes";
+import { logger } from "@aca/shared/logger";
 
 import { HttpStatus } from "../http";
 import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";

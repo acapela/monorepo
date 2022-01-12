@@ -1,8 +1,8 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { extractLinksFromRichContent } from "~richEditor/links/extract";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { extractLinksFromRichContent } from "@aca/richEditor/links/extract";
 
 import { figmaPreviewProvider } from "./figmaPreviewProvider";
 import { loomPreviewProvider } from "./loomPreviewProvider";

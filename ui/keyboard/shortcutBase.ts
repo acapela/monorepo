@@ -1,9 +1,9 @@
 import { HotKey, compareHotkey, parseHotkey } from "is-hotkey";
 import { sortBy } from "lodash";
 
-import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
-import { onDocumentReady } from "~shared/document";
-import { mapGetOrCreate } from "~shared/map";
+import { convertMaybeArrayToArray, removeElementFromArray } from "@aca/shared/array";
+import { onDocumentReady } from "@aca/shared/document";
+import { mapGetOrCreate } from "@aca/shared/map";
 
 import { Key } from "./codes";
 

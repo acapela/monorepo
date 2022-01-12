@@ -3,8 +3,8 @@ import { upperFirst } from "lodash";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { TopicEventEntity } from "~frontend/clientdb/topicEvent";
-import { theme } from "~ui/theme";
+import { TopicEventEntity } from "@aca/frontend/clientdb/topicEvent";
+import { theme } from "@aca/ui/theme";
 
 interface TopicEventRenderer {
   isMatch(event: TopicEventEntity): boolean;

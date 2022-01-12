@@ -2,14 +2,14 @@ import { useRef, useState } from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { slugifySync } from "~shared/slugify";
-import { InputValidatorFunction } from "~shared/validation/inputValidation";
-import { Button } from "~ui/buttons/Button";
-import { createPromiseUI } from "~ui/createPromiseUI";
-import { TextInput } from "~ui/forms/TextInput";
-import { useShortcut } from "~ui/keyboard/useShortcut";
+import { Modal, ModalAnchor } from "@aca/frontend/ui/Modal";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { slugifySync } from "@aca/shared/slugify";
+import { InputValidatorFunction } from "@aca/shared/validation/inputValidation";
+import { Button } from "@aca/ui/buttons/Button";
+import { createPromiseUI } from "@aca/ui/createPromiseUI";
+import { TextInput } from "@aca/ui/forms/TextInput";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
 interface PromptInput {
   title: string;

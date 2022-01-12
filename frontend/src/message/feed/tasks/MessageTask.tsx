@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { styledObserver } from "~shared/component";
-import { niceFormatDateTime } from "~shared/dates/format";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/requests";
-import { theme } from "~ui/theme";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { Avatar } from "@aca/frontend/ui/users/Avatar";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { styledObserver } from "@aca/shared/component";
+import { niceFormatDateTime } from "@aca/shared/dates/format";
+import { MENTION_TYPE_LABELS, RequestType } from "@aca/shared/requests";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   task: TaskEntity;

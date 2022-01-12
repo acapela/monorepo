@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 
-import { getUserSessionTokenFromRequest } from "~frontend/authentication/request";
+import { getUserSessionTokenFromRequest } from "@aca/frontend/authentication/request";
 
 /**
  * The goal of this page is only to redirect to desktop app passing auth token.

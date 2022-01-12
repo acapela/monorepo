@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   title?: ReactNode;

@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import { memo } from "react";
 import styled, { css } from "styled-components";
 
-import { formatMsTimeToPlaybackTime } from "~shared/time";
-import { TranscriptWord as TranscriptWordType } from "~shared/types/transcript";
-import { theme } from "~ui/theme";
+import { formatMsTimeToPlaybackTime } from "@aca/shared/time";
+import { TranscriptWord as TranscriptWordType } from "@aca/shared/types/transcript";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   word: TranscriptWordType;

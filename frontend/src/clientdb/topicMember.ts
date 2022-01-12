@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { topicEntity } from "~frontend/clientdb/topic";
-import { userEntity } from "~frontend/clientdb/user";
-import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "~frontend/clientdb/utils/sync";
-import { TopicMemberFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { topicEntity } from "@aca/frontend/clientdb/topic";
+import { userEntity } from "@aca/frontend/clientdb/user";
+import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
+import { TopicMemberFragment } from "@aca/gql";
 
 const topicMemberFragment = gql`
   fragment TopicMember on topic_member {

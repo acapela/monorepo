@@ -1,10 +1,13 @@
 import { addMinutes, differenceInMinutes } from "date-fns";
 import { groupBy } from "lodash";
 
-import { createRequestIsDue, createRequestIsDueIn3Hours } from "~backend/src/notifications/bodyBuilders/requestIsDue";
-import { sendNotificationPerPreference } from "~backend/src/notifications/sendNotification";
-import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { db } from "~db";
+import {
+  createRequestIsDue,
+  createRequestIsDueIn3Hours,
+} from "@aca/backend/src/notifications/bodyBuilders/requestIsDue";
+import { sendNotificationPerPreference } from "@aca/backend/src/notifications/sendNotification";
+import { backendGetTopicUrl } from "@aca/backend/src/topics/url";
+import { db } from "@aca/db";
 
 const findTasksDueBetween = (gt: Date, lte: Date) =>
   db.task.findMany({

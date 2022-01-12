@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { ErrorView } from "~frontend/views/ErrorView";
-import { Button } from "~ui/buttons/Button";
-import { TextInput } from "~ui/forms/TextInput";
-import { addToast } from "~ui/toasts/data";
+import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { Button } from "@aca/ui/buttons/Button";
+import { TextInput } from "@aca/ui/forms/TextInput";
+import { addToast } from "@aca/ui/toasts/data";
 
 function ResendInviteForm() {
   const [email, setEmail] = useState("");

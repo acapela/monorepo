@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
 import { StylesPart, css } from "styled-components";
 
-import { changeColorLightness, isColorDark, setColorOpacity } from "~shared/colors";
-import { Thunk, resolveThunk } from "~shared/thunk";
+import { changeColorLightness, isColorDark, setColorOpacity } from "@aca/shared/colors";
+import { Thunk, resolveThunk } from "@aca/shared/thunk";
 
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 

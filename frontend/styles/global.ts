@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-import { devAssignWindowVariable } from "~shared/dev";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 
 import { base } from "./base";
 import { fontFacesStyles } from "./fontFaces";

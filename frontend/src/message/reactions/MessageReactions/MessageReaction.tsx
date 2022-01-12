@@ -2,11 +2,11 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
-import { Tooltip } from "~ui/popovers/Tooltip";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { MessageReactionEntity } from "@aca/frontend/clientdb/messageReaction";
+import { Tooltip } from "@aca/ui/popovers/Tooltip";
+import { theme } from "@aca/ui/theme";
 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 

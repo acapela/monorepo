@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 
-import { getObjectKey } from "~shared/object";
-import { BodyPortal } from "~ui/BodyPortal";
-import { theme } from "~ui/theme";
+import { getObjectKey } from "@aca/shared/object";
+import { BodyPortal } from "@aca/ui/BodyPortal";
+import { theme } from "@aca/ui/theme";
 
 import { removeToast, useToasts } from "./data";
 import { ToastLabel } from "./ToastLabel";

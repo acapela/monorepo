@@ -1,8 +1,8 @@
 import router from "next/router";
 
-import { ErrorView } from "~frontend/views/ErrorView";
-import { routes } from "~shared/routes";
-import { Button } from "~ui/buttons/Button";
+import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { routes } from "@aca/shared/routes";
+import { Button } from "@aca/ui/buttons/Button";
 
 export default function ErrorPage() {
   return (

@@ -1,6 +1,6 @@
-import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { db } from "~db";
-import { JoinTopicOutput } from "~gql";
+import { ActionHandler } from "@aca/backend/src/actions/actionHandlers";
+import { db } from "@aca/db";
+import { JoinTopicOutput } from "@aca/gql";
 
 export const joinTopicHandler: ActionHandler<{ access_token: string }, JoinTopicOutput> = {
   actionName: "join_topic",

@@ -1,9 +1,9 @@
 import { ReactNode, RefObject, createContext, useContext, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
-import { createCleanupObject } from "~shared/cleanup";
-import { createElementEvent, createElementEvents } from "~shared/domEvents";
-import { useThrottledState } from "~shared/hooks/useDebouncedState";
+import { createCleanupObject } from "@aca/shared/cleanup";
+import { createElementEvent, createElementEvents } from "@aca/shared/domEvents";
+import { useThrottledState } from "@aca/shared/hooks/useDebouncedState";
 
 interface DropFileContextData {
   holderRef: RefObject<HTMLDivElement>;

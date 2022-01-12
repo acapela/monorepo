@@ -1,9 +1,9 @@
 import { pick } from "lodash";
 import { action, computed, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
-import { waitForEntityAllAwaitingPushOperations } from "~clientdb";
-import { assert } from "~shared/assert";
-import { typedKeys } from "~shared/object";
+import { waitForEntityAllAwaitingPushOperations } from "@aca/clientdb";
+import { assert } from "@aca/shared/assert";
+import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
 import { DatabaseLinker } from "./entitiesConnections";

@@ -3,10 +3,10 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { pluralize } from "~shared/text/pluralize";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { pluralize } from "@aca/shared/text/pluralize";
+import { theme } from "@aca/ui/theme";
 
 import { highlighters } from "./highlighers";
 import { RequestTabs } from "./RequestTabs";

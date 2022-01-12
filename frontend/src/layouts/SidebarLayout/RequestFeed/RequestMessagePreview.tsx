@@ -1,18 +1,18 @@
 import { RefObject } from "react";
 import styled, { css } from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { MessageText } from "~frontend/message/display/types/TextMessageContent";
-import { getStyledMentionForUserSelector } from "~frontend/message/extensions/mentions/TypedMention";
-import { MessageLikeContent } from "~frontend/message/feed/MessageLikeContent";
-import { UIMessagePreview } from "~frontend/message/UIMessagePreview";
-import { styledObserver } from "~shared/component";
-import { MENTION_TYPE_LABELS, MentionType } from "~shared/requests";
-import { PopPresenceAnimator } from "~ui/animations";
-import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
-import { wiggleAnimation } from "~ui/wiggle";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { MessageText } from "@aca/frontend/message/display/types/TextMessageContent";
+import { getStyledMentionForUserSelector } from "@aca/frontend/message/extensions/mentions/TypedMention";
+import { MessageLikeContent } from "@aca/frontend/message/feed/MessageLikeContent";
+import { UIMessagePreview } from "@aca/frontend/message/UIMessagePreview";
+import { styledObserver } from "@aca/shared/component";
+import { MENTION_TYPE_LABELS, MentionType } from "@aca/shared/requests";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { Popover, PopoverPlacement } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
+import { wiggleAnimation } from "@aca/ui/wiggle";
 
 interface Props {
   topic: TopicEntity;

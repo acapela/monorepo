@@ -1,8 +1,8 @@
 import React from "react";
 
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconTrash } from "~ui/icons";
+import { CornerButtonWrapper } from "@aca/ui/buttons/CornerButtonWrapper";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconTrash } from "@aca/ui/icons";
 
 interface AttachmentProps {
   onRemoveRequest: () => void;

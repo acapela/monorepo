@@ -2,9 +2,9 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import React, { ChangeEvent, ReactNode } from "react";
 import styled from "styled-components";
 
-import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { combineCallbacks } from "@aca/shared/callbacks/combineCallbacks";
+import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 
 export interface Props extends HTMLMotionProps<"input"> {
   onChangeText?: (text: string) => void;
