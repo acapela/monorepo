@@ -9,13 +9,15 @@
   "scripts": {
     "dev": "ts-node dev.ts"
   },
+  "source": ".",
   "dependencies": {
     "@parcel/config-default": "^2.1.1",
     "@parcel/core": "^2.1.1",
     "@types/node-cleanup": "^2.1.2",
     "electron": "^16.0.6",
     "electron-is-dev": "^2.0.0",
-    "node-cleanup": "^2.1.2"
+    "node-cleanup": "^2.1.2",
+    "url-pattern": "^1.0.3"
   },
   "devDependencies": {
     "parcel": "^2.1.1"
