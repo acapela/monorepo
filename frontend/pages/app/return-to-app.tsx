@@ -2,6 +2,9 @@ import { GetServerSideProps } from "next";
 
 import { getUserSessionTokenFromRequest } from "~frontend/authentication/request";
 
+/**
+ * The goal of this page is only to redirect to desktop app passing auth token.
+ */
 export default function ReturnToApp() {
   return <></>;
 }
