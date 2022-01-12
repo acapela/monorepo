@@ -1,6 +1,6 @@
 import { useStateList } from "react-use";
 
-import { useShortcut } from "~ui/keyboard/useShortcut";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
 interface UseListWithNavigationConfig {
   enableKeyboard: boolean;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { createDocumentEvent } from "~shared/domEvents";
+import { createDocumentEvent } from "@aca/shared/domEvents";
 
 let isAnyWatchingForPaste = false;
 

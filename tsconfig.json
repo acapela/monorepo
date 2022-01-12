@@ -24,7 +24,7 @@
     "checkJs": false,
     "baseUrl": ".",
     "paths": {
-      "~*": ["./*"]
+      "@aca/*": ["./*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],

@@ -2,11 +2,11 @@ import { AnimatePresence } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { styledObserver } from "~shared/component";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { styledObserver } from "@aca/shared/component";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
 
 import { MessageMetaDataWrapper } from "./MessageMetaData";
 

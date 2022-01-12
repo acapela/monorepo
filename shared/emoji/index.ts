@@ -1,7 +1,7 @@
 import { Index } from "flexsearch";
 import { memoize } from "lodash";
 
-import { typedKeys } from "~shared/object";
+import { typedKeys } from "@aca/shared/object";
 
 import emojiByCategory from "./categories.json";
 import emojiSearchTags from "./search.json";

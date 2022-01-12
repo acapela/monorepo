@@ -2,10 +2,10 @@ import type { BaseEmoji, EmojiData } from "emoji-mart";
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
-import { IconEmotionSmile } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { EmojiPickerWindow } from "@aca/ui/EmojiPicker/EmojiPickerWindow";
+import { IconEmotionSmile } from "@aca/ui/icons";
+import { Popover } from "@aca/ui/popovers/Popover";
 
 import { ToolbarButton } from "./ToolbarButton";
 

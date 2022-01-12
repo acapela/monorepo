@@ -2,7 +2,7 @@ import { ViewStateValue } from "@slack/bolt";
 import { without } from "lodash";
 import { Bits, Blocks, Elements, Md, Modal } from "slack-block-builder";
 
-import { getLabelForPriority } from "~shared/priorities";
+import { getLabelForPriority } from "@aca/shared/priorities";
 import {
   MENTION_OBSERVER,
   MENTION_TYPE_PICKER_LABELS,
@@ -10,7 +10,7 @@ import {
   REQUEST_DECISION,
   REQUEST_RESPONSE,
   RequestType,
-} from "~shared/requests";
+} from "@aca/shared/requests";
 
 import { slackClient } from "../app";
 import { ChannelInfo, ViewMetadata, attachToViewWithMetadata } from "../utils";

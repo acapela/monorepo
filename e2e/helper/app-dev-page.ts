@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 
-import { routes } from "~shared/routes";
+import { routes } from "@aca/shared/routes";
 
 import { basePath } from "./constants";
 

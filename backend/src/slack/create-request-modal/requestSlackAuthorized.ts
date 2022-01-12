@@ -2,11 +2,11 @@ import { Context } from "@slack/bolt";
 import type { View } from "@slack/types";
 import { Blocks, Modal } from "slack-block-builder";
 
-import { getTeamSlackInstallURL, getUserSlackInstallURL } from "~backend/src/slack/install";
-import { Team, User, db } from "~db";
-import { routes } from "~shared/routes";
-import { checkHasAllSlackUserScopes } from "~shared/slack";
-import { Maybe } from "~shared/types";
+import { getTeamSlackInstallURL, getUserSlackInstallURL } from "@aca/backend/src/slack/install";
+import { Team, User, db } from "@aca/db";
+import { routes } from "@aca/shared/routes";
+import { checkHasAllSlackUserScopes } from "@aca/shared/slack";
+import { Maybe } from "@aca/shared/types";
 
 import { SlackInstallation, slackClient } from "../app";
 import { isChannelNotFoundError } from "../errors";

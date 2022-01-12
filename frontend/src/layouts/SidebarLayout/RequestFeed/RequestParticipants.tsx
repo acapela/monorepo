@@ -1,10 +1,10 @@
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { UserEntity } from "~frontend/clientdb/user";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { theme } from "~ui/theme";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   topic: TopicEntity;

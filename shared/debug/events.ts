@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { createCleanupObject } from "~shared/cleanup";
-import { createDocumentEvent, createWindowEvent } from "~shared/domEvents";
-import { isServer } from "~shared/isServer";
+import { createCleanupObject } from "@aca/shared/cleanup";
+import { createDocumentEvent, createWindowEvent } from "@aca/shared/domEvents";
+import { isServer } from "@aca/shared/isServer";
 
 function getEventNamesFromProperties(properties: string[]) {
   return properties

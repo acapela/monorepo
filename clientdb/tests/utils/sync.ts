@@ -1,4 +1,4 @@
-import { EntitySyncConfig } from "~clientdb/entity";
+import { EntitySyncConfig } from "@aca/clientdb/entity";
 
 export type EntitySyncConfigMock<T> = Partial<EntitySyncConfig<T>>;
 

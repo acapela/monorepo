@@ -1,10 +1,10 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { TeamEntity } from "~frontend/clientdb/team";
-import { SlackInstallationButton } from "~frontend/team/SlackInstallationButton";
-import { TeamMembersManager } from "~frontend/team/TeamMembersManager";
-import { theme } from "~ui/theme";
+import { TeamEntity } from "@aca/frontend/clientdb/team";
+import { SlackInstallationButton } from "@aca/frontend/team/SlackInstallationButton";
+import { TeamMembersManager } from "@aca/frontend/team/TeamMembersManager";
+import { theme } from "@aca/ui/theme";
 
 import { Panel } from "../ui";
 

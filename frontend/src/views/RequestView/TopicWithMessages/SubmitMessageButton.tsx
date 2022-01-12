@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
+import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   onSendRequest?: () => void;

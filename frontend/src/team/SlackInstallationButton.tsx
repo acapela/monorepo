@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { TeamEntity } from "~frontend/clientdb/team";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { TeamEntity } from "@aca/frontend/clientdb/team";
+import { openConfirmPrompt } from "@aca/frontend/utils/confirm";
 import {
   GetSlackInstallationUrlQuery,
   GetSlackInstallationUrlQueryVariables,
@@ -13,14 +13,14 @@ import {
   TeamSlackInstallationSubscriptionVariables,
   UninstallSlackMutation,
   UninstallSlackMutationVariables,
-} from "~gql";
-import { assertDefined } from "~shared/assert";
-import { isServer } from "~shared/isServer";
-import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
-import { Button } from "~ui/buttons/Button";
-import { IconMinus } from "~ui/icons";
-import { SlackLogo } from "~ui/icons/logos/SlackLogo";
-import { addToast } from "~ui/toasts/data";
+} from "@aca/gql";
+import { assertDefined } from "@aca/shared/assert";
+import { isServer } from "@aca/shared/isServer";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@aca/shared/slack";
+import { Button } from "@aca/ui/buttons/Button";
+import { IconMinus } from "@aca/ui/icons";
+import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
+import { addToast } from "@aca/ui/toasts/data";
 
 type Props = {
   team: TeamEntity;

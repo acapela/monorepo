@@ -1,5 +1,5 @@
-import { db } from "~db";
-import { logger } from "~shared/logger";
+import { db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
 
 import { HasuraEvent } from "../hasura";
 

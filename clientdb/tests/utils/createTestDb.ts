@@ -1,7 +1,7 @@
-import { createClientDb } from "~clientdb";
-import { EntityDataByDefinition } from "~clientdb/entity/definition";
-import { EntitiesMap } from "~clientdb/entity/entitiesMap";
-import { typedKeys } from "~shared/object";
+import { createClientDb } from "@aca/clientdb";
+import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
+import { EntitiesMap } from "@aca/clientdb/entity/entitiesMap";
+import { typedKeys } from "@aca/shared/object";
 
 import { dog, owner, testEntities } from "./entities";
 import { TablePersistanceMock, createPersistanceAdapterMock } from "./persistance";

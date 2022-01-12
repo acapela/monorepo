@@ -2,10 +2,16 @@ import { JSONContent } from "@tiptap/react";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
-import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { MENTION_TYPE_LABELS, REQUEST_ACTION, REQUEST_DECISION, REQUEST_RESPONSE, RequestType } from "~shared/requests";
-import { theme } from "~ui/theme";
-import { Toggle } from "~ui/toggle";
+import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
+import {
+  MENTION_TYPE_LABELS,
+  REQUEST_ACTION,
+  REQUEST_DECISION,
+  REQUEST_RESPONSE,
+  RequestType,
+} from "@aca/shared/requests";
+import { theme } from "@aca/ui/theme";
+import { Toggle } from "@aca/ui/toggle";
 
 type Props = { requestType: RequestType } & React.ComponentProps<typeof Toggle>;
 

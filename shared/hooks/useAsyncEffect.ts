@@ -1,6 +1,6 @@
 import { DependencyList, EffectCallback, useEffect, useRef } from "react";
 
-import { createResolvablePromise } from "~shared/promises";
+import { createResolvablePromise } from "@aca/shared/promises";
 
 type GetIsCancelled = () => boolean;
 

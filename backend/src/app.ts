@@ -10,9 +10,9 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, json } from "express";
 import securityMiddleware from "helmet";
 
-import { db } from "~db";
-import { IS_DEV } from "~shared/dev";
-import { logger } from "~shared/logger";
+import { db } from "@aca/db";
+import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";

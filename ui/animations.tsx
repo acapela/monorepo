@@ -1,7 +1,7 @@
 import { HTMLMotionProps, Transition } from "framer-motion";
 import { css, keyframes } from "styled-components";
 
-import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 
 import { PresenceAnimator, PresenceStyles } from "./PresenceAnimator";
 

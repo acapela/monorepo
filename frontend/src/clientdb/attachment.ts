@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { transcriptionEntity } from "~frontend/clientdb/transcription";
-import { AttachmentFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { transcriptionEntity } from "@aca/frontend/clientdb/transcription";
+import { AttachmentFragment } from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { getFragmentKeys } from "./utils/analyzeFragment";

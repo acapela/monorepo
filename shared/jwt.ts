@@ -1,6 +1,6 @@
 import jwt, { JwtPayload, Secret, SignOptions, VerifyOptions } from "jsonwebtoken";
 
-import { isServer } from "~shared/isServer";
+import { isServer } from "@aca/shared/isServer";
 
 const JWT_OPTIONS: SignOptions & VerifyOptions = { algorithm: "HS256" };
 

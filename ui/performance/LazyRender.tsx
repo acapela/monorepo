@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 
-import { createTimeout } from "~shared/time";
+import { createTimeout } from "@aca/shared/time";
 
 interface Props {
   children: ReactNode;

@@ -1,6 +1,6 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
-import { db } from "~db";
+import { db } from "@aca/db";
 
 import { cleanupDatabase } from "./testDatabaseUtils";
 

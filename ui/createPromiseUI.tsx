@@ -2,8 +2,8 @@ import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import { ReactNode } from "react";
 
-import { createChannel } from "~shared/channel";
-import { createResolvablePromise } from "~shared/promises";
+import { createChannel } from "@aca/shared/channel";
+import { createResolvablePromise } from "@aca/shared/promises";
 
 /**
  * This module allows creating imperative functions that render some UI.

@@ -1,5 +1,5 @@
-import { createAutocompletePlugin } from "~richEditor/autocomplete";
-import { EditorRequestLinkData, RICH_EDIOTR_REQUEST_LINK_TYPE } from "~shared/types/editor";
+import { createAutocompletePlugin } from "@aca/richEditor/autocomplete";
+import { EditorRequestLinkData, RICH_EDIOTR_REQUEST_LINK_TYPE } from "@aca/shared/types/editor";
 
 import { RequestLinkNode } from "./RequestLinkNode";
 import { RequestPicker } from "./RequestPicker";

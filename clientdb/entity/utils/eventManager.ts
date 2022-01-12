@@ -1,6 +1,6 @@
 import { runInAction } from "mobx";
 
-import { IS_DEV } from "~shared/dev";
+import { IS_DEV } from "@aca/shared/dev";
 
 type EventHandler<T extends unknown[]> = (...args: T) => void;
 

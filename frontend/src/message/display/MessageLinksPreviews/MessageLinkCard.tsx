@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   href: string;

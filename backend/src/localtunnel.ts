@@ -1,7 +1,7 @@
 import os from "os";
 
-import { assertDefined } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
+import { assertDefined } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
 
 const backendPort = assertDefined(process.env.BACKEND_PORT, "BACKEND_PORT env variable is required");
 

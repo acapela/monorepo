@@ -1,8 +1,8 @@
-import { assert } from "~shared/assert";
-import { typedKeys } from "~shared/object";
-import { RequestType } from "~shared/requests";
-import { removePrefix } from "~shared/text/substring";
-import { createTypeGuard } from "~shared/typeUtils/typeGuard";
+import { assert } from "@aca/shared/assert";
+import { typedKeys } from "@aca/shared/object";
+import { RequestType } from "@aca/shared/requests";
+import { removePrefix } from "@aca/shared/text/substring";
+import { createTypeGuard } from "@aca/shared/typeUtils/typeGuard";
 
 import { assertToken } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";

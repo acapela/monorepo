@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { styledObserver } from "~shared/component";
-import { theme } from "~ui/theme";
-import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { styledObserver } from "@aca/shared/component";
+import { theme } from "@aca/ui/theme";
+import { TimeLabelWithDateTooltip } from "@aca/ui/time/DateLabel";
 
 interface Props {
   user: UserEntity;

@@ -2,8 +2,8 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { styledForwardRef } from "~shared/component";
-import { theme } from "~ui/theme";
+import { styledForwardRef } from "@aca/shared/component";
+import { theme } from "@aca/ui/theme";
 
 export interface ButtonDisabledInfo {
   reason: string;

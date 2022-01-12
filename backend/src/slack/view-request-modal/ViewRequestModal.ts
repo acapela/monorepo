@@ -4,11 +4,16 @@ import { format } from "date-fns";
 import { sortBy } from "lodash";
 import { Blocks, EasyPaginator, Elements, Md, Modal } from "slack-block-builder";
 
-import { DecisionOptionVoting } from "~backend/src/slack/decision";
-import { updateHomeView } from "~backend/src/slack/home-tab";
-import { db } from "~db";
-import { assert } from "~shared/assert";
-import { COMPLETED_REQUEST_LABEL, REQUEST_DECISION, RequestType, UNCOMPLETED_REQUEST_LABEL } from "~shared/requests";
+import { DecisionOptionVoting } from "@aca/backend/src/slack/decision";
+import { updateHomeView } from "@aca/backend/src/slack/home-tab";
+import { db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import {
+  COMPLETED_REQUEST_LABEL,
+  REQUEST_DECISION,
+  RequestType,
+  UNCOMPLETED_REQUEST_LABEL,
+} from "@aca/shared/requests";
 
 import { mdDate } from "../md/utils";
 import {

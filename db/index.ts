@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { assert } from "~shared/assert";
+import { assert } from "@aca/shared/assert";
 
 export type {
   account as Account,

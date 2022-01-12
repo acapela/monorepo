@@ -1,8 +1,8 @@
 import { get, map, uniq } from "lodash";
 
-import { db } from "~db";
-import { logger } from "~shared/logger";
-import { Sentry } from "~shared/sentry";
+import { db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
+import { Sentry } from "@aca/shared/sentry";
 
 import { trySendDailySummary } from "../slack/daily-summary";
 import { TeamMemberWithSlack } from "../slack/daily-summary/types";

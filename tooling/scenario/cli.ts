@@ -5,7 +5,7 @@ process.env.APP = "tooling";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 process.env.FORCE_COLOR = 3 as any as string;
 
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import { run } from "./run";
 

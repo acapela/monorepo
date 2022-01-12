@@ -1,5 +1,5 @@
-import { UserFragment } from "~gql";
-import { AnalyticsEventsMap } from "~shared/types/analytics";
+import { UserFragment } from "@aca/gql";
+import { AnalyticsEventsMap } from "@aca/shared/types/analytics";
 
 /**
  * trackEvent is used for all tracking calls which cannot be implemented on the backend side

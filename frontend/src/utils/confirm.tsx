@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { Modal } from "~frontend/ui/Modal";
-import { Button } from "~ui/buttons/Button";
-import { createPromiseUI } from "~ui/createPromiseUI";
+import { Modal } from "@aca/frontend/ui/Modal";
+import { Button } from "@aca/ui/buttons/Button";
+import { createPromiseUI } from "@aca/ui/createPromiseUI";
 
 interface PromptInput {
   title: string;

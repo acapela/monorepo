@@ -2,11 +2,11 @@ import { Suspense, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { namedLazy } from "~shared/namedLazy";
-import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
+import { namedLazy } from "@aca/shared/namedLazy";
+import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "@aca/ui/animations";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
 
 import type { EmojiPickerProps } from "./EmojiPickerWindowInner";
 

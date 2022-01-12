@@ -1,10 +1,10 @@
 import { Page, chromium } from "@playwright/test";
 
-import { test } from "~e2e/helper/base-test";
-import { basePath } from "~e2e/helper/constants";
-import { setupDatabase } from "~e2e/helper/db";
-import { addSessionCookie } from "~e2e/helper/utils";
-import { routes } from "~shared/routes";
+import { test } from "@aca/e2e/helper/base-test";
+import { basePath } from "@aca/e2e/helper/constants";
+import { setupDatabase } from "@aca/e2e/helper/db";
+import { addSessionCookie } from "@aca/e2e/helper/utils";
+import { routes } from "@aca/shared/routes";
 
 const SLACK_URL = "https://alepaca.slack.com/";
 

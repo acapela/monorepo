@@ -1,6 +1,6 @@
 import { isEqual } from "lodash";
 
-import { None } from "~shared/none";
+import { None } from "@aca/shared/none";
 
 export function removeElementFromArray<T>(arr: T[], element: T) {
   const index = arr.indexOf(element);

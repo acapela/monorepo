@@ -1,7 +1,7 @@
 import _slugify from "@sindresorhus/slugify";
 
 async function slugifyWithEmojis(text: string): Promise<string> {
-  const emojis = (await import("~shared/emoji/slugs.json")).default;
+  const emojis = (await import("@aca/shared/emoji/slugs.json")).default;
   const customReplacements = Object.entries(emojis);
   const slug = _slugify(text, { customReplacements });
   if (slug.length != 0) return slug;

@@ -2,11 +2,11 @@ import { AnimatePresence } from "framer-motion";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { getLabelForPriority } from "~shared/priorities";
-import { Button } from "~ui/buttons/Button";
-import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { Popover } from "~ui/popovers/Popover";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { getLabelForPriority } from "@aca/shared/priorities";
+import { Button } from "@aca/ui/buttons/Button";
+import { ItemsDropdown } from "@aca/ui/forms/OptionsDropdown/ItemsDropdown";
+import { Popover } from "@aca/ui/popovers/Popover";
 
 import { Priority, PriorityIcon } from "./priority";
 

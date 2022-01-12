@@ -1,4 +1,4 @@
-import { getHash } from "~shared/hash";
+import { getHash } from "@aca/shared/hash";
 
 import { PersistanceAdapter, PersistanceAdapterInfo, PersistanceTableConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";

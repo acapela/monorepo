@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { trackEvent } from "~frontend/src/analytics/tracking";
-import { IS_DEV } from "~shared/dev";
-import { roundNumber } from "~shared/numbers";
+import { trackEvent } from "@aca/frontend/src/analytics/tracking";
+import { IS_DEV } from "@aca/shared/dev";
+import { roundNumber } from "@aca/shared/numbers";
 
 let didReport = false;
 

@@ -2,18 +2,18 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { UserEntity } from "~frontend/clientdb/user";
-import { useAssertCurrentTeam } from "~frontend/team/CurrentTeam";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { isNotNullish } from "~shared/nullish";
-import { useSearch } from "~shared/search";
-import { PopPresenceAnimator } from "~ui/animations";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconUser } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
-import { SelectList } from "~ui/SelectList";
-import { theme } from "~ui/theme";
+import { UserEntity } from "@aca/frontend/clientdb/user";
+import { useAssertCurrentTeam } from "@aca/frontend/team/CurrentTeam";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { isNotNullish } from "@aca/shared/nullish";
+import { useSearch } from "@aca/shared/search";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { EmptyStatePlaceholder } from "@aca/ui/empty/EmptyStatePlaceholder";
+import { IconUser } from "@aca/ui/icons";
+import { Popover } from "@aca/ui/popovers/Popover";
+import { SelectList } from "@aca/ui/SelectList";
+import { theme } from "@aca/ui/theme";
 
 type UserPickerProps = { alreadyPickedIds: Set<String>; onPick: (user: UserEntity) => void };
 export const UserPicker = observer(({ alreadyPickedIds, onPick }: UserPickerProps) => {

@@ -3,7 +3,7 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { DocumentNode } from "graphql";
 import { isArray, isObject, mapValues } from "lodash";
 
-import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
+import { tryParseStringDate } from "@aca/shared/dates/parseJSONWithDates";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapObjectValues<T>(object: T, callback: (value: unknown) => unknown): any {

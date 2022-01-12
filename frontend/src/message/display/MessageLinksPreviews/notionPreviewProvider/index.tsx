@@ -1,8 +1,8 @@
 import React from "react";
 
-import { MessageEmbedPreviewConfig } from "~frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
-import { MessageLinkCard } from "~frontend/message/display/MessageLinksPreviews/MessageLinkCard";
-import { IconNotionLogo } from "~ui/icons";
+import { MessageEmbedPreviewConfig } from "@aca/frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
+import { MessageLinkCard } from "@aca/frontend/message/display/MessageLinksPreviews/MessageLinkCard";
+import { IconNotionLogo } from "@aca/ui/icons";
 
 import { getNotionPreviewText } from "./getNotionPreviewText";
 

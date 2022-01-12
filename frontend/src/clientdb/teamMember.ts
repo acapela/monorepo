@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
-import { userEntity } from "~frontend/clientdb/user";
-import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "~frontend/clientdb/utils/sync";
-import { TeamMemberFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { teamMemberSlackEntity } from "@aca/frontend/clientdb/teamMemberSlack";
+import { userEntity } from "@aca/frontend/clientdb/user";
+import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
+import { TeamMemberFragment } from "@aca/gql";
 
 import { teamIdContext } from "./utils/context";
 

@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-import { getNextItemInArray } from "~shared/array";
-import { handleWithStopPropagation } from "~shared/events";
-import { theme } from "~ui/theme";
+import { getNextItemInArray } from "@aca/shared/array";
+import { handleWithStopPropagation } from "@aca/shared/events";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   playbackRate?: number;

@@ -2,8 +2,8 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageAttachment } from "~frontend/message/attachment/MessageAttachment";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { MessageAttachment } from "@aca/frontend/message/attachment/MessageAttachment";
 
 interface Props {
   message: MessageEntity;

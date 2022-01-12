@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 
-import { assert } from "~shared/assert";
+import { assert } from "@aca/shared/assert";
 
 export function analyzeFragment<T>(fragment: DocumentNode) {
   assert(fragment.definitions.length === 1, "There can only be one definition of fragment");

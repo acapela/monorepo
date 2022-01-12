@@ -2,7 +2,7 @@ import { IncomingMessage } from "http";
 
 import { NextApiRequest } from "next";
 
-import { parseJWTWithoutValidation } from "~shared/jwt";
+import { parseJWTWithoutValidation } from "@aca/shared/jwt";
 
 type Empty = Record<string, never>;
 

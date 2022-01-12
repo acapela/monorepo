@@ -2,7 +2,7 @@ import { memoize } from "lodash";
 import { ComponentType, LazyExoticComponent, lazy } from "react";
 import { PickByValue } from "utility-types";
 
-import { onDocumentReady } from "~shared/document";
+import { onDocumentReady } from "@aca/shared/document";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyComponent = ComponentType<any>;

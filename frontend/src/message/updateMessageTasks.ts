@@ -1,10 +1,10 @@
 import { JSONContent } from "@tiptap/react";
 import { action } from "mobx";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { taskEntity } from "~frontend/clientdb/task";
-import { getArrayIncludesEqual } from "~shared/array";
-import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { taskEntity } from "@aca/frontend/clientdb/task";
+import { getArrayIncludesEqual } from "@aca/shared/array";
+import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
 
 export const updateMessageTasks = action(function updateMessageTasks(
   message: MessageEntity,

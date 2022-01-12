@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-import { logout } from "~frontend/auth/logout";
-import { increaseClientDBForceRefreshCount } from "~frontend/clientdb/recoveryCounter";
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
+import { logout } from "@aca/frontend/auth/logout";
+import { increaseClientDBForceRefreshCount } from "@aca/frontend/clientdb/recoveryCounter";
+import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 export function AppRecoveryButtons() {
   return (

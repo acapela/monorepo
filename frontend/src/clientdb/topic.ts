@@ -2,13 +2,13 @@ import gql from "graphql-tag";
 import { uniqBy } from "lodash";
 import router from "next/router";
 
-import { EntityByDefinition, cachedComputedWithoutArgs, defineEntity } from "~clientdb";
-import { topicMemberEntity } from "~frontend/clientdb/topicMember";
-import { TopicFragment } from "~gql";
-import { isNotNullish } from "~shared/nullish";
-import { routes } from "~shared/routes";
-import { getTopicSlug } from "~shared/routes/topicSlug";
-import { slugifySync } from "~shared/slugify";
+import { EntityByDefinition, cachedComputedWithoutArgs, defineEntity } from "@aca/clientdb";
+import { topicMemberEntity } from "@aca/frontend/clientdb/topicMember";
+import { TopicFragment } from "@aca/gql";
+import { isNotNullish } from "@aca/shared/nullish";
+import { routes } from "@aca/shared/routes";
+import { getTopicSlug } from "@aca/shared/routes/topicSlug";
+import { slugifySync } from "@aca/shared/slugify";
 
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";

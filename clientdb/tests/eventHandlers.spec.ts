@@ -1,5 +1,5 @@
-import { createClientDb, defineEntity } from "~clientdb";
-import { DatabaseLinker } from "~clientdb/entity/entitiesConnections";
+import { createClientDb, defineEntity } from "@aca/clientdb";
+import { DatabaseLinker } from "@aca/clientdb/entity/entitiesConnections";
 
 import { TestOwnerEntity, createPersistanceAdapterMock, getDefaultCommonData, getSyncConfig } from "./utils";
 

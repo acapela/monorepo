@@ -2,17 +2,17 @@ import { ApolloClient, gql, useApolloClient } from "@apollo/client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useNullableDb } from "~frontend/clientdb";
-import { knownErrors } from "~frontend/errors/knownErrors";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useNullableDb } from "@aca/frontend/clientdb";
+import { knownErrors } from "@aca/frontend/errors/knownErrors";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
   CurrentTeamSubscription,
   CurrentTeamSubscriptionVariables,
-} from "~gql";
-import { assert } from "~shared/assert";
-import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+} from "@aca/gql";
+import { assert } from "@aca/shared/assert";
+import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
 
 async function fetchCurrentTeamId(apollo: ApolloClient<unknown>, userId: string) {
   const result = await apollo.query<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>({

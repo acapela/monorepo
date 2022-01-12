@@ -3,7 +3,7 @@ import { ObservableMap, autorun, observable, runInAction } from "mobx";
 import {
   KEEP_ALIVE_TIME_AFTER_UNOBSERVED,
   cachedComputedWithoutArgs,
-} from "~clientdb/entity/utils/cachedComputedWithoutArgs";
+} from "@aca/clientdb/entity/utils/cachedComputedWithoutArgs";
 
 import { runObserved } from "./utils";
 

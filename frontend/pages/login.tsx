@@ -3,10 +3,10 @@ import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { PageMeta } from "~frontend/utils/PageMeta";
-import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { PageMeta } from "@aca/frontend/utils/PageMeta";
+import { LoginOptionsView } from "@aca/frontend/views/LoginOptionsView";
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();

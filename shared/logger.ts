@@ -1,9 +1,9 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import pino from "pino";
 
-import { assertDefined } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
+import { assertDefined } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
 
 const loggingLevel = assertDefined(
   process.env.LOGGING_LEVEL,

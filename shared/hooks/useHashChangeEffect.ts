@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useWindowEvent } from "~shared/domEvents";
+import { useWindowEvent } from "@aca/shared/domEvents";
 
 export function useHashChangeEffect(callback: (hash: string | null) => void) {
   useWindowEvent("hashchange", () => {

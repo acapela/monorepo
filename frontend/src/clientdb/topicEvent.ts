@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { TopicEventFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { TopicEventFragment } from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { topicEntity } from "./topic";

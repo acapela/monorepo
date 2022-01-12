@@ -4,18 +4,18 @@ import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { MessageText } from "~frontend/message/display/types/TextMessageContent";
-import { UIMessagePreview } from "~frontend/message/UIMessagePreview";
-import { PriorityIcon } from "~frontend/topics/priority";
-import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { findAndMap } from "~shared/array";
-import { None } from "~shared/none";
-import { getLabelForPriority } from "~shared/priorities";
-import { pluralize } from "~shared/text/pluralize";
-import { IconCalendar, IconMessage } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { MessageText } from "@aca/frontend/message/display/types/TextMessageContent";
+import { UIMessagePreview } from "@aca/frontend/message/UIMessagePreview";
+import { PriorityIcon } from "@aca/frontend/topics/priority";
+import { AvatarList } from "@aca/frontend/ui/users/AvatarList";
+import { UserAvatar } from "@aca/frontend/ui/users/UserAvatar";
+import { findAndMap } from "@aca/shared/array";
+import { None } from "@aca/shared/none";
+import { getLabelForPriority } from "@aca/shared/priorities";
+import { pluralize } from "@aca/shared/text/pluralize";
+import { IconCalendar, IconMessage } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { highlighters } from "./highlighers";
 

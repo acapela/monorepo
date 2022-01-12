@@ -4,14 +4,14 @@ import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react
 import { useUpdate } from "react-use";
 import styled, { StylesPart } from "styled-components";
 
-import { getFocusedElement } from "~shared/focus";
-import { useConst } from "~shared/hooks/useConst";
-import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
-import { isPlainObjectEqual } from "~shared/isPlainObjectEqual";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { createTimeout, wait } from "~shared/time";
-import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
-import { useShortcut } from "~ui/keyboard/useShortcut";
+import { getFocusedElement } from "@aca/shared/focus";
+import { useConst } from "@aca/shared/hooks/useConst";
+import { useEqualDependencyChangeEffect } from "@aca/shared/hooks/useEqualEffect";
+import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
+import { createTimeout, wait } from "@aca/shared/time";
+import { useAlphanumericShortcut } from "@aca/ui/keyboard/useAlphanumericShortcut";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
 import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";

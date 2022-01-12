@@ -1,6 +1,6 @@
-import { TeamMember, db } from "~db";
-import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { TeamMember, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 
 import { createOnboardingTopicsWithBot } from "../bot/createOnboardingTopics";
 import { HasuraEvent } from "../hasura";

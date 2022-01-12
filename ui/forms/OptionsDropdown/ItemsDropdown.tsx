@@ -3,11 +3,11 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useClickAway, useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
 
-import { useBoundingBox } from "~shared/hooks/useBoundingBox";
-import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { useBoundingBox } from "@aca/shared/hooks/useBoundingBox";
+import { useListWithNavigation } from "@aca/shared/hooks/useListWithNavigation";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { DropdownItem } from "./DropdownItem";
 

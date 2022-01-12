@@ -2,14 +2,14 @@ import { useApolloClient } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
-import { ErrorView } from "~frontend/views/ErrorView";
-import { useReportPageReady } from "~shared/analytics/useReportPageReady";
-import { assert } from "~shared/assert";
-import { devAssignWindowVariable } from "~shared/dev";
-import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useCurrentTeamContext } from "@aca/frontend/team/CurrentTeam";
+import { AppRecoveryButtons } from "@aca/frontend/utils/AppRecoveryButtons";
+import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { useReportPageReady } from "@aca/shared/analytics/useReportPageReady";
+import { assert } from "@aca/shared/assert";
+import { devAssignWindowVariable } from "@aca/shared/dev";
+import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
 
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 import { LoadingScreen } from "./LoadingScreen";

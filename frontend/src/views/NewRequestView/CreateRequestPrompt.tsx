@@ -2,8 +2,8 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { CurvedArrow } from "~ui/icons/CurvedArrow";
-import { theme } from "~ui/theme";
+import { CurvedArrow } from "@aca/ui/icons/CurvedArrow";
+import { theme } from "@aca/ui/theme";
 
 interface Props extends HTMLMotionProps<"div"> {
   className?: string;

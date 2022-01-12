@@ -1,5 +1,5 @@
-import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { db } from "~db";
+import { ActionHandler } from "@aca/backend/src/actions/actionHandlers";
+import { db } from "@aca/db";
 
 import { getSignedUploadUrl } from "./googleStorage";
 

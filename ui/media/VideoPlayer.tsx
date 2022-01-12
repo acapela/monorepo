@@ -2,14 +2,14 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled from "styled-components";
 
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { TranscriptData } from "~shared/types/transcript";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
+import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
+import { TranscriptData } from "@aca/shared/types/transcript";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";

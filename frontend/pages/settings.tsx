@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
-import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { PageMeta } from "~frontend/utils/PageMeta";
-import { SettingsView } from "~frontend/views/SettingsView";
+import { SidebarLayout } from "@aca/frontend/layouts/SidebarLayout";
+import { assignPageLayout } from "@aca/frontend/utils/pageLayout";
+import { PageMeta } from "@aca/frontend/utils/PageMeta";
+import { SettingsView } from "@aca/frontend/views/SettingsView";
 
 import { AppConfig } from "./_app";
 

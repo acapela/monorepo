@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { userEntity } from "~frontend/clientdb/user";
-import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
-import { teamIdContext } from "~frontend/clientdb/utils/context";
-import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "~frontend/clientdb/utils/sync";
-import { UserGroupFragment, UserGroupMemberFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { userEntity } from "@aca/frontend/clientdb/user";
+import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
+import { teamIdContext } from "@aca/frontend/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
+import { UserGroupFragment, UserGroupMemberFragment } from "@aca/gql";
 
 const userGroupFragment = gql`
   fragment UserGroup on user_group {

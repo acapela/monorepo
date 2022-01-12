@@ -1,4 +1,4 @@
-import { Maybe } from "~shared/types";
+import { Maybe } from "@aca/shared/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Callback<Args extends any[]> = (...args: Args) => void;

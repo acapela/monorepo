@@ -1,11 +1,11 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { PopPresenceAnimator } from "~ui/animations";
-import { CloseIconButton } from "~ui/buttons/CloseIconButton";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { CloseIconButton } from "@aca/ui/buttons/CloseIconButton";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { Popover, PopoverPlacement } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
 
 import { ScreenCover } from "./ScreenCover";
 

@@ -5,13 +5,13 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { PageMeta } from "~frontend/utils/PageMeta";
-import { JoinTopicMutation, JoinTopicMutationVariables } from "~gql";
-import { devAssignWindowVariable } from "~shared/dev";
-import { useIsMountedRef } from "~shared/hooks/useIsMountedRef";
-import { phone } from "~ui/responsive";
+import { useDb } from "@aca/frontend/clientdb";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { PageMeta } from "@aca/frontend/utils/PageMeta";
+import { JoinTopicMutation, JoinTopicMutationVariables } from "@aca/gql";
+import { devAssignWindowVariable } from "@aca/shared/dev";
+import { useIsMountedRef } from "@aca/shared/hooks/useIsMountedRef";
+import { phone } from "@aca/ui/responsive";
 
 import { NotFound } from "./NotFound";
 import { TopicWithMessages } from "./TopicWithMessages";

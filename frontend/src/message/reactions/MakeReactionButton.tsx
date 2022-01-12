@@ -3,13 +3,13 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
-import { useDb } from "~frontend/clientdb";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { IconButton } from "~ui/buttons/IconButton";
-import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
-import { IconEmotionSmile } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
+import { useDb } from "@aca/frontend/clientdb";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { EmojiPickerWindow } from "@aca/ui/EmojiPicker/EmojiPickerWindow";
+import { IconEmotionSmile } from "@aca/ui/icons";
+import { Popover } from "@aca/ui/popovers/Popover";
 
 export const MakeReactionButton = observer(({ message }: { message: MessageEntity }) => {
   const db = useDb();

@@ -1,4 +1,4 @@
-import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
+import { MessageReactionEntity } from "@aca/frontend/clientdb/messageReaction";
 
 export const groupReactionsByEmoji = (reactions: MessageReactionEntity[]): Record<string, MessageReactionEntity[]> => {
   return reactions.reduce((acc: Record<string, MessageReactionEntity[]>, reaction) => {

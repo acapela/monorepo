@@ -2,14 +2,14 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageMedia } from "~frontend/message/display/MessageMedia";
-import { MessageText } from "~frontend/message/display/types/TextMessageContent";
-import { MessageMetaDataWrapper } from "~frontend/message/feed/MessageMetaData";
-import { CloseIconButton } from "~ui/buttons/CloseIconButton";
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { MessageMedia } from "@aca/frontend/message/display/MessageMedia";
+import { MessageText } from "@aca/frontend/message/display/types/TextMessageContent";
+import { MessageMetaDataWrapper } from "@aca/frontend/message/feed/MessageMetaData";
+import { CloseIconButton } from "@aca/ui/buttons/CloseIconButton";
+import { CornerButtonWrapper } from "@aca/ui/buttons/CornerButtonWrapper";
+import { theme } from "@aca/ui/theme";
 
 type Props = {
   message: MessageEntity;

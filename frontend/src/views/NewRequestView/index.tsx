@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAppStateStore } from "~frontend/appState/AppStateStore";
-import { DropFileContext } from "~richEditor/DropFileContext";
-import { theme } from "~ui/theme";
+import { useAppStateStore } from "@aca/frontend/appState/AppStateStore";
+import { DropFileContext } from "@aca/richEditor/DropFileContext";
+import { theme } from "@aca/ui/theme";
 
 import { NewRequest, NewRequestProps } from "./NewRequest";
 

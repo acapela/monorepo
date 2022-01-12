@@ -9,11 +9,11 @@ import {
 import { difference, find } from "lodash";
 import { Message } from "slack-block-builder";
 
-import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "~backend/src/slack/create-request-modal/utils";
-import { assertDefined } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isNotNullish } from "~shared/nullish";
-import { MentionType, REQUEST_DECISION } from "~shared/requests";
+import { DECISION_BLOCK_ID_PRE, getDecisionBlockCount } from "@aca/backend/src/slack/create-request-modal/utils";
+import { assertDefined } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { isNotNullish } from "@aca/shared/nullish";
+import { MentionType, REQUEST_DECISION } from "@aca/shared/requests";
 
 import { buildSummaryBlocksForSlackUser, missingAuthSlackBlocks } from "../home-tab/content";
 import { assertToken, buildDateTimePerUserTimezone, findUserBySlackId, listenToViewWithMetadata } from "../utils";

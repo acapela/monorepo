@@ -1,4 +1,4 @@
-import { RichEditorNodeTypedNode } from "~richEditor/content/types";
+import { RichEditorNodeTypedNode } from "@aca/richEditor/content/types";
 
 import { MentionType } from "../requests";
 

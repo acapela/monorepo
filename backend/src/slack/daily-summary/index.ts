@@ -1,6 +1,6 @@
 import { addDays } from "date-fns";
 
-import { db } from "~db";
+import { db } from "@aca/db";
 
 import { slackClient } from "../app";
 import { DailySummaryMessage } from "./DailySummaryMessage";

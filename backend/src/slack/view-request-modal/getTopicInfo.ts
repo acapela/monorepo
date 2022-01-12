@@ -1,10 +1,10 @@
 import { Md } from "slack-block-builder";
 
-import { backendGetTopicUrl } from "~backend/src/topics/url";
-import { db } from "~db";
-import { RichEditorNode } from "~richEditor/content/types";
-import { assert } from "~shared/assert";
-import { RequestType } from "~shared/requests";
+import { backendGetTopicUrl } from "@aca/backend/src/topics/url";
+import { db } from "@aca/db";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { assert } from "@aca/shared/assert";
+import { RequestType } from "@aca/shared/requests";
 
 import { slackClient } from "../app";
 import { GenerateContext, generateMarkdownFromTipTapJson } from "../md/generator";

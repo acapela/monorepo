@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-import { db } from "~db";
-import { assert } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
+import { db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
 
 import { createOnboardingTopicsWithBot } from "../bot/createOnboardingTopics";
 import { HttpStatus } from "../http";

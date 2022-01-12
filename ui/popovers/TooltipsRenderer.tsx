@@ -1,10 +1,10 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { getObjectKey } from "~shared/object";
-import { createInterval } from "~shared/time";
+import { useDebouncedDocumentEvent, useDocumentEvent } from "@aca/shared/domEvents";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { getObjectKey } from "@aca/shared/object";
+import { createInterval } from "@aca/shared/time";
 
 import { TooltipLabel } from "./TooltipLabel";
 import { getClosestElementTooltipHost, useElementTooltipConfig } from "./tooltipProps";

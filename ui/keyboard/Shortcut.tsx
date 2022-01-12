@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
-import { phone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 import { getShortcutNiceKeys } from "./describeShortcut";
 import { ShortcutCallback, ShortcutDefinition, ShortcutOptions } from "./shortcutBase";

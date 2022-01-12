@@ -4,14 +4,14 @@ import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import _, { noop } from "lodash";
 
-import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { db } from "~db";
-import { assertDefined } from "~shared/assert";
-import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "~shared/backendAnalytics";
-import { IS_DEV } from "~shared/dev";
-import { logger } from "~shared/logger";
-import { routes } from "~shared/routes";
-import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "~shared/slack";
+import { UnprocessableEntityError } from "@aca/backend/src/errors/errorTypes";
+import { db } from "@aca/db";
+import { assertDefined } from "@aca/shared/assert";
+import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
+import { routes } from "@aca/shared/routes";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@aca/shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";

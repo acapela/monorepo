@@ -5,29 +5,29 @@ import { observer } from "mobx-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { PageLayoutAnimator, layoutAnimations } from "~frontend/animations/layout";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { EditorAttachmentInfo, uploadFiles } from "~frontend/message/composer/attachments";
-import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
-import { MessageTools } from "~frontend/message/composer/Tools";
-import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { createMessageAndAttachMeta } from "~frontend/message/createNewMessage";
-import { getDoesMessageContentIncludeDecisionRequests } from "~frontend/message/decisions";
-import { ReplyingToMessageById } from "~frontend/message/reply/ReplyingToMessage";
+import { PageLayoutAnimator, layoutAnimations } from "@aca/frontend/animations/layout";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { EditorAttachmentInfo, uploadFiles } from "@aca/frontend/message/composer/attachments";
+import { MessageContentEditor } from "@aca/frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "@aca/frontend/message/composer/Tools";
+import { useMessageEditorManager } from "@aca/frontend/message/composer/useMessageEditorManager";
+import { createMessageAndAttachMeta } from "@aca/frontend/message/createNewMessage";
+import { getDoesMessageContentIncludeDecisionRequests } from "@aca/frontend/message/decisions";
+import { ReplyingToMessageById } from "@aca/frontend/message/reply/ReplyingToMessage";
 import {
   FirstCompletionEnoughToggle,
   isRequestTypeCompletableBySingleUser,
   useSingleRequestTypeForManyUsers,
-} from "~frontend/tasks/single-completion";
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { Message_Type_Enum } from "~gql";
-import { RichEditorNode } from "~richEditor/content/types";
-import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { select } from "~shared/sharedState";
-import { FadePresenceAnimator } from "~ui/animations";
-import { theme } from "~ui/theme";
+} from "@aca/frontend/tasks/single-completion";
+import { useTopicStoreContext } from "@aca/frontend/topics/TopicStore";
+import { chooseMessageTypeFromMimeType } from "@aca/frontend/utils/chooseMessageType";
+import { Message_Type_Enum } from "@aca/gql";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { Editor, getEmptyRichContent } from "@aca/richEditor/RichEditor";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
+import { select } from "@aca/shared/sharedState";
+import { FadePresenceAnimator } from "@aca/ui/animations";
+import { theme } from "@aca/ui/theme";
 
 import { DecisionEditor, INITIAL_DECISION_OPTIONS } from "./Decision/DecisionEditor";
 import { SubmitMessageButton } from "./SubmitMessageButton";

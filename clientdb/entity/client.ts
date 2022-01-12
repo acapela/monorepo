@@ -1,6 +1,6 @@
 import { computed, runInAction } from "mobx";
 
-import { assert } from "~shared/assert";
+import { assert } from "@aca/shared/assert";
 
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";

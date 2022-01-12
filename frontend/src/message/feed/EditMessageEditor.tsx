@@ -3,12 +3,12 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { MessageContentEditor } from "~frontend/message/composer/MessageContentComposer";
-import { MessageTools } from "~frontend/message/composer/Tools";
-import { useMessageEditorManager } from "~frontend/message/composer/useMessageEditorManager";
-import { Button } from "~ui/buttons/Button";
-import { theme } from "~ui/theme";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { MessageContentEditor } from "@aca/frontend/message/composer/MessageContentComposer";
+import { MessageTools } from "@aca/frontend/message/composer/Tools";
+import { useMessageEditorManager } from "@aca/frontend/message/composer/useMessageEditorManager";
+import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 import { updateMessageAndMeta } from "../createNewMessage";
 

@@ -1,20 +1,20 @@
 import { Request, Response, Router } from "express";
 
-import { handleAttachmentUpdates } from "~backend/src/attachments/events";
-import { extractAndAssertBearerToken } from "~backend/src/authentication";
-import { AuthenticationError } from "~backend/src/errors/errorTypes";
-import { handleMessageChanges, handleMessageReactionChanges } from "~backend/src/messages/events";
+import { handleAttachmentUpdates } from "@aca/backend/src/attachments/events";
+import { extractAndAssertBearerToken } from "@aca/backend/src/authentication";
+import { AuthenticationError } from "@aca/backend/src/errors/errorTypes";
+import { handleMessageChanges, handleMessageReactionChanges } from "@aca/backend/src/messages/events";
 import {
   handleTaskSlackMessageChanges,
   handleTeamSlackInstallationUpdates,
   handleUserSlackInstallation,
-} from "~backend/src/slack/hasuraEvents";
-import { handleTaskChanges } from "~backend/src/tasks/taskHandlers";
-import { handleTeamMemberAdded, handleTeamMemberDeleted } from "~backend/src/teamMember/events";
-import { handleTeamUpdates } from "~backend/src/teams/events";
-import { handleTopicMemberChanges, handleTopicUpdates } from "~backend/src/topics/events";
-import { handleUserUpdates } from "~backend/src/users/events";
-import { logger } from "~shared/logger";
+} from "@aca/backend/src/slack/hasuraEvents";
+import { handleTaskChanges } from "@aca/backend/src/tasks/taskHandlers";
+import { handleTeamMemberAdded, handleTeamMemberDeleted } from "@aca/backend/src/teamMember/events";
+import { handleTeamUpdates } from "@aca/backend/src/teams/events";
+import { handleTopicMemberChanges, handleTopicUpdates } from "@aca/backend/src/topics/events";
+import { handleUserUpdates } from "@aca/backend/src/users/events";
+import { logger } from "@aca/shared/logger";
 
 import { handleTaskDueDateChanges } from "../tasks/messageTaskDueDateHandler";
 import { hasuraEvents } from "./eventHandlers";

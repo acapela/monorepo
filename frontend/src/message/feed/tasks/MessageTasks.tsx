@@ -2,14 +2,14 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
-import { TaskEntity } from "~frontend/clientdb/task";
-import { OwnTaskCompletionButton } from "~frontend/tasks/OwnTaskCompletionButton";
-import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
-import { styledObserver } from "~shared/component";
-import { groupByFilter } from "~shared/groupByFilter";
-import { MENTION_TYPE_LABELS, RequestType } from "~shared/requests";
-import { theme } from "~ui/theme";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { OwnTaskCompletionButton } from "@aca/frontend/tasks/OwnTaskCompletionButton";
+import { TaskDueDateSetter } from "@aca/frontend/tasks/TaskDueDateSetter";
+import { styledObserver } from "@aca/shared/component";
+import { groupByFilter } from "@aca/shared/groupByFilter";
+import { MENTION_TYPE_LABELS, RequestType } from "@aca/shared/requests";
+import { theme } from "@aca/ui/theme";
 
 import { MessageTasksPeople } from "./MessageTasksPeople";
 

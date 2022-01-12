@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { niceFormatTime, relativeFormatDate } from "~shared/dates/format";
+import { niceFormatTime, relativeFormatDate } from "@aca/shared/dates/format";
 
 interface Props {
   date: Date;

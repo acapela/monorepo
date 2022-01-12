@@ -1,7 +1,7 @@
 import { runInAction } from "mobx";
 
-import { runUntracked } from "~shared/mobxUtils";
-import { createResolvablePromise } from "~shared/promises";
+import { runUntracked } from "@aca/shared/mobxUtils";
+import { createResolvablePromise } from "@aca/shared/promises";
 
 import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
-import { createChannel } from "~shared/channel";
-import { createTimeout } from "~shared/time";
+import { createChannel } from "@aca/shared/channel";
+import { createTimeout } from "@aca/shared/time";
 
 export type ToastType = "success" | "warning" | "error";
 

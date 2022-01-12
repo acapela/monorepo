@@ -1,12 +1,12 @@
 import React, { ReactNode, RefObject } from "react";
 import styled from "styled-components";
 
-import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { Shortcut } from "~ui/keyboard/Shortcut";
-import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
-import { zIndexValues } from "~ui/theme/zIndex";
+import { POP_PRESENCE_STYLES } from "@aca/ui/animations";
+import { Shortcut } from "@aca/ui/keyboard/Shortcut";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
+import { zIndexValues } from "@aca/ui/theme/zIndex";
 
 import { Popover, PopoverPlacement } from "./Popover";
 

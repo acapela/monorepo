@@ -1,6 +1,6 @@
-import { MessageEmbedPreviewConfig } from "~frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
-import { MessageLinkCard } from "~frontend/message/display/MessageLinksPreviews/MessageLinkCard";
-import { IconFigmaLogo } from "~ui/icons";
+import { MessageEmbedPreviewConfig } from "@aca/frontend/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
+import { MessageLinkCard } from "@aca/frontend/message/display/MessageLinksPreviews/MessageLinkCard";
+import { IconFigmaLogo } from "@aca/ui/icons";
 
 import { getFigmaPreviewText } from "./getFigmaPreviewText";
 

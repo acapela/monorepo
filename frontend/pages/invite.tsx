@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
-import { addToast } from "~ui/toasts/data";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useDb } from "@aca/frontend/clientdb";
+import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { LoginOptionsView } from "@aca/frontend/views/LoginOptionsView";
+import { addToast } from "@aca/ui/toasts/data";
 
 export default observer(() => {
   const router = useRouter();

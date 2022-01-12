@@ -1,8 +1,8 @@
 import { Blocks, Divider, Elements, Md } from "slack-block-builder";
 
-import { flattenWithDivider } from "~shared/array";
-import { isNotFalsy, isNotNullish } from "~shared/nullish";
-import { pluralize } from "~shared/text/pluralize";
+import { flattenWithDivider } from "@aca/shared/array";
+import { isNotFalsy, isNotNullish } from "@aca/shared/nullish";
+import { pluralize } from "@aca/shared/text/pluralize";
 
 import { createSlackLink } from "../md/utils";
 import { convertDbMessageToSlackMessageSnippet } from "../message/convertToSlack";

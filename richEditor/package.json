@@ -1,5 +1,5 @@
 {
-  "name": "~richEditor",
+  "name": "@aca/richEditor",
   "version": "0.1.0",
   "license": "UNLICENSED",
   "dependencies": {

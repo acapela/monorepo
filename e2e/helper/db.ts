@@ -1,8 +1,8 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import { Prisma, PrismaClient } from "@prisma/client";
 
-import { createJWT, signJWT } from "~shared/jwt";
+import { createJWT, signJWT } from "@aca/shared/jwt";
 
 import { user } from ".prisma/client";
 

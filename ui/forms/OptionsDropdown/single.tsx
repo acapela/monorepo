@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 import { MultipleOptionsDropdown } from "./multiple";
 import { OptionLabel } from "./OptionLabel";

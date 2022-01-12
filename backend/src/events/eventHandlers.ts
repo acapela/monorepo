@@ -14,7 +14,7 @@ import {
   TopicMember,
   Transcription,
   User,
-} from "~db";
+} from "@aca/db";
 
 import { createHasuraEventsHandler } from "../hasura";
 

@@ -1,9 +1,9 @@
 import { Page, expect } from "@playwright/test";
 
-import { getInviteURL } from "~backend/src/inviteUser/utils";
-import { test } from "~e2e/helper/base-test";
-import { basePath } from "~e2e/helper/constants";
-import { routes } from "~shared/routes";
+import { getInviteURL } from "@aca/backend/src/inviteUser/utils";
+import { test } from "@aca/e2e/helper/base-test";
+import { basePath } from "@aca/e2e/helper/constants";
+import { routes } from "@aca/shared/routes";
 
 async function createTeam(page: Page, teamName: string) {
   await page.goto(basePath + routes.teamSelect);

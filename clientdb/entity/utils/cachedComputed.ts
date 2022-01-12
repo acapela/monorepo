@@ -1,6 +1,6 @@
 import { IComputedValueOptions } from "mobx";
 
-import { createDeepMap } from "~shared/deepMap";
+import { createDeepMap } from "@aca/shared/deepMap";
 
 import { cachedComputedWithoutArgs } from "./cachedComputedWithoutArgs";
 

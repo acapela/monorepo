@@ -1,8 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
 
-import { Topic, db } from "~db";
-import { getPerUserRequestMentionDataFromContent } from "~shared/editor/mentions";
-import { slugify } from "~shared/slugify";
+import { Topic, db } from "@aca/db";
+import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
+import { slugify } from "@aca/shared/slugify";
 
 import { ensureBotIsTeamMember } from "./botTeamMembership";
 import { ensureBotUserExists } from "./botUser";

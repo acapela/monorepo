@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { styledForwardRef } from "~shared/component";
-import { handleWithStopPropagation } from "~shared/events";
-import { IconCheck } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { styledForwardRef } from "@aca/shared/component";
+import { handleWithStopPropagation } from "@aca/shared/events";
+import { IconCheck } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { OptionLabel } from "./OptionLabel";
 

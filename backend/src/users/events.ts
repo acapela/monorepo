@@ -1,6 +1,6 @@
-import { User, db } from "~db";
-import { assert } from "~shared/assert";
-import { identifyBackendUser, identifyBackendUserTeam } from "~shared/backendAnalytics";
+import { User, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import { identifyBackendUser, identifyBackendUserTeam } from "@aca/shared/backendAnalytics";
 
 import { HasuraEvent } from "../hasura";
 

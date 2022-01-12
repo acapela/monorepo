@@ -1,13 +1,13 @@
 import { useRef } from "react";
 import styled from "styled-components";
 
-import { TaskEntity } from "~frontend/clientdb/task";
-import { styledObserver } from "~shared/component";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { PopPresenceAnimator } from "~ui/animations";
-import { Button } from "~ui/buttons/Button";
-import { Popover } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { styledObserver } from "@aca/shared/component";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { PopPresenceAnimator } from "@aca/ui/animations";
+import { Button } from "@aca/ui/buttons/Button";
+import { Popover } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
 
 import { MessageTask } from "./MessageTask";
 

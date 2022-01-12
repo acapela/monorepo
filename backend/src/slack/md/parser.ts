@@ -1,10 +1,10 @@
 import { compact, isArray, isString } from "lodash";
 import markdown from "simple-markdown";
 
-import { MENTION_TYPE_KEY } from "~shared/editor/mentions";
-import emojis from "~shared/emoji/slugs.json";
-import { swapPlainObjectKeysWithValues } from "~shared/object";
-import { EditorMentionData } from "~shared/types/editor";
+import { MENTION_TYPE_KEY } from "@aca/shared/editor/mentions";
+import emojis from "@aca/shared/emoji/slugs.json";
+import { swapPlainObjectKeysWithValues } from "@aca/shared/object";
+import { EditorMentionData } from "@aca/shared/types/editor";
 
 const emojiNameToEmoji: Record<string, string> = swapPlainObjectKeysWithValues(emojis);
 

@@ -1,7 +1,7 @@
 import { compact, get, isArray, isString, isUndefined } from "lodash";
 import { Md } from "slack-block-builder";
 
-import { RichEditorNode } from "~richEditor/content/types";
+import { RichEditorNode } from "@aca/richEditor/content/types";
 
 import { createSlackLink } from "./utils";
 

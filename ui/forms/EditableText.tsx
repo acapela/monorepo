@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
 
-import { createDocumentEvent, useElementEvent } from "~shared/domEvents";
-import { useShortcut } from "~ui/keyboard/useShortcut";
+import { createDocumentEvent, useElementEvent } from "@aca/shared/domEvents";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
 interface Props {
   isInEditMode: boolean;

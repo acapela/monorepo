@@ -1,4 +1,4 @@
-import { getUUID } from "~shared/uuid";
+import { getUUID } from "@aca/shared/uuid";
 
 export function getGenericDefaultData() {
   const nowTime = Date.now();

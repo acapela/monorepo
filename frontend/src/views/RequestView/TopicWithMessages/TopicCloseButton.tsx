@@ -1,10 +1,10 @@
 import { observer } from "mobx-react";
 
-import { cachedComputed } from "~clientdb";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { Button } from "~ui/buttons/Button";
-import { IconCheck, IconLock, IconUndo } from "~ui/icons";
+import { cachedComputed } from "@aca/clientdb";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { openConfirmPrompt } from "@aca/frontend/utils/confirm";
+import { Button } from "@aca/ui/buttons/Button";
+import { IconCheck, IconLock, IconUndo } from "@aca/ui/icons";
 
 interface Props {
   topic: TopicEntity;

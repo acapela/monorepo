@@ -1,4 +1,4 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import fs from "fs";
 import path from "path";
@@ -6,7 +6,7 @@ import path from "path";
 import axios from "axios";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
 
-import { logger } from "~shared/logger";
+import { logger } from "@aca/shared/logger";
 
 import { GQL_PACKAGE_PATH } from "./files";
 

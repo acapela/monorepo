@@ -1,7 +1,7 @@
 import { AnnotationsMap, IComputedValue } from "mobx";
 
-import { Entity } from "~clientdb";
-import { getHash } from "~shared/hash";
+import { Entity } from "@aca/clientdb";
+import { getHash } from "@aca/shared/hash";
 
 import { DatabaseLinker } from "./entitiesConnections";
 import { SortResult } from "./query";

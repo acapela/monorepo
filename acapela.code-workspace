@@ -59,7 +59,7 @@
       "db/client/**/*": true,
       ".yarn/**/*": true
     },
-    // Will use auto-imports ~package instead of ../../package if import is from different package
+    // Will use auto-imports @aca/package instead of ../../package if import is from different package
     "typescript.preferences.importModuleSpecifier": "shortest",
     "typescript.suggest.autoImports": true,
     "typescript.tsdk": "node_modules/typescript/lib",

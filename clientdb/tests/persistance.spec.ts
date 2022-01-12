@@ -1,5 +1,5 @@
-import { PERSISTANCE_BATCH_FLUSH_TIMEOUT } from "~clientdb/entity/persistance";
-import { wait } from "~shared/time";
+import { PERSISTANCE_BATCH_FLUSH_TIMEOUT } from "@aca/clientdb/entity/persistance";
+import { wait } from "@aca/shared/time";
 
 import { DefaultEntitiesMap, createTestDb } from "./utils";
 

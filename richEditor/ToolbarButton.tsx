@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { disabledCss } from "~ui/disabled";
-import { theme } from "~ui/theme";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
+import { disabledCss } from "@aca/ui/disabled";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   icon: ReactNode;

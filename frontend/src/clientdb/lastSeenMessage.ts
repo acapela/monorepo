@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { LastSeenMessageFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { LastSeenMessageFragment } from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { topicEntity } from "./topic";

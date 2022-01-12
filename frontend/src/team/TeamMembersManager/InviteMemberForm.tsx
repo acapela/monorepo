@@ -3,14 +3,14 @@ import { useState } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
-import { cachedComputed } from "~clientdb";
-import { TeamEntity } from "~frontend/clientdb/team";
-import { useInviteUser } from "~frontend/team/useInviteUser";
-import { isNotNullish } from "~shared/nullish";
-import { Button } from "~ui/buttons/Button";
-import { TextInput } from "~ui/forms/TextInput";
-import { IconPlusSquare } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { cachedComputed } from "@aca/clientdb";
+import { TeamEntity } from "@aca/frontend/clientdb/team";
+import { useInviteUser } from "@aca/frontend/team/useInviteUser";
+import { isNotNullish } from "@aca/shared/nullish";
+import { Button } from "@aca/ui/buttons/Button";
+import { TextInput } from "@aca/ui/forms/TextInput";
+import { IconPlusSquare } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   team: TeamEntity;

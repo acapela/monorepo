@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
+import { useDb } from "@aca/frontend/clientdb";
 
 import { RequestFeedGroups } from "./RequestFeedGroups/RequestFeedGroups";
 

@@ -1,7 +1,7 @@
 import cors from "cors";
 import { Request, Response, Router } from "express";
 
-import { logger } from "~shared/logger";
+import { logger } from "@aca/shared/logger";
 
 import { HttpStatus } from "../http";
 import { addUserToCustomerio } from "./customerio";

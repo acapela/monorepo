@@ -1,7 +1,7 @@
 import { memoize, throttle } from "lodash";
 import { runInAction } from "mobx";
 
-import { createResolvablePromise } from "~shared/promises";
+import { createResolvablePromise } from "@aca/shared/promises";
 
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";

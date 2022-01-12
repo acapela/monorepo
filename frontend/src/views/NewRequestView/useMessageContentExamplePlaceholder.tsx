@@ -1,7 +1,7 @@
 import { sampleSize } from "lodash";
 import { useMemo } from "react";
 
-import { useDb } from "~frontend/clientdb";
+import { useDb } from "@aca/frontend/clientdb";
 
 /**
  * Creates a placeholder with up to 2 random team members mentioned

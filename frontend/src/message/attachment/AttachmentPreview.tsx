@@ -2,9 +2,9 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconCross } from "~ui/icons";
+import { useDb } from "@aca/frontend/clientdb";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconCross } from "@aca/ui/icons";
 
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 

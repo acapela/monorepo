@@ -1,12 +1,12 @@
 import { ApolloClient } from "@apollo/client";
 
-import { createClientDb } from "~clientdb";
-import { teamMemberEntity } from "~frontend/clientdb/teamMember";
-import { teamMemberSlackEntity } from "~frontend/clientdb/teamMemberSlack";
-import { topicMemberEntity } from "~frontend/clientdb/topicMember";
-import { userGroupEntity, userGroupMemberEntity } from "~frontend/clientdb/userGroup";
-import { IS_DEV, devAssignWindowVariable } from "~shared/dev";
-import { isClient } from "~shared/document";
+import { createClientDb } from "@aca/clientdb";
+import { teamMemberEntity } from "@aca/frontend/clientdb/teamMember";
+import { teamMemberSlackEntity } from "@aca/frontend/clientdb/teamMemberSlack";
+import { topicMemberEntity } from "@aca/frontend/clientdb/topicMember";
+import { userGroupEntity, userGroupMemberEntity } from "@aca/frontend/clientdb/userGroup";
+import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
+import { isClient } from "@aca/shared/document";
 
 import { attachmentEntity } from "./attachment";
 import { decisionOptionEntity } from "./decisionOption";

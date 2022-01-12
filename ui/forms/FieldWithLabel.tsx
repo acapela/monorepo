@@ -2,11 +2,11 @@ import { LayoutGroup, motion } from "framer-motion";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { useId } from "~shared/id";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
-import { IconChevronDown } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { useId } from "@aca/shared/id";
+import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
+import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
+import { IconChevronDown } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 type CursorType = "action" | "input";
 export interface Props {

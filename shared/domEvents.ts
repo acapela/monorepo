@@ -1,7 +1,7 @@
 import { noop } from "lodash";
 import { RefObject, useEffect } from "react";
 
-import { isServer } from "~shared/isServer";
+import { isServer } from "@aca/shared/isServer";
 
 import { useBoolean } from "./hooks/useBoolean";
 

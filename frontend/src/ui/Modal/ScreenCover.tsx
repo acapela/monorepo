@@ -1,10 +1,10 @@
 import { MouseEvent, ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useUnmountPresence } from "~frontend/ui/presence";
-import { BodyPortal } from "~ui/BodyPortal";
-import { theme } from "~ui/theme";
-import { zIndexValues } from "~ui/theme/zIndex";
+import { useUnmountPresence } from "@aca/frontend/ui/presence";
+import { BodyPortal } from "@aca/ui/BodyPortal";
+import { theme } from "@aca/ui/theme";
+import { zIndexValues } from "@aca/ui/theme/zIndex";
 
 interface Props {
   children: ReactNode;

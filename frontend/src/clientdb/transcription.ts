@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "~clientdb";
-import { TranscriptionFragment } from "~gql";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { TranscriptionFragment } from "@aca/gql";
 
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";

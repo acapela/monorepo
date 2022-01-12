@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 
-import { test } from "~e2e/helper/base-test";
-import { getUUID } from "~shared/uuid";
+import { test } from "@aca/e2e/helper/base-test";
+import { getUUID } from "@aca/shared/uuid";
 
 import { AppDevPage } from "./helper/app-dev-page";
 

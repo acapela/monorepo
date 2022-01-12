@@ -2,10 +2,10 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { TeamMemberEntity } from "~frontend/clientdb/teamMember";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { HStack } from "~ui/Stack";
-import { theme } from "~ui/theme";
+import { TeamMemberEntity } from "@aca/frontend/clientdb/teamMember";
+import { Avatar } from "@aca/frontend/ui/users/Avatar";
+import { HStack } from "@aca/ui/Stack";
+import { theme } from "@aca/ui/theme";
 
 import { useCurrentTeam } from "../CurrentTeam";
 

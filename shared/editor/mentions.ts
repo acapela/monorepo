@@ -1,10 +1,10 @@
 import { JSONContent } from "@tiptap/core";
 import { uniqBy } from "lodash";
 
-import { getIsContentNodeOfType, getNodesFromContentByType } from "~richEditor/content/helper";
-import { RichEditorNodeTypedNode } from "~richEditor/content/types";
-import { REQUEST_TYPES, RequestType } from "~shared/requests";
-import { EditorMentionData } from "~shared/types/editor";
+import { getIsContentNodeOfType, getNodesFromContentByType } from "@aca/richEditor/content/helper";
+import { RichEditorNodeTypedNode } from "@aca/richEditor/content/types";
+import { REQUEST_TYPES, RequestType } from "@aca/shared/requests";
+import { EditorMentionData } from "@aca/shared/types/editor";
 
 export const MENTION_TYPE_KEY = "mention";
 

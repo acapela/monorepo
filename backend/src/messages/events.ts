@@ -1,14 +1,14 @@
-import { tryUpdateTaskSlackMessages } from "~backend/src/slack/live-messages/LiveTaskMessage";
-import { tryUpdateTopicSlackMessage } from "~backend/src/slack/live-messages/LiveTopicMessage";
-import { Message, MessageReaction, db } from "~db";
-import { Message_Type_Enum } from "~gql";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { RichEditorNode } from "~richEditor/content/types";
-import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { getMentionNodesFromContent } from "~shared/editor/mentions";
-import { logger } from "~shared/logger";
-import { isEqualForPick } from "~shared/object";
+import { tryUpdateTaskSlackMessages } from "@aca/backend/src/slack/live-messages/LiveTaskMessage";
+import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
+import { Message, MessageReaction, db } from "@aca/db";
+import { Message_Type_Enum } from "@aca/gql";
+import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { getMentionNodesFromContent } from "@aca/shared/editor/mentions";
+import { logger } from "@aca/shared/logger";
+import { isEqualForPick } from "@aca/shared/object";
 
 import { HasuraEvent } from "../hasura";
 

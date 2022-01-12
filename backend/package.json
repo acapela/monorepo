@@ -1,5 +1,5 @@
 {
-  "name": "~backend",
+  "name": "@aca/backend",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "main": "index.js",
@@ -19,6 +19,7 @@
     "typescript": "*"
   },
   "dependencies": {
+    "@aca/config": "0.1.0",
     "@godaddy/terminus": "^4.9.0",
     "@google-cloud/storage": "^5.16.1",
     "@install-binary/berglas": "^0.6.2",
@@ -38,8 +39,7 @@
     "pg": "^8.7.1",
     "slack-block-builder": "^2.4.2",
     "ts-node": "^10.4.0",
-    "uuid": "^8.3.2",
-    "~config": "0.1.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",

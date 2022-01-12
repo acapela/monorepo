@@ -1,6 +1,6 @@
-import { Message, db } from "~db";
-import { RichEditorNode } from "~richEditor/content/types";
-import { isNotNullish } from "~shared/nullish";
+import { Message, db } from "@aca/db";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { isNotNullish } from "@aca/shared/nullish";
 
 import { GenerateContext, SlackMentionContext, generateMarkdownFromTipTapJson } from "../md/generator";
 

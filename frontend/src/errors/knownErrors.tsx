@@ -1,9 +1,9 @@
 import router from "next/router";
 import { ReactNode } from "react";
 
-import { logout } from "~frontend/auth/logout";
-import { routes } from "~shared/routes";
-import { Button } from "~ui/buttons/Button";
+import { logout } from "@aca/frontend/auth/logout";
+import { routes } from "@aca/shared/routes";
+import { Button } from "@aca/ui/buttons/Button";
 
 interface CommonErrorAdditionalInfo {
   description?: string;

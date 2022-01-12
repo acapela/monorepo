@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { IconCross } from "~ui/icons";
+import { IconCross } from "@aca/ui/icons";
 
 import { IconButtonProps as CircleIconButtonProps, IconButton } from "./IconButton";
 

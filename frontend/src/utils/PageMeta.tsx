@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import { Maybe } from "~shared/types";
+import { Maybe } from "@aca/shared/types";
 
 interface Props {
   title?: Maybe<string>;

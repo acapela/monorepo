@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { theme } from "~ui/theme";
+import { theme } from "@aca/ui/theme";
 
 interface VideoPreviewParams {
   stream?: MediaStream | null;

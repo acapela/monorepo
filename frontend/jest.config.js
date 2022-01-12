@@ -6,7 +6,7 @@ module.exports = require("next/jest")()({
     "^.+\\.css$": "<rootDir>/src/testSupport/cssTransform.ts",
   },
   moduleNameMapper: {
-    "~frontend/(.*)": "<rootDir>/src/$1",
+    "@aca/frontend/(.*)": "<rootDir>/src/$1",
   },
   testEnvironment: "jsdom",
 })();

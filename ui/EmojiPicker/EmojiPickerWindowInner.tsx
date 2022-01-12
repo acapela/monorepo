@@ -4,10 +4,10 @@ import { useIsomorphicLayoutEffect } from "react-use";
 import { FixedSizeList as List, ListChildComponentProps, areEqual } from "react-window";
 import styled, { css } from "styled-components";
 
-import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "~shared/emoji";
-import { typedKeys } from "~shared/object";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
+import { emojiByCategories, getEmojiSearchIndex, getEmojiSlug } from "@aca/shared/emoji";
+import { typedKeys } from "@aca/shared/object";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { useFrequentlyUsedEmoji } from "./frequentlyUsed";
 

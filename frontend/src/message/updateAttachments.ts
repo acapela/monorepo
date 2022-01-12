@@ -1,5 +1,5 @@
-import { attachmentEntity } from "~frontend/clientdb/attachment";
-import { MessageEntity } from "~frontend/clientdb/message";
+import { attachmentEntity } from "@aca/frontend/clientdb/attachment";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
 
 import { EditorAttachmentInfo } from "./composer/attachments";
 

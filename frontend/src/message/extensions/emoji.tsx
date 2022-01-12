@@ -2,12 +2,12 @@ import type { BaseEmoji } from "emoji-mart";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { createAutocompletePlugin } from "~richEditor/autocomplete";
-import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
-import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { SelectList } from "~ui/SelectList";
-import { theme } from "~ui/theme";
+import { createAutocompletePlugin } from "@aca/richEditor/autocomplete";
+import { AutocompletePickerProps } from "@aca/richEditor/autocomplete/component";
+import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
+import { EmptyStatePlaceholder } from "@aca/ui/empty/EmptyStatePlaceholder";
+import { SelectList } from "@aca/ui/SelectList";
+import { theme } from "@aca/ui/theme";
 
 interface EmojiData {
   name: string;

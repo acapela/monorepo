@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/react";
 import React from "react";
 
-import { createStoreContext } from "~shared/sharedState";
+import { createStoreContext } from "@aca/shared/sharedState";
 
 interface State {
   currentlyReplyingToMessageId: string | null;

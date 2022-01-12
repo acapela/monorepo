@@ -1,4 +1,4 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import { $, question } from "zx";
 

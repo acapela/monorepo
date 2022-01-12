@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { FocusedActionLayout } from "~frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { AppRecoveryButtons } from "~frontend/utils/AppRecoveryButtons";
+import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { AppRecoveryButtons } from "@aca/frontend/utils/AppRecoveryButtons";
 
 interface Props {
   title?: ReactNode;

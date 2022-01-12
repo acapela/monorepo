@@ -2,9 +2,9 @@ import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { theme } from "~ui/theme";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
+import { theme } from "@aca/ui/theme";
 
 import { PopoverPlacement } from "./Popover";
 import { PopoverMenu, PopoverMenuOption } from "./PopoverMenu";

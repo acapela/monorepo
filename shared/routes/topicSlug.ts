@@ -1,6 +1,6 @@
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
-import { RichEditorNode } from "~richEditor/content/types";
-import { slugifySync } from "~shared/slugify";
+import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
+import { RichEditorNode } from "@aca/richEditor/content/types";
+import { slugifySync } from "@aca/shared/slugify";
 
 function removeDoubleSpaces(input: string) {
   return input.replace(/ +/g, " ");

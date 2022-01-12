@@ -1,6 +1,6 @@
 import { BlockCollection, Blocks, Elements, Md } from "slack-block-builder";
 
-import { SlackActionIds } from "~backend/src/slack/utils";
+import { SlackActionIds } from "@aca/backend/src/slack/utils";
 
 import { NotificationMessage } from "../sendNotification";
 

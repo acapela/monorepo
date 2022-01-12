@@ -1,20 +1,20 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TaskEntity } from "~frontend/clientdb/task";
-import { getMentionColor } from "~frontend/message/extensions/mentions/TypedMention";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { TaskEntity } from "@aca/frontend/clientdb/task";
+import { getMentionColor } from "@aca/frontend/message/extensions/mentions/TypedMention";
 import {
   COMPLETED_REQUEST_LABEL,
   MentionType,
   REQUEST_DECISION,
   RequestType,
   UNCOMPLETED_REQUEST_LABEL,
-} from "~shared/requests";
-import { Button, baseButtonStyles } from "~ui/buttons/Button";
-import { IconCheckboxCircle, IconUndo } from "~ui/icons";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { theme } from "~ui/theme";
+} from "@aca/shared/requests";
+import { Button, baseButtonStyles } from "@aca/ui/buttons/Button";
+import { IconCheckboxCircle, IconUndo } from "@aca/ui/icons";
+import { PopoverMenuTrigger } from "@aca/ui/popovers/PopoverMenuTrigger";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   task: TaskEntity;

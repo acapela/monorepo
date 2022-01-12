@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 
-import { getUserIdFromRequest } from "~backend/src/utils";
-import { db } from "~db";
-import { logger } from "~shared/logger";
+import { getUserIdFromRequest } from "@aca/backend/src/utils";
+import { db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
 
 import { BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";

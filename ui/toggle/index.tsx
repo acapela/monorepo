@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 
-import { useId } from "~shared/id";
-import { theme } from "~ui/theme";
+import { useId } from "@aca/shared/id";
+import { theme } from "@aca/ui/theme";
 
 /**
  * How big part of full width will toggle occupy to indicate change on long press.

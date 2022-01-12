@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 
-import { assert } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
-import { theme } from "~ui/theme";
+import { assert } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
+import { theme } from "@aca/ui/theme";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getBlocksPreviewUrl(result: any): string {

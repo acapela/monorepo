@@ -12,8 +12,8 @@ import {
 } from "date-fns";
 import { useMemo } from "react";
 
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { groupByFilter } from "~shared/groupByFilter";
+import { TopicEntity } from "@aca/frontend/clientdb/topic";
+import { groupByFilter } from "@aca/shared/groupByFilter";
 
 import { RequestsGroupProps } from "../RequestsGroup";
 

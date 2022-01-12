@@ -1,6 +1,6 @@
-import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
-import { SlackLoginButton } from "~frontend/authentication/SlackLoginButton";
-import { Maybe } from "~shared/types";
+import { GoogleLoginButton } from "@aca/frontend/authentication/GoogleLoginButton";
+import { SlackLoginButton } from "@aca/frontend/authentication/SlackLoginButton";
+import { Maybe } from "@aca/shared/types";
 
 type LoginOptionsViewProps = {
   signupEmail?: Maybe<string>;

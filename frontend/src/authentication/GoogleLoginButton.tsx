@@ -1,9 +1,9 @@
 import { signIn } from "next-auth/react";
 import React, { ReactNode } from "react";
 
-import { Maybe } from "~shared/types";
-import { Button } from "~ui/buttons/Button";
-import { GoogleGLogoIcon } from "~ui/icons/logos/GoogleGLogo";
+import { Maybe } from "@aca/shared/types";
+import { Button } from "@aca/ui/buttons/Button";
+import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 
 export const GoogleLoginButton = ({
   className,

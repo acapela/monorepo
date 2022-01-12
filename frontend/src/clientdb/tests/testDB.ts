@@ -1,5 +1,5 @@
-import { createClientDb } from "~clientdb";
-import { createPersistanceAdapterMock } from "~clientdb/tests/utils";
+import { createClientDb } from "@aca/clientdb";
+import { createPersistanceAdapterMock } from "@aca/clientdb/tests/utils";
 
 import { appClientDbEntities } from "../createNewClientDb";
 import { apolloContext, teamIdContext, userIdContext } from "../utils/context";

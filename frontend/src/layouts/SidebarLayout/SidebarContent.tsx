@@ -3,15 +3,15 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { useAppStateStore } from "~frontend/appState/AppStateStore";
-import { UserMenu } from "~frontend/layouts/UserMenu";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { Button } from "~ui/buttons/Button";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconCross, IconPlus } from "~ui/icons";
-import { Shortcut } from "~ui/keyboard/Shortcut";
-import { phone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { useAppStateStore } from "@aca/frontend/appState/AppStateStore";
+import { UserMenu } from "@aca/frontend/layouts/UserMenu";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { Button } from "@aca/ui/buttons/Button";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconCross, IconPlus } from "@aca/ui/icons";
+import { Shortcut } from "@aca/ui/keyboard/Shortcut";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 import { InboxLink } from "./InboxLink";
 import { RequestFeed } from "./RequestFeed";

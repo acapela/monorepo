@@ -2,9 +2,9 @@ import querystring from "querystring";
 
 import axios, { Method } from "axios";
 
-import { assert, assertDefined } from "~shared/assert";
-import { IS_DEV } from "~shared/dev";
-import { SonixTranscriptData } from "~shared/types/transcript";
+import { assert, assertDefined } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
+import { SonixTranscriptData } from "@aca/shared/types/transcript";
 
 import { getDevPublicTunnelURL } from "../localtunnel";
 import { SonixCustomData } from "./customData";

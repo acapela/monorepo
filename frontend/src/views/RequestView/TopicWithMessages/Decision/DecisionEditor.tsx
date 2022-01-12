@@ -2,12 +2,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { DecisionOptionDraft } from "~frontend/message/decisions";
-import { Button } from "~ui/buttons/Button";
-import { IconButton } from "~ui/buttons/IconButton";
-import { TextInput } from "~ui/forms/TextInput";
-import { IconMinusCircle, IconPlus } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { DecisionOptionDraft } from "@aca/frontend/message/decisions";
+import { Button } from "@aca/ui/buttons/Button";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { TextInput } from "@aca/ui/forms/TextInput";
+import { IconMinusCircle, IconPlus } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 interface DecisionEditorProps {
   options: DecisionOptionDraft[];

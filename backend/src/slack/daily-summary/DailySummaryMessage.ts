@@ -1,7 +1,7 @@
 import { min, sortBy } from "lodash";
 import { Blocks, Elements, Md, Message } from "slack-block-builder";
 
-import { SlackNotificationQueue } from "~db";
+import { SlackNotificationQueue } from "@aca/db";
 
 import { mdDate } from "../md/utils";
 import { SlackActionIds } from "../utils";

@@ -1,11 +1,11 @@
 import { Request, Response, Router } from "express";
 
-import { BadRequestError } from "~backend/src/errors/errorTypes";
-import { getUserIdFromRequest } from "~backend/src/utils";
-import { UserFragment } from "~gql";
-import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
-import { logger } from "~shared/logger";
-import { AnalyticsEventName } from "~shared/types/analytics";
+import { BadRequestError } from "@aca/backend/src/errors/errorTypes";
+import { getUserIdFromRequest } from "@aca/backend/src/utils";
+import { UserFragment } from "@aca/gql";
+import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { logger } from "@aca/shared/logger";
+import { AnalyticsEventName } from "@aca/shared/types/analytics";
 
 import { HttpStatus } from "../http";
 

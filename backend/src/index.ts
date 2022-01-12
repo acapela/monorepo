@@ -1,11 +1,11 @@
 process.env.APP = "backend";
 
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import * as Sentry from "@sentry/node";
 
-import { IS_DEV } from "~shared/dev";
-import { logger } from "~shared/logger";
+import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
 
 import { setupServer } from "./app";
 import { getDevPublicTunnelURL } from "./localtunnel";

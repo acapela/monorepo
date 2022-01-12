@@ -3,13 +3,13 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { AttachmentEntity } from "~frontend/clientdb/attachment";
-import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { TranscriptData } from "~shared/types/transcript";
-import { IconFile } from "~ui/icons";
-import { AudioPlayer } from "~ui/media/AudioPlayer";
-import { VideoPlayer } from "~ui/media/VideoPlayer";
-import { theme } from "~ui/theme";
+import { AttachmentEntity } from "@aca/frontend/clientdb/attachment";
+import { chooseMessageTypeFromMimeType } from "@aca/frontend/utils/chooseMessageType";
+import { TranscriptData } from "@aca/shared/types/transcript";
+import { IconFile } from "@aca/ui/icons";
+import { AudioPlayer } from "@aca/ui/media/AudioPlayer";
+import { VideoPlayer } from "@aca/ui/media/VideoPlayer";
+import { theme } from "@aca/ui/theme";
 
 import { MessageImageAttachment } from "./MessageImageAttachment";
 

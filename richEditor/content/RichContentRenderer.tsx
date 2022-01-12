@@ -1,7 +1,7 @@
 import { Editor, EditorContent, EditorOptions, Extensions, JSONContent } from "@tiptap/react";
 import React, { useEffect, useMemo, useState } from "react";
 
-import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
+import { useEqualDependencyChangeEffect } from "@aca/shared/hooks/useEqualEffect";
 
 import { richEditorExtensions } from "../preset";
 

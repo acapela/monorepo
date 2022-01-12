@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 
-import { RichEditorNode, RichEditorNodeTypedNode } from "~richEditor/content/types";
+import { RichEditorNode, RichEditorNodeTypedNode } from "@aca/richEditor/content/types";
 
 function getNodesFromContentByTypeInner<AttributesType = unknown>(
   node: RichEditorNode,

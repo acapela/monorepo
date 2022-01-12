@@ -1,4 +1,4 @@
-import { HttpStatus } from "~backend/src/http";
+import { HttpStatus } from "@aca/backend/src/http";
 
 export class HttpError extends Error {
   public readonly status: HttpStatus;

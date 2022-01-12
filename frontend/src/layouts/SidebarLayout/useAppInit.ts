@@ -1,7 +1,7 @@
-import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
-import { useNullableDb } from "~frontend/clientdb";
-import { useCurrentTeamContext } from "~frontend/team/CurrentTeam";
-import { convertZonedHourToUTCHour } from "~shared/dates/utcUtils";
+import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { useNullableDb } from "@aca/frontend/clientdb";
+import { useCurrentTeamContext } from "@aca/frontend/team/CurrentTeam";
+import { convertZonedHourToUTCHour } from "@aca/shared/dates/utcUtils";
 
 interface Props {
   skip?: boolean;

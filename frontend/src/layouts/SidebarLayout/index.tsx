@@ -3,15 +3,15 @@ import router from "next/router";
 import React, { ReactNode, useEffect } from "react";
 import styled, { css } from "styled-components";
 
-import { LoadingScreen } from "~frontend/clientdb/LoadingScreen";
-import { NewTopicModalDisplayer } from "~frontend/topics/NewTopicModalDisplayer";
-import { HorizontalSpacingContainer } from "~frontend/ui/layout";
-import { useWindowEvent } from "~shared/domEvents";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconMenu } from "~ui/icons";
-import { phone } from "~ui/responsive";
-import { theme } from "~ui/theme";
+import { LoadingScreen } from "@aca/frontend/clientdb/LoadingScreen";
+import { NewTopicModalDisplayer } from "@aca/frontend/topics/NewTopicModalDisplayer";
+import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
+import { useWindowEvent } from "@aca/shared/domEvents";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconMenu } from "@aca/ui/icons";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 import { SidebarContent } from "./SidebarContent";
 import { useAppInitBatchProcedures } from "./useAppInit";

@@ -2,12 +2,12 @@ import { Index } from "flexsearch";
 import { mapValues, memoize, pick, values } from "lodash";
 import { makeAutoObservable } from "mobx";
 
-import { Entity } from "~clientdb";
-import { assert } from "~shared/assert";
-import { measureTime } from "~shared/dev";
-import { runUntracked } from "~shared/mobxUtils";
-import { isNotNullish } from "~shared/nullish";
-import { typedKeys } from "~shared/object";
+import { Entity } from "@aca/clientdb";
+import { assert } from "@aca/shared/assert";
+import { measureTime } from "@aca/shared/dev";
+import { runUntracked } from "@aca/shared/mobxUtils";
+import { isNotNullish } from "@aca/shared/nullish";
+import { typedKeys } from "@aca/shared/object";
 
 import { EntityStore } from "./store";
 import { computedArray } from "./utils/computedArray";

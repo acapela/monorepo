@@ -4,16 +4,16 @@ import { action, computed } from "mobx";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
-import { MessageEntity } from "~frontend/clientdb/message";
-import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { isNotNullish } from "~shared/nullish";
-import { REQUEST_DECISION } from "~shared/requests";
-import { pluralize } from "~shared/text/pluralize";
-import { FadePresenceAnimator } from "~ui/animations";
-import { IconCheck } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { useAssertCurrentUser } from "@aca/frontend/authentication/useCurrentUser";
+import { useDb } from "@aca/frontend/clientdb";
+import { MessageEntity } from "@aca/frontend/clientdb/message";
+import { AvatarList } from "@aca/frontend/ui/users/AvatarList";
+import { isNotNullish } from "@aca/shared/nullish";
+import { REQUEST_DECISION } from "@aca/shared/requests";
+import { pluralize } from "@aca/shared/text/pluralize";
+import { FadePresenceAnimator } from "@aca/ui/animations";
+import { IconCheck } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   message: MessageEntity;

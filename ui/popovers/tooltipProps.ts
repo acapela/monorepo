@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 
-import { getElementAttribute, useDOMAttributeValue } from "~shared/hooks/useElementAttribute";
-import { ShortcutDefinition } from "~ui/keyboard/shortcutBase";
+import { getElementAttribute, useDOMAttributeValue } from "@aca/shared/hooks/useElementAttribute";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 const TOOLTIP_LABEL_ATTRIBUTE = "data-tooltip";
 const TOOLTIP_SHORTCUT_ATTRIBUTE = "data-tooltip-shortcut";

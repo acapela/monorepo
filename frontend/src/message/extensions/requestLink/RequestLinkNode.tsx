@@ -3,11 +3,11 @@ import Link from "next/link";
 import React, { PropsWithChildren } from "react";
 import styled from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
-import { AutocompleteNodeProps } from "~richEditor/autocomplete/component";
-import { EditorRequestLinkData } from "~shared/types/editor";
-import { IconComments } from "~ui/icons";
-import { theme } from "~ui/theme";
+import { useDb } from "@aca/frontend/clientdb";
+import { AutocompleteNodeProps } from "@aca/richEditor/autocomplete/component";
+import { EditorRequestLinkData } from "@aca/shared/types/editor";
+import { IconComments } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 export const RequestLinkNode = observer((props: PropsWithChildren<AutocompleteNodeProps<EditorRequestLinkData>>) => {
   const { data } = props;

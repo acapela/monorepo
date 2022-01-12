@@ -1,8 +1,8 @@
 import { uniq } from "lodash";
 import { observer } from "mobx-react";
 
-import { useDb } from "~frontend/clientdb";
-import { isNotNullish } from "~shared/nullish";
+import { useDb } from "@aca/frontend/clientdb";
+import { isNotNullish } from "@aca/shared/nullish";
 
 import { RequestFeedGroups } from "./RequestFeedGroups/RequestFeedGroups";
 

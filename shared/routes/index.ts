@@ -1,4 +1,4 @@
-import { parameterizeRoutes } from "~shared/routes/utils";
+import { parameterizeRoutes } from "@aca/shared/routes/utils";
 
 export const routes = parameterizeRoutes({
   home: "/",

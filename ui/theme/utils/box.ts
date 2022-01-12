@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-import { phone } from "~ui/responsive";
+import { phone } from "@aca/ui/responsive";
 
 import { ThemeTarget, createThemeTarget } from "./themeTarget";
 

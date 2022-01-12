@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { createCleanupObject } from "~shared/cleanup";
+import { createCleanupObject } from "@aca/shared/cleanup";
 
 import { describeShortcut } from "./describeShortcut";
 import {

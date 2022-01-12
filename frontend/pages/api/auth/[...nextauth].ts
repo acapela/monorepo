@@ -1,4 +1,4 @@
-import "~config/dotenv";
+import "@aca/config/dotenv";
 
 import * as Sentry from "@sentry/node";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -7,12 +7,12 @@ import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 import SlackProvider from "next-auth/providers/slack";
 
-import { User, db } from "~db";
-import { assert } from "~shared/assert";
-import { trackBackendUserEvent, trackFirstBackendUserEvent } from "~shared/backendAnalytics";
-import { IS_DEV } from "~shared/dev";
-import { createJWT, signJWT, verifyJWT } from "~shared/jwt";
-import { Maybe } from "~shared/types";
+import { User, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { IS_DEV } from "@aca/shared/dev";
+import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
+import { Maybe } from "@aca/shared/types";
 
 // Fail quickly in case of missing env variables
 function assertEnvVariable(value: unknown, varName: string) {

@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { logger } from "~shared/logger";
+import { logger } from "@aca/shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";

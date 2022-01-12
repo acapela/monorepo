@@ -1,6 +1,6 @@
 import { RefObject, useEffect } from "react";
 
-import { createElementEvent } from "~shared/domEvents";
+import { createElementEvent } from "@aca/shared/domEvents";
 
 import { useBoolean } from "./useBoolean";
 

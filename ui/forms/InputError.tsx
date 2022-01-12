@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { theme } from "~ui/theme";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   message: string;
