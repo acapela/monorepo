@@ -13,4 +13,6 @@ export const routes = parameterizeRoutes({
   teamInviteMembers: "/team/invite-members",
   teamSelect: "/team/select",
   teamSlack: "/team/slack",
+  finishLogInInApp: "/app/return-to-app",
+  loginForDesktop: "/app/login",
 } as const);
