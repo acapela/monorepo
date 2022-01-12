@@ -56,10 +56,10 @@ const clientBundler = new Parcel({
   defaultConfig: "@parcel/config-default",
   // Enable hot reloading and dev server on localhost
   serveOptions: {
-    port: 4000,
+    port: 3005,
   },
   hmrOptions: {
-    port: 4000,
+    port: 3005,
   },
   defaultTargetOptions: {
     distDir: path.resolve(__dirname, "dist/client"),

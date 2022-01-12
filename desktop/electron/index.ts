@@ -3,6 +3,8 @@ import path from "path";
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 
+import { initializeProtocolHandlers } from "./protocol";
+
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
 const DIST_PATH = path.resolve(__dirname, "../dist");
@@ -21,7 +23,7 @@ function initializeMainWindow() {
   mainWindow.loadURL(
     IS_DEV
       ? // In dev mode - load from local dev server
-        "http://localhost:4000"
+        "http://localhost:3005"
       : // In production - load static, bundled file
         `file://${INDEX_HTML_FILE}`
   );
@@ -34,6 +36,7 @@ function initializeMainWindow() {
 
 function initializeApp() {
   initializeMainWindow();
+  initializeProtocolHandlers();
 }
 
 app.on("ready", initializeApp);
