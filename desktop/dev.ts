@@ -146,11 +146,8 @@ async function startOrRestartElectron() {
 }
 
 nodeCleanup(() => {
-  console.log("cleanup");
   if (currentElectronInstance) {
-    currentElectronInstance.kill().then(() => {
-      console.log("done");
-    });
+    currentElectronInstance.kill();
   }
 });
 
