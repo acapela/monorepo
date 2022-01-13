@@ -38,14 +38,17 @@ const CLIENT_DIR = path.resolve(__dirname, "client");
 // Electron code bundler
 const electronBundler = new Parcel({
   // point into entry of electron code
-  entries: path.resolve(ELECTRON_DIR, "index.ts"),
+  entries: [path.resolve(ELECTRON_DIR, "index.ts"), path.resolve(ELECTRON_DIR, "preload.ts")],
   defaultConfig: "@parcel/config-default",
+
   targets: {
     default: {
       distDir: path.resolve(__dirname, "dist/electron"),
       // It is never loaded remotely - we can disable all sort of optimizations of the bundle
       optimize: false,
       context: "electron-main",
+      // TODO compute this list
+      includeNodeModules: ["@aca/shared", "@aca/ui", "@aca/config", "@aca/db", "@aca/gql", "@aca/desktop"],
     },
   },
 });
@@ -67,7 +70,7 @@ const clientBundler = new Parcel({
   targets: {
     default: {
       // !Important - this code runs in node.js (not browser) env - we don't want to include node_modules in the bundle.
-      // includeNodeModules: true,
+      includeNodeModules: true,
       distDir: path.resolve(__dirname, "dist/client"),
       context: "browser",
       scopeHoist: true,
