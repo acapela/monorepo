@@ -1,18 +1,20 @@
-// import { theme } from "@aca/ui/theme";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { IconButton } from "@aca/ui/buttons/IconButton";
-import { IconCross } from "@aca/ui/icons";
+import { Button } from "@aca/ui/buttons/Button";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 
-export const SidebarView = function SidebarView() {
+interface Props {
+  onShowSettings: () => void;
+  onShowNotification: (props: Notification) => void;
+}
+
+export const SidebarContent = function SidebarContent({ onShowSettings }: Props) {
   return (
     <UIHolder>
       <UIHeader>
-        <IconButton icon={<IconCross />} />
-        <UIHeaderUser>{/* <UserMenu /> */}UserMenu</UIHeaderUser>
+        <Button onClick={onShowSettings}>Show Settings</Button>
       </UIHeader>
 
       <UIRequestFeed>Requests are here</UIRequestFeed>
@@ -43,20 +45,6 @@ const UIHeader = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   ${theme.spacing.actions.asGap}
-
-  ${IconButton} {
-    display: none;
-    ${phone(
-      css`
-        display: block;
-      `
-    )}
-  }
-`;
-
-const UIHeaderUser = styled.div`
-  flex-grow: 1;
-  display: flex;
 `;
 
 const UIRequestFeed = styled.div<{}>`
