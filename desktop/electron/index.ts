@@ -18,6 +18,9 @@ function initializeMainWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
+    webPreferences: {
+      preload: path.resolve(__dirname, "preload.js"),
+    },
   });
 
   mainWindow.loadURL(
