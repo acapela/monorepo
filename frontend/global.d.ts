@@ -6,9 +6,6 @@ declare global {
   }
 
   interface Window {
-    Userback: {
-      access_token: string;
-    };
     analytics: SegmentAnalytics.AnalyticsJS;
   }
 

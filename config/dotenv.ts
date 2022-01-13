@@ -64,7 +64,6 @@ const requiredEnvVarNamesFrontend = [
 
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",
-  "USERBACK_ACCESS_TOKEN",
   "CUSTOMERIO_APP_API_KEY",
   "CUSTOMERIO_CLIENT_API_KEY",
   "CUSTOMERIO_CLIENT_SITE_ID",
