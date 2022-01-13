@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useDebouncedDocumentEvent, useDocumentEvent } from "@aca/shared/domEvents";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";

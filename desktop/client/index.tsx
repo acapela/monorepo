@@ -1,15 +1,33 @@
+import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
+import { createGlobalStyle } from "styled-components";
 
-import { TestView } from "@aca/desktop/views/TestView";
-import { Button } from "@aca/ui/buttons/Button";
+import { SidebarView } from "@aca/desktop/views/SidebarView";
+import { global } from "@aca/frontend/styles/global";
+import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
+import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
+import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
+import { AppThemeProvider, theme } from "@aca/ui/theme";
+import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 const rootElement = document.getElementById("root");
 
+const BuiltInStyles = createGlobalStyle`
+  ${global}
+`;
+
 render(
-  <div>
-    <Button kind="primary">Button test</Button>
-    Hello from react <TestView />
-  </div>,
+  <>
+    <BuiltInStyles />
+    <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+      <AppThemeProvider theme={theme}>
+        <PromiseUIRenderer />
+        <TooltipsRenderer />
+        <ToastsRenderer />
+        <SidebarView />
+      </AppThemeProvider>
+    </MotionConfig>
+  </>,
   rootElement
 );

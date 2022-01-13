@@ -4,8 +4,8 @@ import styled from "styled-components";
 
 import { useAppStateStore } from "@aca/frontend/appState/AppStateStore";
 import { useDb } from "@aca/frontend/clientdb";
-import { Modal } from "@aca/frontend/ui/Modal";
 import { NewRequestView } from "@aca/frontend/views/NewRequestView";
+import { Modal } from "@aca/ui/Modal";
 
 export const NewTopicModalDisplayer = observer(function NewTopicModalDisplayer() {
   const appState = useAppStateStore();

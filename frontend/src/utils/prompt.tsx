@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-import { Modal, ModalAnchor } from "@aca/frontend/ui/Modal";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 import { slugifySync } from "@aca/shared/slugify";
 import { InputValidatorFunction } from "@aca/shared/validation/inputValidation";
@@ -10,6 +9,7 @@ import { Button } from "@aca/ui/buttons/Button";
 import { createPromiseUI } from "@aca/ui/createPromiseUI";
 import { TextInput } from "@aca/ui/forms/TextInput";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { Modal, ModalAnchor } from "@aca/ui/Modal";
 
 interface PromptInput {
   title: string;
