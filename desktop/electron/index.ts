@@ -1,8 +1,12 @@
+import "./globals";
+import "./bridgeHandlers";
+
 import path from "path";
 
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 
+import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
@@ -19,6 +23,7 @@ function initializeMainWindow() {
     width: 900,
     height: 680,
     webPreferences: {
+      contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
   });
@@ -40,6 +45,7 @@ function initializeMainWindow() {
 function initializeApp() {
   initializeMainWindow();
   initializeProtocolHandlers();
+  initializeBridgeHandlers();
 }
 
 app.on("ready", initializeApp);

@@ -51,7 +51,21 @@ const electronBundler = new Parcel({
       includeNodeModules: ["@aca/shared", "@aca/ui", "@aca/config", "@aca/db", "@aca/gql", "@aca/desktop"],
     },
   },
+  env: {
+    ELECTRON_CONTEXT: "electron",
+  } as NodeJS.ProcessEnv,
 });
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace NodeJS {
+    // Let's extend ProcessEnv to provide process.env autocompletion
+    export interface ProcessEnv {
+      // It is possible to narrow down types of some env variables here.
+      ELECTRON_CONTEXT: "client" | "electron";
+    }
+  }
+}
 
 // Client code bundler
 const clientBundler = new Parcel({
@@ -75,8 +89,12 @@ const clientBundler = new Parcel({
       context: "browser",
       scopeHoist: true,
       outputFormat: "commonjs",
+      optimize: true,
     },
   },
+  env: {
+    ELECTRON_CONTEXT: "client",
+  } as NodeJS.ProcessEnv,
 });
 
 async function start() {
