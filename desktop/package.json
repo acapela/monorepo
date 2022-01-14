@@ -11,8 +11,10 @@
   },
   "scripts": {
     "dev": "ts-node dev.ts",
-    "build": "ts-node build.ts",
-    "build-and-publish": "yarn electron-builder build -p always --mac dmg"
+    "build:bundle": "ts-node build.ts",
+    "build:electron": "electron-builder build --dir",
+    "build": "yarn build:bundle && yarn build:electron",
+    "build-and-publish": "electron-builder build -p always --mac dmg"
   },
   "source": ".",
   "dependencies": {
@@ -38,6 +40,10 @@
   "build": {
     "productName": "Acapela",
     "appId": "com.desktop.acapela",
+    "files": [
+      "!node_modules/**/*",
+      "dist"
+    ],
     "publish": [
       {
         "provider": "github",
@@ -48,7 +54,7 @@
     "directories": {
       "output": "dist-electron"
     },
-    "afterSign": "scripts/notarize.js",
+    "afterSign": "./scripts/notarize.js",
     "mac": {
       "category": "public.app-category.productivity",
       "hardenedRuntime": true,

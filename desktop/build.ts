@@ -20,8 +20,7 @@ const electronBundler = new Parcel({
       // It is never loaded remotely - we can disable all sort of optimizations of the bundle
       optimize: false,
       context: "electron-main",
-      // TODO compute this list
-      includeNodeModules: ["@aca/shared", "@aca/ui", "@aca/config", "@aca/db", "@aca/gql", "@aca/desktop"],
+      includeNodeModules: true,
     },
   },
   env: {
@@ -44,19 +43,13 @@ declare global {
 const clientBundler = new Parcel({
   entries: path.resolve(CLIENT_DIR, "index.html"),
   defaultConfig: "@parcel/config-default",
-  // Enable hot reloading and dev server on localhost
   mode: "production",
-  serveOptions: {
-    port: 3005,
-  },
-  hmrOptions: {
-    port: 3005,
-  },
   defaultTargetOptions: {
     distDir: path.resolve(__dirname, "dist/client"),
   },
   targets: {
     default: {
+      publicUrl: "./",
       includeNodeModules: true,
       distDir: path.resolve(__dirname, "dist/client"),
       context: "browser",
