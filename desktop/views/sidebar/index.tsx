@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
+import { avoidTitleBarPadding } from "@aca/desktop/styles/titleBar";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarContent } from "./content";
@@ -27,6 +28,7 @@ const UISidebar = styled.div<{}>`
   height: 100vh;
   max-height: 100vh;
   ${theme.colors.layout.backgroundAccent.asBg};
+  ${avoidTitleBarPadding}
 
   box-sizing: border-box;
   flex-shrink: 0;

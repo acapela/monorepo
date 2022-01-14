@@ -115,7 +115,7 @@ export const baseButtonStyles = css`
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: var(--pointer);
 
   ${theme.typo.content.medium.resetLineHeight};
   ${theme.radius.secondaryItem};
@@ -123,7 +123,7 @@ export const baseButtonStyles = css`
 
   a & {
     /* It is possible that button is inside <a> tag without having onClick handler. It means it should also have cursor pointer. */
-    cursor: pointer;
+    cursor: var(--pointer);
   }
 
   ${theme.transitions.hover()}
