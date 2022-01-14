@@ -1,4 +1,4 @@
-import { createChannelBridge, createInvokeBridge } from "./base";
+import { createChannelBridge, createInvokeBridge } from "./base/channels";
 
 /**
  * This is an example how bridges are defined

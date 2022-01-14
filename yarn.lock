@@ -87,11 +87,14 @@ __metadata:
   dependencies:
     "@parcel/config-default": ^2.1.1
     "@parcel/core": ^2.1.1
+    "@types/electron-json-storage": ^4.5.0
     "@types/node-cleanup": ^2.1.2
     electron: ^16.0.6
     electron-is-dev: ^2.0.0
+    electron-json-storage: ^4.5.0
     node-cleanup: ^2.1.2
     parcel: ^2.1.1
+    react-chicane: ^0.6.1
     url-pattern: ^1.0.3
   peerDependencies:
     react: "*"
@@ -1636,6 +1639,15 @@ __metadata:
   dependencies:
     regenerator-runtime: ^0.13.4
   checksum: b96e67280efe581c6147b4fe984dfe08a8fbea048934a092f3cbf4dcf61725f6b221cb0c879b6e6e98671f83a104c9e8cfbd24c683e5ebcc886a731aa8984ad0
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.7.6":
+  version: 7.16.7
+  resolution: "@babel/runtime@npm:7.16.7"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 47912f0aaacd1cab2e2552aaf3e6eaffbcaf2d5ac9b07a89a12ac0d42029cb92c070b0d16f825e4277c4a34677c54d8ffe85e1f7c6feb57de58f700eec67ce2f
   languageName: node
   linkType: hard
 
@@ -5585,6 +5597,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/electron-json-storage@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "@types/electron-json-storage@npm:4.5.0"
+  checksum: 0ce33c9fe756588f59e1ed24919f91ceb89dd78d5abf2e191d6a68b07800aadb0302feda87900d4f1c8df2142d189db99f5cd5f00b377be4d67022996c9ec8eb
+  languageName: node
+  linkType: hard
+
 "@types/emoji-mart@npm:^3.0.9":
   version: 3.0.9
   resolution: "@types/emoji-mart@npm:3.0.9"
@@ -7141,6 +7160,15 @@ __metadata:
   version: 0.9.2
   resolution: "async@npm:0.9.2"
   checksum: 87dbf129292b8a6c32a4e07f43f462498162aa86f404a7e11f978dbfdf75cfb163c26833684bb07b9d436083cd604cbbf730a57bfcbe436c6ae1ed266cdc56bb
+  languageName: node
+  linkType: hard
+
+"async@npm:^2.0.0":
+  version: 2.6.3
+  resolution: "async@npm:2.6.3"
+  dependencies:
+    lodash: ^4.17.14
+  checksum: 5e5561ff8fca807e88738533d620488ac03a5c43fce6c937451f7e35f943d33ad06c24af3f681a48cca3d2b0002b3118faff0a128dc89438a9bf0226f712c499
   languageName: node
   linkType: hard
 
@@ -10370,6 +10398,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-json-storage@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "electron-json-storage@npm:4.5.0"
+  dependencies:
+    async: ^2.0.0
+    lockfile: ^1.0.4
+    lodash: ^4.0.1
+    mkdirp: ^0.5.1
+    rimraf: ^2.5.1
+    write-file-atomic: ^2.4.2
+  checksum: 25b0cbfed7c0020b4ce0e9422933ea717441efbfb5918751b6acd115b4a375bdcdca2cb5564b7c1aa16ef56aa0d845b89e83d69f2e9bdccdc3e8c71cc354f858
+  languageName: node
+  linkType: hard
+
 "electron-to-chromium@npm:^1.3.723, electron-to-chromium@npm:^1.3.830":
   version: 1.3.843
   resolution: "electron-to-chromium@npm:1.3.843"
@@ -12833,6 +12875,15 @@ fsevents@^1.2.7:
   version: 10.4.1
   resolution: "highlight.js@npm:10.4.1"
   checksum: b6b5f6c4ab6f5d2289fa2d2c321759cd0af081daf8586b1c51185a59914804b3062bb66969e38ac0609782cca775ef3060a4f0c38a04c12c668a884117b67531
+  languageName: node
+  linkType: hard
+
+"history@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "history@npm:5.2.0"
+  dependencies:
+    "@babel/runtime": ^7.7.6
+  checksum: 2c6a05aa86793e0a0857013457f34474c17f81a012c6bdb00bf30862389ac6a8c2df113d82176f67af2fd534ea9dc4e1218470c5526355b6fc1aefcc971f2eb2
   languageName: node
   linkType: hard
 
@@ -15811,6 +15862,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lockfile@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "lockfile@npm:1.0.4"
+  dependencies:
+    signal-exit: ^3.0.2
+  checksum: 8de35aace8acbe883cbca3cc3959e88904d57c79dccd4afffc64aea8f9cf7b4c63598d08b8add66fbf381f8fb3ce4fd4c518cd231c797c266b6c790eb7b33abc
+  languageName: node
+  linkType: hard
+
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -15923,7 +15983,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0, lodash@npm:~4.17.0":
+"lodash@npm:4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0, lodash@npm:~4.17.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -20062,6 +20122,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-chicane@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "react-chicane@npm:0.6.1"
+  dependencies:
+    history: ^5.2.0
+    use-subscription: ^1.5.1
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: e8624be63fcde88bde031ffd7217c4ab091b7e196ff9a378fbbbcf9536d9c0d2c38f70bdb95cbfd49856326e03b1f10e7104c565cb173abcea70078c2293a75e
+  languageName: node
+  linkType: hard
+
 "react-devtools-core@npm:^4.19.1":
   version: 4.21.0
   resolution: "react-devtools-core@npm:4.21.0"
@@ -20785,7 +20857,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^2.6.1":
+"rimraf@npm:^2.5.1, rimraf@npm:^2.6.1":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
   dependencies:
@@ -23503,7 +23575,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:1.5.1":
+"use-subscription@npm:1.5.1, use-subscription@npm:^1.5.1":
   version: 1.5.1
   resolution: "use-subscription@npm:1.5.1"
   dependencies:
@@ -23968,6 +24040,17 @@ fsevents@^1.2.7:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 159da4805f7e84a3d003d8841557196034155008f817172d4e986bd591f74aa82aa7db55929a54222309e01079a65a92a9e6414da5a6aa4b01ee44a511ac3ee5
+  languageName: node
+  linkType: hard
+
+"write-file-atomic@npm:^2.4.2":
+  version: 2.4.3
+  resolution: "write-file-atomic@npm:2.4.3"
+  dependencies:
+    graceful-fs: ^4.1.11
+    imurmurhash: ^0.1.4
+    signal-exit: ^3.0.2
+  checksum: 2db81f92ae974fd87ab4a5e7932feacaca626679a7c98fcc73ad8fcea5a1950eab32fa831f79e9391ac99b562ca091ad49be37a79045bd65f595efbb8f4596ae
   languageName: node
   linkType: hard
 

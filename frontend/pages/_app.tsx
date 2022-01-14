@@ -17,7 +17,6 @@ import { RequiredSessionProvider } from "@aca/frontend/auth/RequiredSessionProvi
 import { getUserFromRequest } from "@aca/frontend/authentication/request";
 import { ClientDbProvider } from "@aca/frontend/clientdb";
 import { sentryFallbackErrorRenderer } from "@aca/frontend/errors/sentryFallbackErrorRenderer";
-import initializeUserbackPlugin from "@aca/frontend/scripts/userback";
 import { global } from "@aca/frontend/styles/global";
 import { CurrentTeamProvider } from "@aca/frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "@aca/frontend/utils/pageLayout";
@@ -34,7 +33,6 @@ export interface AppConfig {
   stage: string | undefined;
   version: string | undefined;
   buildDate: string | undefined;
-  userbackAccessToken: string | undefined;
   sentryDSN: string | undefined;
 }
 
@@ -63,7 +61,6 @@ export default function App({
   stage,
   version,
   buildDate,
-  userbackAccessToken,
   sentryDSN,
 }: AppProps & AppConfig): JSX.Element {
   // We need to remember this from first render, as getInitialProps is not run on client side navigation
@@ -75,14 +72,12 @@ export default function App({
         stage,
         version,
         buildDate,
-        userbackAccessToken,
         sentryDSN,
       } as AppConfig)
   );
 
-  // Load Userback and Sentry integration after initial app render
+  // Load Sentry integration after initial app render
   useEffect(() => {
-    initializeUserbackPlugin(appConfig.userbackAccessToken);
     initSentry(appConfig);
   }, [appConfig]);
 
@@ -200,7 +195,6 @@ App.getInitialProps = async (context: AppContext) => {
     stage: process.env.STAGE,
     version: process.env.SENTRY_RELEASE || "dev",
     buildDate: process.env.BUILD_DATE || "unknown",
-    userbackAccessToken: process.env.USERBACK_ACCESS_TOKEN,
     sentryDSN: process.env.SENTRY_DSN,
     segmentAPIKey: process.env.SEGMENT_API_KEY,
   } as AppConfig;

@@ -10,7 +10,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { TestRouter } from "../views/TestRouter";
+import { RootView } from "../views/RootView";
 
 const rootElement = document.getElementById("root");
 
@@ -26,7 +26,7 @@ render(
         <PromiseUIRenderer />
         <TooltipsRenderer />
         <ToastsRenderer />
-        <TestRouter />
+        <RootView />
       </AppThemeProvider>
     </MotionConfig>
   </>,
