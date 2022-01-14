@@ -27,6 +27,8 @@ function initializeMainWindow() {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
+    titleBarStyle: "hidden",
+    fullscreenable: false,
   });
 
   mainWindow.loadURL(
