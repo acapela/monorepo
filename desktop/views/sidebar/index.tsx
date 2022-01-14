@@ -1,31 +1,22 @@
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-import { IconButton } from "@aca/ui/buttons/IconButton";
-import { IconMenu } from "@aca/ui/icons";
-import { HorizontalSpacingContainer } from "@aca/ui/layout";
-import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarContent } from "./content";
 
 interface Props {
-  onShowSettings: () => void;
-  onShowNotification: (props: Notification) => void;
   children?: ReactNode;
 }
 
-export const SidebarLayout = observer(({ children, onShowSettings, onShowNotification }: Props) => {
+export const SidebarLayout = observer(({ children }: Props) => {
   return (
     <UIHolder>
       <UISidebar>
-        <SidebarContent onShowSettings={onShowSettings} onShowNotification={onShowNotification} />
+        <SidebarContent />
       </UISidebar>
       <UIMainContent>
-        <UIPhoneToggle>
-          <IconButton kind="backgroundAccent" icon={<IconMenu />} />
-        </UIPhoneToggle>
         <UIMainContentBody>{children}</UIMainContentBody>
       </UIMainContent>
     </UIHolder>
@@ -49,12 +40,6 @@ const UISidebar = styled.div<{}>`
 const UIHolder = styled.div<{}>`
   display: flex;
   min-height: 100vh;
-
-  ${phone(
-    css`
-      flex-direction: column;
-    `
-  )}
 `;
 
 const UIMainContent = styled.div<{}>`
@@ -75,16 +60,4 @@ const UIMainContentBody = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 0;
-`;
-
-const UIPhoneToggle = styled(HorizontalSpacingContainer)`
-  align-self: stretch;
-  padding-top: 20px;
-  display: none;
-
-  ${phone(
-    css`
-      display: block;
-    `
-  )}
 `;

@@ -5,16 +5,11 @@ import { Button } from "@aca/ui/buttons/Button";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 
-interface Props {
-  onShowSettings: () => void;
-  onShowNotification: (props: Notification) => void;
-}
-
-export const SidebarContent = function SidebarContent({ onShowSettings }: Props) {
+export const SidebarContent = function SidebarContent() {
   return (
     <UIHolder>
       <UIHeader>
-        <Button onClick={onShowSettings}>Show Settings</Button>
+        <Button>Show Settings</Button>
       </UIHeader>
 
       <UIRequestFeed>Requests are here</UIRequestFeed>

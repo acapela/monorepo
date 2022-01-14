@@ -5,19 +5,12 @@ import { SidebarLayout } from "./sidebar";
 
 type PageType = "settings" | "notification";
 
+// TODO: Refactor the whole thing with appropriate router
 export const TestRouter = function TestRouter() {
-  const [page, setPage] = useState<{ type: PageType; props?: Notification }>({ type: "settings" });
-
-  function handleShowSettings() {
-    setPage({ type: "settings" });
-  }
-
-  function handleShowNotification(props: Notification) {
-    setPage({ type: "notification", props });
-  }
+  const [page] = useState<{ type: PageType; props?: Notification }>({ type: "settings" });
 
   return (
-    <SidebarLayout onShowSettings={handleShowSettings} onShowNotification={handleShowNotification}>
+    <SidebarLayout>
       {page.type === "settings" && <SettingsView />}
       {page.type === "notification" && <>Notification</>}
     </SidebarLayout>
