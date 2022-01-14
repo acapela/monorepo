@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "@aca/clientdb";
-import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
-import { TeamMemberSlackFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { TeamMemberSlackFragment, Team_Member_Slack_Bool_Exp } from "@aca/gql";
 
 const teamMemberSlackFragment = gql`
   fragment TeamMemberSlack on team_member_slack {
@@ -26,9 +26,10 @@ export const teamMemberSlackEntity = defineEntity<TeamMemberSlackFragment>({
     __typename: "team_member_slack",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<TeamMemberSlackFragment>(teamMemberSlackFragment, {
-    insertColumns: [],
-    updateColumns: [],
-    teamScopeCondition: (teamId) => ({ team_member: { team_id: { _eq: teamId } } }),
-  }),
+  sync: createHasuraSyncSetupFromFragment<TeamMemberSlackFragment, { where: Team_Member_Slack_Bool_Exp }>(
+    teamMemberSlackFragment,
+    {
+      teamScopeCondition: (teamId) => ({ team_member: { team_id: { _eq: teamId } } }),
+    }
+  ),
 });

@@ -1,12 +1,20 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { teamIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { userEntity } from "@aca/frontend/clientdb/user";
-import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
-import { teamIdContext } from "@aca/frontend/clientdb/utils/context";
-import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
-import { UserGroupFragment, UserGroupMemberFragment } from "@aca/gql";
+import {
+  UserGroupFragment,
+  UserGroupMemberFragment,
+  User_Group_Bool_Exp,
+  User_Group_Constraint,
+  User_Group_Insert_Input,
+  User_Group_Member_Insert_Input,
+  User_Group_Set_Input,
+} from "@aca/gql";
 
 const userGroupFragment = gql`
   fragment UserGroup on user_group {
@@ -16,6 +24,13 @@ const userGroupFragment = gql`
     updated_at
   }
 `;
+
+type UserGroupConstraints = {
+  key: User_Group_Constraint;
+  insert: User_Group_Insert_Input;
+  update: User_Group_Set_Input;
+  where: User_Group_Bool_Exp;
+};
 
 export const userGroupEntity = defineEntity<UserGroupFragment>({
   name: "user_group",
@@ -27,9 +42,10 @@ export const userGroupEntity = defineEntity<UserGroupFragment>({
     team_id: getContextValue(teamIdContext) ?? undefined,
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<UserGroupFragment>(userGroupFragment, {
+  sync: createHasuraSyncSetupFromFragment<UserGroupFragment, UserGroupConstraints>(userGroupFragment, {
     insertColumns: ["id", "team_id", "name", "created_at", "updated_at"],
     updateColumns: ["name"],
+    upsertConstraint: "user_group_pkey",
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
 }).addConnections((userGroup, { getEntity }) => ({
@@ -58,9 +74,13 @@ export const userGroupMemberEntity = defineEntity<UserGroupMemberFragment>({
     __typename: "user_group_member",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<UserGroupMemberFragment>(userGroupMemberFragment, {
+  sync: createHasuraSyncSetupFromFragment<
+    UserGroupMemberFragment,
+    {
+      insert: User_Group_Member_Insert_Input;
+    }
+  >(userGroupMemberFragment, {
     insertColumns: ["id", "user_group_id", "user_id", "created_at", "updated_at"],
-    updateColumns: [],
   }),
 }).addConnections((userGroupMember, { getEntity }) => ({
   get user() {

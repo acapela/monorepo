@@ -4,9 +4,19 @@ import { memoize } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { decisionOptionEntity } from "@aca/frontend/clientdb/decisionOption";
 import { updateMessageTasks } from "@aca/frontend/message/updateMessageTasks";
-import { MessageFragment } from "@aca/gql";
+import {
+  MessageFragment,
+  Message_Bool_Exp,
+  Message_Constraint,
+  Message_Insert_Input,
+  Message_Set_Input,
+} from "@aca/gql";
 import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
 import { getPerUserRequestMentionDataFromContent } from "@aca/shared/editor/mentions";
 
@@ -16,10 +26,6 @@ import { messageTaskDueDateEntity } from "./messageTaskDueDate";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const messageFragment = gql`
   fragment Message on message {
@@ -34,6 +40,13 @@ const messageFragment = gql`
     is_first_completion_enough
   }
 `;
+
+type MessageConstraints = {
+  key: Message_Constraint;
+  insert: Message_Insert_Input;
+  update: Message_Set_Input;
+  where: Message_Bool_Exp;
+};
 
 export const messageEntity = defineEntity<MessageFragment>({
   name: "message",
@@ -50,9 +63,10 @@ export const messageEntity = defineEntity<MessageFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
+  sync: createHasuraSyncSetupFromFragment<MessageFragment, MessageConstraints>(messageFragment, {
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type", "is_first_completion_enough"],
     updateColumns: ["content", "is_first_completion_enough"],
+    upsertConstraint: "message_id_key",
     teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
   }),
   customObservableAnnotations: {

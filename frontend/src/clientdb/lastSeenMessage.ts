@@ -1,15 +1,20 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
-import { LastSeenMessageFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import {
+  LastSeenMessageFragment,
+  Last_Seen_Message_Bool_Exp,
+  Last_Seen_Message_Constraint,
+  Last_Seen_Message_Insert_Input,
+  Last_Seen_Message_Set_Input,
+} from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { topicEntity } from "./topic";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const lastSeenMessageFragment = gql`
   fragment LastSeenMessage on last_seen_message {
@@ -21,6 +26,13 @@ const lastSeenMessageFragment = gql`
     user_id
   }
 `;
+
+type LastSeenMessageConstraints = {
+  key: Last_Seen_Message_Constraint;
+  insert: Last_Seen_Message_Insert_Input;
+  update: Last_Seen_Message_Set_Input;
+  where: Last_Seen_Message_Bool_Exp;
+};
 
 export const lastSeenMessageEntity = defineEntity<LastSeenMessageFragment>({
   name: "lastSeenMessage",
@@ -35,11 +47,15 @@ export const lastSeenMessageEntity = defineEntity<LastSeenMessageFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<LastSeenMessageFragment>(lastSeenMessageFragment, {
-    insertColumns: ["id", "message_id", "seen_at", "topic_id"],
-    updateColumns: ["message_id", "topic_id", "seen_at"],
-    teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
-  }),
+  sync: createHasuraSyncSetupFromFragment<LastSeenMessageFragment, LastSeenMessageConstraints>(
+    lastSeenMessageFragment,
+    {
+      insertColumns: ["id", "message_id", "seen_at", "topic_id"],
+      updateColumns: ["message_id", "topic_id", "seen_at"],
+      upsertConstraint: "last_seen_message_pkey",
+      teamScopeCondition: (teamId) => ({ topic: { team_id: { _eq: teamId } } }),
+    }
+  ),
 }).addConnections((lastSeenMessage, { getEntity }) => {
   return {
     get message() {

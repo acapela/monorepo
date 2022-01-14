@@ -2,10 +2,9 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "@aca/clientdb";
 import { EntityByDefinition } from "@aca/clientdb/entity/entity";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { TeamSlackInstallationFragment } from "@aca/gql";
-
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const teamSlackInstallationFragment = gql`
   fragment TeamSlackInstallation on team_slack_installation {
@@ -21,10 +20,7 @@ export const teamSlackInstallationEntity = defineEntity<TeamSlackInstallationFra
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<TeamSlackInstallationFragment>(teamSlackInstallationFragment),
-  sync: createHasuraSyncSetupFromFragment<TeamSlackInstallationFragment>(teamSlackInstallationFragment, {
-    insertColumns: [],
-    updateColumns: [],
-  }),
+  sync: createHasuraSyncSetupFromFragment<TeamSlackInstallationFragment>(teamSlackInstallationFragment),
 });
 
 export type TeamSlackInstallationEntity = EntityByDefinition<typeof teamSlackInstallationEntity>;

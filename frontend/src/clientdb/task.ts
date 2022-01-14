@@ -1,14 +1,14 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
-import { TaskFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { TaskFragment, Task_Bool_Exp, Task_Constraint, Task_Insert_Input, Task_Set_Input } from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const taskFragment = gql`
   fragment Task on task {
@@ -23,6 +23,13 @@ const taskFragment = gql`
   }
 `;
 
+type TaskConstraints = {
+  key: Task_Constraint;
+  insert: Task_Insert_Input;
+  update: Task_Set_Input;
+  where: Task_Bool_Exp;
+};
+
 export const taskEntity = defineEntity<TaskFragment>({
   name: "task",
   keyField: "id",
@@ -36,10 +43,11 @@ export const taskEntity = defineEntity<TaskFragment>({
     };
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
-  sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
+  sync: createHasuraSyncSetupFromFragment<TaskFragment, TaskConstraints>(taskFragment, {
     insertColumns: ["done_at", "user_id", "seen_at", "type", "message_id", "id"],
     updateColumns: ["done_at", "seen_at"],
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
+    upsertConstraint: "task_pkey",
   }),
 })
   .addConnections((task, { getEntity, getContextValue }) => {

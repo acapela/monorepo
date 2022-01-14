@@ -1,13 +1,19 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { transcriptionEntity } from "@aca/frontend/clientdb/transcription";
-import { AttachmentFragment } from "@aca/gql";
+import {
+  AttachmentFragment,
+  Attachment_Bool_Exp,
+  Attachment_Constraint,
+  Attachment_Insert_Input,
+  Attachment_Set_Input,
+} from "@aca/gql";
 
 import { messageEntity } from "./message";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const attachmentFragment = gql`
   fragment Attachment on attachment {
@@ -21,6 +27,13 @@ const attachmentFragment = gql`
   }
 `;
 
+type AttachmentConstraints = {
+  key: Attachment_Constraint;
+  insert: Attachment_Insert_Input;
+  update: Attachment_Set_Input;
+  where: Attachment_Bool_Exp;
+};
+
 export const attachmentEntity = defineEntity<AttachmentFragment>({
   name: "attachment",
   updatedAtField: "updated_at",
@@ -32,9 +45,10 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<AttachmentFragment>(attachmentFragment, {
+  sync: createHasuraSyncSetupFromFragment<AttachmentFragment, AttachmentConstraints>(attachmentFragment, {
     insertColumns: ["id", "message_id", "mime_type", "original_name"],
     updateColumns: ["message_id"],
+    upsertConstraint: "attachment_id_key",
   }),
 }).addConnections((attachment, { getEntity }) => ({
   get message() {
