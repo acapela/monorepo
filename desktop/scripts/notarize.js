@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
-const { electron_notarize } = require("electron-notarize");
+const electron_notarize = require("electron-notarize");
 
 module.exports = async function (params) {
   if (process.platform !== "darwin") {
