@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 import { createChannel } from "@aca/shared/channel";
 import { createResolvablePromise } from "@aca/shared/promises";

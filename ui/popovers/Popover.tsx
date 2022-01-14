@@ -5,12 +5,12 @@ import { usePopper } from "react-popper";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { ScreenCover } from "@aca/frontend/src/ui/Modal/ScreenCover";
 import { useRefValue } from "@aca/shared/hooks/useRefValue";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { useValueRef } from "@aca/shared/hooks/useValueRef";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { theme } from "@aca/ui/theme";
 
 export type PopoverPlacement = Placement;

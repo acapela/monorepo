@@ -5,11 +5,11 @@ import styled, { css } from "styled-components";
 
 import { LoadingScreen } from "@aca/frontend/clientdb/LoadingScreen";
 import { NewTopicModalDisplayer } from "@aca/frontend/topics/NewTopicModalDisplayer";
-import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
 import { useWindowEvent } from "@aca/shared/domEvents";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconMenu } from "@aca/ui/icons";
+import { HorizontalSpacingContainer } from "@aca/ui/layout";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 

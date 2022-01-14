@@ -1,63 +1,37 @@
-import React, { useEffect } from "react";
+import { MotionConfig } from "framer-motion";
+import React from "react";
 import { render } from "react-dom";
+import { createGlobalStyle } from "styled-components";
 
-import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { getFoo, pingPongChannel } from "@aca/desktop/bridge/foo";
-import { RootView } from "@aca/desktop/views/RootView";
-import { TestView } from "@aca/desktop/views/TestView";
-import { createInterval } from "@aca/shared/time";
-import { Button } from "@aca/ui/buttons/Button";
+import { global } from "@aca/frontend/styles/global";
+import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
+import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
+import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
+import { AppThemeProvider, theme } from "@aca/ui/theme";
+import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
+
+import { RootView } from "../views/RootView";
+import { SidebarLayout } from "../views/sidebar";
 
 const rootElement = document.getElementById("root");
 
-function App() {
-  const token = authTokenBridgeValue.use();
-  async function handleInvoke() {
-    getFoo("foo").then((result) => {
-      alert(result);
-    });
-  }
+const BuiltInStyles = createGlobalStyle`
+  ${global}
+`;
 
-  function handleLogOut() {
-    authTokenBridgeValue.set(null);
-  }
-
-  useEffect(() => {
-    const cleanSending = createInterval(() => {
-      const message = `ping - ${Math.random()}`;
-
-      console.info("sending", message);
-      pingPongChannel.send(message);
-    }, 1000);
-
-    const cleanListening = pingPongChannel.subscribe((response) => {
-      console.info(`Got response - ${response}`);
-    });
-
-    return () => {
-      cleanSending();
-      cleanListening();
-    };
-  });
-
-  return <RootView />;
-
-  // Demo things
-  return (
-    <div>
-      <Button kind="primary" onClick={handleInvoke}>
-        Invoke test3
-      </Button>
-      <Button kind="primary">Button test</Button>
-      Hello from react <TestView />
-      <div>Token: {JSON.stringify(token)}</div>
-      {!!token && (
-        <Button kind="primary" onClick={handleLogOut}>
-          Log out
-        </Button>
-      )}
-    </div>
-  );
-}
-
-render(<App />, rootElement);
+render(
+  <>
+    <BuiltInStyles />
+    <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+      <AppThemeProvider theme={theme}>
+        <PromiseUIRenderer />
+        <TooltipsRenderer />
+        <ToastsRenderer />
+        <SidebarLayout>
+          <RootView />
+        </SidebarLayout>
+      </AppThemeProvider>
+    </MotionConfig>
+  </>,
+  rootElement
+);

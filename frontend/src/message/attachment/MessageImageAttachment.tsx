@@ -2,13 +2,13 @@ import { AnimatePresence, LayoutGroup } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { ScreenCover } from "@aca/frontend/ui/Modal/ScreenCover";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { CornerButtonWrapper } from "@aca/ui/buttons/CornerButtonWrapper";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconCross } from "@aca/ui/icons";
 import { useShortcuts } from "@aca/ui/keyboard/useShortcut";
+import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { theme } from "@aca/ui/theme";
 
 interface AttachmentProps {

@@ -10,8 +10,8 @@ import { TopicEntity } from "@aca/frontend/clientdb/topic";
 import { TopicEventEntity } from "@aca/frontend/clientdb/topicEvent";
 import { MessagesFeed } from "@aca/frontend/message/feed/MessagesFeed";
 import { TopicStoreContext } from "@aca/frontend/topics/TopicStore";
-import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
 import { DropFileContext } from "@aca/richEditor/DropFileContext";
+import { HorizontalSpacingContainer } from "@aca/ui/layout";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 

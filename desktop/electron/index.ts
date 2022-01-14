@@ -8,6 +8,7 @@ import { autoUpdater } from "electron-updater";
 
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
+import { startServiceSync } from "./services";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
@@ -48,6 +49,7 @@ function initializeApp() {
   initializeBridgeHandlers();
   initializeMainWindow();
   initializeProtocolHandlers();
+  startServiceSync();
 }
 
 app.on("ready", initializeApp);

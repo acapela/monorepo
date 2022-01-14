@@ -1,8 +1,8 @@
 import { MouseEvent, ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useUnmountPresence } from "@aca/frontend/ui/presence";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { useUnmountPresence } from "@aca/ui/presence";
 import { theme } from "@aca/ui/theme";
 import { zIndexValues } from "@aca/ui/theme/zIndex";
 

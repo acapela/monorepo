@@ -8,13 +8,13 @@ import { useAppStateStore } from "@aca/frontend/appState/AppStateStore";
 import { TopicEntity } from "@aca/frontend/clientdb/topic";
 import { PriorityIcon } from "@aca/frontend/topics/priority";
 import { PriorityPicker } from "@aca/frontend/topics/PriorityPicker";
-import { HorizontalSpacingContainer } from "@aca/frontend/ui/layout";
 import { OptionsButton } from "@aca/frontend/ui/options/OptionsButton";
 import { AvatarList } from "@aca/frontend/ui/users/AvatarList";
 import { openUIPrompt } from "@aca/frontend/utils/prompt";
 import { getLabelForPriority } from "@aca/shared/priorities";
 import { createLengthValidator } from "@aca/shared/validation/inputValidation";
 import { IconCheck, IconCopy, IconEdit, IconLock, IconUndo, IconUnlock } from "@aca/ui/icons";
+import { HorizontalSpacingContainer } from "@aca/ui/layout";
 import { PopoverMenuTrigger } from "@aca/ui/popovers/PopoverMenuTrigger";
 import { theme } from "@aca/ui/theme";
 
