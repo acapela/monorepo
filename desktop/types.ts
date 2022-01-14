@@ -1,8 +1,8 @@
 export type Notification = {
-  serviceId: string;
-  internalId: string;
+  service: string;
+  id: string;
   title: string;
-  url: string;
+  path: string;
   isUnread: boolean;
 };
 
@@ -12,7 +12,8 @@ export type NotificationServiceAdapter = {
   needsBackend: boolean;
   checkStatus: () => Promise<NotificationServiceStatus>;
   login: () => Promise<boolean>;
-  sync: (addFn: (notification: Notification) => void) => void;
+  update: (addFn: (notification: Notification) => void) => void;
+  sync: () => Promise<Notification[]>;
   archive: (id: string) => Promise<void>;
   openOAuth: () => Promise<boolean>;
 };
