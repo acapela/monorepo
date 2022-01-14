@@ -4,6 +4,7 @@ import path from "path";
 
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
+import { autoUpdater } from "electron-updater";
 
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
@@ -34,6 +35,8 @@ function initializeMainWindow() {
       : // In production - load static, bundled file
         `file://${INDEX_HTML_FILE}`
   );
+
+  autoUpdater.checkForUpdatesAndNotify();
 
   mainWindow.on("closed", () => {
     mainWindow = null;

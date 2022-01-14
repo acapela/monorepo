@@ -1,13 +1,17 @@
 {
   "name": "@aca/desktop",
   "version": "0.1.0",
+  "description": "Acapela makes async work more actionable by aggregating and triaging notifications from multiple tools.",
   "license": "UNLICENSED",
+  "author": "Acapela GmbH",
+  "repository": "https://github.com/weareacapela/release",
   "peerDependencies": {
     "react": "*",
     "styled-components": "*"
   },
   "scripts": {
-    "dev": "ts-node dev.ts"
+    "dev": "ts-node dev.ts",
+    "build-and-publish": "yarn electron-builder build -p always --mac dmg"
   },
   "source": ".",
   "dependencies": {
@@ -17,12 +21,37 @@
     "electron": "^16.0.6",
     "electron-is-dev": "^2.0.0",
     "electron-json-storage": "^4.5.0",
+    "electron-updater": "^4.6.1",
     "node-cleanup": "^2.1.2",
     "react-chicane": "^0.6.1",
     "url-pattern": "^1.0.3"
   },
   "devDependencies": {
     "@types/electron-json-storage": "^4.5.0",
+    "electron-builder": "^22.14.5",
+    "electron-notarize": "^1.1.1",
     "parcel": "^2.1.1"
+  },
+  "build": {
+    "productName": "Acapela",
+    "appId": "com.desktop.acapela",
+    "artifactName:": "acapela-${version}-${os}-${arch}.${ext}",
+    "publish": [
+      {
+        "provider": "github",
+        "private": false,
+        "releaseType": "release"
+      }
+    ],
+    "afterSign": "scripts/notarize.js",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "sign": false
+    }
   }
 }
