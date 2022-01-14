@@ -1,5 +1,4 @@
 import "./globals";
-import "./bridgeHandlers";
 
 import path from "path";
 
@@ -43,9 +42,9 @@ function initializeMainWindow() {
 }
 
 function initializeApp() {
+  initializeBridgeHandlers();
   initializeMainWindow();
   initializeProtocolHandlers();
-  initializeBridgeHandlers();
 }
 
 app.on("ready", initializeApp);

@@ -1,4 +1,6 @@
-import { app, dialog } from "electron";
+import { app } from "electron";
+
+import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
 import { handleUrlWithPattern } from "./urlPattern";
 
@@ -14,7 +16,7 @@ function handleAppReceivedUrl(url: string) {
 
   // Handle auth token received
   handleUrlWithPattern("authorize/:token", path, ({ token }) => {
-    dialog.showErrorBox("Auth", `Auth token received: ${token}`);
+    authTokenBridgeValue.set(token);
   });
 }
 
