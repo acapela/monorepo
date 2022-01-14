@@ -18,6 +18,7 @@
     "electron-is-dev": "^2.0.0",
     "electron-json-storage": "^4.5.0",
     "node-cleanup": "^2.1.2",
+    "react-chicane": "^0.6.1",
     "url-pattern": "^1.0.3"
   },
   "devDependencies": {

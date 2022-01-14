@@ -94,6 +94,7 @@ __metadata:
     electron-json-storage: ^4.5.0
     node-cleanup: ^2.1.2
     parcel: ^2.1.1
+    react-chicane: ^0.6.1
     url-pattern: ^1.0.3
   peerDependencies:
     react: "*"
@@ -1638,6 +1639,15 @@ __metadata:
   dependencies:
     regenerator-runtime: ^0.13.4
   checksum: b96e67280efe581c6147b4fe984dfe08a8fbea048934a092f3cbf4dcf61725f6b221cb0c879b6e6e98671f83a104c9e8cfbd24c683e5ebcc886a731aa8984ad0
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.7.6":
+  version: 7.16.7
+  resolution: "@babel/runtime@npm:7.16.7"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 47912f0aaacd1cab2e2552aaf3e6eaffbcaf2d5ac9b07a89a12ac0d42029cb92c070b0d16f825e4277c4a34677c54d8ffe85e1f7c6feb57de58f700eec67ce2f
   languageName: node
   linkType: hard
 
@@ -12868,6 +12878,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"history@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "history@npm:5.2.0"
+  dependencies:
+    "@babel/runtime": ^7.7.6
+  checksum: 2c6a05aa86793e0a0857013457f34474c17f81a012c6bdb00bf30862389ac6a8c2df113d82176f67af2fd534ea9dc4e1218470c5526355b6fc1aefcc971f2eb2
+  languageName: node
+  linkType: hard
+
 "hmac-drbg@npm:^1.0.1":
   version: 1.0.1
   resolution: "hmac-drbg@npm:1.0.1"
@@ -20103,6 +20122,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-chicane@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "react-chicane@npm:0.6.1"
+  dependencies:
+    history: ^5.2.0
+    use-subscription: ^1.5.1
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: e8624be63fcde88bde031ffd7217c4ab091b7e196ff9a378fbbbcf9536d9c0d2c38f70bdb95cbfd49856326e03b1f10e7104c565cb173abcea70078c2293a75e
+  languageName: node
+  linkType: hard
+
 "react-devtools-core@npm:^4.19.1":
   version: 4.21.0
   resolution: "react-devtools-core@npm:4.21.0"
@@ -23544,7 +23575,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:1.5.1":
+"use-subscription@npm:1.5.1, use-subscription@npm:^1.5.1":
   version: 1.5.1
   resolution: "use-subscription@npm:1.5.1"
   dependencies:

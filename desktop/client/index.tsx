@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { render } from "react-dom";
 
+import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getFoo, pingPongChannel } from "@aca/desktop/bridge/foo";
+import { RootView } from "@aca/desktop/views/RootView";
 import { TestView } from "@aca/desktop/views/TestView";
 import { createInterval } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
-
-import { authTokenBridgeValue } from "../bridge/auth";
 
 const rootElement = document.getElementById("root");
 
@@ -39,6 +39,10 @@ function App() {
       cleanListening();
     };
   });
+
+  return <RootView />;
+
+  // Demo things
   return (
     <div>
       <Button kind="primary" onClick={handleInvoke}>
