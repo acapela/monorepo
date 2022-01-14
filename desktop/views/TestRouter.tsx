@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { SettingsView } from "./settings";
 import { SidebarLayout } from "./sidebar";
 
 type PageType = "settings" | "notification";
@@ -17,7 +18,7 @@ export const TestRouter = function TestRouter() {
 
   return (
     <SidebarLayout onShowSettings={handleShowSettings} onShowNotification={handleShowNotification}>
-      {page.type === "settings" && <>Settings</>}
+      {page.type === "settings" && <SettingsView />}
       {page.type === "notification" && <>Notification</>}
     </SidebarLayout>
   );

@@ -1,23 +1,18 @@
 export type Notification = {
-  id: string;
+  serviceId: string;
+  internalId: string;
   title: string;
   url: string;
   isUnread: boolean;
 };
 
-export type NotificationServiceStatus<WithOAuth extends boolean> =
-  | "no-session"
-  | "dead-session"
-  | "connected"
-  | (WithOAuth extends true ? "missing-oauth" : never);
+export type NotificationServiceStatus = "no-session" | "dead-session" | "connected" | "missing-oauth";
 
-export type NotificationServiceAdapter<NeedsBackend extends boolean> = {
-  needsBackend: NeedsBackend;
-  checkStatus: () => Promise<NotificationServiceStatus<NeedsBackend>>;
+export type NotificationServiceAdapter = {
+  needsBackend: boolean;
+  checkStatus: () => Promise<NotificationServiceStatus>;
   login: () => Promise<boolean>;
   sync: (addFn: (notification: Notification) => void) => void;
-
   archive: (id: string) => Promise<void>;
-} & NeedsBackend extends true
-  ? { openOAuth: () => Promise<boolean> }
-  : {};
+  openOAuth: () => Promise<boolean>;
+};
