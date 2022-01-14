@@ -1,11 +1,9 @@
 import React from "react";
 
-import { Button } from "@aca/ui/buttons/Button";
-
 import { allRouteNames, desktopRouter } from "../routes";
 import { HomeView } from "./HomeView";
 import { NotificationView } from "./NotificationView";
-import { SettingsView } from "./SettingsView";
+import { SettingsView } from "./settings";
 
 function Routes() {
   const activeRoute = desktopRouter.useRoute(allRouteNames);
@@ -29,34 +27,7 @@ function Routes() {
 export function RootView() {
   return (
     <div>
-      App
-      <Button
-        kind="primary"
-        onClick={() => {
-          desktopRouter.navigate("home");
-        }}
-      >
-        Home
-      </Button>
-      <Button
-        kind="primary"
-        onClick={() => {
-          desktopRouter.navigate("settings");
-        }}
-      >
-        Settings
-      </Button>
-      <Button
-        kind="primary"
-        onClick={() => {
-          desktopRouter.navigate("notification", { notificationId: "foo" });
-        }}
-      >
-        Notification
-      </Button>
-      <div>
-        <Routes />
-      </div>
+      <Routes />
     </div>
   );
 }

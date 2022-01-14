@@ -1,6 +1,6 @@
 import { NotificationServiceName } from "../electron/services";
 import { NotificationServiceStatus } from "../types";
-import { createChannelBridge, createInvokeBridge } from "./base";
+import { createChannelBridge, createInvokeBridge } from "./base/channels";
 
 export const notificationServiceStatusChannel =
   createChannelBridge<Record<string, NotificationServiceStatus>>("notification-service-status");

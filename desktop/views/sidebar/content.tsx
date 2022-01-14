@@ -1,6 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
+import { desktopRouter } from "@aca/desktop/routes";
 import { Button } from "@aca/ui/buttons/Button";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
@@ -9,7 +10,13 @@ export const SidebarContent = function SidebarContent() {
   return (
     <UIHolder>
       <UIHeader>
-        <Button>Show Settings</Button>
+        <Button
+          onClick={() => {
+            desktopRouter.navigate("settings");
+          }}
+        >
+          Show Settings
+        </Button>
       </UIHeader>
 
       <UIRequestFeed>Requests are here</UIRequestFeed>
