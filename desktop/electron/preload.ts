@@ -1,6 +1,6 @@
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
-import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base";
+import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 
 /**
  * This is what is published from electron api to browser.

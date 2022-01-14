@@ -1,6 +1,6 @@
-import { IpcMainEvent, ipcMain } from "electron";
+import { BrowserWindow, IpcMainEvent, app, ipcMain } from "electron";
 
-import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base";
+import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 
 /**
  * Important note.
@@ -13,6 +13,8 @@ import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base";
  */
 const electronGlobal = {
   ipcMain: ipcMain,
+  BrowserWindow: BrowserWindow,
+  appReadyPromise: app.whenReady(),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribe: (channel: string, subscriber: ElectronChannelSubscriber<any>) => {
     function handler(event: IpcMainEvent, data: unknown) {
