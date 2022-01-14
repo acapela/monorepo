@@ -128,3 +128,4 @@ buildinfo.tsbuild
 gql/generated.ts
 gql/schema.graphql
 db/schema.prisma
+dist-electron/
