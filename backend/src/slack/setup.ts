@@ -1,5 +1,6 @@
 import { Express } from "express";
 
+import { setupSlackCapture } from "../notificationCapture/slack";
 import { setupSlackActionHandlers } from "./actions";
 import { slackApp, slackReceiver } from "./app";
 import { setupCreateRequestModal } from "./create-request-modal";
@@ -19,4 +20,6 @@ export function setupSlack(app: Express) {
   setupSlackActionHandlers(slackApp);
 
   setupDecision(slackApp);
+
+  setupSlackCapture(slackApp);
 }
