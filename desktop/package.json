@@ -14,7 +14,7 @@
     "build:bundle": "ts-node build.ts",
     "build:electron": "electron-builder build --mac zip --universal --dir",
     "build": "yarn build:bundle && yarn build:electron",
-    "publish": "yarn build:bundle && electron-builder build --mac zip --universal -p always"
+    "publish": "ts-node ./scripts/publish.ts && yarn build:bundle && electron-builder build --mac zip --universal -p always"
   },
   "source": ".",
   "devDependencies": {
