@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
-const electron_notarize = require("electron-notarize");
+// const electron_notarize = require("electron-notarize");
 
 module.exports = async function (params) {
   if (process.platform !== "darwin") {
     return;
   }
 
-  console.info("afterSign hook triggered", params);
+  //console.info("afterSign hook triggered", params);
 
   let appId = "com.desktop.acapela";
 
@@ -20,16 +20,16 @@ module.exports = async function (params) {
 
   console.info(`Notarizing ${appId} found at ${appPath} with Apple ID ${process.env.APPLE_ID}`);
 
-  try {
-    await electron_notarize.notarize({
-      appBundleId: appId,
-      appPath: appPath,
-      appleId: process.env.APPLE_ID,
-      appleIdPassword: process.env.APPLE_ID_PASSWORD,
-    });
-  } catch (error) {
-    console.error(error);
-  }
-
-  console.info(`Done notarizing ${appId}`);
+  // try {
+  //   await electron_notarize.notarize({
+  //     appBundleId: appId,
+  //     appPath: appPath,
+  //     appleId: process.env.APPLE_ID,
+  //     appleIdPassword: process.env.APPLE_ID_PASSWORD,
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  // }
+  //
+  // console.info(`Done notarizing ${appId}`);
 };

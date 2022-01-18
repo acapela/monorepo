@@ -4,7 +4,7 @@
   "description": "Acapela makes async work more actionable by aggregating and triaging notifications from multiple tools.",
   "license": "UNLICENSED",
   "author": "Acapela GmbH",
-  "repository": "https://github.com/weareacapela/release",
+  "repository": "github:weareacapela/releases",
   "peerDependencies": {
     "react": "*",
     "styled-components": "*"
@@ -12,29 +12,27 @@
   "scripts": {
     "dev": "ts-node dev.ts",
     "build:bundle": "ts-node build.ts",
-    "build:electron": "electron-builder build --dir",
+    "build:electron": "electron-builder build --mac zip --universal --dir",
     "build": "yarn build:bundle && yarn build:electron",
-    "build-and-publish": "electron-builder build -p always --mac dmg"
+    "publish": "yarn build:bundle && electron-builder build --mac zip --universal -p always"
   },
   "source": ".",
-  "dependencies": {
+  "devDependencies": {
     "@parcel/config-default": "^2.1.1",
     "@parcel/core": "^2.1.1",
-    "@types/node-cleanup": "^2.1.2",
-    "electron-is-dev": "^2.0.0",
-    "electron-json-storage": "^4.5.0",
-    "electron-updater": "^4.6.1",
-    "node-cleanup": "^2.1.2",
-    "react-chicane": "^0.6.1",
-    "url-pattern": "^1.0.3"
-  },
-  "devDependencies": {
     "@types/electron-json-storage": "^4.5.0",
+    "@types/node-cleanup": "^2.1.2",
     "electron": "16.0.6",
     "electron-builder": "^22.14.5",
+    "electron-is-dev": "^2.0.0",
+    "electron-json-storage": "^4.5.0",
     "electron-notarize": "^1.1.1",
+    "electron-updater": "^4.6.1",
+    "node-cleanup": "^2.1.2",
     "parcel": "^2.1.1",
-    "ts-node": "^10.4.0"
+    "react-chicane": "^0.6.1",
+    "ts-node": "^10.4.0",
+    "url-pattern": "^1.0.3"
   },
   "main": "./dist/electron/index.js",
   "build": {
@@ -48,6 +46,8 @@
       {
         "provider": "github",
         "private": false,
+        "repo": "releases",
+        "owner": "weareacapela",
         "releaseType": "release"
       }
     ],
@@ -60,9 +60,6 @@
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist"
-    },
-    "dmg": {
-      "sign": false
     }
   }
 }
