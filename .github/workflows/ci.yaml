@@ -196,4 +196,4 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: yarn desktop publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
