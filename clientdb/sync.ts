@@ -68,17 +68,33 @@ type EntityConstraints<Key = unknown, Insert = unknown, Update = unknown, Where 
 
 type KeysAsArray<T> = Array<keyof T>;
 
+type InsertOnlyOptions<Constraints extends EntityConstraints> = {
+  updateColumns: KeysAsArray<Constraints["update"]>;
+  insertColumns?: never;
+  upsertConstraint?: never;
+};
+
+type UpdateOnlyOptions<Constraints extends EntityConstraints> = {
+  insertColumns: KeysAsArray<Constraints["insert"]>;
+  updateColumns?: never;
+  upsertConstraint?: never;
+};
+
+type UpsertOptions<Constraints extends EntityConstraints> = {
+  updateColumns: KeysAsArray<Constraints["update"]>;
+  insertColumns: KeysAsArray<Constraints["insert"]>;
+  upsertConstraint: Constraints["key"] extends string ? Constraints["key"] : never;
+};
+
+type ReadOnlyOptions = { insertColumns?: never; updateColumns?: never; upsertConstraint?: never };
+
 export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityConstraints = {}>(
   fragment: DocumentNode,
   options: (
-    | { updateColumns: KeysAsArray<Constraints["update"]>; insertColumns?: never; upsertConstraint?: never }
-    | { insertColumns: KeysAsArray<Constraints["insert"]>; updateColumns?: never; upsertConstraint?: never }
-    | {
-        updateColumns: KeysAsArray<Constraints["update"]>;
-        insertColumns: KeysAsArray<Constraints["insert"]>;
-        upsertConstraint: Constraints["key"] extends string ? Constraints["key"] : never;
-      }
-    | { insertColumns?: never; updateColumns?: never; upsertConstraint?: never }
+    | InsertOnlyOptions<Constraints>
+    | UpdateOnlyOptions<Constraints>
+    | UpsertOptions<Constraints>
+    | ReadOnlyOptions
   ) & {
     teamScopeCondition?: Constraints["where"] extends object ? (teamId: string) => Constraints["where"] : never;
   } = {}
