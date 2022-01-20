@@ -1,6 +1,7 @@
 import React from "react";
 
 import { allRouteNames, desktopRouter } from "../routes";
+import { FocusModeView } from "./FocusMode/FocusModeView";
 import { HomeView } from "./HomeView";
 import { NotificationView } from "./NotificationView";
 import { SettingsView } from "./settings";
@@ -19,6 +20,8 @@ function Routes() {
       return <SettingsView />;
     case "notification":
       return <NotificationView notificationId={activeRoute.params.notificationId} />;
+    case "focus":
+      return <FocusModeView />;
   }
 
   return <>"404"</>;

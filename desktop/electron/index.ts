@@ -19,6 +19,10 @@ const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
 // Reference to main, opened window
 let mainWindow: BrowserWindow | null;
 
+export function getMainWindow() {
+  return mainWindow;
+}
+
 function initializeMainWindow() {
   mainWindow = new BrowserWindow({
     width: 900,

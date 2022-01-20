@@ -17,6 +17,13 @@ export const SidebarContent = function SidebarContent() {
         >
           Show Settings
         </Button>
+        <Button
+          onClick={() => {
+            desktopRouter.navigate("focus");
+          }}
+        >
+          Focus
+        </Button>
       </UIHeader>
 
       <UIRequestFeed>Requests are here</UIRequestFeed>
