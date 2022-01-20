@@ -1,4 +1,4 @@
-import { app } from "electron";
+import { app, session } from "electron";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
@@ -17,6 +17,12 @@ function handleAppReceivedUrl(url: string) {
   // Handle auth token received
   handleUrlWithPattern("authorize/:token", path, ({ token }) => {
     authTokenBridgeValue.set(token);
+    session.defaultSession.cookies.set({
+      url: "http://localhost:3000",
+      name: "next-auth.session-token",
+      value: token,
+      expirationDate: Date.now() + 1_000 /*sec*/ * 60 /*min*/ * 60 /*h*/ * 24 /*day*/ * 365 /*year*/ * 10 /*years*/,
+    });
   });
 }
 

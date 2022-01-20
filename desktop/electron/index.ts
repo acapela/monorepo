@@ -45,6 +45,8 @@ function initializeMainWindow() {
     mainWindow = null;
     //
   });
+
+  mainWindow.webContents.toggleDevTools();
 }
 
 function initializeApp() {
