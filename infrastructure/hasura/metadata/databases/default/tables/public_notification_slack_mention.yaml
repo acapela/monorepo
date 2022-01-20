@@ -1,0 +1,3 @@
+table:
+  name: notification_slack_mention
+  schema: public

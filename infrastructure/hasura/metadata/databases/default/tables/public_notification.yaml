@@ -1,0 +1,13 @@
+table:
+  name: notification
+  schema: public
+object_relationships:
+- name: slack_mention
+  using:
+    manual_configuration:
+      column_mapping:
+        id: notification_id
+      insertion_order: null
+      remote_table:
+        name: notification_slack_mention
+        schema: public

@@ -60,10 +60,18 @@
         "users.profile:read",
         "users:read",
         "users:read.email",
-        "chat:write"
+        "chat:write",
+        "im:read",
+        "mpim:read",
+        "groups:read"
       ],
       "user": [
+        "channels:history",
+        "groups:history",
+        "im:history",
+        "mpim:history",
         "channels:read",
+        "reactions:read",
         "chat:write",
         "groups:read",
         "im:read",
@@ -87,6 +95,7 @@
     "token_rotation_enabled": false,
     "event_subscriptions": {
       "request_url": "https://app.acape.la/api/backend/slack/events",
+      "user_events": ["message.channels", "message.groups", "message.im", "message.mpim", "reaction_added"],
       "bot_events": ["app_uninstalled", "app_home_opened"]
     }
   }
