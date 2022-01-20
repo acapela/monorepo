@@ -4,6 +4,7 @@ import path from "path";
 
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
+import { autoUpdater } from "electron-updater";
 
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
@@ -11,7 +12,7 @@ import { startServiceSync } from "./services";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
-const DIST_PATH = path.resolve(__dirname, "../dist");
+const DIST_PATH = path.resolve(__dirname, "../client");
 const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
 
 // Note - in case we'll use multiple windows, create some solid abstraction on setting and unsetting open windows.
@@ -26,6 +27,8 @@ function initializeMainWindow() {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
+    titleBarStyle: "hidden",
+    fullscreenable: false,
   });
 
   mainWindow.loadURL(
@@ -35,6 +38,8 @@ function initializeMainWindow() {
       : // In production - load static, bundled file
         `file://${INDEX_HTML_FILE}`
   );
+
+  autoUpdater.checkForUpdatesAndNotify();
 
   mainWindow.on("closed", () => {
     mainWindow = null;

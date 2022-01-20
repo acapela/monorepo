@@ -21,6 +21,10 @@ export const global = css`
     color: #232b35;
   }
 
+  body {
+    --pointer: pointer;
+  }
+
   body.css-debug {
     * {
       outline: 1px solid red;

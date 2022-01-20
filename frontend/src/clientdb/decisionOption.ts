@@ -1,13 +1,19 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { messageEntity } from "@aca/frontend/clientdb/message";
-import { DecisionOptionFragment } from "@aca/gql";
+import {
+  DecisionOptionFragment,
+  Decision_Option_Bool_Exp,
+  Decision_Option_Constraint,
+  Decision_Option_Insert_Input,
+  Decision_Option_Set_Input,
+} from "@aca/gql";
 
 import { decisionVoteEntity } from "./decisionVote";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const decisionOptionFragment = gql`
   fragment DecisionOption on decision_option {
@@ -20,6 +26,13 @@ const decisionOptionFragment = gql`
   }
 `;
 
+type DecisionOptionConstraints = {
+  key: Decision_Option_Constraint;
+  insert: Decision_Option_Insert_Input;
+  update: Decision_Option_Set_Input;
+  where: Decision_Option_Bool_Exp;
+};
+
 export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
   name: "decision_option",
   updatedAtField: "updated_at",
@@ -30,13 +43,14 @@ export const decisionOptionEntity = defineEntity<DecisionOptionFragment>({
     __typename: "decision_option",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<DecisionOptionFragment>(decisionOptionFragment, {
+  sync: createHasuraSyncSetupFromFragment<DecisionOptionFragment, DecisionOptionConstraints>(decisionOptionFragment, {
     insertColumns: ["id", "option", "message_id", "index"],
     updateColumns: [
       "option",
       // In case message is converted to new request we move all options instead of creating new ones to avoid losing votes
       "message_id",
     ],
+    upsertConstraint: "decision_option_pkey",
     teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
   }),
 }).addConnections((decisionOption, { getEntity }) => {

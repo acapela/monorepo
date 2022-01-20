@@ -1,8 +1,8 @@
 import { createClientDb } from "@aca/clientdb";
 import { createPersistanceAdapterMock } from "@aca/clientdb/tests/utils";
+import { apolloContext, teamIdContext, userIdContext } from "@aca/clientdb/utils/context";
 
 import { appClientDbEntities } from "../createNewClientDb";
-import { apolloContext, teamIdContext, userIdContext } from "../utils/context";
 
 export function createTestAppClientDb(userId: string, teamId: string) {
   const clientdb = createClientDb(

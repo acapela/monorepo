@@ -3,8 +3,12 @@ import { uniqBy } from "lodash";
 import router from "next/router";
 
 import { EntityByDefinition, cachedComputedWithoutArgs, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { teamIdContext, userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { topicMemberEntity } from "@aca/frontend/clientdb/topicMember";
-import { TopicFragment } from "@aca/gql";
+import { TopicFragment, Topic_Bool_Exp, Topic_Constraint, Topic_Insert_Input, Topic_Set_Input } from "@aca/gql";
 import { isNotNullish } from "@aca/shared/nullish";
 import { routes } from "@aca/shared/routes";
 import { getTopicSlug } from "@aca/shared/routes/topicSlug";
@@ -16,10 +20,6 @@ import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { topicEventEntity } from "./topicEvent";
 import { UserEntity, userEntity } from "./user";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { teamIdContext, userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const topicFragment = gql`
   fragment Topic on topic {
@@ -37,6 +37,13 @@ const topicFragment = gql`
     priority
   }
 `;
+
+type TopicConstraints = {
+  key: Topic_Constraint;
+  insert: Topic_Insert_Input;
+  update: Topic_Set_Input;
+  where: Topic_Bool_Exp;
+};
 
 export const topicEntity = defineEntity<TopicFragment>({
   name: "topic",
@@ -58,7 +65,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<TopicFragment>(topicFragment, {
+  sync: createHasuraSyncSetupFromFragment<TopicFragment, TopicConstraints>(topicFragment, {
     insertColumns: [
       "id",
       "archived_at",
@@ -72,6 +79,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       "priority",
     ],
     updateColumns: ["archived_at", "closed_at", "closed_by_user_id", "index", "name", "owner_id", "slug", "priority"],
+    upsertConstraint: "thread_pkey",
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
   search: { fields: { name: true } },

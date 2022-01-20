@@ -10,6 +10,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { GlobalDesktopStyles } from "../styles/GlobalDesktopStyles";
 import { RootView } from "../views/RootView";
 import { SidebarLayout } from "../views/sidebar";
 
@@ -22,6 +23,7 @@ const BuiltInStyles = createGlobalStyle`
 render(
   <>
     <BuiltInStyles />
+    <GlobalDesktopStyles />
     <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
       <AppThemeProvider theme={theme}>
         <PromiseUIRenderer />

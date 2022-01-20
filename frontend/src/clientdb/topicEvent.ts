@@ -1,15 +1,15 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
-import { TopicEventFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { TopicEventFragment, Topic_Event_Bool_Exp, Topic_Event_Insert_Input } from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const topicEventFragment = gql`
   fragment TopicEvent on topic_event {
@@ -37,6 +37,11 @@ const topicEventFragment = gql`
   }
 `;
 
+type TopicEventConstraints = {
+  insert: Topic_Event_Insert_Input;
+  where: Topic_Event_Bool_Exp;
+};
+
 export const topicEventEntity = defineEntity<TopicEventFragment>({
   name: "topic_event",
   updatedAtField: "updated_at",
@@ -59,7 +64,7 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
     topic_to_priority: null,
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<TopicEventFragment>(topicEventFragment, {
+  sync: createHasuraSyncSetupFromFragment<TopicEventFragment, TopicEventConstraints>(topicEventFragment, {
     insertColumns: [
       "id",
       "topic_id",
