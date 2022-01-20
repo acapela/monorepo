@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
+import { increaseClientDBForceRefreshCount } from "@aca/clientdb/utils/recoveryCounter";
 import { logout } from "@aca/frontend/auth/logout";
-import { increaseClientDBForceRefreshCount } from "@aca/frontend/clientdb/recoveryCounter";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 

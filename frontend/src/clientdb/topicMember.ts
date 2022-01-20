@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { topicEntity } from "@aca/frontend/clientdb/topic";
 import { userEntity } from "@aca/frontend/clientdb/user";
-import { getFragmentKeys } from "@aca/frontend/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "@aca/frontend/clientdb/utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "@aca/frontend/clientdb/utils/sync";
 import { TopicMemberFragment } from "@aca/gql";
 
 const topicMemberFragment = gql`
@@ -26,10 +26,7 @@ export const topicMemberEntity = defineEntity<TopicMemberFragment>({
     __typename: "topic_member",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<TopicMemberFragment>(topicMemberFragment, {
-    insertColumns: [],
-    updateColumns: [],
-  }),
+  sync: createHasuraSyncSetupFromFragment<TopicMemberFragment>(topicMemberFragment),
 }).addConnections((topicMember, { getEntity }) => ({
   get topic() {
     return getEntity(topicEntity).findById(topicMember.topic_id);

@@ -2,14 +2,14 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "@aca/clientdb";
 import { EntityByDefinition } from "@aca/clientdb/entity/entity";
-import { TeamFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { teamIdContext, userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { TeamFragment, Team_Bool_Exp, Team_Constraint, Team_Insert_Input, Team_Set_Input } from "@aca/gql";
 
 import { teamMemberEntity } from "./teamMember";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { teamIdContext, userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const teamFragment = gql`
   fragment Team on team {
@@ -21,6 +21,13 @@ const teamFragment = gql`
     created_at
   }
 `;
+
+type TeamConstraints = {
+  key: Team_Constraint;
+  insert: Team_Insert_Input;
+  update: Team_Set_Input;
+  where: Team_Bool_Exp;
+};
 
 export const teamEntity = defineEntity<TeamFragment>({
   name: "team",
@@ -35,9 +42,10 @@ export const teamEntity = defineEntity<TeamFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<TeamFragment>(teamFragment, {
+  sync: createHasuraSyncSetupFromFragment<TeamFragment, TeamConstraints>(teamFragment, {
     insertColumns: ["id", "slug", "name"],
     updateColumns: ["name"],
+    upsertConstraint: "team_id_key",
   }),
 }).addConnections((team, { getEntity, getContextValue }) => {
   const slackInstallations = getEntity(teamSlackInstallationEntity).query({ team_id: team.id });

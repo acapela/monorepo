@@ -2,14 +2,14 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "@aca/clientdb";
 import { EntityByDefinition } from "@aca/clientdb";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { UserFragment } from "@aca/gql";
 
 import { taskEntity } from "./task";
 import { teamMemberEntity } from "./teamMember";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { userIdContext } from "./utils/context";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const userFragment = gql`
   fragment User on user {
@@ -36,12 +36,7 @@ export const userEntity = defineEntity<UserFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment, {
-    // TODO currently clientdb is not working for user updates, as user insert is not allowed on db (so upsert as well)
-    insertColumns: [],
-    updateColumns: [],
-    // teamScopeCondition: (teamId) => ({ team_memberships: { team_id: { _eq: teamId } } }),
-  }),
+  sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment),
 }).addConnections((user, { getEntity, getContextValue }) => {
   const connections = {
     tasks: getEntity(taskEntity).query({ user_id: user.id }),

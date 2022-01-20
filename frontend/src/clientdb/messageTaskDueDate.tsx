@@ -1,14 +1,20 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
-import { MessageTaskDueDateFragment } from "@aca/gql";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import {
+  MessageTaskDueDateFragment,
+  Message_Task_Due_Date_Bool_Exp,
+  Message_Task_Due_Date_Constraint,
+  Message_Task_Due_Date_Insert_Input,
+  Message_Task_Due_Date_Set_Input,
+} from "@aca/gql";
 
 import { messageEntity } from "./message";
 import { TopicEntity } from "./topic";
 import { topicEventEntity } from "./topicEvent";
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const messageTaskDueDateFragment = gql`
   fragment MessageTaskDueDate on message_task_due_date {
@@ -19,6 +25,13 @@ const messageTaskDueDateFragment = gql`
     updated_at
   }
 `;
+
+type MessageTaskDueDateConstraints = {
+  key: Message_Task_Due_Date_Constraint;
+  insert: Message_Task_Due_Date_Insert_Input;
+  update: Message_Task_Due_Date_Set_Input;
+  where: Message_Task_Due_Date_Bool_Exp;
+};
 
 export const messageTaskDueDateEntity = defineEntity<MessageTaskDueDateFragment>({
   name: "message_task_due_date",
@@ -31,11 +44,15 @@ export const messageTaskDueDateEntity = defineEntity<MessageTaskDueDateFragment>
     __typename: "message_task_due_date",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<MessageTaskDueDateFragment>(messageTaskDueDateFragment, {
-    insertColumns: ["id", "message_id", "due_at", "created_at", "updated_at"],
-    updateColumns: ["due_at"],
-    teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
-  }),
+  sync: createHasuraSyncSetupFromFragment<MessageTaskDueDateFragment, MessageTaskDueDateConstraints>(
+    messageTaskDueDateFragment,
+    {
+      insertColumns: ["id", "message_id", "due_at", "created_at", "updated_at"],
+      updateColumns: ["due_at"],
+      upsertConstraint: "message_task_due_date_pkey",
+      teamScopeCondition: (teamId) => ({ message: { topic: { team_id: { _eq: teamId } } } }),
+    }
+  ),
 })
   .addConnections((messageTaskDueDate, { getEntity }) => {
     return {

@@ -1,11 +1,10 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
-import { TranscriptionFragment } from "@aca/gql";
-
-import { getFragmentKeys } from "./utils/analyzeFragment";
-import { getGenericDefaultData } from "./utils/getGenericDefaultData";
-import { createHasuraSyncSetupFromFragment } from "./utils/sync";
+import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
+import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { TranscriptionFragment, Transcription_Bool_Exp } from "@aca/gql";
 
 const transcriptionFragment = gql`
   fragment Transcription on transcription {
@@ -26,11 +25,12 @@ export const transcriptionEntity = defineEntity<TranscriptionFragment>({
     __typename: "transcription",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<TranscriptionFragment>(transcriptionFragment, {
-    insertColumns: [],
-    updateColumns: [],
-    teamScopeCondition: (teamId) => ({ attachments: { message: { topic: { team_id: { _eq: teamId } } } } }),
-  }),
+  sync: createHasuraSyncSetupFromFragment<TranscriptionFragment, { where: Transcription_Bool_Exp }>(
+    transcriptionFragment,
+    {
+      teamScopeCondition: (teamId) => ({ attachments: { message: { topic: { team_id: { _eq: teamId } } } } }),
+    }
+  ),
 });
 
 export type TranscriptionEntity = EntityByDefinition<typeof transcriptionEntity>;

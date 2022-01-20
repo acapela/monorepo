@@ -1,6 +1,10 @@
 import { ApolloClient } from "@apollo/client";
 
 import { createClientDb } from "@aca/clientdb";
+import { createIndexedDbAdapter } from "@aca/clientdb/adapters/indexed-db";
+import { apolloContext, teamIdContext, userIdContext } from "@aca/clientdb/utils/context";
+import { setupDevIncorrectMobxUseageWarnings } from "@aca/clientdb/utils/devIncorrectUsageWarnings";
+import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@aca/clientdb/utils/recoveryCounter";
 import { teamMemberEntity } from "@aca/frontend/clientdb/teamMember";
 import { teamMemberSlackEntity } from "@aca/frontend/clientdb/teamMemberSlack";
 import { topicMemberEntity } from "@aca/frontend/clientdb/topicMember";
@@ -11,12 +15,10 @@ import { isClient } from "@aca/shared/document";
 import { attachmentEntity } from "./attachment";
 import { decisionOptionEntity } from "./decisionOption";
 import { decisionVoteEntity } from "./decisionVote";
-import { createIndexedDbAdapter } from "./indexeddb/adapter";
 import { lastSeenMessageEntity } from "./lastSeenMessage";
 import { messageEntity } from "./message";
 import { messageReactionEntity } from "./messageReaction";
 import { messageTaskDueDateEntity } from "./messageTaskDueDate";
-import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "./recoveryCounter";
 import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { teamSlackInstallationEntity } from "./teamSlackInstallation";
@@ -24,8 +26,6 @@ import { topicEntity } from "./topic";
 import { topicEventEntity } from "./topicEvent";
 import { transcriptionEntity } from "./transcription";
 import { userEntity } from "./user";
-import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
-import { setupDevIncorrectMobxUseageWarnings } from "./utils/devIncorrectUsageWarnings";
 
 interface CreateNewClientDbInput {
   userId: string;
