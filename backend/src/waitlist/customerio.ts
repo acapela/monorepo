@@ -1,17 +1,10 @@
 import { RegionEU, TrackClient } from "customerio-node";
 import { getUnixTime } from "date-fns";
 
-import { assertDefined } from "@aca/shared/assert";
 import { Origin } from "@aca/shared/types/analytics";
 
-const customerioClientApiKey = assertDefined(
-  process.env.CUSTOMERIO_CLIENT_API_KEY,
-  "CUSTOMERIO_CLIENT_API_KEY is required"
-);
-const customerioClientSiteId = assertDefined(
-  process.env.CUSTOMERIO_CLIENT_SITE_ID,
-  "CUSTOMERIO_CLIENT_SITE_ID is required"
-);
+const customerioClientApiKey = process.env.CUSTOMERIO_CLIENT_API_KEY;
+const customerioClientSiteId = process.env.CUSTOMERIO_CLIENT_SITE_ID;
 
 export async function addUserToCustomerio(email: string): Promise<void> {
   const cio = new TrackClient(customerioClientSiteId, customerioClientApiKey, { region: RegionEU });
