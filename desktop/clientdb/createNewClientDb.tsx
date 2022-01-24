@@ -8,6 +8,7 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
+import { notificationEntity } from "./notification/notification";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -24,6 +25,7 @@ devAssignWindowVariable("reloadClientDb", () => {
 
 export const appClientDbEntities = {
   user: userEntity,
+  notification: notificationEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
