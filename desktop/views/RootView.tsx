@@ -1,13 +1,16 @@
 import React from "react";
 
-import { restartApp } from "@aca/desktop/bridge/system";
+import { clearAllData, restartApp } from "@aca/desktop/bridge/system";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
+import { useCurrentUser } from "../client/auth/useCurrentUser";
 import { allRouteNames, desktopRouter } from "../routes";
 import { FocusModeView } from "./FocusMode/FocusModeView";
 import { HomeView } from "./HomeView";
+import { LoginView } from "./LoginView";
 import { NotificationView } from "./NotificationView";
 import { SettingsView } from "./settings";
+import { SidebarLayout } from "./sidebar";
 
 function Routes() {
   const activeRoute = desktopRouter.useRoute(allRouteNames);
@@ -35,9 +38,19 @@ export function RootView() {
     restartApp();
   });
 
+  useShortcut(["Mod", "Shift", "C"], () => {
+    clearAllData();
+  });
+
+  const user = useCurrentUser();
+
+  if (!user) {
+    return <LoginView />;
+  }
+
   return (
-    <div>
+    <SidebarLayout>
       <Routes />
-    </div>
+    </SidebarLayout>
   );
 }

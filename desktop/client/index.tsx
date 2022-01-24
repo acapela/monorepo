@@ -12,7 +12,6 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { GlobalDesktopStyles } from "../styles/GlobalDesktopStyles";
 import { RootView } from "../views/RootView";
-import { SidebarLayout } from "../views/sidebar";
 
 const rootElement = document.getElementById("root");
 
@@ -29,9 +28,8 @@ render(
         <PromiseUIRenderer />
         <TooltipsRenderer />
         <ToastsRenderer />
-        <SidebarLayout>
-          <RootView />
-        </SidebarLayout>
+
+        <RootView />
       </AppThemeProvider>
     </MotionConfig>
   </>,
