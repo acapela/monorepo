@@ -17,6 +17,7 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { CurrentTeamProvider } from "../auth/CurrentTeam";
 import { GlobalDesktopStyles } from "../styles/GlobalDesktopStyles";
+import { LoginView } from "../views/LoginView";
 import { RootView } from "../views/RootView";
 
 const rootElement = document.getElementById("root");
@@ -28,7 +29,7 @@ const BuiltInStyles = createGlobalStyle`
 function BridgeSessionProvider({ children }: { children: React.ReactNode }) {
   const session = authTokenBridgeValue.use();
   if (!session) {
-    return null;
+    return <LoginView />;
   }
   return (
     <SessionProvider baseUrl={"http://localhost:3000"} session={jwt.decode(session) as never}>
