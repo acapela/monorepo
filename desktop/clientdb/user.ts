@@ -5,10 +5,10 @@ import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
-import { UserFragment } from "@aca/gql";
+import { DesktopUserFragment } from "@aca/gql";
 
 const userFragment = gql`
-  fragment User on user {
+  fragment DesktopUser on user {
     id
     name
     email
@@ -18,16 +18,16 @@ const userFragment = gql`
   }
 `;
 
-export const userEntity = defineEntity<UserFragment>({
+export const userEntity = defineEntity<DesktopUserFragment>({
   name: "user",
   updatedAtField: "updated_at",
   keyField: "id",
-  keys: getFragmentKeys<UserFragment>(userFragment),
+  keys: getFragmentKeys<DesktopUserFragment>(userFragment),
   getDefaultValues: () => ({
     __typename: "user",
     ...getGenericDefaultData(),
   }),
-  sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment),
+  sync: createHasuraSyncSetupFromFragment<DesktopUserFragment>(userFragment),
 });
 
 export type UserEntity = EntityByDefinition<typeof userEntity>;
