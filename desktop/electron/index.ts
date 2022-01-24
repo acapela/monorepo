@@ -6,9 +6,9 @@ import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { autoUpdater } from "electron-updater";
 
+import { startServiceSync } from "./apps";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
-import { startServiceSync } from "./services";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname

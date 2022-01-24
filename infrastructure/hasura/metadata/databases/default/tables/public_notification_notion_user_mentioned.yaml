@@ -1,0 +1,39 @@
+table:
+  name: notification_notion_user_mentioned
+  schema: public
+object_relationships:
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
+- name: notion_page
+  using:
+    foreign_key_constraint_on: notion_page_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+    columns:
+    - from
+    - created_at
+    - updated_at
+    - id
+    - notification_id
+    - notion_page_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - id
+    - created_at
+    - updated_at
+    - notion_page_id
+    - from
+    - notification_id
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user

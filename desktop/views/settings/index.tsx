@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { loginToService } from "@aca/desktop/bridge/notificationServices";
-import type { NotificationServiceName } from "@aca/desktop/electron/services";
+import type { NotificationServiceName } from "@aca/desktop/electron/apps";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 

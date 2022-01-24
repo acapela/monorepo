@@ -1,4 +1,4 @@
-import { initializeNotificationBridge } from "../services/bridge";
+import { initializeNotificationBridge } from "../apps/bridge";
 import { initializeFooBridge } from "./foo";
 import { initializePersistance } from "./persistance";
 
