@@ -19,16 +19,23 @@ const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
 // Reference to main, opened window
 let mainWindow: BrowserWindow | null;
 
+export function getMainWindow() {
+  return mainWindow;
+}
+
 function initializeMainWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
+    title: "Acapela",
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
     titleBarStyle: "hidden",
     fullscreenable: false,
+    // TODO: Seems not to work in dev mode
+    icon: path.resolve(__dirname, "../../assets/app-icon.png"),
   });
 
   mainWindow.loadURL(

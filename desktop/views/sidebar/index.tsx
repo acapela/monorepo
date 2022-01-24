@@ -2,7 +2,10 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
+import { logout } from "@aca/desktop/bridge/auth";
+import { requestPreviewInMainWindow } from "@aca/desktop/bridge/preview";
 import { avoidTitleBarPadding } from "@aca/desktop/styles/titleBar";
+import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarContent } from "./content";
@@ -16,6 +19,27 @@ export const SidebarLayout = observer(({ children }: Props) => {
     <UIHolder>
       <UISidebar>
         <SidebarContent />
+        <Button
+          onClick={() => {
+            logout();
+          }}
+        >
+          Logout
+        </Button>
+        <Button
+          onClick={() => {
+            requestPreviewInMainWindow({ id: 1 });
+          }}
+        >
+          1
+        </Button>
+        <Button
+          onClick={() => {
+            requestPreviewInMainWindow({ id: 2 });
+          }}
+        >
+          2
+        </Button>
       </UISidebar>
       <UIMainContent>
         <UIMainContentBody>{children}</UIMainContentBody>
