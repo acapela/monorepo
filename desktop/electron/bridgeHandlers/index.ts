@@ -1,3 +1,5 @@
+import { initializeLoginHandler } from "@aca/desktop/electron/auth/acapela";
+
 import { initializeNotificationBridge } from "../services/bridge";
 import { initializeFooBridge } from "./foo";
 import { initializePersistance } from "./persistance";
@@ -10,4 +12,5 @@ export function initializeBridgeHandlers() {
   initializeNotificationBridge();
   initPreviewHandler();
   initializeSystemHandlers();
+  initializeLoginHandler();
 }
