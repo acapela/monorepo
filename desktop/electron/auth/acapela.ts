@@ -2,6 +2,8 @@ import { BrowserWindow, session } from "electron";
 
 import { authTokenBridgeValue, loginBridge } from "@aca/desktop/bridge/auth";
 
+import { syncGoogleAuthState } from "./google";
+import { syncSlackAuthState } from "./slack";
 import { authWindowDefaultOptions } from "./utils";
 
 async function getAcapelaAuthToken() {
@@ -36,6 +38,19 @@ export async function loginAcapela() {
     window.close();
 
     authTokenBridgeValue.set(token);
+
+    /**
+     * We don't know what kind of auth method user has chosen.
+     *
+     * But a side-effect is that user is already logged in in one of those.
+     *
+     * eg. if you sign to acapela with Google, you'll already by logged in Google when it's done.
+     *
+     * Thus lets re-check auth status so it is up-to-date and synced with frontend
+     *
+     * TODO: Maybe there is some 'cookie change' listener so we could avoid such imperative code.
+     */
+    await Promise.all([syncGoogleAuthState(), syncSlackAuthState()]);
   });
 }
 
