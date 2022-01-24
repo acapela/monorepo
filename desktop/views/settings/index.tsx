@@ -1,19 +1,18 @@
 import React from "react";
 import styled from "styled-components";
 
-import { loginToService } from "@aca/desktop/bridge/notificationServices";
-import type { NotificationServiceName } from "@aca/desktop/electron/services";
+import { loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
 export const SettingsView = function SettingsView() {
-  function login(serviceName: NotificationServiceName) {
-    loginToService(serviceName);
-  }
+  const notionToken = notionAuthTokenBridgeValue.use();
+  const isNotionAuthorized = !!notionToken;
   return (
     <UIHolder>
       <UIHeader>Settings</UIHeader>
-      <Button onClick={() => login("notion")}>Login to Notion</Button>
+      {!isNotionAuthorized && <Button onClick={() => loginNotionBridge()}>Login to Notion</Button>}
+      {isNotionAuthorized && <div>Notion authorized</div>}
       <UIVersionInfo>dev</UIVersionInfo>
     </UIHolder>
   );

@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, session } from "electron";
 
 import { Notification, NotificationServiceAdapter, NotificationServiceStatus } from "@aca/desktop/types";
 
@@ -10,17 +10,9 @@ export const notionServiceAdapter: NotificationServiceAdapter = {
   needsBackend: false,
 
   checkStatus: async function (): Promise<NotificationServiceStatus> {
-    // TODO: figure out how to do this nicely
-
-    const window = new BrowserWindow({
-      width: 0,
-      height: 0,
-    });
-
-    cookies = await window.webContents.session.cookies.get({
+    cookies = await session.defaultSession.cookies.get({
       url: notionURL,
     });
-    window.close();
 
     if (cookies.length === 0) {
       return "no-session";
@@ -39,12 +31,7 @@ export const notionServiceAdapter: NotificationServiceAdapter = {
     const window = new BrowserWindow({
       width: 600,
       height: 480,
-      webPreferences: {
-        contextIsolation: true,
-      },
     });
-
-    window.webContents.session.clearStorageData();
 
     await window.loadURL(notionURL + "/login");
     await new Promise<void>((resolve) => {

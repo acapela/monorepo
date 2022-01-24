@@ -33,10 +33,13 @@ function initializeMainWindow() {
       preload: path.resolve(__dirname, "preload.js"),
     },
     titleBarStyle: "hidden",
+
     fullscreenable: false,
     // TODO: Seems not to work in dev mode
     icon: path.resolve(__dirname, "../../assets/app-icon.png"),
   });
+
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.loadURL(
     IS_DEV
@@ -55,9 +58,13 @@ function initializeMainWindow() {
 }
 
 function initializeApp() {
+  console.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
-  initializeMainWindow();
+
+  console.info(`Initialize protocol handlers`);
   initializeProtocolHandlers();
+  console.info(`Initialize main window`);
+  initializeMainWindow();
   startServiceSync();
 }
 
