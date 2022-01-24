@@ -1,5 +1,8 @@
 import React from "react";
 
+import { restartApp } from "@aca/desktop/bridge/system";
+import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+
 import { allRouteNames, desktopRouter } from "../routes";
 import { FocusModeView } from "./FocusMode/FocusModeView";
 import { HomeView } from "./HomeView";
@@ -28,6 +31,10 @@ function Routes() {
 }
 
 export function RootView() {
+  useShortcut(["Mod", "Shift", "D"], () => {
+    restartApp();
+  });
+
   return (
     <div>
       <Routes />

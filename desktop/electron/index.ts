@@ -27,12 +27,15 @@ function initializeMainWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
+    title: "Acapela",
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
     titleBarStyle: "hidden",
     fullscreenable: false,
+    // TODO: Seems not to work in dev mode
+    icon: path.resolve(__dirname, "../../assets/app-icon.png"),
   });
 
   mainWindow.loadURL(

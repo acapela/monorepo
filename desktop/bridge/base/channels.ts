@@ -16,7 +16,7 @@ import type { IpcMainInvokeEvent } from "electron";
  *
  * Each invoke bridge needs to have handler added somewhere in electron to be able to be invoked.
  */
-export function createInvokeBridge<Result, Input = void>(key: string) {
+export function createInvokeBridge<Result = void, Input = void>(key: string) {
   async function invoke(input: Input): Promise<Result> {
     if (process.env.ELECTRON_CONTEXT !== "client") {
       await global.electronGlobal.appReadyPromise;
