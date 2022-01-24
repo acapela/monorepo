@@ -1,4 +1,4 @@
-import { NotificationServiceName } from "../electron/services";
+import type { NotificationServiceName } from "../electron/services";
 import { NotificationServiceStatus } from "../types";
 import { createChannelBridge, createInvokeBridge } from "./base/channels";
 

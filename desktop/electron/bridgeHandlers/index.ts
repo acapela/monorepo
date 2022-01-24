@@ -1,4 +1,4 @@
-import { initializeLoginHandler } from "@aca/desktop/electron/auth/acapela";
+import { initializeAuthHandlers } from "@aca/desktop/electron/auth";
 
 import { initializeNotificationBridge } from "../services/bridge";
 import { initializeFooBridge } from "./foo";
@@ -12,5 +12,5 @@ export function initializeBridgeHandlers() {
   initializeNotificationBridge();
   initPreviewHandler();
   initializeSystemHandlers();
-  initializeLoginHandler();
+  initializeAuthHandlers();
 }

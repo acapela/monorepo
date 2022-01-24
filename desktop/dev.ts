@@ -5,6 +5,8 @@ import { Parcel } from "@parcel/core";
 import nodeCleanup from "node-cleanup";
 import { $ } from "zx";
 
+import { createResolvablePromise } from "@aca/shared/promises";
+
 /**
  * Electron dev workflow is a bit complex.
  * This is single-entry-point initializing and handling entire dev workflow.
@@ -102,6 +104,8 @@ async function start() {
   // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
   removeDirectory(path.resolve(__dirname, "dist"));
 
+  const clientCodeReady = createResolvablePromise();
+
   // Start client bundler in dev (watch) mode
   clientBundler.watch((error, event) => {
     if (error) {
@@ -116,11 +120,14 @@ async function start() {
       return;
     }
 
+    clientCodeReady.resolve();
+
     console.info("Client code compiled successfully");
   });
 
   // Start electron bundler in dev mode and re-initialize electron on each code change
-  electronBundler.watch((error, event) => {
+  electronBundler.watch(async (error, event) => {
+    await clientCodeReady.promise;
     if (error) {
       console.info(error.name, error.message, error.stack);
       return;

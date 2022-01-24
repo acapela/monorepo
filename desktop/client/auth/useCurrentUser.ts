@@ -6,7 +6,11 @@ export function useCurrentUser() {
 
   if (!rawToken) return null;
 
-  const userData = parseJWTWithoutValidation(rawToken);
+  try {
+    const userData = parseJWTWithoutValidation(rawToken);
 
-  return userData;
+    return userData;
+  } catch (error) {
+    return null;
+  }
 }
