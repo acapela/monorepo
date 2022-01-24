@@ -13,7 +13,6 @@ import { notificationSlackMentionEntity } from "./slack/mention";
 const notificationFragment = gql`
   fragment DesktopNotification on notification {
     id
-    title
     url
     resolved_at
     updated_at
