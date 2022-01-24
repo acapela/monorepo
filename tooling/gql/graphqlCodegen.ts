@@ -24,7 +24,7 @@ function isDir(dirPath: string): boolean {
   return true;
 }
 
-const PACKAGES_WITH_GQL_DOCUMENTS = ["frontend", "clientdb"];
+const PACKAGES_WITH_GQL_DOCUMENTS = ["desktop", "frontend", "clientdb"];
 
 export async function startGeneratingGraphqlTypes({ watch }: ToolingGenerateOptions): Promise<void> {
   if (!isDir(ROOT_PATH)) {
