@@ -1,4 +1,4 @@
-import { app, session } from "electron";
+import { app } from "electron";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
@@ -6,8 +6,6 @@ import { handleUrlWithPattern } from "./urlPattern";
 
 export const APP_PROTOCOL = "acapela";
 const APP_PROTOCOL_PREFIX = `${APP_PROTOCOL}://`;
-
-const TEN_YEARS_IN_MS = 1_000 /*sec*/ * 60 /*min*/ * 60 /*h*/ * 24 /*day*/ * 365 /*year*/ * 10;
 
 function handleAppReceivedUrl(url: string) {
   // should never happen - app handled different protocol than one we register here (is it even possible?)
@@ -19,14 +17,6 @@ function handleAppReceivedUrl(url: string) {
   // Handle auth token received
   handleUrlWithPattern("authorize/:token", path, ({ token }) => {
     authTokenBridgeValue.set(token);
-
-    session.defaultSession.cookies.set({
-      url: "http://localhost:3000",
-      name: "next-auth.session-token",
-      value: token,
-      // Cookies without expiry are considered session cookies, thus not surviving browser restarts
-      expirationDate: Date.now() + TEN_YEARS_IN_MS,
-    });
   });
 }
 
