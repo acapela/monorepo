@@ -1,3 +1,4 @@
+import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
@@ -5,6 +6,7 @@ import { Notification, Notification_Notion_User_Mentioned, Notion_Page } from "@
 import { getUUID } from "@aca/shared/uuid";
 
 import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
+import { ServiceSyncController } from "..";
 
 type NotionNotificationPartial = Omit<Notification, "resolved_at" | "user_id" | "__typename">;
 type NotificationNotionUserMentionedPartial = Omit<
@@ -19,7 +21,13 @@ interface NotionWorkerSync {
   notionPage: NotionPagePartial[];
 }
 
-export function startNotionSync() {
+const WINDOW_BLURRED_INTERVAL = 900000; // 15 minutes;
+const WINDOW_FOCUSED_INTERVAL = 90000; // 90 seconds;
+
+let currentInterval: NodeJS.Timer | null = null;
+let timeOfLastSync: Date | null = null;
+
+export function startNotionSync(): ServiceSyncController {
   const window = new BrowserWindow({
     width: 0,
     height: 0,
@@ -30,7 +38,7 @@ export function startNotionSync() {
 
   window.hide();
 
-  setInterval(async () => {
+  async function runSync() {
     const notificationLog = await fetchNotionNotificationLog(window);
     const { notification, userMentionedNotification } = extractNotifications(notificationLog);
     const notionPage = extractPages(
@@ -39,11 +47,29 @@ export function startNotionSync() {
     );
 
     syncWithClientDb({ notification, userMentionedNotification, notionPage });
-  }, 10000);
+    timeOfLastSync = new Date();
+  }
+
+  function restartPullInterval(timeInterval: number) {
+    if (currentInterval) {
+      clearInterval(currentInterval);
+    }
+    currentInterval = setInterval(runSync, timeInterval);
+  }
+
+  runSync();
 
   return {
-    stop() {
-      window.close();
+    onWindowFocus() {
+      const now = new Date();
+      const isLongTimeSinceLastFocus = differenceInMinutes(now, timeOfLastSync ?? now) > 5;
+      if (isLongTimeSinceLastFocus) {
+        runSync();
+      }
+      restartPullInterval(WINDOW_FOCUSED_INTERVAL);
+    },
+    onWindowBlur() {
+      restartPullInterval(WINDOW_BLURRED_INTERVAL);
     },
   };
 }
