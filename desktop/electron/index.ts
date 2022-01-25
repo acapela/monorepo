@@ -39,8 +39,6 @@ function initializeMainWindow() {
     titleBarStyle: "hidden",
 
     fullscreenable: false,
-    // TODO: Seems not to work in dev mode
-    icon: path.resolve(__dirname, "../../build/icon.png"),
   });
 
   // mainWindow.webContents.openDevTools();
