@@ -168,6 +168,7 @@ function extractNotifications(payload: GetNotificationLogResult): {
       url,
       created_at,
       updated_at,
+      from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
     });
     result.userMentionedNotification.push({
       notification_id: id,
@@ -175,7 +176,6 @@ function extractNotifications(payload: GetNotificationLogResult): {
       updated_at,
       notion_page_id: pageId,
       notion_page_title: pageBlock.properties.title[0][0],
-      from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
     });
   }
 

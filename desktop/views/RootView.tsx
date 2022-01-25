@@ -5,7 +5,6 @@ import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
 import { useCurrentUser } from "../client/auth/useCurrentUser";
 import { allRouteNames, desktopRouter } from "../routes";
-import { FocusModeView } from "./FocusMode/FocusModeView";
 import { HomeView } from "./HomeView";
 import { LoginView } from "./LoginView";
 import { NotificationView } from "./NotificationView";
@@ -26,8 +25,6 @@ function Routes() {
       return <SettingsView />;
     case "notification":
       return <NotificationView notificationId={activeRoute.params.notificationId} />;
-    case "focus":
-      return <FocusModeView />;
   }
 
   return <>"404"</>;

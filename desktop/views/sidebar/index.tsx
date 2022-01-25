@@ -3,7 +3,6 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 import { logout } from "@aca/desktop/bridge/auth";
-import { requestPreviewInMainWindow } from "@aca/desktop/bridge/preview";
 import { avoidTitleBarPadding } from "@aca/desktop/styles/titleBar";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
@@ -25,20 +24,6 @@ export const SidebarLayout = observer(({ children }: Props) => {
           }}
         >
           Logout
-        </Button>
-        <Button
-          onClick={() => {
-            requestPreviewInMainWindow({ id: 1 });
-          }}
-        >
-          1
-        </Button>
-        <Button
-          onClick={() => {
-            requestPreviewInMainWindow({ id: 2 });
-          }}
-        >
-          2
         </Button>
       </UISidebar>
       <UIMainContent>

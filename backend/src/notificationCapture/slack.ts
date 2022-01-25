@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { SingleASTNode } from "simple-markdown";
 
@@ -10,49 +11,6 @@ import { isNotNullish } from "@aca/shared/nullish";
 
 import { assertToken, findUserBySlackId } from "../slack/utils";
 
-async function createMentionNotifications(
-  token: string,
-  message: GenericMessageEvent,
-  userIds: string[],
-  authorSlackUserId: string
-) {
-  const [{ permalink }, { user: author }, { channel }] = await Promise.all([
-    slackClient.chat.getPermalink({ token, channel: message.channel, message_ts: message.ts }),
-    slackClient.users.info({ token, user: authorSlackUserId }),
-    slackClient.conversations.info({ token, channel: message.channel }),
-  ]);
-  assert(permalink, `could not get permalink for message ${message.ts} in channel ${message.channel}`);
-  assert(author, `could not get slack user for id ${authorSlackUserId}`);
-  assert(channel, `could not find channel for id ${message.channel}`);
-
-  // We have to use a transaction due to Prisma not supporting relation-creation within createMany
-  // https://github.com/prisma/prisma/issues/5455
-
-  const from = author.real_name ?? author.name ?? "Slack user";
-  const is_private_message = channel.is_im || channel.is_mpim;
-  const channel_name = is_private_message ? `@${from}` : `#${channel.name}`;
-  await db.$transaction(
-    userIds.map((userId) =>
-      db.notification.create({
-        data: {
-          user_id: userId,
-
-          url: permalink,
-          notification_slack_mention: {
-            create: {
-              slack_conversation_id: message.channel,
-              slack_message_ts: message.ts,
-              from,
-              is_private_message,
-              channel_name,
-            },
-          },
-        },
-      })
-    )
-  );
-}
-
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
   return nodes.flatMap((node) => {
     if (Array.isArray(node.content)) {
@@ -63,63 +21,153 @@ function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
   });
 }
 
+async function resolveMessageNotifications(userId: string, whereMessage: Prisma.notification_slack_messageWhereInput) {
+  await db.notification.updateMany({
+    where: {
+      resolved_at: null,
+      user_id: userId,
+      notification_slack_message: whereMessage,
+    },
+    data: { resolved_at: new Date().toISOString() },
+  });
+}
+
+/**
+ * Creates notifications for Acapela users who are in the Slack IM conversation in which the message was posted. If the
+ * conversation is a Slack channel we only create a notification if it was a mention.
+ * TODO:
+ * - Optional fetch! This fetches all the conversation members for every messages. To make it less expensive we should
+ *   only do the fetch if its not a channel or if there is a mention.
+ * - Add pagination! This fetches the first 100 channel members, which is likely more than enough for IMs, but not for
+ *   channels
+ */
+async function createNotificationsFromMessage(userToken: string, message: GenericMessageEvent) {
+  const authorSlackUserId = message.user;
+  const membersResponse = await slackClient.conversations.members({
+    token: userToken,
+    channel: message.channel,
+  });
+  const members = new Set(membersResponse.members);
+
+  // An instant message (IM) is either a direct message or a group chat between multiple people, but not a channel.
+  const isIM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
+
+  // For IMs initialize the Map with all conversation members (apart from the author)
+  const membersWithoutAuthor = Array.from(members).filter((slackUserId) => slackUserId != authorSlackUserId);
+  const slackUserIdsToNotify = new Map<string, { isMention: boolean }>(
+    isIM_or_MPIM ? membersWithoutAuthor.map((slackUserId) => [slackUserId, { isMention: false }]) : undefined
+  );
+
+  // Extract all mentioned users and set/overwrite them as mentions in the slackUsersToNotify Map
+  const mentionedSlackUserIds = extractMentionedSlackUserIds(parseSlackMarkdown(message.text ?? "")).filter(
+    (slackUserId) => members.has(slackUserId)
+  );
+  for (const slackUserId of mentionedSlackUserIds) {
+    slackUserIdsToNotify.set(slackUserId, { isMention: true });
+  }
+
+  // Find Acapela users for all the Slack users that would be notified
+  const usersToNotify = (
+    await Promise.all(
+      Array.from(slackUserIdsToNotify).map(([slackUserId, { isMention }]) =>
+        findUserBySlackId(userToken, slackUserId).then((user) => (user ? { userId: user.id, isMention } : null))
+      )
+    )
+  ).filter(isNotNullish);
+
+  if (usersToNotify.length == 0) {
+    return;
+  }
+
+  const [{ permalink }, { user: author }, { channel }] = await Promise.all([
+    slackClient.chat.getPermalink({
+      token: userToken,
+      channel: message.channel,
+      message_ts: message.ts,
+    }),
+    slackClient.users.info({ token: userToken, user: authorSlackUserId }),
+    isIM_or_MPIM
+      ? { channel: undefined }
+      : slackClient.conversations.info({ token: userToken, channel: message.channel }),
+  ]);
+  assert(permalink, `could not get permalink for message ${message.ts} in channel ${message.channel}`);
+  assert(author, `could not get slack user for id ${authorSlackUserId}`);
+
+  const threadTs = message.thread_ts;
+  const isIM = message.channel_type == "im";
+  // We have to use a transaction due to Prisma not supporting relation-creation within createMany
+  await db.$transaction(
+    usersToNotify.map(({ userId, isMention }) =>
+      db.notification.create({
+        data: {
+          user_id: userId,
+          from: author.real_name ?? "Unknown",
+          url: permalink,
+          notification_slack_message: {
+            create: {
+              slack_conversation_id: message.channel,
+              slack_thread_ts: threadTs,
+              slack_message_ts: message.ts,
+              is_mention: isMention,
+              ...(channel
+                ? {
+                    conversation_name: (channel.is_private ? "🔒" : "#") + channel.name_normalized,
+                    is_private_conversation: channel.is_private,
+                  }
+                : {
+                    conversation_name: isIM ? "Direct Message" : "Group Chat",
+                    is_private_conversation: true,
+                  }),
+            },
+          },
+        },
+      })
+    )
+  );
+}
+
 export function setupSlackCapture(app: SlackApp) {
   app.message(async ({ message, context }) => {
     message = message as GenericMessageEvent;
+
     if (message.type !== "message" || message.subtype || !message.text) {
       return;
     }
 
-    const token = assertToken(context);
-    const authorUserId = message.user;
-    const authorUser = await findUserBySlackId(token, authorUserId);
+    const authorUser = await findUserBySlackId(assertToken(context), message.user);
 
     if (authorUser) {
-      await db.notification.updateMany({
-        where: {
-          resolved_at: null,
-          user_id: authorUser.id,
-          notification_slack_mention: message.thread_ts
-            ? { slack_conversation_id: message.channel, slack_message_ts: message.thread_ts }
-            : { slack_conversation_id: message.channel },
-        },
-        data: { resolved_at: new Date().toISOString() },
-      });
+      try {
+        const threadTs = message.thread_ts;
+        await resolveMessageNotifications(authorUser.id, {
+          slack_conversation_id: message.channel,
+          OR: [
+            threadTs
+              ? { OR: [{ slack_thread_ts: threadTs }, { slack_message_ts: threadTs }] }
+              : { slack_thread_ts: null },
+          ],
+        });
+      } catch (error) {
+        logger.error(error, "Error resolving slack notifications");
+      }
     }
 
-    const userIds = (
-      await Promise.all(
-        extractMentionedSlackUserIds(parseSlackMarkdown(message.text)).map((userId) =>
-          // Don't create notifications to the author of the message if they self-mention
-          2 + 2 == 5 && userId == authorUser?.id ? null : findUserBySlackId(token, userId)
-        )
-      )
-    )
-      .filter(isNotNullish)
-      .map((user) => user.id);
-    if (userIds.length > 0) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        await createMentionNotifications(context.userToken!, message, userIds, authorUserId);
-      } catch (error) {
-        logger.error(error, "Error creating slack mention notifications");
-      }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      await createNotificationsFromMessage(context.userToken!, message);
+    } catch (error) {
+      logger.error(error, "Error creating slack notifications");
     }
   });
 
   app.event("reaction_added", async ({ event, context }) => {
     const user = await findUserBySlackId(assertToken(context), event.user);
-    if (!user || event.item.type !== "message") {
-      return;
+    if (user && event.item.type === "message") {
+      const message = event.item;
+      await resolveMessageNotifications(user.id, {
+        slack_conversation_id: message.channel,
+        slack_message_ts: message.ts,
+      });
     }
-    const message = event.item;
-    await db.notification.updateMany({
-      where: {
-        resolved_at: null,
-        user_id: user.id,
-        notification_slack_mention: { slack_conversation_id: message.channel, slack_message_ts: message.ts },
-      },
-      data: { resolved_at: new Date().toISOString() },
-    });
   });
 }

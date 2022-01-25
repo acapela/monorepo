@@ -21,7 +21,6 @@ const notificationNotionUserMentioned = gql`
     updated_at
     notion_page_id
     notion_page_title
-    from
   }
 `;
 
@@ -46,7 +45,7 @@ export const notificationNotionUserMentionedEntity = defineEntity<NotificationNo
     NotificationNotionUserMentionedFragment,
     NotificationNotionUserMentionedConstraints
   >(notificationNotionUserMentioned, {
-    insertColumns: ["id", "from", "notification_id", "notion_page_id", "created_at", "updated_at", "notion_page_title"],
+    insertColumns: ["id", "notification_id", "notion_page_id", "created_at", "updated_at", "notion_page_title"],
     updateColumns: ["updated_at", "notion_page_title"],
     upsertConstraint: "notification_notion_user_mentioned_pkey",
   }),

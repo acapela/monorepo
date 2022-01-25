@@ -9,7 +9,7 @@ object_relationships:
         id: notification_id
       insertion_order: null
       remote_table:
-        name: notification_slack_mention
+        name: notification_slack_message
         schema: public
 insert_permissions:
 - permission:
@@ -18,17 +18,19 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
-    - url
     - created_at
+    - from
+    - id
     - resolved_at
     - updated_at
-    - id
+    - url
     - user_id
   role: user
 select_permissions:
 - permission:
     columns:
     - created_at
+    - from
     - id
     - resolved_at
     - updated_at
@@ -42,6 +44,7 @@ update_permissions:
 - permission:
     check: null
     columns:
+    - from
     - resolved_at
     - updated_at
     - url

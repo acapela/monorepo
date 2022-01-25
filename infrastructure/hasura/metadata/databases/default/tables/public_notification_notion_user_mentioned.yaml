@@ -14,7 +14,6 @@ insert_permissions:
           _eq: X-Hasura-User-Id
     columns:
     - created_at
-    - from
     - id
     - notification_id
     - notion_page_id
@@ -25,7 +24,6 @@ select_permissions:
 - permission:
     columns:
     - created_at
-    - from
     - id
     - notification_id
     - notion_page_id
