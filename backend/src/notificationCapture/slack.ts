@@ -25,9 +25,10 @@ async function createMentionNotifications(
   assert(author, `could not get slack user for id ${authorSlackUserId}`);
   assert(channel, `could not find channel for id ${message.channel}`);
 
-  const title = `${author.real_name ?? author.name} mentioned you in ${
-    channel.is_im || channel.is_mpim ? "a private message" : "#" + channel.name
-  }`;
+  // TODO: Move this to the frontend
+  // const title = `${author.real_name ?? author.name} mentioned you in ${
+  //   channel.is_im || channel.is_mpim ? "a private message" : "#" + channel.name
+  // }`;
 
   // We have to use a transaction due to Prisma not supporting relation-creation within createMany
   // https://github.com/prisma/prisma/issues/5455
@@ -36,7 +37,7 @@ async function createMentionNotifications(
       db.notification.create({
         data: {
           user_id: userId,
-          title,
+          // title,
           url: permalink,
           notification_slack_mention: {
             create: { slack_conversation_id: message.channel, slack_message_ts: message.ts },
