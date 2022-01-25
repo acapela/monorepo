@@ -8,12 +8,15 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
+    - channel_name
+    - created_at
+    - from
     - id
+    - is_private_message
+    - notification_id
     - slack_conversation_id
     - slack_message_ts
-    - created_at
     - updated_at
-    - notification_id
     filter:
       notification:
         user_id:
