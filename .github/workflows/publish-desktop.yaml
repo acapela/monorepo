@@ -13,6 +13,7 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: yarn desktop publish
         env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
