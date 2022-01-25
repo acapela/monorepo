@@ -58,7 +58,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 }).addConnections((notification, { getEntity }) => ({
-  get inner(): EntityByDefinition<typeof innerEntities[number]> {
+  get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
     return (
       innerEntities
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

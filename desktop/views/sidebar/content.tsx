@@ -19,7 +19,6 @@ export const SidebarContent = observer(function SidebarContent() {
       requestPreloadInMainWindow({ url: notification.url });
     }
   });
-  console.log(unresolvedNotifications);
 
   return (
     <UIHolder>
@@ -51,7 +50,7 @@ export const SidebarContent = observer(function SidebarContent() {
             >
               {notification.inner.__typename == "notification_slack_message"
                 ? `${notification.from} in ${notification.inner?.conversation_name}`
-                : `${notification.inner.from} in ${notification.inner.notion_page_title}`}
+                : `${notification.from} in ${notification.inner.notion_page_title}`}
             </button>
           ))}
       </UIRequestFeed>
