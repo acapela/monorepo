@@ -100,6 +100,7 @@ __metadata:
     electron-builder: ^22.14.5
     electron-is-dev: ^2.0.0
     electron-json-storage: ^4.5.0
+    electron-log: ^4.4.5
     electron-notarize: ^1.1.1
     electron-updater: ^4.6.1
     node-cleanup: ^2.1.2
@@ -10843,6 +10844,13 @@ __metadata:
     rimraf: ^2.5.1
     write-file-atomic: ^2.4.2
   checksum: 25b0cbfed7c0020b4ce0e9422933ea717441efbfb5918751b6acd115b4a375bdcdca2cb5564b7c1aa16ef56aa0d845b89e83d69f2e9bdccdc3e8c71cc354f858
+  languageName: node
+  linkType: hard
+
+"electron-log@npm:^4.4.5":
+  version: 4.4.5
+  resolution: "electron-log@npm:4.4.5"
+  checksum: 2d19e24783c68a379f2461fdc507b00ce9df4d814eaec8dc804fc8685c72ce9090001c604b1000cfc7337c56ddd9ef5637b31a35a3dfb049e208e3f7790c837e
   languageName: node
   linkType: hard
 

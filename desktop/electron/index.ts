@@ -4,6 +4,7 @@ import path from "path";
 
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
+import log from "electron-log";
 import { autoUpdater } from "electron-updater";
 
 import { ServiceSyncController, initializeServiceSync } from "./apps";
@@ -39,7 +40,7 @@ function initializeMainWindow() {
 
     fullscreenable: false,
     // TODO: Seems not to work in dev mode
-    icon: path.resolve(__dirname, "../../assets/app-icon.png"),
+    icon: path.resolve(__dirname, "../../build/icon.png"),
   });
 
   // mainWindow.webContents.openDevTools();
@@ -52,6 +53,8 @@ function initializeMainWindow() {
         `file://${INDEX_HTML_FILE}`
   );
 
+  log.transports.file.level = "info";
+  autoUpdater.logger = log;
   autoUpdater.checkForUpdatesAndNotify();
 
   mainWindow.on("closed", () => {
