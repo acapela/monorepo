@@ -5,9 +5,6 @@ object_relationships:
 - name: notification
   using:
     foreign_key_constraint_on: notification_id
-- name: notion_page
-  using:
-    foreign_key_constraint_on: notion_page_id
 insert_permissions:
 - permission:
     backend_only: false
@@ -16,22 +13,35 @@ insert_permissions:
         user_id:
           _eq: X-Hasura-User-Id
     columns:
-    - from
     - created_at
-    - updated_at
+    - from
     - id
     - notification_id
     - notion_page_id
+    - notion_page_title
+    - updated_at
   role: user
 select_permissions:
 - permission:
     columns:
-    - id
     - created_at
-    - updated_at
-    - notion_page_id
     - from
+    - id
     - notification_id
+    - notion_page_id
+    - notion_page_title
+    - updated_at
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - notion_page_title
+    - updated_at
     filter:
       notification:
         user_id:

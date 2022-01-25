@@ -2,24 +2,14 @@ import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
-import { Notification, Notification_Notion_User_Mentioned, Notion_Page } from "@aca/gql";
-import { getUUID } from "@aca/shared/uuid";
+import {
+  NotificationNotionUserMentionedPartial,
+  NotionNotificationPartial,
+  notionSyncPayload,
+} from "@aca/desktop/bridge/apps/notion";
 
 import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
 import { ServiceSyncController } from "..";
-
-type NotionNotificationPartial = Omit<Notification, "resolved_at" | "user_id" | "__typename">;
-type NotificationNotionUserMentionedPartial = Omit<
-  Notification_Notion_User_Mentioned,
-  "__typename" | "notion_page" | "notification"
->;
-type NotionPagePartial = Omit<Notion_Page, "__typename" | "notification_notion_user_mentioneds">;
-
-interface NotionWorkerSync {
-  notification: NotionNotificationPartial[];
-  userMentionedNotification: NotificationNotionUserMentionedPartial[];
-  notionPage: NotionPagePartial[];
-}
 
 const WINDOW_BLURRED_INTERVAL = 900000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL = 90000; // 90 seconds;
@@ -27,6 +17,13 @@ const WINDOW_FOCUSED_INTERVAL = 90000; // 90 seconds;
 let currentInterval: NodeJS.Timer | null = null;
 let timeOfLastSync: Date | null = null;
 
+/*
+  Pulling logic for notion
+  - Pull immediately on app start
+  - Pull every 15 minutes if main window is blurred
+  - Pull ever 90 seconds if main window is focused
+  - Pull immediately when window focuses if more than 5 minutes have passed before last pull
+*/
 export function startNotionSync(): ServiceSyncController {
   const window = new BrowserWindow({
     width: 0,
@@ -40,13 +37,9 @@ export function startNotionSync(): ServiceSyncController {
 
   async function runSync() {
     const notificationLog = await fetchNotionNotificationLog(window);
-    const { notification, userMentionedNotification } = extractNotifications(notificationLog);
-    const notionPage = extractPages(
-      notificationLog,
-      userMentionedNotification.map((n) => n.notion_page_id)
-    );
 
-    syncWithClientDb({ notification, userMentionedNotification, notionPage });
+    console.info("Notion worker capturing complete");
+    notionSyncPayload.send(extractNotifications(notificationLog));
     timeOfLastSync = new Date();
   }
 
@@ -66,6 +59,7 @@ export function startNotionSync(): ServiceSyncController {
       if (isLongTimeSinceLastFocus) {
         runSync();
       }
+      runSync();
       restartPullInterval(WINDOW_FOCUSED_INTERVAL);
     },
     onWindowBlur() {
@@ -133,7 +127,18 @@ function extractNotifications(payload: GetNotificationLogResult): {
       "/" +
       stripDashes(pageId) +
       (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
-    const created_at = notification.end_time;
+
+    const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
+
+    const created_at = new Date(createdAtTimestampAsNumber).toISOString();
+
+    const pageBlock = (payload.recordMap.block[pageId] as BlockPayload<"page">).value;
+
+    if (pageBlock.type !== "page") {
+      console.error("[Notion Worker] Block is not page type");
+      continue;
+    }
+
     const updated_at = created_at;
     result.notification.push({
       id,
@@ -142,41 +147,14 @@ function extractNotifications(payload: GetNotificationLogResult): {
       updated_at,
     });
     result.userMentionedNotification.push({
-      id: getUUID(),
       notification_id: id,
       created_at,
       updated_at,
       notion_page_id: pageId,
+      notion_page_title: pageBlock.properties.title[0][0],
       from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
     });
   }
 
   return result;
-}
-
-function extractPages(payload: GetNotificationLogResult, pageIds: string[]): NotionPagePartial[] {
-  const result = [] as NotionPagePartial[];
-
-  for (const pageId of pageIds) {
-    const pageBlock = (payload.recordMap.block[pageId] as BlockPayload<"page">).value;
-
-    if (pageBlock.type !== "page") {
-      console.error("[Notion Worker] Block is not page type");
-      continue;
-    }
-
-    result.push({
-      id: pageId,
-      title: pageBlock.properties.title[0][0],
-      created_at: `${pageBlock.created_time}`,
-      updated_at: `${pageBlock.last_edited_time}`,
-    });
-  }
-
-  return result;
-}
-
-function syncWithClientDb(data: NotionWorkerSync) {
-  // eslint-disable-next-line no-console
-  console.log(data);
 }

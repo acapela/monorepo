@@ -9,6 +9,7 @@ import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
 import { notificationEntity } from "./notification/notification";
+import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -26,6 +27,7 @@ devAssignWindowVariable("reloadClientDb", () => {
 export const appClientDbEntities = {
   user: userEntity,
   notification: notificationEntity,
+  notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
