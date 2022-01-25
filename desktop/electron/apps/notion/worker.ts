@@ -7,15 +7,17 @@ import {
   NotionNotificationPartial,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
+import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
 import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
 import { ServiceSyncController } from "..";
 
-const WINDOW_BLURRED_INTERVAL = 900000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL = 90000; // 90 seconds;
+const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
+const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
 
 let currentInterval: NodeJS.Timer | null = null;
 let timeOfLastSync: Date | null = null;
+let isSyncing = false;
 
 /*
   Pulling logic for notion
@@ -36,11 +38,32 @@ export function startNotionSync(): ServiceSyncController {
   window.hide();
 
   async function runSync() {
-    const notificationLog = await fetchNotionNotificationLog(window);
+    const isAbleToSync = authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
 
-    console.info("Notion worker capturing complete");
-    notionSyncPayload.send(extractNotifications(notificationLog));
-    timeOfLastSync = new Date();
+    if (!isAbleToSync) {
+      console.info("Notion worker capturing aborted: no session yet");
+      return;
+    }
+    if (isSyncing) {
+      return;
+    }
+
+    try {
+      isSyncing = true;
+      console.info(`[${new Date().toISOString()}] Notion worker capturing started`);
+
+      const notificationLog = await fetchNotionNotificationLog(window);
+
+      notionSyncPayload.send(extractNotifications(notificationLog));
+
+      timeOfLastSync = new Date();
+
+      console.info(`[${new Date().toISOString()}] Notion worker capturing complete`);
+    } catch (e) {
+      console.error("Error syncing notion", e);
+    } finally {
+      isSyncing = false;
+    }
   }
 
   function restartPullInterval(timeInterval: number) {
@@ -55,11 +78,11 @@ export function startNotionSync(): ServiceSyncController {
   return {
     onWindowFocus() {
       const now = new Date();
-      const isLongTimeSinceLastFocus = differenceInMinutes(now, timeOfLastSync ?? now) > 5;
+      const isLongTimeSinceLastFocus = !timeOfLastSync || differenceInMinutes(now, timeOfLastSync) > 5;
+
       if (isLongTimeSinceLastFocus) {
         runSync();
       }
-      runSync();
       restartPullInterval(WINDOW_FOCUSED_INTERVAL);
     },
     onWindowBlur() {
