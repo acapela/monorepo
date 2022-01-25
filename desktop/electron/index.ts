@@ -6,9 +6,9 @@ import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { autoUpdater } from "electron-updater";
 
+import { ServiceSyncController, initializeServiceSync } from "./apps";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
-import { startServiceSync } from "./services";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
@@ -18,6 +18,9 @@ const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
 // Note - in case we'll use multiple windows, create some solid abstraction on setting and unsetting open windows.
 // Reference to main, opened window
 let mainWindow: BrowserWindow | null;
+
+// This allows the sync utilities to react depending on the state of the windows
+let serviceSyncController: ServiceSyncController | null;
 
 export function getMainWindow() {
   return mainWindow;
@@ -55,6 +58,14 @@ function initializeMainWindow() {
     mainWindow = null;
     //
   });
+
+  mainWindow.on("focus", () => {
+    serviceSyncController?.onWindowFocus();
+  });
+
+  mainWindow.on("blur", () => {
+    serviceSyncController?.onWindowBlur();
+  });
 }
 
 function initializeApp() {
@@ -63,9 +74,12 @@ function initializeApp() {
 
   console.info(`Initialize protocol handlers`);
   initializeProtocolHandlers();
+
   console.info(`Initialize main window`);
   initializeMainWindow();
-  startServiceSync();
+
+  console.info(`Initialize main window`);
+  serviceSyncController = initializeServiceSync();
 }
 
 app.on("ready", initializeApp);

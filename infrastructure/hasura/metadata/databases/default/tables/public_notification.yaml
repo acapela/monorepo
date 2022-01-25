@@ -14,12 +14,11 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
-    - title
-    - url
     - created_at
+    - id
     - resolved_at
     - updated_at
-    - id
+    - url
     - user_id
     filter:
       user_id:
