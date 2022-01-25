@@ -11,6 +11,20 @@ object_relationships:
       remote_table:
         name: notification_slack_mention
         schema: public
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      user_id:
+        _eq: X-Hasura-User-Id
+    columns:
+    - url
+    - created_at
+    - resolved_at
+    - updated_at
+    - id
+    - user_id
+  role: user
 select_permissions:
 - permission:
     columns:
@@ -20,6 +34,17 @@ select_permissions:
     - updated_at
     - url
     - user_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - resolved_at
+    - updated_at
+    - url
     filter:
       user_id:
         _eq: X-Hasura-User-Id

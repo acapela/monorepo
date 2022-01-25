@@ -19,6 +19,7 @@ import { CurrentTeamProvider } from "../auth/CurrentTeam";
 import { GlobalDesktopStyles } from "../styles/GlobalDesktopStyles";
 import { LoginView } from "../views/LoginView";
 import { RootView } from "../views/RootView";
+import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
 const rootElement = document.getElementById("root");
 
@@ -51,6 +52,7 @@ render(
                 <PromiseUIRenderer />
                 <TooltipsRenderer />
                 <ToastsRenderer />
+                <ServiceWorkerConsolidation />
                 <RootView />
               </ClientDbProvider>
             </CurrentTeamProvider>
