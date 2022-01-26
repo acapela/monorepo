@@ -1,8 +1,7 @@
-ALTER TABLE "public".notification_slack_message
-  ADD CONSTRAINT "notification_slack_mention_slack_conversation_id_slack_message_ts_key" UNIQUE ("slack_conversation_id", "slack_message_ts");
+ALTER TABLE notification_slack_mention RENAME TO notification_slack_message;
 
 ALTER TABLE "public".notification_slack_message
-  RENAME TO "notification_slack_message";
+  ADD CONSTRAINT "notification_slack_mention_slack_conversation_id_slack_message_ts_key" UNIQUE ("slack_conversation_id", "slack_message_ts");
 
 ALTER TABLE "public".notification_slack_message
   ADD COLUMN "is_mention" BOOLEAN
@@ -12,7 +11,7 @@ ALTER TABLE "public".notification_slack_message
   ADD COLUMN "slack_thread_ts" TEXT
     NULL;
 
-ALTER TABLE "public"."notification_slack_message"
+  ALTER TABLE "public"."notification_slack_message"
   DROP COLUMN "from";
 
 ALTER TABLE "public"."notification"
