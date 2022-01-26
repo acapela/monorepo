@@ -6,8 +6,12 @@ import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
 import { ApolloClientProvider } from "@aca/desktop/apolloClient";
+import { CurrentTeamProvider } from "@aca/desktop/auth/CurrentTeam";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ClientDbProvider } from "@aca/desktop/clientdb/ClientDbProvider";
+import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { LoginView } from "@aca/desktop/views/LoginView";
+import { RootView } from "@aca/desktop/views/RootView";
 import { global } from "@aca/frontend/styles/global";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
@@ -15,10 +19,6 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { CurrentTeamProvider } from "../auth/CurrentTeam";
-import { GlobalDesktopStyles } from "../styles/GlobalDesktopStyles";
-import { LoginView } from "../views/LoginView";
-import { RootView } from "../views/RootView";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
 const rootElement = document.getElementById("root");

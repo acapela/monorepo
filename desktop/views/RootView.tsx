@@ -1,34 +1,11 @@
 import React from "react";
 
 import { clearAllData, restartApp } from "@aca/desktop/bridge/system";
+import { useCurrentUser } from "@aca/desktop/client/auth/useCurrentUser";
+import { Router } from "@aca/desktop/routes/Router";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
-import { useCurrentUser } from "../client/auth/useCurrentUser";
-import { allRouteNames, desktopRouter } from "../routes";
-import { HomeView } from "./HomeView";
 import { LoginView } from "./LoginView";
-import { NotificationView } from "./NotificationView";
-import { SettingsView } from "./settings";
-import { SidebarLayout } from "./sidebar";
-
-function Routes() {
-  const activeRoute = desktopRouter.useRoute(allRouteNames);
-
-  if (!activeRoute) {
-    return <>"404"</>;
-  }
-
-  switch (activeRoute.name) {
-    case "home":
-      return <HomeView />;
-    case "settings":
-      return <SettingsView />;
-    case "notification":
-      return <NotificationView notificationId={activeRoute.params.notificationId} />;
-  }
-
-  return <>"404"</>;
-}
 
 export function RootView() {
   useShortcut(["Mod", "Shift", "D"], () => {
@@ -45,9 +22,5 @@ export function RootView() {
     return <LoginView />;
   }
 
-  return (
-    <SidebarLayout>
-      <Routes />
-    </SidebarLayout>
-  );
+  return <Router />;
 }

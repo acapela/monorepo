@@ -1,13 +1,13 @@
 import { useApolloClient } from "@apollo/client";
 import React, { PropsWithChildren, createContext, useContext, useState } from "react";
 
+import { useCurrentTeamContext } from "@aca/desktop/auth/CurrentTeam";
+import { useCurrentUserTokenData } from "@aca/desktop/auth/useCurrentUser";
 import { useReportPageReady } from "@aca/shared/analytics/useReportPageReady";
 import { assert } from "@aca/shared/assert";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
 
-import { useCurrentTeamContext } from "../auth/CurrentTeam";
-import { useCurrentUserTokenData } from "../auth/useCurrentUser";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
 /**
