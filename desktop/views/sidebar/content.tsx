@@ -42,17 +42,21 @@ export const SidebarContent = observer(function SidebarContent() {
       <UIRequestFeed>
         {unresolvedNotifications
           .filter((notification) => notification.inner)
-          .map((notification) => (
-            <button
-              key={notification.id}
-              onClick={() => requestPreviewInMainWindow({ url: notification.url })}
-              style={{ display: "block", padding: 5, margin: 10, cursor: "pointer", width: "100%" }}
-            >
-              {notification.inner.__typename == "notification_slack_message"
-                ? `${notification.from} in ${notification.inner?.conversation_name}`
-                : `${notification.from} in ${notification.inner.notion_page_title}`}
-            </button>
-          ))}
+          .map((notification) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const innerNotification = notification.inner!;
+            return (
+              <button
+                key={notification.id}
+                onClick={() => requestPreviewInMainWindow({ url: notification.url })}
+                style={{ display: "block", padding: 5, margin: 10, cursor: "pointer", width: "100%" }}
+              >
+                {innerNotification.__typename == "notification_slack_message"
+                  ? `${notification.from} in ${innerNotification?.conversation_name}`
+                  : `${notification.from} in ${innerNotification.notion_page_title}`}
+              </button>
+            );
+          })}
       </UIRequestFeed>
     </UIHolder>
   );
