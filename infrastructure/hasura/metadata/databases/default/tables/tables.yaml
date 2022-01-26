@@ -9,7 +9,7 @@
 - "!include public_message_type.yaml"
 - "!include public_notification.yaml"
 - "!include public_notification_notion_user_mentioned.yaml"
-- "!include public_notification_slack_mention.yaml"
+- "!include public_notification_slack_message.yaml"
 - "!include public_priority.yaml"
 - "!include public_slack_notification_queue.yaml"
 - "!include public_sync_request.yaml"

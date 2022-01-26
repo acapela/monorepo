@@ -12,13 +12,16 @@ import {
   Notification_Insert_Input,
   Notification_Set_Input,
 } from "@aca/gql";
-import { findAndMap } from "@aca/shared/array";
 
-import { notificationSlackMentionEntity } from "./slack/mention";
+import { notificationNotionUserMentionedEntity } from "./notion/userMentioned";
+import { notificationSlackMessageEntity } from "./slack/message";
+
+export { notificationNotionUserMentionedEntity, notificationSlackMessageEntity };
 
 const notificationFragment = gql`
   fragment DesktopNotification on notification {
     id
+    from
     url
     resolved_at
     updated_at
@@ -33,7 +36,7 @@ type DesktopNotificationConstraints = {
   where: Notification_Bool_Exp;
 };
 
-const notificationEntities = [notificationSlackMentionEntity];
+const innerEntities = [notificationNotionUserMentionedEntity, notificationSlackMessageEntity];
 
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   name: "notification",
@@ -49,16 +52,19 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
     notificationFragment,
     {
-      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id"],
+      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id", "from"],
       updateColumns: ["updated_at", "url", "resolved_at"],
       upsertConstraint: "notification_pkey",
     }
   ),
 }).addConnections((notification, { getEntity }) => ({
-  get inner() {
-    return findAndMap(
-      notificationEntities,
-      (entity) => getEntity(entity).query({ notification_id: notification.id }).first
+  get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
+    return (
+      innerEntities
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .find(Boolean) as any
     );
   },
 }));

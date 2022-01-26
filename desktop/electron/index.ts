@@ -67,6 +67,9 @@ function initializeMainWindow() {
   mainWindow.on("blur", () => {
     serviceSyncController?.onWindowBlur();
   });
+
+  mainWindow.maximize();
+  mainWindow.webContents.toggleDevTools();
 }
 
 function initializeApp() {

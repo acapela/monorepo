@@ -1,5 +1,5 @@
 table:
-  name: notification_slack_mention
+  name: notification_slack_message
   schema: public
 object_relationships:
 - name: notification
@@ -8,14 +8,15 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
-    - channel_name
+    - conversation_name
     - created_at
-    - from
     - id
-    - is_private_message
+    - is_mention
+    - is_private_conversation
     - notification_id
     - slack_conversation_id
     - slack_message_ts
+    - slack_thread_ts
     - updated_at
     filter:
       notification:

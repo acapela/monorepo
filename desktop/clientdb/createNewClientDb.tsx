@@ -8,8 +8,11 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
-import { notificationEntity } from "./notification/notification";
-import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
+import {
+  notificationEntity,
+  notificationNotionUserMentionedEntity,
+  notificationSlackMessageEntity,
+} from "./notification";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -26,7 +29,9 @@ devAssignWindowVariable("reloadClientDb", () => {
 
 export const appClientDbEntities = {
   user: userEntity,
+
   notification: notificationEntity,
+  notificationSlackMessage: notificationSlackMessageEntity,
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
 };
 
