@@ -8,6 +8,7 @@ import log from "electron-log";
 import { autoUpdater } from "electron-updater";
 
 import { ServiceSyncController, initializeServiceSync } from "./apps";
+import { testFigma } from "./apps/figma/worker";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeProtocolHandlers } from "./protocol";
 
@@ -84,6 +85,9 @@ function initializeApp() {
 
   console.info(`Initialize main window`);
   serviceSyncController = initializeServiceSync();
+
+  console.info("TEST RUN FIGMA WINDOW");
+  testFigma();
 }
 
 app.on("ready", initializeApp);

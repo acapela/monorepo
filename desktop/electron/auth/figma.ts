@@ -4,7 +4,7 @@ import { figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge
 
 import { authWindowDefaultOptions } from "./utils";
 
-const figmaURL = "https://www.figma.com";
+export const figmaURL = "https://www.figma.com";
 
 export async function getFigmaAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: figmaURL });
