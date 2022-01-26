@@ -8,9 +8,9 @@ import {
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 
 import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
-import { ServiceSyncController } from "..";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;

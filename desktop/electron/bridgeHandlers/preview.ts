@@ -1,8 +1,7 @@
 import { BrowserView, BrowserWindow, Rectangle } from "electron";
 
 import { requestPreloadInMainWindow, requestPreviewInMainWindow } from "@aca/desktop/bridge/preview";
-
-import { getMainWindow } from "..";
+import { appState } from "@aca/desktop/electron/appState";
 
 const preloads = new Map<string, BrowserView>();
 
@@ -35,7 +34,7 @@ export function initPreviewHandler() {
 
   requestPreviewInMainWindow.handle(async ({ url }) => {
     url = replaceArchiveWithMessages(url);
-    const mainWindow = getMainWindow();
+    const mainWindow = appState.mainWindow;
 
     if (!mainWindow) return false;
 
