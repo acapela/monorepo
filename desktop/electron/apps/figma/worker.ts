@@ -2,8 +2,10 @@ import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 import WebSocket from "ws";
 
-/* eslint-disable no-console */
+import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
+
+import { FigmaCommentNotification, FigmaSessionState, FigmaSocketMessage, FigmaUserNotificationMessage } from "./types";
 
 // This is used for version controlling the app with their api
 // We may need to keep a static version of this, but verify that their API is working every week
@@ -15,7 +17,6 @@ let figmaUserId: string | null = null;
 // It looks like this: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
 let figmaRealtimeUserToken: string | null = null;
 
-// WIP: proof of concept that figma can work with web sockets;
 export async function testFigma() {
   const figmaWindow = new BrowserWindow({
     width: 0,
@@ -49,7 +50,7 @@ export async function testFigma() {
 
     figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!figmaRealtimeUserToken) {
@@ -70,6 +71,7 @@ export async function testFigma() {
 
     // Subscription to messages related to user, including user notifications
     ws.send(`tok:${figmaRealtimeUserToken}`);
+    console.info("[Figma] opening socket connection open");
   });
 
   ws.on("message", function message(data) {
@@ -79,8 +81,10 @@ export async function testFigma() {
       return;
     }
 
+    // Every other message received fits this structure
     const message = JSON.parse(data.toString("utf-8")) as FigmaSocketMessage;
 
+    // We want to get newly created user notifications, that's why we're listing to "post" messages only
     if (
       message.method !== "post" ||
       message.type !== "user_notification" ||
@@ -91,29 +95,39 @@ export async function testFigma() {
 
     const userNotificationMessage: FigmaUserNotificationMessage = message.user_notification;
 
-    console.log({ userNotificationMessage });
-
+    // We've seen notifications when a user gets different access permissions
+    // We only want to handle new comments for now
     if (!isCommentNotification(userNotificationMessage.locals)) {
       return;
     }
 
     const commentNotification: FigmaCommentNotification = userNotificationMessage.locals;
 
-    console.log({ commentNotification });
+    console.info("[Figma] Received socket message");
 
-    console.log({
-      from: commentNotification.from.handle,
-      file_id: commentNotification.file_key,
-      file_name: commentNotification.file.name,
-      is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
-      created_at: userNotificationMessage.created_at,
-      url: commentNotification.reply_url,
-    });
+    figmaSyncPayload.send([
+      {
+        notification: {
+          created_at: userNotificationMessage.created_at,
+          updated_at: userNotificationMessage.created_at,
+          from: commentNotification.from.handle,
+          url: commentNotification.reply_url,
+        },
+        commentNotification: {
+          file_id: commentNotification.file_key,
+          file_name: commentNotification.file.name,
+          is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
+          created_at: userNotificationMessage.created_at,
+          updated_at: userNotificationMessage.created_at,
+          figma_notification_id: userNotificationMessage.id,
+        },
+      },
+    ]);
   });
 
-  ws.on("error", (e) => console.log("error", e));
+  ws.on("error", (e) => console.info("error", e));
 
-  ws.on("pong", (d) => console.log("pong received", d.toString("utf-8")));
+  ws.on("pong", (d) => console.info("pong received", d.toString("utf-8")));
 }
 
 function isUserNotification(
@@ -124,80 +138,4 @@ function isUserNotification(
 
 function isCommentNotification(payload: FigmaCommentNotification | unknown): payload is FigmaCommentNotification {
   return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
-}
-
-//tok:/profile-979019639463365631:1643202911:0:2344cb7182efd26138144afb9dfc0fba6fd0ff46
-//user_realtime_token: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
-
-interface FigmaSessionState {
-  error: boolean;
-  status: number;
-  meta: {
-    user_realtime_token: string;
-  };
-}
-
-interface FigmaSocketMessage {
-  method: "post" | "put" | unknown;
-  type: "user_notification" | unknown;
-  parent_org_id: unknown;
-  user_notification?: FigmaUserNotificationMessage;
-}
-
-interface FigmaUserNotificationMessage {
-  id: string;
-  user_id: string;
-  view: number;
-  locals: FigmaCommentNotification | unknown;
-  read_at: string | null; //date iso string
-  created_at: string | null; //date iso string
-  resolved_at: string | null; //date iso string
-  rejected_at: string | null; //date iso string
-  community_profile_id: unknown;
-  space_id: unknown;
-  cursor_id: unknown;
-  parent_org_id: unknown;
-}
-
-interface FigmaUser {
-  id: string;
-  handle: string; // name of user, e.g. Clark Kent
-  img_url: string;
-}
-
-interface FigmaCommentMessageMeta {
-  user_id?: string;
-  user_annotated?: FigmaUser;
-  t: string; //message text payload
-}
-
-interface FigmaComment {
-  id: string;
-  message_meta: FigmaCommentMessageMeta[];
-  user: FigmaUser;
-}
-
-interface FigmaFile {
-  key: string;
-  name: string; //title of file
-  folder_id: string | null;
-  team_id: string | null;
-  thumbnail_url: string | null;
-}
-
-interface FigmaCommentNotification {
-  file_key: string; //a-zA-Z0-9 value
-  parent_org_id: unknown;
-  comment_id: string;
-  comment_parent_id: string | null;
-  thumbnail_url: string;
-  thumbnail_status: unknown; //
-  user_id: string; //from user_id
-  from: FigmaUser;
-  prototype: boolean;
-  comment: FigmaComment;
-  open_url: string;
-  reply_url: string;
-  parent_comment: FigmaComment | null;
-  file: FigmaFile;
 }

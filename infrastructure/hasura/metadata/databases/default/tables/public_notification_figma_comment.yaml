@@ -13,24 +13,26 @@ insert_permissions:
         user_id:
           _eq: X-Hasura-User-Id
     columns:
-    - id
     - created_at
-    - updated_at
+    - figma_notification_id
     - file_id
     - file_name
+    - id
     - is_mention
     - notification_id
+    - updated_at
   role: user
 select_permissions:
 - permission:
     columns:
-    - is_mention
+    - created_at
+    - figma_notification_id
     - file_id
     - file_name
-    - created_at
-    - updated_at
     - id
+    - is_mention
     - notification_id
+    - updated_at
     filter:
       notification:
         user_id:

@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { useNullableDb } from "@aca/desktop/clientdb/ClientDbProvider";
 
+import { figmaSyncPayload } from "../bridge/apps/figma";
 import { useCurrentUser } from "./auth/useCurrentUser";
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
@@ -42,6 +43,34 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         if (!existingNotification) {
           db.notificationNotionUserMentioned.create(n);
         }
+      }
+    });
+
+    figmaSyncPayload.subscribe((data) => {
+      if (!db || !user) {
+        console.info("[Service Worker Consolidation] still waiting for client session");
+        return;
+      }
+
+      console.info("[Service Worker Consolidation] Syncing Figma notifications");
+      for (const { notification, commentNotification } of data) {
+        // TODO: Refactor once we have other figma notification types
+        if (!commentNotification) {
+          continue;
+        }
+
+        const existingNotification = db.notificationFigmaComment.findByUniqueIndex(
+          "figma_notification_id",
+          commentNotification.figma_notification_id
+        );
+
+        if (existingNotification) {
+          existingNotification.update({ file_name: commentNotification.file_name });
+          continue;
+        }
+
+        const createdNotification = db.notification.create(notification);
+        db.notificationFigmaComment.create({ ...commentNotification, notification_id: createdNotification.id });
       }
     });
   }, [user, db]);
