@@ -45,8 +45,6 @@ export function createInvokeBridge<Result = void, Input = void>(key: string) {
   async function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
     if (!invokeHandler) {
       throw new Error(`No handler`);
-
-      event?.senderFrame;
     }
     const result = await invokeHandler(arg, event);
 
