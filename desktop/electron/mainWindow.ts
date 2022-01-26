@@ -1,5 +1,3 @@
-import "./globals";
-
 import path from "path";
 
 import { BrowserWindow } from "electron";
