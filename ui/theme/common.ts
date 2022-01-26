@@ -9,4 +9,9 @@ export const common = {
     align-items: stretch;
     min-height: 0;
   `,
+  clickable: css`
+    cursor: var(--pointer);
+    -webkit-app-region: no-drag;
+    user-select: none;
+  `,
 };

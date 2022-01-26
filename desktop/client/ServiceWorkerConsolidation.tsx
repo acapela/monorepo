@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
-import { notionSyncPayload } from "../bridge/apps/notion";
-import { useNullableDb } from "../clientdb/ClientDbProvider";
+import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
+import { useNullableDb } from "@aca/desktop/clientdb/ClientDbProvider";
+
 import { useCurrentUser } from "./auth/useCurrentUser";
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {

@@ -1,8 +1,7 @@
 import React from "react";
 
+import { loginBridge } from "@aca/desktop/bridge/auth";
 import { Button } from "@aca/ui/buttons/Button";
-
-import { loginBridge } from "../bridge/auth";
 
 export function LoginView() {
   return (

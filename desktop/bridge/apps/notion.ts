@@ -1,6 +1,5 @@
+import { createChannelBridge } from "@aca/desktop/bridge/base/channels";
 import { Notification, Notification_Notion_User_Mentioned } from "@aca/gql";
-
-import { createChannelBridge } from "../base/channels";
 
 export type NotionNotificationPartial = Omit<Notification, "resolved_at" | "user_id" | "__typename">;
 export type NotificationNotionUserMentionedPartial = Omit<

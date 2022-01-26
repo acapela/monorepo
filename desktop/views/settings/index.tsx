@@ -9,6 +9,7 @@ import {
   notionAuthTokenBridgeValue,
   slackAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
@@ -19,18 +20,20 @@ export const SettingsView = function SettingsView() {
 
   const isSlackAuthorized = !!slackAuthTokenBridgeValue.use();
   return (
-    <UIHolder>
-      <UIHeader>Settings</UIHeader>
-      {!isNotionAuthorized && <Button onClick={() => loginNotionBridge()}>Connect Notion</Button>}
-      {isNotionAuthorized && <div>Notion authorized</div>}
+    <TraySidebarLayout>
+      <UIHolder>
+        <UIHeader>Settings</UIHeader>
+        {!isNotionAuthorized && <Button onClick={() => loginNotionBridge()}>Connect Notion</Button>}
+        {isNotionAuthorized && <div>Notion authorized</div>}
 
-      {!isGoogleAuthorized && <Button onClick={() => loginGoogleBridge()}>Connect Google</Button>}
-      {isGoogleAuthorized && <div>Google authorized</div>}
+        {!isGoogleAuthorized && <Button onClick={() => loginGoogleBridge()}>Connect Google</Button>}
+        {isGoogleAuthorized && <div>Google authorized</div>}
 
-      {!isSlackAuthorized && <Button onClick={() => loginSlackBridge()}>Connect Slack</Button>}
-      {isSlackAuthorized && <div>Slack authorized</div>}
-      <UIVersionInfo>dev</UIVersionInfo>
-    </UIHolder>
+        {!isSlackAuthorized && <Button onClick={() => loginSlackBridge()}>Connect Slack</Button>}
+        {isSlackAuthorized && <div>Slack authorized</div>}
+        <UIVersionInfo>dev</UIVersionInfo>
+      </UIHolder>
+    </TraySidebarLayout>
   );
 };
 
