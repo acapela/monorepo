@@ -1,0 +1,49 @@
+table:
+  name: notification_figma_comment
+  schema: public
+object_relationships:
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+    columns:
+    - id
+    - created_at
+    - updated_at
+    - file_id
+    - file_name
+    - is_mention
+    - notification_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - is_mention
+    - file_id
+    - file_name
+    - created_at
+    - updated_at
+    - id
+    - notification_id
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - file_name
+    - updated_at
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
