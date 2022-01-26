@@ -7,6 +7,9 @@ export const loginBridge = createInvokeBridge("login");
 export const notionAuthTokenBridgeValue = createElectronPersistedValue<string | null>("notion-auth-token", () => null);
 export const loginNotionBridge = createInvokeBridge("login-notion");
 
+export const figmaAuthTokenBridgeValue = createElectronPersistedValue<string | null>("figma-auth-token", () => null);
+export const loginFigmaBridge = createInvokeBridge("login-figma");
+
 export const googleAuthTokenBridgeValue = createElectronPersistedValue<boolean>("google-auth-token", () => false);
 export const loginGoogleBridge = createInvokeBridge("login-google");
 

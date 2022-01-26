@@ -1,4 +1,5 @@
 import { initializeLoginHandler } from "./acapela";
+import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGoogleAuthHandler } from "./google";
 import { initializeNotionAuthHandler } from "./notion";
 import { initializeSlackAuthHandler } from "./slack";
@@ -8,4 +9,5 @@ export function initializeAuthHandlers() {
   initializeNotionAuthHandler();
   initializeGoogleAuthHandler();
   initializeSlackAuthHandler();
+  initializeFigmaAuthHandler();
 }

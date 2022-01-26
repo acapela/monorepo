@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components";
 
 import {
+  figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
+  loginFigmaBridge,
   loginGoogleBridge,
   loginNotionBridge,
   loginSlackBridge,
@@ -14,8 +16,9 @@ import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
 export const SettingsView = function SettingsView() {
-  const notionToken = notionAuthTokenBridgeValue.use();
-  const isNotionAuthorized = !!notionToken;
+  const isNotionAuthorized = !!notionAuthTokenBridgeValue.use();
+
+  const isFigmaAuthorized = !!figmaAuthTokenBridgeValue.use();
   const isGoogleAuthorized = googleAuthTokenBridgeValue.use();
 
   const isSlackAuthorized = !!slackAuthTokenBridgeValue.use();
@@ -25,6 +28,9 @@ export const SettingsView = function SettingsView() {
         <UIHeader>Settings</UIHeader>
         {!isNotionAuthorized && <Button onClick={() => loginNotionBridge()}>Connect Notion</Button>}
         {isNotionAuthorized && <div>Notion authorized</div>}
+
+        {!isFigmaAuthorized && <Button onClick={() => loginFigmaBridge()}>Connect Figma</Button>}
+        {isFigmaAuthorized && <div>Figma authorized</div>}
 
         {!isGoogleAuthorized && <Button onClick={() => loginGoogleBridge()}>Connect Google</Button>}
         {isGoogleAuthorized && <div>Google authorized</div>}
