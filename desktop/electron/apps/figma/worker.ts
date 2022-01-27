@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import WebSocket from "ws";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
+import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 
@@ -29,6 +30,13 @@ function isCommentNotification(payload: FigmaCommentNotification | unknown): pay
 }
 
 export async function startFigmaSync() {
+  const isAbleToSync = authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
+
+  if (!isAbleToSync) {
+    console.info("[Figma] worker capturing aborted: no session yet");
+    return;
+  }
+
   const figmaSessionData = await getFigmaSessionData();
   // First sync happens as the app may be closed over night
   // This sync will get and sync all unread notifications since last app open
