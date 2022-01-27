@@ -1,6 +1,9 @@
+import * as Sentry from "@sentry/electron";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
+
+Sentry.init({ dsn: "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771" });
 
 /**
  * This is what is published from electron api to browser.
