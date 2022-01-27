@@ -1,5 +1,6 @@
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
 
+import { startFigmaSync } from "./figma/worker";
 import { startNotionSync } from "./notion/worker";
 
 export type NotificationServiceName = "notion";
@@ -16,6 +17,7 @@ export function initializeServiceSync(): ServiceSyncController {
   workerSyncStart.handle(async (isAbleToStart: boolean) => {
     if (isAbleToStart) {
       addHandler(startNotionSync());
+      startFigmaSync();
     }
   });
   return {

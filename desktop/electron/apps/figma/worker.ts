@@ -4,20 +4,22 @@ import WebSocket from "ws";
 
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
+import { assert } from "@aca/shared/assert";
 
 import { FigmaCommentNotification, FigmaSessionState, FigmaSocketMessage, FigmaUserNotificationMessage } from "./types";
 
-// This is used for version controlling the app with their api
-// We may need to keep a static version of this, but verify that their API is working every week
-let release_git_tag: string | null = null;
-let figmaUserId: string | null = null;
-
-// The realtime user token is used to establish a websocket subscription where we will get data
-// that included the user notification
-// It looks like this: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
-let figmaRealtimeUserToken: string | null = null;
-
 export async function startFigmaSync() {
+  const figmaSessionData = await getFigmaSessionData();
+  startFigmaSocketBasedSync(figmaSessionData);
+}
+
+interface FigmaSessionData {
+  cookie: string;
+  release_git_tag: string;
+  figmaUserId: string;
+}
+
+async function getFigmaSessionData(): Promise<FigmaSessionData> {
   const figmaWindow = new BrowserWindow({
     width: 0,
     height: 0,
@@ -27,18 +29,39 @@ export async function startFigmaSync() {
 
   await figmaWindow.webContents.loadURL(figmaURL);
 
-  release_git_tag = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.release_git_tag");
-  figmaUserId = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.user_data.id");
+  // This is used for version controlling the app with their api
+  // We may need to keep a static version of this, but verify that their API is working every week
+  const release_git_tag = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.release_git_tag");
 
-  figmaWindow.close();
+  const figmaUserId = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.user_data.id");
 
   const figmaCookies = await figmaWindow.webContents.session.cookies.get({
     url: figmaURL,
   });
+
+  figmaWindow.close();
+
   const cookie = figmaCookies
     .filter((cookie) => cookie.domain?.includes("figma.com"))
     .map((cookie) => cookie.name + "=" + cookie.value)
     .join("; ");
+
+  assert(release_git_tag, "Cant find figma release tag");
+  assert(figmaUserId, "Cant find figma user is");
+  assert(cookie, "cant find figma cookie");
+
+  return {
+    release_git_tag,
+    figmaUserId,
+    cookie,
+  };
+}
+
+async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag }: FigmaSessionData) {
+  // The realtime user token is used to establish a websocket subscription where we will get data
+  // that included the user notification
+  // It looks like this: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
+  let figmaRealtimeUserToken: string | null = null;
 
   try {
     const response = await fetch(figmaURL + "/api/user/state", {
@@ -51,6 +74,7 @@ export async function startFigmaSync() {
     figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
   } catch (e) {
     console.error(e);
+    return;
   }
 
   if (!figmaRealtimeUserToken) {
