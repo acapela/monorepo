@@ -65,9 +65,16 @@ export async function testFigma() {
     },
   });
 
+  // Seems like figma uses pings to keep the connection open
+  function startPingInterval() {
+    setInterval(() => {
+      ws.ping("ping");
+      // 31/32 seconds is the ping interval seen in figma
+    }, 31.5 * 1000);
+  }
+
   ws.on("open", function open() {
-    // TODO: Ping every 31 seconds
-    ws.ping("ping");
+    startPingInterval();
 
     // Subscription to messages related to user, including user notifications
     ws.send(`tok:${figmaRealtimeUserToken}`);
