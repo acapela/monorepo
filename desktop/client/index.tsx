@@ -20,6 +20,7 @@ import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
+import { SystemBar } from "./SystemBar";
 
 const rootElement = document.getElementById("root");
 
@@ -53,6 +54,7 @@ render(
                 <TooltipsRenderer />
                 <ToastsRenderer />
                 <ServiceWorkerConsolidation />
+                <SystemBar />
                 <RootView />
               </ClientDbProvider>
             </CurrentTeamProvider>
