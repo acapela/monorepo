@@ -16,10 +16,10 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 
   useEffect(() => {
-    if (db && user) {
+    if (db && user && !isReadyToSync) {
       workerSyncStart(true).then(setReadyToSync);
     }
-  }, [db, user]);
+  }, [db, user, isReadyToSync]);
 
   useEffect(() => {
     if (!isReadyToSync) {

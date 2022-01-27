@@ -2,21 +2,41 @@ import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 import WebSocket from "ws";
 
-import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
+import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 
-import { FigmaCommentNotification, FigmaSessionState, FigmaSocketMessage, FigmaUserNotificationMessage } from "./types";
-
-export async function startFigmaSync() {
-  const figmaSessionData = await getFigmaSessionData();
-  startFigmaSocketBasedSync(figmaSessionData);
-}
+import {
+  FigmaCommentNotification,
+  FigmaSessionState,
+  FigmaSocketMessage,
+  FigmaUserNotification,
+  GetFigmaUserNotificationsResponse,
+} from "./types";
 
 interface FigmaSessionData {
   cookie: string;
   release_git_tag: string;
   figmaUserId: string;
+}
+
+function isUserNotification(payload: FigmaUserNotification | undefined): payload is FigmaUserNotification {
+  return payload !== undefined;
+}
+
+function isCommentNotification(payload: FigmaCommentNotification | unknown): payload is FigmaCommentNotification {
+  return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
+}
+
+export async function startFigmaSync() {
+  const figmaSessionData = await getFigmaSessionData();
+  // First sync happens as the app may be closed over night
+  // This sync will get and sync all unread notifications since last app open
+  getInitialFigmaSync(figmaSessionData);
+
+  // The figma socket based sync will subscribe to user events
+  // and sync every new notification as it comes in
+  startFigmaSocketBasedSync(figmaSessionData);
 }
 
 async function getFigmaSessionData(): Promise<FigmaSessionData> {
@@ -55,6 +75,31 @@ async function getFigmaSessionData(): Promise<FigmaSessionData> {
     figmaUserId,
     cookie,
   };
+}
+
+async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
+  let result: GetFigmaUserNotificationsResponse;
+
+  try {
+    const response = await fetch(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
+      method: "GET",
+      headers: {
+        cookie,
+      },
+    });
+
+    result = await response.json();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
+  const unreadFigmaNotifications = result.meta.feed.filter((notification) => notification.read_at === null);
+
+  console.info(`[Figma] Attempting to sync ${unreadFigmaNotifications.length} unread notifications`);
+
+  // Initial sync only covers unread notifications
+  transformAndSyncFigmaNotifications(unreadFigmaNotifications, figmaUserId);
 }
 
 async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag }: FigmaSessionData) {
@@ -124,49 +169,47 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
       return;
     }
 
-    const userNotificationMessage: FigmaUserNotificationMessage = message.user_notification;
+    console.info("[Figma] Received socket user notification");
 
-    // We've seen notifications when a user gets different access permissions
-    // We only want to handle new comments for now
-    if (!isCommentNotification(userNotificationMessage.locals)) {
-      return;
-    }
+    const userNotificationMessage: FigmaUserNotification = message.user_notification;
 
-    const commentNotification: FigmaCommentNotification = userNotificationMessage.locals;
-
-    console.info("[Figma] Received socket message");
-
-    figmaSyncPayload.send([
-      {
-        notification: {
-          created_at: userNotificationMessage.created_at,
-          updated_at: userNotificationMessage.created_at,
-          from: commentNotification.from.handle,
-          url: commentNotification.reply_url,
-        },
-        commentNotification: {
-          file_id: commentNotification.file_key,
-          file_name: commentNotification.file.name,
-          is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
-          created_at: userNotificationMessage.created_at,
-          updated_at: userNotificationMessage.created_at,
-          figma_notification_id: userNotificationMessage.id,
-        },
-      },
-    ]);
+    transformAndSyncFigmaNotifications([userNotificationMessage], figmaUserId);
   });
 
-  ws.on("error", (e) => console.info("error", e));
-
-  ws.on("pong", (d) => console.info("pong received", d.toString("utf-8")));
+  ws.on("error", (e) => console.info("[Figma] error", e));
 }
 
-function isUserNotification(
-  payload: FigmaUserNotificationMessage | undefined
-): payload is FigmaUserNotificationMessage {
-  return payload !== undefined;
-}
+function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNotification[], figmaUserId: string) {
+  const syncPayload: FigmaWorkerSync = [];
 
-function isCommentNotification(payload: FigmaCommentNotification | unknown): payload is FigmaCommentNotification {
-  return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
+  for (const userNotification of figmaUserNotifications) {
+    // We've seen notifications when a user gets different access permissions
+    // We only want to handle new comments for now
+    if (!isCommentNotification(userNotification.locals)) {
+      continue;
+    }
+
+    const commentNotification: FigmaCommentNotification = userNotification.locals;
+
+    syncPayload.push({
+      notification: {
+        created_at: userNotification.created_at,
+        updated_at: userNotification.created_at,
+        from: commentNotification.from.handle,
+        url: commentNotification.reply_url,
+      },
+      commentNotification: {
+        file_id: commentNotification.file_key,
+        file_name: commentNotification.file.name,
+        is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
+        created_at: userNotification.created_at,
+        updated_at: userNotification.created_at,
+        figma_notification_id: userNotification.id,
+      },
+    });
+  }
+
+  if (syncPayload.length > 0) {
+    figmaSyncPayload.send(syncPayload);
+  }
 }

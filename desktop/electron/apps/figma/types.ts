@@ -10,10 +10,10 @@ export interface FigmaSocketMessage {
   method: "post" | "put" | unknown;
   type: "user_notification" | unknown;
   parent_org_id: unknown;
-  user_notification?: FigmaUserNotificationMessage;
+  user_notification?: FigmaUserNotification;
 }
 
-export interface FigmaUserNotificationMessage {
+export interface FigmaUserNotification {
   id: string;
   user_id: string;
   view: number;
@@ -69,4 +69,15 @@ export interface FigmaCommentNotification {
   reply_url: string;
   parent_comment: FigmaComment | null;
   file: FigmaFile;
+}
+
+export interface GetFigmaUserNotificationsResponse {
+  error: boolean;
+  status: number;
+  meta: {
+    feed: FigmaUserNotification[];
+    users: Record<string, FigmaUser>;
+    // There's many other properties that are ignored...
+  };
+  i18n: null;
 }
