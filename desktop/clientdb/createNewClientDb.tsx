@@ -13,6 +13,7 @@ import {
   notificationNotionUserMentionedEntity,
   notificationSlackMessageEntity,
 } from "./notification";
+import { notificationFigmaCommentEntity } from "./notification/figma/comment";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -33,6 +34,7 @@ export const appClientDbEntities = {
   notification: notificationEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
+  notificationFigmaComment: notificationFigmaCommentEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
