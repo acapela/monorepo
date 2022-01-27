@@ -10,7 +10,7 @@
     "styled-components": "*"
   },
   "scripts": {
-    "dev": "NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:3000 ts-node dev.ts",
+    "dev": "ts-node dev.ts",
     "build:bundle": "ts-node build.ts",
     "build:electron": "electron-builder build --mac zip --universal --dir",
     "build": "yarn build:bundle && yarn build:electron",
