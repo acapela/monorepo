@@ -17,7 +17,7 @@ let figmaUserId: string | null = null;
 // It looks like this: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
 let figmaRealtimeUserToken: string | null = null;
 
-export async function testFigma() {
+export async function startFigmaSync() {
   const figmaWindow = new BrowserWindow({
     width: 0,
     height: 0,

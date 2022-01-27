@@ -1,18 +1,28 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
+import { workerSyncStart } from "@aca/desktop/bridge/apps";
+import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { useNullableDb } from "@aca/desktop/clientdb/ClientDbProvider";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
-import { figmaSyncPayload } from "../bridge/apps/figma";
 import { useCurrentUser } from "./auth/useCurrentUser";
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = useNullableDb();
   const user = useCurrentUser();
 
+  const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
+
   useEffect(() => {
-    if (!db || !user) {
+    if (db && user) {
+      workerSyncStart(true).then(setReadyToSync);
+    }
+  }, [db, user]);
+
+  useEffect(() => {
+    if (!isReadyToSync) {
       console.info("[Service Worker Consolidation] still waiting for client session");
       return;
     }
@@ -73,7 +83,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         db.notificationFigmaComment.create({ ...commentNotification, notification_id: createdNotification.id });
       }
     });
-  }, [user, db]);
+  }, [isReadyToSync]);
 
   return <></>;
 });
