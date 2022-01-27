@@ -10,6 +10,8 @@ import {
 import { appState } from "@aca/desktop/electron/appState";
 import { assert, assertDefined } from "@aca/shared/assert";
 
+import { loadURLWithFilters } from "./siteFilters";
+
 const DESTROY_BROWSER_VIEW_TIMEOUT_MS = 5000;
 
 type StringURL = string;
@@ -42,7 +44,8 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
       subscribers: new Set([id]),
       destroyTimeout: null,
     };
-    await browserView.webContents.loadURL(url);
+
+    await loadURLWithFilters(browserView, url);
   }
 
   return ref.view;
