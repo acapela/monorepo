@@ -1,5 +1,6 @@
 import "./globals";
 
+import * as Sentry from "@sentry/electron";
 import { app } from "electron";
 
 import { initializeServiceSync } from "./apps";
@@ -8,6 +9,8 @@ import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeSingleInstanceLock } from "./singleInstance";
+
+Sentry.init({ dsn: "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771" });
 
 // Has to be done before app ready
 initializeSingleInstanceLock();
