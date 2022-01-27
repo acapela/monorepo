@@ -6,8 +6,8 @@ const routes = {
   home: "/",
   settings: "/settings",
   notification: "/notifications/:notificationId",
-  focus: "/focus",
   list: "/list/:listId",
+  focus: "/focus/:notificationId",
 } as const;
 
 export const allRouteNames = typedKeys(routes);

@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."notification_figma_comment" add column "figma_notification_id" text
+--  not null unique;

@@ -5,7 +5,7 @@ import { ActionButton } from "@aca/desktop/ui/ActionButton";
 
 export function LoginView() {
   return (
-    <div>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
       <ActionButton action={loginToAcapela} />
     </div>
   );

@@ -1,7 +1,9 @@
 import { loginBridge } from "@aca/desktop/bridge/auth";
 import {
   authTokenBridgeValue,
+  figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
+  loginFigmaBridge,
   loginGoogleBridge,
   loginNotionBridge,
   loginSlackBridge,
@@ -32,6 +34,14 @@ export const connectSlack = defineAction({
   canApply: () => !slackAuthTokenBridgeValue.get(),
   handler() {
     loginSlackBridge();
+  },
+});
+
+export const connectFigma = defineAction({
+  name: "Connect Figma",
+  canApply: () => !figmaAuthTokenBridgeValue.get(),
+  handler() {
+    loginFigmaBridge();
   },
 });
 
