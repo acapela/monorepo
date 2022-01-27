@@ -30,11 +30,12 @@ const BuiltInStyles = createGlobalStyle`
 
 function BridgeSessionProvider({ children }: { children: React.ReactNode }) {
   const session = authTokenBridgeValue.use();
+
   if (!session) {
     return <LoginView />;
   }
   return (
-    <SessionProvider baseUrl={"http://localhost:3000"} session={jwt.decode(session) as never}>
+    <SessionProvider session={jwt.decode(session) as never} refetchInterval={0} refetchOnWindowFocus={false}>
       {children}
     </SessionProvider>
   );
