@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -16,11 +15,9 @@ import {
 const notificationNotionUserMentioned = gql`
   fragment NotificationNotionUserMentioned on notification_notion_user_mentioned {
     id
-    notification_id
+    notification_notion_id
     created_at
     updated_at
-    notion_page_id
-    notion_page_title
   }
 `;
 
@@ -34,7 +31,7 @@ type NotificationNotionUserMentionedConstraints = {
 export const notificationNotionUserMentionedEntity = defineEntity<NotificationNotionUserMentionedFragment>({
   name: "notification_notion_user_mentioned",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["notification_id"],
+  uniqueIndexes: ["notification_notion_id"],
   keyField: "id",
   keys: getFragmentKeys<NotificationNotionUserMentionedFragment>(notificationNotionUserMentioned),
   getDefaultValues: () => ({
@@ -45,8 +42,8 @@ export const notificationNotionUserMentionedEntity = defineEntity<NotificationNo
     NotificationNotionUserMentionedFragment,
     NotificationNotionUserMentionedConstraints
   >(notificationNotionUserMentioned, {
-    insertColumns: ["id", "notification_id", "notion_page_id", "created_at", "updated_at", "notion_page_title"],
-    updateColumns: ["updated_at", "notion_page_title"],
+    insertColumns: ["id", "notification_notion_id", "created_at", "updated_at"],
+    updateColumns: ["updated_at"],
     upsertConstraint: "notification_notion_user_mentioned_pkey",
   }),
 });
