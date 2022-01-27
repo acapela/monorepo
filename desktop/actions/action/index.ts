@@ -26,6 +26,9 @@ export interface ActionData extends ActionCreateInput {
   canApply: ActionContextCallback<boolean>;
 }
 
+/**
+ * Some action fields might be functions that depend on context - this will resolve final data providing some specific context.
+ */
 export function resolveActionData(action: ActionData, context: ActionContext = createActionContext()) {
   return {
     ...action,
@@ -34,25 +37,24 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
   };
 }
 
+/**
+ * Helper that also resolves action data, but requiring target to be provided instead of full context.
+ */
 export function resolveActionDataWithTarget(action: ActionData, target?: unknown) {
   const context = createActionContext(target);
-  return {
-    ...action,
-    name: resolveActionDataThunk(action.name, context),
-    icon: resolveActionDataThunk(action.icon, context),
-  };
+  return resolveActionData(action, context);
 }
 
-export function defineAction(data: ActionCreateInput): ActionData {
+export function defineAction(input: ActionCreateInput): ActionData {
   return {
     id: getUUID(),
     canApply: () => true,
-    ...data,
+    ...input,
   };
 }
 
 export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
-  if (action.canApply && !action.canApply(context)) {
+  if (!action.canApply(context)) {
     return;
   }
 
