@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { navigateToList } from "@aca/desktop/domains/lists";
+import { importantList, inboxList, relevantList } from "@aca/desktop/domains/lists";
 
 import { ListTabLabel } from "./ListTabLabel";
 
@@ -12,30 +12,9 @@ interface Props {
 export function ListsTabBar({ activeListId }: Props) {
   return (
     <UIHolder>
-      <ListTabLabel
-        label="Inbox"
-        count={14}
-        isActive={activeListId === "inbox"}
-        onClick={() => {
-          navigateToList("inbox");
-        }}
-      />
-      <ListTabLabel
-        label="Important"
-        count={14}
-        isActive={activeListId === "important"}
-        onClick={() => {
-          navigateToList("important");
-        }}
-      />
-      <ListTabLabel
-        label="Relevant"
-        count={14}
-        isActive={activeListId === "relevant"}
-        onClick={() => {
-          navigateToList("relevant");
-        }}
-      />
+      <ListTabLabel list={inboxList} count={14} isActive={activeListId === "inbox"} />
+      <ListTabLabel list={importantList} count={14} isActive={activeListId === "important"} />
+      <ListTabLabel list={relevantList} count={14} isActive={activeListId === "relevant"} />
     </UIHolder>
   );
 }

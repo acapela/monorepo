@@ -1,3 +1,6 @@
+import { observable } from "mobx";
+import { useObserver } from "mobx-react";
+
 import { createChannel } from "@aca/shared/channel";
 
 import { createChannelBridge, createInvokeBridge } from "./channels";
@@ -11,6 +14,12 @@ export const persistedValueChangeRequestChannel = createChannelBridge<{ key: str
 
 export function createElectronPersistedValue<T>(valueKey: string, getDefault: () => T) {
   const localChannel = createChannel<T>();
+
+  const observableValue = observable.box<T>(getDefault());
+
+  localChannel.subscribe((value) => {
+    observableValue.set(value);
+  });
 
   setTimeout(() => {
     requestGetPersistedValue(valueKey).then((value) => {
@@ -32,11 +41,11 @@ export function createElectronPersistedValue<T>(valueKey: string, getDefault: ()
   }
 
   function get() {
-    return localChannel.getLastValue() ?? getDefault();
+    return observableValue.get();
   }
 
   function use() {
-    return localChannel.useLastValue() ?? getDefault();
+    return useObserver(() => get());
   }
 
   return {

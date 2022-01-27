@@ -17,15 +17,18 @@ export interface ButtonDisabledInfo {
   reason: string;
 }
 
-export interface ButtonProps extends HTMLMotionProps<"button"> {
+export interface ButtonStyleProps {
+  isWide?: boolean;
+  kind?: ButtonKind;
+  size?: ButtonSize;
+}
+
+export interface ButtonProps extends HTMLMotionProps<"button">, ButtonStyleProps {
   icon?: ReactNode;
   iconAtStart?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean | ButtonDisabledInfo;
-  isWide?: boolean;
   tooltip?: string;
-  kind?: ButtonKind;
-  size?: ButtonSize;
   shortcut?: ShortcutDefinition;
   indicateDropdown?: boolean;
   onClick?: () => void;

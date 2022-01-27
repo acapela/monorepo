@@ -1,18 +1,23 @@
 import React from "react";
 import styled from "styled-components";
 
+import { ActionData, resolveActionDataWithTarget } from "@aca/desktop/actions/action";
+import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  label: string;
-  onClick: () => void;
+  action: ActionData;
+  target?: unknown;
 }
 
-export function SidebarItem({ label, onClick }: Props) {
+export function SidebarItem({ action, target }: Props) {
+  const { name } = resolveActionDataWithTarget(action, target);
   return (
-    <UIHolder onClick={onClick}>
-      <UILabel>{label}</UILabel>
-    </UIHolder>
+    <ActionTrigger action={action} target={target}>
+      <UIHolder>
+        <UILabel>{name}</UILabel>
+      </UIHolder>
+    </ActionTrigger>
   );
 }
 
