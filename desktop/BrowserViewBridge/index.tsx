@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 import {
   hideBrowserView,
@@ -8,6 +8,7 @@ import {
   unregisterBrowserViewPreload,
 } from "@aca/desktop/bridge/preview";
 import { useConst } from "@aca/shared/hooks/useConst";
+import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { getUUID } from "@aca/shared/uuid";
 
@@ -29,7 +30,7 @@ export function PreloadBrowserView({ url }: BrowserViewProps) {
 
 export function BrowserViewBridge({ url }: BrowserViewProps) {
   const id = useUUID();
-  const [bounds, setBounds] = useState<Electron.Rectangle | null>(null);
+  const [bounds, setBounds] = useEqualState<Electron.Rectangle | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useResizeCallback(rootRef, (entry) => {

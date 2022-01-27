@@ -12,8 +12,9 @@ import { assert, assertDefined } from "@aca/shared/assert";
 
 const DESTROY_BROWSER_VIEW_TIMEOUT_MS = 5000;
 
+type StringURL = string;
 const browserViewRefs: Record<
-  string,
+  StringURL,
   {
     view: BrowserView;
     subscribers: Set<string>;
@@ -28,6 +29,7 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
   let ref = browserViewRefs[url];
   if (ref) {
     if (ref.destroyTimeout) {
+      console.info("cancelling browser view destroy timeout for", url);
       clearTimeout(ref.destroyTimeout);
       ref.destroyTimeout = null;
     }
