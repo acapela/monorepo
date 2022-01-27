@@ -12,7 +12,7 @@ export interface GetNotificationLogResult {
 
 type NotificationPayloadType = "user-mentioned" | "commented" | "user-invited";
 
-interface NotificationPayload {
+export interface NotificationPayload {
   role: string;
   value: {
     id: string;

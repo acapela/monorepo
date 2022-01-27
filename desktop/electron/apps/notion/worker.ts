@@ -2,15 +2,11 @@ import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
-import {
-  NotificationNotionUserMentionedPartial,
-  NotionNotificationPartial,
-  notionSyncPayload,
-} from "@aca/desktop/bridge/apps/notion";
+import { NotionWorkerSync, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 
-import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
+import { ActivityPayload, BlockPayload, GetNotificationLogResult, NotificationPayload } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
@@ -123,61 +119,121 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
   return (await response.json()) as GetNotificationLogResult;
 }
 
-function extractNotifications(payload: GetNotificationLogResult): {
-  notification: NotionNotificationPartial[];
-  userMentionedNotification: NotificationNotionUserMentionedPartial[];
-} {
+const stripDashes = (str: string) => str.replaceAll("-", "");
+
+function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
-  const stripDashes = (str: string) => str.replaceAll("-", "");
-
-  const result = {
-    notification: [],
-    userMentionedNotification: [],
-  } as ReturnType<typeof extractNotifications>;
+  const result: NotionWorkerSync = [];
 
   for (const id of notificationIds) {
     const notification = recordMap.notification[id].value;
 
-    if (notification.type !== "user-mentioned") {
+    if (notification.type === "user-mentioned") {
+      const userMentionedNotification = extractUserMentionedData(notification, recordMap);
+      if (userMentionedNotification) {
+        result.push(userMentionedNotification);
+      }
       continue;
     }
-
-    const pageId = notification.navigable_block_id;
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
-    const url =
-      notionURL +
-      "/" +
-      stripDashes(pageId) +
-      (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
-
-    const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
-
-    const created_at = new Date(createdAtTimestampAsNumber).toISOString();
-
-    const pageBlock = (payload.recordMap.block[pageId] as BlockPayload<"page">).value;
-
-    if (pageBlock.type !== "page") {
-      console.error("[Notion Worker] Block is not page type");
+    if (notification.type === "commented") {
+      const commentedNotification = extractCommentData(notification, recordMap);
+      if (commentedNotification) {
+        result.push(commentedNotification);
+      }
       continue;
     }
+  }
 
-    const updated_at = created_at;
-    result.notification.push({
-      id,
+  return result;
+}
+
+function extractUserMentionedData(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+) {
+  const pageId = notification.navigable_block_id;
+  const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
+  const url =
+    notionURL +
+    "/" +
+    stripDashes(pageId) +
+    (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
+
+  const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
+
+  const created_at = new Date(createdAtTimestampAsNumber).toISOString();
+
+  const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
+
+  if (pageBlock.type !== "page") {
+    console.error("[Notion Worker] Block is not page type");
+    return;
+  }
+
+  const updated_at = created_at;
+  return {
+    notification: {
+      id: notification.id,
       url,
       created_at,
       updated_at,
       from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
-    });
-    result.userMentionedNotification.push({
-      notification_id: id,
+    },
+    userMentioned: {
+      notification_id: notification.id,
       created_at,
       updated_at,
       notion_page_id: pageId,
       notion_page_title: pageBlock.properties.title[0][0],
-    });
+    },
+  } as const;
+}
+
+function extractCommentData(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+) {
+  const pageId = notification.navigable_block_id;
+  const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
+  const discussion = recordMap.discussion[activity.discussion_id].value;
+
+  const parentDiscussionBlock = discussion.parent_id;
+
+  const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
+
+  if (pageBlock.type !== "page") {
+    console.error("[Notion Worker] Block is not page type");
+    return;
   }
 
-  return result;
+  const url =
+    notionURL +
+    "/" +
+    stripDashes(pageId) +
+    "?d=" +
+    `${stripDashes(discussion.id)}` +
+    `#${stripDashes(parentDiscussionBlock)}`;
+
+  const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
+
+  const created_at = new Date(createdAtTimestampAsNumber).toISOString();
+
+  const updated_at = created_at;
+  return {
+    notification: {
+      id: notification.id,
+      url,
+      created_at,
+      updated_at,
+      from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
+    },
+    commented: {
+      notification_id: notification.id,
+      created_at,
+      updated_at,
+      notion_page_id: pageId,
+      notion_page_title: pageBlock.properties.title[0][0],
+    },
+  } as const;
 }

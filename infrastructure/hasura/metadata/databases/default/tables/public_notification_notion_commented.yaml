@@ -1,0 +1,47 @@
+table:
+  name: notification_notion_commented
+  schema: public
+object_relationships:
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+    columns:
+    - id
+    - created_at
+    - updated_at
+    - notification_id
+    - notion_page_title
+    - notion_page_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - notion_page_title
+    - created_at
+    - updated_at
+    - id
+    - notification_id
+    - notion_page_id
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - notion_page_title
+    - updated_at
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
