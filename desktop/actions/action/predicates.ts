@@ -1,5 +1,15 @@
 import { assert } from "@aca/shared/assert";
 
+/**
+ * With action objects - we don't know what is action context target (eg. what is hovered, what page is active, etc).
+ *
+ * There might be multiple targets at once (eg. active page is some list of notifications, but we also have hover on some specific notification).
+ *
+ * Thus target might be an array of items of various types.
+ *
+ * Those are helpers allowing to work with this context in type safe way.
+ */
+
 type PredicatesMap = Record<string, (input: unknown) => input is unknown>;
 
 type PredicateFunctionType<T> = T extends (item: unknown) => item is infer U ? U : never;
