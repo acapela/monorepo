@@ -2,21 +2,13 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
 import { useCurrentTeam } from "@aca/desktop/auth/CurrentTeam";
 import { useAssertCurrentUser } from "@aca/desktop/auth/useCurrentUser";
-import {
-  figmaAuthTokenBridgeValue,
-  googleAuthTokenBridgeValue,
-  loginFigmaBridge,
-  loginGoogleBridge,
-  loginNotionBridge,
-  loginSlackBridge,
-  notionAuthTokenBridgeValue,
-  slackAuthTokenBridgeValue,
-} from "@aca/desktop/bridge/auth";
+import { slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
-import { Button } from "@aca/ui/buttons/Button";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
@@ -29,10 +21,7 @@ export const SettingsView = observer(function SettingsView() {
   const currentUser = useAssertCurrentUser();
   const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
 
-  const isNotionAuthorized = !!notionAuthTokenBridgeValue.use();
-  const isFigmaAuthorized = !!figmaAuthTokenBridgeValue.use();
-  const isGoogleAuthorized = googleAuthTokenBridgeValue.use();
-  const isSlackAuthorized = !!slackAuthTokenBridgeValue.use();
+  const isSlackAuthorized = !!slackAuthTokenBridgeValue.get();
 
   return (
     <TraySidebarLayout>
@@ -40,16 +29,11 @@ export const SettingsView = observer(function SettingsView() {
         <UIHeader>Settings</UIHeader>
         {!team && <CreateTeamForm />}
 
-        {!isNotionAuthorized && <Button onClick={() => loginNotionBridge()}>Connect Notion</Button>}
-        {isNotionAuthorized && <div>Notion authorized</div>}
+        <ActionButton action={connectGoogle} />
+        <ActionButton action={connectNotion} />
+        <ActionButton action={connectSlack} />
+        <ActionButton action={connectFigma} />
 
-        {!isFigmaAuthorized && <Button onClick={() => loginFigmaBridge()}>Connect Figma</Button>}
-        {isFigmaAuthorized && <div>Figma authorized</div>}
-
-        {!isGoogleAuthorized && <Button onClick={() => loginGoogleBridge()}>Connect Google</Button>}
-        {isGoogleAuthorized && <div>Google authorized</div>}
-
-        {!isSlackAuthorized && <Button onClick={() => loginSlackBridge()}>Connect Slack</Button>}
         {isSlackAuthorized && (
           <HStack alignItems="center" gap={10}>
             <div>Slack authorized</div>

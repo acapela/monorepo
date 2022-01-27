@@ -1,37 +1,24 @@
 import React from "react";
 import styled from "styled-components";
 
-import { desktopRouter } from "@aca/desktop/routes";
-import { IconButton } from "@aca/ui/buttons/IconButton";
-import { IconCross } from "@aca/ui/icons";
+import { goToList, goToSettings } from "@aca/desktop/actions/lists";
+import { toggleNavigationMenu } from "@aca/desktop/actions/navigation";
+import { inboxList } from "@aca/desktop/domains/lists";
+import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
 
-interface Props {
-  onCloseRequest: () => void;
-}
-
-export function Sidebar({ onCloseRequest }: Props) {
+export function Sidebar() {
   return (
-    <UIHolder presenceStyles={{ opacity: [0, 1] }}>
+    <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
       <UITopTools>
-        <IconButton onClick={onCloseRequest} icon={<IconCross />} />
+        <ActionIconButton action={toggleNavigationMenu} />
       </UITopTools>
       <UIItems>
-        <SidebarItem
-          label="Home"
-          onClick={() => {
-            desktopRouter.navigate("home");
-          }}
-        />
-        <SidebarItem
-          label="Settings"
-          onClick={() => {
-            desktopRouter.navigate("settings");
-          }}
-        />
+        <SidebarItem action={goToList} target={inboxList} />
+        <SidebarItem action={goToSettings} />
       </UIItems>
     </UIHolder>
   );
