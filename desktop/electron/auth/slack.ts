@@ -1,6 +1,6 @@
 import { BrowserWindow, session } from "electron";
 
-import { loginSlackBridge, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { connectSlackBridge, loginSlackBridge, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
 import { authWindowDefaultOptions } from "./utils";
 
@@ -42,6 +42,10 @@ export async function loginSlack() {
 export function initializeSlackAuthHandler() {
   loginSlackBridge.handle(async () => {
     await loginSlack();
+  });
+  connectSlackBridge.handle(async ({ url }) => {
+    const window = new BrowserWindow({ ...authWindowDefaultOptions });
+    window.webContents.loadURL(url);
   });
 
   syncSlackAuthState();

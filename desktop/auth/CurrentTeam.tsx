@@ -2,6 +2,7 @@ import { ApolloClient, gql, useApolloClient } from "@apollo/client";
 import React, { PropsWithChildren, createContext, useContext, useState } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
+import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
@@ -147,4 +148,13 @@ export function CurrentTeamProvider({ children }: PropsWithChildren<{}>) {
   const teamManager = useCurrentTeamManager();
 
   return <Context.Provider value={teamManager}>{children}</Context.Provider>;
+}
+
+export function useCurrentTeam() {
+  const db = useDb();
+  const { teamId } = useCurrentTeamContext();
+
+  const team = teamId ? db?.team.findById(teamId) ?? null : null;
+
+  return team;
 }

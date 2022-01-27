@@ -15,6 +15,7 @@ export const loginGoogleBridge = createInvokeBridge("login-google");
 
 export const slackAuthTokenBridgeValue = createElectronPersistedValue<string | null>("slack-auth-token", () => null);
 export const loginSlackBridge = createInvokeBridge("login-slack");
+export const connectSlackBridge = createInvokeBridge<void, { url: string }>("connect-slack");
 
 export async function logout() {
   authTokenBridgeValue.set(null);
