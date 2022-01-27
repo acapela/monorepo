@@ -13,6 +13,7 @@ import {
   Notification_Set_Input,
 } from "@aca/gql";
 
+import { notificationFigmaCommentEntity } from "./figma/comment";
 import { notificationNotionUserMentionedEntity } from "./notion/userMentioned";
 import { notificationSlackMessageEntity } from "./slack/message";
 
@@ -36,7 +37,11 @@ type DesktopNotificationConstraints = {
   where: Notification_Bool_Exp;
 };
 
-const innerEntities = [notificationNotionUserMentionedEntity, notificationSlackMessageEntity];
+const innerEntities = [
+  notificationNotionUserMentionedEntity,
+  notificationSlackMessageEntity,
+  notificationFigmaCommentEntity,
+];
 
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   name: "notification",
