@@ -1,8 +1,7 @@
 import { app } from "electron";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
-
-import { handleUrlWithPattern } from "./urlPattern";
+import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
 export const APP_PROTOCOL = "acapela";
 const APP_PROTOCOL_PREFIX = `${APP_PROTOCOL}://`;

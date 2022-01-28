@@ -1,30 +1,37 @@
-import { navigateToList } from "@aca/desktop/domains/lists";
+import React from "react";
 
+import { navigateToList } from "@aca/desktop/domains/lists";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop } from "@aca/ui/icons";
+
+import { getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 
 export const exitFocusMode = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
-  handler(context) {
-    navigateToList(context.assertTarget("list").id);
+  name: "Exit focus mode",
+  icon: <IconArrowLeft />,
+  shortcut: "Esc",
+  canApply: () => getIsRouteActive("focus"),
+  handler() {
+    navigateToList("inbox");
   },
 });
 
 export const goToNextNotification = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
-  handler(context) {
-    navigateToList(context.assertTarget("list").id);
+  icon: <IconArrowBottom />,
+  name: "Go to previous notification",
+  shortcut: "ArrowDown",
+  canApply: () => getIsRouteActive("focus"),
+  handler() {
+    alert("Not supported yet");
   },
 });
 
 export const goToPreviousNotification = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
-  handler(context) {
-    navigateToList(context.assertTarget("list").id);
+  icon: <IconArrowTop />,
+  name: "Go to previous notification",
+  shortcut: "ArrowUp",
+  canApply: () => getIsRouteActive("focus"),
+  handler() {
+    alert("Not supported yet");
   },
 });

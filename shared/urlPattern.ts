@@ -78,5 +78,5 @@ interface UrlPatternOptions {
 
 const urlPatternOptions: UrlPatternOptions = {
   // By default path value can be "a-zA-Z0-9" (would not work with eg auth/<TOKEN>) as token includes "_" and "."
-  segmentValueCharset: `a-zA-Z0-9_\\.`,
+  segmentValueCharset: `a-zA-Z0-9_\\-\\.`,
 };

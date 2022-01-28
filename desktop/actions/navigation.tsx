@@ -1,6 +1,6 @@
 import React from "react";
 
-import { desktopRouter, getIsCurrentRoute } from "@aca/desktop/routes";
+import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { IconMenu } from "@aca/ui/icons";
 
@@ -19,7 +19,7 @@ export const toggleNavigationMenu = defineAction({
 export const goToSettings = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: "Settings",
-  canApply: () => !getIsCurrentRoute("settings"),
+  canApply: () => !getExactIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
     desktopRouter.navigate("settings");
@@ -29,7 +29,7 @@ export const goToSettings = defineAction({
 export const exitSettings = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: "Settings",
-  canApply: () => getIsCurrentRoute("settings"),
+  canApply: () => getExactIsRouteActive("settings"),
   shortcut: ["Esc"],
   handler() {
     desktopRouter.navigate("home");

@@ -3,6 +3,7 @@ import { createRouter } from "react-chicane";
 import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
 import { typedKeys } from "@aca/shared/object";
+import { PathArguments, parseUrlWithPattern } from "@aca/shared/urlPattern";
 
 const routes = {
   home: "/",
@@ -44,6 +45,19 @@ export function getObservedRouter() {
 type Routes = typeof routes;
 type BasePath = string;
 
+export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathArguments<Routes[R]> | null {
+  const router = getObservedRouter();
+  const currentRouteUrl = router.getLocation().url;
+
+  const pattern = routes[route];
+
+  return parseUrlWithPattern(pattern, currentRouteUrl);
+}
+
+export function getIsRouteActive(route: keyof Routes): boolean {
+  return getRouteParamsIfActive(route) !== null;
+}
+
 /**
  * Returns true if given route is currently active.
  *
@@ -51,7 +65,7 @@ type BasePath = string;
  *
  * Note: type signature is copy-pasted from `createURL` types.
  */
-export const getIsCurrentRoute: <
+export const getExactIsRouteActive: <
   RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
 >(
   routeName: RouteName,
@@ -62,7 +76,7 @@ export const getIsCurrentRoute: <
   >
 ) => boolean = (routeName, ...args) => {
   const router = getObservedRouter();
-  routeChangeAtom.reportObserved();
+  router;
   const routeUrl = router.createURL(routeName, ...args);
   const currentRouteUrl = router.getLocation().url;
 
