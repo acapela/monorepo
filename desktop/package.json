@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "ts-node dev.ts",
-    "build:bundle": "ts-node build.ts",
+    "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac zip --universal --dir",
     "build": "yarn build:bundle && yarn build:electron",
     "upload-sourcemaps": "ts-node ./scripts/upload-sourcemaps.ts",
