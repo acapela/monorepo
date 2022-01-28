@@ -17,7 +17,7 @@ const VERSION =
 const SYMBOL_CACHE_FOLDER = ".electron-symbols";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const package = require("../package.json");
-const sentryCli = new SentryCli("../sentry.properties");
+const sentryCli = new SentryCli("./sentry.properties");
 
 async function main() {
   let version = getElectronVersion();
