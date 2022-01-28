@@ -1,6 +1,6 @@
 {
   "name": "@aca/desktop",
-  "version": "0.1.0",
+  "version": "999.0.0-do-not-autouptdate",
   "description": "Acapela makes async work more actionable by aggregating and triaging notifications from multiple tools.",
   "license": "UNLICENSED",
   "author": "Acapela GmbH",
