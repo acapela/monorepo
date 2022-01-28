@@ -25,11 +25,12 @@ const browserViewRefs: Record<
 > = {};
 
 async function registerBrowserViewSubscriber(url: string, id: string) {
+  console.info("registering browser view subscriber for", url);
+
   const { mainWindow } = appState;
   assert(mainWindow, "mainWindow is not defined");
 
   let ref = browserViewRefs[url];
-  console.info("registering browser view subscriber for", url);
   if (ref) {
     if (ref.destroyTimeout !== null) {
       console.info("cancelling browser view destroy timeout for", url);
@@ -39,7 +40,9 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
     ref.subscribers.add(id);
   } else {
     const browserView = new BrowserView();
-    browserView.setBounds(mainWindow.getBounds());
+    mainWindow.addBrowserView(browserView);
+    const mainBounds = mainWindow.getBounds();
+    browserView.setBounds({ ...mainBounds, x: -mainBounds.width });
     ref = browserViewRefs[url] = {
       view: browserView,
       subscribers: new Set([id]),
@@ -53,8 +56,12 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
 }
 
 function unregisterBrowserViewSubscriber(url: string, id: string) {
-  const ref = assertDefined(browserViewRefs[url], `browserViewRef is missing for: ${url}`);
   console.info("unregistering browser view subscriber for", url);
+
+  const { mainWindow } = appState;
+  assert(mainWindow, "mainWindow is not defined");
+
+  const ref = assertDefined(browserViewRefs[url], `browserViewRef is missing for: ${url}`);
   const wasPresent = ref.subscribers.delete(id);
   if (!wasPresent) {
     // eslint-disable-next-line no-console
@@ -63,10 +70,16 @@ function unregisterBrowserViewSubscriber(url: string, id: string) {
     console.info("starting browser view destroy timeout for", url);
     ref.destroyTimeout = setTimeout(() => {
       console.info("destroying browser view for", url);
+
+      const browserView = browserViewRefs[url].view;
+
+      mainWindow.removeBrowserView(browserView);
+
       // As of this writing destroy() is an undocumented method for getting rid of a BrowserView.
       // https://github.com/electron/electron/issues/10096#issuecomment-882837830
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (browserViewRefs[url].view.webContents as any).destroy();
+      (browserView.webContents as any).destroy();
+
       delete browserViewRefs[url];
     }, DESTROY_BROWSER_VIEW_TIMEOUT_MS);
   }
@@ -88,15 +101,20 @@ export function initPreviewHandler() {
     assert(mainWindow, "mainWindow is not defined");
 
     const browserView = await registerBrowserViewSubscriber(url, id);
-    if (!mainWindow.getBrowserViews().includes(browserView)) {
-      mainWindow.setBrowserView(browserView);
-      browserView.webContents.focus();
-    }
+    const isNewlyShown = !mainWindow.getBrowserViews().includes(browserView);
 
     const roundedBounds = mapValues(bounds, (value) => Math.round(value));
     for (const { view } of Object.values(browserViewRefs)) {
       // We'll update bounds for all BrowserViews here to make them the correct size for immediate display
-      view.setBounds(roundedBounds);
+      mainWindow.addBrowserView(view);
+      if (view !== browserView) {
+        view.setBounds({ ...roundedBounds, x: -roundedBounds.width });
+      }
+    }
+    browserView.setBounds(roundedBounds);
+
+    if (isNewlyShown) {
+      browserView.webContents.focus();
     }
 
     return true;
