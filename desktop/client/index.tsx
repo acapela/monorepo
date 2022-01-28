@@ -23,10 +23,12 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
-Sentry.init({
-  dsn: "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771",
-  release: window.electronBridge.version,
-});
+if (!window.electronBridge.isDev) {
+  Sentry.init({
+    dsn: window.electronBridge.sentryDsn,
+    release: window.electronBridge.version,
+  });
+}
 
 const rootElement = document.getElementById("root");
 

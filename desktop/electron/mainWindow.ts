@@ -1,5 +1,6 @@
 import path from "path";
 
+import * as Sentry from "@sentry/electron";
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import log from "electron-log";
@@ -11,6 +12,14 @@ import { appState } from "./appState";
 // Note - do not use relative paths without __dirname
 const DIST_PATH = path.resolve(__dirname, "../client");
 const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
+const sentryDsn = "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771";
+
+if (!IS_DEV) {
+  Sentry.init({
+    dsn: sentryDsn,
+    release: app.getVersion(),
+  });
+}
 
 export function initializeMainWindow() {
   const mainWindow = new BrowserWindow({
@@ -20,7 +29,7 @@ export function initializeMainWindow() {
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
-      additionalArguments: [app.getVersion()],
+      additionalArguments: [sentryDsn, `${IS_DEV}`, app.getVersion()],
     },
     titleBarStyle: "hidden",
     fullscreenable: false,
