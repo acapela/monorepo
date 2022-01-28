@@ -1,7 +1,10 @@
-import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
+import { computed } from "mobx";
 
-export function useUnresolvedNotifications() {
-  const db = useDb();
+import { getDb } from "@aca/desktop/clientdb";
+
+export const unresolvedNotificationsComputed = computed(() => {
+  const db = getDb();
+
   const unresolvedNotifications = db.notification.query({ resolved_at: null }).all;
   return unresolvedNotifications.filter((notification) => notification.inner);
-}
+});

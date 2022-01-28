@@ -12,9 +12,9 @@ interface Props {
 export function ListsTabBar({ activeListId }: Props) {
   return (
     <UIHolder>
-      <ListTabLabel list={inboxList} count={14} isActive={activeListId === "inbox"} />
-      <ListTabLabel list={importantList} count={14} isActive={activeListId === "important"} />
-      <ListTabLabel list={relevantList} count={14} isActive={activeListId === "relevant"} />
+      <ListTabLabel list={inboxList} count={0} isActive={activeListId === "inbox"} />
+      <ListTabLabel list={importantList} count={0} isActive={activeListId === "important"} />
+      <ListTabLabel list={relevantList} count={0} isActive={activeListId === "relevant"} />
     </UIHolder>
   );
 }

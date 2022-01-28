@@ -2,23 +2,24 @@ import { observer } from "mobx-react";
 import React from "react";
 
 import { BrowserViewBridge, PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
-import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
-import { useUnresolvedNotifications } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { getDb } from "@aca/desktop/clientdb";
+import { unresolvedNotificationsComputed } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { desktopRouter } from "@aca/desktop/routes";
 import { Button } from "@aca/ui/buttons/Button";
 
 export const FocusModeView = observer(({ notificationId }: { notificationId: string }) => {
-  const db = useDb();
+  const db = getDb();
   const currentNotification = db.notification.assertFindById(notificationId);
 
-  const unresolvedNotifications = useUnresolvedNotifications();
+  const unresolvedNotifications = unresolvedNotificationsComputed.get();
   const currentIndex = unresolvedNotifications.findIndex((n) => n.id === notificationId);
 
   // We limit the amount of notifications to preload to the previous one and the next 3
   const notificationsToPreload = unresolvedNotifications.slice(Math.max(currentIndex - 1, 0), currentIndex + 3);
 
   return (
-    <div>
+    <AppLayout tray={null} footer={null}>
       {currentIndex !== -1 &&
         notificationsToPreload.map((notification) => (
           <PreloadBrowserView key={notification.id} url={notification.url} />
@@ -43,6 +44,6 @@ export const FocusModeView = observer(({ notificationId }: { notificationId: str
         </Button>
       </div>
       <BrowserViewBridge url={currentNotification.url} />
-    </div>
+    </AppLayout>
   );
 });

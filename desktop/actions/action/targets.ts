@@ -1,5 +1,5 @@
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsConfiguredList } from "@aca/desktop/domains/lists";
-import { Notification } from "@aca/gql";
 
 import { createPredicates } from "./predicates";
 
@@ -13,8 +13,8 @@ import { createPredicates } from "./predicates";
  * GOOD: foo: (item: unknown) => item is Notification
  */
 export const targetPredicates = {
-  notification(input: unknown): input is Notification {
-    return (input as Notification)?.__typename === "notification";
+  notification(input: unknown): input is NotificationEntity {
+    return (input as NotificationEntity)?.__typename === "notification";
   },
   list: getIsConfiguredList,
 };

@@ -1,4 +1,4 @@
-import { createInvokeBridge } from "../base/channels";
+import { createInvokeBridge } from "@aca/desktop/bridge/base/channels";
 
 /*
   The render thread has to load up quite a few things before it is ready to take in

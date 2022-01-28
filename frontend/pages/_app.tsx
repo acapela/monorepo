@@ -17,7 +17,7 @@ import { RequiredSessionProvider } from "@aca/frontend/auth/RequiredSessionProvi
 import { getUserFromRequest } from "@aca/frontend/authentication/request";
 import { ClientDbProvider } from "@aca/frontend/clientdb";
 import { sentryFallbackErrorRenderer } from "@aca/frontend/errors/sentryFallbackErrorRenderer";
-import { global } from "@aca/frontend/styles/global";
+import { globalDesktopStyles } from "@aca/frontend/styles/global";
 import { CurrentTeamProvider } from "@aca/frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "@aca/frontend/utils/pageLayout";
 import { useConst } from "@aca/shared/hooks/useConst";
@@ -50,7 +50,7 @@ function initSentry(appConfig: AppConfig) {
 }
 
 const BuiltInStyles = createGlobalStyle`
-  ${global}
+  ${globalDesktopStyles}
 `;
 
 export default function App({
