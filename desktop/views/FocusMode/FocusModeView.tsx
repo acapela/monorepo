@@ -3,7 +3,7 @@ import React from "react";
 
 import { BrowserViewBridge, PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { getDb } from "@aca/desktop/clientdb";
-import { useUnresolvedNotifications } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { unresolvedNotificationsComputed } from "@aca/desktop/hooks/useUnresolvedNotifications";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { desktopRouter } from "@aca/desktop/routes";
 import { Button } from "@aca/ui/buttons/Button";
@@ -12,7 +12,7 @@ export const FocusModeView = observer(({ notificationId }: { notificationId: str
   const db = getDb();
   const currentNotification = db.notification.assertFindById(notificationId);
 
-  const unresolvedNotifications = useUnresolvedNotifications();
+  const unresolvedNotifications = unresolvedNotificationsComputed.get();
   const currentIndex = unresolvedNotifications.findIndex((n) => n.id === notificationId);
 
   // We limit the amount of notifications to preload to the previous one and the next 3

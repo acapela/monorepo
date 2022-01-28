@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { useUnresolvedNotifications } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { unresolvedNotificationsComputed } from "@aca/desktop/hooks/useUnresolvedNotifications";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { desktopRouter } from "@aca/desktop/routes";
 
@@ -46,7 +46,7 @@ function getNotificationTitle(notification: NotificationEntity): string {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const unresolvedNotifications = useUnresolvedNotifications();
+  const unresolvedNotifications = unresolvedNotificationsComputed.get();
   return (
     <TraySidebarLayout>
       <UITabsBar>
