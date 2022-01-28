@@ -12,6 +12,10 @@ import {
   Notification_Notion_Set_Input,
 } from "@aca/gql";
 
+import { notificationNotionCommentedEntity } from "./commented";
+import { notificationNotionUserInvitedEntity } from "./userInvited";
+import { notificationNotionUserMentionedEntity } from "./userMentioned";
+
 const notificationNotion = gql`
   fragment NotificationNotion on notification_notion {
     id
@@ -30,6 +34,12 @@ type NotificationNotionConstraints = {
   update: Notification_Notion_Set_Input;
   where: Notification_Notion_Bool_Exp;
 };
+
+const innerEntities = [
+  notificationNotionUserMentionedEntity,
+  notificationNotionCommentedEntity,
+  notificationNotionUserInvitedEntity,
+];
 
 export const notificationNotionEntity = defineEntity<NotificationNotionFragment>({
   name: "notification_notion",
@@ -57,6 +67,19 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
       upsertConstraint: "notification_notion_pkey",
     }
   ),
-});
+}).addConnections((notificationNotion, { getEntity }) => ({
+  get inner(): EntityByDefinition<typeof innerEntities[number]> {
+    return (
+      innerEntities
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((entity) => getEntity(entity as any).query({ notification_notion_id: notificationNotion.id }).first)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .find(Boolean) as any
+    );
+  },
+  get type() {
+    return this.inner.__typename;
+  },
+}));
 
 export type NotificationNotionEntity = EntityByDefinition<typeof notificationNotionEntity>;
