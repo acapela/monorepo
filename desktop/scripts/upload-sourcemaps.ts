@@ -7,7 +7,7 @@ const cli = new SentryCli("./sentry.properties");
 
 async function main(): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const version = require("../package.json").version;
+  const version = require("./release-version");
   if (!version) {
     console.error("version is missing in package.json");
     process.exit(1);
