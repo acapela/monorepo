@@ -78,6 +78,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
     );
   },
   get type() {
+    return "notification_notion_user_mentioned";
     return this.inner.__typename;
   },
 }));

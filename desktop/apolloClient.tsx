@@ -1,25 +1,15 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  FieldMergeFunction,
-  HttpLink,
-  InMemoryCache,
-  split as splitLinks,
-} from "@apollo/client";
+import { ApolloClient, FieldMergeFunction, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
-import React, { ReactNode } from "react";
 
 import { createDateParseLink } from "@aca/frontend/src/apollo/dateStringParseLink";
-import { readAppInitialPropByName } from "@aca/frontend/src/utils/next";
 import { TypedTypePolicies } from "@aca/gql";
 import { IS_DEV } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
-import { useConst } from "@aca/shared/hooks/useConst";
 import { Maybe } from "@aca/shared/types";
 import { addToast } from "@aca/ui/toasts/data";
 
@@ -133,7 +123,7 @@ export const getApolloClient = memoize(
       },
       new WebSocketLink({
         // Try to read hasura endpoint from _app initial props if option is not provided.
-        uri: `${websocketEndpoint ?? readAppInitialPropByName("hasuraWebsocketEndpoint") ?? ""}/graphql`,
+        uri: `${websocketEndpoint ?? ""}/graphql`,
         options: {
           reconnect: true,
           lazy: true,
@@ -150,13 +140,4 @@ export const getApolloClient = memoize(
   }
 );
 
-interface ApolloClientProviderProps {
-  children: ReactNode;
-  websocketEndpoint?: string | null;
-}
-
-export const ApolloClientProvider = ({ children, websocketEndpoint }: ApolloClientProviderProps) => {
-  const client = useConst(() => getApolloClient(websocketEndpoint ?? undefined));
-
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
-};
+export const apolloClient = getApolloClient("ws://localhost:3000");

@@ -1,9 +1,9 @@
 import React from "react";
 
-import { appStateStore } from "@aca/desktop/domains/appStateStore";
 import { IconMenu } from "@aca/ui/icons";
 
 import { desktopRouter, getIsCurrentRoute } from "../routes";
+import { uiStore } from "../store/uiStore";
 import { defineAction } from "./action";
 
 export const toggleNavigationMenu = defineAction({
@@ -12,7 +12,7 @@ export const toggleNavigationMenu = defineAction({
   shortcut: ["Meta", "/"],
   icon: <IconMenu />,
   handler() {
-    appStateStore.isSidebarOpened = !appStateStore.isSidebarOpened;
+    uiStore.isSidebarOpened = !uiStore.isSidebarOpened;
   },
 });
 

@@ -1,8 +1,8 @@
 import { gql, useApolloClient } from "@apollo/client";
 import React, { useState } from "react";
 
-import { useAssertCurrentUser } from "@aca/desktop/auth/useCurrentUser";
-import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
+import { getDb } from "@aca/desktop/clientdb";
+import { authStore } from "@aca/desktop/store/authStore";
 import { ChangeCurrentTeamIdMutation, ChangeCurrentTeamIdMutationVariables } from "@aca/gql";
 import { slugify } from "@aca/shared/slugify";
 import { Button } from "@aca/ui/buttons/Button";
@@ -11,8 +11,8 @@ import { TextInput } from "@aca/ui/forms/TextInput";
 export function CreateTeamForm() {
   const [name, setName] = useState("");
   const apollo = useApolloClient();
-  const db = useDb();
-  const currentUser = useAssertCurrentUser();
+  const db = getDb();
+  const currentUser = authStore.user;
 
   return (
     <form

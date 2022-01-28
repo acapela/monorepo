@@ -3,11 +3,10 @@ import React from "react";
 import styled from "styled-components";
 
 import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
-import { useCurrentTeam } from "@aca/desktop/auth/CurrentTeam";
-import { useAssertCurrentUser } from "@aca/desktop/auth/useCurrentUser";
 import { slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
+import { getDb } from "@aca/desktop/clientdb";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
+import { authStore } from "@aca/desktop/store/authStore";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
@@ -16,10 +15,9 @@ import { CreateTeamForm } from "./CreateTeamForm";
 import { InstallSlackButton } from "./InstallSlackButton";
 
 export const SettingsView = observer(function SettingsView() {
-  const db = useDb();
-  const team = useCurrentTeam();
-  const currentUser = useAssertCurrentUser();
-  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == currentUser.id).first;
+  const db = getDb();
+  const { user, team } = authStore;
+  const teamMember = db.teamMember.query((teamMember) => teamMember.user_id == user.id).first;
 
   const isSlackAuthorized = !!slackAuthTokenBridgeValue.get();
 

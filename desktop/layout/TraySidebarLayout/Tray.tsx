@@ -4,13 +4,13 @@ import React from "react";
 import styled from "styled-components";
 
 import { toggleNavigationMenu } from "@aca/desktop/actions/navigation";
-import { appStateStore } from "@aca/desktop/domains/appStateStore";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
 import { Sidebar } from "./Sidebar";
 
 export const ListViewTray = observer(function ListViewTray() {
-  const { isSidebarOpened } = appStateStore;
+  const { isSidebarOpened } = uiStore;
   return (
     <>
       <AnimatePresence>{isSidebarOpened && <Sidebar />}</AnimatePresence>

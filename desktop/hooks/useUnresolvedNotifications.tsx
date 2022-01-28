@@ -1,4 +1,4 @@
-import { useDb } from "@aca/desktop/clientdb/ClientDbProvider";
+import { useDb } from "@aca/desktop/clientdb";
 
 export function useUnresolvedNotifications() {
   const db = useDb();

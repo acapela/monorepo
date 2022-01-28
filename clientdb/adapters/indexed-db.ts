@@ -75,7 +75,6 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
 
               // If this happens, we indeed want to instantly close the connection and reload the page (it usually means user has 'old' tab opened for a long time!)
               db.close();
-              window.location.reload();
             },
             terminated() {
               onTerminated?.();
