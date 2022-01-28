@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import { goToList, goToSettings } from "@aca/desktop/actions/lists";
-import { toggleNavigationMenu } from "@aca/desktop/actions/navigation";
+import { goToList } from "@aca/desktop/actions/lists";
+import { goToSettings, toggleNavigationMenu } from "@aca/desktop/actions/navigation";
 import { inboxList } from "@aca/desktop/domains/lists";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";

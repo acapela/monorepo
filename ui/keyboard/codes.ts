@@ -134,7 +134,7 @@ export type Key =
   | "ScrollLock"
   | "SemiColon"
   | "Equals"
-  | "Comma"
+  | ","
   | "Dash"
   | "Period"
   | "UnderScore"

@@ -1,9 +1,9 @@
 import { BrowserWindow, app, session } from "electron";
 
-import { clearAllData, restartApp, toggleMaximize } from "@aca/desktop/bridge/system";
+import { clearAllData, requestRestartApp, toggleMaximize } from "@aca/desktop/bridge/system";
 
 export function initializeSystemHandlers() {
-  restartApp.handle(async () => {
+  requestRestartApp.handle(async () => {
     app.relaunch();
     app.exit();
   });

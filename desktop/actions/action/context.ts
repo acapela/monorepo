@@ -5,6 +5,8 @@ export function createActionContext(forcedTarget?: unknown) {
   const targetPredicates = createActionTargetPredicates(() => [forcedTarget]);
 
   return {
+    // Not really used, but makes it easier to debug actions
+    forcedTarget,
     ...targetPredicates,
   };
 }
