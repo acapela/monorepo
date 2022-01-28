@@ -29,8 +29,9 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
   assert(mainWindow, "mainWindow is not defined");
 
   let ref = browserViewRefs[url];
+  console.info("registering browser view subscriber for", url);
   if (ref) {
-    if (ref.destroyTimeout) {
+    if (ref.destroyTimeout !== null) {
       console.info("cancelling browser view destroy timeout for", url);
       clearTimeout(ref.destroyTimeout);
       ref.destroyTimeout = null;
@@ -53,6 +54,7 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
 
 function unregisterBrowserViewSubscriber(url: string, id: string) {
   const ref = assertDefined(browserViewRefs[url], `browserViewRef is missing for: ${url}`);
+  console.info("unregistering browser view subscriber for", url);
   const wasPresent = ref.subscribers.delete(id);
   if (!wasPresent) {
     // eslint-disable-next-line no-console
@@ -86,7 +88,10 @@ export function initPreviewHandler() {
     assert(mainWindow, "mainWindow is not defined");
 
     const browserView = await registerBrowserViewSubscriber(url, id);
-    mainWindow.setBrowserView(browserView);
+    if (!mainWindow.getBrowserViews().includes(browserView)) {
+      mainWindow.setBrowserView(browserView);
+      browserView.webContents.focus();
+    }
 
     const roundedBounds = mapValues(bounds, (value) => Math.round(value));
     for (const { view } of Object.values(browserViewRefs)) {
