@@ -1,13 +1,7 @@
-import { useRef } from "react";
-
-type ConstRefValue<T> = null | { value: T };
+import { useState } from "react";
 
 export function useConst<T>(factory: () => T): T {
-  const valueRef = useRef<ConstRefValue<T>>(null);
+  const [value] = useState(factory);
 
-  if (valueRef.current === null) {
-    valueRef.current = { value: factory() };
-  }
-
-  return valueRef.current.value;
+  return value;
 }
