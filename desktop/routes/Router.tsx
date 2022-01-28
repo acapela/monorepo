@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { allRouteNames, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
@@ -10,6 +10,12 @@ import { Redirect } from "./Redirect";
 
 export function Router() {
   const activeRoute = desktopRouter.useRoute(allRouteNames);
+
+  useEffect(() => {
+    if (!activeRoute) {
+      desktopRouter.navigate("list", { listId: "inbox" });
+    }
+  }, [activeRoute]);
 
   if (!activeRoute) {
     return <>"404"</>;
