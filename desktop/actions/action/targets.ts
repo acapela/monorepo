@@ -1,5 +1,5 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { getIsConfiguredList } from "@aca/desktop/domains/lists";
+import { getIsDefinedList } from "@aca/desktop/domains/list/defineList";
 
 import { createPredicates } from "./predicates";
 
@@ -16,7 +16,7 @@ export const targetPredicates = {
   notification(input: unknown): input is NotificationEntity {
     return (input as NotificationEntity)?.__typename === "notification";
   },
-  list: getIsConfiguredList,
+  list: getIsDefinedList,
 };
 
 export function createActionTargetPredicates(targets: () => unknown[]) {

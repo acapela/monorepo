@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { importantList, inboxList, relevantList } from "@aca/desktop/domains/lists";
+import { inboxList } from "@aca/desktop/domains/list/preconfigured";
 
 import { ListTabLabel } from "./ListTabLabel";
 
@@ -13,8 +13,6 @@ export function ListsTabBar({ activeListId }: Props) {
   return (
     <UIHolder>
       <ListTabLabel list={inboxList} count={0} isActive={activeListId === "inbox"} />
-      <ListTabLabel list={importantList} count={0} isActive={activeListId === "important"} />
-      <ListTabLabel list={relevantList} count={0} isActive={activeListId === "relevant"} />
     </UIHolder>
   );
 }

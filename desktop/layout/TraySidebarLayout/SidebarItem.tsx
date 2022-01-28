@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -10,7 +11,7 @@ interface Props {
   target?: unknown;
 }
 
-export function SidebarItem({ action, target }: Props) {
+export const SidebarItem = observer(function SidebarItem({ action, target }: Props) {
   const { name } = resolveActionDataWithTarget(action, target);
   return (
     <ActionTrigger action={action} target={target}>
@@ -19,7 +20,7 @@ export function SidebarItem({ action, target }: Props) {
       </UIHolder>
     </ActionTrigger>
   );
-}
+});
 
 const UIHolder = styled.div`
   padding: 12px 12px 12px 72px;

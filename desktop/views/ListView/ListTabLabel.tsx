@@ -2,12 +2,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
-import { ConfiguredListData } from "@aca/desktop/domains/lists";
+import { DefinedList } from "@aca/desktop/domains/list/defineList";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  list: ConfiguredListData;
+  list: DefinedList;
   count: number;
   isActive: boolean;
 }

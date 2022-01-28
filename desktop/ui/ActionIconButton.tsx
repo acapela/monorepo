@@ -12,11 +12,14 @@ interface Props {
 
 export const ActionIconButton = styledObserver(function ActionIconButton({ action, target }: Props) {
   const context = createActionContext(target);
-  const { icon } = resolveActionData(action, context);
+  const { icon, canApply } = resolveActionData(action, context);
+
+  const isDisabled = !canApply(context);
 
   return (
     <IconButton
       icon={icon}
+      isDisabled={isDisabled}
       onClick={() => {
         runAction(action, context);
       }}

@@ -6,6 +6,8 @@
   "author": "Acapela GmbH",
   "repository": "github:weareacapela/releases",
   "peerDependencies": {
+    "mobx": "*",
+    "mobx-react": "*",
     "react": "*",
     "styled-components": "*"
   },

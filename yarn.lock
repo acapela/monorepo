@@ -113,6 +113,8 @@ __metadata:
     ts-node: ^10.4.0
     url-pattern: ^1.0.3
   peerDependencies:
+    mobx: "*"
+    mobx-react: "*"
     react: "*"
     styled-components: "*"
   languageName: unknown

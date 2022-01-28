@@ -2,6 +2,8 @@ import { createAtom } from "mobx";
 import { createRouter } from "react-chicane";
 import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
+import { assert } from "@aca/shared/assert";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 import { typedKeys } from "@aca/shared/object";
 import { PathArguments, parseUrlWithPattern } from "@aca/shared/urlPattern";
 
@@ -10,12 +12,14 @@ const routes = {
   settings: "/settings",
   notification: "/notifications/:notificationId",
   list: "/list/:listId",
-  focus: "/focus/:notificationId",
+  focus: "/focus/:listId/:notificationId",
 } as const;
 
 export const allRouteNames = typedKeys(routes);
 
 export const desktopRouter = createRouter(routes);
+
+devAssignWindowVariable("router", desktopRouter);
 
 /**
  * We want to be able to check if given route is active:
@@ -52,6 +56,14 @@ export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathAr
   const pattern = routes[route];
 
   return parseUrlWithPattern(pattern, currentRouteUrl);
+}
+
+export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): PathArguments<Routes[R]> {
+  const params = getRouteParamsIfActive(route);
+
+  assert(params, `Asserting params for active route ${route}, but it is not active`);
+
+  return params;
 }
 
 export function getIsRouteActive(route: keyof Routes): boolean {

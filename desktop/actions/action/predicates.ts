@@ -41,28 +41,40 @@ type PredicateFunctionsTypeMap<T> = {
  * p.getTarget("foo") // <- returns Foo type or null
  */
 
-export function createPredicates<P extends PredicatesMap>(predicates: P, targets: () => unknown[]) {
+export function createPredicates<P extends PredicatesMap>(predicates: P, targetsGetter: () => unknown[]) {
   type TargetName = keyof P;
   type TargetsMap = PredicateFunctionsTypeMap<P>;
 
-  function getFirstTarget() {
-    return targets()[0];
+  function isMatching<N extends TargetName>(name: N, item: unknown): item is TargetsMap[N] {
+    return predicates[name](item);
   }
 
-  function hasTarget<N extends TargetName>(name: N): boolean {
-    return predicates[name](getFirstTarget());
-  }
+  function getTarget<N extends TargetName>(name: N, canBeSecondary = false): TargetsMap[N] | null {
+    const targets = targetsGetter();
 
-  function getTarget<N extends TargetName>(name: N): TargetsMap[N] | null {
-    if (hasTarget(name)) {
-      return getFirstTarget() as TargetsMap[N];
+    if (!canBeSecondary) {
+      const [primaryTarget] = targets;
+
+      if (isMatching(name, primaryTarget)) {
+        return primaryTarget;
+      }
+
+      return null;
     }
 
-    return null;
+    return (
+      targets.find((target): target is TargetsMap[N] => {
+        return isMatching(name, target);
+      }) ?? null
+    );
   }
 
-  function assertTarget<N extends TargetName>(name: N): TargetsMap[N] {
-    const target = getTarget(name);
+  function hasTarget<N extends TargetName>(name: N, canBeSecondary = false): boolean {
+    return !!getTarget(name, canBeSecondary);
+  }
+
+  function assertTarget<N extends TargetName>(name: N, canBeSecondary = false): TargetsMap[N] {
+    const target = getTarget(name, canBeSecondary);
 
     assert(target, `Asserted target is not present for name ${name}`);
 
@@ -70,7 +82,7 @@ export function createPredicates<P extends PredicatesMap>(predicates: P, targets
   }
 
   function getTargets<N extends TargetName>(name: N): TargetsMap[N][] {
-    return targets().filter((target) => predicates[name](target)) as TargetsMap[N][];
+    return targetsGetter().filter((target) => isMatching(name, target)) as TargetsMap[N][];
   }
 
   function hasTargets<N extends TargetName>(name: N) {

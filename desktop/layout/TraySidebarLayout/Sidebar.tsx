@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
 import { goToSettings, toggleNavigationMenu } from "@aca/desktop/actions/navigation";
-import { inboxList } from "@aca/desktop/domains/lists";
+import { inboxList } from "@aca/desktop/domains/list/preconfigured";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";

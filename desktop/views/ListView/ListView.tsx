@@ -60,7 +60,7 @@ export const ListView = observer(({ listId }: Props) => {
             {i < 5 && <PreloadBrowserView url={notification.url} />}
             <button
               onClick={() => {
-                desktopRouter.navigate("focus", { notificationId: notification.id });
+                desktopRouter.navigate("focus", { notificationId: notification.id, listId });
               }}
               style={{ display: "block", padding: 5, margin: 10, cursor: "pointer", width: "100%" }}
             >

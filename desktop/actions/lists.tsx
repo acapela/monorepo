@@ -1,5 +1,4 @@
-import { navigateToList } from "@aca/desktop/domains/lists";
-
+import { desktopRouter } from "../routes";
 import { defineAction } from "./action";
 
 export const goToList = defineAction({
@@ -7,6 +6,6 @@ export const goToList = defineAction({
   name: (context) => `${context.assertTarget("list").name}`,
   canApply: (context) => context.hasTargets("list"),
   handler(context) {
-    navigateToList(context.assertTarget("list").id);
+    desktopRouter.navigate("list", { listId: context.assertTarget("list").id });
   },
 });
