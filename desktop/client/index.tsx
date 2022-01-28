@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/electron";
+import * as Sentry from "@sentry/electron/dist/renderer";
 import { MotionConfig } from "framer-motion";
 import jwt from "jsonwebtoken";
 import { SessionProvider } from "next-auth/react";
