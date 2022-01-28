@@ -1,6 +1,7 @@
 import "./globals";
 
-import { app } from "electron";
+import { app, protocol } from "electron";
+import IS_DEV from "electron-is-dev";
 
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
@@ -8,6 +9,8 @@ import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeSingleInstanceLock } from "./singleInstance";
+
+protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
 
 // Has to be done before app ready
 initializeSingleInstanceLock();
