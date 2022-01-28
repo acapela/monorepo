@@ -14,6 +14,7 @@ import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
 import React, { ReactNode } from "react";
 
+import { FRONTEND_URL } from "@aca/desktop/vars";
 import { createDateParseLink } from "@aca/frontend/src/apollo/dateStringParseLink";
 import { readAppInitialPropByName } from "@aca/frontend/src/utils/next";
 import { TypedTypePolicies } from "@aca/gql";
@@ -87,7 +88,7 @@ interface ApolloClientOptions {
 const DEBUG_PRODUCTION_LOCALLY = IS_DEV && false;
 
 function getGraphqlUrl() {
-  const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
+  const rootUrl = FRONTEND_URL;
 
   if (DEBUG_PRODUCTION_LOCALLY) {
     return `https://app.acape.la/graphql`;

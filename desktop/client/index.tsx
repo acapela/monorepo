@@ -11,6 +11,7 @@ import { CurrentTeamProvider } from "@aca/desktop/auth/CurrentTeam";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ClientDbProvider } from "@aca/desktop/clientdb/ClientDbProvider";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { WEBSOCKET_URL } from "@aca/desktop/vars";
 import { LoginView } from "@aca/desktop/views/LoginView";
 import { RootView } from "@aca/desktop/views/RootView";
 import { global } from "@aca/frontend/styles/global";
@@ -55,7 +56,7 @@ render(
     <GlobalDesktopStyles />
     <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
       <BridgeSessionProvider>
-        <ApolloClientProvider websocketEndpoint={"ws://localhost:3000"}>
+        <ApolloClientProvider websocketEndpoint={WEBSOCKET_URL}>
           <AppThemeProvider theme={theme}>
             <CurrentTeamProvider>
               <ClientDbProvider>
