@@ -15,7 +15,8 @@
     "jsonwebtoken": "^8.5.1",
     "pino": "^7.6.2",
     "simple-markdown": "^0.7.3",
-    "unicode-emoji-json": "^0.3.0"
+    "unicode-emoji-json": "^0.3.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.7",
