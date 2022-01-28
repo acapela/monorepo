@@ -2,11 +2,12 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";
 
-export const routeTargets = cachedComputed((): unknown[] => {
+const routeTargets = cachedComputed((): unknown[] => {
   const focusRoute = getRouteParamsIfActive("focus");
 
   if (focusRoute) {
@@ -28,7 +29,7 @@ export const routeTargets = cachedComputed((): unknown[] => {
 export function createActionContext(forcedTarget?: unknown) {
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
-    const targets = [forcedTarget, ...routeTargets()].filter(isNotNullish);
+    const targets = [forcedTarget, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
 
     return targets;
   });

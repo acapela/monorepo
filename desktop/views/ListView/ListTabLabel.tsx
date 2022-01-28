@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -8,21 +9,20 @@ import { theme } from "@aca/ui/theme";
 
 interface Props {
   list: DefinedList;
-  count: number;
-  isActive: boolean;
+  activeListId: string;
 }
 
-export function ListTabLabel({ count, isActive, list }: Props) {
+export const ListTabLabel = observer(function ListTabLabel({ activeListId, list }: Props) {
   return (
     <ActionTrigger action={goToList} target={list}>
       <UIHolder>
         <UILabel>{list.name}</UILabel>
-        <UICount>{count}</UICount>
-        <UIActiveIndicator $isVisible={isActive} />
+        <UICount>{list.getAllNotifications().count}</UICount>
+        <UIActiveIndicator $isVisible={list.id === activeListId} />
       </UIHolder>
     </ActionTrigger>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;

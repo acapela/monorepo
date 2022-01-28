@@ -103,6 +103,31 @@ export function getNextItemInArray<T>(items: T[], activeItem: T) {
   return nextItem;
 }
 
+function getPreviousIndexInArray<T>(items: T[], currentIndex: number) {
+  const previousNaturalIndex = currentIndex - 1;
+
+  if (previousNaturalIndex < 0) {
+    return items.length - 1;
+  }
+
+  return previousNaturalIndex;
+}
+
+/**
+ * This hook allows 'getting next value' of an array with a simple callback.
+ *
+ * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
+ */
+export function getPreviousItemInArray<T>(items: T[], activeItem: T) {
+  const activeItemIndex = items.indexOf(activeItem);
+
+  const previousIndex = getPreviousIndexInArray(items, activeItemIndex);
+
+  const previousItem = items[previousIndex];
+
+  return previousItem;
+}
+
 /*
  * Creates a new array with the given item inserted at the given index into the array
  */

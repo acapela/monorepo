@@ -56,16 +56,23 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       upsertConstraint: "notification_pkey",
     }
   ),
-}).addConnections((notification, { getEntity }) => ({
-  get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
-    return (
-      innerEntities
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .find(Boolean) as any
-    );
-  },
-}));
+}).addConnections((notification, { getEntity }) => {
+  const connections = {
+    get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
+      return (
+        innerEntities
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .find(Boolean) as any
+      );
+    },
+    get kind() {
+      return connections.inner?.__typename ?? null;
+    },
+  };
+
+  return connections;
+});
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;

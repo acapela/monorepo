@@ -8,6 +8,7 @@ export const GlobalDesktopStyles = createGlobalStyle`
 
   body, html, #root {
     min-height: 100vh;
+    max-height: 100vh;
   }
 
   #root {

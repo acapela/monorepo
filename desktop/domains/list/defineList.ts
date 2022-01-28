@@ -41,6 +41,29 @@ export function defineList({ id, name, filter }: DefineListConfig) {
     return getAllNotifications().all[index - 1] ?? null;
   });
 
+  const NOTIFICATIONS_TO_PRELOAD_COUNT = 5;
+
+  const getNotificationsToPreload = cachedComputed((openedNotification?: NotificationEntity) => {
+    const allNotifications = getAllNotifications().all;
+    if (!openedNotification) {
+      return allNotifications.slice(0, NOTIFICATIONS_TO_PRELOAD_COUNT);
+    }
+
+    const notificationIndex = getNotificationIndex(openedNotification);
+
+    if (notificationIndex === null) {
+      return allNotifications.slice(0, NOTIFICATIONS_TO_PRELOAD_COUNT);
+    }
+
+    // We limit the amount of notifications to preload to the previous one and the next 3
+    const notificationsToPreload = allNotifications.slice(
+      Math.max(notificationIndex - 1, 0),
+      notificationIndex + NOTIFICATIONS_TO_PRELOAD_COUNT - 2
+    );
+
+    return notificationsToPreload;
+  });
+
   return {
     kind: "definedList" as const,
     id,
@@ -49,6 +72,7 @@ export function defineList({ id, name, filter }: DefineListConfig) {
     getNotificationIndex,
     getNextNotification,
     getPreviousNotification,
+    getNotificationsToPreload,
   };
 }
 

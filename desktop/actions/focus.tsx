@@ -17,6 +17,21 @@ export const exitFocusMode = defineAction({
   },
 });
 
+export const openFocusMode = defineAction({
+  icon: <IconArrowBottom />,
+  name: "Open focus mode for notification",
+  shortcut: "Enter",
+  canApply: (context) => {
+    return !getIsRouteActive("focus") && context.hasTarget("list", true) && context.hasTarget("notification");
+  },
+  handler(context) {
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+  },
+});
+
 export const goToNextNotification = defineAction({
   icon: <IconArrowBottom />,
   name: "Go to previous notification",

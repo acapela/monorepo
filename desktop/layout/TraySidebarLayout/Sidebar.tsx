@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
-import { goToSettings, toggleNavigationMenu } from "@aca/desktop/actions/navigation";
+import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
 import { inboxList } from "@aca/desktop/domains/list/preconfigured";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
@@ -14,7 +14,7 @@ export function Sidebar() {
   return (
     <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
       <UITopTools>
-        <ActionIconButton action={toggleNavigationMenu} />
+        <ActionIconButton action={closeNavigationMenu} />
       </UITopTools>
       <UIItems>
         <SidebarItem action={goToList} target={inboxList} />

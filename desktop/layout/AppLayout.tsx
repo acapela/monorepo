@@ -29,6 +29,7 @@ const UITray = styled.div`
 const UIMain = styled.div`
   display: flex;
   flex-grow: 1;
+  min-height: 0;
 `;
 
 const UIBody = styled.div`
@@ -44,4 +45,5 @@ const AppLayoutHolder = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-height: 0;
 `;
