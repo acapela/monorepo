@@ -2,6 +2,7 @@ import { BrowserWindow, session } from "electron";
 
 import { figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 
+import { tryInitializeServiceSync } from "../apps";
 import { authWindowDefaultOptions } from "./utils";
 
 export const figmaURL = "https://www.figma.com";
@@ -9,7 +10,7 @@ export const figmaURL = "https://www.figma.com";
 export async function getFigmaAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: figmaURL });
 
-  const sessionCookie = cookies.find((cookie) => cookie.name === "figma.session");
+  const sessionCookie = cookies.find((cookie) => cookie.name === "figma.mst");
 
   if (!sessionCookie) return null;
 
@@ -17,33 +18,30 @@ export async function getFigmaAuthToken() {
 }
 
 export async function loginFigma() {
-  const currentToken = await getFigmaAuthToken();
-  if (currentToken) {
-    figmaAuthTokenBridgeValue.set(currentToken);
-    console.info("Already logged in");
-    return;
-  }
-
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
   window.webContents.loadURL(figmaURL + "/login");
 
-  window.webContents.on("did-navigate-in-page", async () => {
-    const token = await getFigmaAuthToken();
+  return new Promise<void>((resolve) => {
+    window.webContents.on("did-navigate-in-page", async () => {
+      const token = await getFigmaAuthToken();
 
-    if (!token) {
-      return;
-    }
+      if (!token) {
+        return;
+      }
 
-    window.close();
+      window.close();
 
-    figmaAuthTokenBridgeValue.set(token);
+      figmaAuthTokenBridgeValue.set(token);
+      resolve();
+    });
   });
 }
 
 export async function initializeFigmaAuthHandler() {
   loginFigmaBridge.handle(async () => {
     await loginFigma();
+    tryInitializeServiceSync("figma");
   });
 
   getFigmaAuthToken().then((token) => {

@@ -1,4 +1,4 @@
-import { requestRestartApp } from "@aca/desktop/bridge/system";
+import { clearAllData, requestRestartApp } from "@aca/desktop/bridge/system";
 
 import { defineAction } from "./action";
 
@@ -14,6 +14,6 @@ export const restartAndClearElectronData = defineAction({
   name: "Clear all data and restart",
   shortcut: ["Mod", "Shift", "C"],
   handler() {
-    requestRestartApp();
+    clearAllData();
   },
 });
