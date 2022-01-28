@@ -2,11 +2,11 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
-import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { useNullableDb } from "@aca/desktop/clientdb/ClientDbProvider";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
+import { figmaSyncPayload } from "../bridge/apps/figma";
 import { useCurrentUser } from "./auth/useCurrentUser";
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
@@ -17,6 +17,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
   useEffect(() => {
     if (db && user && !isReadyToSync) {
+      console.info("[Service Worker Consolidation] Enable worker sync");
       workerSyncStart(true).then(setReadyToSync);
     }
   }, [db, user, isReadyToSync]);
@@ -27,31 +28,38 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
       return;
     }
 
+    console.info("[Service Worker Consolidation] Enable worker subscription handling");
+
     notionSyncPayload.subscribe((data) => {
       if (!db || !user) {
         console.info("[Service Worker Consolidation] still waiting for client session");
         return;
       }
 
-      const { notification, userMentionedNotification } = data;
-
-      console.info("[Service Worker Consolidation] Syncing Notion Base notifications");
-      for (const n of notification) {
-        const existingNotification = db.notification.findById(n.id);
-        if (!existingNotification) {
-          db.notification.create(n);
-        }
-      }
-
-      console.info("[Service Worker Consolidation] Syncing Notion User Mentioned Notifications");
-      for (const n of userMentionedNotification) {
-        const existingNotification = db.notificationNotionUserMentioned.findByUniqueIndex(
-          "notification_id",
-          n.notification_id
+      console.info(`[Service Worker Consolidation] Syncing ${data.length} Notion notifications`);
+      for (const { notification, notionNotification, type } of data) {
+        const existingNotification = db.notificationNotion.findByUniqueIndex(
+          "notion_original_notification_id",
+          notionNotification.notion_original_notification_id
         );
 
-        if (!existingNotification) {
-          db.notificationNotionUserMentioned.create(n);
+        if (existingNotification) {
+          continue;
+        }
+
+        const createdNotification = db.notification.create(notification);
+
+        const createdNotionNotification = db.notificationNotion.create({
+          ...notionNotification,
+          notification_id: createdNotification.id,
+        });
+
+        if (type === "notification_notion_commented") {
+          db.notificationNotionCommented.create({ notification_notion_id: createdNotionNotification.id });
+        } else if (type === "notification_notion_user_mentioned") {
+          db.notificationNotionUserMentioned.create({ notification_notion_id: createdNotionNotification.id });
+        } else if (type === "notification_notion_user_invited") {
+          db.notificationNotionUserInvited.create({ notification_notion_id: createdNotionNotification.id });
         }
       }
     });

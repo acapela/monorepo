@@ -1,21 +1,21 @@
 import { createChannelBridge } from "@aca/desktop/bridge/base/channels";
-import { Notification, Notification_Notion_Commented, Notification_Notion_User_Mentioned } from "@aca/gql";
+import { Notification, Notification_Notion } from "@aca/gql";
 
-export type NotionNotificationPartial = Omit<Notification, "resolved_at" | "user_id" | "__typename" | "slack_mention">;
-export type NotificationNotionUserMentionedPartial = Omit<
-  Notification_Notion_User_Mentioned,
-  "__typename" | "id" | "notification"
+export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
+export type NotificationNotionPartial = Omit<
+  Notification_Notion,
+  "id" | "notification" | "notification_id" | "__typename"
 >;
 
-export type NotificationNotionCommentedPartial = Omit<
-  Notification_Notion_Commented,
-  "__typename" | "id" | "notification"
->;
+export type NotionNotificationType =
+  | "notification_notion_user_mentioned"
+  | "notification_notion_user_invited"
+  | "notification_notion_commented";
 
 export type NotionWorkerSync = {
-  notification: NotionNotificationPartial;
-  userMentioned?: NotificationNotionUserMentionedPartial;
-  commented?: NotificationNotionCommentedPartial;
+  notification: NotificationPartial;
+  notionNotification: NotificationNotionPartial;
+  type: NotionNotificationType;
 }[];
 
 export const notionSyncPayload = createChannelBridge<NotionWorkerSync>("notion-worker-sync");

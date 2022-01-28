@@ -14,6 +14,9 @@ import {
   notificationSlackMessageEntity,
 } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationNotionEntity } from "./notification/notion/baseNotification";
+import { notificationNotionCommentedEntity } from "./notification/notion/commented";
+import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -32,8 +35,11 @@ export const appClientDbEntities = {
   user: userEntity,
 
   notification: notificationEntity,
+  notificationNotion: notificationNotionEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
+  notificationNotionCommented: notificationNotionCommentedEntity,
+  notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
 };
 

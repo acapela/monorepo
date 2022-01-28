@@ -14,6 +14,8 @@ import {
 } from "@aca/gql";
 
 import { notificationFigmaCommentEntity } from "./figma/comment";
+import { notificationNotionCommentedEntity } from "./notion/commented";
+import { notificationNotionUserInvitedEntity } from "./notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notion/userMentioned";
 import { notificationSlackMessageEntity } from "./slack/message";
 
@@ -39,6 +41,8 @@ type DesktopNotificationConstraints = {
 
 const innerEntities = [
   notificationNotionUserMentionedEntity,
+  notificationNotionCommentedEntity,
+  notificationNotionUserInvitedEntity,
   notificationSlackMessageEntity,
   notificationFigmaCommentEntity,
 ];

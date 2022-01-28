@@ -44,7 +44,15 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   sync: createHasuraSyncSetupFromFragment<NotificationNotionFragment, NotificationNotionConstraints>(
     notificationNotion,
     {
-      insertColumns: ["id", "notification_id", "page_id", "created_at", "updated_at", "page_title"],
+      insertColumns: [
+        "id",
+        "notification_id",
+        "notion_original_notification_id",
+        "page_id",
+        "created_at",
+        "updated_at",
+        "page_title",
+      ],
       updateColumns: ["updated_at", "page_title"],
       upsertConstraint: "notification_notion_pkey",
     }

@@ -24,12 +24,14 @@ function getNotificationTitle(notification: NotificationEntity): string {
       return `${notification.from} in ${innerNotification?.conversation_name}`;
     }
     case "notification_notion_user_mentioned": {
-      return `${notification.from} mentioned you in ${innerNotification?.notion_page_title}`;
+      // return `${notification.from} mentioned you in ${innerNotification?.notion_page_title}`;
+      return "fix me";
     }
     case "notification_figma_comment": {
-      return `${notification.from} ${innerNotification.is_mention ? "mentioned you" : "commented"} in ${
-        innerNotification?.file_name
-      }`;
+      // return `${notification.from} ${innerNotification.is_mention ? "mentioned you" : "commented"} in ${
+      //   innerNotification?.file_name
+      // }`;
+      return "fix me";
     }
     default:
       return "Unhandled notification!!";
