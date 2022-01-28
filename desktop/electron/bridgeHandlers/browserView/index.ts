@@ -26,13 +26,13 @@ const browserViewRefs: Record<
 
 async function registerBrowserViewSubscriber(url: string, id: string) {
   const { mainWindow } = appState;
-  assert(mainWindow, "mainWindow is not defined");
+  assert(mainWindow, "[BrowserView] mainWindow is not defined");
 
   let ref = browserViewRefs[url];
-  console.info("registering browser view subscriber for", url);
+  console.info("[BrowserView] registering browser view subscriber for", url);
   if (ref) {
     if (ref.destroyTimeout !== null) {
-      console.info("cancelling browser view destroy timeout for", url);
+      console.info("[BrowserView] cancelling browser view destroy timeout for", url);
       clearTimeout(ref.destroyTimeout);
       ref.destroyTimeout = null;
     }
@@ -53,16 +53,14 @@ async function registerBrowserViewSubscriber(url: string, id: string) {
 }
 
 function unregisterBrowserViewSubscriber(url: string, id: string) {
-  const ref = assertDefined(browserViewRefs[url], `browserViewRef is missing for: ${url}`);
-  console.info("unregistering browser view subscriber for", url);
+  const ref = assertDefined(browserViewRefs[url], `[BrowserView] browserViewRef is missing for: ${url}`);
+
   const wasPresent = ref.subscribers.delete(id);
   if (!wasPresent) {
     // eslint-disable-next-line no-console
-    console.trace("no subscribers found for url", url, "with id", id);
+    console.trace("[BrowserView] no subscribers found for url", url, "with id", id);
   } else if (ref.subscribers.size == 0 && !ref.destroyTimeout) {
-    console.info("starting browser view destroy timeout for", url);
     ref.destroyTimeout = setTimeout(() => {
-      console.info("destroying browser view for", url);
       // As of this writing destroy() is an undocumented method for getting rid of a BrowserView.
       // https://github.com/electron/electron/issues/10096#issuecomment-882837830
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,7 +83,7 @@ export function initPreviewHandler() {
 
   showBrowserView.handle(async ({ url, id, bounds }) => {
     const { mainWindow } = appState;
-    assert(mainWindow, "mainWindow is not defined");
+    assert(mainWindow, "[BrowserView] mainWindow is not defined");
 
     const browserView = await registerBrowserViewSubscriber(url, id);
     if (!mainWindow.getBrowserViews().includes(browserView)) {
@@ -106,7 +104,7 @@ export function initPreviewHandler() {
     const browserView = browserViewRefs[url]?.view;
     if (browserView) {
       const { mainWindow } = appState;
-      assert(mainWindow, "mainWindow is not defined");
+      assert(mainWindow, "[BrowserView] mainWindow is not defined");
       mainWindow.removeBrowserView(browserView);
     }
 

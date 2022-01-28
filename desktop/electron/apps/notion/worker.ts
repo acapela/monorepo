@@ -19,6 +19,10 @@ let isSyncing = false;
 const stripDashes = (str: string) => str.replaceAll("-", "");
 const notionURL = "https://www.notion.so";
 
+export function isNotionReadyToSync() {
+  return authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
+}
+
 /*
   Pulling logic for notion
   - Pull immediately on app start
@@ -38,12 +42,6 @@ export function startNotionSync(): ServiceSyncController {
   window.hide();
 
   async function runSync() {
-    const isAbleToSync = authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
-
-    if (!isAbleToSync) {
-      console.info("Notion worker capturing aborted: no session yet");
-      return;
-    }
     if (isSyncing) {
       return;
     }
@@ -59,7 +57,7 @@ export function startNotionSync(): ServiceSyncController {
 
       console.info(`[${new Date().toISOString()}] Notion worker capturing complete`);
     } catch (e) {
-      console.info("Error syncing notion", e);
+      console.info("[Notion] Error syncing notion", e);
     } finally {
       isSyncing = false;
     }
@@ -96,14 +94,13 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
   });
 
   if (!cookies) {
-    console.info("[Notion] unable to sync no cookies");
-    throw new Error("unable to sync");
+    throw new Error("[Notion] unable to sync: no cookies");
   }
 
   const spaceId = cookies.find((cookie) => cookie.name == "ajs_group_id")?.value ?? (await fetchCurrentSpace(window));
 
   if (!spaceId) {
-    throw new Error("[Unable to fetch spaceId");
+    throw new Error("[Notion] Unable to fetch spaceId");
   }
 
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
@@ -123,6 +120,11 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
     }),
   });
 
+  if (response.status === 401) {
+    notionAuthTokenBridgeValue.set(null);
+    throw new Error("[Notion] Unauthorized");
+  }
+
   return (await response.json()) as GetNotificationLogResult;
 }
 
@@ -132,8 +134,7 @@ async function fetchCurrentSpace(window: BrowserWindow) {
   });
 
   if (!cookies) {
-    console.info("[Notion] unable to sync no cookies");
-    throw new Error("unable to sync");
+    throw new Error("[Notion] unable to sync no cookies");
   }
 
   const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id");
@@ -151,6 +152,11 @@ async function fetchCurrentSpace(window: BrowserWindow) {
     },
     body: JSON.stringify({}),
   });
+
+  if (response.status === 401) {
+    notionAuthTokenBridgeValue.set(null);
+    throw new Error("[Notion] Unauthorized");
+  }
 
   const getSpacesResult = (await response.json()) as GetSpacesResult;
 

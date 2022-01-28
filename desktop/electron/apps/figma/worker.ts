@@ -29,15 +29,20 @@ function isCommentNotification(payload: FigmaCommentNotification | unknown): pay
   return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
 }
 
+export function isFigmaReadyToSync() {
+  return authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
+}
 export async function startFigmaSync() {
-  const isAbleToSync = authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
-
-  if (!isAbleToSync) {
-    console.info("[Figma] worker capturing aborted: no session yet");
+  let figmaSessionData;
+  console.info("[Figma] Fetching session variables");
+  try {
+    figmaSessionData = await getFigmaSessionData();
+  } catch (e) {
+    console.info("[Figma] Error getting figma session data", e);
+    figmaAuthTokenBridgeValue.set(null);
     return;
   }
-
-  const figmaSessionData = await getFigmaSessionData();
+  console.info("[Figma] Done fetching session variables");
   // First sync happens as the app may be closed over night
   // This sync will get and sync all unread notifications since last app open
   getInitialFigmaSync(figmaSessionData);
@@ -86,21 +91,21 @@ async function getFigmaSessionData(): Promise<FigmaSessionData> {
 }
 
 async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
-  let result: GetFigmaUserNotificationsResponse;
+  console.info(`[Figma] Getting initial notifications`);
 
-  try {
-    const response = await fetch(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
-      method: "GET",
-      headers: {
-        cookie,
-      },
-    });
+  const response = await fetch(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
+    method: "GET",
+    headers: {
+      cookie,
+    },
+  });
 
-    result = await response.json();
-  } catch (e) {
-    console.error(e);
-    return;
+  if (response.status === 401) {
+    figmaAuthTokenBridgeValue.set(null);
+    throw new Error("[Figma] Unauthorized");
   }
+
+  const result: GetFigmaUserNotificationsResponse = await response.json();
 
   const unreadFigmaNotifications = result.meta.feed.filter((notification) => notification.read_at === null);
 
@@ -126,12 +131,12 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
 
     figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
   } catch (e) {
-    console.error(e);
+    console.info(e);
     return;
   }
 
   if (!figmaRealtimeUserToken) {
-    console.error("unable to extract figma real time user token");
+    console.info("[Figma] unable to extract figma real time user token");
     return;
   }
 
@@ -155,7 +160,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
 
     // Subscription to messages related to user, including user notifications
     ws.send(`tok:${figmaRealtimeUserToken}`);
-    console.info("[Figma] opening socket connection open");
+    console.info("[Figma] opening socket connection");
   });
 
   ws.on("message", function message(data) {

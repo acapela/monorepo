@@ -2,6 +2,7 @@ import { BrowserWindow, session } from "electron";
 
 import { loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
+import { tryInitializeServiceSync } from "../apps";
 import { authWindowDefaultOptions } from "./utils";
 
 const notionURL = "https://www.notion.so";
@@ -18,33 +19,30 @@ export async function getNotionAuthToken() {
 }
 
 export async function loginNotion() {
-  const currentToken = await getNotionAuthToken();
-  if (currentToken) {
-    notionAuthTokenBridgeValue.set(currentToken);
-    console.info("Already logged in");
-    return;
-  }
-
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
   window.webContents.loadURL(notionURL + "/login");
 
-  window.webContents.on("did-navigate-in-page", async () => {
-    const token = await getNotionAuthToken();
+  return new Promise<void>((resolve) => {
+    window.webContents.on("did-navigate-in-page", async () => {
+      const token = await getNotionAuthToken();
 
-    if (!token) {
-      return;
-    }
+      if (!token) {
+        return;
+      }
 
-    window.close();
+      window.close();
 
-    notionAuthTokenBridgeValue.set(token);
+      notionAuthTokenBridgeValue.set(token);
+      resolve();
+    });
   });
 }
 
 export function initializeNotionAuthHandler() {
   loginNotionBridge.handle(async () => {
     await loginNotion();
+    tryInitializeServiceSync("notion");
   });
 
   getNotionAuthToken().then((token) => {

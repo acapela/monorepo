@@ -50,7 +50,6 @@ __metadata:
     ts-node: ^10.4.0
     ts-node-dev: ^1.1.8
     tsc-watch: ^4.6.0
-    uuid: ^8.3.2
   peerDependencies:
     axios: "*"
     date-fns: "*"
@@ -243,6 +242,7 @@ __metadata:
     ts-jest: ^27.1.2
     ts-node-dev: ^1.1.8
     unicode-emoji-json: ^0.3.0
+    uuid: ^8.3.2
   peerDependencies:
     date-fns: "*"
   languageName: unknown
