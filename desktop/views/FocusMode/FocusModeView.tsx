@@ -16,11 +16,12 @@ export const FocusModeView = observer(({ notificationId }: { notificationId: str
 
   // We limit the amount of notifications to preload to the previous one and the next 3
   const notificationsToPreload = unresolvedNotifications.slice(Math.max(currentIndex - 1, 0), currentIndex + 3);
+
   return (
     <div>
       {currentIndex !== -1 &&
         notificationsToPreload.map((notification) => (
-          <PreloadBrowserView key={notification.id} url={currentNotification.url} />
+          <PreloadBrowserView key={notification.id} url={notification.url} />
         ))}
       <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
         <Button
