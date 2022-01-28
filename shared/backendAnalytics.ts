@@ -1,9 +1,9 @@
+import Sentry from "@sentry/node";
 import Analytics from "analytics-node";
 
 import { User } from "@aca/db";
 import { UserFragment } from "@aca/gql";
 
-import { Sentry } from "./sentry";
 import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User | UserFragment): Partial<AnalyticsUserProfile> {

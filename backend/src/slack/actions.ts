@@ -1,5 +1,6 @@
 import assert from "assert";
 
+import Sentry from "@sentry/node";
 import { App, BlockButtonAction } from "@slack/bolt";
 import { Blocks, Modal } from "slack-block-builder";
 
@@ -8,7 +9,6 @@ import { assertDefined } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { RequestType } from "@aca/shared/requests";
 import { routes } from "@aca/shared/routes";
-import { Sentry } from "@aca/shared/sentry";
 
 import { slackClient } from "./app";
 import { createLiveMessage } from "./create-request-modal/createRequestInSlack";
