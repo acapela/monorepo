@@ -1,12 +1,12 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
+import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { Router } from "@aca/desktop/routes/Router";
+import { authStore } from "@aca/desktop/store/authStore";
 
-import { allActions } from "../actions/all";
-import { getNullableDb } from "../clientdb";
-import { authStore } from "../store/authStore";
 import { LoginView } from "./LoginView";
 
 export const RootView = observer(function RootView() {

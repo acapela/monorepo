@@ -2,12 +2,11 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
+import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { authStore } from "@aca/desktop/store/authStore";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
-
-import { figmaSyncPayload } from "../bridge/apps/figma";
-import { authStore } from "../store/authStore";
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = getNullableDb();

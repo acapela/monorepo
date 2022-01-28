@@ -1,9 +1,9 @@
 import React from "react";
 
+import { desktopRouter, getIsCurrentRoute } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { IconMenu } from "@aca/ui/icons";
 
-import { desktopRouter, getIsCurrentRoute } from "../routes";
-import { uiStore } from "../store/uiStore";
 import { defineAction } from "./action";
 
 export const toggleNavigationMenu = defineAction({
