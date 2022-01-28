@@ -1,5 +1,5 @@
 import { LayoutGroup, motion } from "framer-motion";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { useId } from "@aca/shared/id";

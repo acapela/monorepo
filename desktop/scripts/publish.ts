@@ -2,10 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 
 const pkgJson = JSON.parse(readFileSync("./package.json", "utf-8"));
 
-let releaseVersion = process.env.RELEASE_VERSION || "";
-if (releaseVersion.startsWith("refs/tags/")) releaseVersion = releaseVersion.replace(/^refs\/tags\//, "");
-if (releaseVersion.startsWith("v")) releaseVersion = releaseVersion.slice(1);
-pkgJson.version = releaseVersion;
+pkgJson.version = require("./release-version");
 // this is required to show the correct app name (instead of @aca/desktop)
 pkgJson.name = "Acapela";
 

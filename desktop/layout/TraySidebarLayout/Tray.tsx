@@ -1,26 +1,26 @@
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { observer } from "mobx-react";
+import React from "react";
 import styled from "styled-components";
 
-import { IconButton } from "@aca/ui/buttons/IconButton";
-import { IconMenu } from "@aca/ui/icons";
+import { toggleNavigationMenu } from "@aca/desktop/actions/navigation";
+import { appStateStore } from "@aca/desktop/domains/appStateStore";
+import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
 import { Sidebar } from "./Sidebar";
 
-export function ListViewTray() {
-  const [isSidebarOpened, setIsSidebarOpened] = useState(false);
+export const ListViewTray = observer(function ListViewTray() {
+  const { isSidebarOpened } = appStateStore;
   return (
     <>
-      <AnimatePresence>
-        {isSidebarOpened && <Sidebar onCloseRequest={() => setIsSidebarOpened(false)} />}
-      </AnimatePresence>
+      <AnimatePresence>{isSidebarOpened && <Sidebar />}</AnimatePresence>
 
       <UIHolder>
-        <IconButton icon={<IconMenu />} onClick={() => setIsSidebarOpened(true)} />
+        <ActionIconButton action={toggleNavigationMenu} />
       </UIHolder>
     </>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/electron";
 import { MotionConfig } from "framer-motion";
 import jwt from "jsonwebtoken";
 import { SessionProvider } from "next-auth/react";
@@ -22,6 +23,8 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
+Sentry.init({ dsn: "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771" });
+
 const rootElement = document.getElementById("root");
 
 const BuiltInStyles = createGlobalStyle`
@@ -30,11 +33,12 @@ const BuiltInStyles = createGlobalStyle`
 
 function BridgeSessionProvider({ children }: { children: React.ReactNode }) {
   const session = authTokenBridgeValue.use();
+
   if (!session) {
     return <LoginView />;
   }
   return (
-    <SessionProvider baseUrl={"http://localhost:3000"} session={jwt.decode(session) as never}>
+    <SessionProvider session={jwt.decode(session) as never} refetchInterval={0} refetchOnWindowFocus={false}>
       {children}
     </SessionProvider>
   );

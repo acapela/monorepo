@@ -1,22 +1,26 @@
 import React from "react";
 import styled from "styled-components";
 
+import { goToList } from "@aca/desktop/actions/lists";
+import { ConfiguredListData } from "@aca/desktop/domains/lists";
+import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  label: string;
+  list: ConfiguredListData;
   count: number;
   isActive: boolean;
-  onClick: () => void;
 }
 
-export function ListTabLabel({ label, count, isActive, onClick }: Props) {
+export function ListTabLabel({ count, isActive, list }: Props) {
   return (
-    <UIHolder onClick={onClick}>
-      <UILabel>{label}</UILabel>
-      <UICount>{count}</UICount>
-      <UIActiveIndicator $isVisible={isActive} />
-    </UIHolder>
+    <ActionTrigger action={goToList} target={list}>
+      <UIHolder>
+        <UILabel>{list.name}</UILabel>
+        <UICount>{count}</UICount>
+        <UIActiveIndicator $isVisible={isActive} />
+      </UIHolder>
+    </ActionTrigger>
   );
 }
 

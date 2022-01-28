@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { toggleMaximize } from "../bridge/system";
+import { toggleMaximize } from "@aca/desktop/bridge/system";
 
 export function SystemBar() {
   return (

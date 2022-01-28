@@ -1,20 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import { clearAllData, restartApp } from "@aca/desktop/bridge/system";
+import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
 import { useCurrentUser } from "@aca/desktop/client/auth/useCurrentUser";
 import { Router } from "@aca/desktop/routes/Router";
-import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
+import { allActions } from "../actions/all";
 import { LoginView } from "./LoginView";
 
 export function RootView() {
-  useShortcut(["Mod", "Shift", "D"], () => {
-    restartApp();
-  });
-
-  useShortcut(["Mod", "Shift", "C"], () => {
-    clearAllData();
-  });
+  useEffect(() => {
+    attachActionsShortcutsHandler(allActions);
+  }, []);
 
   const user = useCurrentUser();
 

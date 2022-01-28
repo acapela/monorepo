@@ -15,6 +15,10 @@ import { notificationNotionCommentedEntity } from "./notification/notion/comment
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
+import { teamEntity } from "./team";
+import { teamMemberEntity } from "./teamMember";
+import { teamMemberSlackEntity } from "./teamMemberSlack";
+import { teamSlackInstallationEntity } from "./teamSlackInstallation";
 import { userEntity } from "./user";
 
 interface CreateNewClientDbInput {
@@ -31,6 +35,12 @@ devAssignWindowVariable("reloadClientDb", () => {
 
 export const appClientDbEntities = {
   user: userEntity,
+
+  team: teamEntity,
+  teamSlackInstallation: teamSlackInstallationEntity,
+  teamMember: teamMemberEntity,
+  teamMemberSlack: teamMemberSlackEntity,
+
   notification: notificationEntity,
   notificationNotion: notificationNotionEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
