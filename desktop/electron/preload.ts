@@ -4,10 +4,15 @@ import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 
 const version = process.argv.pop();
-Sentry.init({
-  dsn: "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771",
-  release: version,
-});
+const isDev = process.argv.pop() === "true";
+const sentryDsn = process.argv.pop();
+
+if (!isDev) {
+  Sentry.init({
+    dsn: sentryDsn,
+    release: version,
+  });
+}
 
 /**
  * This is what is published from electron api to browser.
@@ -50,6 +55,8 @@ const publishedApi = {
     ipcRenderer.send(channel, data);
   },
   version,
+  isDev,
+  sentryDsn,
 };
 
 export type ElectronPublishedAPI = typeof publishedApi;
