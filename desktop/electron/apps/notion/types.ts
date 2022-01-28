@@ -1,3 +1,47 @@
+export type GetSpacesResult = Record<
+  string,
+  {
+    __version__: number;
+    notion_user: Record<string, NotionUserPayload>;
+    user_root: unknown;
+    user_settings: unknown;
+    space_view: unknown;
+    space: Record<string, SpacePayload>;
+    block: unknown;
+    collection: unknown;
+  }
+>;
+
+interface SpacePayload {
+  role: Role;
+  value: {
+    id: string;
+    version: number;
+    name: string;
+    permissions: UserPermission[];
+    email_domains: string[];
+    icon: string;
+    beta_enabled: boolean;
+    pages: string[];
+    created_time: number;
+    last_edited_time: number;
+    created_by_table: string; //e.g. notion_user
+    created_by_id: string;
+    last_edited_by_table: string; //e.g. notion_user
+    last_edited_by_id: string;
+    plan_type: string; //e.g. team
+    invite_link_enabled: boolean;
+  };
+}
+
+type Role = "read_and_write" | "editor" | "read";
+
+export interface UserPermission {
+  role: Role;
+  type: "user_permission";
+  user_id: string;
+}
+
 export interface GetNotificationLogResult {
   notificationIds: string[]; // uuids
   recordMap: {
@@ -12,7 +56,7 @@ export interface GetNotificationLogResult {
 
 type NotificationPayloadType = "user-mentioned" | "commented" | "user-invited";
 
-interface NotificationPayload {
+export interface NotificationPayload {
   role: string;
   value: {
     id: string;

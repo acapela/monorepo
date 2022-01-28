@@ -1,5 +1,5 @@
 table:
-  name: notification_notion_user_mentioned
+  name: notification_notion_user_invited
   schema: public
 object_relationships:
 - name: notification_notion

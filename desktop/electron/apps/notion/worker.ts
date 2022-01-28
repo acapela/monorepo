@@ -2,15 +2,12 @@ import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
-import {
-  NotificationNotionUserMentionedPartial,
-  NotionNotificationPartial,
-  notionSyncPayload,
-} from "@aca/desktop/bridge/apps/notion";
+import { NotionNotificationType, NotionWorkerSync, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
+import { assert } from "@aca/shared/assert";
 
-import { ActivityPayload, BlockPayload, GetNotificationLogResult } from "./types";
+import { ActivityPayload, BlockPayload, GetNotificationLogResult, GetSpacesResult, NotificationPayload } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
@@ -18,6 +15,9 @@ const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
 let currentInterval: NodeJS.Timer | null = null;
 let timeOfLastSync: Date | null = null;
 let isSyncing = false;
+
+const stripDashes = (str: string) => str.replaceAll("-", "");
+const notionURL = "https://www.notion.so";
 
 /*
   Pulling logic for notion
@@ -51,7 +51,6 @@ export function startNotionSync(): ServiceSyncController {
     try {
       isSyncing = true;
       console.info(`[${new Date().toISOString()}] Notion worker capturing started`);
-
       const notificationLog = await fetchNotionNotificationLog(window);
 
       notionSyncPayload.send(extractNotifications(notificationLog));
@@ -60,7 +59,7 @@ export function startNotionSync(): ServiceSyncController {
 
       console.info(`[${new Date().toISOString()}] Notion worker capturing complete`);
     } catch (e) {
-      console.error("Error syncing notion", e);
+      console.info("Error syncing notion", e);
     } finally {
       isSyncing = false;
     }
@@ -91,16 +90,20 @@ export function startNotionSync(): ServiceSyncController {
   };
 }
 
-const notionURL = "https://www.notion.so";
-
 async function fetchNotionNotificationLog(window: BrowserWindow) {
   const cookies = await window.webContents.session.cookies.get({
     url: notionURL,
   });
 
   if (!cookies) {
-    console.error("unable to sync");
+    console.info("[Notion] unable to sync no cookies");
     throw new Error("unable to sync");
+  }
+
+  const spaceId = cookies.find((cookie) => cookie.name == "ajs_group_id")?.value ?? (await fetchCurrentSpace(window));
+
+  if (!spaceId) {
+    throw new Error("[Unable to fetch spaceId");
   }
 
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
@@ -114,7 +117,7 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
     },
     body: JSON.stringify({
       // Notion uses the space id for tracking within their help-desk
-      spaceId: cookies.find((cookie) => cookie.name == "ajs_group_id")?.value,
+      spaceId,
       size: 20,
       type: "mentions",
     }),
@@ -123,39 +126,67 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
   return (await response.json()) as GetNotificationLogResult;
 }
 
-function extractNotifications(payload: GetNotificationLogResult): {
-  notification: NotionNotificationPartial[];
-  userMentionedNotification: NotificationNotionUserMentionedPartial[];
-} {
+async function fetchCurrentSpace(window: BrowserWindow) {
+  const cookies = await window.webContents.session.cookies.get({
+    url: notionURL,
+  });
+
+  if (!cookies) {
+    console.info("[Notion] unable to sync no cookies");
+    throw new Error("unable to sync");
+  }
+
+  const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id");
+
+  assert(notionUserId, "[Notion] Unable to extract notion user id from cookie");
+
+  const response = await fetch(notionURL + "/api/v3/getSpaces", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      cookie: cookies
+        .filter((cookie) => cookie.domain?.includes("notion.so"))
+        .map((cookie) => cookie.name + "=" + cookie.value)
+        .join("; "),
+    },
+    body: JSON.stringify({}),
+  });
+
+  const getSpacesResult = (await response.json()) as GetSpacesResult;
+
+  const currentUserSpaces = getSpacesResult[notionUserId.value].space;
+
+  const spacedWithWriteAccess = Object.values(currentUserSpaces).filter(
+    (space) => space.role === "editor" || space.role === "read_and_write"
+  );
+  const firstFoundSpaceId = spacedWithWriteAccess.map((space) => space.value.id)[0];
+
+  return firstFoundSpaceId;
+}
+
+function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
-  const stripDashes = (str: string) => str.replaceAll("-", "");
-
-  const result = {
-    notification: [],
-    userMentionedNotification: [],
-  } as ReturnType<typeof extractNotifications>;
+  const result: NotionWorkerSync = [];
 
   for (const id of notificationIds) {
     const notification = recordMap.notification[id].value;
 
-    if (notification.type !== "user-mentioned") {
+    const urlAndType = getUrlAndType(notification, recordMap);
+    if (!urlAndType) {
       continue;
     }
 
+    const { url, type } = urlAndType;
+
     const pageId = notification.navigable_block_id;
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
-    const url =
-      notionURL +
-      "/" +
-      stripDashes(pageId) +
-      (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
 
     const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
 
-    const pageBlock = (payload.recordMap.block[pageId] as BlockPayload<"page">).value;
+    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
       console.error("[Notion Worker] Block is not page type");
@@ -163,21 +194,72 @@ function extractNotifications(payload: GetNotificationLogResult): {
     }
 
     const updated_at = created_at;
-    result.notification.push({
-      id,
-      url,
-      created_at,
-      updated_at,
-      from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
-    });
-    result.userMentionedNotification.push({
-      notification_id: id,
-      created_at,
-      updated_at,
-      notion_page_id: pageId,
-      notion_page_title: pageBlock.properties.title[0][0],
+    result.push({
+      notification: {
+        url,
+        created_at,
+        updated_at,
+        from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
+      },
+      type,
+      notionNotification: {
+        notion_original_notification_id: id,
+        page_id: pageId,
+        page_title: pageBlock.properties.title[0][0],
+      },
     });
   }
 
   return result;
+}
+
+function getUrlAndType(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+): { type: NotionNotificationType; url: string } | undefined {
+  const pageId = notification.navigable_block_id;
+
+  if (notification.type === "user-mentioned") {
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
+    const url =
+      notionURL +
+      "/" +
+      stripDashes(pageId) +
+      (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
+
+    return {
+      type: "notification_notion_user_mentioned",
+      url,
+    };
+  }
+
+  if (notification.type === "commented") {
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
+    const discussion = recordMap.discussion[activity.discussion_id].value;
+
+    const parentDiscussionBlock = discussion.parent_id;
+    const url =
+      notionURL +
+      "/" +
+      stripDashes(pageId) +
+      "?d=" +
+      `${stripDashes(discussion.id)}` +
+      `#${stripDashes(parentDiscussionBlock)}`;
+
+    return {
+      type: "notification_notion_commented",
+      url,
+    };
+  }
+
+  if (notification.type === "user-invited") {
+    const url = notionURL + "/" + stripDashes(pageId);
+
+    return {
+      type: "notification_notion_user_invited",
+      url,
+    };
+  }
+
+  return;
 }

@@ -8,12 +8,13 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
-import {
-  notificationEntity,
-  notificationNotionUserMentionedEntity,
-  notificationSlackMessageEntity,
-} from "./notification";
+import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationNotionEntity } from "./notification/notion/baseNotification";
+import { notificationNotionCommentedEntity } from "./notification/notion/commented";
+import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
+import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
+import { notificationSlackMessageEntity } from "./notification/slack/message";
 import { teamEntity } from "./team";
 import { teamMemberEntity } from "./teamMember";
 import { teamMemberSlackEntity } from "./teamMemberSlack";
@@ -41,8 +42,11 @@ export const appClientDbEntities = {
   teamMemberSlack: teamMemberSlackEntity,
 
   notification: notificationEntity,
+  notificationNotion: notificationNotionEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
+  notificationNotionCommented: notificationNotionCommentedEntity,
+  notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
 };
 
