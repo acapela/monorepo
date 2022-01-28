@@ -1,6 +1,6 @@
 import path from "path";
 
-import { BrowserWindow } from "electron";
+import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
@@ -20,9 +20,9 @@ export function initializeMainWindow() {
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
+      additionalArguments: [app.getVersion()],
     },
     titleBarStyle: "hidden",
-
     fullscreenable: false,
   });
 
