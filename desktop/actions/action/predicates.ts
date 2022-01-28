@@ -64,7 +64,7 @@ export function createPredicates<P extends PredicatesMap>(predicates: P, targets
   function assertTarget<N extends TargetName>(name: N): TargetsMap[N] {
     const target = getTarget(name);
 
-    assert(target, "nope");
+    assert(target, `Asserted target is not present for name ${name}`);
 
     return target;
   }

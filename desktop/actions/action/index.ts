@@ -1,6 +1,7 @@
+import { runInAction } from "mobx";
 import { ReactNode } from "react";
 
-import { getUUID } from "@aca/shared/uuid";
+import { getUUID, isUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 import { ActionContext, createActionContext } from "./context";
@@ -53,12 +54,34 @@ export function defineAction(input: ActionCreateInput): ActionData {
   };
 }
 
+export function getIsAction(input: unknown): input is ActionData {
+  if (!input) return false;
+
+  const typedInput = input as ActionData;
+
+  return isUUID(typedInput.id) && typeof typedInput.name === "string" && typeof typedInput.canApply === "function";
+}
+
 export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
   if (!action.canApply(context)) {
     return;
   }
 
-  action.handler(context);
+  try {
+    // Let's always run actions as mobx-actions so mobx will not complain
+    runInAction(() => {
+      action.handler(context);
+    });
+  } catch (error) {
+    /**
+     * In case action throws an error, provide every detail we have.
+     *
+     * It might be very handy as actions are running outside of 'react' and errors can be caused by react
+     * eg. 'toggle sidebar' > sidebar renders > sidebar component throws > as a result the very action handler throws as render happens in sync way after the action
+     */
+    console.error(`Error occured when running action. Logging action, context and error below`, action, context);
+    console.error(error);
+  }
 }
 
 /**

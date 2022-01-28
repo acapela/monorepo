@@ -38,6 +38,14 @@ export function resolveShortcutsDefinition(shortcut: ShortcutDefinition): Shortc
   return convertMaybeArrayToArray(shortcut);
 }
 
+export function getIsShortcutDefinitionMatchingEvent(shortcut: ShortcutDefinition, event: KeyboardEvent) {
+  const keys = resolveShortcutsDefinition(shortcut);
+  const hotkeyDescription = getShortcutDescription(keys);
+  const hotkeyObject = parseHotkey(hotkeyDescription, { byKey: true });
+
+  return compareHotkey(hotkeyObject, event);
+}
+
 /**
  * If any handler return true, we don't want any other handler to be able to be called.
  *
