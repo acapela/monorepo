@@ -1,11 +1,16 @@
+// TODO: add ".svg" types for CI to not complain
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { styledObserver } from "@aca/shared/component";
 
+//@ts-ignore
 import figma from "./figma.svg";
+//@ts-ignore
 import notion from "./notion.svg";
+//@ts-ignore
 import slack from "./slack.svg";
 
 interface Props {
