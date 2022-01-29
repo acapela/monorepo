@@ -15,8 +15,7 @@ async function main(): Promise<void> {
   }
   console.info(`creating new sentry release: ${version}`);
   await cli.execute(["releases", "new", version], true);
-  await cli.execute(["releases", "files", version, "upload-sourcemaps", "./dist"], true);
-  //"--url-prefix", "/app"
+  await cli.execute(["releases", "files", version, "upload-sourcemaps", "./dist", "--url-prefix", "app:///dist"], true);
   await cli.execute(["releases", "finalize", version], true);
   console.info("removing source maps...");
   const sourceMaps = await glob.promise("./dist/**/*.map");
