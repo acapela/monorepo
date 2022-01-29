@@ -7,6 +7,7 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/authStore";
 
+import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
 
 export const RootView = observer(function RootView() {
@@ -17,12 +18,16 @@ export const RootView = observer(function RootView() {
 
   const user = authStore.nullableUser;
 
+  if (!authStore.isReady) {
+    return <LoadingScreen />;
+  }
+
   if (!user) {
     return <LoginView />;
   }
 
   if (!db) {
-    return <>Clientdb loading</>;
+    return <LoadingScreen />;
   }
 
   return <Router />;

@@ -4,6 +4,7 @@ import { ActionData, resolveActionData, runAction } from "@aca/desktop/actions/a
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { styledObserver } from "@aca/shared/component";
 import { IconButton } from "@aca/ui/buttons/IconButton";
+import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 
 interface Props {
   action: ActionData;
@@ -12,7 +13,7 @@ interface Props {
 
 export const ActionIconButton = styledObserver(function ActionIconButton({ action, target }: Props) {
   const context = createActionContext(target);
-  const { icon, canApply } = resolveActionData(action, context);
+  const { icon, canApply, shortcut } = resolveActionData(action, context);
 
   const isDisabled = !canApply(context);
 
@@ -20,6 +21,7 @@ export const ActionIconButton = styledObserver(function ActionIconButton({ actio
     <IconButton
       icon={icon}
       isDisabled={isDisabled}
+      tooltip={shortcut ? describeShortcut(shortcut) : undefined}
       onClick={() => {
         runAction(action, context);
       }}
