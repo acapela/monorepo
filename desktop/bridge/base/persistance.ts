@@ -28,6 +28,8 @@ export function createElectronPersistedValue<T>(valueKey: string, getDefault: ()
     requestGetPersistedValue(valueKey).then((value) => {
       if (value !== null) {
         localChannel.publish(value as T);
+      } else {
+        isReady.set(true);
       }
     });
   }, 1);
