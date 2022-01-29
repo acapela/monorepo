@@ -9,9 +9,14 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 interface Props {
   action: ActionData;
   target?: unknown;
+  hideShortcutTooltip?: boolean;
 }
 
-export const ActionIconButton = styledObserver(function ActionIconButton({ action, target }: Props) {
+export const ActionIconButton = styledObserver(function ActionIconButton({
+  action,
+  target,
+  hideShortcutTooltip,
+}: Props) {
   const context = createActionContext(target);
   const { icon, canApply, shortcut } = resolveActionData(action, context);
 
@@ -21,7 +26,7 @@ export const ActionIconButton = styledObserver(function ActionIconButton({ actio
     <IconButton
       icon={icon}
       isDisabled={isDisabled}
-      tooltip={shortcut && !isDisabled ? describeShortcut(shortcut) : undefined}
+      tooltip={!hideShortcutTooltip && shortcut && !isDisabled ? describeShortcut(shortcut) : undefined}
       onClick={() => {
         runAction(action, context);
       }}

@@ -11,8 +11,8 @@ export const FocusModeTray = observer(function ListViewTray() {
       <UIHolder>
         <ActionIconButton action={exitFocusMode} />
         <UILimiter />
-        <ActionIconButton action={goToPreviousNotification} />
-        <ActionIconButton action={goToNextNotification} />
+        <ActionIconButton action={goToPreviousNotification} hideShortcutTooltip />
+        <ActionIconButton action={goToNextNotification} hideShortcutTooltip />
       </UIHolder>
     </>
   );
