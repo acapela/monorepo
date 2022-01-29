@@ -1,5 +1,6 @@
 import { pick } from "lodash";
 import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
 
 import {
   hideBrowserView,
@@ -50,5 +51,10 @@ export function BrowserViewBridge({ url }: BrowserViewProps) {
     };
   }, [url, id]);
 
-  return <div ref={rootRef} style={{ minHeight: 600, width: "100%" }} />;
+  return <UIHolder ref={rootRef} />;
 }
+
+const UIHolder = styled.div`
+  width: 100%;
+  flex-grow: 1;
+`;

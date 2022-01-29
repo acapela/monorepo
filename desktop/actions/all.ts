@@ -3,13 +3,20 @@ import { AnyStarImport, convertStarImportsToList } from "@aca/shared/imports";
 import { ActionData, getIsAction } from "./action";
 import * as authActions from "./auth";
 import * as devActions from "./dev";
+import * as focusActions from "./focus";
 import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
 
 /**
  * Convert all '* as' imports into list of actions
  */
-export const allActions = composeActionsFromImports(authActions, listsActions, navigationActions, devActions);
+export const allActions = composeActionsFromImports(
+  authActions,
+  listsActions,
+  navigationActions,
+  devActions,
+  focusActions
+);
 
 /**
  * To make it easy to have up-to-date list of all actions, here are small helpers that can convert

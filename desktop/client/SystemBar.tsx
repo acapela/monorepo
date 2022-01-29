@@ -19,4 +19,6 @@ const UIBar = styled.div`
   left: 0;
   right: 0;
   height: 24px;
+  -webkit-app-region: drag;
+  z-index: 2;
 `;

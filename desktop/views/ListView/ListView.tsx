@@ -3,75 +3,47 @@ import React from "react";
 import styled from "styled-components";
 
 import { PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { unresolvedNotificationsComputed } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
-import { desktopRouter } from "@aca/desktop/routes";
 
 import { ListsTabBar } from "./ListsTabBar";
+import { NotificationRow } from "./NotificationRow";
 
 interface Props {
   listId: string;
 }
 
-function getNotificationTitle(notification: NotificationEntity): string {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const innerNotification = notification.inner!;
-  const type = innerNotification.__typename;
-
-  switch (type) {
-    case "notification_slack_message": {
-      return `${notification.from} in ${innerNotification?.conversation_name}`;
-    }
-    case "notification_notion": {
-      switch (innerNotification.type) {
-        case "notification_notion_commented":
-          return `${notification.from} left a comment in ${innerNotification?.page_title}`;
-        case "notification_notion_user_invited":
-          return `${notification.from} invited you to ${innerNotification?.page_title}`;
-        case "notification_notion_user_mentioned":
-          return `${notification.from} mentioned you to ${innerNotification?.page_title}`;
-        default:
-          return "New Notion notification";
-      }
-    }
-    case "notification_figma_comment": {
-      return `${notification.from} ${innerNotification.is_mention ? "mentioned you" : "commented"} in ${
-        innerNotification?.file_name
-      }`;
-    }
-    default:
-      return "Unhandled notification!!";
-  }
-}
-
 export const ListView = observer(({ listId }: Props) => {
-  const unresolvedNotifications = unresolvedNotificationsComputed.get();
+  const list = getPredefinedListById(listId);
   return (
     <TraySidebarLayout>
       <UITabsBar>
         <ListsTabBar activeListId={listId} />
       </UITabsBar>
-      Active list {listId}
-      {unresolvedNotifications.map((notification, i) => {
-        return (
-          <React.Fragment key={notification.id}>
-            {/*  We only preload the first 5 notifications' web-views to limit resource usage */}
-            {i < 5 && <PreloadBrowserView url={notification.url} />}
-            <button
-              onClick={() => {
-                desktopRouter.navigate("focus", { notificationId: notification.id });
-              }}
-              style={{ display: "block", padding: 5, margin: 10, cursor: "pointer", width: "100%" }}
-            >
-              {getNotificationTitle(notification)}
-            </button>
-          </React.Fragment>
-        );
-      })}
+      {!list && <>Unknown list</>}
+      {list && (
+        <>
+          {list.getNotificationsToPreload().map((notificationToPreload) => {
+            return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+          })}
+          <UINotifications>
+            {list.getAllNotifications().all.map((notification) => {
+              return <NotificationRow list={list} key={notification.id} notification={notification} />;
+            })}
+          </UINotifications>
+        </>
+      )}
     </TraySidebarLayout>
   );
 });
+
+const UINotifications = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+`;
 
 const UITabsBar = styled.div`
   padding-top: 2px;

@@ -6,6 +6,7 @@ import { desktopRouter } from "@aca/desktop/routes";
  * Store holding global state of the UI
  */
 export const uiStore = makeAutoObservable({
+  focusedTarget: null as unknown,
   isSidebarOpened: false,
 });
 

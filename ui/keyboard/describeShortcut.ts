@@ -15,6 +15,7 @@ type KeyNiceVersion = string | Partial<Record<KeyboardPlatform, string>>;
 const shortcutKeyNiceVersionMap: Partial<Record<Key, KeyNiceVersion>> = {
   Mod: { mac: "⌘", windows: "CTRL" },
   Alt: { mac: "⌥", windows: "ALT" },
+  Meta: { mac: "⌘", windows: "CTRL" },
   Enter: "↩︎",
   Shift: "⇧",
   Control: "CTRL",

@@ -31,7 +31,7 @@ export function Router() {
     case "list":
       return <ListView listId={activeRoute.params.listId} />;
     case "focus":
-      return <FocusModeView notificationId={activeRoute.params.notificationId} />;
+      return <FocusModeView notificationId={activeRoute.params.notificationId} listId={activeRoute.params.listId} />;
   }
 
   return <>"404"</>;

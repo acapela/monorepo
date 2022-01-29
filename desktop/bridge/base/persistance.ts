@@ -17,8 +17,11 @@ export function createElectronPersistedValue<T>(valueKey: string, getDefault: ()
 
   const observableValue = observable.box<T>(getDefault());
 
+  const isReady = observable.box(false);
+
   localChannel.subscribe((value) => {
     observableValue.set(value);
+    isReady.set(true);
   });
 
   setTimeout(() => {
@@ -49,6 +52,9 @@ export function createElectronPersistedValue<T>(valueKey: string, getDefault: ()
   }
 
   return {
+    get isReady() {
+      return isReady.get();
+    },
     get,
     set,
     use,

@@ -1,30 +1,81 @@
-import { navigateToList } from "@aca/desktop/domains/lists";
+import React from "react";
 
+import { IconArrowBottom, IconArrowLeft, IconArrowTop } from "@aca/ui/icons";
+
+import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 
 export const exitFocusMode = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
+  name: "Exit focus mode",
+  icon: <IconArrowLeft />,
+  shortcut: "Esc",
+  canApply: () => getIsRouteActive("focus"),
+  handler() {
+    const { listId } = assertGetActiveRouteParams("focus");
+
+    desktopRouter.navigate("list", { listId });
+  },
+});
+
+export const openFocusMode = defineAction({
+  icon: <IconArrowBottom />,
+  name: "Open focus mode for notification",
+  shortcut: "Enter",
+  canApply: (context) => {
+    return !getIsRouteActive("focus") && context.hasTarget("list", true) && context.hasTarget("notification");
+  },
   handler(context) {
-    navigateToList(context.assertTarget("list").id);
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
   },
 });
 
 export const goToNextNotification = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
+  icon: <IconArrowBottom />,
+  name: "Go to previous notification",
+  shortcut: "ArrowDown",
+  canApply: (context) => {
+    if (!getIsRouteActive("focus")) return false;
+
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    return !!list.getNextNotification(notification);
+  },
   handler(context) {
-    navigateToList(context.assertTarget("list").id);
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    const nextNotification = list.getNextNotification(notification);
+
+    if (!nextNotification) return;
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
   },
 });
 
 export const goToPreviousNotification = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
-  canApply: (context) => context.hasTargets("list"),
+  icon: <IconArrowTop />,
+  name: "Go to previous notification",
+  shortcut: "ArrowUp",
+  canApply: (context) => {
+    if (!getIsRouteActive("focus")) return false;
+
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    return !!list.getPreviousNotification(notification);
+  },
   handler(context) {
-    navigateToList(context.assertTarget("list").id);
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    const previousNotification = list.getPreviousNotification(notification);
+
+    if (!previousNotification) return;
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: previousNotification.id });
   },
 });

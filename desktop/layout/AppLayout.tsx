@@ -29,10 +29,13 @@ const UITray = styled.div`
 const UIMain = styled.div`
   display: flex;
   flex-grow: 1;
+  min-height: 0;
 `;
 
 const UIBody = styled.div`
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UIFooter = styled.div``;
@@ -41,4 +44,6 @@ const AppLayoutHolder = styled.div`
   padding-top: 48px;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 `;

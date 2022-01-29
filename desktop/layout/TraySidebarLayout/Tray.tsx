@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { toggleNavigationMenu } from "@aca/desktop/actions/navigation";
+import { openNavigationMenu } from "@aca/desktop/actions/navigation";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
@@ -16,7 +16,7 @@ export const ListViewTray = observer(function ListViewTray() {
       <AnimatePresence>{isSidebarOpened && <Sidebar />}</AnimatePresence>
 
       <UIHolder>
-        <ActionIconButton action={toggleNavigationMenu} />
+        <ActionIconButton action={openNavigationMenu} />
       </UIHolder>
     </>
   );

@@ -37,6 +37,10 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   throw error;
 }
 
+export function unsafeAssertType<T>(input: unknown): asserts input is T {
+  //
+}
+
 export async function assertGetAsync<T>(promise: Promise<T | Nullish>, messageOrError: MessageOrError): Promise<T> {
   try {
     const result = await promise;

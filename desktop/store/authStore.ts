@@ -13,6 +13,9 @@ import { watchUserTeamId } from "./currentTeam";
  */
 
 export const authStore = makeAutoObservable({
+  get isReady() {
+    return authTokenBridgeValue.isReady;
+  },
   get nullableUser() {
     const rawToken = authTokenBridgeValue.get();
 

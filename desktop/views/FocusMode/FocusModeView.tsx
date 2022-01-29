@@ -1,49 +1,55 @@
 import { observer } from "mobx-react";
 import React from "react";
+import styled from "styled-components";
 
 import { BrowserViewBridge, PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { getDb } from "@aca/desktop/clientdb";
-import { unresolvedNotificationsComputed } from "@aca/desktop/hooks/useUnresolvedNotifications";
+import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
-import { desktopRouter } from "@aca/desktop/routes";
-import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
-export const FocusModeView = observer(({ notificationId }: { notificationId: string }) => {
+import { FocusModeTray } from "./Tray";
+
+interface Props {
+  notificationId: string;
+  listId: string;
+}
+
+export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
   const currentNotification = db.notification.assertFindById(notificationId);
 
-  const unresolvedNotifications = unresolvedNotificationsComputed.get();
-  const currentIndex = unresolvedNotifications.findIndex((n) => n.id === notificationId);
-
-  // We limit the amount of notifications to preload to the previous one and the next 3
-  const notificationsToPreload = unresolvedNotifications.slice(Math.max(currentIndex - 1, 0), currentIndex + 3);
+  const list = getPredefinedListById(listId);
 
   return (
-    <AppLayout tray={null} footer={null}>
-      {currentIndex !== -1 &&
-        notificationsToPreload.map((notification) => (
-          <PreloadBrowserView key={notification.id} url={notification.url} />
-        ))}
-      <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
-        <Button
-          disabled={currentIndex <= 0}
-          onClick={() =>
-            desktopRouter.navigate("focus", { notificationId: unresolvedNotifications[currentIndex - 1].id })
-          }
-        >
-          Previous
-        </Button>
-        <Button onClick={() => desktopRouter.navigate("list", { listId: "inbox" })}>Back to List</Button>
-        <Button
-          disabled={currentIndex == -1 || currentIndex >= unresolvedNotifications.length - 1}
-          onClick={() =>
-            desktopRouter.navigate("focus", { notificationId: unresolvedNotifications[currentIndex + 1].id })
-          }
-        >
-          Next
-        </Button>
-      </div>
+    <AppLayout tray={<FocusModeTray />} footer={null}>
+      {list?.getNotificationsToPreload(currentNotification).map((notificationToPreload) => {
+        return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+      })}
+
+      <UIHeader>
+        <NotificationAppIcon notification={currentNotification} />
+        <UITitle>{getNotificationTitle(currentNotification)}</UITitle>
+      </UIHeader>
+
       <BrowserViewBridge url={currentNotification.url} />
     </AppLayout>
   );
 });
+
+const UITitle = styled.div`
+  ${theme.typo.secondaryTitle.semibold};
+`;
+
+const UIHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+
+  ${NotificationAppIcon} {
+    ${theme.typo.secondaryTitle}
+  }
+`;

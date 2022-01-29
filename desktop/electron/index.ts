@@ -6,6 +6,7 @@ import IS_DEV from "electron-is-dev";
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
+import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeSingleInstanceLock } from "./singleInstance";
@@ -27,6 +28,8 @@ function initializeApp() {
 
   console.info(`Initialize main window`);
   initializeServiceSync();
+
+  initializeGlobalShortcuts();
 }
 
 app.on("ready", initializeApp);

@@ -43,7 +43,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
       className={className}
       onClick={onClick}
       kind={kind}
-      isDisabled={isDisabled}
+      $isDisabled={isDisabled}
       disabled={isDisabled}
       iconSizeRatio={iconSizeRatio}
       {...props}
@@ -57,7 +57,7 @@ const ICON_SIZE = 20;
 
 export const UIButton = styled.button<{
   kind: ButtonKind;
-  isDisabled: boolean;
+  $isDisabled: boolean;
   iconSizeRatio: number;
 }>`
   display: flex;
@@ -79,7 +79,14 @@ export const UIButton = styled.button<{
   }
 
   ${(props) =>
-    !props.isDisabled &&
+    props.$isDisabled &&
+    css`
+      opacity: 0.25;
+      pointer-events: none;
+    `}
+
+  ${(props) =>
+    !props.$isDisabled &&
     css`
       cursor: pointer;
     `};

@@ -4,11 +4,15 @@ import styled from "styled-components";
 import { ActionData, runAction } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { styledObserver } from "@aca/shared/component";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   action: ActionData;
   target?: unknown;
   children: ReactNode;
+  className?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 /**
@@ -16,11 +20,21 @@ interface Props {
  *
  * Useful for rendering action buttons that have custom UI (nor Button or IconButton, etc.)
  */
-export const ActionTrigger = styledObserver(function ActionTrigger({ action, target, children }: Props) {
+export const ActionTrigger = styledObserver<Props>(function ActionTrigger({
+  action,
+  target,
+  children,
+  className,
+  onMouseEnter,
+  onMouseLeave,
+}: Props) {
   const context = createActionContext(target);
 
   return (
     <UIHolder
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={className}
       onClick={() => {
         runAction(action, context);
       }}
@@ -30,4 +44,6 @@ export const ActionTrigger = styledObserver(function ActionTrigger({ action, tar
   );
 })``;
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  ${theme.common.clickable};
+`;
