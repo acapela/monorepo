@@ -82,6 +82,7 @@ export const UIButton = styled.button<{
     props.$isDisabled &&
     css`
       opacity: 0.25;
+      pointer-events: none;
     `}
 
   ${(props) =>
