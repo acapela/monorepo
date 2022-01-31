@@ -10,7 +10,9 @@ import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
+import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
+import { mobxTicks } from "@aca/shared/mobxTime";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -21,6 +23,8 @@ interface Props {
 export const NotificationRow = styledObserver(({ notification, list }: Props) => {
   const isFocused = uiStore.focusedTarget === notification;
   const elementRef = useRef<HTMLDivElement>(null);
+
+  mobxTicks.minute.reportObserved();
 
   useEffect(() => {
     if (!isFocused) return;
@@ -55,6 +59,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
         <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>
   );
@@ -74,5 +79,10 @@ const UIHolder = styled.div<{ $isFocused: boolean }>`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.semibold}
+  ${theme.typo.content.semibold};
+  flex-grow: 1;
+`;
+
+const UIDate = styled.div`
+  opacity: 0.6;
 `;

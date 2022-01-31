@@ -43,6 +43,7 @@ const UINotifications = styled.div`
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 15px;
 `;
 
 const UITabsBar = styled.div`
