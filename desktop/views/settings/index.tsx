@@ -1,13 +1,16 @@
+import { toJS } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
+import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { authStore } from "@aca/desktop/store/authStore";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
@@ -28,7 +31,10 @@ export const SettingsView = observer(function SettingsView() {
         {!team && <CreateTeamForm />}
 
         <ActionButton action={connectGoogle} />
-        <ActionButton action={connectNotion} />
+        <HStack alignItems="center" gap={10}>
+          <ActionButton action={connectNotion} />
+          <NotionSpaceSelector />
+        </HStack>
         <ActionButton action={connectSlack} />
         <ActionButton action={connectFigma} />
 
@@ -43,6 +49,36 @@ export const SettingsView = observer(function SettingsView() {
         <UIVersionInfo>v{window.electronBridge.version}</UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
+  );
+});
+
+const NotionSpaceSelector = observer(function NotionSpaceSelector() {
+  const savedSpaces = notionSelectedSpaceValue.use();
+
+  if (savedSpaces?.selected?.length === 0) {
+    return <></>;
+  }
+
+  const { selected, allSpaces } = toJS(savedSpaces);
+
+  const selectedItem = allSpaces.filter((space) => selected.includes(space.id))[0];
+
+  function handleItemSelected(space: NotionSpace) {
+    notionSelectedSpaceValue.set({
+      selected: [space.id],
+      allSpaces,
+    });
+  }
+
+  return (
+    <SingleOptionDropdown<NotionSpace>
+      items={allSpaces}
+      keyGetter={(space) => space.id}
+      labelGetter={(space) => space.name}
+      selectedItem={selectedItem}
+      onChange={handleItemSelected}
+      placeholder="Selected Notion Space"
+    />
   );
 });
 
