@@ -1,3 +1,5 @@
+import "@aca/desktop/lib/vars"; // import for side effects
+
 import "./globals";
 
 import { app, protocol } from "electron";

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import { Parcel } from "@parcel/core";
+import dotenv from "dotenv";
 
 const ELECTRON_DIR = path.resolve(__dirname, "electron");
 const CLIENT_DIR = path.resolve(__dirname, "client");
@@ -13,8 +14,38 @@ declare global {
     export interface ProcessEnv {
       // It is possible to narrow down types of some env variables here.
       ELECTRON_CONTEXT: "client" | "electron";
+      FRONTEND_URL: string;
     }
   }
+}
+
+export type BuildEnvironment = "development" | "staging" | "production";
+function loadDotenv() {
+  return new Map<BuildEnvironment, Object>(
+    ["development", "staging", "production"].map(
+      (e) => [e, dotenv.parse(fs.readFileSync(`./.env.${e}`))] as [BuildEnvironment, dotenv.DotenvParseOutput]
+    )
+  );
+}
+const loadedEnv = loadDotenv();
+
+const generatedJs = path.resolve(__dirname, "lib", "vars", "generated.js");
+
+function generateVarFile(env: BuildEnvironment) {
+  const content = `// DO NOT EDIT! THIS FILE IS GENERATED DURING THE BUILD PROCESS
+module.exports = ${JSON.stringify(getEnv(env))};`;
+  fs.writeFileSync(generatedJs, content);
+}
+
+function getEnv(env: BuildEnvironment, isClient = false) {
+  return {
+    ...loadedEnv.get(env),
+    ELECTRON_CONTEXT: isClient ? "client" : "electron",
+  } as NodeJS.ProcessEnv;
+}
+
+function isDev(env: BuildEnvironment): boolean {
+  return env === "development";
 }
 
 /**
@@ -24,33 +55,38 @@ declare global {
  */
 
 // Electron code bundler
-export function createElectronBundler(isProd: boolean): Parcel {
+export function createElectronBundler(env: BuildEnvironment): Parcel {
+  generateVarFile(env);
   return new Parcel({
     // point into entry of electron code
     entries: [path.resolve(ELECTRON_DIR, "index.ts"), path.resolve(ELECTRON_DIR, "preload.ts")],
     defaultConfig: "@parcel/config-default",
-    mode: isProd ? "production" : "development",
+    mode: isDev(env) ? "development" : "production",
     targets: {
       default: {
         distDir: path.resolve(__dirname, "dist/electron"),
         // It is never loaded remotely - we can disable all sort of optimizations of the bundle
         optimize: false,
         context: "electron-main",
-        includeNodeModules: isProd || ["@aca/shared", "@aca/ui", "@aca/config", "@aca/db", "@aca/gql", "@aca/desktop"],
+        includeNodeModules: !isDev(env) || [
+          "@aca/shared",
+          "@aca/ui",
+          "@aca/config",
+          "@aca/db",
+          "@aca/gql",
+          "@aca/desktop",
+        ],
       },
     },
-    env: {
-      ELECTRON_CONTEXT: "electron",
-    } as NodeJS.ProcessEnv,
   });
 }
 
-export function createClientBundler(isProd: boolean): Parcel {
+export function createClientBundler(env: BuildEnvironment): Parcel {
   const distDir = path.resolve(__dirname, "dist/client");
   return new Parcel({
     entries: path.resolve(CLIENT_DIR, "index.html"),
     defaultConfig: "@parcel/config-default",
-    mode: isProd ? "production" : "development",
+    mode: isDev(env) ? "development" : "production",
     defaultTargetOptions: {
       distDir,
     },
@@ -65,19 +101,17 @@ export function createClientBundler(isProd: boolean): Parcel {
         optimize: true,
       },
     },
-    env: {
-      ELECTRON_CONTEXT: "client",
-    } as NodeJS.ProcessEnv,
-    ...(isProd
-      ? {}
-      : {
+    env: getEnv(env, true),
+    ...(isDev(env)
+      ? {
           serveOptions: {
             port: 3005,
           },
           hmrOptions: {
             port: 3005,
           },
-        }),
+        }
+      : {}),
   });
 }
 

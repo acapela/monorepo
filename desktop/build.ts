@@ -2,7 +2,7 @@ import path from "path";
 
 import { Parcel } from "@parcel/core";
 
-import { createClientBundler, createElectronBundler, removeDirectory } from "./parcel";
+import { BuildEnvironment, createClientBundler, createElectronBundler, removeDirectory } from "./parcel";
 
 async function build(name: string, bundler: Parcel) {
   console.info(`[${name}] starting build... 👷‍️🏗 `);
@@ -19,8 +19,13 @@ async function start() {
   // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
   removeDirectory(path.resolve(__dirname, "dist"));
 
+  let env = "staging" as BuildEnvironment;
+  if (process.argv.pop() === "production") {
+    env = "production";
+  }
+  console.info(`environment: ${env}`);
   // Start client and electron bundler
-  await Promise.all([build("client", createClientBundler(true)), build("electron", createElectronBundler(true))]);
+  await Promise.all([build("client", createClientBundler(env)), build("electron", createElectronBundler(env))]);
 }
 
 start();
