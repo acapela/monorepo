@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/electron";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 import WebSocket from "ws";
@@ -39,6 +40,7 @@ export async function startFigmaSync() {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
     console.info("[Figma] Error getting figma session data", e);
+    Sentry.captureException(e);
     figmaAuthTokenBridgeValue.set(null);
     return;
   }
@@ -101,6 +103,7 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   });
 
   if (response.status === 401) {
+    Sentry.captureException(new Error("[Figma] unauthorized, 401"));
     figmaAuthTokenBridgeValue.set(null);
     throw new Error("[Figma] Unauthorized");
   }
@@ -131,12 +134,14 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
 
     figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
   } catch (e) {
+    Sentry.captureException(e);
     console.info(e);
     return;
   }
 
   if (!figmaRealtimeUserToken) {
     console.info("[Figma] unable to extract figma real time user token");
+    Sentry.captureException("[Figma] unable to extract figma real time user token");
     return;
   }
 
@@ -189,7 +194,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
     transformAndSyncFigmaNotifications([userNotificationMessage], figmaUserId);
   });
 
-  ws.on("error", (e) => console.info("[Figma] error", e));
+  ws.on("error", (e) => Sentry.captureException(e));
 }
 
 function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNotification[], figmaUserId: string) {
