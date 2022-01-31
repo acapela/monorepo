@@ -25,6 +25,7 @@ import { removePrefix } from "@aca/shared/text/substring";
  * function, transpile it ts>js and paste into dev-tools console
  */
 
+// We'll assign temp variables in window of given view/window - let's keep track of it.
 let uniqueWindowNameCounter = 0;
 
 export async function evaluateFunctionInWebContents<R>(web: WebContents, callback: () => R) {
