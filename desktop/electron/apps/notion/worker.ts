@@ -3,7 +3,12 @@ import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
-import { NotionNotificationType, NotionWorkerSync, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
+import {
+  NotionNotificationType,
+  NotionWorkerSync,
+  notionSelectedSpaceValue,
+  notionSyncPayload,
+} from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { assert } from "@aca/shared/assert";
@@ -99,7 +104,7 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
     throw new Error("[Notion] unable to sync: no cookies");
   }
 
-  const spaceId = cookies.find((cookie) => cookie.name == "ajs_group_id")?.value ?? (await fetchCurrentSpace(window));
+  const spaceId = await fetchCurrentSpace(window);
 
   if (!spaceId) {
     throw new Error("[Notion] Unable to fetch spaceId");
@@ -164,16 +169,22 @@ async function fetchCurrentSpace(window: BrowserWindow) {
 
   const currentUserSpaces = getSpacesResult[notionUserId.value].space;
 
-  const spacedWithWriteAccess = Object.values(currentUserSpaces).filter(
-    (space) => space.role === "editor" || space.role === "read_and_write"
-  );
-  const firstFoundSpaceId = spacedWithWriteAccess.map((space) => space.value.id)[0];
+  const allSpaces = Object.values(currentUserSpaces).map((space) => ({ id: space.value.id, name: space.value.name }));
 
-  if (!firstFoundSpaceId) {
-    throw new Error("[Notion] Unable to find space with write access");
+  if (allSpaces.length === 0) {
+    throw new Error("[Notion] Unable to find any spaces in account");
   }
 
-  return firstFoundSpaceId;
+  const savedSpaces = notionSelectedSpaceValue.get();
+
+  const selected = savedSpaces?.selected?.length > 0 ? savedSpaces.selected : [allSpaces[0].id];
+
+  notionSelectedSpaceValue.set({
+    selected,
+    allSpaces,
+  });
+
+  return selected[0];
 }
 
 function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
