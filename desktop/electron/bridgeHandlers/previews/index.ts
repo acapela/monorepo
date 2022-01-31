@@ -1,7 +1,12 @@
 import { BrowserView, BrowserWindow } from "electron";
 import { isEqual } from "lodash";
 
-import { requestAttachPreview, requestPreviewPreload, updatePreviewPosition } from "@aca/desktop/bridge/preview";
+import {
+  previewEventsBridge,
+  requestAttachPreview,
+  requestPreviewPreload,
+  updatePreviewPosition,
+} from "@aca/desktop/bridge/preview";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
@@ -9,6 +14,7 @@ import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { getUUID } from "@aca/shared/uuid";
 
+import { listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { loadURLWithFilters } from "./siteFilters";
 
 const DESTROY_BROWSER_VIEW_TIMEOUT_MS = 5000;
@@ -61,6 +67,10 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
       if (input.type === "keyDown" && input.key === "Escape" && isEqual(input.modifiers, ["meta"])) {
         window.webContents.focus();
       }
+    });
+
+    listenToWebContentsFocus(browserView.webContents, (isFocused) => {
+      previewEventsBridge.send({ url, type: isFocused ? "focus" : "blur" });
     });
 
     log("Initializing preview for url", url);
