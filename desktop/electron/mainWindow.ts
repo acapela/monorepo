@@ -41,7 +41,7 @@ export function initializeMainWindow() {
     minWidth: 900,
     minHeight: 680,
     titleBarStyle: "hidden",
-    fullscreenable: false,
+    fullscreenable: true,
   });
 
   // mainWindow.webContents.openDevTools();
