@@ -97,6 +97,7 @@ __metadata:
     "@sentry/electron": ^2.5.4
     "@types/electron-json-storage": ^4.5.0
     "@types/node-cleanup": ^2.1.2
+    dotenv: ^15.0.0
     electron: 16.0.6
     electron-builder: ^22.14.5
     electron-download: ^4.1.1
@@ -10876,6 +10877,13 @@ __metadata:
   version: 10.0.0
   resolution: "dotenv@npm:10.0.0"
   checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "dotenv@npm:15.0.0"
+  checksum: be5d852b2ad1708780e7038481c0687ce4bb9edf354d439872511e966a5f28c083f296e1d1c182256d695bfdd67e320382eb3b0f2e9d83efa3615cd1757257ab
   languageName: node
   linkType: hard
 
