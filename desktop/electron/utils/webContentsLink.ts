@@ -25,14 +25,14 @@ import { removePrefix } from "@aca/shared/text/substring";
  * function, transpile it ts>js and paste into dev-tools console
  */
 
-let callbackCounter = 0;
+let uniqueWindowNameCounter = 0;
 
 export async function evaluateFunctionInWebContents<R>(web: WebContents, callback: () => R) {
   // Get source of given function
   const functionDefinitionCode = callback.toString();
 
   // We'll assign it to temp window variable - let's remember this temp name
-  const TEMP_FUNCTION_NAME = `__evaluate__callback${callbackCounter++}`;
+  const TEMP_FUNCTION_NAME = `__evaluate__callback${uniqueWindowNameCounter++}`;
 
   const codeToExecute = [
     // Assign it to temp variable
@@ -72,8 +72,8 @@ type Cleanup = () => void;
 export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callback: () => Cleanup) {
   const functionDefinitionCode = callback.toString();
 
-  const TEMP_FUNCTION_NAME = `__evaluate__callback${callbackCounter++}`;
-  const TEMP_CLEANUP_NAME = `__evaluate__callback_cleanup${callbackCounter++}`;
+  const TEMP_FUNCTION_NAME = `__evaluate__callback${uniqueWindowNameCounter++}`;
+  const TEMP_CLEANUP_NAME = `__evaluate__callback_cleanup${uniqueWindowNameCounter++}`;
 
   const codeToExecute = [
     `window.${TEMP_FUNCTION_NAME} = ${functionDefinitionCode}`,
