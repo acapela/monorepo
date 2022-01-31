@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/focus";
-import { PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { DefinedList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
+import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
@@ -50,7 +50,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
       {isFocused &&
         list.getNotificationsToPreload(notification).map((notificationToPreload) => {
-          return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+          return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
         })}
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
