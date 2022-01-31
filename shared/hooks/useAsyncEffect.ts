@@ -24,7 +24,7 @@ type AsyncEffect = (input: AsyncEffectInput) => Promise<Cleanup | void>;
  *
  * // Fetching api
  * const [response, setResponse] = useState(null);
- * useAsyncEffect(async (getIsCancelled) => {
+ * useAsyncEffect(async ({ getIsCancelled }) => {
  *   const apiResponse = await api.fetch(apiParams);
  *
  *   // At this point it is possible that our component is no longer mounted so setting state would result in warning

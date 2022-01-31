@@ -35,6 +35,11 @@ computed_fields:
       name: has_user_account
       schema: public
   name: has_account
+- definition:
+    function:
+      name: has_slack_installation
+      schema: public
+  name: has_slack_installation
 select_permissions:
 - permission:
     columns:
@@ -47,6 +52,7 @@ select_permissions:
     - updated_at
     computed_fields:
     - has_account
+    - has_slack_installation
     filter:
       _or:
       - team_memberships:

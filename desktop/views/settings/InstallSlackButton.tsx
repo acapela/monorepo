@@ -1,28 +1,37 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import React from "react";
 
+import { apolloClient } from "@aca/desktop/apolloClient";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
-import { GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables } from "@aca/gql";
-import { isServer } from "@aca/shared/isServer";
+import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
+import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
 import { Button } from "@aca/ui/buttons/Button";
 
-export function InstallSlackButton({ teamId }: { teamId: string }) {
-  const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
-    gql`
-      query GetSlackInstallationURL($input: GetTeamSlackInstallationURLInput!) {
-        slackInstallation: get_team_slack_installation_url(input: $input) {
-          url
+export function InstallSlackButton() {
+  const [installationURL, setInstallationURL] = React.useState<string | null>(null);
+  useAsyncEffect(async ({ getIsCancelled }) => {
+    const {
+      data: { slackInstallation },
+    } = await apolloClient.query<
+      GetIndividualSlackInstallationUrlQuery,
+      GetIndividualSlackInstallationUrlQueryVariables
+    >({
+      query: gql`
+        query GetIndividualSlackInstallationURL($input: GetSlackInstallationURLInput!) {
+          slackInstallation: get_slack_installation_url(input: $input) {
+            url
+          }
         }
-      }
-    `,
-    {
-      skip: isServer,
-      variables: { input: { team_id: teamId, with_bot: true, redirectURL: isServer ? "" : location.href } },
+      `,
+      variables: { input: { redirectURL: "" } },
+    });
+    if (!getIsCancelled()) {
+      setInstallationURL(slackInstallation?.url ?? null);
     }
-  );
-  const url = slackInstallationData?.slackInstallation?.url;
+  });
+
   return (
-    <Button disabled={!url} onClick={() => url && connectSlackBridge({ url })}>
+    <Button disabled={!installationURL} onClick={() => installationURL && connectSlackBridge({ url: installationURL })}>
       Connect Slack
     </Button>
   );

@@ -68,18 +68,21 @@
       "user": [
         "channels:history",
         "groups:history",
-        "im:history",
         "mpim:history",
+        "im:history",
+
         "channels:read",
-        "reactions:read",
-        "chat:write",
         "groups:read",
         "im:read",
-        "im:write",
         "mpim:read",
+
+        "users:read",
+
+        "reactions:read",
+        "chat:write",
+        "im:write",
         "mpim:write",
         "users.profile:read",
-        "users:read",
         "users:read.email"
       ]
     }

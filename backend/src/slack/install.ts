@@ -6,13 +6,40 @@ import { botScopes, userScopes } from "@aca/shared/slack";
 import { slackReceiver } from "./app";
 import { InstallMetadata } from "./installMetadata";
 
-export const getUserSlackInstallURL = async (metadata: InstallMetadata, scopes: string[] = []) => {
-  const basePath = IS_DEV ? (await getDevPublicTunnelURL(3000)) + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
-  return assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
-    userScopes,
-    scopes,
-    redirectUri: basePath + "/slack/oauth_redirect",
+const NEW_ACAPELA_USER_SCOPES = [
+  "channels:history",
+  "groups:history",
+  "mpim:history",
+  "im:history",
+
+  "channels:read",
+  "groups:read",
+  "im:read",
+  "mpim:read",
+
+  "users:read",
+];
+
+const getRedirectURI = async () =>
+  (IS_DEV ? (await getDevPublicTunnelURL(3000)) + "/api/backend" : process.env.BACKEND_API_ENDPOINT) +
+  "/slack/oauth_redirect";
+
+/**
+ * Called for the new Acapela where slack installations are not tied to teams anymore. It also needs a lot fewer scopes.
+ */
+export const getIndividualSlackInstallURL = async (metadata: { userId: string; redirectURL: string }) =>
+  assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
+    userScopes: NEW_ACAPELA_USER_SCOPES,
+    scopes: [],
+    redirectUri: await getRedirectURI(),
     metadata: JSON.stringify(metadata),
   });
-};
+
+export const getUserSlackInstallURL = async (metadata: InstallMetadata, scopes: string[] = []) =>
+  assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
+    userScopes,
+    scopes,
+    redirectUri: await getRedirectURI(),
+    metadata: JSON.stringify(metadata),
+  });
 export const getTeamSlackInstallURL = async (metadata: InstallMetadata) => getUserSlackInstallURL(metadata, botScopes);

@@ -30,7 +30,7 @@ export const connectGoogle = defineAction({
 });
 
 export const connectSlack = defineAction({
-  name: "Connect Slack",
+  name: "Start Slack session",
   canApply: () => !slackAuthTokenBridgeValue.get(),
   handler() {
     loginSlackBridge();

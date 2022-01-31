@@ -13,7 +13,6 @@ import {
   Team_Member_Set_Input,
 } from "@aca/gql";
 
-import { teamMemberSlackEntity } from "./teamMemberSlack";
 import { userEntity } from "./user";
 
 const teamMemberFragment = gql`
@@ -68,9 +67,6 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
 }).addConnections((teamMember, { getEntity, getContextValue }) => ({
   get user() {
     return getEntity(userEntity).findById(teamMember.user_id);
-  },
-  get teamMemberSlack() {
-    return getEntity(teamMemberSlackEntity).findByUniqueIndex("team_member_id", teamMember.id);
   },
   get isMemberOfCurrentTeam() {
     return teamMember.team_id === getContextValue(teamIdContext);
