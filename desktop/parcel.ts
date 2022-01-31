@@ -46,15 +46,19 @@ export function createElectronBundler(isProd: boolean): Parcel {
 }
 
 export function createClientBundler(isProd: boolean): Parcel {
+  const distDir = path.resolve(__dirname, "dist/client");
   return new Parcel({
     entries: path.resolve(CLIENT_DIR, "index.html"),
     defaultConfig: "@parcel/config-default",
     mode: isProd ? "production" : "development",
+    defaultTargetOptions: {
+      distDir,
+    },
     targets: {
       default: {
         publicUrl: "./",
         includeNodeModules: true,
-        distDir: path.resolve(__dirname, "dist/client"),
+        distDir,
         context: "browser",
         scopeHoist: true,
         outputFormat: "commonjs",
