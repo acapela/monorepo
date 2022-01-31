@@ -13,8 +13,10 @@ import { initializeSingleInstanceLock } from "./singleInstance";
 
 protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
 
-// Has to be done before app ready
-initializeSingleInstanceLock();
+if (!IS_DEV) {
+  // Has to be done before app ready
+  initializeSingleInstanceLock();
+}
 
 function initializeApp() {
   console.info(`Initialize bridge handlers`);

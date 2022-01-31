@@ -55,10 +55,5 @@ export function initializeMainWindow() {
     appState.mainWindow = null;
   });
 
-  if (IS_DEV) {
-    mainWindow.maximize();
-    mainWindow.webContents.toggleDevTools();
-  }
-
   return mainWindow;
 }
