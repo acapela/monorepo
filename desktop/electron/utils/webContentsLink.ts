@@ -104,6 +104,8 @@ export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callb
 /**
  * This allows primitive communication with any web-contents without setting up ipc.
  *
+ * The only option that seems to make sense is listening to console logs on electron side
+ *
  * Convention is: execute console.log("electron", "anything-here") and callback with "anything-here" will be called
  *
  * TODO: with a bit of effort we can send any JSON this way
