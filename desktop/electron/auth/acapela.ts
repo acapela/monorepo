@@ -11,6 +11,8 @@ async function getAcapelaAuthToken() {
   const [cookie] = await session.defaultSession.cookies.get({ name: "next-auth.session-token" });
   if (!cookie) return null;
 
+  // Set another cookie with weakened sameSite policy to allow us to make requests from our app which is on a different
+  // domain, namely localhost in development and file:// in production.
   await session.defaultSession.cookies.set({
     url: "https://" + cookie.domain,
     domain: cookie.domain,

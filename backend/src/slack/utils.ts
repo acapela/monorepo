@@ -63,7 +63,11 @@ export async function findUserBySlackId(token: string, slackUserId: string, team
     return user;
   }
 
-  const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
+  const { profile } = await slackClient.users.profile.get({ token, user: slackUserId }).catch((error) => {
+    // eslint-disable-next-line no-console
+    console.trace("error while getting profile for", slackUserId, ":", error);
+    throw error;
+  });
   if (!profile?.email) {
     return;
   }
