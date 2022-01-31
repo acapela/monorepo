@@ -58,8 +58,8 @@ export function startNotionSync(): ServiceSyncController {
 
       console.info(`[Notion](${new Date().toISOString()}) Capturing complete`);
     } catch (e) {
-      Sentry.captureException(e);
       console.info("[Notion] Error syncing notion", e);
+      Sentry.captureException(e);
     } finally {
       isSyncing = false;
     }
@@ -186,7 +186,8 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const urlAndType = getUrlAndType(notification, recordMap);
     if (!urlAndType) {
-      Sentry.captureException(new Error(`[Notion] Unable to handle notification of type ${notification.type}`));
+      console.info(`[Notion] Unable to handle notification ${id} of type ${notification.type}`);
+      Sentry.captureException(`[Notion] Unable to handle notification of type ${notification.type}`);
       continue;
     }
 
@@ -202,7 +203,8 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
-      Sentry.captureException(new Error(`[Notion] Block is not page type, instead its: '${notification.type}'`));
+      console.info(`[Notion] Block is not page type, instead its: '${notification.type}'`);
+      Sentry.captureException(`[Notion] Block is not page type, instead its: '${notification.type}'`);
       continue;
     }
 
