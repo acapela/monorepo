@@ -14,7 +14,7 @@ import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { getUUID } from "@aca/shared/uuid";
 
-import { listenToWebContentsFocus } from "../../utils/webContentsLink";
+import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { loadURLWithFilters } from "./siteFilters";
 
 const DESTROY_BROWSER_VIEW_TIMEOUT_MS = 5000;
@@ -63,10 +63,32 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
     const browserView = new BrowserView({ webPreferences: {} });
     const loadingPromise = loadURLWithFilters(browserView, url);
 
-    browserView.webContents.on("before-input-event", (event, input) => {
-      if (input.type === "keyDown" && input.key === "Escape" && isEqual(input.modifiers, ["meta"])) {
+    browserView.webContents.on("before-input-event", async (event, input) => {
+      // Handle Esc press only
+      if (input.type !== "keyDown" || input.key !== "Escape") return;
+
+      // If it is CMD + Esc - restore focus to main window instantly
+      if (isEqual(input.modifiers, ["meta"])) {
         window.webContents.focus();
+        return;
       }
+
+      // Check if there is any editable element focused (aka cursor blinking anywhere).
+      const isAnyInputFocused = await evaluateFunctionInWebContents(browserView.webContents, () => {
+        return document.activeElement !== document.body;
+      });
+
+      // if something is focused, blur it, but don't escape preview focus yet.
+      if (isAnyInputFocused) {
+        await evaluateFunctionInWebContents(browserView.webContents, () => {
+          return (document.activeElement as HTMLElement)?.blur();
+        });
+        return;
+      }
+
+      // Esc was pressed without any editable element focused, restore focus to main window
+
+      window.webContents.focus();
     });
 
     listenToWebContentsFocus(browserView.webContents, (isFocused) => {
