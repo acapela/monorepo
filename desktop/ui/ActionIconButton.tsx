@@ -10,23 +10,43 @@ interface Props {
   action: ActionData;
   target?: unknown;
   hideShortcutTooltip?: boolean;
+  showTitleInTooltip?: boolean;
 }
 
 export const ActionIconButton = styledObserver(function ActionIconButton({
   action,
   target,
-  hideShortcutTooltip,
+  hideShortcutTooltip = false,
+  showTitleInTooltip = false,
 }: Props) {
   const context = createActionContext(target);
-  const { icon, canApply, shortcut } = resolveActionData(action, context);
+  const { icon, canApply, shortcut, name } = resolveActionData(action, context);
 
   const isDisabled = !canApply(context);
+
+  function getTooltip() {
+    const parts: string[] = [];
+
+    if (showTitleInTooltip) parts.push(name);
+
+    if (!hideShortcutTooltip && shortcut && !isDisabled) {
+      if (showTitleInTooltip) {
+        parts.push(`(${describeShortcut(shortcut)})`);
+      } else {
+        parts.push(describeShortcut(shortcut));
+      }
+    }
+
+    if (parts.length === 0) return undefined;
+
+    return parts.join(" ");
+  }
 
   return (
     <IconButton
       icon={icon}
       isDisabled={isDisabled}
-      tooltip={!hideShortcutTooltip && shortcut && !isDisabled ? describeShortcut(shortcut) : undefined}
+      tooltip={getTooltip()}
       onClick={() => {
         runAction(action, context);
       }}
