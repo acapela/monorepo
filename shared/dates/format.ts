@@ -1,5 +1,15 @@
-import { compareAsc, format, formatRelative, startOfWeek } from "date-fns";
+import {
+  compareAsc,
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  format,
+  formatRelative,
+  startOfWeek,
+} from "date-fns";
 import { upperFirst } from "lodash";
+
+import { timeDuration } from "../time";
 
 export function relativeFormatDate(date: Date): string {
   if (isBeforeThisWeek(date)) {
@@ -57,4 +67,19 @@ export function niceFormatMinutes(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const minutesLeft = minutes % 60;
   return `${hours}h${minutesLeft}m`;
+}
+
+export function relativeShortFormatDate(date: Date): string {
+  const now = new Date();
+  const timeSinceNow = now.getTime() - date.getTime();
+
+  if (timeSinceNow <= timeDuration.hour) {
+    return `${differenceInMinutes(now, date)}m`;
+  }
+
+  if (timeSinceNow <= timeDuration.day) {
+    return `${differenceInHours(now, date)}h`;
+  }
+
+  return `${differenceInDays(now, date)}d`;
 }

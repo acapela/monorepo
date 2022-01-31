@@ -16,7 +16,7 @@ export function getNotificationTitle(notification: NotificationEntity): string {
         case "notification_notion_user_invited":
           return `${notification.from} invited you to ${innerNotification?.page_title}`;
         case "notification_notion_user_mentioned":
-          return `${notification.from} mentioned you to ${innerNotification?.page_title}`;
+          return `${notification.from} mentioned you in ${innerNotification?.page_title}`;
         default:
           return "New Notion notification";
       }

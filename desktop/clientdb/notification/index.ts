@@ -42,6 +42,10 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<DesktopNotificationFragment>(notificationFragment),
+  defaultSort: (notification) => {
+    // Show newest first
+    return -1 * new Date(notification.created_at).getTime();
+  },
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification",
     user_id: getContextValue(userIdContext) ?? undefined,
