@@ -31,10 +31,10 @@ export const SettingsView = observer(function SettingsView() {
         {!team && <CreateTeamForm />}
 
         <ActionButton action={connectGoogle} />
-        <>
+        <HStack alignItems="center" gap={10}>
           <ActionButton action={connectNotion} />
           <NotionSpaceSelector />
-        </>
+        </HStack>
         <ActionButton action={connectSlack} />
         <ActionButton action={connectFigma} />
 
@@ -71,17 +71,14 @@ const NotionSpaceSelector = observer(function NotionSpaceSelector() {
   }
 
   return (
-    <HStack alignItems="center" gap={10}>
-      Current Notion Space
-      <SingleOptionDropdown<NotionSpace>
-        items={allSpaces}
-        keyGetter={(space) => space.id}
-        labelGetter={(space) => space.name}
-        selectedItem={selectedItem}
-        onChange={handleItemSelected}
-        placeholder="Selected Notion Space"
-      />
-    </HStack>
+    <SingleOptionDropdown<NotionSpace>
+      items={allSpaces}
+      keyGetter={(space) => space.id}
+      labelGetter={(space) => space.name}
+      selectedItem={selectedItem}
+      onChange={handleItemSelected}
+      placeholder="Selected Notion Space"
+    />
   );
 });
 
