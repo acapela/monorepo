@@ -5,7 +5,9 @@ import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
+import { action, runInAction } from "mobx";
 
+import { AppEnvData } from "../envData";
 import { appState } from "./appState";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
@@ -22,6 +24,11 @@ if (!IS_DEV) {
 }
 
 export function initializeMainWindow() {
+  const env: AppEnvData = {
+    sentryDsn,
+    isDev: IS_DEV,
+    version: app.getVersion(),
+  };
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -29,7 +36,7 @@ export function initializeMainWindow() {
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
-      additionalArguments: [sentryDsn, `${IS_DEV}`, app.getVersion()],
+      additionalArguments: [JSON.stringify(env)],
     },
     titleBarStyle: "hidden",
     fullscreenable: false,
@@ -49,10 +56,21 @@ export function initializeMainWindow() {
   autoUpdater.logger = log;
   autoUpdater.checkForUpdatesAndNotify();
 
-  appState.mainWindow = mainWindow;
+  runInAction(() => {
+    appState.mainWindow = mainWindow;
+  });
 
-  mainWindow.on("closed", () => {
-    appState.mainWindow = null;
+  mainWindow.on(
+    "closed",
+    action(() => {
+      appState.mainWindow = null;
+    })
+  );
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.getBrowserViews().forEach((view) => {
+      mainWindow.removeBrowserView(view);
+    });
   });
 
   return mainWindow;

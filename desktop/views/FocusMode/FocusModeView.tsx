@@ -2,10 +2,13 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { BrowserViewBridge, PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { getDb } from "@aca/desktop/clientdb";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
+import {
+  NotificationEmbedView,
+  PreloadNotificationEmbed,
+} from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { theme } from "@aca/ui/theme";
@@ -26,7 +29,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   return (
     <AppLayout tray={<FocusModeTray />} footer={null}>
       {list?.getNotificationsToPreload(currentNotification).map((notificationToPreload) => {
-        return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+        return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
       })}
 
       <UIHeader>
@@ -34,7 +37,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
         <UITitle>{getNotificationTitle(currentNotification)}</UITitle>
       </UIHeader>
 
-      <BrowserViewBridge url={currentNotification.url} />
+      <NotificationEmbedView url={currentNotification.url} />
     </AppLayout>
   );
 });

@@ -11,6 +11,10 @@ export const GlobalDesktopStyles = createGlobalStyle`
     max-height: 100vh;
   }
 
+  * {
+    cursor: default;
+  }
+
   #root {
     display: flex;
     flex-direction: column;

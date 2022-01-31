@@ -5,14 +5,15 @@ import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 
-const version = process.argv.pop();
-const isDev = process.argv.pop() === "true";
-const sentryDsn = process.argv.pop();
+import { AppEnvData } from "../envData";
 
-if (!isDev) {
+const appEnvJSON = process.argv.pop();
+const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
+
+if (!appEnv.isDev) {
   Sentry.init({
-    dsn: sentryDsn,
-    release: version,
+    dsn: appEnv.sentryDsn,
+    release: appEnv.version,
   });
 }
 
@@ -56,9 +57,7 @@ const publishedApi = {
     // TODO (security): reject other channels than registered bridges
     ipcRenderer.send(channel, data);
   },
-  version,
-  isDev,
-  sentryDsn,
+  env: appEnv,
 };
 
 export type ElectronPublishedAPI = typeof publishedApi;

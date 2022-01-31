@@ -95,7 +95,7 @@ export function createClientBundler(env: BuildEnvironment): Parcel {
         distDir,
         optimize: true,
         includeNodeModules: true,
-        publicUrl: "./",
+        publicUrl: "/",
         scopeHoist: true,
         outputFormat: "commonjs",
       },

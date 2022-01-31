@@ -18,7 +18,7 @@ type PreloadBrowserViewProps = { url: string };
 
 type BrowserViewProps = { url: string; onFocus?: () => void; onBlur?: () => void };
 
-export function PreloadBrowserView({ url }: PreloadBrowserViewProps) {
+export function PreloadNotificationEmbed({ url }: PreloadBrowserViewProps) {
   useEffect(() => {
     return requestPreviewPreload({ url });
   }, [url]);
@@ -26,7 +26,7 @@ export function PreloadBrowserView({ url }: PreloadBrowserViewProps) {
   return <></>;
 }
 
-export function BrowserViewBridge({ url, onFocus, onBlur }: BrowserViewProps) {
+export function NotificationEmbedView({ url, onFocus, onBlur }: BrowserViewProps) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -88,7 +88,7 @@ const UIFocusCover = styled.div<{ $isVisible: boolean }>`
   right: 0;
   bottom: 0;
   ${theme.colors.layout.background.opacity(0.8).asBg};
-  pointer-events: none;
+  pointer-events: ${(props) => (props.$isVisible ? "all" : "none")};
   opacity: ${(props) => (props.$isVisible ? 1 : 0)};
   transition: 0.15s all;
 `;

@@ -16,10 +16,10 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
-if (!window.electronBridge.isDev) {
+if (!window.electronBridge.env.isDev) {
   Sentry.init({
-    dsn: window.electronBridge.sentryDsn,
-    release: window.electronBridge.version,
+    dsn: window.electronBridge.env.sentryDsn,
+    release: window.electronBridge.env.version,
   });
 }
 

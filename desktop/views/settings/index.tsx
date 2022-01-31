@@ -46,7 +46,7 @@ export const SettingsView = observer(function SettingsView() {
             )}
           </HStack>
         )}
-        <UIVersionInfo>v{window.electronBridge.version}</UIVersionInfo>
+        <UIVersionInfo>v{window.electronBridge.env.version}</UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
   );
