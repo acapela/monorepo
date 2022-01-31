@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-import { toggleMaximize } from "@aca/desktop/bridge/system";
+import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 
 export function SystemBar() {
   return (
     <UIBar
       onDoubleClick={() => {
-        toggleMaximize();
+        toggleMaximizeRequest();
       }}
     ></UIBar>
   );
