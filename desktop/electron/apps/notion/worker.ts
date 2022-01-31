@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/electron";
 import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
@@ -48,15 +49,16 @@ export function startNotionSync(): ServiceSyncController {
 
     try {
       isSyncing = true;
-      console.info(`[${new Date().toISOString()}] Notion worker capturing started`);
+      console.info(`[Notion](${new Date().toISOString()}) Capturing started`);
       const notificationLog = await fetchNotionNotificationLog(window);
 
       notionSyncPayload.send(extractNotifications(notificationLog));
 
       timeOfLastSync = new Date();
 
-      console.info(`[${new Date().toISOString()}] Notion worker capturing complete`);
+      console.info(`[Notion](${new Date().toISOString()}) Capturing complete`);
     } catch (e) {
+      Sentry.captureException(e);
       console.info("[Notion] Error syncing notion", e);
     } finally {
       isSyncing = false;
@@ -155,7 +157,7 @@ async function fetchCurrentSpace(window: BrowserWindow) {
 
   if (response.status === 401) {
     notionAuthTokenBridgeValue.set(null);
-    throw new Error("[Notion] Unauthorized");
+    throw new Error("[Notion] 401 - Unauthorized");
   }
 
   const getSpacesResult = (await response.json()) as GetSpacesResult;
@@ -166,6 +168,10 @@ async function fetchCurrentSpace(window: BrowserWindow) {
     (space) => space.role === "editor" || space.role === "read_and_write"
   );
   const firstFoundSpaceId = spacedWithWriteAccess.map((space) => space.value.id)[0];
+
+  if (!firstFoundSpaceId) {
+    throw new Error("[Notion] Unable to find space with write access");
+  }
 
   return firstFoundSpaceId;
 }
@@ -180,6 +186,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const urlAndType = getUrlAndType(notification, recordMap);
     if (!urlAndType) {
+      Sentry.captureException(new Error(`[Notion] Unable to handle notification of type ${notification.type}`));
       continue;
     }
 
@@ -195,7 +202,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
-      console.error("[Notion Worker] Block is not page type");
+      Sentry.captureException(new Error(`[Notion] Block is not page type, instead its: '${notification.type}'`));
       continue;
     }
 
@@ -266,6 +273,4 @@ function getUrlAndType(
       url,
     };
   }
-
-  return;
 }
