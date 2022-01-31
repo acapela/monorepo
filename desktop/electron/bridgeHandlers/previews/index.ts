@@ -4,17 +4,18 @@ import { isEqual } from "lodash";
 import {
   previewEventsBridge,
   requestAttachPreview,
+  requestPreviewFocus,
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
+import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";
 import { assert } from "@aca/shared/assert";
 import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { getUUID } from "@aca/shared/uuid";
 
-import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { loadURLWithFilters } from "./siteFilters";
 
 const DESTROY_BROWSER_VIEW_TIMEOUT_MS = 5000;
@@ -255,5 +256,15 @@ export function initPreviewHandler() {
     viewRef.position = position;
 
     updatePreviewSize(viewRef);
+  });
+
+  requestPreviewFocus.handle(async ({ url }) => {
+    const preview = alivePreviews.get(url);
+
+    if (!preview) return;
+
+    // TODO: We'll probably need some integration-specific code here that would eg. focus specific input field
+
+    preview.view.webContents.focus();
   });
 }

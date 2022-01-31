@@ -11,6 +11,8 @@ export const requestAttachPreview = createInvokeWithCleanupBridge<PreviewGeneric
   "attach-preview"
 );
 
+export const requestPreviewFocus = createInvokeWithCleanupBridge<PreviewGenericData>("preview-focus");
+
 export const updatePreviewPosition =
   createInvokeWithCleanupBridge<{ url: string; position: PreviewPosition }>("update-preview-position");
 
