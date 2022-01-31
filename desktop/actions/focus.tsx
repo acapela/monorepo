@@ -1,9 +1,10 @@
 import React from "react";
 
 import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
+import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconTarget } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconExternalLink, IconTarget } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 
@@ -45,6 +46,20 @@ export const focusOnNotificationPreview = defineAction({
     const notification = context.assertTarget("notification");
 
     requestPreviewFocus({ url: notification.url });
+  },
+});
+
+export const openNotificationInApp = defineAction({
+  icon: <IconExternalLink />,
+  name: "Open in original app",
+  shortcut: ["Mod", "Shift", "O"],
+  canApply: () => {
+    return getIsRouteActive("focus");
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    openLinkRequest({ url: notification.url });
   },
 });
 

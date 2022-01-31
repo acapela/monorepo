@@ -1,7 +1,8 @@
-import { app, session } from "electron";
+import { app, session, shell } from "electron";
 
 import {
   clearAllDataRequest,
+  openLinkRequest,
   restartAppRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
@@ -46,5 +47,9 @@ export function initializeSystemHandlers() {
     } else {
       senderWindow.setFullScreen(true);
     }
+  });
+
+  openLinkRequest.handle(async ({ url }) => {
+    shell.openExternal(url);
   });
 }

@@ -4,8 +4,7 @@ import * as Sentry from "@sentry/electron/dist/renderer";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
-
-import { AppEnvData } from "../envData";
+import { AppEnvData } from "@aca/desktop/envData";
 
 const appEnvJSON = process.argv.pop();
 const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
