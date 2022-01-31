@@ -27,6 +27,9 @@ export function createCleanupObject() {
         cleanups.add(cleanupToAdd);
       });
     },
+    set next(cleanupToAdd: CleanupFunction) {
+      cleanups.add(cleanupToAdd);
+    },
   };
 
   return cleanupObject;

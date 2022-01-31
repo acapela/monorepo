@@ -1,6 +1,7 @@
-import { BrowserWindow, app, session } from "electron";
+import { app, session } from "electron";
 
 import { clearAllData, requestRestartApp, toggleMaximize } from "@aca/desktop/bridge/system";
+import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 
 export function initializeSystemHandlers() {
   requestRestartApp.handle(async () => {
@@ -15,12 +16,9 @@ export function initializeSystemHandlers() {
   });
 
   toggleMaximize.handle(async (_, event) => {
-    // Let's maximize the window that sent the event (usually or always will be mainWindow, but just in case)
-    const windowId = event?.frameId;
+    if (!event) return;
 
-    if (!windowId) return;
-
-    const senderWindow = BrowserWindow.fromId(windowId);
+    const senderWindow = getSourceWindowFromIPCEvent(event);
 
     if (!senderWindow) return;
 

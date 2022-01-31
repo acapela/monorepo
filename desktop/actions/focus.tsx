@@ -1,8 +1,8 @@
 import React from "react";
 
+import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop } from "@aca/ui/icons";
 
-import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 
 export const exitFocusMode = defineAction({

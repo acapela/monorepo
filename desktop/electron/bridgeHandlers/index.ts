@@ -1,7 +1,8 @@
+import { initializeCleanupsHandler } from "@aca/desktop/bridge/base/invokeWithCleanup";
 import { initializeAuthHandlers } from "@aca/desktop/electron/auth";
 
-import { initPreviewHandler } from "./browserView";
 import { initializePersistance } from "./persistance";
+import { initPreviewHandler } from "./previews";
 import { initializeSystemHandlers } from "./system";
 
 export function initializeBridgeHandlers() {
@@ -9,4 +10,5 @@ export function initializeBridgeHandlers() {
   initPreviewHandler();
   initializeSystemHandlers();
   initializeAuthHandlers();
+  initializeCleanupsHandler();
 }

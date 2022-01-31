@@ -1,8 +1,8 @@
 import { BrowserWindow, session } from "electron";
 
 import { loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
-import { tryInitializeServiceSync } from "../apps";
 import { authWindowDefaultOptions } from "./utils";
 
 const notionURL = "https://www.notion.so";

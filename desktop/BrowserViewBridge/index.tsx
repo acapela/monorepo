@@ -1,55 +1,44 @@
-import { pick } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
-import {
-  hideBrowserView,
-  registerBrowserViewPreload,
-  showBrowserView,
-  unregisterBrowserViewPreload,
-} from "@aca/desktop/bridge/preview";
-import { useConst } from "@aca/shared/hooks/useConst";
+import { requestAttachPreview, requestPreviewPreload, updatePreviewPosition } from "@aca/desktop/bridge/preview";
+import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
-import { getUUID } from "@aca/shared/uuid";
 
 type BrowserViewProps = { url: string };
 
-const useUUID = () => useConst(() => getUUID());
-
 export function PreloadBrowserView({ url }: BrowserViewProps) {
-  const id = useUUID();
   useEffect(() => {
-    registerBrowserViewPreload({ url, id });
-    return () => {
-      unregisterBrowserViewPreload({ url, id });
-    };
+    return requestPreviewPreload({ url });
   }, [url]);
 
   return <></>;
 }
 
 export function BrowserViewBridge({ url }: BrowserViewProps) {
-  const id = useUUID();
-  const [bounds, setBounds] = useEqualState<Electron.Rectangle | null>(null);
+  const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
+
   const rootRef = useRef<HTMLDivElement>(null);
 
   useResizeCallback(rootRef, (entry) => {
-    setBounds(pick(entry.target.getBoundingClientRect(), ["width", "height", "x", "y"]));
+    setPosition(getPreviewPositionFromElement(entry.target as HTMLElement));
   });
 
-  useEffect(() => {
-    if (!bounds) {
-      return;
-    }
-    showBrowserView({ url, id, bounds });
-  }, [url, id, bounds]);
+  useDependencyChangeEffect(() => {
+    if (!position) return;
+    updatePreviewPosition({ position, url });
+  }, [position]);
 
-  useEffect(() => {
-    return () => {
-      hideBrowserView({ url, id });
-    };
-  }, [url, id]);
+  useLayoutEffect(() => {
+    if (!position) return;
+    return requestAttachPreview({ url, position });
+  }, [
+    url,
+    // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
+    !!position,
+  ]);
 
   return <UIHolder ref={rootRef} />;
 }
