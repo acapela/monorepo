@@ -1,5 +1,5 @@
-import { createBridgeValue } from "@aca/desktop/base/persistance";
 import { createChannelBridge } from "@aca/desktop/bridge/base/channels";
+import { createBridgeValue } from "@aca/desktop/bridge/base/persistance";
 import { Notification, Notification_Notion } from "@aca/gql";
 
 export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
