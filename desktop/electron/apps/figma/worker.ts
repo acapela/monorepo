@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/electron";
+import { differenceInWeeks } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 import WebSocket from "ws";
@@ -45,8 +46,9 @@ export async function startFigmaSync() {
     return;
   }
   console.info("[Figma] Done fetching session variables");
-  // First sync happens as the app may be closed over night
-  // This sync will get and sync all unread notifications since last app open
+  // First sync extract all of the notifications from a standard rest endpoint.
+  // This sync will get and sync all relevant notifications since last app open
+  // Relevant notification: !read && !resolved && !rejected && created less than 2 weeks ago
   getInitialFigmaSync(figmaSessionData);
 
   // The figma socket based sync will subscribe to user events
@@ -92,6 +94,8 @@ async function getFigmaSessionData(): Promise<FigmaSessionData> {
   };
 }
 
+const isLessThan2WeeksOld = (isoString: string) => differenceInWeeks(new Date(), new Date(isoString)) < 2;
+
 async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   console.info(`[Figma] Getting initial notifications`);
 
@@ -110,12 +114,14 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
 
   const result: GetFigmaUserNotificationsResponse = await response.json();
 
-  const unreadFigmaNotifications = result.meta.feed.filter((notification) => notification.read_at === null);
+  const isNotificationRelevant = ({ read_at, rejected_at, resolved_at, created_at }: FigmaUserNotification) =>
+    !read_at && !resolved_at && !rejected_at && isLessThan2WeeksOld(created_at);
 
-  console.info(`[Figma] Attempting to sync ${unreadFigmaNotifications.length} unread notifications`);
+  const relevantFigmaNotifications = result.meta.feed.filter(isNotificationRelevant);
 
-  // Initial sync only covers unread notifications
-  transformAndSyncFigmaNotifications(unreadFigmaNotifications, figmaUserId);
+  console.info(`[Figma] Attempting to sync ${relevantFigmaNotifications.length} relevant notifications`);
+
+  transformAndSyncFigmaNotifications(relevantFigmaNotifications, figmaUserId);
 }
 
 async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag }: FigmaSessionData) {
