@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 
 import { ListsTabBar } from "./ListsTabBar";
@@ -24,7 +24,7 @@ export const ListView = observer(({ listId }: Props) => {
       {list && (
         <>
           {list.getNotificationsToPreload().map((notificationToPreload) => {
-            return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+            return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
             {list.getAllNotifications().all.map((notification) => {
