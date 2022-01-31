@@ -90,7 +90,14 @@ export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callb
 
   return async function cleanup() {
     await resultPromise;
-    await web.executeJavaScript([`window.${TEMP_CLEANUP_NAME}()`, `delete window.${TEMP_CLEANUP_NAME}`].join(";"));
+    await web.executeJavaScript(
+      [
+        // Perform cleanup
+        `window.${TEMP_CLEANUP_NAME}()`,
+        // Remove cleanup function
+        `delete window.${TEMP_CLEANUP_NAME}`,
+      ].join(";")
+    );
   };
 }
 
