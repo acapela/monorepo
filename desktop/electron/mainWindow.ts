@@ -38,6 +38,8 @@ export function initializeMainWindow() {
       preload: path.resolve(__dirname, "preload.js"),
       additionalArguments: [JSON.stringify(env)],
     },
+    minWidth: 900,
+    minHeight: 680,
     titleBarStyle: "hidden",
     fullscreenable: false,
   });
