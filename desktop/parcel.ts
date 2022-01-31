@@ -64,10 +64,9 @@ export function createElectronBundler(env: BuildEnvironment): Parcel {
     mode: isDev(env) ? "development" : "production",
     targets: {
       default: {
-        distDir: path.resolve(__dirname, "dist/electron"),
-        // It is never loaded remotely - we can disable all sort of optimizations of the bundle
-        optimize: false,
         context: "electron-main",
+        distDir: path.resolve(__dirname, "dist/electron"),
+        optimize: !isDev(env),
         includeNodeModules: !isDev(env) || [
           "@aca/shared",
           "@aca/ui",
@@ -92,13 +91,13 @@ export function createClientBundler(env: BuildEnvironment): Parcel {
     },
     targets: {
       default: {
-        publicUrl: "./",
-        includeNodeModules: true,
-        distDir,
         context: "browser",
+        distDir,
+        optimize: true,
+        includeNodeModules: true,
+        publicUrl: "./",
         scopeHoist: true,
         outputFormat: "commonjs",
-        optimize: true,
       },
     },
     env: getEnv(env, true),
