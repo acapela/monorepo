@@ -14,26 +14,34 @@ interface Props {
 
 export const ListTabLabel = observer(function ListTabLabel({ activeListId, list }: Props) {
   return (
-    <ActionTrigger action={goToList} target={list}>
-      <UIHolder>
-        <UILabel>{list.name}</UILabel>
-        <UICount>{list.getAllNotifications().count}</UICount>
-        <UIActiveIndicator $isVisible={list.id === activeListId} />
-      </UIHolder>
-    </ActionTrigger>
+    <UIHolder action={goToList} target={list}>
+      <UILabel>{list.name}</UILabel>
+      <UICount>{list.getAllNotifications().count}</UICount>
+      <UIActiveIndicator $isVisible={list.id === activeListId} />
+    </UIHolder>
   );
 });
 
-const UIHolder = styled.div`
+const UILabel = styled.div`
+  ${theme.font.medium};
+`;
+
+const UIHolder = styled(ActionTrigger)`
   display: flex;
   gap: 8px;
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
   position: relative;
-`;
 
-const UILabel = styled.div`
-  ${theme.font.medium};
+  ${UILabel} {
+    opacity: 0.8;
+  }
+
+  &:hover {
+    ${UILabel} {
+      opacity: 1;
+    }
+  }
 `;
 
 const UICount = styled.div`
