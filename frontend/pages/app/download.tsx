@@ -13,6 +13,10 @@ export default function LoginPage(): JSX.Element {
     axios.get(`/api/app-download-url`).then((response) => {
       const fetchedURL = response.data.downloadURL;
 
+      /**
+       * We cannot 'start downloading' here as it is async and it is not trusted event.
+       */
+
       setDownloadURL(fetchedURL);
     });
   });
