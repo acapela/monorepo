@@ -1,7 +1,9 @@
 import React from "react";
 
+import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop } from "@aca/ui/icons";
+import { uiStore } from "@aca/desktop/store/uiStore";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconTarget } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 
@@ -29,6 +31,20 @@ export const openFocusMode = defineAction({
     const notification = context.assertTarget("notification");
 
     desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+  },
+});
+
+export const focusOnNotificationPreview = defineAction({
+  icon: <IconTarget />,
+  name: "Focus on notification screen",
+  shortcut: ["Mod", "Enter"],
+  canApply: () => {
+    return getIsRouteActive("focus") && !uiStore.isAnyPreviewFocused;
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    requestPreviewFocus({ url: notification.url });
   },
 });
 
