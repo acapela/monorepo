@@ -1,6 +1,7 @@
-import { makeAutoObservable, observable } from "mobx";
+import { autorun, makeAutoObservable, observable } from "mobx";
 
 import { appWindowValue } from "@aca/desktop/bridge/appWindow";
+import { isFullscreenValue } from "@aca/desktop/bridge/system";
 import { desktopRouter } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
 
@@ -32,6 +33,9 @@ createWindowEvent("blur", () => {
 export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
+  get isFullscreen() {
+    return isFullscreenValue.get();
+  },
   // Any part of the app is focused
   get isAppFocused() {
     return appWindowValue.get().isFocused;
@@ -54,4 +58,12 @@ export const uiStore = makeAutoObservable({
  */
 desktopRouter.subscribe(() => {
   uiStore.isSidebarOpened = false;
+});
+
+autorun(() => {
+  if (uiStore.isFullscreen) {
+    document.body.classList.add("fullscreen");
+  } else {
+    document.body.classList.remove("fullscreen");
+  }
 });
