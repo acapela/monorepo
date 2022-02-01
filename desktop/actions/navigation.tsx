@@ -2,12 +2,22 @@ import React from "react";
 
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowLeft, IconCross, IconMenu, IconSlidersHoriz } from "@aca/ui/icons";
+import { IconArrowLeft, IconCross, IconHome, IconMenu, IconSlidersHoriz } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
 export const navigationActionsGroup = defineGroup({ name: "Navigation" });
+
+export const goToMainScreen = defineAction({
+  name: "Go to main screen",
+  group: navigationActionsGroup,
+  keywords: ["home", "return", "back"],
+  icon: <IconHome />,
+  handler() {
+    desktopRouter.navigate("home");
+  },
+});
 
 export const openNavigationMenu = defineAction({
   name: "Toggle navigation menu",

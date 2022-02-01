@@ -38,6 +38,7 @@ export const exitFocusMode = defineAction({
   name: (ctx) => (ctx.isContextual ? "Exit" : "Go back to list"),
   group: currentNotificationActionsGroup,
   icon: <IconArrowLeft />,
+  keywords: ["exit", "back"],
   shortcut: "Esc",
   canApply: () => getIsRouteActive("focus"),
   handler() {
@@ -94,7 +95,7 @@ export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["Mod", "Shift", "O"],
+  shortcut: ["Mod", "O"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
