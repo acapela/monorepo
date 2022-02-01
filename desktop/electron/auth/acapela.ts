@@ -4,7 +4,6 @@ import { authTokenBridgeValue, loginBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { syncGoogleAuthState } from "./google";
-import { syncSlackAuthState } from "./slack";
 import { authWindowDefaultOptions } from "./utils";
 
 async function getAcapelaAuthToken() {
@@ -61,7 +60,7 @@ export async function loginAcapela() {
      *
      * TODO: Maybe there is some 'cookie change' listener so we could avoid such imperative code.
      */
-    await Promise.all([syncGoogleAuthState(), syncSlackAuthState()]);
+    await syncGoogleAuthState();
   });
 }
 

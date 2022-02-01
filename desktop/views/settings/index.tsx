@@ -3,13 +3,11 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
+import { connectFigma, connectGoogle, connectNotion } from "@aca/desktop/actions/auth";
 import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
 import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
-import { notionAuthTokenBridgeValue, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { getDb } from "@aca/desktop/clientdb";
+import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
-import { authStore } from "@aca/desktop/store/authStore";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 import { HStack } from "@aca/ui/Stack";
@@ -18,8 +16,6 @@ import { theme } from "@aca/ui/theme";
 import { InstallSlackButton } from "./InstallSlackButton";
 
 export const SettingsView = observer(function SettingsView() {
-  const isSlackAuthorized = !!slackAuthTokenBridgeValue.get();
-  const user = getDb().user.findById(authStore.user.id);
   return (
     <TraySidebarLayout>
       <UIHolder>
@@ -32,8 +28,7 @@ export const SettingsView = observer(function SettingsView() {
         </HStack>
         <ActionButton action={connectFigma} />
 
-        <ActionButton action={connectSlack} />
-        {isSlackAuthorized && user && !user.has_slack_installation && <InstallSlackButton />}
+        <InstallSlackButton />
         <UIVersionInfo>v{window.electronBridge.env.version}</UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
