@@ -8,7 +8,7 @@ export const devActionsGroup = defineGroup({
 });
 
 export const restartElectronAction = defineAction({
-  name: "Restart electron app",
+  name: "Restart app",
   group: devActionsGroup,
   shortcut: ["Mod", "Shift", "D"],
   keywords: ["dev", "reload"],
