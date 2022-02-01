@@ -18,6 +18,7 @@ import {
 import { mobxTickAt } from "@aca/shared/mobx/time";
 
 import { notificationFigmaCommentEntity } from "./figma/comment";
+import { notificationLinearEntity } from "./linear/issue";
 import { notificationNotionEntity } from "./notion/baseNotification";
 import { notificationSlackMessageEntity } from "./slack/message";
 
@@ -40,7 +41,12 @@ type DesktopNotificationConstraints = {
   where: Notification_Bool_Exp;
 };
 
-const innerEntities = [notificationNotionEntity, notificationSlackMessageEntity, notificationFigmaCommentEntity];
+const innerEntities = [
+  notificationNotionEntity,
+  notificationSlackMessageEntity,
+  notificationFigmaCommentEntity,
+  notificationLinearEntity,
+];
 
 export type NotificationInner = EntityDataByDefinition<typeof innerEntities[number]>;
 

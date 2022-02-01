@@ -22,6 +22,7 @@ import { router as devRouter } from "./dev/router";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
+import { router as linearRoutes } from "./linear/router";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
@@ -80,7 +81,8 @@ function setupRoutes(app: Application): void {
     transcriptionRoutes,
     cronRoutes,
     waitlistRoutes,
-    tracking
+    tracking,
+    linearRoutes
   );
 
   if (IS_DEV) {

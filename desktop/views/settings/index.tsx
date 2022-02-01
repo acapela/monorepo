@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { connectFigma, connectGoogle, connectNotion } from "@aca/desktop/actions/auth";
+import { connectFigma, connectGoogle, connectLinear, connectNotion } from "@aca/desktop/actions/auth";
 import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
 import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
@@ -30,6 +30,8 @@ export const SettingsView = observer(function SettingsView() {
         <ActionButton action={connectFigma} />
 
         <SlackActions />
+
+        <ActionButton action={connectLinear} />
 
         <ThemeSelector />
 

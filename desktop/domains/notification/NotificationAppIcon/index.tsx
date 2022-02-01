@@ -9,6 +9,8 @@ import { styledObserver } from "@aca/shared/component";
 //@ts-ignore
 import figma from "./figma.svg";
 //@ts-ignore
+import linear from "./linear.svg";
+//@ts-ignore
 import notion from "./notion.svg";
 //@ts-ignore
 import slack from "./slack.svg";
@@ -40,6 +42,10 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
 
   if (targetNotification.__typename === "notification_notion") {
     return <UIIcon className={className} src={notion} $invert={isOnDarkBackground} />;
+  }
+
+  if (targetNotification.__typename === "notification_linear") {
+    return <UIIcon className={className} src={linear} />;
   }
 
   return unknownNode;
