@@ -1,9 +1,33 @@
-import { createInvokeBridge } from "./base/channels";
+import { PreviewPosition } from "@aca/desktop/domains/preview";
 
-type Data = { url: string; id: string };
+import { createChannelBridge } from "./base/channels";
+import { createInvokeWithCleanupBridge } from "./base/invokeWithCleanup";
 
-export const registerBrowserViewPreload = createInvokeBridge<Boolean, Data>("register-browser-view-preload");
-export const unregisterBrowserViewPreload = createInvokeBridge<Boolean, Data>("unregister-browser-view-preload");
+type PreviewGenericData = { url: string };
 
-export const showBrowserView = createInvokeBridge<Boolean, Data & { bounds: Electron.Rectangle }>("show-browser-view");
-export const hideBrowserView = createInvokeBridge<Boolean, Data>("hide-browser-view");
+export const requestPreviewPreload = createInvokeWithCleanupBridge<PreviewGenericData>("preload-preview");
+
+export const requestAttachPreview = createInvokeWithCleanupBridge<PreviewGenericData & { position: PreviewPosition }>(
+  "attach-preview"
+);
+
+export const requestPreviewFocus = createInvokeWithCleanupBridge<PreviewGenericData>("preview-focus");
+
+export const updatePreviewPosition =
+  createInvokeWithCleanupBridge<{ url: string; position: PreviewPosition }>("update-preview-position");
+
+interface PreviewEventBase {
+  url: string;
+}
+
+type PreviewEventData =
+  | {
+      type: "focus";
+    }
+  | {
+      type: "blur";
+    };
+
+type PreviewEvent = PreviewEventBase & PreviewEventData;
+
+export const previewEventsBridge = createChannelBridge<PreviewEvent>("preview-event");

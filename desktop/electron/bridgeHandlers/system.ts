@@ -1,26 +1,33 @@
-import { BrowserWindow, app, session } from "electron";
+import { app, session, shell } from "electron";
 
-import { clearAllData, requestRestartApp, toggleMaximize } from "@aca/desktop/bridge/system";
+import {
+  clearAllDataRequest,
+  isFullscreenValue,
+  openLinkRequest,
+  restartAppRequest,
+  toggleFullscreenRequest,
+  toggleMaximizeRequest,
+} from "@aca/desktop/bridge/system";
+import { appState } from "@aca/desktop/electron/appState";
+import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
+import { autorunEffect } from "@aca/shared/mobxUtils";
 
 export function initializeSystemHandlers() {
-  requestRestartApp.handle(async () => {
+  restartAppRequest.handle(async () => {
     app.relaunch();
     app.exit();
   });
 
-  clearAllData.handle(async () => {
+  clearAllDataRequest.handle(async () => {
     await session.defaultSession.clearStorageData();
     app.relaunch();
     app.exit();
   });
 
-  toggleMaximize.handle(async (_, event) => {
-    // Let's maximize the window that sent the event (usually or always will be mainWindow, but just in case)
-    const windowId = event?.frameId;
+  toggleMaximizeRequest.handle(async (_, event) => {
+    if (!event) return;
 
-    if (!windowId) return;
-
-    const senderWindow = BrowserWindow.fromId(windowId);
+    const senderWindow = getSourceWindowFromIPCEvent(event);
 
     if (!senderWindow) return;
 
@@ -29,5 +36,42 @@ export function initializeSystemHandlers() {
     } else {
       senderWindow.maximize();
     }
+  });
+
+  toggleFullscreenRequest.handle(async (_, event) => {
+    if (!event) return;
+
+    const senderWindow = getSourceWindowFromIPCEvent(event);
+
+    if (!senderWindow) return;
+
+    if (senderWindow.isFullScreen()) {
+      senderWindow.setFullScreen(false);
+    } else {
+      senderWindow.setFullScreen(true);
+    }
+  });
+
+  openLinkRequest.handle(async ({ url }) => {
+    shell.openExternal(url);
+  });
+
+  autorunEffect(() => {
+    const { mainWindow } = appState;
+
+    if (!mainWindow) return;
+
+    isFullscreenValue.set(mainWindow.isFullScreen());
+
+    const handleEnterFullscreen = () => isFullscreenValue.set(true);
+    const handleLeaveFullscreen = () => isFullscreenValue.set(false);
+
+    mainWindow.on("enter-full-screen", handleEnterFullscreen);
+    mainWindow.on("leave-full-screen", handleLeaveFullscreen);
+
+    return () => {
+      mainWindow.off("enter-full-screen", handleEnterFullscreen);
+      mainWindow.off("leave-full-screen", handleLeaveFullscreen);
+    };
   });
 }

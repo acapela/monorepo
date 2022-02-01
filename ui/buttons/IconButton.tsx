@@ -72,8 +72,6 @@ export const UIButton = styled.button<{
 
   ${(props) => getButtonKindtyles(props.kind)}
 
-  cursor: pointer;
-
   svg {
     font-size: ${(props) => props.iconSizeRatio}em;
   }
@@ -85,9 +83,5 @@ export const UIButton = styled.button<{
       pointer-events: none;
     `}
 
-  ${(props) =>
-    !props.$isDisabled &&
-    css`
-      cursor: pointer;
-    `};
+  ${(props) => !props.$isDisabled && theme.common.clickable};
 `;

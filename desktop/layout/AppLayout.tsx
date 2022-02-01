@@ -42,6 +42,10 @@ const UIFooter = styled.div``;
 
 const AppLayoutHolder = styled.div`
   padding-top: 48px;
+
+  body.fullscreen & {
+    padding-top: 24px;
+  }
   display: flex;
   flex-direction: column;
   flex-grow: 1;

@@ -2,15 +2,17 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/focus";
-import { PreloadBrowserView } from "@aca/desktop/BrowserViewBridge";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { DefinedList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
+import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
+import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
+import { mobxTicks } from "@aca/shared/mobxTime";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -21,6 +23,8 @@ interface Props {
 export const NotificationRow = styledObserver(({ notification, list }: Props) => {
   const isFocused = uiStore.focusedTarget === notification;
   const elementRef = useRef<HTMLDivElement>(null);
+
+  mobxTicks.minute.reportObserved();
 
   useEffect(() => {
     if (!isFocused) return;
@@ -50,11 +54,12 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
       {isFocused &&
         list.getNotificationsToPreload(notification).map((notificationToPreload) => {
-          return <PreloadBrowserView key={notificationToPreload.id} url={notificationToPreload.url} />;
+          return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
         })}
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
         <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>
   );
@@ -74,5 +79,10 @@ const UIHolder = styled.div<{ $isFocused: boolean }>`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.semibold}
+  ${theme.typo.content.semibold};
+  flex-grow: 1;
+`;
+
+const UIDate = styled.div`
+  opacity: 0.6;
 `;

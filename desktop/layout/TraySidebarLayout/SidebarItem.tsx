@@ -14,17 +14,19 @@ interface Props {
 export const SidebarItem = observer(function SidebarItem({ action, target }: Props) {
   const { name } = resolveActionDataWithTarget(action, target);
   return (
-    <ActionTrigger action={action} target={target}>
-      <UIHolder>
-        <UILabel>{name}</UILabel>
-      </UIHolder>
-    </ActionTrigger>
+    <UIHolder action={action} target={target}>
+      <UILabel>{name}</UILabel>
+    </UIHolder>
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled(ActionTrigger)`
   padding: 12px 12px 12px 72px;
   ${theme.typo.secondaryTitle};
   ${theme.common.clickable};
+  opacity: 0.8;
+  &:hover {
+    opacity: 1;
+  }
 `;
 const UILabel = styled.div``;

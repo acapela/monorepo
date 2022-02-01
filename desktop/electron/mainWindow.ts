@@ -5,6 +5,9 @@ import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
+import { action, runInAction } from "mobx";
+
+import { AppEnvData } from "@aca/desktop/envData";
 
 import { appState } from "./appState";
 
@@ -22,6 +25,11 @@ if (!IS_DEV) {
 }
 
 export function initializeMainWindow() {
+  const env: AppEnvData = {
+    sentryDsn,
+    isDev: IS_DEV,
+    version: app.getVersion(),
+  };
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -29,10 +37,12 @@ export function initializeMainWindow() {
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
-      additionalArguments: [sentryDsn, `${IS_DEV}`, app.getVersion()],
+      additionalArguments: [JSON.stringify(env)],
     },
+    minWidth: 900,
+    minHeight: 680,
     titleBarStyle: "hidden",
-    fullscreenable: false,
+    fullscreenable: true,
   });
 
   // mainWindow.webContents.openDevTools();
@@ -49,10 +59,21 @@ export function initializeMainWindow() {
   autoUpdater.logger = log;
   autoUpdater.checkForUpdatesAndNotify();
 
-  appState.mainWindow = mainWindow;
+  runInAction(() => {
+    appState.mainWindow = mainWindow;
+  });
 
-  mainWindow.on("closed", () => {
-    appState.mainWindow = null;
+  mainWindow.on(
+    "closed",
+    action(() => {
+      appState.mainWindow = null;
+    })
+  );
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.getBrowserViews().forEach((view) => {
+      mainWindow.removeBrowserView(view);
+    });
   });
 
   return mainWindow;

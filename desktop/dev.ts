@@ -32,8 +32,8 @@ async function start() {
   // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
   removeDirectory(path.resolve(__dirname, "dist"));
 
-  const clientBundler = createClientBundler(false);
-  const electronBundler = createElectronBundler(false);
+  const clientBundler = createClientBundler("development");
+  const electronBundler = createElectronBundler("development");
 
   const clientCodeReady = createResolvablePromise();
 

@@ -1,16 +1,18 @@
+import "@aca/desktop/lib/vars"; // import for side effects
+
 import * as Sentry from "@sentry/electron/dist/renderer";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
+import { AppEnvData } from "@aca/desktop/envData";
 
-const version = process.argv.pop();
-const isDev = process.argv.pop() === "true";
-const sentryDsn = process.argv.pop();
+const appEnvJSON = process.argv.pop();
+const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
 
-if (!isDev) {
+if (!appEnv.isDev) {
   Sentry.init({
-    dsn: sentryDsn,
-    release: version,
+    dsn: appEnv.sentryDsn,
+    release: appEnv.version,
   });
 }
 
@@ -54,9 +56,7 @@ const publishedApi = {
     // TODO (security): reject other channels than registered bridges
     ipcRenderer.send(channel, data);
   },
-  version,
-  isDev,
-  sentryDsn,
+  env: appEnv,
 };
 
 export type ElectronPublishedAPI = typeof publishedApi;

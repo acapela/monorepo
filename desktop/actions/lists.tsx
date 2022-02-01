@@ -1,8 +1,8 @@
+import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
+import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
-import { preconfiguredLists } from "../domains/list/preconfigured";
-import { desktopRouter, getIsRouteActive } from "../routes";
-import { uiStore } from "../store/uiStore";
 import { defineAction } from "./action";
 
 export const goToList = defineAction({

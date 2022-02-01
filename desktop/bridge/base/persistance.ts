@@ -1,48 +1,72 @@
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 import { useObserver } from "mobx-react";
 
 import { createChannel } from "@aca/shared/channel";
+import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 
-import { createChannelBridge, createInvokeBridge } from "./channels";
+import { createChannelBridge } from "./channels";
+import { createInvokeBridge } from "./invoke";
 
-export const requestPersistValue = createInvokeBridge<boolean, { key: string; data: unknown }>("requestPersistValue");
-export const requestGetPersistedValue = createInvokeBridge<unknown, string>("requestGetPersistedValue");
+export const requestPersistValue = createInvokeBridge<{ key: string; data: unknown }, boolean>("requestPersistValue");
+export const requestGetPersistedValue = createInvokeBridge<string, unknown>("requestGetPersistedValue");
 
-export const persistedValueChangeRequestChannel = createChannelBridge<{ key: string; data: unknown }>(
-  "persistedValueChangeRequestChannel"
-);
+export const bridgeValueChangeChannel = createChannelBridge<{ key: string; data: unknown }>("bridgeValueChangeChannel");
 
-export function createElectronPersistedValue<T>(valueKey: string, getDefault: () => T) {
+interface BridgeValueConfig<T> {
+  getDefault: () => T;
+  isPersisted?: boolean;
+}
+
+export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
   const localChannel = createChannel<T>();
 
   const observableValue = observable.box<T>(getDefault());
 
-  const isReady = observable.box(false);
+  const isReady = observable.box(!isPersisted);
 
-  localChannel.subscribe((value) => {
-    observableValue.set(value);
-    isReady.set(true);
-  });
+  localChannel.subscribe(
+    action((value) => {
+      observableValue.set(value);
+      isReady.set(true);
+    })
+  );
 
-  setTimeout(() => {
-    requestGetPersistedValue(valueKey).then((value) => {
-      if (value !== null) {
-        localChannel.publish(value as T);
-      } else {
-        isReady.set(true);
-      }
-    });
-  }, 1);
+  function initialize() {
+    if (!isPersisted) {
+      return;
+    }
+    setTimeout(() => {
+      requestGetPersistedValue(valueKey).then((value) => {
+        if (value !== null) {
+          localChannel.publish(value as T);
+        } else {
+          isReady.set(true);
+        }
+      });
+    }, 1);
+  }
 
-  persistedValueChangeRequestChannel.subscribe(({ key, data }) => {
+  initialize();
+
+  bridgeValueChangeChannel.subscribe(({ key, data }) => {
     if (key !== valueKey) return;
     localChannel.publish(data as T);
   });
 
   function set(value: T) {
     localChannel.publish(value);
-    requestPersistValue({ key: valueKey, data: value });
-    persistedValueChangeRequestChannel.send({ key: valueKey, data: value });
+
+    bridgeValueChangeChannel.send({ key: valueKey, data: value });
+
+    if (isPersisted) {
+      requestPersistValue({ key: valueKey, data: value });
+    }
+  }
+
+  function update(updater: ValueUpdater<T>) {
+    const newValue = updateValue(get(), updater);
+
+    set(newValue);
   }
 
   function get() {
@@ -60,5 +84,6 @@ export function createElectronPersistedValue<T>(valueKey: string, getDefault: ()
     get,
     set,
     use,
+    update,
   };
 }

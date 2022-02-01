@@ -20,3 +20,14 @@ export function mapGetOrCreate<M extends Map<unknown, unknown>>(
 
   return newValue;
 }
+
+export function mapRemoveValue<K, V>(map: Map<K, V>, value: V) {
+  for (const [key, existingValue] of map) {
+    if (existingValue === value) {
+      map.delete(key);
+      return true;
+    }
+  }
+
+  return false;
+}

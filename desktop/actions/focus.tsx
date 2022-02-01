@@ -1,8 +1,11 @@
 import React from "react";
 
-import { IconArrowBottom, IconArrowLeft, IconArrowTop } from "@aca/ui/icons";
+import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
+import { openLinkRequest } from "@aca/desktop/bridge/system";
+import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconExternalLink, IconTarget } from "@aca/ui/icons";
 
-import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 
 export const exitFocusMode = defineAction({
@@ -29,6 +32,34 @@ export const openFocusMode = defineAction({
     const notification = context.assertTarget("notification");
 
     desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+  },
+});
+
+export const focusOnNotificationPreview = defineAction({
+  icon: <IconTarget />,
+  name: "Focus on notification screen",
+  shortcut: ["Mod", "Enter"],
+  canApply: () => {
+    return getIsRouteActive("focus") && !uiStore.isAnyPreviewFocused;
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    requestPreviewFocus({ url: notification.url });
+  },
+});
+
+export const openNotificationInApp = defineAction({
+  icon: <IconExternalLink />,
+  name: "Open in original app",
+  shortcut: ["Mod", "Shift", "O"],
+  canApply: () => {
+    return getIsRouteActive("focus");
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    openLinkRequest({ url: notification.url });
   },
 });
 

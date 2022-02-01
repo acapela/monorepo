@@ -1,4 +1,5 @@
 import { createChannelBridge } from "@aca/desktop/bridge/base/channels";
+import { createBridgeValue } from "@aca/desktop/bridge/base/persistance";
 import { Notification, Notification_Notion } from "@aca/gql";
 
 export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
@@ -19,3 +20,20 @@ export type NotionWorkerSync = {
 }[];
 
 export const notionSyncPayload = createChannelBridge<NotionWorkerSync>("notion-worker-sync");
+
+interface NotionSpaces {
+  selected: string[]; //id
+  allSpaces: NotionSpace[];
+}
+
+export interface NotionSpace {
+  id: string;
+  name: string;
+}
+
+export const notionSelectedSpaceValue = createBridgeValue<NotionSpaces>("notion-spaces", {
+  getDefault: () => ({
+    selected: [],
+    allSpaces: [],
+  }),
+});

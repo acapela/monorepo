@@ -1,6 +1,7 @@
 import { AnyStarImport, convertStarImportsToList } from "@aca/shared/imports";
 
 import { ActionData, getIsAction } from "./action";
+import * as appActions from "./app";
 import * as authActions from "./auth";
 import * as devActions from "./dev";
 import * as focusActions from "./focus";
@@ -15,7 +16,8 @@ export const allActions = composeActionsFromImports(
   listsActions,
   navigationActions,
   devActions,
-  focusActions
+  focusActions,
+  appActions
 );
 
 /**
