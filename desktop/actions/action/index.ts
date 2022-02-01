@@ -1,7 +1,7 @@
 import { runInAction } from "mobx";
 import { ReactNode } from "react";
 
-import { getUUID, isUUID } from "@aca/shared/uuid";
+import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 import { ActionContext, createActionContext } from "./context";
@@ -24,6 +24,7 @@ export interface ActionCreateInput {
 
 export interface ActionData extends ActionCreateInput {
   id: string;
+  isAction: typeof actionSymbol;
   canApply: ActionContextCallback<boolean>;
 }
 
@@ -46,9 +47,12 @@ export function resolveActionDataWithTarget(action: ActionData, target?: unknown
   return resolveActionData(action, context);
 }
 
+const actionSymbol = Symbol("action");
+
 export function defineAction(input: ActionCreateInput): ActionData {
   return {
     id: getUUID(),
+    isAction: actionSymbol,
     canApply: () => true,
     ...input,
   };
@@ -59,7 +63,7 @@ export function getIsAction(input: unknown): input is ActionData {
 
   const typedInput = input as ActionData;
 
-  return isUUID(typedInput.id) && typeof typedInput.name === "string" && typeof typedInput.canApply === "function";
+  return typedInput.isAction && typedInput.isAction === actionSymbol;
 }
 
 export function runAction(action: ActionData, context: ActionContext = createActionContext()) {

@@ -9,7 +9,7 @@ import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconCheck, IconExternalLi
 import { defineAction } from "./action";
 
 export const exitFocusMode = defineAction({
-  name: "Exit focus mode",
+  name: (ctx) => (ctx.isContextual ? "Exit" : "Exit focus mode"),
   icon: <IconArrowLeft />,
   shortcut: "Esc",
   canApply: () => getIsRouteActive("focus"),
@@ -22,7 +22,7 @@ export const exitFocusMode = defineAction({
 
 export const openFocusMode = defineAction({
   icon: <IconArrowBottom />,
-  name: "Open focus mode for notification",
+  name: (ctx) => (ctx.isContextual ? "Open" : "Open focus mode for notification"),
   shortcut: "Enter",
   canApply: (context) => {
     return !getIsRouteActive("focus") && context.hasTarget("list", true) && context.hasTarget("notification");
@@ -37,7 +37,7 @@ export const openFocusMode = defineAction({
 
 export const focusOnNotificationPreview = defineAction({
   icon: <IconTarget />,
-  name: "Focus on notification screen",
+  name: (ctx) => (ctx.isContextual ? "Focus" : "Focus on notification screen"),
   shortcut: ["Mod", "Enter"],
   canApply: () => {
     return getIsRouteActive("focus") && !uiStore.isAnyPreviewFocused;
@@ -51,10 +51,10 @@ export const focusOnNotificationPreview = defineAction({
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
-  name: "Open in original app",
+  name: (ctx) => (ctx.isContextual ? "Open App" : "Open in original app"),
   shortcut: ["Mod", "Shift", "O"],
-  canApply: () => {
-    return getIsRouteActive("focus");
+  canApply: (ctx) => {
+    return ctx.hasTarget("notification");
   },
   handler(context) {
     const notification = context.assertTarget("notification");
@@ -65,10 +65,10 @@ export const openNotificationInApp = defineAction({
 
 export const resolveNotification = defineAction({
   icon: <IconCheck />,
-  name: "Resolve Notification",
+  name: (ctx) => (ctx.isContextual ? "Resolve" : "Resolve Notification"),
   shortcut: ["Mod", "D"],
-  canApply: () => {
-    return getIsRouteActive("focus");
+  canApply: (ctx) => {
+    return ctx.hasTarget("notification");
   },
   handler(context) {
     const notification = context.assertTarget("notification");
@@ -79,7 +79,7 @@ export const resolveNotification = defineAction({
 
 export const goToNextNotification = defineAction({
   icon: <IconArrowBottom />,
-  name: "Go to previous notification",
+  name: (ctx) => (ctx.isContextual ? "Next" : "Go to next notification"),
   shortcut: "ArrowDown",
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
@@ -103,7 +103,7 @@ export const goToNextNotification = defineAction({
 
 export const goToPreviousNotification = defineAction({
   icon: <IconArrowTop />,
-  name: "Go to previous notification",
+  name: (ctx) => (ctx.isContextual ? "Previous" : "Go to previous notification"),
   shortcut: "ArrowUp",
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;

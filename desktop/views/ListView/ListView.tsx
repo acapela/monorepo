@@ -7,6 +7,7 @@ import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/Noti
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 
 import { ListsTabBar } from "./ListsTabBar";
+import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 export const ListView = observer(({ listId }: Props) => {
   const list = getPredefinedListById(listId);
   return (
-    <TraySidebarLayout>
+    <TraySidebarLayout footer={<ListViewFooter />}>
       <UITabsBar>
         <ListsTabBar activeListId={listId} />
       </UITabsBar>
