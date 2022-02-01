@@ -10,6 +10,7 @@ import { isClient } from "@aca/shared/document";
 
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationLinearEntity } from "./notification/linear/issue";
 import { notificationNotionEntity } from "./notification/notion/baseNotification";
 import { notificationNotionCommentedEntity } from "./notification/notion/commented";
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
@@ -44,6 +45,7 @@ export const appClientDbEntities = {
   notificationNotionCommented: notificationNotionCommentedEntity,
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
+  notificationLinear: notificationLinearEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
