@@ -26,7 +26,11 @@ const routeTargets = cachedComputed((): unknown[] => {
   return [];
 });
 
-export function createActionContext(forcedTarget?: unknown) {
+interface ActionContextConfig {
+  isContextual?: boolean;
+}
+
+export function createActionContext(forcedTarget?: unknown, { isContextual = false }: ActionContextConfig = {}) {
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
     const targets = [forcedTarget, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
@@ -35,6 +39,7 @@ export function createActionContext(forcedTarget?: unknown) {
   });
 
   return {
+    isContextual,
     // Not really used, but makes it easier to debug actions
     forcedTarget,
     ...targetPredicates,

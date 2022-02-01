@@ -6,12 +6,13 @@ import { ListViewTray } from "./Tray";
 
 interface Props {
   children: ReactNode;
+  footer?: ReactNode;
 }
 
-export function TraySidebarLayout({ children }: Props) {
+export function TraySidebarLayout({ children, footer }: Props) {
   return (
     <>
-      <AppLayout tray={<ListViewTray />} footer={null}>
+      <AppLayout tray={<ListViewTray />} footer={footer}>
         {children}
       </AppLayout>
     </>

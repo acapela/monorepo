@@ -16,7 +16,7 @@ export const goToList = defineAction({
 
 export const focusNextNotificationInList = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: "Focus next notification in list",
+  name: (ctx) => (ctx.isContextual ? "Next" : "Focus next notification in list"),
   canApply: () => {
     return getIsRouteActive("list");
   },
@@ -40,7 +40,7 @@ export const focusNextNotificationInList = defineAction({
 
 export const focusPreviousNotificationInList = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: "Focus previous notification in list",
+  name: (ctx) => (ctx.isContextual ? "Previous" : "Focus previous notification in list"),
   canApply: (context) => {
     return getIsRouteActive("list") && context.hasTarget("notification");
   },
@@ -59,7 +59,7 @@ export const focusPreviousNotificationInList = defineAction({
 
 export const goToNextList = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: "Go to next list",
+  name: (ctx) => (ctx.isContextual ? "Next list" : "Go to next list"),
   canApply: () => {
     return getIsRouteActive("list");
   },
@@ -75,7 +75,7 @@ export const goToNextList = defineAction({
 
 export const goToPreviousList = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: "Go to previous list",
+  name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
   canApply: () => {
     return getIsRouteActive("list");
   },

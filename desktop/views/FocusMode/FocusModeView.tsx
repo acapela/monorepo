@@ -15,6 +15,7 @@ import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { theme } from "@aca/ui/theme";
 
+import { FocusModeFooter } from "./FocusModeFooter";
 import { FocusModeTray } from "./Tray";
 
 interface Props {
@@ -29,7 +30,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const list = getPredefinedListById(listId);
 
   return (
-    <AppLayout tray={<FocusModeTray />} footer={null}>
+    <AppLayout tray={<FocusModeTray />} footer={<FocusModeFooter />}>
       {list?.getNotificationsToPreload(notification).map((notificationToPreload) => {
         return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
       })}

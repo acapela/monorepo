@@ -103,8 +103,7 @@
           "yarn frontend:dev",
           "yarn backend:dev",
           "yarn tooling:gql-types",
-          "yarn hasura:console",
-          "yarn desktop dev"
+          "yarn hasura:console"
         ]
       }
     ]

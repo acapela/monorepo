@@ -15,6 +15,12 @@ export function attachActionsShortcutsHandler(actions: ActionData[]) {
 
       const targetActions = actions
         /**
+         * Now filter by those that can be applied
+         */
+        .filter((action) => {
+          return action.canApply(actionContext);
+        })
+        /**
          * First filter actions leaving only those with matching shortcut definition
          */
         .filter((action) => {
@@ -23,12 +29,6 @@ export function attachActionsShortcutsHandler(actions: ActionData[]) {
           if (!shortcutDefinition) return false;
 
           return getIsShortcutDefinitionMatchingEvent(shortcutDefinition, event);
-        })
-        /**
-         * Now filter by those that can be applied
-         */
-        .filter((action) => {
-          return action.canApply(actionContext);
         });
 
       if (!targetActions.length) return;
