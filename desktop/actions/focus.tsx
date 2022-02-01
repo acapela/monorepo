@@ -4,7 +4,7 @@ import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconExternalLink, IconTarget } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconCheck, IconExternalLink, IconTarget } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 
@@ -60,6 +60,20 @@ export const openNotificationInApp = defineAction({
     const notification = context.assertTarget("notification");
 
     openLinkRequest({ url: notification.url });
+  },
+});
+
+export const resolveNotification = defineAction({
+  icon: <IconCheck />,
+  name: "Resolve Notification",
+  shortcut: ["Mod", "D"],
+  canApply: () => {
+    return getIsRouteActive("focus");
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    notification.update({ resolved_at: new Date().toISOString() });
   },
 });
 

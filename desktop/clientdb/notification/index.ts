@@ -1,10 +1,12 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
 import {
   DesktopNotificationFragment,
   Notification_Bool_Exp,
@@ -37,6 +39,8 @@ type DesktopNotificationConstraints = {
 
 const innerEntities = [notificationNotionEntity, notificationSlackMessageEntity, notificationFigmaCommentEntity];
 
+export type NotificationInner = EntityDataByDefinition<typeof innerEntities[number]>;
+
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   name: "notification",
   updatedAtField: "updated_at",
@@ -60,23 +64,38 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       upsertConstraint: "notification_pkey",
     }
   ),
-}).addConnections((notification, { getEntity }) => {
-  const connections = {
-    get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
-      return (
-        innerEntities
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .find(Boolean) as any
-      );
-    },
-    get kind() {
-      return connections.inner?.__typename ?? null;
-    },
-  };
+})
+  .addConnections((notification, { getEntity }) => {
+    const connections = {
+      get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
+        return (
+          innerEntities
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .find(Boolean) as any
+        );
+      },
+      get kind() {
+        return connections.inner?.__typename ?? null;
+      },
+    };
 
-  return connections;
-});
+    return connections;
+  })
+  .addEventHandlers({
+    itemUpdated(notification, dataBefore) {
+      const isResolvedNow = !dataBefore.resolved_at && notification.resolved_at;
+
+      if (!isResolvedNow) return;
+
+      if (!notification.inner) return;
+
+      const notificationData = notification.getData();
+      const notificationInnerData = notification.inner.getData();
+
+      notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
+    },
+  });
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;
