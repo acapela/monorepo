@@ -27,11 +27,6 @@ export const googleAuthTokenBridgeValue = createBridgeValue<boolean>("google-aut
 });
 export const loginGoogleBridge = createInvokeBridge("login-google");
 
-export const slackAuthTokenBridgeValue = createBridgeValue<boolean>("slack-auth-token", {
-  getDefault: () => false,
-  isPersisted: true,
-});
-export const loginSlackBridge = createInvokeBridge("login-slack");
 export const connectSlackBridge = createInvokeWithCleanupBridge<{ url: string }>("connect-slack");
 
 export async function logout() {
