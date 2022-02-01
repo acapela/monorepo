@@ -2,6 +2,7 @@ import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobxUtils";
 
+import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
 import { isNotionReadyToSync, startNotionSync } from "./notion/worker";
 import { ServiceSyncController } from "./types";
@@ -32,7 +33,13 @@ function startFigmaIfReady() {
   startFigmaSync();
 }
 
+export function iniitializeServicePushSync() {
+  initializeFigmaPush();
+}
+
 export function initializeServiceSync() {
+  iniitializeServicePushSync();
+
   workerSyncStart.handle(async (isAbleToStart: boolean) => {
     if (!isAbleToStart) {
       return;

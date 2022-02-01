@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { openNotificationInApp } from "@aca/desktop/actions/focus";
+import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/focus";
 import { getDb } from "@aca/desktop/clientdb";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -24,23 +24,24 @@ interface Props {
 
 export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
-  const currentNotification = db.notification.assertFindById(notificationId);
+  const notification = db.notification.assertFindById(notificationId);
 
   const list = getPredefinedListById(listId);
 
   return (
     <AppLayout tray={<FocusModeTray />} footer={null}>
-      {list?.getNotificationsToPreload(currentNotification).map((notificationToPreload) => {
+      {list?.getNotificationsToPreload(notification).map((notificationToPreload) => {
         return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
       })}
 
       <UIHeader>
-        <NotificationAppIcon notification={currentNotification} />
-        <UITitle>{getNotificationTitle(currentNotification)}</UITitle>
-        <ActionIconButton action={openNotificationInApp} target={currentNotification} showTitleInTooltip />
+        <NotificationAppIcon notification={notification} />
+        <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <ActionIconButton action={openNotificationInApp} target={notification} showTitleInTooltip />
+        <ActionIconButton action={resolveNotification} target={notification} showTitleInTooltip />
       </UIHeader>
 
-      <NotificationEmbedView url={currentNotification.url} />
+      <NotificationEmbedView url={notification.url} />
     </AppLayout>
   );
 });
