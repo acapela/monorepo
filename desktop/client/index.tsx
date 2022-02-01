@@ -13,6 +13,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { CommandMenuManager } from "../domains/commandMenu/CommandMenuManager";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
@@ -40,6 +41,7 @@ render(
         <ToastsRenderer />
         <ServiceWorkerConsolidation />
         <SystemBar />
+        <CommandMenuManager />
         <RootView />
       </AppThemeProvider>
     </MotionConfig>

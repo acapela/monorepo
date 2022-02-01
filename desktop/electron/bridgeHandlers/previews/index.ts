@@ -162,7 +162,7 @@ async function attachPreviewToWindow(url: string, initialPosition: PreviewPositi
   assertViewIsNotAttachedToWindow(preview.view, targetWindow);
 
   targetWindow.setBrowserView(preview.view);
-  preview.view.webContents.focus();
+  // preview.view.webContents.focus();
 
   preview.position = initialPosition;
 

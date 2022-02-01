@@ -13,4 +13,5 @@ export const box = {
   previewPopover: createBox(20, 20),
   pageCart: createBox(30, 30),
   buttonsGroup: createBox(4, 4),
+  hint: createBox(4, 4),
 };

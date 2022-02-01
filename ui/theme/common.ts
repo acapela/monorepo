@@ -14,4 +14,10 @@ export const common = {
     -webkit-app-region: no-drag;
     user-select: none;
   `,
+  stretchPosition: css`
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  `,
 };

@@ -1,7 +1,7 @@
 import "@aca/desktop/lib/env"; // import for side effects
 
 import * as Sentry from "@sentry/electron/dist/renderer";
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+import { IpcRendererEvent, clipboard, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 import { AppEnvData } from "@aca/desktop/envData";
@@ -55,6 +55,9 @@ const publishedApi = {
   send: (channel: string, data: unknown) => {
     // TODO (security): reject other channels than registered bridges
     ipcRenderer.send(channel, data);
+  },
+  copyToClipboard: (thing: string) => {
+    clipboard.write({ text: thing });
   },
   env: appEnv,
 };

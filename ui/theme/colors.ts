@@ -35,10 +35,13 @@ const divider = color("#E0E0E0");
 
 const selectedTab = color("#f3f4f6");
 
+const inverted = color("#111827");
+
 export const colors = {
   primary,
   secondary,
   text: black,
+  inverted,
   action: {
     // Used for buttons
     primary,
@@ -56,6 +59,7 @@ export const colors = {
     }),
   },
   layout: {
+    actionPanel: inverted,
     // Root background of the app
     background: white,
     // Used eg. for app sidebar

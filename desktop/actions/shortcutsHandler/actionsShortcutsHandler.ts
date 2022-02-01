@@ -1,5 +1,6 @@
 import { ActionData, runAction } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { getIsShortcutDefinitionMatchingEvent } from "@aca/ui/keyboard/shortcutBase";
 
 /**
@@ -11,6 +12,8 @@ export function attachActionsShortcutsHandler(actions: ActionData[]) {
   document.body.addEventListener(
     "keydown",
     (event) => {
+      if (commandMenuStore.session) return;
+
       const actionContext = createActionContext();
 
       const targetActions = actions
