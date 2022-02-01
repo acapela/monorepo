@@ -36,15 +36,10 @@ function startFigmaIfReady() {
     return;
   }
   startFigmaSync();
-}
-
-export function initializeServicePushSync() {
   initializeFigmaPush();
 }
 
 export function initializeServiceSync() {
-  initializeServicePushSync();
-
   workerSyncStart.handle(async (isAbleToStart: boolean) => {
     if (!isAbleToStart) {
       return;

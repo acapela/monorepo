@@ -94,6 +94,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       const notificationData = notification.getData();
       const notificationInnerData = notification.inner.getData();
 
+      console.info(`[Push Resolve] Notification ${notification.id} of type ${notificationInnerData.__typename}`);
       notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
     },
   });

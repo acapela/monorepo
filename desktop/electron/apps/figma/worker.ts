@@ -21,6 +21,7 @@ interface FigmaSessionData {
   cookie: string;
   release_git_tag: string;
   figmaUserId: string;
+  trackingSessionId: string;
 }
 
 function isUserNotification(payload: FigmaUserNotification | undefined): payload is FigmaUserNotification {
@@ -56,7 +57,7 @@ export async function startFigmaSync() {
   startFigmaSocketBasedSync(figmaSessionData);
 }
 
-async function getFigmaSessionData(): Promise<FigmaSessionData> {
+export async function getFigmaSessionData(): Promise<FigmaSessionData> {
   const figmaWindow = new BrowserWindow({
     width: 0,
     height: 0,
@@ -71,6 +72,9 @@ async function getFigmaSessionData(): Promise<FigmaSessionData> {
   const release_git_tag = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.release_git_tag");
 
   const figmaUserId = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.user_data.id");
+  const trackingSessionId = await figmaWindow.webContents.executeJavaScript(
+    "window.INITIAL_OPTIONS.tracking_session_id"
+  );
 
   const figmaCookies = await figmaWindow.webContents.session.cookies.get({
     url: figmaURL,
@@ -85,12 +89,14 @@ async function getFigmaSessionData(): Promise<FigmaSessionData> {
 
   assert(release_git_tag, "Cant find figma release tag");
   assert(figmaUserId, "Cant find figma user is");
+  assert(trackingSessionId, "cant find tracking session id");
   assert(cookie, "cant find figma cookie");
 
   return {
     release_git_tag,
     figmaUserId,
     cookie,
+    trackingSessionId,
   };
 }
 
