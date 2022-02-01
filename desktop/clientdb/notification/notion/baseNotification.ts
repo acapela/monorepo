@@ -25,6 +25,7 @@ const notificationNotion = gql`
     updated_at
     page_id
     page_title
+    space_id
   }
 `;
 
@@ -56,6 +57,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
     {
       insertColumns: [
         "id",
+        "space_id",
         "notification_id",
         "notion_original_notification_id",
         "page_id",
@@ -63,7 +65,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
         "updated_at",
         "page_title",
       ],
-      updateColumns: ["updated_at", "page_title"],
+      updateColumns: ["updated_at", "page_title", "space_id"],
       upsertConstraint: "notification_notion_pkey",
     }
   ),
@@ -78,7 +80,6 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
     );
   },
   get type() {
-    return "notification_notion_user_mentioned";
     return this.inner.__typename;
   },
 }));
