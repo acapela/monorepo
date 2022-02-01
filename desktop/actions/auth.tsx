@@ -66,7 +66,6 @@ export const restartAndClearElectronData = defineAction({
   name: "Log out",
   group: accountActionsGroup,
   keywords: ["reload"],
-  shortcut: ["Mod", "Shift", "C"],
   handler() {
     clearAllDataRequest();
   },

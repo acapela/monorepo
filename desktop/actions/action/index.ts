@@ -55,6 +55,17 @@ export function defineAction(input: ActionCreateInput): ActionData {
     id: getUUID(),
     isAction: actionSymbol,
     canApply: () => true,
+    get keywords() {
+      const keywords = input.keywords ?? [];
+
+      const groupName = input.group?.name;
+
+      if (groupName && typeof groupName === "string") {
+        keywords.push(groupName);
+      }
+
+      if (keywords.length) return keywords;
+    },
     ...input,
   };
 }

@@ -39,7 +39,14 @@ export function fuzzySearchWithScore<T>(items: T[], termsGetter: TermGetter<T>, 
   return sortBy(passingItems, (item) => item.score).reverse();
 }
 
-export function fuzzySearch<T>(items: T[], termsGetter: TermGetter<T>, keyword: string, minScore = 0) {
+const DEFAULT_FUZZY_SEARCH_TRESHOLD = 0.09;
+
+export function fuzzySearch<T>(
+  items: T[],
+  termsGetter: TermGetter<T>,
+  keyword: string,
+  minScore = DEFAULT_FUZZY_SEARCH_TRESHOLD
+) {
   if (!keyword.trim()) {
     return items;
   }

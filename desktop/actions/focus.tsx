@@ -35,7 +35,7 @@ export const currentNotificationActionsGroup = defineGroup({
 });
 
 export const exitFocusMode = defineAction({
-  name: (ctx) => (ctx.isContextual ? "Exit" : "Exit focus mode"),
+  name: (ctx) => (ctx.isContextual ? "Exit" : "Go back to list"),
   group: currentNotificationActionsGroup,
   icon: <IconArrowLeft />,
   shortcut: "Esc",
@@ -109,6 +109,7 @@ export const copyNotificationLink = defineAction({
   icon: <IconLink1 />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
+  shortcut: ["Mod", "Shift", "C"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
