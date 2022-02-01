@@ -2,8 +2,9 @@ import React from "react";
 
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowLeft, IconCross, IconHome, IconMenu, IconSlidersHoriz } from "@aca/ui/icons";
+import { IconArrowLeft, IconCross, IconHome, IconMenu, IconMonitor, IconSlidersHoriz } from "@aca/ui/icons";
 
+import { openLinkRequest } from "../bridge/system";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -16,6 +17,16 @@ export const goToMainScreen = defineAction({
   icon: <IconHome />,
   handler() {
     desktopRouter.navigate("home");
+  },
+});
+
+export const openAcapelaWebsite = defineAction({
+  name: "Open Acapela website",
+  group: navigationActionsGroup,
+  keywords: ["info", "help", "feedback"],
+  icon: <IconMonitor />,
+  handler() {
+    openLinkRequest({ url: "https://acapela.com" });
   },
 });
 
