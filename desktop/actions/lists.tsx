@@ -41,13 +41,18 @@ export const focusNextNotificationInList = defineAction({
 export const focusPreviousNotificationInList = defineAction({
   // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: (ctx) => (ctx.isContextual ? "Previous" : "Focus previous notification in list"),
-  canApply: (context) => {
-    return getIsRouteActive("list") && context.hasTarget("notification");
+  canApply: () => {
+    return getIsRouteActive("list");
   },
   shortcut: "ArrowUp",
   handler(context) {
     const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+
+    if (!notification) {
+      uiStore.focusedTarget = list.getAllNotifications().last;
+      return;
+    }
 
     const previousNotification = list.getPreviousNotification(notification);
 
