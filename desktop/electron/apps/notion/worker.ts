@@ -80,6 +80,7 @@ export function startNotionSync(): ServiceSyncController {
   runSync();
 
   return {
+    serviceName: "notion",
     onWindowFocus() {
       const now = new Date();
       const isLongTimeSinceLastFocus = !timeOfLastSync || differenceInMinutes(now, timeOfLastSync) > 5;
@@ -91,6 +92,9 @@ export function startNotionSync(): ServiceSyncController {
     },
     onWindowBlur() {
       restartPullInterval(WINDOW_BLURRED_INTERVAL);
+    },
+    forceSync() {
+      runSync();
     },
   };
 }
@@ -132,7 +136,9 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
     throw new Error("[Notion] Unauthorized");
   }
 
-  return (await response.json()) as GetNotificationLogResult;
+  const result = (await response.json()) as GetNotificationLogResult;
+
+  return result;
 }
 
 async function fetchCurrentSpace(window: BrowserWindow) {

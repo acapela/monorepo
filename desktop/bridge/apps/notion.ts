@@ -36,4 +36,5 @@ export const notionSelectedSpaceValue = createBridgeValue<NotionSpaces>("notion-
     selected: [],
     allSpaces: [],
   }),
+  isPersisted: true,
 });
