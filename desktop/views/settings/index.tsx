@@ -4,6 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
+import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
 import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
@@ -55,6 +56,7 @@ const NotionSpaceSelector = observer(function NotionSpaceSelector() {
       selected: [space.id],
       allSpaces,
     });
+    forceWorkerSyncRun(["notion"]);
   }
 
   return (

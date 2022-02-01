@@ -1,20 +1,25 @@
-import { workerSyncStart } from "@aca/desktop/bridge/apps";
+import { forceWorkerSyncRun, workerSyncStart } from "@aca/desktop/bridge/apps";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobxUtils";
 
 import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
 import { isNotionReadyToSync, startNotionSync } from "./notion/worker";
-import { ServiceSyncController } from "./types";
+import { ServiceSyncController, WorkerService } from "./types";
 
-export type NotificationServiceName = "notion";
+interface Handler {
+  serviceName: WorkerService;
+  action: () => void;
+}
 
-const onWindowsFocusHandlers: Array<() => void> = [];
-const onWindowsBlurHandlers: Array<() => void> = [];
+const onWindowsFocusHandlers: Array<Handler> = [];
+const onWindowsBlurHandlers: Array<Handler> = [];
+const onForcedRunHandlers: Array<Handler> = [];
 
-function addHandler(controller: ServiceSyncController) {
-  onWindowsFocusHandlers.push(controller.onWindowFocus);
-  onWindowsBlurHandlers.push(controller.onWindowBlur);
+function addHandler({ serviceName, onWindowBlur, onWindowFocus, forceSync }: ServiceSyncController) {
+  onWindowsFocusHandlers.push({ serviceName, action: onWindowFocus });
+  onWindowsBlurHandlers.push({ serviceName, action: onWindowBlur });
+  onForcedRunHandlers.push({ serviceName, action: forceSync });
 }
 
 function startNotionIfReady() {
@@ -33,12 +38,12 @@ function startFigmaIfReady() {
   startFigmaSync();
 }
 
-export function iniitializeServicePushSync() {
+export function initializeServicePushSync() {
   initializeFigmaPush();
 }
 
 export function initializeServiceSync() {
-  iniitializeServicePushSync();
+  initializeServicePushSync();
 
   workerSyncStart.handle(async (isAbleToStart: boolean) => {
     if (!isAbleToStart) {
@@ -48,12 +53,20 @@ export function initializeServiceSync() {
     startFigmaIfReady();
   });
 
+  forceWorkerSyncRun.handle(async (workersToForce: WorkerService[]) => {
+    onForcedRunHandlers.forEach((handler) => {
+      if (workersToForce.includes(handler.serviceName)) {
+        handler.action();
+      }
+    });
+  });
+
   function handleWindowFocus() {
-    onWindowsFocusHandlers.forEach((handler) => handler());
+    onWindowsFocusHandlers.forEach((handler) => handler.action());
   }
 
   function handleWindowBlur() {
-    onWindowsBlurHandlers.forEach((handler) => handler());
+    onWindowsBlurHandlers.forEach((handler) => handler.action());
   }
 
   autorunEffect(() => {
