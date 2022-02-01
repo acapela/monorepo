@@ -31,10 +31,12 @@ export interface NotionSpace {
   name: string;
 }
 
+const DEFAULT_SELECTED_SPACE_VALUE = {
+  selected: [],
+  allSpaces: [],
+};
+
 export const notionSelectedSpaceValue = createBridgeValue<NotionSpaces>("notion-spaces", {
-  getDefault: () => ({
-    selected: [],
-    allSpaces: [],
-  }),
+  getDefault: () => DEFAULT_SELECTED_SPACE_VALUE,
   isPersisted: true,
 });

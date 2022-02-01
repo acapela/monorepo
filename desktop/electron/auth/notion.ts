@@ -1,5 +1,6 @@
 import { BrowserWindow, session } from "electron";
 
+import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
@@ -48,4 +49,9 @@ export function initializeNotionAuthHandler() {
   getNotionAuthToken().then((token) => {
     notionAuthTokenBridgeValue.set(token);
   });
+}
+
+export function clearNotionSessionData() {
+  notionAuthTokenBridgeValue.reset();
+  notionSelectedSpaceValue.reset();
 }

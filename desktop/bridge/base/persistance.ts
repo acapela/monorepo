@@ -77,6 +77,10 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     return useObserver(() => get());
   }
 
+  function reset() {
+    return set(getDefault());
+  }
+
   return {
     get isReady() {
       return isReady.get();
@@ -85,5 +89,6 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     set,
     use,
     update,
+    reset,
   };
 }

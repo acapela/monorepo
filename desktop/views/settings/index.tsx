@@ -1,12 +1,12 @@
 import { toJS } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { connectFigma, connectGoogle, connectNotion, connectSlack } from "@aca/desktop/actions/auth";
 import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
 import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
-import { slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { notionAuthTokenBridgeValue, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { authStore } from "@aca/desktop/store/authStore";
@@ -42,8 +42,16 @@ export const SettingsView = observer(function SettingsView() {
 
 const NotionSpaceSelector = observer(function NotionSpaceSelector() {
   const savedSpaces = notionSelectedSpaceValue.use();
+  const notionAuthBridge = notionAuthTokenBridgeValue.use();
 
-  if (savedSpaces?.selected?.length === 0) {
+  useEffect(() => {
+    // Covers corner case of losing notion session without resetting spaces
+    if (!notionAuthBridge) {
+      notionSelectedSpaceValue.reset();
+    }
+  }, [notionAuthBridge]);
+
+  if (!savedSpaces?.selected?.length) {
     return <></>;
   }
 
