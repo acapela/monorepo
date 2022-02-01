@@ -16,6 +16,10 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
   useShortcut(
     ["Mod", "K"],
     action(() => {
+      if (commandMenuStore.session) {
+        commandMenuStore.session = null;
+        return;
+      }
       uiStore.isSidebarOpened = false;
       commandMenuStore.session = createDefaultCommandMenuSession();
     })

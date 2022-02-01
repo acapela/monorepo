@@ -14,6 +14,7 @@ export const goToMainScreen = defineAction({
   name: "Go to main screen",
   group: navigationActionsGroup,
   keywords: ["home", "return", "back"],
+  shortcut: ["Mod", "Shift", "H"],
   icon: <IconHome />,
   handler() {
     desktopRouter.navigate("home");

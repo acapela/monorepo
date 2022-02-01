@@ -125,6 +125,7 @@ export const resolveNotification = defineAction({
   icon: <IconCheck />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Resolve" : "Resolve Notification"),
+  keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");

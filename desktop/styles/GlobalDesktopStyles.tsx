@@ -15,6 +15,10 @@ export const GlobalDesktopStyles = createGlobalStyle`
     cursor: default;
   }
 
+  input, textarea {
+    cursor: text;
+  }
+
   #root {
     display: flex;
     flex-direction: column;
