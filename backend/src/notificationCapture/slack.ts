@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
+import { uniq } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
@@ -25,6 +26,9 @@ function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
   });
 }
 
+const extractMentionedSlackUserIdsFromMd = (text?: string) =>
+  extractMentionedSlackUserIds(parseSlackMarkdown(text ?? ""));
+
 async function resolveMessageNotifications(userId: string, whereMessage: Prisma.notification_slack_messageWhereInput) {
   await db.notification.updateMany({
     where: {
@@ -44,9 +48,10 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
  *   only do the fetch if its not a channel or if there is a mention.
  * - Add pagination! This fetches the first 100 channel members, which is likely more than enough for IMs, but not for
  *   channels
+ *   - Same for threads, I have not run into the limit yet but if we want to scale to infinity we'll want to paginate
  */
 async function createNotificationsFromMessage(userToken: string, message: GenericMessageEvent) {
-  const authorSlackUserId = message.user;
+  const { ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
   const membersResponse = await slackClient.conversations.members({
     token: userToken,
     channel: message.channel,
@@ -56,26 +61,39 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
   // An instant message (IM) is either a direct message or a group chat between multiple people, but not a channel.
   const isIM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
 
-  // For IMs initialize the Map with all conversation members (apart from the author)
-  const membersWithoutAuthor = Array.from(members).filter((slackUserId) => slackUserId != authorSlackUserId);
-  const slackUserIdsToNotify = new Map<string, { isMention: boolean }>(
-    isIM_or_MPIM ? membersWithoutAuthor.map((slackUserId) => [slackUserId, { isMention: false }]) : undefined
-  );
+  const membersWithoutAuthor = new Set(members);
+  membersWithoutAuthor.delete(authorSlackUserId);
+
+  const slackUserIdsToNotify: string[] = [];
+
+  if (threadTs) {
+    // For a message posted in a thread, notify all users who posted in the thread or were mentioned in it
+    const { messages } = await slackClient.conversations.replies({
+      token: userToken,
+      channel: message.channel,
+      ts: threadTs,
+    });
+    slackUserIdsToNotify.push(
+      ...(messages ?? []).flatMap(({ user: author, text }) =>
+        (author && membersWithoutAuthor.has(author) ? [author] : []).concat(
+          extractMentionedSlackUserIdsFromMd(text).filter((id) => membersWithoutAuthor.has(id))
+        )
+      )
+    );
+  } else if (isIM_or_MPIM) {
+    // For IMs outside of threads notify all members of the conversation except for the author
+    slackUserIdsToNotify.push(...membersWithoutAuthor);
+  }
 
   // Extract all mentioned users and set/overwrite them as mentions in the slackUsersToNotify Map
-  const mentionedSlackUserIds = extractMentionedSlackUserIds(parseSlackMarkdown(message.text ?? "")).filter(
-    (slackUserId) => members.has(slackUserId)
+  const mentionedSlackUserIds = new Set(
+    extractMentionedSlackUserIdsFromMd(message.text).filter((id) => members.has(id))
   );
-  for (const slackUserId of mentionedSlackUserIds) {
-    slackUserIdsToNotify.set(slackUserId, { isMention: true });
-  }
 
   // Find Acapela users for all the Slack users that would be notified
   const userSlackInstallations = await db.user_slack_installation.findMany({
     where: {
-      OR: Array.from(slackUserIdsToNotify.keys()).map((slackUserId) => ({
-        data: { path: ["user", "id"], equals: slackUserId },
-      })),
+      OR: uniq(slackUserIdsToNotify).map((id) => ({ data: { path: ["user", "id"], equals: id } })),
     },
   });
 
@@ -87,17 +105,17 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
     slackClient.chat.getPermalink({
       token: userToken,
       channel: message.channel,
-      message_ts: message.ts,
+      message_ts: messageTs,
     }),
     slackClient.users.info({ token: userToken, user: authorSlackUserId }),
     isIM_or_MPIM
-      ? { channel: undefined }
+      ? // we only need to fetch info for channels, as we use their name for the notification title
+        { channel: undefined }
       : slackClient.conversations.info({ token: userToken, channel: message.channel }),
   ]);
-  assert(permalink, `could not get permalink for message ${message.ts} in channel ${message.channel}`);
+  assert(permalink, `could not get permalink for message ${messageTs} in channel ${message.channel}`);
   assert(author, `could not get slack user for id ${authorSlackUserId}`);
 
-  const threadTs = message.thread_ts;
   const isIM = message.channel_type == "im";
   // We have to use a transaction due to Prisma not supporting relation-creation within createMany
   await db.$transaction(
@@ -111,8 +129,8 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
             create: {
               slack_conversation_id: message.channel,
               slack_thread_ts: threadTs,
-              slack_message_ts: message.ts,
-              is_mention: slackUserIdsToNotify.get((data as unknown as SlackInstallation).user.id)?.isMention ?? false,
+              slack_message_ts: messageTs,
+              is_mention: mentionedSlackUserIds.has((data as unknown as SlackInstallation).user.id),
               ...(channel
                 ? {
                     conversation_name: (channel.is_private ? "🔒" : "#") + channel.name_normalized,

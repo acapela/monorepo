@@ -1,6 +1,6 @@
 import React from "react";
 
-import { loginBridge, loginSlackBridge, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { loginBridge } from "@aca/desktop/bridge/auth";
 import {
   authTokenBridgeValue,
   figmaAuthTokenBridgeValue,
@@ -37,16 +37,6 @@ export const connectGoogle = defineAction({
   canApply: () => !googleAuthTokenBridgeValue.get(),
   handler() {
     loginGoogleBridge();
-  },
-});
-
-export const connectSlack = defineAction({
-  name: "Start Slack session",
-  icon: <IconAtom />,
-  group: accountActionsGroup,
-  canApply: () => !slackAuthTokenBridgeValue.get(),
-  handler() {
-    loginSlackBridge();
   },
 });
 
