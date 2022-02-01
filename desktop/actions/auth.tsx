@@ -6,9 +6,7 @@ import {
   loginFigmaBridge,
   loginGoogleBridge,
   loginNotionBridge,
-  loginSlackBridge,
   notionAuthTokenBridgeValue,
-  slackAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 
 import { defineAction } from "./action";
@@ -26,14 +24,6 @@ export const connectGoogle = defineAction({
   canApply: () => !googleAuthTokenBridgeValue.get(),
   handler() {
     loginGoogleBridge();
-  },
-});
-
-export const connectSlack = defineAction({
-  name: "Start Slack session",
-  canApply: () => !slackAuthTokenBridgeValue.get(),
-  handler() {
-    loginSlackBridge();
   },
 });
 
