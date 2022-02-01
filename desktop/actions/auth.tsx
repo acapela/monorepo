@@ -1,3 +1,5 @@
+import React from "react";
+
 import { loginBridge, loginSlackBridge, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import {
   authTokenBridgeValue,
@@ -8,6 +10,7 @@ import {
   loginNotionBridge,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { IconAtom, IconLogIn, IconLogOut } from "@aca/ui/icons";
 
 import { clearAllDataRequest } from "../bridge/system";
 import { defineAction } from "./action";
@@ -20,6 +23,7 @@ export const accountActionsGroup = defineGroup({
 export const loginToAcapela = defineAction({
   name: "Log in",
   group: accountActionsGroup,
+  icon: <IconLogIn />,
   canApply: () => !authTokenBridgeValue.get(),
   handler() {
     loginBridge();
@@ -28,6 +32,7 @@ export const loginToAcapela = defineAction({
 
 export const connectGoogle = defineAction({
   name: "Connect Google",
+  icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
   handler() {
@@ -37,6 +42,7 @@ export const connectGoogle = defineAction({
 
 export const connectSlack = defineAction({
   name: "Start Slack session",
+  icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !slackAuthTokenBridgeValue.get(),
   handler() {
@@ -46,6 +52,7 @@ export const connectSlack = defineAction({
 
 export const connectFigma = defineAction({
   name: "Connect Figma",
+  icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !figmaAuthTokenBridgeValue.get(),
   handler() {
@@ -55,6 +62,7 @@ export const connectFigma = defineAction({
 
 export const connectNotion = defineAction({
   name: "Connect Notion",
+  icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !notionAuthTokenBridgeValue.get(),
   handler() {
@@ -64,6 +72,7 @@ export const connectNotion = defineAction({
 
 export const restartAndClearElectronData = defineAction({
   name: "Log out",
+  icon: <IconLogOut />,
   group: accountActionsGroup,
   keywords: ["reload"],
   handler() {
