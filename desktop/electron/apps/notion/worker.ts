@@ -13,6 +13,7 @@ import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/b
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { assert } from "@aca/shared/assert";
 
+import { clearNotionSessionData } from "../../auth/notion";
 import { ActivityPayload, BlockPayload, GetNotificationLogResult, GetSpacesResult, NotificationPayload } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
@@ -132,7 +133,7 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
   });
 
   if (response.status === 401) {
-    notionAuthTokenBridgeValue.set(null);
+    clearNotionSessionData();
     throw new Error("[Notion] Unauthorized");
   }
 
@@ -167,7 +168,7 @@ async function fetchCurrentSpace(window: BrowserWindow) {
   });
 
   if (response.status === 401) {
-    notionAuthTokenBridgeValue.set(null);
+    clearNotionSessionData();
     throw new Error("[Notion] 401 - Unauthorized");
   }
 
