@@ -1,4 +1,4 @@
-import "@aca/desktop/lib/vars"; // import for side effects
+import "@aca/desktop/lib/env"; // import for side effects
 
 import * as Sentry from "@sentry/electron/dist/renderer";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";

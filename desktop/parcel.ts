@@ -29,9 +29,9 @@ function loadDotenv() {
 }
 const loadedEnv = loadDotenv();
 
-const generatedJs = path.resolve(__dirname, "lib", "vars", "generated.js");
+const generatedJs = path.resolve(__dirname, "lib", "env", "generated.js");
 
-function generateVarFile(env: BuildEnvironment) {
+function generateEnvVarFile(env: BuildEnvironment) {
   const content = `// DO NOT EDIT! THIS FILE IS GENERATED DURING THE BUILD PROCESS
 module.exports = ${JSON.stringify(getEnv(env))};`;
   fs.writeFileSync(generatedJs, content);
@@ -56,7 +56,7 @@ function isDev(env: BuildEnvironment): boolean {
 
 // Electron code bundler
 export function createElectronBundler(env: BuildEnvironment): Parcel {
-  generateVarFile(env);
+  generateEnvVarFile(env);
   return new Parcel({
     // point into entry of electron code
     entries: [path.resolve(ELECTRON_DIR, "index.ts"), path.resolve(ELECTRON_DIR, "preload.ts")],

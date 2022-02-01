@@ -1,7 +1,7 @@
 import { BrowserWindow, session } from "electron";
 
 import { authTokenBridgeValue, loginBridge } from "@aca/desktop/bridge/auth";
-import { FRONTEND_URL } from "@aca/desktop/lib/vars";
+import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { syncGoogleAuthState } from "./google";
 import { syncSlackAuthState } from "./slack";
