@@ -33,3 +33,6 @@ export type JsonValue<T> = DeepReplace<
 export type PromiseResult<T> = T extends PromiseLike<infer U> ? U : T;
 
 export type AsyncReturnType<T> = T extends (...args: any[]) => PromiseLike<infer U> ? U : T;
+
+export type Cleanup = () => void;
+export type MaybeCleanup = Cleanup | void;

@@ -1,6 +1,9 @@
+import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 
-export function getNotificationTitle(notification: NotificationEntity): string {
+export const getNotificationTitle = cachedComputed(function getNotificationTitle(
+  notification: NotificationEntity
+): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const innerNotification = notification.inner!;
   const type = innerNotification.__typename;
@@ -29,4 +32,4 @@ export function getNotificationTitle(notification: NotificationEntity): string {
     default:
       return "Unhandled notification!!";
   }
-}
+});

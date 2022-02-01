@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
@@ -46,6 +46,10 @@ export const CommandMenuAction = observer(function CommandMenuAction({
   );
 });
 
+const UIIcon = styled.div`
+  font-size: 1.33em;
+`;
+
 const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
   padding: 16px 24px;
   ${theme.typo.content.medium};
@@ -53,15 +57,20 @@ const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
   ${theme.spacing.actions.asGap};
   align-items: center;
 
-  ${(props) => props.$isActive && theme.colors.layout.actionPanel.active.asBg}
-`;
+  ${UIIcon} {
+    opacity: ${(props) => (props.$isActive ? 1 : 0.5)};
+  }
 
-const UIIcon = styled.div`
-  font-size: 1.5em;
+  ${(props) =>
+    props.$isActive &&
+    css`
+      ${theme.colors.layout.actionPanel.active.asBg}
+    `}
 `;
 
 const UIName = styled.div`
   flex-grow: 1;
+  ${theme.common.ellipsisText}
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`

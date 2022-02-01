@@ -1,17 +1,24 @@
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
-import { getLastElementFromArray, getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import {
+  getIsLastArrayElement,
+  getLastElementFromArray,
+  getNextItemInArray,
+  getPreviousItemInArray,
+} from "@aca/shared/array";
 import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { theme } from "@aca/ui/theme";
 
-import { CommandMenuAction } from "./CommandMenuAction";
+import { CommandMenuActionsGroup } from "./CommandMenuActionsGroup";
+import { groupActions } from "./groups";
 import { fuzzySearch } from "./search/fuzzySearch";
 import { CommandMenuSession } from "./session";
+import { CommandMenuTargetLabel } from "./TargetLabel";
 
 interface Props {
   session: CommandMenuSession;
@@ -21,10 +28,14 @@ interface Props {
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [keyword, setKeyword] = useState("");
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
+  const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
-  const actions = session.getActions({ keyword });
+  const preparedKeyword = keyword.trim().toLowerCase();
+
+  const actions = session.getActions({ keyword: preparedKeyword });
 
   const applicableActions = actions.filter((action) => {
+    if (action.private) return false;
     if (!action.canApply(session.actionContext)) return false;
 
     return true;
@@ -36,24 +47,35 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
       const { name, keywords = [] } = resolveActionData(action);
       return [name, ...keywords];
     },
-    keyword
+    preparedKeyword
   );
 
+  const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow);
+
   useEffect(() => {
-    if (actionsToShow.length) {
-      setActiveAction(actionsToShow[0]);
+    if (!activeAction) return;
+
+    return activeAction.onMightBeSelected?.(session.actionContext);
+  }, [activeAction]);
+
+  useEffect(() => {
+    actionsScrollerRef.current?.scrollTo({ top: 0, left: 0 });
+    if (flatGroupsActions.length) {
+      setActiveAction(flatGroupsActions[0]);
     } else {
       setActiveAction(null);
     }
-  }, [keyword]);
+  }, [preparedKeyword]);
 
   useShortcut("ArrowDown", () => {
     if (!activeAction) {
-      setActiveAction(actionsToShow[0] ?? null);
+      setActiveAction(flatGroupsActions[0] ?? null);
       return true;
     }
 
-    const nextAction = getNextItemInArray(actionsToShow, activeAction);
+    if (getIsLastArrayElement(flatGroupsActions, activeAction)) return true;
+
+    const nextAction = getNextItemInArray(flatGroupsActions, activeAction);
 
     if (!nextAction) return true;
 
@@ -62,13 +84,15 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
 
   useShortcut("ArrowUp", () => {
     if (!activeAction) {
-      setActiveAction(getLastElementFromArray(actionsToShow));
+      setActiveAction(getLastElementFromArray(flatGroupsActions));
       return true;
     }
 
-    const prevAction = getPreviousItemInArray(actionsToShow, activeAction);
+    if (flatGroupsActions.indexOf(activeAction) === 0) return true;
 
-    if (!prevAction) return;
+    const prevAction = getPreviousItemInArray(flatGroupsActions, activeAction);
+
+    if (!prevAction) return true;
 
     setActiveAction(prevAction);
     return true;
@@ -84,28 +108,28 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     <BodyPortal>
       <UICover>
         <UIBody>
+          <UIHead>
+            <CommandMenuTargetLabel session={session} />
+          </UIHead>
+
           <UIInput
-            placeholder="Search..."
+            placeholder="Find anything..."
             autoFocus
             onChange={(event) => {
               setKeyword(event.target.value);
             }}
             spellCheck={false}
           />
-          <UIActions>
-            {actionsToShow.map((action) => {
+          <UIActions ref={actionsScrollerRef}>
+            {groupsToShow.map(({ groupItem, items: actions }) => {
               return (
-                <CommandMenuAction
-                  key={action.id}
-                  action={action}
+                <CommandMenuActionsGroup
+                  group={groupItem}
+                  actions={actions}
                   session={session}
-                  isActive={activeAction?.id === action.id}
-                  onSelectRequest={() => {
-                    setActiveAction(action);
-                  }}
-                  onApplyRequest={() => {
-                    onActionSelected(action);
-                  }}
+                  activeAction={activeAction ?? undefined}
+                  onSelectRequest={setActiveAction}
+                  onApplyRequest={onActionSelected}
                 />
               );
             })}
@@ -147,11 +171,22 @@ const UIInput = styled.input`
   outline: none;
   width: 100%;
   padding: 8px 24px;
+  margin-bottom: 16px;
 
   ::placeholder {
     color: inherit;
-    opacity: 0.7;
+    opacity: 0.5;
   }
+`;
+
+const UIHead = styled.div`
+  display: flex;
+  &:empty {
+    display: none;
+  }
+
+  padding: 8px 24px;
+  margin-bottom: 8px;
 `;
 
 const UIActions = styled.div`

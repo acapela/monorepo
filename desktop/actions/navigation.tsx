@@ -2,12 +2,16 @@ import React from "react";
 
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconCross, IconMenu } from "@aca/ui/icons";
+import { IconArrowLeft, IconCross, IconMenu, IconSlidersHoriz } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { defineGroup } from "./action/group";
+
+export const navigationActionsGroup = defineGroup({ name: "Navigation" });
 
 export const openNavigationMenu = defineAction({
   name: "Toggle navigation menu",
+  group: navigationActionsGroup,
   keywords: ["sidebar"],
   shortcut: ["Meta", "/"],
   icon: <IconMenu />,
@@ -18,6 +22,7 @@ export const openNavigationMenu = defineAction({
 
 export const closeNavigationMenu = defineAction({
   name: "Close navigation menu",
+  group: navigationActionsGroup,
   keywords: ["sidebar"],
   shortcut: "Esc",
   icon: <IconCross />,
@@ -29,6 +34,8 @@ export const closeNavigationMenu = defineAction({
 
 export const goToSettings = defineAction({
   name: "Settings",
+  group: navigationActionsGroup,
+  icon: <IconSlidersHoriz />,
   canApply: () => !getExactIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
@@ -38,6 +45,8 @@ export const goToSettings = defineAction({
 
 export const exitSettings = defineAction({
   name: "Exit settings",
+  group: navigationActionsGroup,
+  icon: <IconArrowLeft />,
   canApply: () => getExactIsRouteActive("settings") && !uiStore.isSidebarOpened,
   shortcut: ["Esc"],
   handler() {

@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, sortBy } from "lodash";
 
 import { None } from "@aca/shared/none";
 
@@ -27,7 +27,7 @@ export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
   return [input];
 }
 
-export function isLastItem<T>(array: T[], item: T) {
+export function getIsLastArrayElement<T>(array: T[], item: T) {
   const index = array.indexOf(item);
 
   return index === array.length - 1;
@@ -166,4 +166,15 @@ export function findAndMap<I, R>(input: I[], finderAndMapper: (item: I) => R | t
       return result;
     }
   }
+}
+
+export function sortArrayBySortList<I, S>(input: I[], sortItemGetter: (item: I) => S, sortList: S[]): I[] {
+  return sortBy(input, (item) => {
+    const sortItem = sortItemGetter(item);
+    const sortIndex = sortList.indexOf(sortItem);
+
+    if (sortIndex === -1) return Number.MAX_SAFE_INTEGER;
+
+    return -sortIndex;
+  }).reverse();
 }

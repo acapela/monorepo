@@ -20,4 +20,9 @@ export const common = {
     right: 0;
     bottom: 0;
   `,
+  ellipsisText: css`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `,
 };

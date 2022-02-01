@@ -1,13 +1,36 @@
+import React from "react";
+
 import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { IconArrowBottom, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { defineGroup } from "./action/group";
+
+export const currentListActionsGroup = defineGroup({
+  name: (ctx) => {
+    const list = ctx.getTarget("list");
+
+    if (list) return `List - ${list.name}`;
+
+    return "List";
+  },
+});
 
 export const goToList = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: (context) => `${context.assertTarget("list").name}`,
+  name: (context) => {
+    const list = context.getTarget("list");
+
+    if (!list) return "Open list";
+
+    if (context.isContextual) return list.name;
+
+    return `Open list - ${list.name}`;
+  },
+  private: true,
+  group: currentListActionsGroup,
   canApply: (context) => context.hasTarget("list"),
   handler(context) {
     desktopRouter.navigate("list", { listId: context.assertTarget("list").id });
@@ -15,11 +38,12 @@ export const goToList = defineAction({
 });
 
 export const focusNextNotificationInList = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: (ctx) => (ctx.isContextual ? "Next" : "Focus next notification in list"),
+  group: currentListActionsGroup,
   canApply: () => {
     return getIsRouteActive("list");
   },
+  icon: <IconArrowBottom />,
   shortcut: "ArrowDown",
   handler(context) {
     const list = context.assertTarget("list", true);
@@ -39,11 +63,12 @@ export const focusNextNotificationInList = defineAction({
 });
 
 export const focusPreviousNotificationInList = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: (ctx) => (ctx.isContextual ? "Previous" : "Focus previous notification in list"),
+  group: currentListActionsGroup,
   canApply: () => {
     return getIsRouteActive("list");
   },
+  icon: <IconArrowTop />,
   shortcut: "ArrowUp",
   handler(context) {
     const list = context.assertTarget("list", true);
@@ -63,11 +88,12 @@ export const focusPreviousNotificationInList = defineAction({
 });
 
 export const goToNextList = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: (ctx) => (ctx.isContextual ? "Next list" : "Go to next list"),
+  group: currentListActionsGroup,
   canApply: () => {
     return getIsRouteActive("list");
   },
+  icon: <IconArrowRight />,
   shortcut: "ArrowRight",
   handler(context) {
     const list = context.assertTarget("list", true);
@@ -79,8 +105,9 @@ export const goToNextList = defineAction({
 });
 
 export const goToPreviousList = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
+  group: currentListActionsGroup,
+  icon: <IconArrowLeft />,
   canApply: () => {
     return getIsRouteActive("list");
   },

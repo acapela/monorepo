@@ -15,10 +15,15 @@ import slack from "./slack.svg";
 
 interface Props {
   notification: NotificationEntity;
+  isOnDarkBackground?: boolean;
   className?: string;
 }
 
-export const NotificationAppIcon = styledObserver(function NotificationAppIcon({ notification, className }: Props) {
+export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
+  notification,
+  className,
+  isOnDarkBackground,
+}: Props) {
   const targetNotification = notification.inner;
 
   const unknownNode = <UIUnknown className={className}>?</UIUnknown>;
@@ -34,7 +39,7 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   }
 
   if (targetNotification.__typename === "notification_notion") {
-    return <UIIcon className={className} src={notion} />;
+    return <UIIcon className={className} src={notion} $invert={isOnDarkBackground} />;
   }
 
   return unknownNode;
@@ -45,8 +50,14 @@ const iconStyles = css`
   width: 1em;
 `;
 
-const UIIcon = styled.img`
-  ${iconStyles}
+const UIIcon = styled.img<{ $invert?: boolean }>`
+  ${iconStyles};
+
+  ${(props) =>
+    props.$invert &&
+    css`
+      filter: invert(1);
+    `}
 `;
 
 const UIUnknown = styled.div`

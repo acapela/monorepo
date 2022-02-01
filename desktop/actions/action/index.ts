@@ -1,21 +1,22 @@
 import { runInAction } from "mobx";
 import { ReactNode } from "react";
 
+import { MaybeCleanup } from "@aca/shared/types";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
-import { ActionContext, createActionContext } from "./context";
-
-type ActionContextCallback<T> = (context: ActionContext) => T;
-
-type ActionDataThunk<T> = T | ActionContextCallback<T>;
+import { ActionContext, ActionContextCallback, ActionDataThunk, createActionContext } from "./context";
+import { ActionGroupData } from "./group";
 
 export interface ActionCreateInput {
   id?: string;
   analyticsName?: string;
   name: ActionDataThunk<string>;
+  private?: boolean;
+  group?: ActionGroupData;
   keywords?: string[];
   shortcut?: ShortcutDefinition;
+  onMightBeSelected?: ActionContextCallback<MaybeCleanup>;
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
@@ -86,6 +87,10 @@ export function runAction(action: ActionData, context: ActionContext = createAct
     console.error(`Error occured when running action. Logging action, context and error below`, action, context);
     console.error(error);
   }
+}
+
+export function runActionWithTarget(action: ActionData, target: unknown) {
+  return runAction(action, createActionContext(target));
 }
 
 /**

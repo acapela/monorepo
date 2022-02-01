@@ -7,6 +7,10 @@ import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";
 
+export type ActionContextCallback<T> = (context: ActionContext) => T;
+
+export type ActionDataThunk<T> = T | ActionContextCallback<T>;
+
 const routeTargets = cachedComputed((): unknown[] => {
   const focusRoute = getRouteParamsIfActive("focus");
 
