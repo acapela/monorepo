@@ -43,6 +43,12 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         );
 
         if (existingNotification) {
+          // TODO: Delete update ~3weeks after 1.Feb.2022
+          // First version of notifications don't have space_id
+          // This covers those cases.
+          if (!existingNotification.space_id) {
+            existingNotification.update({ space_id: notionNotification.space_id });
+          }
           continue;
         }
 

@@ -19,6 +19,7 @@ insert_permissions:
     - notion_original_notification_id
     - page_id
     - page_title
+    - space_id
     - updated_at
   role: user
 select_permissions:
@@ -30,6 +31,7 @@ select_permissions:
     - notion_original_notification_id
     - page_id
     - page_title
+    - space_id
     - updated_at
     filter:
       notification:
@@ -41,6 +43,7 @@ update_permissions:
     check: null
     columns:
     - page_title
+    - space_id
     - updated_at
     filter:
       notification:

@@ -12,10 +12,9 @@ export async function initializeFigmaPush() {
   const session = await getFigmaSessionData();
 
   notificationResolvedChannel.subscribe(async (event) => {
-    console.info({ event });
-
     if (event.inner.__typename !== "notification_figma_comment") return;
-    console.info("[Figma] Received event 'notification_figma_comment'");
+
+    console.info("[Figma] Received resolved request 'notification_figma_comment'");
 
     const commentId = event.notification.url.split("#")[1];
 

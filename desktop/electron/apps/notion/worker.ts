@@ -24,20 +24,18 @@ let timeOfLastSync: Date | null = null;
 let isSyncing = false;
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
-const notionURL = "https://www.notion.so";
+export const notionURL = "https://www.notion.so";
 
 export function isNotionReadyToSync() {
   return authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
 }
 
-/*
-  Pulling logic for notion
-  - Pull immediately on app start
-  - Pull every 15 minutes if main window is blurred
-  - Pull ever 90 seconds if main window is focused
-  - Pull immediately when window focuses if more than 5 minutes have passed before last pull
-*/
-export function startNotionSync(): ServiceSyncController {
+export interface NotionSessionData {
+  cookie: string;
+  notionUserId: string;
+}
+
+export async function getNotionSessionData(): Promise<NotionSessionData> {
   const window = new BrowserWindow({
     width: 0,
     height: 0,
@@ -48,15 +46,49 @@ export function startNotionSync(): ServiceSyncController {
 
   window.hide();
 
+  const cookies = await window.webContents.session.cookies.get({
+    url: notionURL,
+  });
+
+  if (!cookies) {
+    throw new Error("[Notion] unable to sync: no cookies");
+  }
+
+  window.close();
+
+  const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id")?.value;
+
+  assert(notionUserId, "[Notion] Unable to extract notion user id from cookies");
+
+  const cookie = cookies
+    .filter((cookie) => cookie.domain?.includes("notion.so"))
+    .map((cookie) => cookie.name + "=" + cookie.value)
+    .join("; ");
+
+  return { cookie, notionUserId };
+}
+
+/*
+  Pulling logic for notion
+  - Pull immediately on app start
+  - Pull every 15 minutes if main window is blurred
+  - Pull ever 90 seconds if main window is focused
+  - Pull immediately when window focuses if more than 5 minutes have passed before last pull
+*/
+export function startNotionSync(): ServiceSyncController {
+  const sessionDataPromise = getNotionSessionData();
+
   async function runSync() {
     if (isSyncing) {
       return;
     }
 
+    const sessionData = await sessionDataPromise;
+
     try {
       isSyncing = true;
       console.info(`[Notion](${new Date().toISOString()}) Capturing started`);
-      const notificationLog = await fetchNotionNotificationLog(window);
+      const notificationLog = await fetchNotionNotificationLog(sessionData);
 
       notionSyncPayload.send(extractNotifications(notificationLog));
 
@@ -100,16 +132,8 @@ export function startNotionSync(): ServiceSyncController {
   };
 }
 
-async function fetchNotionNotificationLog(window: BrowserWindow) {
-  const cookies = await window.webContents.session.cookies.get({
-    url: notionURL,
-  });
-
-  if (!cookies) {
-    throw new Error("[Notion] unable to sync: no cookies");
-  }
-
-  const spaceId = await fetchCurrentSpace(window);
+async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
+  const spaceId = await fetchCurrentSpace(sessionData);
 
   if (!spaceId) {
     throw new Error("[Notion] Unable to fetch spaceId");
@@ -119,10 +143,7 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      cookie: cookies
-        .filter((cookie) => cookie.domain?.includes("notion.so"))
-        .map((cookie) => cookie.name + "=" + cookie.value)
-        .join("; "),
+      cookie: sessionData.cookie,
     },
     body: JSON.stringify({
       // Notion uses the space id for tracking within their help-desk
@@ -142,27 +163,12 @@ async function fetchNotionNotificationLog(window: BrowserWindow) {
   return result;
 }
 
-async function fetchCurrentSpace(window: BrowserWindow) {
-  const cookies = await window.webContents.session.cookies.get({
-    url: notionURL,
-  });
-
-  if (!cookies) {
-    throw new Error("[Notion] unable to sync no cookies");
-  }
-
-  const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id");
-
-  assert(notionUserId, "[Notion] Unable to extract notion user id from cookie");
-
+async function fetchCurrentSpace(sessionData: NotionSessionData) {
   const response = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      cookie: cookies
-        .filter((cookie) => cookie.domain?.includes("notion.so"))
-        .map((cookie) => cookie.name + "=" + cookie.value)
-        .join("; "),
+      cookie: sessionData.cookie,
     },
     body: JSON.stringify({}),
   });
@@ -174,7 +180,7 @@ async function fetchCurrentSpace(window: BrowserWindow) {
 
   const getSpacesResult = (await response.json()) as GetSpacesResult;
 
-  const currentUserSpaces = getSpacesResult[notionUserId.value].space;
+  const currentUserSpaces = getSpacesResult[sessionData.notionUserId].space;
 
   const allSpaces = Object.values(currentUserSpaces).map((space) => ({ id: space.value.id, name: space.value.name }));
 
@@ -239,6 +245,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
         notion_original_notification_id: id,
         page_id: pageId,
         page_title: pageBlock.properties.title[0][0],
+        space_id: notification.space_id,
       },
     });
   }

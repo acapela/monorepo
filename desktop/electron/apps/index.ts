@@ -4,6 +4,7 @@ import { autorunEffect } from "@aca/shared/mobxUtils";
 
 import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
+import { initializeNotionPush } from "./notion/push";
 import { isNotionReadyToSync, startNotionSync } from "./notion/worker";
 import { ServiceSyncController, WorkerService } from "./types";
 
@@ -28,6 +29,7 @@ function startNotionIfReady() {
     return;
   }
   addHandler(startNotionSync());
+  initializeNotionPush();
 }
 
 function startFigmaIfReady() {
