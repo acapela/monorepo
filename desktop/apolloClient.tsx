@@ -6,7 +6,7 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
 
-import { FRONTEND_URL, WEBSOCKET_URL } from "@aca/desktop/lib/vars";
+import { FRONTEND_URL, WEBSOCKET_URL } from "@aca/desktop/lib/env";
 import { createDateParseLink } from "@aca/frontend/src/apollo/dateStringParseLink";
 import { TypedTypePolicies } from "@aca/gql";
 import { IS_DEV } from "@aca/shared/dev";
