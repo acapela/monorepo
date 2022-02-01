@@ -1,4 +1,8 @@
 type Query {
+  get_slack_installation_url(input: GetSlackInstallationURLInput!): GetSlackInstallationURLOutput
+}
+
+type Query {
   get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
 }
 
@@ -39,6 +43,10 @@ input FindSlackUserInput {
 input InviteUserInput {
   email: String!
   team_id: uuid!
+}
+
+input GetSlackInstallationURLInput {
+  redirectURL: String!
 }
 
 type UpgradeUserResponse {
@@ -84,4 +92,8 @@ type UninstallSlackOutput {
 
 type JoinTopicOutput {
   success: Boolean!
+}
+
+type GetSlackInstallationURLOutput {
+  url: String!
 }

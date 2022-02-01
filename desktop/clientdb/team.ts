@@ -9,7 +9,6 @@ import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData
 import { TeamFragment, Team_Bool_Exp, Team_Constraint, Team_Insert_Input, Team_Set_Input } from "@aca/gql";
 
 import { teamMemberEntity } from "./teamMember";
-import { teamSlackInstallationEntity } from "./teamSlackInstallation";
 
 const teamFragment = gql`
   fragment Team on team {
@@ -46,14 +45,7 @@ export const teamEntity = defineEntity<TeamFragment>({
     upsertConstraint: "team_id_key",
   }),
 }).addConnections((team, { getEntity, getContextValue }) => {
-  const slackInstallations = getEntity(teamSlackInstallationEntity).query({ team_id: team.id });
   return {
-    get slackInstallation() {
-      return slackInstallations.first;
-    },
-    get hasSlackInstallation() {
-      return slackInstallations.hasItems;
-    },
     get isOwnedByCurrentUser() {
       return team.owner_id === getContextValue(userIdContext);
     },

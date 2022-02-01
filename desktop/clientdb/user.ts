@@ -13,6 +13,7 @@ const userFragment = gql`
     name
     email
     avatar_url
+    has_slack_installation
     updated_at
     created_at
   }

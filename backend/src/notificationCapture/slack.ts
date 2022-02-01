@@ -2,14 +2,18 @@ import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { SingleASTNode } from "simple-markdown";
 
-import { slackClient } from "@aca/backend/src/slack/app";
+import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import { parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
 import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
-import { isNotNullish } from "@aca/shared/nullish";
 
-import { assertToken, findUserBySlackId } from "../slack/utils";
+export async function findUserIdForSlackInstallation(slackUserId: string) {
+  const slackInstallation = await db.user_slack_installation.findFirst({
+    where: { data: { path: ["user", "id"], equals: slackUserId } },
+  });
+  return slackInstallation?.user_id;
+}
 
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
   return nodes.flatMap((node) => {
@@ -67,15 +71,15 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
   }
 
   // Find Acapela users for all the Slack users that would be notified
-  const usersToNotify = (
-    await Promise.all(
-      Array.from(slackUserIdsToNotify).map(([slackUserId, { isMention }]) =>
-        findUserBySlackId(userToken, slackUserId).then((user) => (user ? { userId: user.id, isMention } : null))
-      )
-    )
-  ).filter(isNotNullish);
+  const userSlackInstallations = await db.user_slack_installation.findMany({
+    where: {
+      OR: Array.from(slackUserIdsToNotify.keys()).map((slackUserId) => ({
+        data: { path: ["user", "id"], equals: slackUserId },
+      })),
+    },
+  });
 
-  if (usersToNotify.length == 0) {
+  if (userSlackInstallations.length == 0) {
     return;
   }
 
@@ -97,10 +101,10 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
   const isIM = message.channel_type == "im";
   // We have to use a transaction due to Prisma not supporting relation-creation within createMany
   await db.$transaction(
-    usersToNotify.map(({ userId, isMention }) =>
+    userSlackInstallations.map(({ user_id, data }) =>
       db.notification.create({
         data: {
-          user_id: userId,
+          user_id,
           from: author.real_name ?? "Unknown",
           url: permalink,
           notification_slack_message: {
@@ -108,7 +112,7 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
               slack_conversation_id: message.channel,
               slack_thread_ts: threadTs,
               slack_message_ts: message.ts,
-              is_mention: isMention,
+              is_mention: slackUserIdsToNotify.get((data as unknown as SlackInstallation).user.id)?.isMention ?? false,
               ...(channel
                 ? {
                     conversation_name: (channel.is_private ? "🔒" : "#") + channel.name_normalized,
@@ -134,12 +138,11 @@ export function setupSlackCapture(app: SlackApp) {
       return;
     }
 
-    const authorUser = await findUserBySlackId(assertToken(context), message.user);
-
-    if (authorUser) {
+    const authorUserId = await findUserIdForSlackInstallation(message.user);
+    if (authorUserId) {
       try {
         const threadTs = message.thread_ts;
-        await resolveMessageNotifications(authorUser.id, {
+        await resolveMessageNotifications(authorUserId, {
           slack_conversation_id: message.channel,
           OR: [
             threadTs
@@ -160,11 +163,11 @@ export function setupSlackCapture(app: SlackApp) {
     }
   });
 
-  app.event("reaction_added", async ({ event, context }) => {
-    const user = await findUserBySlackId(assertToken(context), event.user);
-    if (user && event.item.type === "message") {
+  app.event("reaction_added", async ({ event }) => {
+    const userId = await findUserIdForSlackInstallation(event.user);
+    if (userId && event.item.type === "message") {
       const message = event.item;
-      await resolveMessageNotifications(user.id, {
+      await resolveMessageNotifications(userId, {
         slack_conversation_id: message.channel,
         slack_message_ts: message.ts,
       });

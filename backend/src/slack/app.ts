@@ -4,9 +4,8 @@ import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import _, { noop } from "lodash";
 
-import { UnprocessableEntityError } from "@aca/backend/src/errors/errorTypes";
 import { db } from "@aca/db";
-import { assertDefined } from "@aca/shared/assert";
+import { assert, assertDefined } from "@aca/shared/assert";
 import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
@@ -33,6 +32,50 @@ function handleInstallationResponse(res: ServerResponse, redirectURL?: string, s
   } else {
     res.writeHead(HttpStatus.OK).write("<script>window.close();</script>");
     res.end();
+  }
+}
+
+const getSlackInstallationFilter = ({ teamId, userId }: Partial<{ teamId: string; userId: string }>) => ({
+  AND: [
+    teamId ? { data: { path: ["team", "id"], equals: teamId } } : {},
+    userId ? { data: { path: ["user", "id"], equals: userId } } : {},
+  ],
+});
+
+async function storeUserSlackInstallation(userId: string, installation: SlackInstallation) {
+  const slackInstallationFilter = getSlackInstallationFilter({
+    teamId: installation.team?.id,
+    userId: installation.user.id,
+  });
+  const userSlackInstallation = await db.user_slack_installation.findFirst({
+    where: slackInstallationFilter,
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = installation as any;
+  if (userSlackInstallation) {
+    const installationUserId = userSlackInstallation.user_id;
+    if (installationUserId != userId) {
+      throw new Error(
+        `Slack installation for user (${userId}) is already used by different user (${installationUserId})`
+      );
+    }
+    await db.user_slack_installation.updateMany({
+      where: { user_id: userId, ...slackInstallationFilter },
+      data: { data },
+    });
+  } else {
+    await db.$transaction([
+      db.user_slack_installation.create({ data: { user_id: userId, data } }),
+      db.user.update({
+        where: { id: userId },
+        data: {
+          // user.has_slack_installation will change, but since it is computed we need to bump updated_at to
+          // make it sync with clientdb
+          updated_at: null, // (null sets it to `now()`)
+        },
+      }),
+    ]);
   }
 }
 
@@ -66,6 +109,14 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       const { teamId } = metadata;
       let { userId } = metadata;
 
+      // For the new desktop Acapela we want to capture slack notifications for individual users, thus skipping the team
+      if (!teamId) {
+        assert(userId, "must have a userId when no teamId is given");
+        await storeUserSlackInstallation(userId, installation);
+        return;
+      }
+
+      // Below is the flow for the old Acapela which splits up installation data between team and a team_member
       const slackTeamId = assertDefined(installation.team, "installation must have team").id;
       const otherTeamWithSameSlack = await db.team.findFirst({
         where: { NOT: { id: teamId }, team_slack_installation: { slack_team_id: slackTeamId } },
@@ -107,7 +158,17 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       trackBackendUserEvent(userId, "Added User Slack Integration", { slackTeamId, teamId });
       identifyBackendUser(userId, { isSlackInstalled: true });
     },
+
     async fetchInstallation(query) {
+      // Just like in storeInstallation we first try the new Acapela persistence
+      const userSlackInstallation = await db.user_slack_installation.findFirst({
+        where: getSlackInstallationFilter(query),
+      });
+      if (userSlackInstallation) {
+        return userSlackInstallation.data as unknown as SlackInstallation;
+      }
+
+      // This is the old-Acapela team-based installation retrieval
       const [teamSlackInstallation, teamMemberSlackInstallation] = await Promise.all([
         db.team_slack_installation.findFirst({
           where: { slack_team_id: query.teamId },
@@ -116,12 +177,18 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           where: { slack_user_id: query.userId },
         }),
       ]);
-      const teamData = assertDefined(
-        teamSlackInstallation?.data,
-        new UnprocessableEntityError(`No team Slack installation found for query ${JSON.stringify(query)}`)
-      ) as unknown as SlackInstallation;
-      const memberData = teamMemberSlackInstallation?.installation_data;
-      return { ...teamData, user: memberData ?? {} } as SlackInstallation;
+      if (teamSlackInstallation) {
+        const teamData = teamSlackInstallation.data as unknown as SlackInstallation;
+        const memberData = teamMemberSlackInstallation?.installation_data;
+        return { ...teamData, user: memberData ?? {} } as SlackInstallation;
+      }
+
+      // If all of these do not find an installation, we try to find an installation from the team, for a different user
+      const userSlackInstallationForTeam = await db.user_slack_installation.findFirst({
+        where: getSlackInstallationFilter({ teamId: query.teamId }),
+      });
+      return assertDefined(userSlackInstallationForTeam, `missing installation for team ${query.teamId}`)
+        .data as unknown as SlackInstallation;
     },
   },
 
