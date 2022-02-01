@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/focus";
+import { openNotificationInApp } from "@aca/desktop/actions/focus";
 import { getDb } from "@aca/desktop/clientdb";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -39,7 +39,6 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
         <NotificationAppIcon notification={notification} />
         <UITitle>{getNotificationTitle(notification)}</UITitle>
         <ActionIconButton action={openNotificationInApp} target={notification} showTitleInTooltip />
-        <ActionIconButton action={resolveNotification} target={notification} showTitleInTooltip />
       </UIHeader>
 
       <NotificationEmbedView url={notification.url} />

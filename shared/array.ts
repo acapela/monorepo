@@ -19,6 +19,8 @@ export function removeElementsFromArrayByFilter<T>(arr: T[], filter: (item: T) =
   }
 }
 
+export type MaybeArray<T> = T | T[];
+
 export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
   if (Array.isArray(input)) return input;
 

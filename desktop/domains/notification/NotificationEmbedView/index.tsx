@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
@@ -7,6 +8,7 @@ import {
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
+import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
@@ -26,7 +28,11 @@ export function PreloadNotificationEmbed({ url }: PreloadBrowserViewProps) {
   return <></>;
 }
 
-export function NotificationEmbedView({ url, onFocus, onBlur }: BrowserViewProps) {
+export const NotificationEmbedView = observer(function NotificationEmbedView({
+  url,
+  onFocus,
+  onBlur,
+}: BrowserViewProps) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -58,9 +64,10 @@ export function NotificationEmbedView({ url, onFocus, onBlur }: BrowserViewProps
   }, [position]);
 
   useLayoutEffect(() => {
-    if (!position) return;
+    if (!position || !!commandMenuStore.session) return;
     return requestAttachPreview({ url, position });
   }, [
+    !!commandMenuStore.session,
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,
@@ -74,11 +81,12 @@ export function NotificationEmbedView({ url, onFocus, onBlur }: BrowserViewProps
       </BodyPortal>
     </>
   );
-}
+});
 
 const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
+  ${theme.colors.layout.backgroundAccent.asBg};
 `;
 
 const UIFocusCover = styled.div<{ $isVisible: boolean }>`

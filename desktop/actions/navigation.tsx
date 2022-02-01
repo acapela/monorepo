@@ -28,7 +28,6 @@ export const closeNavigationMenu = defineAction({
 });
 
 export const goToSettings = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
   name: "Settings",
   canApply: () => !getExactIsRouteActive("settings"),
   shortcut: ["Mod", ","],
@@ -38,8 +37,7 @@ export const goToSettings = defineAction({
 });
 
 export const exitSettings = defineAction({
-  // TODO: when we have CMD + K - this can return `Open list...` and result in sub-actions select being opened if no target is set
-  name: "Settings",
+  name: "Exit settings",
   canApply: () => getExactIsRouteActive("settings") && !uiStore.isSidebarOpened,
   shortcut: ["Esc"],
   handler() {

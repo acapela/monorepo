@@ -6,6 +6,7 @@
   "author": "Acapela GmbH",
   "repository": "github:weareacapela/releases",
   "peerDependencies": {
+    "framer-motion": "*",
     "mobx": "*",
     "mobx-react": "*",
     "react": "*",

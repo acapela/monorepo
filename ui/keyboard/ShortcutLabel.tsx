@@ -18,7 +18,11 @@ export const ShortcutDescriptor = styled(function ShortcutDescriptor({ shortcut,
   return (
     <UIHolder className={className}>
       {niceShortcutKeys.map((key) => {
-        return <UIKey key={key}>{key}</UIKey>;
+        return (
+          <UIKey key={key} className="key">
+            {key}
+          </UIKey>
+        );
       })}
     </UIHolder>
   );
@@ -29,6 +33,7 @@ const UIHolder = styled.div`
   align-items: center;
   user-select: none;
   gap: 2px;
+  line-height: 1;
 
   ${phone(
     css`
@@ -38,4 +43,6 @@ const UIHolder = styled.div`
 `;
 const UIKey = styled.div`
   ${theme.typo.content.secondary};
+  line-height: 1;
+  text-align: center;
 `;

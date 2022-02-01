@@ -114,6 +114,7 @@ __metadata:
     ts-node: ^10.4.0
     url-pattern: ^1.0.3
   peerDependencies:
+    framer-motion: "*"
     mobx: "*"
     mobx-react: "*"
     react: "*"

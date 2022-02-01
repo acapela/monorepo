@@ -4,7 +4,15 @@ import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconCheck, IconExternalLink, IconTarget } from "@aca/ui/icons";
+import {
+  IconArrowBottom,
+  IconArrowLeft,
+  IconArrowTop,
+  IconCheck,
+  IconExternalLink,
+  IconLink1,
+  IconTarget,
+} from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 
@@ -51,7 +59,7 @@ export const focusOnNotificationPreview = defineAction({
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
-  name: (ctx) => (ctx.isContextual ? "Open App" : "Open in original app"),
+  name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "Shift", "O"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
@@ -60,6 +68,19 @@ export const openNotificationInApp = defineAction({
     const notification = context.assertTarget("notification");
 
     openLinkRequest({ url: notification.url });
+  },
+});
+
+export const copyNotificationLink = defineAction({
+  icon: <IconLink1 />,
+  name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
+  canApply: (ctx) => {
+    return ctx.hasTarget("notification");
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    window.electronBridge.copyToClipboard(notification.url);
   },
 });
 
