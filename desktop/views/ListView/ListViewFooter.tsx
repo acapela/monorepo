@@ -15,8 +15,8 @@ export function ListViewFooter() {
       actions={[
         focusNextNotificationInList,
         focusPreviousNotificationInList,
-        goToNextList,
         goToPreviousList,
+        goToNextList,
         openFocusMode,
         resolveNotification,
         openNotificationInApp,
