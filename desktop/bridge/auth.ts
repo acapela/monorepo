@@ -1,3 +1,5 @@
+import { createInvokeWithCleanupBridge } from "@aca/desktop/bridge/base/invokeWithCleanup";
+
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
 
@@ -25,12 +27,12 @@ export const googleAuthTokenBridgeValue = createBridgeValue<boolean>("google-aut
 });
 export const loginGoogleBridge = createInvokeBridge("login-google");
 
-export const slackAuthTokenBridgeValue = createBridgeValue<string | null>("slack-auth-token", {
-  getDefault: () => null,
+export const slackAuthTokenBridgeValue = createBridgeValue<boolean>("slack-auth-token", {
+  getDefault: () => false,
   isPersisted: true,
 });
 export const loginSlackBridge = createInvokeBridge("login-slack");
-export const connectSlackBridge = createInvokeBridge<{ url: string }>("connect-slack");
+export const connectSlackBridge = createInvokeWithCleanupBridge<{ url: string }>("connect-slack");
 
 export async function logout() {
   authTokenBridgeValue.set(null);

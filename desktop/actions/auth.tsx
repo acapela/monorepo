@@ -1,4 +1,4 @@
-import { loginBridge } from "@aca/desktop/bridge/auth";
+import { loginBridge, loginSlackBridge, slackAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import {
   authTokenBridgeValue,
   figmaAuthTokenBridgeValue,
@@ -6,9 +6,7 @@ import {
   loginFigmaBridge,
   loginGoogleBridge,
   loginNotionBridge,
-  loginSlackBridge,
   notionAuthTokenBridgeValue,
-  slackAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 
 import { clearAllDataRequest } from "../bridge/system";
