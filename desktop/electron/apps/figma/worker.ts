@@ -72,6 +72,9 @@ export async function getFigmaSessionData(): Promise<FigmaSessionData> {
   const release_git_tag = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.release_git_tag");
 
   const figmaUserId = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.user_data.id");
+
+  // This seems to be used for distributed tracing mechanisms (e.g. https://www.jaegertracing.io/)
+  // Some apis don't work without this
   const trackingSessionId = await figmaWindow.webContents.executeJavaScript(
     "window.INITIAL_OPTIONS.tracking_session_id"
   );
