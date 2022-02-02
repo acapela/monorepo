@@ -22,25 +22,25 @@
   },
   "source": ".",
   "devDependencies": {
-    "@parcel/config-default": "^2.1.1",
-    "@parcel/core": "^2.1.1",
+    "@parcel/config-default": "^2.2.1",
+    "@parcel/core": "^2.2.1",
     "@sentry/cli": "^1.72.1",
     "@sentry/electron": "^2.5.4",
     "@types/electron-json-storage": "^4.5.0",
     "@types/node-cleanup": "^2.1.2",
     "dotenv": "^15.0.0",
-    "electron": "16.0.6",
-    "electron-builder": "^22.14.5",
+    "electron": "16.0.8",
+    "electron-builder": "^22.14.13",
     "electron-download": "^4.1.1",
     "electron-is-dev": "^2.0.0",
     "electron-json-storage": "^4.5.0",
     "electron-log": "^4.4.5",
     "electron-notarize": "^1.1.1",
-    "electron-updater": "^4.6.1",
+    "electron-updater": "^4.6.5",
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
     "node-cleanup": "^2.1.2",
-    "parcel": "^2.1.1",
+    "parcel": "^2.2.1",
     "react-chicane": "^0.6.1",
     "ts-node": "^10.4.0",
     "url-pattern": "^1.0.3"
@@ -72,5 +72,8 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist"
     }
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.0"
   }
 }

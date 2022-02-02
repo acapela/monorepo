@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.17.1"
+    "@playwright/test": "^1.18.1"
   },
   "scripts": {
     "test": "APP=e2e playwright test --workers 1",
