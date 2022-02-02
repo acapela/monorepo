@@ -1,10 +1,10 @@
 import React from "react";
 
-import { loginBridge } from "@aca/desktop/bridge/auth";
 import {
   authTokenBridgeValue,
   figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
+  loginBridge,
   loginFigmaBridge,
   loginGoogleBridge,
   loginNotionBridge,

@@ -124,6 +124,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
             {groupsToShow.map(({ groupItem, items: actions }) => {
               return (
                 <CommandMenuActionsGroup
+                  key={groupItem?.id}
                   group={groupItem}
                   actions={actions}
                   session={session}
