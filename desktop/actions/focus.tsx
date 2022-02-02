@@ -128,6 +128,7 @@ function getNextNotification(context: ActionContext) {
 
   return {
     listId: list?.id,
+    list: list,
     nextNotification: list?.getNextNotification(notification),
   } as const;
 }
@@ -143,7 +144,7 @@ export const resolveNotification = defineAction({
   },
   handler(context) {
     const notification = context.assertTarget("notification");
-    const { listId, nextNotification } = getNextNotification(context);
+    const { listId, list, nextNotification } = getNextNotification(context);
 
     notification.update({ resolved_at: new Date().toISOString() });
 
@@ -152,6 +153,13 @@ export const resolveNotification = defineAction({
     }
     if (nextNotification) {
       desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
+      return;
+    }
+
+    const notificationAtBeginningOfList = list.getAllNotifications().first;
+
+    if (notificationAtBeginningOfList) {
+      desktopRouter.navigate("focus", { listId, notificationId: notificationAtBeginningOfList.id });
     } else {
       desktopRouter.navigate("list", { listId });
     }
