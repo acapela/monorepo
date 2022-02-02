@@ -134,7 +134,7 @@ interface CreateRequestInSlackInput {
   topicName?: Maybe<string>;
   priority?: Maybe<string>;
   decisionOptions?: string[];
-  isFirstCompletionEnough: boolean;
+  isFirstCompletionEnough?: boolean;
 }
 
 // TODO: Split this function to require prepared data and only handle creating and tracking slack message instead of doing all request preparation
@@ -209,7 +209,7 @@ export async function createAndTrackRequestInSlack({
     messageContent,
     priority,
     decisionOptions: decisionOptions ?? [],
-    isFirstCompletionEnough,
+    isFirstCompletionEnough: !!isFirstCompletionEnough,
     usersWithMentionType,
   });
 
