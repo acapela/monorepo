@@ -1,5 +1,8 @@
+import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+import { uiStore } from "../store/uiStore";
 
 interface Props {
   children: ReactNode;
@@ -7,17 +10,19 @@ interface Props {
   footer: ReactNode;
 }
 
-export function AppLayout({ children, tray, footer }: Props) {
+export const AppLayout = observer(function AppLayout({ children, tray, footer }: Props) {
+  const { isSidebarOpened } = uiStore;
+
   return (
     <AppLayoutHolder>
       <UIMain>
         <UITray>{tray}</UITray>
-        <UIBody>{children}</UIBody>
+        <UIBody $isSidebarOpened={isSidebarOpened}>{children}</UIBody>
       </UIMain>
       <UIFooter>{footer}</UIFooter>
     </AppLayoutHolder>
   );
-}
+});
 
 const UITray = styled.div`
   width: 72px;
@@ -32,10 +37,16 @@ const UIMain = styled.div`
   min-height: 0;
 `;
 
-const UIBody = styled.div`
+const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+
+  ${(props) =>
+    props.$isSidebarOpened &&
+    css`
+      opacity: 0.5;
+    `}
 `;
 
 const UIFooter = styled.div``;

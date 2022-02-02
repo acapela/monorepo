@@ -47,6 +47,8 @@ const UIHolder = styled(PresenceAnimator)`
   bottom: 0;
   width: 320px;
   ${theme.colors.layout.background.asBg};
+  ${theme.shadow.popover};
+  ${theme.radius.panel};
   z-index: 2;
   padding-top: 24px;
 `;
