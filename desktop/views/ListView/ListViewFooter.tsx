@@ -1,6 +1,6 @@
 import React from "react";
 
-import { openFocusMode, openNotificationInApp, resolveNotification } from "@aca/desktop/actions/focus";
+import { openFocusMode } from "@aca/desktop/actions/focus";
 import {
   focusNextNotificationInList,
   focusPreviousNotificationInList,
@@ -8,6 +8,7 @@ import {
   goToPreviousList,
   toggleNotificationsGroup,
 } from "@aca/desktop/actions/lists";
+import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { ShortcutsFooter } from "@aca/desktop/ui/ShortcutsFooter";
 
 export function ListViewFooter() {

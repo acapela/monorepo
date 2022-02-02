@@ -1,8 +1,6 @@
 import React from "react";
 
 import { requestPreviewFocus, requestPreviewPreload } from "@aca/desktop/bridge/preview";
-import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import {
   assertGetActiveRouteParams,
   desktopRouter,
@@ -10,31 +8,13 @@ import {
   getRouteParamsIfActive,
 } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import {
-  IconArrowBottom,
-  IconArrowLeft,
-  IconArrowTop,
-  IconCheck,
-  IconExternalLink,
-  IconKeyboard,
-  IconLink1,
-  IconTarget,
-} from "@aca/ui/icons";
+import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconTarget } from "@aca/ui/icons";
 
-import { getNextItemInList } from "../domains/list/getNextItemInList";
+import { getGroupedAndOrderedNotificationsInList } from "../domains/list/getNextItemInList";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
-import { defineGroup } from "./action/group";
-
-export const currentNotificationActionsGroup = defineGroup({
-  name: (ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    if (notification) return `Notification - ${getNotificationTitle(notification)}`;
-
-    return "Notification";
-  },
-});
+import { currentNotificationActionsGroup } from "./groups";
 
 export const exitFocusMode = defineAction({
   name: (ctx) => (ctx.isContextual ? "Exit" : "Go back to list"),
@@ -93,96 +73,27 @@ export const focusOnNotificationPreview = defineAction({
   },
 });
 
-export const openNotificationInApp = defineAction({
-  icon: <IconExternalLink />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["Mod", "O"],
-  canApply: (ctx) => {
-    return ctx.hasTarget("notification");
-  },
-  handler(context) {
-    const notification = context.assertTarget("notification");
-
-    openLinkRequest({ url: notification.url });
-  },
-});
-
-export const copyNotificationLink = defineAction({
-  icon: <IconLink1 />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
-  shortcut: ["Mod", "Shift", "C"],
-  canApply: (ctx) => {
-    return ctx.hasTarget("notification");
-  },
-  handler(context) {
-    const notification = context.assertTarget("notification");
-
-    window.electronBridge.copyToClipboard(notification.url);
-  },
-});
-
-function getNextNotification(context: ActionContext) {
+export function getNextNotificationInFocusMode(context: ActionContext) {
   const list = context.getTarget("list", true);
   const notification = context.getTarget("notification");
 
   if (!list || !notification) return null;
 
-  return getNextItemInList(list, notification);
+  const allNotifications = getGroupedAndOrderedNotificationsInList(list);
+
+  return getNextItemInArray(allNotifications, notification, { loop: false });
 }
 
-export const resolveNotification = defineAction({
-  icon: <IconCheck />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Resolve" : "Resolve Notification"),
-  keywords: ["done", "next", "mark"],
-  shortcut: ["Mod", "D"],
-  canApply: (ctx) => {
-    const notification = ctx.getTarget("notification");
+export function getPrevNotificationInFocusMode(context: ActionContext) {
+  const list = context.getTarget("list", true);
+  const notification = context.getTarget("notification");
 
-    if (notification) return !notification.isResolved;
+  if (!list || !notification) return null;
 
-    const group = ctx.getTarget("group");
+  const allNotifications = getGroupedAndOrderedNotificationsInList(list);
 
-    if (group) return group.notifications.some((notification) => !notification.isResolved);
-
-    return false;
-  },
-  handler(context) {
-    const group = context.getTarget("group");
-    const nextNotification = getNextNotification(context);
-    const list = context.assertTarget("list", true);
-
-    if (group) {
-      group.notifications.forEach((notification) => {
-        notification.resolve();
-      });
-    }
-
-    const notification = context.getTarget("notification");
-
-    if (notification) {
-      notification.resolve();
-    }
-
-    // In list mode - simply focus next notification
-    if (getIsRouteActive("list")) {
-      uiStore.focusedTarget = nextNotification;
-      return;
-    }
-
-    if (getIsRouteActive("focus")) {
-      if (nextNotification) {
-        desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
-        return;
-      }
-
-      // If it was last notification in focus mode - go back to list to experience some ZEN
-      desktopRouter.navigate("list", { listId: list.id });
-    }
-  },
-});
+  return getPreviousItemInArray(allNotifications, notification, { loop: false });
+}
 
 export const goToNextNotification = defineAction({
   icon: <IconArrowBottom />,
@@ -192,16 +103,19 @@ export const goToNextNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const nextNotification = getNextNotification(context);
+    const nextNotification = getNextNotificationInFocusMode(context);
 
     return !!nextNotification;
   },
   handler(context) {
-    const nextNotification = getNextNotification(context);
+    const nextNotification = getNextNotificationInFocusMode(context);
 
     if (!nextNotification) return;
 
-    desktopRouter.navigate("focus", { listId: context.assertTarget("list").id, notificationId: nextNotification.id });
+    desktopRouter.navigate("focus", {
+      listId: context.assertTarget("list", true).id,
+      notificationId: nextNotification.id,
+    });
   },
 });
 
@@ -213,19 +127,16 @@ export const goToPreviousNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const list = context.getTarget("list", true);
-    const notification = context.getTarget("notification");
-
-    return !!notification && !!list?.getPreviousNotification(notification);
+    return !!getPrevNotificationInFocusMode(context);
   },
   handler(context) {
-    const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
-
-    const previousNotification = list.getPreviousNotification(notification);
+    const previousNotification = getPrevNotificationInFocusMode(context);
 
     if (!previousNotification) return;
 
-    desktopRouter.navigate("focus", { listId: list.id, notificationId: previousNotification.id });
+    desktopRouter.navigate("focus", {
+      listId: context.assertTarget("list", true).id,
+      notificationId: previousNotification.id,
+    });
   },
 });

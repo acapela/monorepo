@@ -1,3 +1,4 @@
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
@@ -23,7 +24,23 @@ function getVisibleGroupedElementsInList(list: DefinedList): NotificationOrGroup
   return result;
 }
 
-export function getNextItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
+export function getGroupedAndOrderedNotificationsInList(list: DefinedList): NotificationEntity[] {
+  const groupedList = groupNotifications(list.getAllNotifications().all);
+
+  const result: NotificationEntity[] = [];
+
+  groupedList.forEach((notificationOrGroup) => {
+    if (getIsNotificationsGroup(notificationOrGroup)) {
+      result.push(...notificationOrGroup.notifications);
+      return;
+    }
+    result.push(notificationOrGroup);
+  });
+
+  return result;
+}
+
+export function getNextVisibleItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
   const visibleElements = getVisibleGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[0];
@@ -33,7 +50,7 @@ export function getNextItemInList(list: DefinedList, currentItem?: NotificationO
   });
 }
 
-export function getPreviousItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
+export function getPreviousVisibleItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
   const visibleElements = getVisibleGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[visibleElements.length - 1];

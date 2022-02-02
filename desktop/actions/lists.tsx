@@ -2,7 +2,7 @@ import React from "react";
 
 import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { getNextItemInList, getPreviousItemInList } from "@aca/desktop/domains/list/getNextItemInList";
+import { getNextVisibleItemInList, getPreviousVisibleItemInList } from "@aca/desktop/domains/list/getNextItemInList";
 import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
@@ -54,13 +54,29 @@ export const focusNextNotificationInList = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    const nextItem = getNextItemInList(list, notification ?? group ?? undefined);
+    const nextItem = getNextVisibleItemInList(list, notification ?? group ?? undefined);
 
     if (nextItem) {
       uiStore.focusedTarget = nextItem;
     }
   },
 });
+
+export function getNextVisibleItemInListMode(context: ActionContext) {
+  const list = context.assertTarget("list", true);
+  const notification = context.getTarget("notification");
+  const group = context.getTarget("group");
+
+  return getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
+}
+
+export function getPrevVisibleItemInListMode(context: ActionContext) {
+  const list = context.assertTarget("list", true);
+  const notification = context.getTarget("notification");
+  const group = context.getTarget("group");
+
+  return getNextVisibleItemInList(list, notification ?? group ?? undefined);
+}
 
 export const focusPreviousNotificationInList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous" : "Focus previous notification in list"),
@@ -75,7 +91,7 @@ export const focusPreviousNotificationInList = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    const previousItem = getPreviousItemInList(list, notification ?? group ?? undefined);
+    const previousItem = getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
 
     if (previousItem) {
       uiStore.focusedTarget = previousItem;
