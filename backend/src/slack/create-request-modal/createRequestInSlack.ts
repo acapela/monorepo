@@ -126,14 +126,14 @@ interface CreateRequestInSlackInput {
   token: string;
   originalChannelId?: Maybe<string>;
   conversationId?: Maybe<string>;
-  client: WebClient;
+  // client: WebClient;
   triggerId: string;
   dueAt?: Maybe<Date>;
   botToken?: Maybe<string>;
   messageTs?: Maybe<string>;
   topicName?: Maybe<string>;
   priority?: Maybe<string>;
-  decisionOptions: string[];
+  decisionOptions?: string[];
   isFirstCompletionEnough: boolean;
 }
 
@@ -156,7 +156,7 @@ export async function createAndTrackRequestInSlack({
   botToken,
   topicName,
   priority,
-  decisionOptions = [],
+  decisionOptions,
   isFirstCompletionEnough,
 }: CreateRequestInSlackInput) {
   assert(messageText, "create_request called with wrong arguments");
@@ -208,7 +208,7 @@ export async function createAndTrackRequestInSlack({
     dueAt,
     messageContent,
     priority,
-    decisionOptions,
+    decisionOptions: decisionOptions ?? [],
     isFirstCompletionEnough,
     usersWithMentionType,
   });
