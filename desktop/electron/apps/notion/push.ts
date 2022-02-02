@@ -55,7 +55,7 @@ export async function initializeNotionPush() {
     });
 
     if (!response.ok) {
-      Sentry.captureException("[Notion] Unable to archive notification" + (await response.json()));
+      Sentry.captureException("[Notion] Unable to archive notification" + JSON.stringify(await response.json()));
     }
   });
 }
