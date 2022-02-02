@@ -2,7 +2,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import {
+  getAllInboxListsById,
+  inboxLists,
+  isInboxList,
+  outOfInboxLists,
+} from "@aca/desktop/domains/list/preconfigured";
 import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 
@@ -15,21 +20,24 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const list = getPredefinedListById(listId);
+  const displayedList = getAllInboxListsById(listId);
+
+  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
+
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
       <UITabsBar>
-        <ListsTabBar activeListId={listId} />
+        <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      {!list && <>Unknown list</>}
-      {list && (
+      {!displayedList && <>Unknown list</>}
+      {displayedList && (
         <>
-          {list.getNotificationsToPreload().map((notificationToPreload) => {
+          {displayedList.getNotificationsToPreload().map((notificationToPreload) => {
             return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
-            {list.getAllNotifications().all.map((notification) => {
-              return <NotificationRow list={list} key={notification.id} notification={notification} />;
+            {displayedList.getAllNotifications().all.map((notification) => {
+              return <NotificationRow list={displayedList} key={notification.id} notification={notification} />;
             })}
           </UINotifications>
         </>

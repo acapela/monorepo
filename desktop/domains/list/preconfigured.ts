@@ -9,8 +9,8 @@ function getIsNotificationNotResolved(notification: NotificationEntity) {
   return true;
 }
 
-export const inboxList = defineList({
-  id: "inbox",
+export const allNotificationsList = defineList({
+  id: "allNotifications",
   name: "Inbox",
   filter: getIsNotificationNotResolved,
 });
@@ -39,15 +39,46 @@ export const figmaList = defineList({
   },
 });
 
-export const preconfiguredLists = [inboxList, slackList, notionList, figmaList];
+export const resolvedList = defineList({
+  id: "resolved",
+  name: "Resolved",
+  filter: (notification) => !!notification.resolved_at,
+});
 
-export const preconfiguredListIdMap = {
-  inbox: inboxList,
+export const inboxLists = [allNotificationsList, slackList, notionList, figmaList];
+
+export const inboxListIdMap = {
+  allNotifications: allNotificationsList,
   slack: slackList,
   notion: notionList,
   figma: figmaList,
 };
 
-export function getPredefinedListById(id: string): DefinedList | null {
-  return preconfiguredListIdMap[id as keyof typeof preconfiguredListIdMap] ?? null;
+export const outOfInboxLists = [resolvedList];
+
+export const outOfInboxListIdMap = {
+  resolved: resolvedList,
+};
+
+export const allInboxLists = inboxLists.concat(outOfInboxLists);
+
+export const allInboxListsIdMap = {
+  ...inboxListIdMap,
+  ...outOfInboxListIdMap,
+};
+
+export function getInboxListById(id: string): DefinedList | null {
+  return inboxListIdMap[id as keyof typeof inboxListIdMap] ?? null;
+}
+
+export function isInboxList(id: string): boolean {
+  return !!inboxListIdMap[id as keyof typeof inboxListIdMap];
+}
+
+export function getOutOfInboxListsById(id: string): DefinedList | null {
+  return outOfInboxListIdMap[id as keyof typeof outOfInboxListIdMap] ?? null;
+}
+
+export function getAllInboxListsById(id: string): DefinedList | null {
+  return allInboxListsIdMap[id as keyof typeof allInboxListsIdMap] ?? null;
 }

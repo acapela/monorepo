@@ -9,21 +9,22 @@ import { theme } from "@aca/ui/theme";
 interface Props {
   action: ActionData;
   target?: unknown;
+  className?: string;
 }
 
-export const SidebarItem = observer(function SidebarItem({ action, target }: Props) {
+export const SidebarItem = observer(function SidebarItem({ action, target, className }: Props) {
   const { name } = resolveActionDataWithTarget(action, target);
   return (
-    <UIHolder action={action} target={target}>
+    <UIHolder action={action} target={target} className={className}>
       <UILabel>{name}</UILabel>
     </UIHolder>
   );
 });
 
 const UIHolder = styled(ActionTrigger)`
-  padding: 12px 12px 12px 72px;
   ${theme.typo.secondaryTitle};
   ${theme.common.clickable};
+  ${theme.font.medium};
   opacity: 0.8;
   &:hover {
     opacity: 1;

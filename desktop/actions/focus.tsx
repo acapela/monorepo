@@ -18,6 +18,7 @@ import {
   IconKeyboard,
   IconLink1,
   IconTarget,
+  IconUndo,
 } from "@aca/ui/icons";
 
 import { getNotificationTitle } from "../domains/notification/title";
@@ -133,24 +134,58 @@ function getNextNotification(context: ActionContext) {
   } as const;
 }
 
+function getResolveNotificationName(ctx: ActionContext) {
+  const getTitle = (actionString: string) => (ctx.isContextual ? actionString : `${actionString} Notification`);
+
+  if (!hasNotification(ctx)) {
+    return getTitle("Resolve");
+  }
+
+  return isNotificationResolved(ctx) ? getTitle("Undo Resolve") : getTitle("Resolve");
+}
+
+function getResolveNotificationIcon(ctx: ActionContext) {
+  if (!hasNotification(ctx)) {
+    return <IconCheck />;
+  }
+
+  return isNotificationResolved(ctx) ? <IconUndo /> : <IconCheck />;
+}
+
+function hasNotification(ctx: ActionContext) {
+  return ctx.hasTarget("notification");
+}
+
+function isNotificationResolved(ctx: ActionContext) {
+  const notification = ctx.assertTarget("notification");
+  return !!notification.resolved_at;
+}
+
 export const resolveNotification = defineAction({
-  icon: <IconCheck />,
+  icon: getResolveNotificationIcon,
   group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Resolve" : "Resolve Notification"),
+  name: getResolveNotificationName,
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
-  canApply: (ctx) => {
-    return ctx.hasTarget("notification");
-  },
+  canApply: hasNotification,
   handler(context) {
     const notification = context.assertTarget("notification");
-    const { listId, list, nextNotification } = getNextNotification(context);
 
-    notification.update({ resolved_at: new Date().toISOString() });
+    const wasNotificationResolvedBeforeAction = isNotificationResolved(context);
+
+    const resolved_at = wasNotificationResolvedBeforeAction ? null : new Date().toISOString();
+
+    notification.update({ resolved_at });
+
+    if (wasNotificationResolvedBeforeAction) {
+      return;
+    }
 
     if (!getIsRouteActive("focus")) {
       return;
     }
+
+    const { listId, list, nextNotification } = getNextNotification(context);
     if (nextNotification) {
       desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
       return;
@@ -174,9 +209,10 @@ export const goToNextNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const { listId, nextNotification } = getNextNotification(context);
+    const list = context.getTarget("list", true);
+    const notification = context.getTarget("notification");
 
-    return !!listId && !!nextNotification;
+    return !!notification && !!list?.getNextNotification(notification);
   },
   handler(context) {
     const { listId, nextNotification } = getNextNotification(context);
