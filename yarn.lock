@@ -21,7 +21,7 @@ __metadata:
     "@google-cloud/storage": ^5.18.1
     "@install-binary/berglas": ^0.6.2
     "@sentry/node": ^6.17.3
-    "@slack/bolt": ^3.8.1
+    "@slack/bolt": ^3.9.0
     "@slack/web-api": ^6.6.0
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.12
@@ -4990,15 +4990,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/bolt@npm:^3.8.1":
-  version: 3.8.1
-  resolution: "@slack/bolt@npm:3.8.1"
+"@slack/bolt@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@slack/bolt@npm:3.9.0"
   dependencies:
     "@slack/logger": ^3.0.0
-    "@slack/oauth": ^2.3.0
+    "@slack/oauth": ^2.4.0
     "@slack/socket-mode": ^1.2.0
-    "@slack/types": ^2.2.0
-    "@slack/web-api": ^6.4.0
+    "@slack/types": ^2.4.0
+    "@slack/web-api": ^6.6.0
     "@types/express": ^4.16.1
     "@types/node": ">=12"
     "@types/promise.allsettled": ^1.0.3
@@ -5009,7 +5009,7 @@ __metadata:
     promise.allsettled: ^1.0.2
     raw-body: ^2.3.3
     tsscmp: ^1.0.6
-  checksum: 765183b344b72a3f53c6f5052cc7bc511a6329fde743a9830572e74550534bba13681a7082f9e3a6bc1f0aa4aeaa54c7f1816a92189b907641ea126028b2d959
+  checksum: cf38d8556f7562410a666bc39e1e1f000f1d5e002195a94909b19606a1db885feee3618c6b9a353f96e032efd5937c50e30bc9c2edb2e635f5d8ddee7ba708d1
   languageName: node
   linkType: hard
 
@@ -5022,9 +5022,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/oauth@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@slack/oauth@npm:2.3.0"
+"@slack/oauth@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@slack/oauth@npm:2.4.0"
   dependencies:
     "@slack/logger": ^3.0.0
     "@slack/web-api": ^6.3.0
@@ -5032,7 +5032,7 @@ __metadata:
     "@types/node": ">=12"
     jsonwebtoken: ^8.5.1
     lodash.isstring: ^4.0.1
-  checksum: 0b7eb80ca7c0e70a61b7aec6a1e5c9cd6d2072bfe0e85253b981cbcf4556a3f41eb46018e329d2a409b30cd128ee0596419480fa5d6ced9ce97e3ae868644ffa
+  checksum: 286f03a90f60117bc3250760941114fd7e23500eb9c17e8ab4ef3b7ce8b9f8193eae7ec0e38e6c722fa6acb079e8fd6c7eace7b812cb749c80f84ee75987476f
   languageName: node
   linkType: hard
 
@@ -5054,14 +5054,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/types@npm:^2.0.0, @slack/types@npm:^2.2.0":
+"@slack/types@npm:^2.0.0":
   version: 2.2.0
   resolution: "@slack/types@npm:2.2.0"
   checksum: b69a204d2e97f0998fef25062846f8db1e07e1d5872506b576220e5a889d8ba05756a4824cb95dedbeca99ce74f00c25bfef2e82f349e2de835041ab1b07ede8
   languageName: node
   linkType: hard
 
-"@slack/web-api@npm:^6.2.3, @slack/web-api@npm:^6.3.0, @slack/web-api@npm:^6.4.0":
+"@slack/types@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@slack/types@npm:2.4.0"
+  checksum: f2661ab4f6bb20a67f01879f8e32e82bb1ef2b9384cc4c854091cd1f6c0f26db95bc10f630355c1ae8f99eb377a92c84a8ec26cf56cbd547fc9b4d7efbcc78d7
+  languageName: node
+  linkType: hard
+
+"@slack/web-api@npm:^6.2.3, @slack/web-api@npm:^6.3.0":
   version: 6.4.0
   resolution: "@slack/web-api@npm:6.4.0"
   dependencies:
