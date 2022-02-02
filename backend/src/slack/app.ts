@@ -161,8 +161,12 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 
     async fetchInstallation(query) {
       // Just like in storeInstallation we first try the new Acapela persistence
-      const userSlackInstallation = await db.user_slack_installation.findFirst({
+      let userSlackInstallation = await db.user_slack_installation.findFirst({
         where: getSlackInstallationFilter(query),
+      });
+      // If there is no installation for the user, we try to find a team member's installation
+      userSlackInstallation ??= await db.user_slack_installation.findFirst({
+        where: getSlackInstallationFilter({ teamId: query.teamId }),
       });
       if (userSlackInstallation) {
         return userSlackInstallation.data as unknown as SlackInstallation;
@@ -183,12 +187,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         return { ...teamData, user: memberData ?? {} } as SlackInstallation;
       }
 
-      // If all of these do not find an installation, we try to find an installation from the team, for a different user
-      const userSlackInstallationForTeam = await db.user_slack_installation.findFirst({
-        where: getSlackInstallationFilter({ teamId: query.teamId }),
-      });
-      return assertDefined(userSlackInstallationForTeam, `missing installation for team ${query.teamId}`)
-        .data as unknown as SlackInstallation;
+      throw new Error(`Could not find a Slack installation for query ${JSON.stringify(query)}`);
     },
   },
 

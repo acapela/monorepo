@@ -4,9 +4,10 @@ import { uniq } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
+import { isChannelNotFoundError } from "@aca/backend/src/slack/errors";
 import { parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
 import { db } from "@aca/db";
-import { assert } from "@aca/shared/assert";
+import { assert, assertDefined } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
 export async function findUserIdForSlackInstallation(slackUserId: string) {
@@ -41,6 +42,37 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
 }
 
 /**
+ * We have to find a slack installation with access to the given channel, unfortunately there is no mechanism
+ * for knowing which slack installation is the right one within the context of a message event.
+ * https://github.com/slackapi/bolt-js/issues/1298
+ */
+async function findSlackUserTokenWithAccessToConversation(teamId: string, channel: string): Promise<string | null> {
+  const userSlackInstallations = await db.user_slack_installation.findMany({
+    where: { data: { path: ["team", "id"], equals: teamId } },
+  });
+  const userTokens = await Promise.all(
+    userSlackInstallations.map(async ({ data }) => {
+      const userToken = (data as unknown as SlackInstallation).user.token;
+      if (!userToken) {
+        return null;
+      }
+      try {
+        const response = await slackClient.conversations.info({ token: userToken, channel });
+        if (response.ok) {
+          return userToken;
+        }
+      } catch (error) {
+        if (!isChannelNotFoundError(error)) {
+          throw error;
+        }
+      }
+      return null;
+    })
+  );
+  return userTokens.find(Boolean) ?? null;
+}
+
+/**
  * Creates notifications for Acapela users who are in the Slack IM conversation in which the message was posted. If the
  * conversation is a Slack channel we only create a notification if it was a mention.
  * TODO:
@@ -50,7 +82,13 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
  *   channels
  *   - Same for threads, I have not run into the limit yet but if we want to scale to infinity we'll want to paginate
  */
-async function createNotificationsFromMessage(userToken: string, message: GenericMessageEvent) {
+async function createNotificationsFromMessage(message: GenericMessageEvent) {
+  const slackTeamId = assertDefined(message.team, `missing team for message ${JSON.stringify(message)}`);
+  const userToken = await findSlackUserTokenWithAccessToConversation(slackTeamId, message.channel);
+  if (!userToken) {
+    return;
+  }
+
   const { ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
   const membersResponse = await slackClient.conversations.members({
     token: userToken,
@@ -86,9 +124,8 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
   }
 
   // Extract all mentioned users and set/overwrite them as mentions in the slackUsersToNotify Map
-  const mentionedSlackUserIds = new Set(
-    extractMentionedSlackUserIdsFromMd(message.text).filter((id) => members.has(id))
-  );
+  const mentionedMembers = new Set(extractMentionedSlackUserIdsFromMd(message.text).filter((id) => members.has(id)));
+  slackUserIdsToNotify.push(...mentionedMembers);
 
   // Find Acapela users for all the Slack users that would be notified
   const userSlackInstallations = await db.user_slack_installation.findMany({
@@ -130,7 +167,7 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
               slack_conversation_id: message.channel,
               slack_thread_ts: threadTs,
               slack_message_ts: messageTs,
-              is_mention: mentionedSlackUserIds.has((data as unknown as SlackInstallation).user.id),
+              is_mention: mentionedMembers.has((data as unknown as SlackInstallation).user.id),
               ...(channel
                 ? {
                     conversation_name: (channel.is_private ? "🔒" : "#") + channel.name_normalized,
@@ -149,7 +186,7 @@ async function createNotificationsFromMessage(userToken: string, message: Generi
 }
 
 export function setupSlackCapture(app: SlackApp) {
-  app.message(async ({ message, context }) => {
+  app.message(async ({ message }) => {
     message = message as GenericMessageEvent;
 
     if (message.type !== "message" || message.subtype || !message.text) {
@@ -174,8 +211,7 @@ export function setupSlackCapture(app: SlackApp) {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      await createNotificationsFromMessage(context.userToken!, message);
+      await createNotificationsFromMessage(message);
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
     }

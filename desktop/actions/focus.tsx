@@ -22,6 +22,7 @@ import {
 } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
 export const currentNotificationActionsGroup = defineGroup({
@@ -121,6 +122,17 @@ export const copyNotificationLink = defineAction({
   },
 });
 
+function getNextNotification(context: ActionContext) {
+  const list = context.assertTarget("list", true);
+  const notification = context.assertTarget("notification");
+
+  return {
+    listId: list?.id,
+    list: list,
+    nextNotification: list?.getNextNotification(notification),
+  } as const;
+}
+
 export const resolveNotification = defineAction({
   icon: <IconCheck />,
   group: currentNotificationActionsGroup,
@@ -134,8 +146,25 @@ export const resolveNotification = defineAction({
   },
   handler(context) {
     const notification = context.assertTarget("notification");
+    const { listId, list, nextNotification } = getNextNotification(context);
 
     notification.update({ resolved_at: new Date().toISOString() });
+
+    if (!getIsRouteActive("focus")) {
+      return;
+    }
+    if (nextNotification) {
+      desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
+      return;
+    }
+
+    const notificationAtBeginningOfList = list.getAllNotifications().first;
+
+    if (notificationAtBeginningOfList) {
+      desktopRouter.navigate("focus", { listId, notificationId: notificationAtBeginningOfList.id });
+    } else {
+      desktopRouter.navigate("list", { listId });
+    }
   },
 });
 
@@ -147,20 +176,16 @@ export const goToNextNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const list = context.getTarget("list", true);
-    const notification = context.getTarget("notification");
+    const { listId, nextNotification } = getNextNotification(context);
 
-    return !!notification && !!list?.getNextNotification(notification);
+    return !!listId && !!nextNotification;
   },
   handler(context) {
-    const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
-
-    const nextNotification = list.getNextNotification(notification);
+    const { listId, nextNotification } = getNextNotification(context);
 
     if (!nextNotification) return;
 
-    desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
+    desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
   },
 });
 

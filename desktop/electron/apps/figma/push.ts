@@ -43,7 +43,7 @@ export async function initializeFigmaPush() {
     });
 
     if (!response.ok) {
-      Sentry.captureException("[Figma] Unable to delete unread comment" + (await response.json()));
+      Sentry.captureException("[Figma] Unable to delete unread comment" + JSON.stringify(await response.json()));
     }
   });
 }
