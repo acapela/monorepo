@@ -23,7 +23,7 @@ export function Sidebar() {
 
         <UIItemGroup>
           {preconfiguredLists
-            .filter((list) => list.id !== "inbox")
+            .filter((list) => list.id !== inboxList.id)
             .map((list) => {
               return <UIListTabLabel key={list.id} list={list} />;
             })}
