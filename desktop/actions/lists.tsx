@@ -27,7 +27,7 @@ export const goToList = defineAction({
 
     if (context.isContextual) return list.name;
 
-    return `Open list - ${list.name}`;
+    return list.name;
   },
   private: true,
   group: currentListActionsGroup,

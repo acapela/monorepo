@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import { goToList } from "@aca/desktop/actions/lists";
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
-import { inboxList } from "@aca/desktop/domains/list/preconfigured";
+import { inboxList, preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { ListTabLabel } from "@aca/desktop/views/ListView/ListTabLabel";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
@@ -17,8 +17,19 @@ export function Sidebar() {
         <ActionIconButton action={closeNavigationMenu} />
       </UITopTools>
       <UIItems>
-        <SidebarItem action={goToList} target={inboxList} />
-        <SidebarItem action={goToSettings} />
+        <UIItemGroup>
+          <UIListTabLabel list={inboxList} />
+        </UIItemGroup>
+
+        <UIItemGroup>
+          {preconfiguredLists
+            .filter((list) => list.id !== "inbox")
+            .map((list) => {
+              return <UIListTabLabel key={list.id} list={list} />;
+            })}
+        </UIItemGroup>
+
+        <UISidebarItem action={goToSettings} />
       </UIItems>
     </UIHolder>
   );
@@ -35,9 +46,26 @@ const UIHolder = styled(PresenceAnimator)`
   padding-top: 24px;
 `;
 
+const UIItemGroup = styled.div<{}>``;
+
 const UITopTools = styled.div`
   padding-top: 24px;
   padding-left: 16px;
 `;
 
-const UIItems = styled.div``;
+const UIItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-left: 72px;
+  row-gap: 16px;
+`;
+
+const itemPadding = "padding: 12px 12px 12px 0;";
+
+const UISidebarItem = styled(SidebarItem)`
+  ${itemPadding}
+`;
+
+const UIListTabLabel = styled(ListTabLabel)`
+  ${itemPadding}
+`;
