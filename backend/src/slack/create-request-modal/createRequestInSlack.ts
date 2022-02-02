@@ -126,7 +126,7 @@ interface CreateRequestInSlackInput {
   token: string;
   originalChannelId?: Maybe<string>;
   conversationId?: Maybe<string>;
-  // client: WebClient;
+  client: WebClient;
   triggerId: string;
   dueAt?: Maybe<Date>;
   botToken?: Maybe<string>;
