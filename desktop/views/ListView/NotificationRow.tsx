@@ -15,6 +15,8 @@ import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnEleme
 import { mobxTicks } from "@aca/shared/mobxTime";
 import { theme } from "@aca/ui/theme";
 
+import { UISendersLabel } from "./shared";
+
 interface Props {
   notification: NotificationEntity;
   list: DefinedList;
@@ -58,6 +60,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         })}
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
+        <UISendersLabel>{notification.from}</UISendersLabel>
         <UITitle>{getNotificationTitle(notification)}</UITitle>
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>

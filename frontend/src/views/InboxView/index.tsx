@@ -45,7 +45,7 @@ export const InboxView = observer(() => {
             <>
               {" "}
               You have <UIUnreadIndicator>{unreadTasksCount} new unread</UIUnreadIndicator>{" "}
-              {pluralize(unreadTasksCount, "request", "requests")}.
+              {pluralize`${unreadTasksCount} ${["request"]}`}.
             </>
           )}
         </UIWelcome>

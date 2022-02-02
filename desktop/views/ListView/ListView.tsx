@@ -2,6 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
 import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
@@ -9,6 +11,7 @@ import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySid
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
+import { NotificationsGroupRow } from "./NotificationsGroupRow";
 
 interface Props {
   listId: string;
@@ -16,6 +19,11 @@ interface Props {
 
 export const ListView = observer(({ listId }: Props) => {
   const list = getPredefinedListById(listId);
+
+  const allNotifications = list?.getAllNotifications().all;
+
+  const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
+
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
       <UITabsBar>
@@ -28,8 +36,12 @@ export const ListView = observer(({ listId }: Props) => {
             return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
-            {list.getAllNotifications().all.map((notification) => {
-              return <NotificationRow list={list} key={notification.id} notification={notification} />;
+            {notificationGroups?.map((notificationOrGroup) => {
+              if (getIsNotificationsGroup(notificationOrGroup)) {
+                return <NotificationsGroupRow list={list} key={notificationOrGroup.id} group={notificationOrGroup} />;
+              }
+
+              return <NotificationRow list={list} key={notificationOrGroup.id} notification={notificationOrGroup} />;
             })}
           </UINotifications>
         </>

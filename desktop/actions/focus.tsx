@@ -2,6 +2,7 @@ import React from "react";
 
 import { requestPreviewFocus, requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import {
   assertGetActiveRouteParams,
   desktopRouter,
@@ -20,7 +21,6 @@ import {
   IconTarget,
 } from "@aca/ui/icons";
 
-import { getNotificationTitle } from "../domains/notification/title";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -128,7 +128,9 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   canApply: (ctx) => {
-    return ctx.hasTarget("notification");
+    const notification = ctx.getTarget("notification");
+
+    return !!notification && !notification.resolved_at;
   },
   handler(context) {
     const notification = context.assertTarget("notification");

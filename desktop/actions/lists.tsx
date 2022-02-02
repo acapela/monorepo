@@ -1,12 +1,16 @@
 import React from "react";
 
+import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
+import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { getNextItemInList, getPreviousItemInList } from "@aca/desktop/domains/list/getNextItemInList";
 import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-import { IconArrowBottom, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowLeft, IconArrowRight, IconArrowTop, IconToggleOn } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
 export const currentListActionsGroup = defineGroup({
@@ -48,17 +52,9 @@ export const focusNextNotificationInList = defineAction({
   handler(context) {
     const list = context.assertTarget("list", true);
     const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    if (!notification) {
-      uiStore.focusedTarget = list.getAllNotifications().first;
-      return;
-    }
-
-    const nextNotification = list.getNextNotification(notification);
-
-    if (!nextNotification) return;
-
-    uiStore.focusedTarget = nextNotification;
+    uiStore.focusedTarget = getNextItemInList(list, notification ?? group ?? undefined);
   },
 });
 
@@ -73,17 +69,9 @@ export const focusPreviousNotificationInList = defineAction({
   handler(context) {
     const list = context.assertTarget("list", true);
     const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    if (!notification) {
-      uiStore.focusedTarget = list.getAllNotifications().last;
-      return;
-    }
-
-    const previousNotification = list.getPreviousNotification(notification);
-
-    if (!previousNotification) return;
-
-    uiStore.focusedTarget = previousNotification;
+    uiStore.focusedTarget = getPreviousItemInList(list, notification ?? group ?? undefined);
   },
 });
 
@@ -118,5 +106,39 @@ export const goToPreviousList = defineAction({
     const previousList = getPreviousItemInArray(preconfiguredLists, list);
 
     desktopRouter.navigate("list", { listId: previousList.id });
+  },
+});
+
+function getNotificationTargetGroup(context: ActionContext) {
+  const group = context.getTarget("group");
+  if (group) return group;
+
+  const list = context.getTarget("list", true);
+  const notification = context.getTarget("notification");
+
+  if (!notification || !list) return null;
+
+  const targetGroup = getNotificationParentGroupInList(notification, list);
+
+  return targetGroup;
+}
+
+export const toggleNotificationsGroup = defineAction({
+  icon: <IconToggleOn />,
+  group: currentListActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Toggle" : "Show notifications in group"),
+  shortcut: "Space",
+  canApply: (context) => {
+    return !!getNotificationTargetGroup(context);
+  },
+  handler(context) {
+    const group = getNotificationTargetGroup(context);
+
+    if (!group) return;
+    const isOpenedNow = openedNotificationsGroupsStore.toggleOpen(group.id);
+
+    if (!isOpenedNow) {
+      uiStore.focusedTarget = group;
+    }
   },
 });

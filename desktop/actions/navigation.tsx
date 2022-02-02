@@ -1,10 +1,10 @@
 import React from "react";
 
+import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { IconArrowLeft, IconCross, IconHome, IconMenu, IconMonitor, IconSlidersHoriz } from "@aca/ui/icons";
 
-import { openLinkRequest } from "../bridge/system";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

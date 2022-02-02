@@ -6,6 +6,7 @@ import {
   focusPreviousNotificationInList,
   goToNextList,
   goToPreviousList,
+  toggleNotificationsGroup,
 } from "@aca/desktop/actions/lists";
 import { ShortcutsFooter } from "@aca/desktop/ui/ShortcutsFooter";
 
@@ -20,6 +21,7 @@ export function ListViewFooter() {
         openFocusMode,
         resolveNotification,
         openNotificationInApp,
+        toggleNotificationsGroup,
       ]}
     />
   );

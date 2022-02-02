@@ -7,12 +7,12 @@ import { allActions } from "@aca/desktop/actions/all";
 import { openFocusMode } from "@aca/desktop/actions/focus";
 import { searchListActionsGroup, searchNotificationsGroup } from "@aca/desktop/actions/groups";
 import { goToList } from "@aca/desktop/actions/lists";
+import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
+import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
+import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { IconFolder } from "@aca/ui/icons";
 
-import { listsFuzzySearch } from "../list/search";
-import { NotificationAppIcon } from "../notification/NotificationAppIcon";
-import { notificationsFuzzySearch } from "../notification/search";
-import { getNotificationTitle } from "../notification/title";
 import { CommandMenuSession } from "./session";
 
 const getSearchActions = cachedComputed(function getSearchActions(keyword: string) {

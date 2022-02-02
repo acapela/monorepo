@@ -33,6 +33,9 @@ createWindowEvent("blur", () => {
 export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
+  getTypedFocusedTarget<T>() {
+    return uiStore.focusedTarget as T | null;
+  },
   get isFullscreen() {
     return isFullscreenValue.get();
   },

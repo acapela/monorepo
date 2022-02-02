@@ -194,11 +194,7 @@ export async function buildSummaryBlocksForUser(
 
   const allUnreadMessages: number = sumBy(unreadMessagesByTopic, "unread_messages");
   const allUnreadMessagesText = allUnreadMessages
-    ? `:envelope_with_arrow: You currently have *${allUnreadMessages}* unread ${pluralize(
-        allUnreadMessages,
-        "message",
-        "messages"
-      )}.`
+    ? pluralize`:envelope_with_arrow: You currently have *${allUnreadMessages}* unread ${["message"]}`
     : ":envelope: You're all caught up. :tada:";
 
   const unreadMessagesByTopicId = Object.fromEntries(
