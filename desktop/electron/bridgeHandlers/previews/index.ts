@@ -64,6 +64,8 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
     const browserView = new BrowserView({ webPreferences: {} });
     const loadingPromise = loadURLWithFilters(browserView, url);
 
+    browserView.webContents.setAudioMuted(true);
+
     browserView.webContents.on("before-input-event", async (event, input) => {
       // Handle Esc press only
       if (input.type !== "keyDown" || input.key !== "Escape") return;
@@ -93,6 +95,7 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
     });
 
     listenToWebContentsFocus(browserView.webContents, (isFocused) => {
+      browserView.webContents.setAudioMuted(!isFocused);
       previewEventsBridge.send({ url, type: isFocused ? "focus" : "blur" });
     });
 
