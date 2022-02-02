@@ -6,6 +6,7 @@ import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/settings";
 
+import { allNotificationsList } from "../domains/list/preconfigured";
 import { Redirect } from "./Redirect";
 
 export function Router() {
@@ -13,7 +14,7 @@ export function Router() {
 
   useEffect(() => {
     if (!activeRoute) {
-      desktopRouter.navigate("list", { listId: "inbox" });
+      desktopRouter.navigate("list", { listId: allNotificationsList.id });
     }
   }, [activeRoute]);
 
@@ -23,7 +24,7 @@ export function Router() {
 
   switch (activeRoute.name) {
     case "home":
-      return <Redirect to={desktopRouter.createURL("list", { listId: "inbox" })} />;
+      return <Redirect to={desktopRouter.createURL("list", { listId: allNotificationsList.id })} />;
     case "settings":
       return <SettingsView />;
     case "notification":

@@ -1,18 +1,19 @@
 import React from "react";
 import styled from "styled-components";
 
-import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
+import { DefinedList } from "@aca/desktop/domains/list/defineList";
 
 import { ListTabLabel } from "./ListTabLabel";
 
 interface Props {
   activeListId: string;
+  lists: DefinedList[];
 }
 
-export function ListsTabBar({ activeListId }: Props) {
+export function ListsTabBar({ lists, activeListId }: Props) {
   return (
     <UIHolder>
-      {preconfiguredLists.map((list) => {
+      {lists.map((list) => {
         return <ListTabLabel key={list.id} list={list} activeListId={activeListId} />;
       })}
     </UIHolder>

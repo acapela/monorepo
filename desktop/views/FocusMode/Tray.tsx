@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { exitFocusMode, goToNextNotification, goToPreviousNotification } from "@aca/desktop/actions/focus";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
-export const FocusModeTray = observer(function ListViewTray() {
+export const FocusModeTray = observer(function FocusModeTray() {
   return (
     <>
       <UIHolder>

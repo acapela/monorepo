@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
-import { inboxList, preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
+import { allNotificationsList, inboxLists, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { ListTabLabel } from "@aca/desktop/views/ListView/ListTabLabel";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
@@ -18,15 +18,20 @@ export function Sidebar() {
       </UITopTools>
       <UIItems>
         <UIItemGroup>
-          <UIListTabLabel list={inboxList} />
+          <UIListTabLabel list={allNotificationsList} />
         </UIItemGroup>
 
         <UIItemGroup>
-          {preconfiguredLists
-            .filter((list) => list.id !== inboxList.id)
+          {inboxLists
+            .filter((list) => list.id !== allNotificationsList.id)
             .map((list) => {
               return <UIListTabLabel key={list.id} list={list} />;
             })}
+        </UIItemGroup>
+        <UIItemGroup>
+          {outOfInboxLists.map((list) => (
+            <UIListTabLabel key={list.id} list={list} />
+          ))}
         </UIItemGroup>
 
         <UISidebarItem action={goToSettings} />

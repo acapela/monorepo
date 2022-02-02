@@ -1,6 +1,6 @@
 import React from "react";
 
-import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
+import { inboxLists, isInboxList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
@@ -90,15 +90,16 @@ export const focusPreviousNotificationInList = defineAction({
 export const goToNextList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Next list" : "Go to next list"),
   group: currentListActionsGroup,
-  canApply: () => {
-    return getIsRouteActive("list");
+  canApply: (context) => {
+    const list = context.getTarget("list", true);
+    return getIsRouteActive("list") && isInboxList(list?.id ?? "");
   },
   icon: <IconArrowRight />,
   shortcut: "ArrowRight",
   handler(context) {
     const list = context.assertTarget("list", true);
 
-    const nextList = getNextItemInArray(preconfiguredLists, list);
+    const nextList = getNextItemInArray(inboxLists, list);
 
     desktopRouter.navigate("list", { listId: nextList.id });
   },
@@ -108,14 +109,15 @@ export const goToPreviousList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
   group: currentListActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: () => {
-    return getIsRouteActive("list");
+  canApply: (context) => {
+    const list = context.getTarget("list", true);
+    return getIsRouteActive("list") && isInboxList(list?.id ?? "");
   },
   shortcut: "ArrowLeft",
   handler(context) {
     const list = context.assertTarget("list", true);
 
-    const previousList = getPreviousItemInArray(preconfiguredLists, list);
+    const previousList = getPreviousItemInArray(inboxLists, list);
 
     desktopRouter.navigate("list", { listId: previousList.id });
   },

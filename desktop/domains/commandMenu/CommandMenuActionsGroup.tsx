@@ -34,6 +34,7 @@ export const CommandMenuActionsGroup = observer(function CommandMenuActionsGroup
       {actions.map((action) => {
         return (
           <CommandMenuAction
+            key={action.id}
             action={action}
             session={session}
             isActive={activeAction?.id === action.id}

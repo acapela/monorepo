@@ -140,7 +140,8 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   canApply: (ctx) => {
-    return ctx.hasTarget("notification");
+    const notification = ctx.getTarget("notification");
+    return !notification?.resolved_at;
   },
   handler(context) {
     const notification = context.assertTarget("notification");
@@ -174,9 +175,10 @@ export const goToNextNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const { listId, nextNotification } = getNextNotification(context);
+    const list = context.getTarget("list", true);
+    const notification = context.getTarget("notification");
 
-    return !!listId && !!nextNotification;
+    return !!notification && !!list?.getNextNotification(notification);
   },
   handler(context) {
     const { listId, nextNotification } = getNextNotification(context);

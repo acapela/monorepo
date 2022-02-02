@@ -1,6 +1,6 @@
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
-import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { isNotNullish } from "@aca/shared/nullish";
@@ -16,7 +16,7 @@ const routeTargets = cachedComputed((): unknown[] => {
 
   if (focusRoute) {
     const { notificationId, listId } = focusRoute;
-    return [getDb().notification.findById(notificationId), getPredefinedListById(listId)];
+    return [getDb().notification.findById(notificationId), getAllInboxListsById(listId)];
   }
 
   const listRoute = getRouteParamsIfActive("list");
@@ -24,7 +24,7 @@ const routeTargets = cachedComputed((): unknown[] => {
   if (listRoute) {
     const { listId } = listRoute;
 
-    return [getPredefinedListById(listId)];
+    return [getAllInboxListsById(listId)];
   }
 
   return [];
