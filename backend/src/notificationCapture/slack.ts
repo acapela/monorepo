@@ -6,7 +6,7 @@ import { SingleASTNode } from "simple-markdown";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import { parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
 import { db } from "@aca/db";
-import { assert } from "@aca/shared/assert";
+import { assert, assertDefined } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
 export async function findUserIdForSlackInstallation(slackUserId: string) {
@@ -174,8 +174,8 @@ export function setupSlackCapture(app: SlackApp) {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      await createNotificationsFromMessage(context.userToken!, message);
+      const userToken = assertDefined(context.userToken, `missing user token in context ${JSON.stringify(context)}`);
+      await createNotificationsFromMessage(userToken, message);
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
     }

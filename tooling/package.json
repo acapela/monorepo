@@ -4,22 +4,22 @@
   "license": "UNLICENSED",
   "main": "cli-tooling.ts",
   "devDependencies": {
-    "@graphql-codegen/cli": "^2.3.0",
-    "@graphql-codegen/fragment-matcher": "^3.2.0",
-    "@graphql-codegen/typescript": "^2.4.1",
-    "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.8",
-    "@graphql-codegen/typescript-operations": "^2.2.1",
+    "@graphql-codegen/cli": "^2.4.0",
+    "@graphql-codegen/fragment-matcher": "^3.2.1",
+    "@graphql-codegen/typescript": "^2.4.2",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.9",
+    "@graphql-codegen/typescript-operations": "^2.2.3",
     "@types/ink": "^2.0.3",
     "@types/temp": "^0.9.1"
   },
   "dependencies": {
     "@aca/config": "0.1.0",
-    "graphql": "^16.2.0",
+    "graphql": "^16.3.0",
     "ink": "^3.2.0",
     "temp": "^0.9.4",
     "temp-dir": "^2.0.0",
     "yargs": "^17.3.1",
-    "zx": "^4.2.0"
+    "zx": "^4.3.0"
   },
   "peerDependencies": {
     "axios": "*",

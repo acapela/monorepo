@@ -20,7 +20,7 @@
     "react-window": "^1.8.6"
   },
   "devDependencies": {
-    "@svgr/cli": "^6.1.2",
+    "@svgr/cli": "^6.2.1",
     "@types/emoji-mart": "^3.0.9",
     "@types/react-window": "^1.8.5"
   }

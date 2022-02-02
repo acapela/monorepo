@@ -121,7 +121,7 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
     throw new Error("[Figma] Unauthorized");
   }
 
-  const result: GetFigmaUserNotificationsResponse = await response.json();
+  const result = (await response.json()) as GetFigmaUserNotificationsResponse;
 
   const isNotificationRelevant = ({ read_at, rejected_at, resolved_at, created_at }: FigmaUserNotification) =>
     !read_at && !resolved_at && !rejected_at && isLessThan2WeeksOld(created_at);
