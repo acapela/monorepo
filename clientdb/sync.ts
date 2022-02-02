@@ -134,12 +134,14 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
     return Array.from(idsWithoutAccess);
   }
 
-  function getPushInputFromData(data: T) {
+  function getPushInputFromData(data: T, { isUpdate } = { isUpdate: false }) {
     return runUntracked(() => {
-      // If we have specified input columns - use those
-      if ("insertColumns" in options) {
-        assert(options.insertColumns, `${type} of entity has no insert columns defined`);
-        return pick(data, options.insertColumns);
+      const columns = isUpdate
+        ? "updateColumns" in options && options.updateColumns
+        : "insertColumns" in options && options.insertColumns;
+      // If we have specified columns - use those
+      if (columns) {
+        return pick(data, columns);
       }
 
       // Otherwise, pass all keys of data we have.
@@ -228,7 +230,7 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
 
     const hasInsertColumns = ("insertColumns" in options && options.insertColumns?.length) ?? 0 > 0;
 
-    const input = getPushInputFromData({ ...entity.getData(), ...changedData });
+    let input = getPushInputFromData({ ...entity.getData(), ...changedData });
 
     if (hasUpdateColumns && hasInsertColumns) {
       return upsert(input, apollo);
@@ -237,6 +239,8 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
     if (hasInsertColumns) {
       return insert(input, apollo);
     }
+
+    input = getPushInputFromData({ ...entity.getData(), ...changedData }, { isUpdate: true });
 
     const id = entity.getKey();
     const idKey = entity.getKeyName();

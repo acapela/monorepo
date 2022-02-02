@@ -13,7 +13,7 @@ import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
-import { InstallSlackButton } from "./InstallSlackButton";
+import { SlackActions } from "./SlackActions";
 
 export const SettingsView = observer(function SettingsView() {
   return (
@@ -28,7 +28,8 @@ export const SettingsView = observer(function SettingsView() {
         </HStack>
         <ActionButton action={connectFigma} />
 
-        <InstallSlackButton />
+        <SlackActions />
+
         <UIVersionInfo>v{window.electronBridge.env.version}</UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
