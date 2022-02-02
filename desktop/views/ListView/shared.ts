@@ -12,3 +12,11 @@ export const UISendersLabel = styled.div`
   display: flex;
   align-items: center;
 `;
+
+export const UINotificationRowTitle = styled.div`
+  ${theme.typo.content.semibold};
+  ${theme.common.ellipsisText};
+  min-width: 0;
+  flex-grow: 1;
+  flex-basis: 0;
+`;

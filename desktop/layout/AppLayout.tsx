@@ -36,6 +36,7 @@ const UIBody = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 `;
 
 const UIFooter = styled.div``;

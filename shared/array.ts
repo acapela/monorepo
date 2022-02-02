@@ -90,18 +90,25 @@ function getNextIndexInArray<T>(items: T[], currentIndex: number) {
   return nextNaturalIndex;
 }
 
+interface ArrayLoopConfig<T> {
+  keyGetter?: (item: T) => string;
+  loop?: boolean;
+}
+
 /**
  * This hook allows 'getting next value' of an array with a simple callback.
  *
  * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
  */
-export function getNextItemInArray<T>(items: T[], activeItem: T, keyGetter?: (item: T) => string) {
+export function getNextItemInArray<T>(items: T[], activeItem: T, { keyGetter, loop }: ArrayLoopConfig<T> = {}) {
   const activeItemIndex = items.findIndex((item) => {
     if (keyGetter) {
       return keyGetter(activeItem) === keyGetter(item);
     }
     return item === activeItem;
   });
+
+  if (activeItemIndex === items.length - 1 && !loop) return null;
 
   const nextIndex = getNextIndexInArray(items, activeItemIndex);
 
@@ -125,13 +132,15 @@ function getPreviousIndexInArray<T>(items: T[], currentIndex: number) {
  *
  * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
  */
-export function getPreviousItemInArray<T>(items: T[], activeItem: T, keyGetter?: (item: T) => string) {
+export function getPreviousItemInArray<T>(items: T[], activeItem: T, { keyGetter, loop }: ArrayLoopConfig<T> = {}) {
   const activeItemIndex = items.findIndex((item) => {
     if (keyGetter) {
       return keyGetter(activeItem) === keyGetter(item);
     }
     return item === activeItem;
   });
+
+  if (activeItemIndex === 0 && !loop) return null;
 
   const previousIndex = getPreviousIndexInArray(items, activeItemIndex);
 

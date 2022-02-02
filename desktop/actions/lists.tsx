@@ -7,7 +7,7 @@ import { preconfiguredLists } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-import { IconArrowBottom, IconArrowLeft, IconArrowRight, IconArrowTop, IconToggleOn } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowCornerCwRb, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -54,7 +54,11 @@ export const focusNextNotificationInList = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    uiStore.focusedTarget = getNextItemInList(list, notification ?? group ?? undefined);
+    const nextItem = getNextItemInList(list, notification ?? group ?? undefined);
+
+    if (nextItem) {
+      uiStore.focusedTarget = nextItem;
+    }
   },
 });
 
@@ -71,7 +75,11 @@ export const focusPreviousNotificationInList = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    uiStore.focusedTarget = getPreviousItemInList(list, notification ?? group ?? undefined);
+    const previousItem = getPreviousItemInList(list, notification ?? group ?? undefined);
+
+    if (previousItem) {
+      uiStore.focusedTarget = previousItem;
+    }
   },
 });
 
@@ -86,9 +94,11 @@ export const goToNextList = defineAction({
   handler(context) {
     const list = context.assertTarget("list", true);
 
-    const nextList = getNextItemInArray(preconfiguredLists, list);
+    const nextList = getNextItemInArray(preconfiguredLists, list, { loop: true });
 
-    desktopRouter.navigate("list", { listId: nextList.id });
+    if (nextList) {
+      desktopRouter.navigate("list", { listId: nextList.id });
+    }
   },
 });
 
@@ -103,9 +113,11 @@ export const goToPreviousList = defineAction({
   handler(context) {
     const list = context.assertTarget("list", true);
 
-    const previousList = getPreviousItemInArray(preconfiguredLists, list);
+    const previousList = getPreviousItemInArray(preconfiguredLists, list, { loop: true });
 
-    desktopRouter.navigate("list", { listId: previousList.id });
+    if (previousList) {
+      desktopRouter.navigate("list", { listId: previousList.id });
+    }
   },
 });
 
@@ -124,10 +136,11 @@ function getNotificationTargetGroup(context: ActionContext) {
 }
 
 export const toggleNotificationsGroup = defineAction({
-  icon: <IconToggleOn />,
+  icon: <IconArrowCornerCwRb />,
   group: currentListActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Toggle" : "Show notifications in group"),
+  name: (ctx) => (ctx.isContextual ? "Toggle" : "Show/hide notifications in group"),
   shortcut: "Space",
+  keywords: ["toggle", "group", "all"],
   canApply: (context) => {
     return !!getNotificationTargetGroup(context);
   },

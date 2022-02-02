@@ -20,7 +20,7 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UISendersLabel } from "./shared";
+import { UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   group: NotificationsGroup;
@@ -96,7 +96,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
-            {group.name}
+            <UITitleText>{group.name}</UITitleText>
           </UITitle>
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
@@ -130,12 +130,14 @@ const UIHolder = styled.div<{ $isFocused: boolean }>`
   }
 `;
 
-const UITitle = styled.div`
-  ${theme.typo.content.semibold};
-  flex-grow: 1;
+const UITitle = styled(UINotificationRowTitle)`
   display: flex;
   gap: 8px;
   align-items: center;
+`;
+
+const UITitleText = styled.div`
+  ${theme.common.ellipsisText}
 `;
 
 const UIDate = styled.div`

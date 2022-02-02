@@ -21,6 +21,7 @@ import {
   IconTarget,
 } from "@aca/ui/icons";
 
+import { getNextItemInList } from "../domains/list/getNextItemInList";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -123,14 +124,12 @@ export const copyNotificationLink = defineAction({
 });
 
 function getNextNotification(context: ActionContext) {
-  const list = context.assertTarget("list", true);
-  const notification = context.assertTarget("notification");
+  const list = context.getTarget("list", true);
+  const notification = context.getTarget("notification");
 
-  return {
-    listId: list?.id,
-    list: list,
-    nextNotification: list?.getNextNotification(notification),
-  } as const;
+  if (!list || !notification) return null;
+
+  return getNextItemInList(list, notification);
 }
 
 export const resolveNotification = defineAction({
@@ -142,28 +141,45 @@ export const resolveNotification = defineAction({
   canApply: (ctx) => {
     const notification = ctx.getTarget("notification");
 
-    return !!notification && !notification.resolved_at;
+    if (notification) return !notification.isResolved;
+
+    const group = ctx.getTarget("group");
+
+    if (group) return group.notifications.some((notification) => !notification.isResolved);
+
+    return false;
   },
   handler(context) {
-    const notification = context.assertTarget("notification");
-    const { listId, list, nextNotification } = getNextNotification(context);
+    const group = context.getTarget("group");
+    const nextNotification = getNextNotification(context);
+    const list = context.assertTarget("list", true);
 
-    notification.update({ resolved_at: new Date().toISOString() });
-
-    if (!getIsRouteActive("focus")) {
-      return;
-    }
-    if (nextNotification) {
-      desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
-      return;
+    if (group) {
+      group.notifications.forEach((notification) => {
+        notification.resolve();
+      });
     }
 
-    const notificationAtBeginningOfList = list.getAllNotifications().first;
+    const notification = context.getTarget("notification");
 
-    if (notificationAtBeginningOfList) {
-      desktopRouter.navigate("focus", { listId, notificationId: notificationAtBeginningOfList.id });
-    } else {
-      desktopRouter.navigate("list", { listId });
+    if (notification) {
+      notification.resolve();
+    }
+
+    // In list mode - simply focus next notification
+    if (getIsRouteActive("list")) {
+      uiStore.focusedTarget = nextNotification;
+      return;
+    }
+
+    if (getIsRouteActive("focus")) {
+      if (nextNotification) {
+        desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
+        return;
+      }
+
+      // If it was last notification in focus mode - go back to list to experience some ZEN
+      desktopRouter.navigate("list", { listId: list.id });
     }
   },
 });
@@ -176,16 +192,16 @@ export const goToNextNotification = defineAction({
   canApply: (context) => {
     if (!getIsRouteActive("focus")) return false;
 
-    const { listId, nextNotification } = getNextNotification(context);
+    const nextNotification = getNextNotification(context);
 
-    return !!listId && !!nextNotification;
+    return !!nextNotification;
   },
   handler(context) {
-    const { listId, nextNotification } = getNextNotification(context);
+    const nextNotification = getNextNotification(context);
 
     if (!nextNotification) return;
 
-    desktopRouter.navigate("focus", { listId, notificationId: nextNotification.id });
+    desktopRouter.navigate("focus", { listId: context.assertTarget("list").id, notificationId: nextNotification.id });
   },
 });
 

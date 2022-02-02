@@ -28,9 +28,9 @@ export function getNextItemInList(list: DefinedList, currentItem?: NotificationO
 
   if (!currentItem) return visibleElements[0];
 
-  return getNextItemInArray(visibleElements, currentItem, (item) =>
-    getIsNotificationsGroup(item) ? item.id : item.id
-  );
+  return getNextItemInArray(visibleElements, currentItem, {
+    keyGetter: (item) => (getIsNotificationsGroup(item) ? item.id : item.id),
+  });
 }
 
 export function getPreviousItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
@@ -38,7 +38,7 @@ export function getPreviousItemInList(list: DefinedList, currentItem?: Notificat
 
   if (!currentItem) return visibleElements[visibleElements.length - 1];
 
-  return getPreviousItemInArray(visibleElements, currentItem, (item) =>
-    getIsNotificationsGroup(item) ? item.id : item.id
-  );
+  return getPreviousItemInArray(visibleElements, currentItem, {
+    keyGetter: (item) => (getIsNotificationsGroup(item) ? item.id : item.id),
+  });
 }
