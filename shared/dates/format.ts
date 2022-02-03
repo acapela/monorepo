@@ -3,8 +3,8 @@ import {
   differenceInDays,
   differenceInHours,
   differenceInMinutes,
-  format,
   formatRelative,
+  isThisYear,
   startOfWeek,
 } from "date-fns";
 import { upperFirst } from "lodash";
@@ -30,25 +30,28 @@ export function relativeFormatDateTime(date: Date): string {
   return upperFirst(formatRelative(date, new Date()));
 }
 
-interface DateFormatOptions {
-  showWeekDay?: "long" | "short";
-}
-function getWeekDayFormat(options?: DateFormatOptions) {
-  if (!options || !options.showWeekDay) return "";
-
-  if (options.showWeekDay === "long") {
-    return "EEEE, ";
-  }
-
-  return "EEE ";
+export function niceFormatDate(date: Date, options?: FormatOptions): string {
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    weekday: "short",
+    year: isThisYear(date) ? undefined : "numeric",
+    ...options,
+  });
 }
 
-export function niceFormatDate(date: Date, options?: DateFormatOptions): string {
-  return format(date, `${getWeekDayFormat(options)}MMM do`);
-}
+type FormatOptions = Intl.DateTimeFormatOptions;
 
-export function niceFormatDateTime(date: Date, options?: DateFormatOptions): string {
-  return format(date, `${getWeekDayFormat(options)}MMM do`) + " at " + niceFormatTime(date);
+export function niceFormatDateTime(date: Date, options?: FormatOptions): string {
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    weekday: "short",
+    year: isThisYear(date) ? undefined : "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    ...options,
+  });
 }
 
 export function niceFormatTime(date: Date): string {

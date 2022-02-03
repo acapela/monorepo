@@ -2,11 +2,12 @@ import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
 import { defineAction } from "@aca/desktop/actions/action";
-import { createActionContext } from "@aca/desktop/actions/action/context";
+import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { allActions } from "@aca/desktop/actions/all";
 import { searchListActionsGroup, searchNotificationsGroup } from "@aca/desktop/actions/groups";
 import { goToList } from "@aca/desktop/actions/lists";
 import { openFocusMode } from "@aca/desktop/actions/notification";
+import { getSnoozeOptionsForSearch } from "@aca/desktop/actions/snooze";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
@@ -16,8 +17,9 @@ import { IconFolder } from "@aca/ui/icons";
 
 import { CommandMenuSession, createCommandMenuSession } from "./session";
 
-const getSearchActions = cachedComputed(function getSearchActions(keyword: string) {
-  const notifications = notificationsFuzzySearch(keyword);
+const getSearchActions = cachedComputed(function getSearchActions(context: ActionContext) {
+  const { searchKeyword } = context;
+  const notifications = notificationsFuzzySearch(searchKeyword);
 
   const notificationActions = notifications.slice(0, 10).map((notification) =>
     defineAction({
@@ -30,7 +32,7 @@ const getSearchActions = cachedComputed(function getSearchActions(keyword: strin
     })
   );
 
-  const lists = listsFuzzySearch(keyword);
+  const lists = listsFuzzySearch(searchKeyword);
 
   const listActions = lists.slice(0, 10).map((list) =>
     defineAction({
@@ -43,7 +45,7 @@ const getSearchActions = cachedComputed(function getSearchActions(keyword: strin
     })
   );
 
-  return [...notificationActions, ...listActions];
+  return [...notificationActions, ...listActions, ...getSnoozeOptionsForSearch(context)];
 });
 
 export function createDefaultCommandMenuSession(): CommandMenuSession {
@@ -51,9 +53,9 @@ export function createDefaultCommandMenuSession(): CommandMenuSession {
 
   return createCommandMenuSession({
     actionContext,
-    getActions({ searchKeyword }) {
-      if (!searchKeyword.length) return allActions;
-      return [...getSearchActions(searchKeyword), ...allActions];
+    getActions(context) {
+      if (context.searchKeyword.length < 2) return allActions;
+      return [...getSearchActions(context), ...allActions];
     },
   });
 }

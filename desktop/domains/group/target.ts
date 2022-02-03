@@ -18,7 +18,7 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
       id: targetNotification.file_id,
       name: targetNotification.file_name,
       integration: "figma",
-      integrationTitle: "Figma",
+      integrationTitle: "Figma file",
     };
   }
 
@@ -27,7 +27,7 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
       id: targetNotification.page_id,
       name: targetNotification.page_title,
       integration: "notion",
-      integrationTitle: "Notion",
+      integrationTitle: "Notion page",
     };
   }
 
@@ -36,7 +36,7 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
       id: targetNotification.slack_conversation_id,
       name: targetNotification.conversation_name,
       integration: "slack",
-      integrationTitle: "Slack",
+      integrationTitle: "Slack conversation",
     };
   }
 

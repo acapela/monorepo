@@ -26,7 +26,7 @@ export function runAction(action: ActionData, context: ActionContext = createAct
 
     commandMenuStore.session = createCommandMenuSession({
       actionContext: createActionContext(context.forcedTarget, {
-        isContextual: context.isContextual,
+        isContextual: actionResult.isContextual ?? context.isContextual,
         searchPlaceholder: actionResult.searchPlaceholder,
       }),
       getActions(context) {
