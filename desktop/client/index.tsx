@@ -6,6 +6,7 @@ import { createGlobalStyle } from "styled-components";
 
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { RootView } from "@aca/desktop/views/RootView";
 import { globalDesktopStyles } from "@aca/frontend/styles/global";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
@@ -14,7 +15,6 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { DebugView } from "../views/debug/DebugView";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 

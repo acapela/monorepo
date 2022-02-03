@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 
+import { allNotificationsList } from "@aca/desktop/domains/list/preconfigured";
 import { allRouteNames, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/settings";
 
-import { allNotificationsList } from "../domains/list/preconfigured";
 import { Redirect } from "./Redirect";
 
 export function Router() {

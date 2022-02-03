@@ -4,10 +4,10 @@ import { observer } from "mobx-react";
 import React from "react";
 
 import { ActionData } from "@aca/desktop/actions/action";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
-import { runAction } from "../runAction";
 import { CommandMenuView } from "./CommandMenuView";
 import { createDefaultCommandMenuSession } from "./defaultSession";
 import { commandMenuStore } from "./store";

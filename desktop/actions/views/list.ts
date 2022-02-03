@@ -1,3 +1,4 @@
+import { createActionView } from "@aca/desktop/actions/action/view";
 import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -7,8 +8,6 @@ import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/des
 import { getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-
-import { createActionView } from "../action/view";
 
 export const listPageView = createActionView((context) => {
   if (!getIsRouteActive("list")) return null;

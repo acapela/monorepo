@@ -11,9 +11,9 @@ import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+import { runActionWithTarget } from "@aca/desktop/domains/runAction";
 import { IconFolder } from "@aca/ui/icons";
 
-import { runActionWithTarget } from "../runAction";
 import { CommandMenuSession, createCommandMenuSession } from "./session";
 
 const getSearchActions = cachedComputed(function getSearchActions(keyword: string) {

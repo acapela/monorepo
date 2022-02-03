@@ -1,10 +1,10 @@
 import React from "react";
 
+import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { desktopRouter, getRouteParamsIfActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
-import { requestPreviewPreload } from "../bridge/preview";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { goToOrFocusNextItem } from "./views/common";

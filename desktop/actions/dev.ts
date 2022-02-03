@@ -1,6 +1,6 @@
 import { restartAppRequest } from "@aca/desktop/bridge/system";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 
-import { devSettingsStore } from "../domains/dev/store";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

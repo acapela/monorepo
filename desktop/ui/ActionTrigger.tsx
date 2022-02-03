@@ -3,10 +3,9 @@ import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
-
-import { runAction } from "../domains/runAction";
 
 interface Props {
   action: ActionData;

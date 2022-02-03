@@ -1,9 +1,9 @@
 import { runInAction } from "mobx";
 
+import { ActionData } from "@aca/desktop/actions/action";
+import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 
-import { ActionData } from "../actions/action";
-import { ActionContext, createActionContext } from "../actions/action/context";
 import { createCommandMenuSession } from "./commandMenu/session";
 import { commandMenuStore } from "./commandMenu/store";
 
