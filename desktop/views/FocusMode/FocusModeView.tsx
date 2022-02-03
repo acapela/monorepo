@@ -48,6 +48,8 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
 const UITitle = styled.div`
   ${theme.typo.secondaryTitle.semibold};
+  ${theme.common.ellipsisText}
+  min-width: 0;
 `;
 
 const UIHeader = styled.div`
@@ -55,6 +57,7 @@ const UIHeader = styled.div`
   align-items: center;
   margin-bottom: 16px;
   gap: 8px;
+  padding-right: 16px;
 
   ${NotificationAppIcon} {
     ${theme.typo.secondaryTitle}

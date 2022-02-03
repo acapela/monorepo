@@ -35,7 +35,8 @@ export const ActionTrigger = styledObserver<Props>(function ActionTrigger({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={className}
-      onClick={() => {
+      onClick={(event) => {
+        event.stopPropagation();
         runAction(action, context);
       }}
     >
