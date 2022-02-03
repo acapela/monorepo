@@ -103,7 +103,9 @@ async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook)
   const linearClient = getRandomLinearClient(usersForOrg);
   const creator = await linearClient.user(payload.data.creatorId);
   const notificationPromises = usersForOrg
-    .filter((u) => payload.data.subscriberIds.includes(u.linear_user_id || ""))
+    .filter(
+      (u) => u.linear_user_id !== payload.data.creatorId && payload.data.subscriberIds.includes(u.linear_user_id || "")
+    )
     .map((u) =>
       db.notification_linear.create({
         data: {
@@ -152,7 +154,7 @@ async function saveComment(usersForOrg: LinearOauthToken[], payload: CommentWebh
   }
   const subscribers = map(get(subscribersRes.data, "issue.subscribers.nodes", []), "id");
   const notificationPromises = usersForOrg
-    .filter((u) => subscribers.includes(u.linear_user_id || ""))
+    .filter((u) => u.linear_user_id !== payload.data.user.id && subscribers.includes(u.linear_user_id || ""))
     .map((u) =>
       db.notification_linear.create({
         data: {
