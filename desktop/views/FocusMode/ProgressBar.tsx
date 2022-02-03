@@ -54,6 +54,8 @@ export const ProgressBar = observer(function ProgressBar({ all, done, title, avg
 
   const remaining = all - done;
 
+  const isAllDone = remaining === 0;
+
   const msTillDone = Math.max(MINUTE, avgTimePerItem * remaining);
 
   const msTillDoneSpring = useAnimatedNumber(msTillDone);
@@ -68,8 +70,12 @@ export const ProgressBar = observer(function ProgressBar({ all, done, title, avg
     <UIHolder>
       <UIHead>
         <UITitle data-tooltip={title}>{title}</UITitle>
-        <UIStats data-tooltip={`Est. finish time ${niceFormatTime(estTimeEnd)} (${remainingTimeLabel} left)`}>
-          {done} / {all} <UITimeRemaining>({remainingTimeLabel})</UITimeRemaining>
+        <UIStats
+          data-tooltip={
+            !isAllDone ? `Est. finish time ${niceFormatTime(estTimeEnd)} (${remainingTimeLabel} left)` : undefined
+          }
+        >
+          {done} / {all} {!isAllDone && <UITimeRemaining>({remainingTimeLabel})</UITimeRemaining>}
         </UIStats>
       </UIHead>
       <UIBarBg>
