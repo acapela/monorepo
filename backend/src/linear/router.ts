@@ -4,11 +4,12 @@ import { LinearClient } from "@linear/sdk";
 import axios from "axios";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
+import { get, map } from "lodash";
 import qs from "qs";
 
-import { Webhook } from "@aca/backend/src/linear/types";
+import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
-import { db } from "@aca/db";
+import { LinearOauthToken, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
@@ -75,29 +76,113 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
     accessToken: oauthToken,
   });
   const [user, org] = await Promise.all([linearClient.viewer, linearClient.organization]);
-  await db.linear_oauth_token.create({
-    data: {
-      user_id: userId,
+  await db.linear_oauth_token.upsert({
+    where: {
+      user_id_linear_user_id_linear_organization_id: {
+        user_id: userId,
+        linear_user_id: user.id,
+        linear_organization_id: org.id,
+      },
+    },
+    update: {
       access_token: oauthToken,
       expires_at: expires,
+    },
+    create: {
+      user_id: userId,
       linear_user_id: user.id,
       linear_organization_id: org.id,
+      access_token: oauthToken,
+      expires_at: expires,
     },
   });
   res.status(HttpStatus.OK).end();
 });
+
+async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook) {
+  const notificationPromises = usersForOrg
+    .filter((u) => payload.data.subscriberIds.includes(u.linear_user_id || ""))
+    .map((u) =>
+      db.notification_linear.create({
+        data: {
+          notification: {
+            create: {
+              user_id: u.user_id,
+              url: payload.url,
+              from: "Linear",
+            },
+          },
+          type: payload.type,
+          issue_id: payload.data.id,
+          issue_title: payload.data.title,
+        },
+      })
+    );
+  return Promise.all(notificationPromises);
+}
+
+async function saveComment(usersForOrg: LinearOauthToken[], payload: CommentWebhook) {
+  // pick a random token to access linear api
+  const randomUserToken = usersForOrg[Math.floor(usersForOrg.length * Math.random())].access_token;
+  const linearClient = new LinearClient({
+    accessToken: randomUserToken,
+  });
+  const subscribersRes = await linearClient.client.rawRequest(
+    `
+  query Issue($id: String!) {
+    issue(id: $id) {
+      subscribers {
+        nodes {
+          id
+        }
+      }
+    }
+  }
+  `,
+    { id: payload.data.issue.id }
+  );
+  if (subscribersRes.status != 200) {
+    throw new Error(`linear api request error: ${subscribersRes.status}`);
+  }
+  const subscribers = map(get(subscribersRes.data, "issue.subscribers.nodes", []), "id");
+  const notificationPromises = usersForOrg
+    .filter((u) => subscribers.includes(u.linear_user_id || ""))
+    .map((u) =>
+      db.notification_linear.create({
+        data: {
+          notification: {
+            create: {
+              user_id: u.user_id,
+              url: payload.url,
+              from: payload.data.user.name,
+            },
+          },
+          type: payload.type,
+          issue_id: payload.data.issue.id,
+          issue_title: payload.data.issue.title,
+        },
+      })
+    );
+  return Promise.all(notificationPromises);
+}
 
 router.post("/v1/linear/webhook", async (req: Request, res: Response) => {
   // accept webhook
   res.status(HttpStatus.NO_CONTENT).end();
 
   const payload = req.body as Webhook;
+  // ignore updated and removed actions for now
   if (payload.action != "create") return;
 
   console.info(payload);
-  // db.notification_linear.create({
-  //   data: {
-  //
-  //   },
-  // });
+
+  // fetch all users for notified org
+  const usersForOrg = await db.linear_oauth_token.findMany({
+    where: {
+      linear_organization_id: payload.organizationId,
+    },
+  });
+
+  if (payload.type === "Issue") await saveIssue(usersForOrg, payload);
+  if (payload.type === "Comment") await saveComment(usersForOrg, payload);
 });
