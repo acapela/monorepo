@@ -5,7 +5,12 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
   notification: NotificationEntity
 ): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const innerNotification = notification.inner!;
+  const innerNotification = notification.inner;
+
+  if (!innerNotification) {
+    return `Unknown notification`;
+  }
+
   const type = innerNotification.__typename;
 
   switch (type) {
