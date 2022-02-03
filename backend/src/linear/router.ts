@@ -100,6 +100,8 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
 });
 
 async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook) {
+  const linearClient = getRandomLinearClient(usersForOrg);
+  const creator = await linearClient.user(payload.data.creatorId);
   const notificationPromises = usersForOrg
     .filter((u) => payload.data.subscriberIds.includes(u.linear_user_id || ""))
     .map((u) =>
@@ -109,7 +111,7 @@ async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook)
             create: {
               user_id: u.user_id,
               url: payload.url,
-              from: "Linear",
+              from: creator.name,
             },
           },
           type: payload.type,
@@ -121,12 +123,16 @@ async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook)
   return Promise.all(notificationPromises);
 }
 
-async function saveComment(usersForOrg: LinearOauthToken[], payload: CommentWebhook) {
+function getRandomLinearClient(usersForOrg: LinearOauthToken[]): LinearClient {
   // pick a random token to access linear api
   const randomUserToken = usersForOrg[Math.floor(usersForOrg.length * Math.random())].access_token;
-  const linearClient = new LinearClient({
+  return new LinearClient({
     accessToken: randomUserToken,
   });
+}
+
+async function saveComment(usersForOrg: LinearOauthToken[], payload: CommentWebhook) {
+  const linearClient = getRandomLinearClient(usersForOrg);
   const subscribersRes = await linearClient.client.rawRequest(
     `
   query Issue($id: String!) {
@@ -174,7 +180,7 @@ router.post("/v1/linear/webhook", async (req: Request, res: Response) => {
   // ignore updated and removed actions for now
   if (payload.action != "create") return;
 
-  console.info(payload);
+  // console.info(payload);
 
   // fetch all users for notified org
   const usersForOrg = await db.linear_oauth_token.findMany({
