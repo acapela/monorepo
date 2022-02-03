@@ -10,6 +10,7 @@ export const box = {
   linkButton: createBox(7, 4),
 
   popover: createBox(10, 10),
+  importantNotice: createBox(20, 10),
   previewPopover: createBox(20, 20),
   pageCart: createBox(30, 30),
   buttonsGroup: createBox(4, 4),

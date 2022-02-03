@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -14,6 +15,8 @@ import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { devSettingsStore } from "../../dev/store";
@@ -75,7 +78,15 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
 
   return (
     <>
-      <UIHolder ref={rootRef} />
+      <UIHolder ref={rootRef}>
+        <AnimatePresence>
+          {isFocused && (
+            <UIEscapeFlyer presenceStyles={{ opacity: [0, 1], y: [-10, 0] }}>
+              <UIEscapeLabel>Press {describeShortcut(["Mod", "Esc"])} to return</UIEscapeLabel>
+            </UIEscapeFlyer>
+          )}
+        </AnimatePresence>
+      </UIHolder>
       <BodyPortal>
         <UIFocusCover $isVisible={isFocused} />
       </BodyPortal>
@@ -87,6 +98,7 @@ const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
   ${theme.colors.layout.backgroundAccent.asBg};
+  position: relative;
 `;
 
 const UIFocusCover = styled.div<{ $isVisible: boolean }>`
@@ -99,4 +111,23 @@ const UIFocusCover = styled.div<{ $isVisible: boolean }>`
   pointer-events: ${(props) => (props.$isVisible ? "all" : "none")};
   opacity: ${(props) => (props.$isVisible ? 1 : 0)};
   transition: 0.15s all;
+`;
+
+const UIEscapeFlyer = styled(PresenceAnimator)`
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  isolation: isolate;
+  z-index: 1000;
+`;
+
+const UIEscapeLabel = styled.div`
+  ${theme.typo.content.semibold};
+  ${theme.colors.layout.actionPanel.asBgWithReadableText};
+  ${theme.box.importantNotice};
+  ${theme.radius.primaryItem};
 `;
