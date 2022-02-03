@@ -7,7 +7,7 @@ import { createMessageAndAttachMeta } from "@aca/frontend/message/createNewMessa
 import { DecisionOptionDraft } from "@aca/frontend/message/decisions";
 import { TopicFragment } from "@aca/gql";
 import { RichEditorNode } from "@aca/richEditor/content/types";
-import { runUntracked } from "@aca/shared/mobxUtils";
+import { runUntracked } from "@aca/shared/mobx/utils";
 import { getTopicNameFromContent } from "@aca/shared/routes/topicSlug";
 import { slugify } from "@aca/shared/slugify";
 import { getUUID } from "@aca/shared/uuid";

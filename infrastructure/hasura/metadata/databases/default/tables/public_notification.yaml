@@ -22,6 +22,7 @@ insert_permissions:
     - from
     - id
     - resolved_at
+    - snoozed_until
     - updated_at
     - url
     - user_id
@@ -33,6 +34,7 @@ select_permissions:
     - from
     - id
     - resolved_at
+    - snoozed_until
     - updated_at
     - url
     - user_id
@@ -46,6 +48,7 @@ update_permissions:
     columns:
     - from
     - resolved_at
+    - snoozed_until
     - updated_at
     - url
     filter:

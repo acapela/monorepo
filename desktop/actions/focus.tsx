@@ -16,10 +16,15 @@ export const exitFocusMode = defineAction({
   keywords: ["exit", "back"],
   shortcut: "Esc",
   canApply: () => getIsRouteActive("focus"),
-  handler() {
+  handler(context) {
+    const notification = context.view(focusPageView)?.notification;
     const { listId } = assertGetActiveRouteParams("focus");
 
     desktopRouter.navigate("list", { listId });
+
+    if (notification) {
+      uiStore.focusedTarget = notification;
+    }
   },
 });
 

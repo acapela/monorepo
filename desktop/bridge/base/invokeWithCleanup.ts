@@ -39,7 +39,7 @@ export function initializeCleanupsHandler() {
  * Each invoke bridge needs to have handler added somewhere in electron to be able to be invoked.
  */
 export function createInvokeWithCleanupBridge<Input = void>(key: string) {
-  const log = createLogger(key);
+  const log = createLogger(key, false);
   type InnerInput = { input: Input; cleanupId: string };
   const initKey = `${key}_init`;
   function invoke(input: Input): MaybeCleanup {

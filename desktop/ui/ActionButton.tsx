@@ -1,7 +1,8 @@
 import React from "react";
 
-import { ActionData, resolveActionData, runAction } from "@aca/desktop/actions/action";
+import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { styledObserver } from "@aca/shared/component";
 import { Button, ButtonStyleProps } from "@aca/ui/buttons/Button";
 

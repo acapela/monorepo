@@ -6,6 +6,7 @@ import { createGlobalStyle } from "styled-components";
 
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { RootView } from "@aca/desktop/views/RootView";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
@@ -43,6 +44,7 @@ render(
         <SystemBar />
         <CommandMenuManager />
         <RootView />
+        <DebugView />
       </DesktopThemeProvider>
     </MotionConfig>
   </>,

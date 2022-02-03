@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { uiStore } from "@aca/desktop/store/uiStore";
@@ -14,7 +14,8 @@ import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
-import { mobxTicks } from "@aca/shared/mobxTime";
+import { makeElementVisible } from "@aca/shared/interactionUtils";
+import { mobxTicks } from "@aca/shared/mobx/time";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -24,7 +25,7 @@ import { UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   group: NotificationsGroup;
-  list: DefinedList;
+  list: NotificationsList;
 }
 
 export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => {
@@ -37,7 +38,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   useEffect(() => {
     if (!isFocused) return;
-    elementRef.current?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
+    makeElementVisible(elementRef.current);
 
     return () => {
       if (uiStore.focusedTarget === group) {

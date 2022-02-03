@@ -1,10 +1,10 @@
 import { cachedComputed } from "@aca/clientdb";
-import { fuzzySearch } from "@aca/desktop/domains/commandMenu/search/fuzzySearch";
+import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 
-import { DefinedList } from "./defineList";
+import { NotificationsList } from "./defineList";
 import { inboxLists } from "./preconfigured";
 
-export const getListSearchTerms = cachedComputed((list: DefinedList) => {
+export const getListSearchTerms = cachedComputed((list: NotificationsList) => {
   return [list.name];
 });
 

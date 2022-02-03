@@ -1,10 +1,6 @@
-import { isEqual } from "lodash";
 import { RefObject, useEffect } from "react";
 
-import { createDocumentEvent, createElementEvent } from "../domEvents";
-import { Point } from "../point";
-
-let lastCursorPosition: Point | null = null;
+import { createDocumentEvent, createElementEvent } from "@aca/shared/domEvents";
 
 /**
  * Will watch if user focused on some element.
@@ -15,17 +11,18 @@ let lastCursorPosition: Point | null = null;
  * want to treat it as user intent to focus. This is especially annoying with keyboard based scrolling.
  */
 
-// We need to track cursor position to detect if some 'mouse enter' was actually caused by cursor movement
-function getMousePositionFromEvent(event: MouseEvent): Point {
-  return {
-    x: event.screenX,
-    y: event.screenY,
-  };
-}
+let lastCursorMoveTime: number | null = null;
 
-createDocumentEvent("mousemove", (event) => {
-  lastCursorPosition = getMousePositionFromEvent(event);
+createDocumentEvent("mousemove", () => {
+  lastCursorMoveTime = Date.now();
 });
+
+const TIME_SINCE_LAST_MOVE_TO_CONSIDER_USER_ACTION = 50;
+
+function getIsUserEnterOrLeaveEvent() {
+  if (!lastCursorMoveTime) return;
+  return Math.abs(Date.now() - lastCursorMoveTime) <= TIME_SINCE_LAST_MOVE_TO_CONSIDER_USER_ACTION;
+}
 
 export function useUserFocusedOnElement(
   ref: RefObject<HTMLElement>,
@@ -37,20 +34,16 @@ export function useUserFocusedOnElement(
 
     if (!element) return;
 
-    const cleanEnter = createElementEvent(element, "mouseenter", (event) => {
-      const cursorPosition = getMousePositionFromEvent(event);
-
-      if (isEqual(cursorPosition, lastCursorPosition)) {
+    const cleanEnter = createElementEvent(element, "mouseenter", () => {
+      if (!getIsUserEnterOrLeaveEvent()) {
         return;
       }
 
       focusCallback?.();
     });
 
-    const cleanLeave = createElementEvent(element, "mouseleave", (event) => {
-      const cursorPosition = getMousePositionFromEvent(event);
-
-      if (isEqual(cursorPosition, lastCursorPosition)) {
+    const cleanLeave = createElementEvent(element, "mouseleave", () => {
+      if (!getIsUserEnterOrLeaveEvent()) {
         return;
       }
 

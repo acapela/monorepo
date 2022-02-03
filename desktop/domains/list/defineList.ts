@@ -9,7 +9,7 @@ interface DefineListConfig {
   filter: (notification: NotificationEntity) => boolean;
 }
 
-export function defineList({ id, name, filter }: DefineListConfig) {
+export function defineNotificationsList({ id, name, filter }: DefineListConfig) {
   const getAllNotifications = cachedComputed(() => {
     const db = getDb();
     return db.notification.query(filter);
@@ -65,7 +65,7 @@ export function defineList({ id, name, filter }: DefineListConfig) {
   });
 
   return {
-    kind: "definedList" as const,
+    kind: "notificationsList" as const,
     id,
     name,
     getAllNotifications,
@@ -76,10 +76,10 @@ export function defineList({ id, name, filter }: DefineListConfig) {
   };
 }
 
-export type DefinedList = ReturnType<typeof defineList>;
+export type NotificationsList = ReturnType<typeof defineNotificationsList>;
 
-export function getIsDefinedList(input: unknown): input is DefinedList {
-  unsafeAssertType<DefinedList>(input);
+export function getIsNotificationsList(input: unknown): input is NotificationsList {
+  unsafeAssertType<NotificationsList>(input);
 
-  return input?.kind === "definedList";
+  return input?.kind === "notificationsList";
 }

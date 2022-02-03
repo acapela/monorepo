@@ -1,4 +1,5 @@
-import { getNotificationTitle } from "../domains/notification/title";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+
 import { defineGroup } from "./action/group";
 import { appActionsGroup } from "./app";
 import { accountActionsGroup } from "./auth";

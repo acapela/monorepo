@@ -1,7 +1,7 @@
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { authStore } from "@aca/desktop/store/authStore";
 import { assert } from "@aca/shared/assert";
-import { asyncComputedWithCleanup } from "@aca/shared/mobxUtils";
+import { asyncComputedWithCleanup } from "@aca/shared/mobx/utils";
 import { wait } from "@aca/shared/time";
 
 import { ClientDb, createNewClientDb } from "./createNewClientDb";

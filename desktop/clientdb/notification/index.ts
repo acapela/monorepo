@@ -1,3 +1,4 @@
+import { isPast } from "date-fns";
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
@@ -14,6 +15,7 @@ import {
   Notification_Insert_Input,
   Notification_Set_Input,
 } from "@aca/gql";
+import { mobxTickAt } from "@aca/shared/mobx/time";
 
 import { notificationFigmaCommentEntity } from "./figma/comment";
 import { notificationNotionEntity } from "./notion/baseNotification";
@@ -27,6 +29,7 @@ const notificationFragment = gql`
     resolved_at
     updated_at
     created_at
+    snoozed_until
   }
 `;
 
@@ -59,8 +62,8 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
     notificationFragment,
     {
-      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id", "from"],
-      updateColumns: ["updated_at", "url", "resolved_at"],
+      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id", "from", "snoozed_until"],
+      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until"],
       upsertConstraint: "notification_pkey",
     }
   ),
@@ -83,7 +86,29 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         return !!notification.resolved_at;
       },
       resolve() {
+        if (notification.resolved_at) return;
         updateSelf({ resolved_at: new Date().toISOString() });
+      },
+
+      get isSnoozed() {
+        // Note: Not sure about this one
+        if (notification.resolved_at) return false;
+        if (!notification.snoozed_until) return false;
+
+        const snoozeDate = new Date(notification.snoozed_until);
+
+        if (isPast(snoozeDate)) return false;
+
+        // If it is snoozed - force components or reactions using this information to re-render / re-run when this changes
+        mobxTickAt(snoozeDate);
+
+        return true;
+      },
+      get canSnooze() {
+        if (connections.isResolved) return false;
+        if (connections.isSnoozed) return false;
+
+        return true;
       },
     };
 

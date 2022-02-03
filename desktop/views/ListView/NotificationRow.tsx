@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
@@ -12,14 +12,15 @@ import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
-import { mobxTicks } from "@aca/shared/mobxTime";
+import { makeElementVisible } from "@aca/shared/interactionUtils";
+import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
 import { UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   notification: NotificationEntity;
-  list: DefinedList;
+  list: NotificationsList;
 }
 
 export const NotificationRow = styledObserver(({ notification, list }: Props) => {
@@ -30,7 +31,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
 
   useEffect(() => {
     if (!isFocused) return;
-    elementRef.current?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
+    makeElementVisible(elementRef.current);
 
     return () => {
       if (uiStore.focusedTarget === notification) {

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { isInboxList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { IconArrowBottom, IconArrowCornerCwRb, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
@@ -75,9 +74,8 @@ export const focusPreviousNotificationInList = defineAction({
 export const goToNextList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Next list" : "Go to next list"),
   group: currentListActionsGroup,
-  canApply: (context) => {
-    const list = context.getTarget("list", true);
-    return getIsRouteActive("list") && isInboxList(list?.id ?? "");
+  canApply: () => {
+    return getIsRouteActive("list");
   },
   icon: <IconArrowRight />,
   shortcut: "ArrowRight",
@@ -94,9 +92,8 @@ export const goToPreviousList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
   group: currentListActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: (context) => {
-    const list = context.getTarget("list", true);
-    return getIsRouteActive("list") && isInboxList(list?.id ?? "");
+  canApply: () => {
+    return getIsRouteActive("list");
   },
   shortcut: "ArrowLeft",
   handler(context) {
@@ -112,6 +109,7 @@ export const toggleNotificationsGroup = defineAction({
   icon: <IconArrowCornerCwRb />,
   group: currentListActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Toggle" : "Show/hide notifications in group"),
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {

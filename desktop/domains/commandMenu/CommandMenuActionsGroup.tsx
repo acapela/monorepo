@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { ActionGroupData, resolveGroupData } from "@aca/desktop/actions/action/group";
+import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
 
 import { CommandMenuAction } from "./CommandMenuAction";
@@ -27,10 +28,21 @@ export const CommandMenuActionsGroup = observer(function CommandMenuActionsGroup
   onSelectRequest,
   onApplyRequest,
 }: Props) {
+  const groupTitleRef = useRef<HTMLDivElement>(null);
   const groupName = group ? resolveGroupData(group, session.actionContext).name : undefined;
+
+  const isFirstElementActive = activeAction && actions[0].id === activeAction?.id;
+
+  // If first element is active - make sure to also show group name
+  useLayoutEffect(() => {
+    if (isFirstElementActive) {
+      makeElementVisible(groupTitleRef.current);
+    }
+  }, [isFirstElementActive]);
+
   return (
     <UIHolder>
-      {groupName && <UIGroupLabel>{groupName}</UIGroupLabel>}
+      {groupName && <UIGroupLabel ref={groupTitleRef}>{groupName}</UIGroupLabel>}
       {actions.map((action) => {
         return (
           <CommandMenuAction
