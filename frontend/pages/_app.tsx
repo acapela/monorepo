@@ -17,13 +17,13 @@ import { RequiredSessionProvider } from "@aca/frontend/auth/RequiredSessionProvi
 import { getUserFromRequest } from "@aca/frontend/authentication/request";
 import { ClientDbProvider } from "@aca/frontend/clientdb";
 import { sentryFallbackErrorRenderer } from "@aca/frontend/errors/sentryFallbackErrorRenderer";
-import { globalDesktopStyles } from "@aca/frontend/styles/global";
 import { CurrentTeamProvider } from "@aca/frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "@aca/frontend/utils/pageLayout";
 import { useConst } from "@aca/shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
+import { globalStyles } from "@aca/ui/styles/global";
 import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
@@ -50,7 +50,7 @@ function initSentry(appConfig: AppConfig) {
 }
 
 const BuiltInStyles = createGlobalStyle`
-  ${globalDesktopStyles}
+  ${globalStyles}
 `;
 
 export default function App({

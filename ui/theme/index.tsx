@@ -27,7 +27,7 @@ export const defaultTheme = {
   box,
   gradients,
   common: common,
-};
+} as const;
 
 export const zenTheme: typeof defaultTheme = {
   ...defaultTheme,
@@ -38,4 +38,4 @@ export function AppThemeProvider<T extends object>({ theme, children }: PropsWit
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 }
 
-export const theme = buildStyledTheme(zenTheme);
+export const theme = buildStyledTheme(defaultTheme);
