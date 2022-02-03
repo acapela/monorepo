@@ -74,10 +74,15 @@ autorun(() => {
   }
 });
 
+// Updates the uiStore dark mode settings depending on the stored value in the settings bridge
 autorun(() => {
-  const isInDarkMode = uiSettingsBridge.observableValue.get().isDarkMode;
+  const { isReady: isPersistedSettingsReady, value: persistedSettings } = uiSettingsBridge.observables;
 
-  if (typeof isInDarkMode !== "undefined") {
-    uiStore.isInDarkMode = isInDarkMode;
+  if (isPersistedSettingsReady.get()) {
+    const isInDarkMode = persistedSettings.get().isDarkMode;
+
+    if (typeof isInDarkMode !== "undefined") {
+      uiStore.isInDarkMode = isInDarkMode;
+    }
   }
 });
