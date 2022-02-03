@@ -1,13 +1,14 @@
 import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
+import { WebClient } from "@slack/web-api";
 import { uniq } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
-import { isChannelNotFoundError } from "@aca/backend/src/slack/errors";
 import { parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
+import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlackInstallation";
 import { db } from "@aca/db";
-import { assert, assertDefined } from "@aca/shared/assert";
+import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
 export function findUserForSlackInstallation(slackUserId: string) {
@@ -40,35 +41,19 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
   });
 }
 
-/**
- * We have to find a slack installation with access to the given channel, unfortunately there is no mechanism
- * for knowing which slack installation is the right one within the context of a message event.
- * https://github.com/slackapi/bolt-js/issues/1298
- */
-async function findSlackUserTokenWithAccessToConversation(teamId: string, channel: string): Promise<string | null> {
-  const userSlackInstallations = await db.user_slack_installation.findMany({
-    where: { data: { path: ["team", "id"], equals: teamId } },
+// A special client authorized with the app token for the few API calls that need app level scopes
+const appClient = new WebClient(process.env.SLACK_APP_TOKEN);
+async function findSlackUserTokenForEvent(eventContextId: string): Promise<string | null> {
+  const { authorizations } = await appClient.apps.event.authorizations.list({ event_context: eventContextId });
+
+  const userSlackInstallation = await db.user_slack_installation.findFirst({
+    where: {
+      OR: (authorizations ?? [])
+        .filter((auth) => auth.team_id && auth.user_id)
+        .map((auth) => getUserSlackInstallationFilter({ teamId: auth.team_id, userId: auth.user_id })),
+    },
   });
-  const userTokens = await Promise.all(
-    userSlackInstallations.map(async ({ data }) => {
-      const userToken = (data as unknown as SlackInstallation).user.token;
-      if (!userToken) {
-        return null;
-      }
-      try {
-        const response = await slackClient.conversations.info({ token: userToken, channel });
-        if (response.ok) {
-          return userToken;
-        }
-      } catch (error) {
-        if (!isChannelNotFoundError(error)) {
-          throw error;
-        }
-      }
-      return null;
-    })
-  );
-  return userTokens.find(Boolean) ?? null;
+  return (userSlackInstallation?.data as unknown as SlackInstallation).user.token ?? null;
 }
 
 /**
@@ -81,9 +66,8 @@ async function findSlackUserTokenWithAccessToConversation(teamId: string, channe
  *   channels
  *   - Same for threads, I have not run into the limit yet but if we want to scale to infinity we'll want to paginate
  */
-async function createNotificationsFromMessage(message: GenericMessageEvent) {
-  const slackTeamId = assertDefined(message.team, `missing team for message ${JSON.stringify(message)}`);
-  const userToken = await findSlackUserTokenWithAccessToConversation(slackTeamId, message.channel);
+async function createNotificationsFromMessage(eventContextId: string, message: GenericMessageEvent) {
+  const userToken = await findSlackUserTokenForEvent(eventContextId);
   if (!userToken) {
     return;
   }
@@ -185,10 +169,11 @@ async function createNotificationsFromMessage(message: GenericMessageEvent) {
 }
 
 export function setupSlackCapture(app: SlackApp) {
-  app.message(async ({ message }) => {
+  app.event("message", async ({ message, body }) => {
+    const eventContextId = body.event_context as string;
     message = message as GenericMessageEvent;
 
-    if (message.type !== "message" || message.subtype || !message.text) {
+    if (message.type !== "message" || message.text === undefined) {
       return;
     }
 
@@ -210,7 +195,7 @@ export function setupSlackCapture(app: SlackApp) {
     }
 
     try {
-      await createNotificationsFromMessage(message);
+      await createNotificationsFromMessage(eventContextId, message);
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
     }
