@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { openFocusMode } from "@aca/desktop/actions/focus";
+import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { DefinedList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";

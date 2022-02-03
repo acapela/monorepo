@@ -1,14 +1,15 @@
 import React from "react";
 
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter, getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconCheck, IconExternalLink, IconLink1 } from "@aca/ui/icons";
+import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { requestPreviewPreload } from "../bridge/preview";
 import { defineAction } from "./action";
-import { getNextNotificationInFocusMode } from "./focus";
 import { currentNotificationActionsGroup } from "./groups";
-import { getNextVisibleItemInListMode } from "./lists";
+import { focusPageView } from "./views/focus";
+import { listPageView } from "./views/list";
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
@@ -60,28 +61,80 @@ export const resolveNotification = defineAction({
   handler(context) {
     const list = context.assertTarget("list", true);
     const notification = context.assertTarget("notification");
-    if (getIsRouteActive("focus")) {
-      const nextNotification = getNextNotificationInFocusMode(context);
+
+    const listView = context.view(listPageView);
+
+    if (listView) {
+      const nextItem = listView.nextListItem;
+      notification.resolve();
+      uiStore.focusedTarget = nextItem;
+      return;
+    }
+
+    const focusView = context.view(focusPageView);
+
+    if (focusView) {
+      const nextNotification = focusView.nextNotification;
+
+      notification.resolve();
 
       if (nextNotification) {
         desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
       } else {
         desktopRouter.navigate("list", { listId: list.id });
       }
+    }
+  },
+});
 
+export const unresolveNotification = defineAction({
+  icon: <IconCheckboxSquare />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Undo resolve" : "Undo resolve Notification"),
+  keywords: ["undo", "todo", "mark"],
+  canApply: (ctx) => {
+    return ctx.hasTarget("notification");
+  },
+  handler(context) {
+    const notification = context.assertTarget("notification");
+
+    notification.update({ resolved_at: null });
+
+    const listView = context.view(listPageView);
+
+    if (listView) {
+      const nextItem = listView.nextListItem;
       notification.resolve();
-
+      uiStore.focusedTarget = nextItem;
       return;
     }
+  },
+});
 
-    if (getIsRouteActive("list")) {
-      const nextVisibleItem = getNextVisibleItemInListMode(context);
+export const openFocusMode = defineAction({
+  icon: <IconTarget />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
+  shortcut: "Enter",
+  canApply: (context) => {
+    const activeNotificationId = getRouteParamsIfActive("focus")?.notificationId;
+    const targetNotification = context.getTarget("notification");
 
-      notification.resolve();
+    if (!targetNotification) return false;
 
-      if (!nextVisibleItem) return;
+    if (targetNotification.id === activeNotificationId) return false;
 
-      uiStore.focusedTarget = nextVisibleItem;
-    }
+    return context.hasTarget("list", true);
+  },
+  handler(context) {
+    const list = context.assertTarget("list", true);
+    const notification = context.assertTarget("notification");
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+  },
+  onMightBeSelected(context) {
+    const notification = context.assertTarget("notification");
+
+    return requestPreviewPreload({ url: notification.url });
   },
 });
