@@ -1,5 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 
+import { theme } from "@aca/ui/theme";
+
 export const GlobalDesktopStyles = createGlobalStyle`
   body.desktop {
     --pointer: default;
@@ -9,6 +11,8 @@ export const GlobalDesktopStyles = createGlobalStyle`
   body, html, #root {
     min-height: 100vh;
     max-height: 100vh;
+    ${theme.colors.text.asColor};
+    ${theme.colors.layout.background.asBg}
   }
 
   * {

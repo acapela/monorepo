@@ -32,10 +32,10 @@ const BuiltInStyles = createGlobalStyle`
 
 render(
   <>
-    <BuiltInStyles />
-    <GlobalDesktopStyles />
     <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
       <AppThemeProvider theme={theme}>
+        <BuiltInStyles />
+        <GlobalDesktopStyles />
         <PromiseUIRenderer />
         <TooltipsRenderer />
         <ToastsRenderer />
