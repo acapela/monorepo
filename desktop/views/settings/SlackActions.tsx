@@ -9,8 +9,10 @@ import { authStore } from "@aca/desktop/store/authStore";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
 import { Button } from "@aca/ui/buttons/Button";
+import { HStack } from "@aca/ui/Stack";
+import { Toggle } from "@aca/ui/toggle";
 
-export const InstallSlackButton = observer(() => {
+export const SlackActions = observer(() => {
   const [installationURL, setInstallationURL] = useState<string | null>(null);
   const user = getDb().user.findById(authStore.user.id);
   const [closeConnectBridge, setCloseConnectBridge] = useState<(() => void) | null>(null);
@@ -43,16 +45,29 @@ export const InstallSlackButton = observer(() => {
   }, [user]);
 
   return (
-    <Button
-      isDisabled={!user || user.has_slack_installation || !installationURL}
-      onClick={() => {
-        if (installationURL) {
-          const cleanup = connectSlackBridge({ url: installationURL });
-          setCloseConnectBridge(cleanup ?? null);
-        }
-      }}
-    >
-      Connect Slack
-    </Button>
+    <HStack alignItems="center" gap={10}>
+      <Button
+        isDisabled={!user || user.has_slack_installation || !installationURL}
+        onClick={() => {
+          if (installationURL) {
+            const cleanup = connectSlackBridge({ url: installationURL });
+            setCloseConnectBridge(cleanup ?? null);
+          }
+        }}
+      >
+        Connect Slack
+      </Button>
+      {user?.has_slack_installation && (
+        <HStack alignItems="center" gap={5}>
+          <Toggle
+            isSet={user.is_slack_auto_resolve_enabled}
+            onChange={(value) => {
+              user.update({ is_slack_auto_resolve_enabled: value });
+            }}
+          />
+          Automatically resolve Slack messages to which you reply or react
+        </HStack>
+      )}
+    </HStack>
   );
 });

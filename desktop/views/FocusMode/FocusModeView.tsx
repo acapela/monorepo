@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
-import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import {
   NotificationEmbedView,
@@ -27,7 +27,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
   const notification = db.notification.assertFindById(notificationId);
 
-  const list = getPredefinedListById(listId);
+  const list = getAllInboxListsById(listId);
 
   return (
     <AppLayout tray={<FocusModeTray />} footer={<FocusModeFooter />}>

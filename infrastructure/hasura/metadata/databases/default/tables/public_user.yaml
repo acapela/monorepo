@@ -48,6 +48,7 @@ select_permissions:
     - email
     - id
     - is_bot
+    - is_slack_auto_resolve_enabled
     - name
     - updated_at
     computed_fields:
@@ -75,6 +76,7 @@ update_permissions:
     columns:
     - avatar_url
     - current_team_id
+    - is_slack_auto_resolve_enabled
     - name
     filter:
       id:

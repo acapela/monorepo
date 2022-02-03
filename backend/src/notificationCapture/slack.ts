@@ -10,11 +10,10 @@ import { db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
-export async function findUserIdForSlackInstallation(slackUserId: string) {
-  const slackInstallation = await db.user_slack_installation.findFirst({
-    where: { data: { path: ["user", "id"], equals: slackUserId } },
+export function findUserForSlackInstallation(slackUserId: string) {
+  return db.user.findFirst({
+    where: { user_slack_installation: { some: { data: { path: ["user", "id"], equals: slackUserId } } } },
   });
-  return slackInstallation?.user_id;
 }
 
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
@@ -193,11 +192,11 @@ export function setupSlackCapture(app: SlackApp) {
       return;
     }
 
-    const authorUserId = await findUserIdForSlackInstallation(message.user);
-    if (authorUserId) {
+    const author = await findUserForSlackInstallation(message.user);
+    if (author?.is_slack_auto_resolve_enabled) {
       try {
         const threadTs = message.thread_ts;
-        await resolveMessageNotifications(authorUserId, {
+        await resolveMessageNotifications(author.id, {
           slack_conversation_id: message.channel,
           OR: [
             threadTs
@@ -218,13 +217,10 @@ export function setupSlackCapture(app: SlackApp) {
   });
 
   app.event("reaction_added", async ({ event }) => {
-    const userId = await findUserIdForSlackInstallation(event.user);
-    if (userId && event.item.type === "message") {
-      const message = event.item;
-      await resolveMessageNotifications(userId, {
-        slack_conversation_id: message.channel,
-        slack_message_ts: message.ts,
-      });
+    const user = await findUserForSlackInstallation(event.user);
+    if (user?.is_slack_auto_resolve_enabled && event.item.type === "message") {
+      const { channel, ts } = event.item;
+      await resolveMessageNotifications(user.id, { slack_conversation_id: channel, slack_message_ts: ts });
     }
   });
 }

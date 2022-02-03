@@ -9,12 +9,13 @@ import { theme } from "@aca/ui/theme";
 
 interface Props {
   list: DefinedList;
-  activeListId: string;
+  activeListId?: string;
+  className?: string;
 }
 
-export const ListTabLabel = observer(function ListTabLabel({ activeListId, list }: Props) {
+export const ListTabLabel = observer(function ListTabLabel({ activeListId, list, className }: Props) {
   return (
-    <UIHolder action={goToList} target={list}>
+    <UIHolder action={goToList} target={list} className={className}>
       <UILabel>{list.name}</UILabel>
       <UICount>{list.getAllNotifications().count}</UICount>
       <UIActiveIndicator $isVisible={list.id === activeListId} />
@@ -24,6 +25,12 @@ export const ListTabLabel = observer(function ListTabLabel({ activeListId, list 
 
 const UILabel = styled.div`
   ${theme.font.medium};
+
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const UIHolder = styled(ActionTrigger)`
@@ -32,16 +39,6 @@ const UIHolder = styled(ActionTrigger)`
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
   position: relative;
-
-  ${UILabel} {
-    opacity: 0.8;
-  }
-
-  &:hover {
-    ${UILabel} {
-      opacity: 1;
-    }
-  }
 `;
 
 const UICount = styled.div`

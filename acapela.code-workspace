@@ -38,6 +38,12 @@
     },
     {
       "path": "e2e"
+    },
+    {
+      "path": "desktop"
+    },
+    {
+      "path": "clientdb"
     }
   ],
   "settings": {

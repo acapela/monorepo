@@ -4,7 +4,12 @@ import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import { getPredefinedListById } from "@aca/desktop/domains/list/preconfigured";
+import {
+  getAllInboxListsById,
+  inboxLists,
+  isInboxList,
+  outOfInboxLists,
+} from "@aca/desktop/domains/list/preconfigured";
 import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 
@@ -18,30 +23,40 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const list = getPredefinedListById(listId);
+  const displayedList = getAllInboxListsById(listId);
 
-  const allNotifications = list?.getAllNotifications().all;
+  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
+
+  const allNotifications = displayedList?.getAllNotifications().all;
 
   const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
       <UITabsBar>
-        <ListsTabBar activeListId={listId} />
+        <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      {!list && <>Unknown list</>}
-      {list && (
+      {!displayedList && <>Unknown list</>}
+      {displayedList && (
         <>
-          {list.getNotificationsToPreload().map((notificationToPreload) => {
+          {displayedList.getNotificationsToPreload().map((notificationToPreload) => {
             return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
             {notificationGroups?.map((notificationOrGroup) => {
               if (getIsNotificationsGroup(notificationOrGroup)) {
-                return <NotificationsGroupRow list={list} key={notificationOrGroup.id} group={notificationOrGroup} />;
+                return (
+                  <NotificationsGroupRow
+                    list={displayedList}
+                    key={notificationOrGroup.id}
+                    group={notificationOrGroup}
+                  />
+                );
               }
 
-              return <NotificationRow list={list} key={notificationOrGroup.id} notification={notificationOrGroup} />;
+              return (
+                <NotificationRow list={displayedList} key={notificationOrGroup.id} notification={notificationOrGroup} />
+              );
             })}
           </UINotifications>
         </>
