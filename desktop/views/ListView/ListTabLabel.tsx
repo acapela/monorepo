@@ -3,12 +3,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  list: DefinedList;
+  list: NotificationsList;
   activeListId?: string;
   className?: string;
 }

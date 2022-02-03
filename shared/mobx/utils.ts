@@ -1,6 +1,6 @@
 import { action, autorun, observable, untracked } from "mobx";
 
-import { getUUID } from "./uuid";
+import { getUUID } from "@aca/shared/uuid";
 
 /**
  * Escape hatch for using mobx observables outside of observers without mobx warning

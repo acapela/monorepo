@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { ListTabLabel } from "./ListTabLabel";
 
 interface Props {
   activeListId: string;
-  lists: DefinedList[];
+  lists: NotificationsList[];
 }
 
 export function ListsTabBar({ lists, activeListId }: Props) {

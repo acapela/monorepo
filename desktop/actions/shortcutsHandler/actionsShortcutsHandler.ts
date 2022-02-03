@@ -1,6 +1,7 @@
-import { ActionData, runAction } from "@aca/desktop/actions/action";
+import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { getIsShortcutDefinitionMatchingEvent } from "@aca/ui/keyboard/shortcutBase";
 
 /**

@@ -2,7 +2,7 @@ import { BrowserWindow } from "electron";
 import { makeObservable, observable } from "mobx";
 
 import { appWindowValue } from "@aca/desktop/bridge/appWindow";
-import { autorunEffect } from "@aca/shared/mobxUtils";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 export const appState = makeObservable(
   {

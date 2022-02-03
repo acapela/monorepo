@@ -10,7 +10,7 @@ import {
 } from "@aca/desktop/bridge/system";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
-import { autorunEffect } from "@aca/shared/mobxUtils";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 export function initializeSystemHandlers() {
   restartAppRequest.handle(async () => {
