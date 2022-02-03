@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
+import { goToList } from "@aca/desktop/actions/lists";
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
 import { allNotificationsList, inboxLists, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
-import { ListTabLabel } from "@aca/desktop/views/ListView/ListTabLabel";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
@@ -18,19 +18,19 @@ export function Sidebar() {
       </UITopTools>
       <UIItems>
         <UIItemGroup>
-          <UIListTabLabel list={allNotificationsList} />
+          <UISidebarItem action={goToList} target={allNotificationsList} />
         </UIItemGroup>
 
         <UIItemGroup>
           {inboxLists
             .filter((list) => list.id !== allNotificationsList.id)
-            .map((list) => {
-              return <UIListTabLabel key={list.id} list={list} />;
-            })}
+            .map((list) => (
+              <UISidebarItem key={list.id} action={goToList} target={list} />
+            ))}
         </UIItemGroup>
         <UIItemGroup>
           {outOfInboxLists.map((list) => (
-            <UIListTabLabel key={list.id} list={list} />
+            <UISidebarItem key={list.id} action={goToList} target={list} />
           ))}
         </UIItemGroup>
 
@@ -47,6 +47,8 @@ const UIHolder = styled(PresenceAnimator)`
   bottom: 0;
   width: 320px;
   ${theme.colors.layout.background.asBg};
+  ${theme.shadow.popover};
+  ${theme.radius.panel};
   z-index: 2;
   padding-top: 24px;
 `;
@@ -65,12 +67,6 @@ const UIItems = styled.div`
   row-gap: 16px;
 `;
 
-const itemPadding = "padding: 12px 12px 12px 0;";
-
 const UISidebarItem = styled(SidebarItem)`
-  ${itemPadding}
-`;
-
-const UIListTabLabel = styled(ListTabLabel)`
-  ${itemPadding}
+  padding: 12px 12px 12px 0;
 `;

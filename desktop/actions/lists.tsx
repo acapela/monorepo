@@ -1,17 +1,18 @@
 import React from "react";
 
-import { inboxLists, isInboxList } from "@aca/desktop/domains/list/preconfigured";
+import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { isInboxList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-import { IconArrowBottom, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowCornerCwRb, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
+import { listPageView } from "./views/list";
 
 export const currentListActionsGroup = defineGroup({
   name: (ctx) => {
-    const list = ctx.getTarget("list");
+    const list = ctx.view(listPageView)?.list;
 
     if (list) return `List - ${list.name}`;
 
@@ -46,19 +47,11 @@ export const focusNextNotificationInList = defineAction({
   icon: <IconArrowBottom />,
   shortcut: "ArrowDown",
   handler(context) {
-    const list = context.assertTarget("list", true);
-    const notification = context.getTarget("notification");
+    const nextItem = context.assertView(listPageView).nextListItem;
 
-    if (!notification) {
-      uiStore.focusedTarget = list.getAllNotifications().first;
-      return;
+    if (nextItem) {
+      uiStore.focusedTarget = nextItem;
     }
-
-    const nextNotification = list.getNextNotification(notification);
-
-    if (!nextNotification) return;
-
-    uiStore.focusedTarget = nextNotification;
   },
 });
 
@@ -71,19 +64,11 @@ export const focusPreviousNotificationInList = defineAction({
   icon: <IconArrowTop />,
   shortcut: "ArrowUp",
   handler(context) {
-    const list = context.assertTarget("list", true);
-    const notification = context.getTarget("notification");
+    const prevItem = context.assertView(listPageView).prevListItem;
 
-    if (!notification) {
-      uiStore.focusedTarget = list.getAllNotifications().last;
-      return;
+    if (prevItem) {
+      uiStore.focusedTarget = prevItem;
     }
-
-    const previousNotification = list.getPreviousNotification(notification);
-
-    if (!previousNotification) return;
-
-    uiStore.focusedTarget = previousNotification;
   },
 });
 
@@ -97,11 +82,11 @@ export const goToNextList = defineAction({
   icon: <IconArrowRight />,
   shortcut: "ArrowRight",
   handler(context) {
-    const list = context.assertTarget("list", true);
+    const nextList = context.assertView(listPageView).nextList;
 
-    const nextList = getNextItemInArray(inboxLists, list);
-
-    desktopRouter.navigate("list", { listId: nextList.id });
+    if (nextList) {
+      desktopRouter.navigate("list", { listId: nextList.id });
+    }
   },
 });
 
@@ -115,10 +100,31 @@ export const goToPreviousList = defineAction({
   },
   shortcut: "ArrowLeft",
   handler(context) {
-    const list = context.assertTarget("list", true);
+    const prevList = context.assertView(listPageView).prevList;
 
-    const previousList = getPreviousItemInArray(inboxLists, list);
+    if (prevList) {
+      desktopRouter.navigate("list", { listId: prevList.id });
+    }
+  },
+});
 
-    desktopRouter.navigate("list", { listId: previousList.id });
+export const toggleNotificationsGroup = defineAction({
+  icon: <IconArrowCornerCwRb />,
+  group: currentListActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Toggle" : "Show/hide notifications in group"),
+  shortcut: "Space",
+  keywords: ["toggle", "group", "all"],
+  canApply: (context) => {
+    return !!context.view(listPageView)?.focusedGroup;
+  },
+  handler(context) {
+    const group = context.view(listPageView)?.focusedGroup;
+
+    if (!group) return;
+    const isOpenedNow = openedNotificationsGroupsStore.toggleOpen(group.id);
+
+    if (!isOpenedNow) {
+      uiStore.focusedTarget = group;
+    }
   },
 });

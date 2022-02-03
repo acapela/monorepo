@@ -12,14 +12,12 @@ const Avatar = (user: User) =>
 
 const UserName = (user: User, currentUserId?: string) => (currentUserId == user.id ? "You" : user.name);
 
-const getOthersLabel = (othersCount: number) =>
-  othersCount == 0 ? "" : ` and ${othersCount + " " + pluralize(othersCount, "other", "others")}`;
-
 type TopicUserInfoTopic = Topic & { user: User; topic_member: TopicMember[] };
 const TopicUserInfo = (topic: TopicUserInfoTopic, currentUserId?: string) =>
-  [Avatar(topic.user), `${UserName(topic.user, currentUserId)}${getOthersLabel(topic.topic_member.length - 1)}`].filter(
-    isNotNullish
-  );
+  [
+    Avatar(topic.user),
+    pluralize`${UserName(topic.user, currentUserId)} and ${topic.topic_member.length - 1} ${["other"]}`,
+  ].filter(isNotNullish);
 
 export type RequestFooterTopic = Topic & TopicUserInfoTopic;
 export const RequestFooter = (

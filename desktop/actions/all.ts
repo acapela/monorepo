@@ -7,6 +7,7 @@ import * as devActions from "./dev";
 import * as focusActions from "./focus";
 import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
+import * as notificationActions from "./notification";
 import * as slackActions from "./slack";
 
 /**
@@ -19,7 +20,8 @@ export const allActions = composeActionsFromImports(
   navigationActions,
   devActions,
   focusActions,
-  appActions
+  appActions,
+  notificationActions
 );
 
 /**

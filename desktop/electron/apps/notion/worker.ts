@@ -11,9 +11,9 @@ import {
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
+import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
-import { clearNotionSessionData } from "../../auth/notion";
 import { ActivityPayload, BlockPayload, GetNotificationLogResult, GetSpacesResult, NotificationPayload } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;

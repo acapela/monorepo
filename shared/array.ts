@@ -90,13 +90,25 @@ function getNextIndexInArray<T>(items: T[], currentIndex: number) {
   return nextNaturalIndex;
 }
 
+interface ArrayLoopConfig<T> {
+  keyGetter?: (item: T) => string;
+  loop?: boolean;
+}
+
 /**
  * This hook allows 'getting next value' of an array with a simple callback.
  *
  * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
  */
-export function getNextItemInArray<T>(items: T[], activeItem: T) {
-  const activeItemIndex = items.indexOf(activeItem);
+export function getNextItemInArray<T>(items: T[], activeItem: T, { keyGetter, loop }: ArrayLoopConfig<T> = {}) {
+  const activeItemIndex = items.findIndex((item) => {
+    if (keyGetter) {
+      return keyGetter(activeItem) === keyGetter(item);
+    }
+    return item === activeItem;
+  });
+
+  if (activeItemIndex === items.length - 1 && !loop) return null;
 
   const nextIndex = getNextIndexInArray(items, activeItemIndex);
 
@@ -120,8 +132,15 @@ function getPreviousIndexInArray<T>(items: T[], currentIndex: number) {
  *
  * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
  */
-export function getPreviousItemInArray<T>(items: T[], activeItem: T) {
-  const activeItemIndex = items.indexOf(activeItem);
+export function getPreviousItemInArray<T>(items: T[], activeItem: T, { keyGetter, loop }: ArrayLoopConfig<T> = {}) {
+  const activeItemIndex = items.findIndex((item) => {
+    if (keyGetter) {
+      return keyGetter(activeItem) === keyGetter(item);
+    }
+    return item === activeItem;
+  });
+
+  if (activeItemIndex === 0 && !loop) return null;
 
   const previousIndex = getPreviousIndexInArray(items, activeItemIndex);
 
@@ -177,4 +196,27 @@ export function sortArrayBySortList<I, S>(input: I[], sortItemGetter: (item: I) 
 
     return -sortIndex;
   }).reverse();
+}
+
+export function toggleElementInArray<T>(array: T[], item: T) {
+  if (array.includes(item)) {
+    removeElementFromArray(array, item);
+    return false;
+  } else {
+    array.push(item);
+    return true;
+  }
+}
+
+interface NeigbourAwareIteration<T> {
+  item: T;
+  previous: T | null;
+  next: T | null;
+  index: number;
+}
+
+export function createArrayNeighbourList<T>(array: T[]): NeigbourAwareIteration<T>[] {
+  return array.map((item, index) => {
+    return { index, item: array[index], previous: array[index - 1] ?? null, next: array[index + 1] ?? null };
+  });
 }

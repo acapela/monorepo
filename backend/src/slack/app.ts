@@ -14,6 +14,7 @@ import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@ac
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
+import { getUserSlackInstallationFilter } from "./userSlackInstallation";
 import { createTeamMemberUserFromSlack } from "./utils";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
@@ -35,15 +36,8 @@ function handleInstallationResponse(res: ServerResponse, redirectURL?: string, s
   }
 }
 
-const getSlackInstallationFilter = ({ teamId, userId }: Partial<{ teamId: string; userId: string }>) => ({
-  AND: [
-    teamId ? { data: { path: ["team", "id"], equals: teamId } } : {},
-    userId ? { data: { path: ["user", "id"], equals: userId } } : {},
-  ],
-});
-
 async function storeUserSlackInstallation(userId: string, installation: SlackInstallation) {
-  const slackInstallationFilter = getSlackInstallationFilter({
+  const slackInstallationFilter = getUserSlackInstallationFilter({
     teamId: installation.team?.id,
     userId: installation.user.id,
   });
@@ -162,11 +156,11 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     async fetchInstallation(query) {
       // Just like in storeInstallation we first try the new Acapela persistence
       let userSlackInstallation = await db.user_slack_installation.findFirst({
-        where: getSlackInstallationFilter(query),
+        where: getUserSlackInstallationFilter(query),
       });
       // If there is no installation for the user, we try to find a team member's installation
       userSlackInstallation ??= await db.user_slack_installation.findFirst({
-        where: getSlackInstallationFilter({ teamId: query.teamId }),
+        where: getUserSlackInstallationFilter({ teamId: query.teamId }),
       });
       if (userSlackInstallation) {
         return userSlackInstallation.data as unknown as SlackInstallation;

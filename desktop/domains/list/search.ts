@@ -1,6 +1,6 @@
 import { cachedComputed } from "@aca/clientdb";
+import { fuzzySearch } from "@aca/desktop/domains/commandMenu/search/fuzzySearch";
 
-import { fuzzySearch } from "../commandMenu/search/fuzzySearch";
 import { DefinedList } from "./defineList";
 import { inboxLists } from "./preconfigured";
 

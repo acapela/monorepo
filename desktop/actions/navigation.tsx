@@ -1,10 +1,11 @@
 import React from "react";
 
+import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowLeft, IconCross, IconHome, IconMenu, IconMonitor, IconSlidersHoriz } from "@aca/ui/icons";
+import { IconArrowLeft, IconCheck, IconCross, IconHome, IconMenu, IconMonitor, IconSlidersHoriz } from "@aca/ui/icons";
 
-import { openLinkRequest } from "../bridge/system";
+import { resolvedList } from "../domains/list/preconfigured";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -62,6 +63,16 @@ export const goToSettings = defineAction({
   shortcut: ["Mod", ","],
   handler() {
     desktopRouter.navigate("settings");
+  },
+});
+
+export const goToResolved = defineAction({
+  name: "Resolved notifications",
+  group: navigationActionsGroup,
+  icon: <IconCheck />,
+  canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
+  handler() {
+    desktopRouter.navigate("list", { listId: resolvedList.id });
   },
 });
 

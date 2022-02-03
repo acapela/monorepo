@@ -30,6 +30,7 @@ const shortcutKeyNiceVersionMap: Partial<Record<Key, KeyNiceVersion>> = {
   ArrowRight: "→",
   Delete: "⌦",
   Tab: "⇥",
+  Space: "⎵",
 };
 
 export function getShortcutKeyNiceVersion(key: Key) {

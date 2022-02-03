@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { openFocusMode } from "@aca/desktop/actions/focus";
+import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { DefinedList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -14,6 +14,8 @@ import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { mobxTicks } from "@aca/shared/mobxTime";
 import { theme } from "@aca/ui/theme";
+
+import { UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   notification: NotificationEntity;
@@ -58,7 +60,8 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         })}
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
-        <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <UISendersLabel>{notification.from}</UISendersLabel>
+        <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>
@@ -70,17 +73,13 @@ const UIHolder = styled.div<{ $isFocused: boolean }>`
   display: flex;
   align-items: center;
   gap: 24px;
+  min-width: 0;
 
   ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
 
   ${NotificationAppIcon} {
     font-size: 24px;
   }
-`;
-
-const UITitle = styled.div`
-  ${theme.typo.content.semibold};
-  flex-grow: 1;
 `;
 
 const UIDate = styled.div`

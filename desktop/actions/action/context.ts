@@ -1,3 +1,5 @@
+import assert from "assert";
+
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
@@ -6,6 +8,7 @@ import { uiStore } from "@aca/desktop/store/uiStore";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";
+import { ActionView } from "./view";
 
 export type ActionContextCallback<T> = (context: ActionContext) => T;
 
@@ -42,12 +45,27 @@ export function createActionContext(forcedTarget?: unknown, { isContextual = fal
     return targets;
   });
 
-  return {
+  const context = {
     isContextual,
     // Not really used, but makes it easier to debug actions
     forcedTarget,
+    view<D>(view: ActionView<D>): D {
+      return view.getView(context);
+    },
+    assertView<D>(view: ActionView<D>) {
+      const foundView = context.view(view);
+
+      assert(foundView, "No view");
+
+      return foundView as NonNullable<D>;
+    },
+    hasView(view: ActionView<unknown>) {
+      return !!context.view(view);
+    },
     ...targetPredicates,
   };
+
+  return context;
 }
 
 export type ActionContext = ReturnType<typeof createActionContext>;

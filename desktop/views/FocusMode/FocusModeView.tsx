@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { openNotificationInApp } from "@aca/desktop/actions/focus";
+import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
 import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -48,6 +48,8 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
 const UITitle = styled.div`
   ${theme.typo.secondaryTitle.semibold};
+  ${theme.common.ellipsisText}
+  min-width: 0;
 `;
 
 const UIHeader = styled.div`
@@ -55,6 +57,7 @@ const UIHeader = styled.div`
   align-items: center;
   margin-bottom: 16px;
   gap: 8px;
+  padding-right: 16px;
 
   ${NotificationAppIcon} {
     ${theme.typo.secondaryTitle}
