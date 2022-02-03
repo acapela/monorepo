@@ -33,14 +33,12 @@ async function querySlackInstallationURL() {
   return assertDefined(slackInstallation?.url, "missing slack installation url");
 }
 
-/**
- *
- */
-let closeSlackWindow: Function | void = void null;
+// We want to close any Slack install windows, as soon as the user has a Slack installation
+let closeSlackInstallWindow: Function | void = void null;
 autorun(() => {
   const user = getAuthUser();
   if (user?.has_slack_installation) {
-    closeSlackWindow?.();
+    closeSlackInstallWindow?.();
   }
 });
 export const connectSlack = defineAction({
@@ -53,7 +51,7 @@ export const connectSlack = defineAction({
   },
   handler() {
     querySlackInstallationURL().then((url) => {
-      closeSlackWindow = connectSlackBridge({ url });
+      closeSlackInstallWindow = connectSlackBridge({ url });
     });
   },
 });
