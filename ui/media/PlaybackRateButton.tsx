@@ -14,8 +14,10 @@ export function PlaybackRateButton({ playbackRate = 1, onPlaybackRateChangeReque
   return (
     <UIPlaybackRateButton
       onClick={handleWithStopPropagation(() => {
-        const nextRate = getNextItemInArray(allowedPlaybackRates, playbackRate);
-        onPlaybackRateChangeRequest?.(nextRate);
+        const nextRate = getNextItemInArray(allowedPlaybackRates, playbackRate, { loop: true });
+        if (nextRate) {
+          onPlaybackRateChangeRequest?.(nextRate);
+        }
       })}
       data-tooltip={`Change playback speed`}
     >
