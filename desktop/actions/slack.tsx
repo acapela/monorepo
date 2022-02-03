@@ -4,7 +4,7 @@ import React from "react";
 
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
-import { IconAtom, IconToggleOn } from "@aca/ui/icons";
+import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
 import { apolloClient } from "../apolloClient";
 import { connectSlackBridge } from "../bridge/auth";
@@ -13,10 +13,7 @@ import { authStore } from "../store/authStore";
 import { defineAction } from "./action";
 import { accountActionsGroup } from "./auth";
 
-function getAuthUser() {
-  const user = getDb().user.findById(authStore.user.id);
-  return user;
-}
+const getAuthUser = () => getDb().user.findById(authStore.user.id);
 
 async function querySlackInstallationURL() {
   const {
@@ -36,6 +33,7 @@ async function querySlackInstallationURL() {
   return assertDefined(slackInstallation?.url, "missing slack installation url");
 }
 
+let disposeSlackWindowCheck: Function | null = null;
 export const connectSlack = defineAction({
   name: "Connect Slack",
   icon: <IconAtom />,
@@ -48,10 +46,12 @@ export const connectSlack = defineAction({
     const closeSlackWindow = connectSlackBridge({ url: await querySlackInstallationURL() });
     const user = getAuthUser();
 
-    const disposer = autorun(() => {
+    disposeSlackWindowCheck?.();
+    disposeSlackWindowCheck = autorun(() => {
       if (user?.has_slack_installation) {
         closeSlackWindow?.();
-        disposer();
+        disposeSlackWindowCheck?.();
+        disposeSlackWindowCheck = null;
       }
     });
   },
@@ -62,7 +62,7 @@ const getIsAutoResolveEnabled = () => Boolean(getAuthUser()?.is_slack_auto_resol
 export const toggleSlackAutoResolve = defineAction({
   name: () => (getIsAutoResolveEnabled() ? "Disable Slack Auto Resolve" : "Enable Slack Auto Resolve"),
   group: accountActionsGroup,
-  icon: <IconToggleOn />,
+  icon: () => (getIsAutoResolveEnabled() ? <IconToggleOn /> : <IconToggleOff />),
   canApply: () => !!getAuthUser(),
   handler() {
     const user = assertDefined(getAuthUser(), "missing user");
