@@ -21,7 +21,8 @@
     "build:release": "ts-node ./scripts/update-package.ts && electron-builder build --mac zip --universal && ts-node ./scripts/update-package.ts reset",
     "build:production": "yarn build:bundle production && yarn upload-sourcemaps update && yarn build:release && mv ./dist-electron ./dist-electron-production",
     "build:staging": "yarn build:bundle && yarn upload-sourcemaps && yarn build:release && mv ./dist-electron ./dist-electron-staging",
-    "release": "rm -rf dist-electron* && yarn build:staging && yarn build:production"
+    "release": "rm -rf dist-electron* && yarn build:staging && yarn build:production",
+    "publish": "yarn release && ./scripts/upload-release.sh"
   },
   "source": ".",
   "devDependencies": {
