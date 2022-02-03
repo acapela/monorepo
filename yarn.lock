@@ -128,6 +128,7 @@ __metadata:
   resolution: "@aca/e2e@workspace:e2e"
   dependencies:
     "@playwright/test": ^1.18.1
+    playwright: ^1.18.1
   languageName: unknown
   linkType: soft
 
@@ -19241,6 +19242,17 @@ fsevents@^1.2.7:
   bin:
     playwright: cli.js
   checksum: 7b3d5a228bb0559eece28c82f6aa963a9f3cb68f56e470feb968fe414e4f0074edb9a2d9b27266f4927be31d57203cdfb739e57d5b30744d5f30800a8025b3b8
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.18.1":
+  version: 1.18.1
+  resolution: "playwright@npm:1.18.1"
+  dependencies:
+    playwright-core: =1.18.1
+  bin:
+    playwright: cli.js
+  checksum: a50c4c3b04c0f4c2698898003b5cba8d24af0de01e13e9af754d34af4d928d5397704ab7e84a593fb614d538fe72e307f69f01971219857118cd619ee3f91c88
   languageName: node
   linkType: hard
 
