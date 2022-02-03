@@ -20,7 +20,7 @@ const siteFilters: SiteFilter[] = [
   {
     on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
     css: `.p-workspace-layout {
-            grid-template-columns: auto 320px !important;
+            grid-template-columns: auto 40% !important;
           }`,
   },
   {
