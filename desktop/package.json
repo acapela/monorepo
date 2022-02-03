@@ -18,7 +18,7 @@
     "build:electron": "electron-builder build --mac zip --universal --dir",
     "build": "yarn build:bundle && yarn build:electron",
     "upload-sourcemaps": "ts-node ./scripts/upload-sourcemaps.ts",
-    "publish": "yarn build:bundle && yarn upload-sourcemaps && ts-node ./scripts/publish.ts && electron-builder build --mac zip --universal -p always"
+    "publish": "yarn upload-sourcemaps && ts-node ./scripts/publish.ts && electron-builder build --mac zip --universal -p always"
   },
   "source": ".",
   "devDependencies": {

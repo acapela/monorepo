@@ -11,7 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
-      - run: yarn desktop publish
+      - run: |
+          yarn desktop build:bundle
+          yarn e2e test electron
+          yarn desktop publish
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
