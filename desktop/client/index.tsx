@@ -11,9 +11,9 @@ import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
-import { AppThemeProvider, theme } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
@@ -33,7 +33,7 @@ const BuiltInStyles = createGlobalStyle`
 render(
   <>
     <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-      <AppThemeProvider theme={theme}>
+      <DesktopThemeProvider>
         <BuiltInStyles />
         <GlobalDesktopStyles />
         <PromiseUIRenderer />
@@ -43,7 +43,7 @@ render(
         <SystemBar />
         <CommandMenuManager />
         <RootView />
-      </AppThemeProvider>
+      </DesktopThemeProvider>
     </MotionConfig>
   </>,
   rootElement

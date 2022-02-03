@@ -5,6 +5,8 @@ import { isFullscreenValue } from "@aca/desktop/bridge/system";
 import { desktopRouter } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
 
+import { uiSettingsBridge } from "../bridge/ui";
+
 /**
  * Note on focus:
  *
@@ -33,6 +35,7 @@ createWindowEvent("blur", () => {
 export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
+  isInDarkMode: false,
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },
@@ -68,5 +71,13 @@ autorun(() => {
     document.body.classList.add("fullscreen");
   } else {
     document.body.classList.remove("fullscreen");
+  }
+});
+
+autorun(() => {
+  const isInDarkMode = uiSettingsBridge.observableValue.get().isDarkMode;
+
+  if (typeof isInDarkMode !== "undefined") {
+    uiStore.isInDarkMode = isInDarkMode;
   }
 });

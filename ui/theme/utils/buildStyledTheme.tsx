@@ -57,7 +57,7 @@ export function buildStyledTheme<T extends object>(theme: T) {
         return null;
       }
       try {
-        const valueFromTheme = replayAccess(theme, accessRecord);
+        const valueFromTheme = replayAccess(props.theme, accessRecord);
 
         return valueFromTheme;
       } catch (error) {

@@ -12,7 +12,7 @@ export const GlobalDesktopStyles = createGlobalStyle`
     min-height: 100vh;
     max-height: 100vh;
     ${theme.colors.text.asColor};
-    ${theme.colors.layout.background.asBg}
+    ${theme.colors.layout.background.asBg}    
   }
 
   * {
