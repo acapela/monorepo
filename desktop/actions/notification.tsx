@@ -2,9 +2,10 @@ import React from "react";
 
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { desktopRouter, getRouteParamsIfActive } from "@aca/desktop/routes";
+import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { goToOrFocusNextItem } from "./views/common";
@@ -29,6 +30,7 @@ export const copyNotificationLink = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
   shortcut: ["Mod", "Shift", "C"],
+  keywords: ["url", "share"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
@@ -85,6 +87,7 @@ export const unresolveNotification = defineAction({
   icon: <IconCheckboxSquare />,
   group: currentNotificationActionsGroup,
   name: "Undo resolve",
+  shortcut: ["Mod", "Shift", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark"],
   canApply: (ctx) => {
@@ -108,25 +111,38 @@ export const openFocusMode = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
   shortcut: "Enter",
-  canApply: (context) => {
-    const activeNotificationId = getRouteParamsIfActive("focus")?.notificationId;
-    const targetNotification = context.getTarget("notification");
+  canApply: ({ hasTarget }) => {
+    if (getIsRouteActive("focus") || !hasTarget("list", true)) return false;
+    if (!hasTarget("notification") && !hasTarget("group")) return false;
 
-    if (!targetNotification) return false;
-
-    if (targetNotification.id === activeNotificationId) return false;
-
-    return context.hasTarget("list", true);
+    return true;
   },
   handler(context) {
     const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+    if (notification) {
+      desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+      return;
+    }
+
+    if (group) {
+      openedNotificationsGroupsStore.open(group.id);
+      desktopRouter.navigate("focus", { listId: list.id, notificationId: group.notifications[0].id });
+    }
   },
   onMightBeSelected(context) {
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
 
-    return requestPreviewPreload({ url: notification.url });
+    if (notification) {
+      return requestPreviewPreload({ url: notification.url });
+    }
+
+    const group = context.getTarget("group");
+
+    if (group) {
+      requestPreviewPreload({ url: group.notifications[0].url });
+    }
   },
 });

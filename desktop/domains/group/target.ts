@@ -8,10 +8,17 @@ export interface NotificationGroupTarget {
   integrationTitle: string;
 }
 
-export function getNotificationGroupTarget(notification: NotificationEntity): NotificationGroupTarget | null {
+const unknownTarget: NotificationGroupTarget = {
+  id: "unknown",
+  name: "Unknown",
+  integration: "slack",
+  integrationTitle: "Slack conversation",
+};
+
+export function getNotificationGroupTarget(notification: NotificationEntity): NotificationGroupTarget {
   const targetNotification = notification.inner;
 
-  if (!targetNotification) return null;
+  if (!targetNotification) return unknownTarget;
 
   if (targetNotification.__typename === "notification_figma_comment") {
     return {
@@ -40,7 +47,5 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
     };
   }
 
-  console.warn(`Unrecognized notification target for grouping`);
-
-  return null;
+  return unknownTarget;
 }

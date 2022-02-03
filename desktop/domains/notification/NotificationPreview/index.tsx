@@ -16,11 +16,13 @@ import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { theme } from "@aca/ui/theme";
 
+import { devSettingsStore } from "../../dev/store";
+
 type PreloadBrowserViewProps = { url: string };
 
 type BrowserViewProps = { url: string; onFocus?: () => void; onBlur?: () => void };
 
-export function PreloadNotificationEmbed({ url }: PreloadBrowserViewProps) {
+export function PreloadNotificationPreview({ url }: PreloadBrowserViewProps) {
   useEffect(() => {
     return requestPreviewPreload({ url });
   }, [url]);
@@ -28,11 +30,7 @@ export function PreloadNotificationEmbed({ url }: PreloadBrowserViewProps) {
   return <></>;
 }
 
-export const NotificationEmbedView = observer(function NotificationEmbedView({
-  url,
-  onFocus,
-  onBlur,
-}: BrowserViewProps) {
+export const NotificationPreview = observer(function NotificationPreview({ url, onFocus, onBlur }: BrowserViewProps) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -64,6 +62,7 @@ export const NotificationEmbedView = observer(function NotificationEmbedView({
   }, [position]);
 
   useLayoutEffect(() => {
+    if (devSettingsStore.hidePreviews) return;
     if (!position || !!commandMenuStore.session) return;
     return requestAttachPreview({ url, position });
   }, [
@@ -71,6 +70,7 @@ export const NotificationEmbedView = observer(function NotificationEmbedView({
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,
+    devSettingsStore.hidePreviews,
   ]);
 
   return (

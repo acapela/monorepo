@@ -7,7 +7,7 @@ import { createTimeout, timeDuration } from "@aca/shared/time";
  * Ticks that will make react components re-render periodically in given interval.
  */
 
-const createTick = memoize((interval: number) => {
+export const createMobxTick = memoize((interval: number) => {
   const tick = createAtom(`tick-${interval}`);
 
   setInterval(() => {
@@ -18,7 +18,7 @@ const createTick = memoize((interval: number) => {
 });
 
 export const mobxTicks = mapValues(timeDuration, (duration) => {
-  return createTick(duration);
+  return createMobxTick(duration);
 });
 
 export const mobxTickAt = memoize(

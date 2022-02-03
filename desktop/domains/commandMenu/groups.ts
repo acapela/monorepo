@@ -1,12 +1,13 @@
-import { ActionData } from "@aca/desktop/actions/action";
+import { ActionData, resolveActionDataThunk } from "@aca/desktop/actions/action";
+import { ActionContext } from "@aca/desktop/actions/action/context";
 import { groupsPriority } from "@aca/desktop/actions/groups";
 import { sortArrayBySortList } from "@aca/shared/array";
 import { groupBy } from "@aca/shared/groupBy";
 
-export function groupActions(actions: ActionData[]) {
+export function groupActions(actions: ActionData[], context: ActionContext) {
   const groups = groupBy(
     actions,
-    (action) => action.group,
+    (action) => resolveActionDataThunk(action.group, context),
     (group) => group?.id ?? "no-group"
   );
 

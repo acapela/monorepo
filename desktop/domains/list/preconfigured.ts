@@ -88,7 +88,7 @@ export function getOutOfInboxListsById(id: string): NotificationsList | null {
   return outOfInboxListIdMap[id as keyof typeof outOfInboxListIdMap] ?? null;
 }
 
-export function getAllInboxListsById(id: string): NotificationsList | null {
+export function getInboxListsById(id: string): NotificationsList | null {
   return allInboxListsIdMap[id as keyof typeof allInboxListsIdMap] ?? null;
 }
 

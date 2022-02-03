@@ -26,10 +26,12 @@ export const focusPageView = createActionView((context) => {
       const { nextNotification } = view;
       if (!nextNotification) {
         desktopRouter.navigate("list", { listId: list.id });
-        return;
+        return null;
       }
 
       desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
+
+      return nextNotification;
     },
   };
 

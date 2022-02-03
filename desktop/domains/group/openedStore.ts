@@ -10,6 +10,11 @@ export const openedNotificationsGroupsStore = makeAutoObservable({
   toggleOpen(id: string) {
     return toggleElementInArray(openedNotificationsGroupsStore.openedIds, id);
   },
+  open(id: string) {
+    if (!openedNotificationsGroupsStore.getIsOpened(id)) {
+      openedNotificationsGroupsStore.openedIds.push(id);
+    }
+  },
   getIsOpened(id: string) {
     return openedNotificationsGroupsStore.openedIds.includes(id);
   },

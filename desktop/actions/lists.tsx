@@ -3,9 +3,17 @@ import React from "react";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IconArrowBottom, IconArrowCornerCwRb, IconArrowLeft, IconArrowRight, IconArrowTop } from "@aca/ui/icons";
+import {
+  IconArrowBottom,
+  IconArrowCornerCwLt,
+  IconArrowCornerCwRb,
+  IconArrowLeft,
+  IconArrowRight,
+  IconArrowTop,
+} from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 import { listPageView } from "./views/list";
 
@@ -78,6 +86,7 @@ export const goToNextList = defineAction({
     return getIsRouteActive("list");
   },
   icon: <IconArrowRight />,
+  supplementaryLabel: (context) => context.assertView(listPageView).nextList?.name,
   shortcut: "ArrowRight",
   handler(context) {
     const nextList = context.assertView(listPageView).nextList;
@@ -95,6 +104,7 @@ export const goToPreviousList = defineAction({
   canApply: () => {
     return getIsRouteActive("list");
   },
+  supplementaryLabel: (context) => context.assertView(listPageView).prevList?.name,
   shortcut: "ArrowLeft",
   handler(context) {
     const prevList = context.assertView(listPageView).prevList;
@@ -105,10 +115,28 @@ export const goToPreviousList = defineAction({
   },
 });
 
+function getGroupInfo(context: ActionContext) {
+  const group = context.view(listPageView)?.focusedGroup;
+
+  if (!group) return null;
+
+  const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
+
+  return { group, isOpened };
+}
+
 export const toggleNotificationsGroup = defineAction({
-  icon: <IconArrowCornerCwRb />,
+  icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
   group: currentListActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Toggle" : "Show/hide notifications in group"),
+  name: (context) => {
+    const isOpened = getGroupInfo(context)?.isOpened;
+
+    if (isOpened === undefined) return "Toggle";
+
+    if (context.isContextual) return isOpened ? "Collapse" : "Expand";
+
+    return isOpened ? "Hide notifications in group" : "Show notifications in group";
+  },
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],

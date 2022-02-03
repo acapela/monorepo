@@ -4,13 +4,8 @@ import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import {
-  getAllInboxListsById,
-  inboxLists,
-  isInboxList,
-  outOfInboxLists,
-} from "@aca/desktop/domains/list/preconfigured";
-import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
+import { getInboxListsById, inboxLists, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 
 import { ListsTabBar } from "./ListsTabBar";
@@ -23,7 +18,7 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const displayedList = getAllInboxListsById(listId);
+  const displayedList = getInboxListsById(listId);
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
 
@@ -40,7 +35,7 @@ export const ListView = observer(({ listId }: Props) => {
       {displayedList && (
         <>
           {displayedList.getNotificationsToPreload().map((notificationToPreload) => {
-            return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
+            return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
             {notificationGroups?.map((notificationOrGroup) => {
