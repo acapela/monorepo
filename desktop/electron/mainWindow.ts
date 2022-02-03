@@ -62,12 +62,12 @@ export function initializeMainWindow() {
     autoUpdater.checkForUpdates();
   }, 10 * 60 * 1000); // check for updates every 10 minutes
 
-  autoUpdater.on("update-downloaded", (_, releaseNotes, releaseName) => {
+  autoUpdater.on("update-downloaded", (_event, _releaseNotes, releaseName) => {
     const dialogOpts = {
       type: "info",
       buttons: ["Restart", "Later"],
       title: "Application Update",
-      message: process.platform === "win32" ? releaseNotes : releaseName,
+      message: releaseName,
       detail: "A new version of Acapela is available. Restart the app to update.",
     };
 
