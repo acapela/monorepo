@@ -1,6 +1,7 @@
 import React from "react";
 
 import { openLinkRequest } from "@aca/desktop/bridge/system";
+import { resolvedList, snoozedList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import {
@@ -14,7 +15,6 @@ import {
   IconSlidersHoriz,
 } from "@aca/ui/icons";
 
-import { resolvedList, snoozedList } from "../domains/list/preconfigured";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
