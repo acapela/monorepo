@@ -64,10 +64,10 @@ export const goToPreviousNotification = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous" : "Go to previous notification"),
   shortcut: "ArrowUp",
   canApply: (context) => {
-    return !!context.view(focusPageView)?.nextNotification;
+    return !!context.view(focusPageView)?.prevNotification;
   },
   handler(context) {
-    const previousNotification = context.view(focusPageView)?.nextNotification;
+    const previousNotification = context.view(focusPageView)?.prevNotification;
 
     if (!previousNotification) return;
 
