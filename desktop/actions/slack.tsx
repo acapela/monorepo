@@ -33,7 +33,16 @@ async function querySlackInstallationURL() {
   return assertDefined(slackInstallation?.url, "missing slack installation url");
 }
 
-let disposeSlackWindowCheck: Function | null = null;
+/**
+ *
+ */
+let closeSlackWindow: Function | void = void null;
+autorun(() => {
+  const user = getAuthUser();
+  if (user?.has_slack_installation) {
+    closeSlackWindow?.();
+  }
+});
 export const connectSlack = defineAction({
   name: "Connect Slack",
   icon: <IconAtom />,
@@ -42,17 +51,9 @@ export const connectSlack = defineAction({
     const user = getAuthUser();
     return Boolean(user && !user.has_slack_installation);
   },
-  async handler() {
-    const closeSlackWindow = connectSlackBridge({ url: await querySlackInstallationURL() });
-    const user = getAuthUser();
-
-    disposeSlackWindowCheck?.();
-    disposeSlackWindowCheck = autorun(() => {
-      if (user?.has_slack_installation) {
-        closeSlackWindow?.();
-        disposeSlackWindowCheck?.();
-        disposeSlackWindowCheck = null;
-      }
+  handler() {
+    querySlackInstallationURL().then((url) => {
+      closeSlackWindow = connectSlackBridge({ url });
     });
   },
 });
@@ -63,7 +64,7 @@ export const toggleSlackAutoResolve = defineAction({
   name: () => (getIsAutoResolveEnabled() ? "Disable Slack Auto Resolve" : "Enable Slack Auto Resolve"),
   group: accountActionsGroup,
   icon: () => (getIsAutoResolveEnabled() ? <IconToggleOn /> : <IconToggleOff />),
-  canApply: () => !!getAuthUser(),
+  canApply: () => Boolean(getAuthUser()?.has_slack_installation),
   handler() {
     const user = assertDefined(getAuthUser(), "missing user");
     user.update({ is_slack_auto_resolve_enabled: !user.is_slack_auto_resolve_enabled });
