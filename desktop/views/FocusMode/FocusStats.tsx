@@ -8,6 +8,7 @@ import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domain
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { useConst } from "@aca/shared/hooks/useConst";
+import { useGrowingArray } from "@aca/shared/hooks/useGrowingArray";
 import { isNotFalsy } from "@aca/shared/nullish";
 import { MINUTE } from "@aca/shared/time";
 import { IconWatch2 } from "@aca/ui/icons";
@@ -39,7 +40,13 @@ const DEFAULT_AVG_TIME_PER_NOTIFICATION = MINUTE * 1.5;
 export const FocusStats = observer(({ currentNotification, list }: Props) => {
   const focusModeStartedAt = useConst(() => new Date());
   const msSinceStarted = Math.max(1, Date.now() - focusModeStartedAt.getTime());
-  const allNotificationsWhenFocusStarted = useConst(() => list.getAllNotifications().all);
+  /**
+   * We never want to remove items from this list (eg. after you resolve some item and it is actually
+   * not part of given list anymore).
+   *
+   * We however want to include new items if they appear in the list
+   */
+  const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications().all);
 
   const groups = groupNotifications(allNotificationsWhenFocusStarted);
 

@@ -37,6 +37,10 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   throw error;
 }
 
+export function unsafeAssert(input: unknown): asserts input {
+  //
+}
+
 export function unsafeAssertType<T>(input: unknown): asserts input is T {
   //
 }
