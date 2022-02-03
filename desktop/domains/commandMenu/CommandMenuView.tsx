@@ -41,10 +41,6 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     return true;
   });
 
-  useEffect(() => {
-    session.actionContext.searchKeyword = "";
-  }, [session]);
-
   const actionsToShow = fuzzySearch(
     applicableActions,
     (action) => {
