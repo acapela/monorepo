@@ -1,5 +1,3 @@
-import React, { PropsWithChildren } from "react";
-import { ThemeProvider } from "styled-components";
 import { isPrimitive } from "utility-types";
 
 import { AccessAction, replayAccess } from "./accessRecorder";
@@ -133,11 +131,7 @@ export function buildStyledTheme<T extends object>(theme: T) {
     { accessPath: [] }
   );
 
-  function StyledThemeProvider({ theme, children }: PropsWithChildren<{ theme: T }>) {
-    return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
-  }
-
-  return [themeProxy, StyledThemeProvider] as const;
+  return themeProxy;
 }
 
 /**

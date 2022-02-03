@@ -1,6 +1,10 @@
+import React from "react";
+import { PropsWithChildren } from "react";
+import { ThemeProvider } from "styled-components";
+
 import { radius } from "./borderRadius";
 import { box } from "./box";
-import { colors } from "./colors";
+import { defaultColors, zenColors } from "./colors";
 import { common } from "./common";
 import { gradients } from "./gradients";
 import { shadow } from "./shadow";
@@ -15,7 +19,7 @@ export const defaultTheme = {
   font: font(),
   typo,
   spacing,
-  colors,
+  colors: defaultColors,
   transitions,
   shadow,
   radius,
@@ -25,4 +29,13 @@ export const defaultTheme = {
   common: common,
 };
 
-export const [theme, AppThemeProvider] = buildStyledTheme(defaultTheme);
+export const zenTheme: typeof defaultTheme = {
+  ...defaultTheme,
+  colors: zenColors,
+};
+
+export function AppThemeProvider<T extends object>({ theme, children }: PropsWithChildren<{ theme: T }>) {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+}
+
+export const theme = buildStyledTheme(zenTheme);

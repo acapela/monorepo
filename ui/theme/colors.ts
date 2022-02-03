@@ -37,7 +37,7 @@ const selectedTab = color("#f3f4f6");
 
 const inverted = color("#111827");
 
-export const colors = {
+export const defaultColors = {
   primary,
   secondary,
   text: black,
@@ -91,4 +91,9 @@ export const colors = {
   functional: {
     userAvatar: blue,
   },
+};
+
+export const zenColors: typeof defaultColors = {
+  ...defaultColors,
+  text: white,
 };
