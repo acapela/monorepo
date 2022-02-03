@@ -8,6 +8,7 @@ import { ActionContext, ActionContextCallback, ActionDataThunk, createActionCont
 import { ActionGroupData } from "./group";
 
 type ChildActionsResult = {
+  isContextual?: boolean;
   searchPlaceholder?: string;
   getActions: (context: ActionContext) => ActionData[];
 };

@@ -1,5 +1,5 @@
 import { parseDate } from "chrono-node";
-import { isSameDay, startOfDay } from "date-fns";
+import { isPast, isSameDay, startOfDay } from "date-fns";
 import { range as _range, sortBy, uniqBy, upperFirst } from "lodash";
 
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
@@ -99,8 +99,17 @@ export interface DateSuggestion {
   isExact?: boolean;
 }
 
-export function autosuggestDate(input: string): DateSuggestion[] {
-  const matchingSuggestions = fuzzySearch(suggestedDates, (i) => i, input, 0.01).slice(0, 5);
+interface AutosuggestDateOptions {
+  minScore?: number;
+  maxResults?: number;
+  allowPast?: boolean;
+}
+
+export function autosuggestDate(
+  input: string,
+  { minScore = 0.01, maxResults = 5, allowPast = false }: AutosuggestDateOptions = {}
+): DateSuggestion[] {
+  const matchingSuggestions = fuzzySearch(suggestedDates, (i) => i, input, minScore).slice(0, maxResults);
 
   const exactMatch = parseDate(input);
 
@@ -127,5 +136,8 @@ export function autosuggestDate(input: string): DateSuggestion[] {
 
   const dateUniqueResults = uniqBy(results, (result) => result.date.getTime());
 
-  return sortBy(dateUniqueResults, (result) => -result.date.getTime());
+  return sortBy(dateUniqueResults, (result) => -result.date.getTime()).filter((suggestion) => {
+    if (!allowPast && isPast(suggestion.date)) return false;
+    return true;
+  });
 }

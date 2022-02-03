@@ -10,37 +10,43 @@ import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { goToOrFocusNextItem } from "./views/common";
 
+function canApplySnooze(context: ActionContext) {
+  if (context.getTarget("notification")?.canSnooze === true) return true;
+  if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
+
+  return false;
+}
+
 export const snoozeNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => {
     if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Snooze all" : "Snooze all notifications in group...";
+      return ctx.isContextual ? "Snooze all" : "Snooze group...";
     }
+
     return ctx.isContextual ? "Snooze" : "Snooze notification...";
   },
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["delay", "time", "next", "tomorrow", "week", "in"],
-  canApply: (ctx) => {
-    if (ctx.getTarget("notification")?.canSnooze === true) return true;
-    if (ctx.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
-
-    return false;
-  },
+  keywords: ["delay", "time"],
+  canApply: canApplySnooze,
   icon: <IconClockZzz />,
   shortcut: ["Mod", "W"],
   handler() {
     return {
       searchPlaceholder: "In 3 days...",
+      isContextual: true,
       getActions: (context) => {
-        const dateSuggestions = getSnoozeSuggestions(context);
-
-        const snoozeActions = dateSuggestions.map(convertDateSuggestionToAction);
-
-        return snoozeActions;
+        return getSnoozeSuggestionActions(context);
       },
     };
   },
 });
+
+export function getSnoozeOptionsForSearch(context: ActionContext) {
+  if (!canApplySnooze(context)) return [];
+
+  return getSnoozeSuggestionActions(context);
+}
 
 export const unsnoozeNotification = defineAction({
   group: currentNotificationActionsGroup,
@@ -93,10 +99,18 @@ const defaultSuggestions: DateSuggestion[] = [
   },
 ];
 
-function getSnoozeSuggestions({ searchKeyword }: ActionContext): DateSuggestion[] {
+export function getSnoozeSuggestionActions(context: ActionContext) {
+  const dateSuggestions = getSnoozeSuggestions(context);
+
+  const snoozeActions = dateSuggestions.map(convertDateSuggestionToAction);
+
+  return snoozeActions;
+}
+
+function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
   if (!searchKeyword.trim()) return defaultSuggestions;
 
-  return autosuggestDate(searchKeyword).map((suggestion) => {
+  return autosuggestDate(searchKeyword, { maxResults: isContextual ? 5 : 2 }).map((suggestion) => {
     if (suggestion.isExact) return suggestion;
     return {
       ...suggestion,
@@ -107,8 +121,9 @@ function getSnoozeSuggestions({ searchKeyword }: ActionContext): DateSuggestion[
 
 function convertDateSuggestionToAction(suggestion: DateSuggestion) {
   return defineAction({
-    name: suggestion.text,
+    name: (ctx) => (ctx.isContextual ? suggestion.text : `Snooze until "${suggestion.text}"`),
     icon: <IconClockZzz />,
+    group: currentNotificationActionsGroup,
     supplementaryLabel: () => niceFormatDateTime(suggestion.date),
     handler(context) {
       const notification = context.getTarget("notification");

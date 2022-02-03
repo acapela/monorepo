@@ -21,6 +21,10 @@ export const currentNotificationActionsGroup = defineGroup({
 
     if (notification) return `Notification - ${getNotificationTitle(notification)}`;
 
+    const group = ctx.getTarget("group");
+
+    if (group) return `${group.integrationTitle} - ${group.name}`;
+
     return "Notification";
   },
 });
