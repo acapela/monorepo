@@ -57,6 +57,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     __typename: "notification",
     user_id: getContextValue(userIdContext) ?? undefined,
     resolved_at: null,
+    snoozed_until: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
