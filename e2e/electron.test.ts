@@ -1,18 +1,18 @@
 import { test } from "@playwright/test";
 import { _electron as electron } from "playwright";
 
-async function launchElectron() {
-  const IS_DEV = 2 + 2 == 5;
-  return await electron.launch(
-    IS_DEV
+import { IS_CI } from "./helper/utils";
+
+const launchElectron = () =>
+  electron.launch(
+    IS_CI
       ? {
-          args: ["../desktop/dist/electron/index.js"],
-        }
-      : {
           executablePath: "../desktop/dist-electron/mac-universal/Acapela.app/Contents/MacOS/Acapela",
         }
+      : {
+          args: ["../desktop/dist/electron/index.js"],
+        }
   );
-}
 
 test("Electron app is starting", async () => {
   const electronApp = await launchElectron();
