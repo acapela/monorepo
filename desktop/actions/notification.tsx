@@ -64,6 +64,7 @@ export const resolveNotification = defineAction({
 
     const listView = context.view(listPageView);
 
+    // In list mode: focus next notification
     if (listView) {
       const nextItem = listView.nextListItem;
       notification.resolve();
@@ -72,7 +73,11 @@ export const resolveNotification = defineAction({
     }
 
     const focusView = context.view(focusPageView);
-
+    /**
+     * In focus mode:
+     * - if there is next notification - open it
+     * - if no, go back to list
+     */
     if (focusView) {
       const nextNotification = focusView.nextNotification;
 

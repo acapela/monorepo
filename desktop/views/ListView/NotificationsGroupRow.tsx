@@ -153,8 +153,7 @@ const UINotifications = styled.div`
 `;
 
 const UICountIndicator = styled.div`
-  background-color: #f0cfa4;
-  color: #fff;
+  background-color: #f3f4f6;
   width: 24px;
   height: 24px;
   aspect-ratio: 1;
