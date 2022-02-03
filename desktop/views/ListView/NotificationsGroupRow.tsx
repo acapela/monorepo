@@ -154,7 +154,7 @@ const UINotifications = styled.div`
 `;
 
 const UICountIndicator = styled.div`
-  background-color: #f3f4f6;
+  ${theme.colors.panels.selectedTab.asBgWithReadableText};
   width: 24px;
   height: 24px;
   aspect-ratio: 1;

@@ -14,6 +14,7 @@ import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
 import { SlackActions } from "./SlackActions";
+import { ThemeSelector } from "./ThemeSelector";
 
 export const SettingsView = observer(function SettingsView() {
   return (
@@ -29,6 +30,8 @@ export const SettingsView = observer(function SettingsView() {
         <ActionButton action={connectFigma} />
 
         <SlackActions />
+
+        <ThemeSelector />
 
         <UIVersionInfo>v{window.electronBridge.env.version}</UIVersionInfo>
       </UIHolder>

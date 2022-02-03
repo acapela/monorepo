@@ -5,7 +5,7 @@ import { devAssignWindowVariable } from "@aca/shared/dev";
 import { base } from "./base";
 import { fontFacesStyles } from "./fontFaces";
 
-export const globalDesktopStyles = css`
+export const globalStyles = css`
   ${base}
   ${fontFacesStyles}
 
