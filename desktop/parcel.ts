@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 const ELECTRON_DIR = path.resolve(__dirname, "electron");
 const CLIENT_DIR = path.resolve(__dirname, "client");
 
+export type BuildEnvironment = "development" | "staging" | "production";
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
@@ -15,11 +17,11 @@ declare global {
       // It is possible to narrow down types of some env variables here.
       ELECTRON_CONTEXT: "client" | "electron";
       FRONTEND_URL: string;
+      STAGE: BuildEnvironment;
     }
   }
 }
 
-export type BuildEnvironment = "development" | "staging" | "production";
 function loadDotenv() {
   return new Map<BuildEnvironment, Object>(
     ["development", "staging", "production"].map(
@@ -41,6 +43,7 @@ function getEnv(env: BuildEnvironment, isClient = false) {
   return {
     ...loadedEnv.get(env),
     ELECTRON_CONTEXT: isClient ? "client" : "electron",
+    STAGE: env,
   } as NodeJS.ProcessEnv;
 }
 

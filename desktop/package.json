@@ -15,10 +15,13 @@
   "scripts": {
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
-    "build:electron": "electron-builder build --mac zip --universal --dir",
+    "build:electron": "electron-builder build --mac zip --universal",
     "build": "yarn build:bundle && yarn build:electron",
     "upload-sourcemaps": "ts-node ./scripts/upload-sourcemaps.ts",
-    "publish": "yarn build:bundle && yarn upload-sourcemaps && ts-node ./scripts/publish.ts && electron-builder build --mac zip --universal -p always"
+    "update-package": "ts-node ./scripts/update-package.ts",
+    "build:production": "yarn build:bundle production && yarn upload-sourcemaps update && yarn build && mv ./dist-electron ./dist-electron-production",
+    "build:staging": "yarn build:bundle && yarn upload-sourcemaps && yarn build && mv ./dist-electron ./dist-electron-staging",
+    "release": "yarn update-package && yarn build:staging && yarn build:production"
   },
   "source": ".",
   "devDependencies": {
@@ -52,15 +55,6 @@
     "files": [
       "!node_modules/**/*",
       "dist"
-    ],
-    "publish": [
-      {
-        "provider": "github",
-        "private": false,
-        "repo": "releases",
-        "owner": "weareacapela",
-        "releaseType": "release"
-      }
     ],
     "directories": {
       "output": "dist-electron"
