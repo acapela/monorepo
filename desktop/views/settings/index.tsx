@@ -33,7 +33,10 @@ export const SettingsView = observer(function SettingsView() {
 
         <ThemeSelector />
 
-        <UIVersionInfo>v{window.electronBridge.env.version}</UIVersionInfo>
+        <UIVersionInfo>
+          v{window.electronBridge.env.version}
+          {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
+        </UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
   );
