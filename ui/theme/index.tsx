@@ -4,7 +4,7 @@ import { ThemeProvider } from "styled-components";
 
 import { radius } from "./borderRadius";
 import { box } from "./box";
-import { defaultColors, zenColors } from "./colors";
+import { darkThemeColors, defaultColors } from "./colors";
 import { common } from "./common";
 import { gradients } from "./gradients";
 import { shadow } from "./shadow";
@@ -29,9 +29,9 @@ export const defaultTheme = {
   common: common,
 } as const;
 
-export const zenTheme: typeof defaultTheme = {
+export const darkTheme: typeof defaultTheme = {
   ...defaultTheme,
-  colors: zenColors,
+  colors: darkThemeColors,
 };
 
 export function AppThemeProvider<T extends object>({ theme, children }: PropsWithChildren<{ theme: T }>) {
