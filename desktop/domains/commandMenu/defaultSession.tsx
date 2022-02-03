@@ -1,7 +1,7 @@
 import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
-import { defineAction, runActionWithTarget } from "@aca/desktop/actions/action";
+import { defineAction } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { allActions } from "@aca/desktop/actions/all";
 import { searchListActionsGroup, searchNotificationsGroup } from "@aca/desktop/actions/groups";
@@ -13,7 +13,8 @@ import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/sear
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { IconFolder } from "@aca/ui/icons";
 
-import { CommandMenuSession } from "./session";
+import { runActionWithTarget } from "../runAction";
+import { CommandMenuSession, createCommandMenuSession } from "./session";
 
 const getSearchActions = cachedComputed(function getSearchActions(keyword: string) {
   const notifications = notificationsFuzzySearch(keyword);
@@ -48,11 +49,11 @@ const getSearchActions = cachedComputed(function getSearchActions(keyword: strin
 export function createDefaultCommandMenuSession(): CommandMenuSession {
   const actionContext = createActionContext();
 
-  return {
+  return createCommandMenuSession({
     actionContext,
-    getActions({ keyword }) {
-      if (!keyword.length) return allActions;
-      return [...getSearchActions(keyword), ...allActions];
+    getActions({ searchKeyword }) {
+      if (!searchKeyword.length) return allActions;
+      return [...getSearchActions(searchKeyword), ...allActions];
     },
-  };
+  });
 }

@@ -5,6 +5,7 @@ export interface NotificationGroupTarget {
   id: string;
   name: string;
   integration: IntegrationType;
+  integrationTitle: string;
 }
 
 export function getNotificationGroupTarget(notification: NotificationEntity): NotificationGroupTarget | null {
@@ -13,7 +14,12 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
   if (!targetNotification) return null;
 
   if (targetNotification.__typename === "notification_figma_comment") {
-    return { id: targetNotification.file_id, name: targetNotification.file_name, integration: "figma" };
+    return {
+      id: targetNotification.file_id,
+      name: targetNotification.file_name,
+      integration: "figma",
+      integrationTitle: "Figma",
+    };
   }
 
   if (targetNotification.__typename === "notification_notion") {
@@ -21,6 +27,7 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
       id: targetNotification.page_id,
       name: targetNotification.page_title,
       integration: "notion",
+      integrationTitle: "Notion",
     };
   }
 
@@ -29,6 +36,7 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
       id: targetNotification.slack_conversation_id,
       name: targetNotification.conversation_name,
       integration: "slack",
+      integrationTitle: "Slack",
     };
   }
 

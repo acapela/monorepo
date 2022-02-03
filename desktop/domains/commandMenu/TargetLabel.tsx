@@ -23,6 +23,10 @@ export const CommandMenuTargetLabel = styledObserver(function CommandMenuView({ 
 
     if (notification) return `Notification - ${getNotificationTitle(notification)}`;
 
+    const group = actionContext.getTarget("group");
+
+    if (group) return `${group.integrationTitle} - ${group.name}`;
+
     return null;
   }
 

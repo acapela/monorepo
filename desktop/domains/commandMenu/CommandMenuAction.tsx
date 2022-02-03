@@ -5,7 +5,8 @@ import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
-import { IconArrowRight } from "@aca/ui/icons";
+import { makeElementVisible } from "@aca/shared/interactionUtils";
+import { IconArrowRight, IconChevronRight } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 import { theme } from "@aca/ui/theme";
 
@@ -27,7 +28,7 @@ export const CommandMenuAction = observer(function CommandMenuAction({
   onApplyRequest,
 }: Props) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const { name, shortcut, icon } = resolveActionData(action, session.actionContext);
+  const { name, shortcut, icon, supplementaryLabel } = resolveActionData(action, session.actionContext);
 
   useUserFocusedOnElement(elementRef, () => {
     onSelectRequest();
@@ -35,12 +36,20 @@ export const CommandMenuAction = observer(function CommandMenuAction({
 
   useEffect(() => {
     if (!isActive) return;
-    elementRef.current?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
+    makeElementVisible(elementRef.current);
   }, [isActive]);
   return (
     <UIHolder $isActive={isActive} ref={elementRef} onClick={onApplyRequest}>
       <UIIcon>{icon ?? <IconArrowRight />}</UIIcon>
-      <UIName>{name}</UIName>
+      <UIName>
+        {name}{" "}
+        {supplementaryLabel && (
+          <UIInfo>
+            <IconChevronRight /> {supplementaryLabel}
+          </UIInfo>
+        )}
+      </UIName>
+
       {shortcut && <UIShortcut shortcut={shortcut} />}
     </UIHolder>
   );
@@ -70,6 +79,8 @@ const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
 
 const UIName = styled.div`
   flex-grow: 1;
+  display: flex;
+  align-items: center;
   ${theme.common.ellipsisText}
 `;
 
@@ -83,4 +94,10 @@ const UIShortcut = styled(ShortcutDescriptor)`
     ${theme.radius.badge};
     min-width: 2.5ch;
   }
+`;
+
+const UIInfo = styled.span`
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.5;
 `;

@@ -4,7 +4,7 @@ import { makeAutoObservable } from "mobx";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { assert } from "@aca/shared/assert";
-import { autorunEffect } from "@aca/shared/mobxUtils";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { watchUserTeamId } from "./currentTeam";
 

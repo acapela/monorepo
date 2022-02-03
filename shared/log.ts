@@ -25,7 +25,7 @@ export function createLogger(key: string, configInpuf: LoggerConfigInput = true)
   }
 
   function log(...args: unknown[]) {
-    // if (!config.isEnabled) return;
+    if (!config.isEnabled) return;
     console.info(...getLogArguments(...args));
   }
 

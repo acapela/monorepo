@@ -3,10 +3,11 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 
-import { ActionData, runAction } from "@aca/desktop/actions/action";
+import { ActionData } from "@aca/desktop/actions/action";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
+import { runAction } from "../runAction";
 import { CommandMenuView } from "./CommandMenuView";
 import { createDefaultCommandMenuSession } from "./defaultSession";
 import { commandMenuStore } from "./store";
@@ -33,11 +34,11 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
     { isEnabled: !!currentSession }
   );
 
-  async function handleActionSelected(action: ActionData) {
+  const handleActionSelected = action(function handleActionSelected(action: ActionData) {
     if (!currentSession) return;
     commandMenuStore.session = null;
     runAction(action, currentSession.actionContext);
-  }
+  });
 
   return (
     <AnimatePresence>

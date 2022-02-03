@@ -1,10 +1,11 @@
 import React from "react";
 
-import { ActionData, resolveActionData, runAction } from "@aca/desktop/actions/action";
+import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { styledObserver } from "@aca/shared/component";
 import { Button, ButtonStyleProps } from "@aca/ui/buttons/Button";
 
+import { runAction } from "../domains/runAction";
 import { SharedActionButtonProps } from "./actionShared";
 
 interface Props extends ButtonStyleProps, SharedActionButtonProps {

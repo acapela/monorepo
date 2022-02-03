@@ -2,9 +2,10 @@ import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/fin
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
-import { inboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
+import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/preconfigured";
 import { getIsRouteActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
 import { createActionView } from "../action/view";
@@ -16,7 +17,7 @@ export const listPageView = createActionView((context) => {
   const list = context.assertTarget("list", true);
   const notification = context.getTarget("notification");
 
-  return {
+  const view = {
     list,
     get focusedGroup() {
       if (group) return group;
@@ -31,10 +32,10 @@ export const listPageView = createActionView((context) => {
       return notification;
     },
     get nextList() {
-      return getNextItemInArray(inboxLists, list, { loop: true });
+      return getNextNotificationsList(list);
     },
     get prevList() {
-      return getPreviousItemInArray(inboxLists, list, { loop: true });
+      return getPreviousNotificationsList(list);
     },
     get nextListItem() {
       return getNextVisibleItemInList(list, notification ?? group ?? undefined);
@@ -42,10 +43,15 @@ export const listPageView = createActionView((context) => {
     get prevListItem() {
       return getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
     },
+    focusNextItem() {
+      uiStore.focusedTarget = view.nextListItem;
+    },
   };
+
+  return view;
 });
 
-function getVisibleGroupedElementsInList(list: DefinedList): NotificationOrGroup[] {
+function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
   const groupedList = groupNotifications(list.getAllNotifications().all);
 
   const result: NotificationOrGroup[] = [];
@@ -63,7 +69,7 @@ function getVisibleGroupedElementsInList(list: DefinedList): NotificationOrGroup
   return result;
 }
 
-function getNextVisibleItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
+function getNextVisibleItemInList(list: NotificationsList, currentItem?: NotificationOrGroup) {
   const visibleElements = getVisibleGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[0];
@@ -73,7 +79,7 @@ function getNextVisibleItemInList(list: DefinedList, currentItem?: NotificationO
   });
 }
 
-function getPreviousVisibleItemInList(list: DefinedList, currentItem?: NotificationOrGroup) {
+function getPreviousVisibleItemInList(list: NotificationsList, currentItem?: NotificationOrGroup) {
   const visibleElements = getVisibleGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[visibleElements.length - 1];

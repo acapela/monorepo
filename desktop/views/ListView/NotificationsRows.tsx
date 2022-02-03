@@ -3,12 +3,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { NotificationRow } from "./NotificationRow";
 
 interface Props {
-  list: DefinedList;
+  list: NotificationsList;
   notifications: NotificationEntity[];
 }
 

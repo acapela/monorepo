@@ -1,4 +1,3 @@
-import { runInAction } from "mobx";
 import { ReactNode } from "react";
 
 import { MaybeCleanup } from "@aca/shared/types";
@@ -8,10 +7,17 @@ import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { ActionContext, ActionContextCallback, ActionDataThunk, createActionContext } from "./context";
 import { ActionGroupData } from "./group";
 
+type ChildActionsResult = {
+  searchPlaceholder?: string;
+  getActions: (context: ActionContext) => ActionData[];
+};
+
+export type ActionResult = ChildActionsResult;
 export interface ActionCreateInput {
   id?: string;
   analyticsName?: string;
   name: ActionDataThunk<string>;
+  supplementaryLabel?: ActionDataThunk<string | undefined | null>;
   private?: boolean;
   group?: ActionGroupData;
   keywords?: string[];
@@ -20,7 +26,7 @@ export interface ActionCreateInput {
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
-  handler: ActionContextCallback<void>;
+  handler: ActionContextCallback<void | ActionResult>;
 }
 
 export interface ActionData extends ActionCreateInput {
@@ -37,6 +43,7 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
     ...action,
     name: resolveActionDataThunk(action.name, context),
     icon: resolveActionDataThunk(action.icon, context),
+    supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
   };
 }
 
@@ -76,32 +83,6 @@ export function getIsAction(input: unknown): input is ActionData {
   const typedInput = input as ActionData;
 
   return typedInput.isAction && typedInput.isAction === actionSymbol;
-}
-
-export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
-  if (!action.canApply(context)) {
-    return;
-  }
-
-  try {
-    // Let's always run actions as mobx-actions so mobx will not complain
-    runInAction(() => {
-      action.handler(context);
-    });
-  } catch (error) {
-    /**
-     * In case action throws an error, provide every detail we have.
-     *
-     * It might be very handy as actions are running outside of 'react' and errors can be caused by react
-     * eg. 'toggle sidebar' > sidebar renders > sidebar component throws > as a result the very action handler throws as render happens in sync way after the action
-     */
-    console.error(`Error occured when running action. Logging action, context and error below`, action, context);
-    console.error(error);
-  }
-}
-
-export function runActionWithTarget(action: ActionData, target: unknown) {
-  return runAction(action, createActionContext(target));
 }
 
 /**

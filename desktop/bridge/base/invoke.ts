@@ -19,7 +19,7 @@ import { createLogger } from "@aca/shared/log";
  * Each invoke bridge needs to have handler added somewhere in electron to be able to be invoked.
  */
 export function createInvokeBridge<Input = void, Result = void>(key: string) {
-  const log = createLogger(`${key}`);
+  const log = createLogger(`${key}`, false);
   async function invoke(input: Input): Promise<Result> {
     log("invoke", input);
     if (process.env.ELECTRON_CONTEXT !== "client") {

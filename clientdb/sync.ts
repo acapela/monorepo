@@ -5,7 +5,7 @@ import { max, pick, upperFirst } from "lodash";
 
 import { PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
-import { runUntracked } from "@aca/shared/mobxUtils";
+import { runUntracked } from "@aca/shared/mobx/utils";
 
 import { Entity, EntitySyncConfig } from "./entity";
 import { analyzeFragment } from "./utils/analyzeFragment";
