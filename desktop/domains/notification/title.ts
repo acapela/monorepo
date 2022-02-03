@@ -33,7 +33,10 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
       return `New ${innerNotification.is_mention ? "mention" : "comment"} in ${innerNotification?.file_name}`;
     }
     case "notification_linear": {
-      return `${notification.from} commented in ${innerNotification?.issue_title}`;
+      if (innerNotification.type === "Comment") {
+        return `${notification.from} commented in ${innerNotification?.issue_title}`;
+      }
+      return `${notification.from} created the issue ${innerNotification?.issue_title}`;
     }
     default:
       return "Unhandled notification!!";
