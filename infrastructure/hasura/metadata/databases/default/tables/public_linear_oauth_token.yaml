@@ -1,3 +1,7 @@
 table:
   name: linear_oauth_token
   schema: public
+object_relationships:
+- name: user
+  using:
+    foreign_key_constraint_on: user_id

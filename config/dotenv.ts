@@ -53,6 +53,7 @@ const requiredEnvVarNamesBackend = [
   "FRONTEND_URL",
   "LINEAR_CLIENT_ID",
   "LINEAR_CLIENT_SECRET",
+  "LINEAR_OAUTH_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = [
