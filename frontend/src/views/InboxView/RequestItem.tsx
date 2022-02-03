@@ -59,9 +59,7 @@ export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
             {unreadMessagesCount > 0 && (
               <UICenteredExtras>
                 <IconMessage style={{ position: "relative", top: 1 }} />
-                <span>
-                  {unreadMessagesCount} new {pluralize(unreadMessagesCount, "reply", "replies")}
-                </span>
+                <span>{pluralize`${unreadMessagesCount} new ${["reply"]}`}</span>
               </UICenteredExtras>
             )}
             {nextTask?.dueDate && (
@@ -77,9 +75,7 @@ export const RequestItem = observer(({ topic }: { topic: TopicEntity }) => {
             {extraMembers.length > 0 && (
               <UIMemberInfo>
                 <AvatarList users={extraMembers} maxVisibleCount={6} size={20} />
-                <div>
-                  {extraMembers.length} other {pluralize(extraMembers.length, "participant", "participants")}
-                </div>
+                <div>{pluralize`${extraMembers.length} other ${["participant"]}`}</div>
               </UIMemberInfo>
             )}
           </UIExtraInfo>

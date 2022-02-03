@@ -2,6 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import {
   getAllInboxListsById,
   inboxLists,
@@ -14,6 +16,7 @@ import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySid
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
+import { NotificationsGroupRow } from "./NotificationsGroupRow";
 
 interface Props {
   listId: string;
@@ -23,6 +26,10 @@ export const ListView = observer(({ listId }: Props) => {
   const displayedList = getAllInboxListsById(listId);
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
+
+  const allNotifications = displayedList?.getAllNotifications().all;
+
+  const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
@@ -36,8 +43,20 @@ export const ListView = observer(({ listId }: Props) => {
             return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
-            {displayedList.getAllNotifications().all.map((notification) => {
-              return <NotificationRow list={displayedList} key={notification.id} notification={notification} />;
+            {notificationGroups?.map((notificationOrGroup) => {
+              if (getIsNotificationsGroup(notificationOrGroup)) {
+                return (
+                  <NotificationsGroupRow
+                    list={displayedList}
+                    key={notificationOrGroup.id}
+                    group={notificationOrGroup}
+                  />
+                );
+              }
+
+              return (
+                <NotificationRow list={displayedList} key={notificationOrGroup.id} notification={notificationOrGroup} />
+              );
             })}
           </UINotifications>
         </>

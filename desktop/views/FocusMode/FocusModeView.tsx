@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { openNotificationInApp } from "@aca/desktop/actions/focus";
+import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
 import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";

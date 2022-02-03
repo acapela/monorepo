@@ -3,8 +3,8 @@ import { omit } from "lodash";
 import fetch from "node-fetch";
 
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { figmaURL } from "@aca/desktop/electron/auth/figma";
 
-import { figmaURL } from "../../auth/figma";
 import { getFigmaSessionData } from "./worker";
 
 export async function initializeFigmaPush() {

@@ -4,10 +4,9 @@ import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext } from "@aca/desktop/actions/action/context";
+import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 import { theme } from "@aca/ui/theme";
-
-import { ActionTrigger } from "../ActionTrigger";
 
 interface Props {
   action: ActionData;

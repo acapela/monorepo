@@ -65,7 +65,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity }) => {
+  .addConnections((notification, { getEntity, updateSelf }) => {
     const connections = {
       get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
         return (
@@ -78,6 +78,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       },
       get kind() {
         return connections.inner?.__typename ?? null;
+      },
+      get isResolved() {
+        return !!notification.resolved_at;
+      },
+      resolve() {
+        updateSelf({ resolved_at: new Date().toISOString() });
       },
     };
 

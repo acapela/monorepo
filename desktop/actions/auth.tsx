@@ -10,9 +10,9 @@ import {
   loginNotionBridge,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { clearAllDataRequest } from "@aca/desktop/bridge/system";
 import { IconAtom, IconLogIn, IconLogOut } from "@aca/ui/icons";
 
-import { clearAllDataRequest } from "../bridge/system";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

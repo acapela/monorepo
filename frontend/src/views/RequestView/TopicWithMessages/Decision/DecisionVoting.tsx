@@ -77,14 +77,8 @@ export const DecisionVoting = observer(function DecisionVoting({ message }: Prop
               <div>
                 <UIOptionText>{option.option}</UIOptionText>
                 <UIOptionVotes>
-                  {isUserChoice
-                    ? "You" +
-                      (votes.length < 2
-                        ? ""
-                        : ` and ${votes.length - 1} ${pluralize(votes.length - 1, "other", "others")} voted`)
-                    : votes.length == 0
-                    ? "No vote yet"
-                    : votes.length + " votes"}
+                  {isUserChoice && pluralize`You and ${votes.length - 1} ${["other"]} voted`}
+                  {!isUserChoice && <>{votes.length == 0 ? "No vote yet" : pluralize`${votes.length} ${["vote"]}`}</>}
                 </UIOptionVotes>
               </div>
               <UIAvatarList users={votes.map((vote) => vote.user).filter(isNotNullish)} maxVisibleCount={6} />

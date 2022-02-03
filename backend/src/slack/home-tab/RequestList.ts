@@ -77,15 +77,9 @@ export async function RequestsList({
     ...topicBlocks,
     extraTopicsCount > 0 &&
       Blocks.Context().elements(
-        `There ${pluralize(
-          extraTopicsCount,
-          `is ${extraCountLabel} other topic`,
-          `are ${extraCountLabel} more topics`
-        )} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${pluralize(
-          extraTopicsCount,
-          "it",
-          "them"
-        )}.`
+        pluralize`There ${["is"]} ${extraCountLabel} ${["other", "more"]} ${[
+          "topic",
+        ]} in this category. ${createSlackLink(process.env.FRONTEND_URL, "Open the web app")} to see ${["it", "them"]}`
       ),
     Padding,
     Padding,

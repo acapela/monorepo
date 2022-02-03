@@ -7,6 +7,7 @@ import * as devActions from "./dev";
 import * as focusActions from "./focus";
 import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
+import * as notificationActions from "./notification";
 
 /**
  * Convert all '* as' imports into list of actions
@@ -17,7 +18,8 @@ export const allActions = composeActionsFromImports(
   navigationActions,
   devActions,
   focusActions,
-  appActions
+  appActions,
+  notificationActions
 );
 
 /**

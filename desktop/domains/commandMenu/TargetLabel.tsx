@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
-import { getNotificationTitle } from "../notification/title";
 import { CommandMenuSession } from "./session";
 
 interface Props {

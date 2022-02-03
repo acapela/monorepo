@@ -57,11 +57,9 @@ export function createRequestIsDue({
   topicURL: string;
   openTasks: number;
 }): Partial<NotificationMessage> {
-  const message = `The request you sent (${topicName}) still has ${openTasks} outstanding ${pluralize(
-    openTasks,
+  const message = pluralize`The request you sent (${topicName}) still has ${openTasks} outstanding ${[
     "task",
-    "tasks"
-  )} left. Bummer 😭. Don't worry though, we've let your team know they're overdue 🤓. If you want to extend the deadline or follow-up with them personally, click`;
+  ]}} left. Bummer 😭. Don't worry though, we've let your team know they're overdue 🤓. If you want to extend the deadline or follow-up with them personally, click`;
   const messageSlack = `${message} ${createSlackLink(topicURL, "here")}.`;
   const messageHtml = `${message} <a href="${topicURL}">here</a>.`;
   return {
