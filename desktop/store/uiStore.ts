@@ -39,6 +39,17 @@ export const uiStore = makeAutoObservable({
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },
+  useFocus<T>(item: T, keyGetter?: (item: T | null) => string | undefined) {
+    function getIsFocused() {
+      if (!keyGetter) return item === uiStore.focusedTarget;
+
+      return keyGetter(item) === keyGetter(uiStore.focusedTarget as T | null);
+    }
+
+    const isFocused = getIsFocused();
+
+    return isFocused;
+  },
   get isFullscreen() {
     return isFullscreenValue.get();
   },
@@ -64,6 +75,7 @@ export const uiStore = makeAutoObservable({
  */
 desktopRouter.subscribe(() => {
   uiStore.isSidebarOpened = false;
+  uiStore.focusedTarget = null;
 });
 
 autorun(() => {

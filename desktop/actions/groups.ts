@@ -6,6 +6,7 @@ import { accountActionsGroup } from "./auth";
 import { devActionsGroup } from "./dev";
 import { currentListActionsGroup } from "./lists";
 import { navigationActionsGroup } from "./navigation";
+import { settingsActionsGroup } from "./settings";
 
 export const searchNotificationsGroup = defineGroup({
   name: "Search - Notifications",
@@ -35,6 +36,8 @@ export const groupsPriority = [
 
   searchListActionsGroup,
   searchNotificationsGroup,
+
+  settingsActionsGroup,
 
   navigationActionsGroup,
   appActionsGroup,

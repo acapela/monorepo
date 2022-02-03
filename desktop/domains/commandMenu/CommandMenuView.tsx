@@ -11,6 +11,7 @@ import {
   getPreviousItemInArray,
 } from "@aca/shared/array";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { isNotNullish } from "@aca/shared/nullish";
 import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
@@ -45,12 +46,12 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     applicableActions,
     (action) => {
       const { name, keywords = [] } = resolveActionData(action);
-      return [name, ...keywords];
+      return [name, ...keywords].filter(isNotNullish);
     },
     actionContext.searchKeyword
   );
 
-  const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow);
+  const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow, actionContext);
 
   useEffect(() => {
     if (!activeAction) return;

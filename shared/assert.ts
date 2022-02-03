@@ -53,3 +53,11 @@ export async function assertGetAsync<T>(promise: Promise<T | Nullish>, messageOr
     throw error;
   }
 }
+
+export function getGuarded<T>(callback: () => T, fallback: T): T {
+  try {
+    return callback();
+  } catch (error) {
+    return fallback;
+  }
+}

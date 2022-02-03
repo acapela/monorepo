@@ -7,6 +7,7 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+import { getGuarded } from "@aca/shared/assert";
 import { theme } from "@aca/ui/theme";
 
 export function checkType<T>(input: unknown, checker: (input: T | null) => boolean): input is T {
@@ -14,7 +15,7 @@ export function checkType<T>(input: unknown, checker: (input: T | null) => boole
 }
 
 export const DebugFocusView = observer(() => {
-  const targets = getImplicitTargets();
+  const targets = getGuarded(() => getImplicitTargets(), []);
   return (
     <UIHolder>
       {targets.map((target, index) => {

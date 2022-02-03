@@ -18,20 +18,28 @@ type NoInfer<T> = [T][T extends any ? 0 : never];
  */
 export function createMobxPersistedStore<T extends object, AdditionalKeys extends PropertyKey = never>(
   key: string,
-  initial: T,
+  defaultValue: T,
   overrides?: AnnotationsMap<T, NoInfer<AdditionalKeys>>,
   options?: CreateObservableOptions
 ): T {
   if (IS_DEV) {
-    if (!isEqual(initial, JSON.parse(JSON.stringify(initial)))) {
+    if (!isEqual(defaultValue, JSON.parse(JSON.stringify(defaultValue)))) {
       console.warn(`createMobxPersistedStore - target not JSON serializable`);
     }
   }
   const fullKey = `mobx-store-${key}`;
   const initialJSON = localStorage.getItem(fullKey);
 
-  const finalValue = initialJSON ? (JSON.parse(initialJSON) as T) : initial;
-  const store = makeAutoObservable(finalValue, overrides, options);
+  const defaultOrPersisted = initialJSON ? (JSON.parse(initialJSON) as T) : defaultValue;
+  const store = makeAutoObservable(
+    {
+      // We need to do that in case new keys are added after value is persisted
+      ...defaultValue,
+      ...defaultOrPersisted,
+    },
+    overrides,
+    options
+  );
 
   autorun(() => {
     localStorage.setItem(fullKey, JSON.stringify(store));

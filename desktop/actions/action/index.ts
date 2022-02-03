@@ -20,8 +20,8 @@ export interface ActionCreateInput {
   name: ActionDataThunk<string>;
   supplementaryLabel?: ActionDataThunk<string | undefined | null>;
   private?: boolean;
-  group?: ActionGroupData;
-  keywords?: string[];
+  group?: ActionDataThunk<ActionGroupData>;
+  keywords?: ActionDataThunk<string[]>;
   shortcut?: ShortcutDefinition;
   onMightBeSelected?: ActionContextCallback<MaybeCleanup>;
   icon?: ActionDataThunk<ReactNode>;
@@ -44,6 +44,8 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
     ...action,
     name: resolveActionDataThunk(action.name, context),
     icon: resolveActionDataThunk(action.icon, context),
+    keywords: resolveActionDataThunk(action.keywords, context),
+    group: resolveActionDataThunk(action.group, context),
     supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
   };
 }
@@ -59,23 +61,39 @@ export function resolveActionDataWithTarget(action: ActionData, target?: unknown
 const actionSymbol = Symbol("action");
 
 export function defineAction(input: ActionCreateInput): ActionData {
-  return {
+  function resolvedRawKeywords(context: ActionContext) {
+    if (!input.keywords) return [];
+    if (Array.isArray(input.keywords)) {
+      return input.keywords;
+    }
+
+    return input.keywords(context);
+  }
+  const action: ActionData = {
     id: getUUID(),
     isAction: actionSymbol,
     canApply: () => true,
-    get keywords() {
-      const keywords = input.keywords ?? [];
+    keywords(context) {
+      const keywords = resolvedRawKeywords(context);
 
-      const groupName = input.group?.name;
+      const group = resolveActionDataThunk(input.group, context);
 
-      if (groupName && typeof groupName === "string") {
-        keywords.push(groupName);
+      if (group) {
+        keywords.push(resolveActionDataThunk(group.name, context));
       }
 
-      if (keywords.length) return keywords;
+      const supplementaryLabel = resolveActionDataThunk(input.supplementaryLabel, context);
+
+      if (supplementaryLabel) {
+        keywords.push(supplementaryLabel);
+      }
+
+      return keywords;
     },
     ...input,
   };
+
+  return action;
 }
 
 export function getIsAction(input: unknown): input is ActionData {
@@ -90,7 +108,7 @@ export function getIsAction(input: unknown): input is ActionData {
  * Some params of action can be either value of function of context => value. This is helper
  * that resolves this thunk into an actual value.
  */
-function resolveActionDataThunk<T>(thunk: ActionDataThunk<T>, context: ActionContext): T {
+export function resolveActionDataThunk<T>(thunk: ActionDataThunk<T>, context: ActionContext): T {
   if (typeof thunk === "function") {
     return (thunk as ActionContextCallback<T>)(context);
   }

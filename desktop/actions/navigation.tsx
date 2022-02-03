@@ -6,9 +6,9 @@ import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import {
   IconArrowLeft,
-  IconCheck,
   IconClockZzz,
   IconCross,
+  IconFolderCheck,
   IconHome,
   IconMenu,
   IconMonitor,
@@ -22,6 +22,7 @@ export const navigationActionsGroup = defineGroup({ name: "Navigation" });
 
 export const goToMainScreen = defineAction({
   name: "Go to main screen",
+  supplementaryLabel: "Inbox",
   group: navigationActionsGroup,
   keywords: ["home", "return", "back"],
   shortcut: ["Mod", "Shift", "H"],
@@ -78,7 +79,7 @@ export const goToSettings = defineAction({
 export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
-  icon: <IconCheck />,
+  icon: <IconFolderCheck />,
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
