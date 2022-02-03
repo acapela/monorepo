@@ -69,19 +69,31 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
       upsertConstraint: "notification_notion_pkey",
     }
   ),
-}).addConnections((notificationNotion, { getEntity }) => ({
-  get inner(): EntityByDefinition<typeof innerEntities[number]> {
-    return (
-      innerEntities
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .map((entity) => getEntity(entity as any).query({ notification_notion_id: notificationNotion.id }).first)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .find(Boolean) as any
-    );
-  },
-  get type() {
-    return this.inner.__typename;
-  },
-}));
+})
+  .addConnections((notificationNotion, { getEntity }) => {
+    const connections = {
+      get inner(): EntityByDefinition<typeof innerEntities[number]> {
+        return (
+          innerEntities
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .map((entity) => getEntity(entity as any).query({ notification_notion_id: notificationNotion.id }).first)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .find(Boolean) as any
+        );
+      },
+      get type() {
+        return connections.inner.__typename;
+      },
+    };
+
+    return connections;
+  })
+  .addAccessValidation((entity) => {
+    if (!entity.inner) {
+      console.warn(`No inner for entity`, entity);
+    }
+
+    return !!entity.inner;
+  });
 
 export type NotificationNotionEntity = EntityByDefinition<typeof notificationNotionEntity>;

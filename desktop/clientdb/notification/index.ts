@@ -129,6 +129,13 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       console.info(`[Push Resolve] Notification ${notification.id} of type ${notificationInnerData.__typename}`);
       notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
     },
+  })
+  .addAccessValidation((notification) => {
+    if (!notification.inner) {
+      console.warn(`No inner for entity`, notification);
+    }
+
+    return !!notification.inner;
   });
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;

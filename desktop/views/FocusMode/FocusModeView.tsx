@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { focusOnNotificationPreview } from "@aca/desktop/actions/focus";
 import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/preconfigured";
@@ -37,6 +38,8 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
       <UIHeader>
         <NotificationAppIcon notification={notification} />
         <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <ActionIconButton action={focusOnNotificationPreview} target={notification} showTitleInTooltip />
+
         <ActionIconButton action={openNotificationInApp} target={notification} showTitleInTooltip />
       </UIHeader>
       {uiSettings.showFocusModeStats && (
@@ -52,6 +55,7 @@ const UITitle = styled.div`
   ${theme.typo.secondaryTitle.semibold};
   ${theme.common.ellipsisText}
   min-width: 0;
+  flex-grow: 1;
 `;
 
 const UIHeader = styled.div`
