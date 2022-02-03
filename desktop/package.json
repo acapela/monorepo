@@ -18,10 +18,10 @@
     "build:electron": "electron-builder build --mac zip --universal",
     "build": "yarn build:bundle && yarn build:electron",
     "upload-sourcemaps": "ts-node ./scripts/upload-sourcemaps.ts",
-    "update-package": "ts-node ./scripts/update-package.ts",
-    "build:production": "yarn build:bundle production && yarn upload-sourcemaps update && yarn build && mv ./dist-electron ./dist-electron-production",
-    "build:staging": "yarn build:bundle && yarn upload-sourcemaps && yarn build && mv ./dist-electron ./dist-electron-staging",
-    "release": "yarn update-package && yarn build:staging && yarn build:production"
+    "build:release": "ts-node ./scripts/update-package.ts && electron-builder build --mac zip --universal && ts-node ./scripts/update-package.ts reset",
+    "build:production": "yarn build:bundle production && yarn upload-sourcemaps update && yarn build:release && mv ./dist-electron ./dist-electron-production",
+    "build:staging": "yarn build:bundle && yarn upload-sourcemaps && yarn build:release && mv ./dist-electron ./dist-electron-staging",
+    "release": "rm -rf dist-electron* && yarn build:staging && yarn build:production"
   },
   "source": ".",
   "devDependencies": {
