@@ -63,29 +63,32 @@ export const unsnoozeNotification = defineAction({
   },
 });
 
+const DEFAULT_WORK_START_HOUR = 9;
+const DEFAULT_WORK_END_HOUR = 17;
+
 const defaultSuggestions: DateSuggestion[] = [
   {
     text: "End of day",
     get date() {
-      return setHours(new Date(), 17);
+      return setHours(new Date(), DEFAULT_WORK_END_HOUR);
     },
   },
   {
     text: "Tomorrow",
     get date() {
-      return setHours(startOfTomorrow(), 9);
+      return setHours(startOfTomorrow(), DEFAULT_WORK_START_HOUR);
     },
   },
   {
     text: "End of week",
     get date() {
-      return setHours(setDay(new Date(), 5), 9);
+      return setHours(setDay(new Date(), 5), DEFAULT_WORK_START_HOUR);
     },
   },
   {
     text: "Next week",
     get date() {
-      return setHours(nextMonday(new Date()), 9);
+      return setHours(nextMonday(new Date()), DEFAULT_WORK_START_HOUR);
     },
   },
 ];
@@ -97,7 +100,7 @@ function getSnoozeSuggestions({ searchKeyword }: ActionContext): DateSuggestion[
     if (suggestion.isExact) return suggestion;
     return {
       ...suggestion,
-      date: setHours(suggestion.date, 9),
+      date: setHours(suggestion.date, DEFAULT_WORK_START_HOUR),
     };
   });
 }
