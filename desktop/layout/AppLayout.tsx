@@ -75,7 +75,7 @@ const AppLayoutHolder = styled.div<{}>`
     background-repeat: no-repeat;
     background-size: cover;
     background-image: url(${zenImage as unknown as string});
-    box-shadow: inset 0 0 80px 80px ${theme.colors.layout.background.opacity(0.7).value};
+    box-shadow: inset 0 0 80px 80px ${theme.colors.layout.background.opacity(0.8).value};
   }
 
   @keyframes fadeInFromNone {
