@@ -2,6 +2,9 @@ import React from "react";
 
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
+import { getDb } from "@aca/desktop/clientdb";
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
@@ -71,7 +74,17 @@ export const resolveNotification = defineAction({
   },
   handler(context) {
     const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
+    let group = context.getTarget("group");
+
+    if (!group && notification) {
+      // If the given notification is part of a group which can be previewed through a single notification, we treat
+      // marking one of them as done as marking the whole group as done
+      group =
+        groupNotifications(getDb().notification.query({ isResolved: false }).all)
+          .filter(getIsNotificationsGroup)
+          .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
+        null;
+    }
 
     goToOrFocusNextItem(context);
 

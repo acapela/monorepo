@@ -141,7 +141,8 @@ export const toggleNotificationsGroup = defineAction({
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {
-    return !!context.view(listPageView)?.focusedGroup;
+    const focusedGroup = context.view(listPageView)?.focusedGroup;
+    return Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
   },
   handler(context) {
     const group = context.view(listPageView)?.focusedGroup;

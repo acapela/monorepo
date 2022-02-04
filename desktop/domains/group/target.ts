@@ -1,17 +1,19 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { IntegrationType } from "@aca/desktop/domains/integrations/types";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 
 export interface NotificationGroupTarget {
   id: string;
   name: string;
   integration: IntegrationType;
   integrationTitle: string;
+  isOnePreviewEnough?: boolean;
 }
 
 const unknownTarget: NotificationGroupTarget = {
   id: "unknown",
   name: "Unknown",
-  integration: "slack",
+  integration: "unknown",
   integrationTitle: "Slack conversation",
 };
 
@@ -40,10 +42,11 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
 
   if (targetNotification.__typename === "notification_slack_message") {
     return {
-      id: targetNotification.slack_conversation_id,
-      name: targetNotification.conversation_name,
+      id: targetNotification.slack_conversation_id + "#" + (targetNotification.slack_thread_ts ?? ""),
+      name: getNotificationTitle(notification),
       integration: "slack",
       integrationTitle: "Slack conversation",
+      isOnePreviewEnough: true,
     };
   }
 

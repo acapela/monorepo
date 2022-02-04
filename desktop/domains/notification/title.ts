@@ -15,7 +15,7 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
 
   switch (type) {
     case "notification_slack_message": {
-      return `${innerNotification?.conversation_name}`;
+      return `${innerNotification?.conversation_name}${innerNotification.slack_thread_ts ? " in Thread" : ""}`;
     }
     case "notification_notion": {
       switch (innerNotification.type) {
@@ -33,10 +33,11 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
       return `New ${innerNotification.is_mention ? "mention" : "comment"} in ${innerNotification?.file_name}`;
     }
     case "notification_linear": {
+      const issueTitle = innerNotification.issue_title;
       if (innerNotification.type === "Comment") {
-        return `${notification.from} commented in ${innerNotification?.issue_title}`;
+        return `Comment in ${issueTitle}`;
       }
-      return `${notification.from} created the issue ${innerNotification?.issue_title}`;
+      return `New issue: ${issueTitle}`;
     }
     default:
       return "Unhandled notification!!";
