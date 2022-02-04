@@ -36,7 +36,7 @@ export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
   isInDarkMode: false,
-  isDisplayingZenImage: true,
+  isDisplayingZenImage: false,
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },
@@ -72,11 +72,13 @@ export const uiStore = makeAutoObservable({
 });
 
 /**
- * After each route change, make sure sidebar is closed.
+ * After each route change, make sure sidebar is closed and the zen image is removed.
  */
 desktopRouter.subscribe(() => {
   uiStore.isSidebarOpened = false;
   uiStore.focusedTarget = null;
+
+  uiStore.isDisplayingZenImage = false;
 });
 
 autorun(() => {
