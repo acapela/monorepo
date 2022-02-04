@@ -36,6 +36,7 @@ export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
   isInDarkMode: false,
+  isDisplayingZenImage: true,
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },

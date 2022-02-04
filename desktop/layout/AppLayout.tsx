@@ -2,7 +2,9 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+import zenImage from "@aca/desktop/assets/zen/today.jpg";
 import { uiStore } from "@aca/desktop/store/uiStore";
+import { theme } from "@aca/ui/theme";
 
 interface Props {
   children: ReactNode;
@@ -14,7 +16,7 @@ export const AppLayout = observer(function AppLayout({ children, tray, footer }:
   const { isSidebarOpened } = uiStore;
 
   return (
-    <AppLayoutHolder>
+    <AppLayoutHolder className={uiStore.isDisplayingZenImage ? "zenImage" : ""}>
       <UIMain>
         <UITray>{tray}</UITray>
         <UIBody $isSidebarOpened={isSidebarOpened}>{children}</UIBody>
@@ -52,7 +54,7 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
 
 const UIFooter = styled.div``;
 
-const AppLayoutHolder = styled.div`
+const AppLayoutHolder = styled.div<{}>`
   padding-top: 48px;
 
   body.fullscreen & {
@@ -62,4 +64,34 @@ const AppLayoutHolder = styled.div`
   flex-direction: column;
   flex-grow: 1;
   min-height: 0;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  &.zenImage {
+    animation: fadeInFromNone 2s linear;
+
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(${zenImage as unknown as string});
+    box-shadow: inset 0 0 80px 80px ${theme.colors.layout.background.opacity(0.7).value};
+  }
+
+  @keyframes fadeInFromNone {
+    0% {
+      display: none;
+      opacity: 0;
+    }
+
+    1% {
+      display: block;
+      opacity: 0;
+    }
+
+    100% {
+      display: block;
+      opacity: 1;
+    }
+  }
 `;
