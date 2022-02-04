@@ -24,6 +24,16 @@ if (!IS_DEV) {
   });
 }
 
+function loadAppInWindow(window: BrowserWindow) {
+  window.loadURL(
+    IS_DEV
+      ? // In dev mode - load from local dev server
+        "http://localhost:3005"
+      : // In production - load static, bundled file
+        `file://${INDEX_HTML_FILE}`
+  );
+}
+
 export function initializeMainWindow() {
   const env: AppEnvData = {
     sentryDsn,
@@ -47,13 +57,7 @@ export function initializeMainWindow() {
 
   // mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(
-    IS_DEV
-      ? // In dev mode - load from local dev server
-        "http://localhost:3005"
-      : // In production - load static, bundled file
-        `file://${INDEX_HTML_FILE}`
-  );
+  loadAppInWindow(mainWindow);
 
   log.transports.file.level = "info";
   autoUpdater.logger = log;
@@ -91,6 +95,10 @@ export function initializeMainWindow() {
       appState.mainWindow = null;
     })
   );
+
+  mainWindow.webContents.on("did-fail-load", () => {
+    loadAppInWindow(mainWindow);
+  });
 
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.getBrowserViews().forEach((view) => {
