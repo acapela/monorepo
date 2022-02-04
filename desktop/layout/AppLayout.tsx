@@ -1,7 +1,11 @@
+// TODO: add ".jpg" types for CI to not complain
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+//@ts-ignore
 import zenImage from "@aca/desktop/assets/zen/today.jpg";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { theme } from "@aca/ui/theme";
