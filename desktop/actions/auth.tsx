@@ -4,9 +4,11 @@ import {
   authTokenBridgeValue,
   figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
+  linearAuthTokenBridgeValue,
   loginBridge,
   loginFigmaBridge,
   loginGoogleBridge,
+  loginLinearBridge,
   loginNotionBridge,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
@@ -57,6 +59,14 @@ export const connectNotion = defineAction({
   canApply: () => !notionAuthTokenBridgeValue.get(),
   handler() {
     loginNotionBridge();
+  },
+});
+
+export const connectLinear = defineAction({
+  name: "Connect Linear",
+  canApply: () => !linearAuthTokenBridgeValue.get(),
+  handler() {
+    loginLinearBridge();
   },
 });
 

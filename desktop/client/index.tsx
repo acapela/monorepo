@@ -6,14 +6,15 @@ import { createGlobalStyle } from "styled-components";
 
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { RootView } from "@aca/desktop/views/RootView";
-import { globalDesktopStyles } from "@aca/frontend/styles/global";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
-import { AppThemeProvider, theme } from "@aca/ui/theme";
+import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
@@ -27,15 +28,15 @@ if (!window.electronBridge.env.isDev) {
 const rootElement = document.getElementById("root");
 
 const BuiltInStyles = createGlobalStyle`
-  ${globalDesktopStyles}
+  ${globalStyles}
 `;
 
 render(
   <>
-    <BuiltInStyles />
-    <GlobalDesktopStyles />
     <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-      <AppThemeProvider theme={theme}>
+      <DesktopThemeProvider>
+        <BuiltInStyles />
+        <GlobalDesktopStyles />
         <PromiseUIRenderer />
         <TooltipsRenderer />
         <ToastsRenderer />
@@ -43,7 +44,8 @@ render(
         <SystemBar />
         <CommandMenuManager />
         <RootView />
-      </AppThemeProvider>
+        <DebugView />
+      </DesktopThemeProvider>
     </MotionConfig>
   </>,
   rootElement

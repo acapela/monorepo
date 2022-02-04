@@ -5,12 +5,13 @@ import {
   isFullscreenValue,
   openLinkRequest,
   restartAppRequest,
+  toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
 } from "@aca/desktop/bridge/system";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
-import { autorunEffect } from "@aca/shared/mobxUtils";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 export function initializeSystemHandlers() {
   restartAppRequest.handle(async () => {
@@ -50,6 +51,19 @@ export function initializeSystemHandlers() {
     } else {
       senderWindow.setFullScreen(true);
     }
+  });
+
+  toggleDevtoolsRequest.handle(async (alsoMaximize, event) => {
+    if (!event) return;
+
+    const senderWindow = getSourceWindowFromIPCEvent(event);
+
+    if (!senderWindow) return;
+
+    if (alsoMaximize) {
+      senderWindow.maximize();
+    }
+    senderWindow.webContents.toggleDevTools();
   });
 
   openLinkRequest.handle(async ({ url }) => {

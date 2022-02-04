@@ -2,9 +2,9 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 
-import { DefinedList } from "./defineList";
+import { NotificationsList } from "./defineList";
 
-export function getGroupedAndOrderedNotificationsInList(list: DefinedList): NotificationEntity[] {
+export function getGroupedAndOrderedNotificationsInList(list: NotificationsList): NotificationEntity[] {
   const groupedList = groupNotifications(list.getAllNotifications().all);
 
   const result: NotificationEntity[] = [];

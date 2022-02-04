@@ -1,6 +1,6 @@
 import { forceWorkerSyncRun, workerSyncStart } from "@aca/desktop/bridge/apps";
 import { appState } from "@aca/desktop/electron/appState";
-import { autorunEffect } from "@aca/shared/mobxUtils";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";

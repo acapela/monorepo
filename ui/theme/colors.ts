@@ -10,6 +10,8 @@ const black = color("hsl(0, 0%, 0%)", {
   active: color("hsl(0, 0%, 30%)"),
 });
 
+const darkGrey = color("hsl(213, 20.45%, 17.25%)");
+
 const primary = color("hsl(310, 100%, 67%)", {
   hover: color("hsl(310, 79%, 57%)"),
   active: color("hsl(310, 79%, 40%)"),
@@ -37,10 +39,10 @@ const selectedTab = color("#f3f4f6");
 
 const inverted = color("#111827");
 
-export const colors = {
+export const defaultColors = {
   primary,
   secondary,
-  text: black,
+  text: darkGrey,
   inverted,
   action: {
     // Used for buttons
@@ -90,5 +92,30 @@ export const colors = {
   },
   functional: {
     userAvatar: blue,
+  },
+} as const;
+
+export const darkThemeColors: typeof defaultColors = {
+  ...defaultColors,
+  text: white,
+  layout: {
+    actionPanel: blue,
+    // Root background of the app
+    background: darkGrey,
+    // Used eg. for app sidebar
+    backgroundAccent: white.opacity(0.2),
+    divider,
+  },
+  panels: {
+    popover: white,
+    secondaryPopover: darkGrey,
+    tooltip: white,
+    notification: primary,
+    modal: darkGrey,
+    selectedTab,
+  },
+  action: {
+    ...defaultColors.action,
+    transparent: darkGrey,
   },
 };

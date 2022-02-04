@@ -1,7 +1,7 @@
 import path from "path";
 
 import * as Sentry from "@sentry/electron";
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, dialog } from "electron";
 import IS_DEV from "electron-is-dev";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
@@ -57,7 +57,29 @@ export function initializeMainWindow() {
 
   log.transports.file.level = "info";
   autoUpdater.logger = log;
-  autoUpdater.checkForUpdatesAndNotify();
+
+  setInterval(() => {
+    autoUpdater.checkForUpdates();
+  }, 10 * 60 * 1000); // check for updates every 10 minutes
+
+  autoUpdater.on("update-downloaded", (_event, _releaseNotes, releaseName) => {
+    const dialogOpts = {
+      type: "info",
+      buttons: ["Restart", "Later"],
+      title: "Application Update",
+      message: releaseName,
+      detail: "A new version of Acapela is available. Restart the app to update.",
+    };
+
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+  });
+
+  autoUpdater.on("error", (message) => {
+    console.error("There was a problem updating the application");
+    console.error(message);
+  });
 
   runInAction(() => {
     appState.mainWindow = mainWindow;

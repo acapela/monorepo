@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { uiStore } from "../store/uiStore";
+import { uiStore } from "@aca/desktop/store/uiStore";
 
 interface Props {
   children: ReactNode;

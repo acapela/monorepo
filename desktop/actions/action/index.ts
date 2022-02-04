@@ -1,4 +1,3 @@
-import { runInAction } from "mobx";
 import { ReactNode } from "react";
 
 import { MaybeCleanup } from "@aca/shared/types";
@@ -8,19 +7,27 @@ import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { ActionContext, ActionContextCallback, ActionDataThunk, createActionContext } from "./context";
 import { ActionGroupData } from "./group";
 
+type ChildActionsResult = {
+  isContextual?: boolean;
+  searchPlaceholder?: string;
+  getActions: (context: ActionContext) => ActionData[];
+};
+
+export type ActionResult = ChildActionsResult;
 export interface ActionCreateInput {
   id?: string;
   analyticsName?: string;
   name: ActionDataThunk<string>;
+  supplementaryLabel?: ActionDataThunk<string | undefined | null>;
   private?: boolean;
-  group?: ActionGroupData;
-  keywords?: string[];
+  group?: ActionDataThunk<ActionGroupData>;
+  keywords?: ActionDataThunk<string[]>;
   shortcut?: ShortcutDefinition;
   onMightBeSelected?: ActionContextCallback<MaybeCleanup>;
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
-  handler: ActionContextCallback<void>;
+  handler: ActionContextCallback<void | ActionResult>;
 }
 
 export interface ActionData extends ActionCreateInput {
@@ -37,6 +44,9 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
     ...action,
     name: resolveActionDataThunk(action.name, context),
     icon: resolveActionDataThunk(action.icon, context),
+    keywords: resolveActionDataThunk(action.keywords, context),
+    group: resolveActionDataThunk(action.group, context),
+    supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
   };
 }
 
@@ -51,23 +61,39 @@ export function resolveActionDataWithTarget(action: ActionData, target?: unknown
 const actionSymbol = Symbol("action");
 
 export function defineAction(input: ActionCreateInput): ActionData {
-  return {
+  function resolvedRawKeywords(context: ActionContext) {
+    if (!input.keywords) return [];
+    if (Array.isArray(input.keywords)) {
+      return input.keywords;
+    }
+
+    return input.keywords(context);
+  }
+  const action: ActionData = {
     id: getUUID(),
     isAction: actionSymbol,
     canApply: () => true,
-    get keywords() {
-      const keywords = input.keywords ?? [];
+    keywords(context) {
+      const keywords = resolvedRawKeywords(context);
 
-      const groupName = input.group?.name;
+      const group = resolveActionDataThunk(input.group, context);
 
-      if (groupName && typeof groupName === "string") {
-        keywords.push(groupName);
+      if (group) {
+        keywords.push(resolveActionDataThunk(group.name, context));
       }
 
-      if (keywords.length) return keywords;
+      const supplementaryLabel = resolveActionDataThunk(input.supplementaryLabel, context);
+
+      if (supplementaryLabel) {
+        keywords.push(supplementaryLabel);
+      }
+
+      return keywords;
     },
     ...input,
   };
+
+  return action;
 }
 
 export function getIsAction(input: unknown): input is ActionData {
@@ -78,37 +104,11 @@ export function getIsAction(input: unknown): input is ActionData {
   return typedInput.isAction && typedInput.isAction === actionSymbol;
 }
 
-export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
-  if (!action.canApply(context)) {
-    return;
-  }
-
-  try {
-    // Let's always run actions as mobx-actions so mobx will not complain
-    runInAction(() => {
-      action.handler(context);
-    });
-  } catch (error) {
-    /**
-     * In case action throws an error, provide every detail we have.
-     *
-     * It might be very handy as actions are running outside of 'react' and errors can be caused by react
-     * eg. 'toggle sidebar' > sidebar renders > sidebar component throws > as a result the very action handler throws as render happens in sync way after the action
-     */
-    console.error(`Error occured when running action. Logging action, context and error below`, action, context);
-    console.error(error);
-  }
-}
-
-export function runActionWithTarget(action: ActionData, target: unknown) {
-  return runAction(action, createActionContext(target));
-}
-
 /**
  * Some params of action can be either value of function of context => value. This is helper
  * that resolves this thunk into an actual value.
  */
-function resolveActionDataThunk<T>(thunk: ActionDataThunk<T>, context: ActionContext): T {
+export function resolveActionDataThunk<T>(thunk: ActionDataThunk<T>, context: ActionContext): T {
   if (typeof thunk === "function") {
     return (thunk as ActionContextCallback<T>)(context);
   }

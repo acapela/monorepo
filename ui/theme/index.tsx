@@ -1,6 +1,9 @@
+import React, { PropsWithChildren } from "react";
+import { ThemeProvider } from "styled-components";
+
 import { radius } from "./borderRadius";
 import { box } from "./box";
-import { colors } from "./colors";
+import { darkThemeColors, defaultColors } from "./colors";
 import { common } from "./common";
 import { gradients } from "./gradients";
 import { shadow } from "./shadow";
@@ -15,7 +18,7 @@ export const defaultTheme = {
   font: font(),
   typo,
   spacing,
-  colors,
+  colors: defaultColors,
   transitions,
   shadow,
   radius,
@@ -23,6 +26,15 @@ export const defaultTheme = {
   box,
   gradients,
   common: common,
+} as const;
+
+export const darkTheme: typeof defaultTheme = {
+  ...defaultTheme,
+  colors: darkThemeColors,
 };
 
-export const [theme, AppThemeProvider] = buildStyledTheme(defaultTheme);
+export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
+  return <ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>;
+}
+
+export const theme = buildStyledTheme(defaultTheme);

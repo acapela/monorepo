@@ -1,10 +1,12 @@
-import { getNotificationTitle } from "../domains/notification/title";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+
 import { defineGroup } from "./action/group";
 import { appActionsGroup } from "./app";
 import { accountActionsGroup } from "./auth";
 import { devActionsGroup } from "./dev";
 import { currentListActionsGroup } from "./lists";
 import { navigationActionsGroup } from "./navigation";
+import { settingsActionsGroup } from "./settings";
 
 export const searchNotificationsGroup = defineGroup({
   name: "Search - Notifications",
@@ -20,6 +22,10 @@ export const currentNotificationActionsGroup = defineGroup({
 
     if (notification) return `Notification - ${getNotificationTitle(notification)}`;
 
+    const group = ctx.getTarget("group");
+
+    if (group) return `${group.integrationTitle} - ${group.name}`;
+
     return "Notification";
   },
 });
@@ -30,6 +36,8 @@ export const groupsPriority = [
 
   searchListActionsGroup,
   searchNotificationsGroup,
+
+  settingsActionsGroup,
 
   navigationActionsGroup,
   appActionsGroup,

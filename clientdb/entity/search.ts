@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { Entity } from "@aca/clientdb";
 import { assert } from "@aca/shared/assert";
 import { measureTime } from "@aca/shared/dev";
-import { runUntracked } from "@aca/shared/mobxUtils";
+import { runUntracked } from "@aca/shared/mobx/utils";
 import { isNotNullish } from "@aca/shared/nullish";
 import { typedKeys } from "@aca/shared/object";
 

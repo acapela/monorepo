@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -9,6 +10,8 @@ import {
   getNextItemInArray,
   getPreviousItemInArray,
 } from "@aca/shared/array";
+import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { isNotNullish } from "@aca/shared/nullish";
 import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
@@ -16,7 +19,6 @@ import { theme } from "@aca/ui/theme";
 
 import { CommandMenuActionsGroup } from "./CommandMenuActionsGroup";
 import { groupActions } from "./groups";
-import { fuzzySearch } from "./search/fuzzySearch";
 import { CommandMenuSession } from "./session";
 import { CommandMenuTargetLabel } from "./TargetLabel";
 
@@ -26,13 +28,12 @@ interface Props {
 }
 
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
-  const [keyword, setKeyword] = useState("");
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
   const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
-  const preparedKeyword = keyword.trim().toLowerCase();
+  const { actionContext } = session;
 
-  const actions = session.getActions({ keyword: preparedKeyword });
+  const actions = session.getActions(actionContext);
 
   const applicableActions = actions.filter((action) => {
     if (action.private) return false;
@@ -45,12 +46,12 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     applicableActions,
     (action) => {
       const { name, keywords = [] } = resolveActionData(action);
-      return [name, ...keywords];
+      return [name, ...keywords].filter(isNotNullish);
     },
-    preparedKeyword
+    actionContext.searchKeyword
   );
 
-  const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow);
+  const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow, actionContext);
 
   useEffect(() => {
     if (!activeAction) return;
@@ -65,7 +66,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     } else {
       setActiveAction(null);
     }
-  }, [preparedKeyword]);
+  }, [actionContext.searchKeyword]);
 
   useShortcut("ArrowDown", () => {
     if (!activeAction) {
@@ -113,18 +114,19 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
           </UIHead>
 
           <UIInput
-            placeholder="Find anything..."
+            placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
             autoFocus
-            onChange={(event) => {
-              setKeyword(event.target.value);
-            }}
+            onChange={action((event) => {
+              actionContext.searchKeyword = event.target.value;
+            })}
             spellCheck={false}
+            value={actionContext.searchKeyword}
           />
           <UIActions ref={actionsScrollerRef}>
             {groupsToShow.map(({ groupItem, items: actions }) => {
               return (
                 <CommandMenuActionsGroup
-                  key={groupItem?.id}
+                  key={groupItem?.id ?? "no-group"}
                   group={groupItem}
                   actions={actions}
                   session={session}

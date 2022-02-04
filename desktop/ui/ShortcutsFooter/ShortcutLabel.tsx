@@ -30,6 +30,7 @@ const UIHolder = styled(ActionTrigger)<{ $isEnabled: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
   ${theme.box.label};
   ${theme.radius.button};
   ${theme.transitions.hover("all")};
@@ -52,6 +53,7 @@ const UIHolder = styled(ActionTrigger)<{ $isEnabled: boolean }>`
 
 const UIName = styled.div`
   ${theme.typo.content.medium};
+  ${theme.common.ellipsisText};
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`

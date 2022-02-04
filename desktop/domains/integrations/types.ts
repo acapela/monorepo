@@ -1,1 +1,1 @@
-export type IntegrationType = "figma" | "slack" | "notion";
+export type IntegrationType = "figma" | "slack" | "notion" | "unknown";

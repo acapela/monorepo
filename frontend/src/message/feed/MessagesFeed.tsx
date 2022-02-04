@@ -96,7 +96,7 @@ export const MessagesFeed = observer(({ feedItems, isReadonly }: Props) => {
 });
 
 function DateHeader({ date }: { date: Date }) {
-  return <UIDateHeader>{niceFormatDate(date, { showWeekDay: "long" })}</UIDateHeader>;
+  return <UIDateHeader>{niceFormatDate(date, { weekday: "long" })}</UIDateHeader>;
 }
 
 const UIHolder = styled.div<{}>`

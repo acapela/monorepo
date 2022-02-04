@@ -37,6 +37,10 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   throw error;
 }
 
+export function unsafeAssert(input: unknown): asserts input {
+  //
+}
+
 export function unsafeAssertType<T>(input: unknown): asserts input is T {
   //
 }
@@ -51,5 +55,13 @@ export async function assertGetAsync<T>(promise: Promise<T | Nullish>, messageOr
     const error = getErrorFromMessageOrError(messageOrError);
 
     throw error;
+  }
+}
+
+export function getGuarded<T>(callback: () => T, fallback: T): T {
+  try {
+    return callback();
+  } catch (error) {
+    return fallback;
   }
 }

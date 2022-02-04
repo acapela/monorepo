@@ -13,10 +13,20 @@ async function main(): Promise<void> {
     process.exit(1);
     return;
   }
-  console.info(`creating new sentry release: ${version}`);
-  await cli.execute(["releases", "new", version], true);
+  let isUpdate = false;
+  if (process.argv.pop() === "update") {
+    console.info("only update");
+    isUpdate = true;
+  }
+  if (!isUpdate) {
+    console.info(`creating new sentry release: ${version}`);
+    await cli.execute(["releases", "new", version], true);
+  }
   await cli.execute(["releases", "files", version, "upload-sourcemaps", "./dist", "--url-prefix", "app:///dist"], true);
-  await cli.execute(["releases", "finalize", version], true);
+  if (!isUpdate) {
+    console.info("finalizing release...");
+    await cli.execute(["releases", "finalize", version], true);
+  }
   console.info("removing source maps...");
   const sourceMaps = await glob.promise("./dist/**/*.map");
   for (const sourceMap of sourceMaps) {

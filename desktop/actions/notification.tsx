@@ -1,15 +1,14 @@
 import React from "react";
 
+import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { desktopRouter, getRouteParamsIfActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
-import { requestPreviewPreload } from "../bridge/preview";
+import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { focusPageView } from "./views/focus";
-import { listPageView } from "./views/list";
+import { goToOrFocusNextItem } from "./views/common";
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
@@ -31,6 +30,7 @@ export const copyNotificationLink = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
   shortcut: ["Mod", "Shift", "C"],
+  keywords: ["url", "share"],
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
@@ -44,75 +44,65 @@ export const copyNotificationLink = defineAction({
 export const resolveNotification = defineAction({
   icon: <IconCheck />,
   group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Resolve" : "Resolve Notification"),
+  name: (ctx) => {
+    if (ctx.hasTarget("group")) {
+      return ctx.isContextual ? "Resolve all" : "Resolve all notifications in group";
+    }
+
+    return ctx.isContextual ? "Resolve" : "Resolve Notification";
+  },
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: (ctx) => {
     const notification = ctx.getTarget("notification");
 
-    if (notification) return !notification.isResolved;
+    if (notification) {
+      return !notification.isResolved;
+    }
 
     const group = ctx.getTarget("group");
 
-    if (group) return group.notifications.some((notification) => !notification.isResolved);
+    if (group) {
+      return group.notifications.some((notification) => !notification.isResolved);
+    }
 
     return false;
   },
   handler(context) {
-    const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    const listView = context.view(listPageView);
+    goToOrFocusNextItem(context);
 
-    // In list mode: focus next notification
-    if (listView) {
-      const nextItem = listView.nextListItem;
+    notification?.resolve();
+
+    group?.notifications.forEach((notification) => {
       notification.resolve();
-      uiStore.focusedTarget = nextItem;
-      return;
-    }
-
-    const focusView = context.view(focusPageView);
-    /**
-     * In focus mode:
-     * - if there is next notification - open it
-     * - if no, go back to list
-     */
-    if (focusView) {
-      const nextNotification = focusView.nextNotification;
-
-      notification.resolve();
-
-      if (nextNotification) {
-        desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
-      } else {
-        desktopRouter.navigate("list", { listId: list.id });
-      }
-    }
+    });
   },
 });
 
 export const unresolveNotification = defineAction({
   icon: <IconCheckboxSquare />,
   group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Undo resolve" : "Undo resolve Notification"),
+  name: "Undo resolve",
+  shortcut: ["Mod", "Shift", "D"],
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark"],
   canApply: (ctx) => {
-    return ctx.hasTarget("notification");
+    return ctx.hasTarget("notification") || ctx.hasTarget("group");
   },
   handler(context) {
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    notification.update({ resolved_at: null });
+    goToOrFocusNextItem(context);
 
-    const listView = context.view(listPageView);
-
-    if (listView) {
-      const nextItem = listView.nextListItem;
-      notification.resolve();
-      uiStore.focusedTarget = nextItem;
-      return;
-    }
+    notification?.update({ resolved_at: null });
+    group?.notifications.forEach((notification) => {
+      notification.update({ resolved_at: null });
+    });
   },
 });
 
@@ -121,25 +111,38 @@ export const openFocusMode = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
   shortcut: "Enter",
-  canApply: (context) => {
-    const activeNotificationId = getRouteParamsIfActive("focus")?.notificationId;
-    const targetNotification = context.getTarget("notification");
+  canApply: ({ hasTarget }) => {
+    if (getIsRouteActive("focus") || !hasTarget("list", true)) return false;
+    if (!hasTarget("notification") && !hasTarget("group")) return false;
 
-    if (!targetNotification) return false;
-
-    if (targetNotification.id === activeNotificationId) return false;
-
-    return context.hasTarget("list", true);
+    return true;
   },
   handler(context) {
     const list = context.assertTarget("list", true);
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+    if (notification) {
+      desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+      return;
+    }
+
+    if (group) {
+      openedNotificationsGroupsStore.open(group.id);
+      desktopRouter.navigate("focus", { listId: list.id, notificationId: group.notifications[0].id });
+    }
   },
   onMightBeSelected(context) {
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
 
-    return requestPreviewPreload({ url: notification.url });
+    if (notification) {
+      return requestPreviewPreload({ url: notification.url });
+    }
+
+    const group = context.getTarget("group");
+
+    if (group) {
+      requestPreviewPreload({ url: group.notifications[0].url });
+    }
   },
 });

@@ -29,6 +29,12 @@ export const loginGoogleBridge = createInvokeBridge("login-google");
 
 export const connectSlackBridge = createInvokeWithCleanupBridge<{ url: string }>("connect-slack");
 
+export const linearAuthTokenBridgeValue = createBridgeValue<boolean>("linear-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+export const loginLinearBridge = createInvokeBridge("login-linear");
+
 export async function logout() {
   authTokenBridgeValue.set(null);
 }

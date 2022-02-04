@@ -16,10 +16,15 @@ export const exitFocusMode = defineAction({
   keywords: ["exit", "back"],
   shortcut: "Esc",
   canApply: () => getIsRouteActive("focus"),
-  handler() {
+  handler(context) {
+    const notification = context.view(focusPageView)?.notification;
     const { listId } = assertGetActiveRouteParams("focus");
 
     desktopRouter.navigate("list", { listId });
+
+    if (notification) {
+      uiStore.focusedTarget = notification;
+    }
   },
 });
 
@@ -64,10 +69,10 @@ export const goToPreviousNotification = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous" : "Go to previous notification"),
   shortcut: "ArrowUp",
   canApply: (context) => {
-    return !!context.view(focusPageView)?.nextNotification;
+    return !!context.view(focusPageView)?.prevNotification;
   },
   handler(context) {
-    const previousNotification = context.view(focusPageView)?.nextNotification;
+    const previousNotification = context.view(focusPageView)?.prevNotification;
 
     if (!previousNotification) return;
 

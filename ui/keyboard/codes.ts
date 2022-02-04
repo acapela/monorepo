@@ -98,6 +98,7 @@ export type Key =
   | "X"
   | "Y"
   | "Z"
+  | "."
   | "Meta"
   | "Mod" // Either Ctrl for windows or Meta in Mac
   | "LeftWindowKey"
@@ -145,4 +146,5 @@ export type Key =
   | "GraveAccent"
   | "OpenBracket"
   | "ClosedBracket"
-  | "Quote";
+  | "Quote"
+  | "0";

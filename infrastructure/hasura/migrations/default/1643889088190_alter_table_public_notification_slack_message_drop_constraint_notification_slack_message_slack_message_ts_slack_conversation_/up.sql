@@ -1,0 +1,1 @@
+alter table "public"."notification_slack_message" drop constraint "notification_slack_mention_slack_conversation_id_slack_message_ts_key";

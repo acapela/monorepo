@@ -1,19 +1,27 @@
 import { BrowserView } from "electron";
 
 type SiteFilter = { on: (url: URL) => boolean; rewriteURL?: (url: URL) => string; css?: string };
+
+const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
+
 const siteFilters: SiteFilter[] = [
   {
-    on: (url) => url.hostname.endsWith(".slack.com"),
+    on: (url) => isHostSlack(url),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
     css: `.p-workspace-layout {
-            position: relative;
-            left: -210px;
-            width: calc(100% + 210px);
-        }
-        
-        .p-workspace__sidebar, .p-resizer {
-            display: none;
-        }`,
+            grid-template-columns: 100% !important;
+            grid-template-areas: 'p-workspace__primary_view p-workspace__secondary_view' !important;  
+          }
+          .p-workspace__sidebar {
+            display: none !important;
+          }
+          `,
+  },
+  {
+    on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
+    css: `.p-workspace-layout {
+            grid-template-columns: auto 40% !important;
+          }`,
   },
   {
     on: (url) => url.hostname.endsWith("notion.so"),

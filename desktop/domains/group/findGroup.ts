@@ -1,12 +1,12 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { DefinedList } from "@aca/desktop/domains/list/defineList";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { NotificationsGroup, getIsNotificationsGroup } from "./group";
 import { groupNotifications } from "./groupNotifications";
 
 export function getNotificationParentGroupInList(
   notification: NotificationEntity,
-  list: DefinedList
+  list: NotificationsList
 ): NotificationsGroup | null {
   const groupsList = groupNotifications(list.getAllNotifications().all);
 
