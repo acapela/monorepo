@@ -4,6 +4,7 @@ import { Nullish, isNotNullish } from "./nullish";
 export class AssertError extends Error {
   constructor(message: string) {
     super(`Assert error - ${message}`);
+    this.name = "AssertError";
   }
 }
 

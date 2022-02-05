@@ -7,7 +7,9 @@ export type Prefix =
   | "Figma-Worker"
   | "Worker-Consolidation"
   | "Preview"
-  | "Notification-Events";
+  | "Notification-Events"
+  | "ClientDb"
+  | "BrowserView";
 
 export type Severity = "Error" | "Warning" | "Info" | "Debug";
 

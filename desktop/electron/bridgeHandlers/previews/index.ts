@@ -8,11 +8,11 @@ import {
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
+import { makeLogger } from "@aca/desktop/domains/dev/logger";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";
 import { assert } from "@aca/shared/assert";
-import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { getUUID } from "@aca/shared/uuid";
 
@@ -34,7 +34,7 @@ interface AlivePreviewState {
 
 const alivePreviews = new Map<StringURL, AlivePreviewState>();
 
-const log = createLogger("BrowserView");
+const log = makeLogger("BrowserView");
 
 /**
  * Requests preview for given url to be loaded.
@@ -99,7 +99,7 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
       previewEventsBridge.send({ url, type: isFocused ? "focus" : "blur" });
     });
 
-    log("Initializing preview for url", url);
+    log.debug(`Initializing preview for url`, url);
     return {
       url,
       window,
@@ -120,7 +120,7 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
    * This can happen if: url requested > url not requested > waiting a bit to be destroyed > before destroyed was requested again
    */
   if (preview.destroyTimeout) {
-    log(`cancel planned preview destroy ${url}`);
+    log.debug(`cancel planned preview destroy`, url);
     clearTimeout(preview.destroyTimeout);
     preview.destroyTimeout = null;
   }
@@ -138,9 +138,9 @@ function requestPreviewLoad(url: string, window: BrowserWindow) {
 
     assert(!preview.destroyTimeout, "Bad state - for some reason view destroy was scheduled twice");
 
-    log(`schedule preview destroy ${url}`);
+    log.debug(`schedule preview destroy`, url);
     preview.destroyTimeout = setTimeout(() => {
-      log("destroying view", preview.url);
+      log.debug("destroying view ", preview.url);
       destroyBrowserView(preview.view);
       // Remove it from map of active previews so it'll be re-created next time
       alivePreviews.delete(preview.url);
@@ -184,7 +184,7 @@ async function attachPreviewToWindow(url: string, initialPosition: PreviewPositi
   targetWindow.on("resize", handleWindowResize);
 
   return function detach() {
-    log("will detach view");
+    log.debug("will detach view");
 
     targetWindow.removeBrowserView(preview.view);
 
@@ -223,15 +223,15 @@ function updatePreviewSize(preview: AlivePreviewState) {
 }
 
 function assertViewIsNotAttachedToWindow(view: BrowserView, window: BrowserWindow) {
-  assert(!window.getBrowserViews().includes(view), "Requested view is already attached to the window");
+  assert(!window.getBrowserViews().includes(view), "Requested view is already attached to the window", log.error);
 }
 
 export function initPreviewHandler() {
   requestPreviewPreload.handle(async ({ url }, event) => {
-    assert(event, "Preload can only be requested from client side");
+    assert(event, "Preload can only be requested from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
-    assert(targetWindow, "No target window for showing browser view");
+    assert(targetWindow, "No target window for showing browser view", log.error);
 
     const [, stopRequesting] = await requestPreviewLoad(url, targetWindow);
 
@@ -239,12 +239,12 @@ export function initPreviewHandler() {
   });
 
   requestAttachPreview.handle(async ({ url, position }, event) => {
-    assert(event, "Show browser view can only be called from client side");
+    assert(event, "Show browser view can only be called from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
-    assert(targetWindow, "No target window for showing browser view");
+    assert(targetWindow, "No target window for showing browser view", log.error);
 
-    log("will attach view", { url, position });
+    log.debug("will attach view", { url, position });
 
     return attachPreviewToWindow(url, position, targetWindow);
   });
@@ -254,7 +254,7 @@ export function initPreviewHandler() {
 
     if (!viewRef) return;
 
-    log("updating preview position requirements", position);
+    log.debug("updating preview position requirements", position);
 
     viewRef.position = position;
 

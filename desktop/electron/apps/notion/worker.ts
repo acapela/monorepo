@@ -98,8 +98,7 @@ export function startNotionSync(): ServiceSyncController {
 
       log.info(`Capturing complete`);
     } catch (e: unknown) {
-      const { message, stack } = e as Error;
-      log.error(new Error(`Worker failed. -- Cause: \n${message}:\n ${stack ?? ""} `));
+      log.error(new Error("Worker failed"), e as Error);
     } finally {
       isSyncing = false;
     }
@@ -138,7 +137,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
   const spaceId = await fetchCurrentSpace(sessionData);
 
   if (!spaceId) {
-    throw new Error("[Notion] Unable to fetch spaceId");
+    throw log.error(new Error("Unable to fetch spaceId"));
   }
 
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
@@ -157,7 +156,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
 
   if (!response.ok) {
     clearNotionSessionData();
-    throw log.error(new Error(`getNotificationLog -> ${response.status} ${response.statusText}`));
+    throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
   const result = (await response.json()) as GetNotificationLogResult;
@@ -177,7 +176,7 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
 
   if (!response.ok) {
     clearNotionSessionData();
-    throw log.error(new Error(`getSpaces -> ${response.status} ${response.statusText}`));
+    throw log.error(new Error(`getSpaces`), `${response.status} - ${response.statusText}`);
   }
 
   const getSpacesResult = (await response.json()) as GetSpacesResult;
@@ -228,7 +227,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
-      log.error(`Block is not page type, instead its: '${(pageBlock.type as string) ?? ""}'`);
+      log.error(`Block is not page type, instead its`, (pageBlock.type as string) ?? "");
       continue;
     }
 

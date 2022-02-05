@@ -4,6 +4,7 @@ import { assert } from "@aca/shared/assert";
 import { asyncComputedWithCleanup } from "@aca/shared/mobx/utils";
 import { wait } from "@aca/shared/time";
 
+import { makeLogger } from "../domains/dev/logger";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
 const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid, setSelf }) => {
@@ -40,10 +41,12 @@ const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertS
   };
 });
 
+const log = makeLogger("ClientDb");
+
 export function getDb() {
   const db = getNullableDb();
 
-  assert(db, "Used outside ClientDbProvider or without being logged in");
+  assert(db, "Used outside ClientDbProvider or without being logged in", log.error);
 
   return db;
 }
