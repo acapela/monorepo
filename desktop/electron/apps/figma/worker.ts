@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/electron";
 import { differenceInWeeks } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
@@ -43,7 +42,7 @@ export async function startFigmaSync() {
   try {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
-    Sentry.captureException(log.error("Error getting figma session data," + JSON.stringify(e)));
+    log.error("Error getting figma session data," + JSON.stringify(e));
     figmaAuthTokenBridgeValue.set(null);
     return;
   }
@@ -149,13 +148,13 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
 
     figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
   } catch (e) {
-    Sentry.captureException(e);
-    console.info(e);
+    log.error(e as Error);
+
     return;
   }
 
   if (!figmaRealtimeUserToken) {
-    Sentry.captureException(log.error("unable to extract figma real time user token"));
+    log.error("unable to extract figma real time user token");
     return;
   }
 
@@ -208,7 +207,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
     transformAndSyncFigmaNotifications([userNotificationMessage], figmaUserId);
   });
 
-  ws.on("error", (e) => Sentry.captureException(e));
+  ws.on("error", (e) => log.error(e));
 }
 
 function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNotification[], figmaUserId: string) {

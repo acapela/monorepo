@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/electron";
 import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
@@ -100,7 +99,7 @@ export function startNotionSync(): ServiceSyncController {
       log.info(`Capturing complete`);
     } catch (e: unknown) {
       const { message, stack } = e as Error;
-      Sentry.captureException(log.error(new Error(`Worker failed. -- Cause: \n${message}:\n ${stack ?? ""} `)));
+      log.error(new Error(`Worker failed. -- Cause: \n${message}:\n ${stack ?? ""} `));
     } finally {
       isSyncing = false;
     }
@@ -213,7 +212,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const urlAndType = getUrlAndType(notification, recordMap);
     if (!urlAndType) {
-      Sentry.captureException(log.error(`Unable to handle notification ${id} of type ${notification.type}`));
+      log.error(`Unable to handle notification ${id} of type ${notification.type}`);
       continue;
     }
 
@@ -229,7 +228,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
-      Sentry.captureException(log.error(`Block is not page type, instead its: '${(pageBlock.type as string) ?? ""}'`));
+      log.error(`Block is not page type, instead its: '${(pageBlock.type as string) ?? ""}'`);
       continue;
     }
 
