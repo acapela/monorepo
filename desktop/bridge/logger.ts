@@ -9,7 +9,8 @@ export type Prefix =
   | "Preview"
   | "Notification-Events"
   | "ClientDb"
-  | "BrowserView";
+  | "BrowserView"
+  | "AutoUpdater";
 
 export type Severity = "Error" | "Warning" | "Info" | "Debug";
 

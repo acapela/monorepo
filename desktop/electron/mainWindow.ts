@@ -9,6 +9,7 @@ import { action, runInAction } from "mobx";
 
 import { AppEnvData } from "@aca/desktop/envData";
 
+import { makeLogger } from "../domains/dev/logger";
 import { appState } from "./appState";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
@@ -23,6 +24,8 @@ if (!IS_DEV) {
     release: app.getVersion(),
   });
 }
+
+const logger = makeLogger("AutoUpdater");
 
 export function initializeMainWindow() {
   const env: AppEnvData = {
@@ -56,7 +59,12 @@ export function initializeMainWindow() {
   mainWindow.loadURL(acapelaAppPathUrl);
 
   log.transports.file.level = "info";
-  autoUpdater.logger = log;
+  autoUpdater.logger = {
+    debug: (message: string) => logger.debug(message),
+    info: (message: string) => logger.info(message),
+    warn: (message: string) => logger.warn(message),
+    error: (message: string) => logger.error(message),
+  };
 
   setInterval(() => {
     autoUpdater.checkForUpdates();
@@ -77,8 +85,7 @@ export function initializeMainWindow() {
   });
 
   autoUpdater.on("error", (message) => {
-    console.error("There was a problem updating the application");
-    console.error(message);
+    logger.error("There was a problem updating the application", message);
   });
 
   runInAction(() => {
@@ -107,7 +114,6 @@ export function initializeMainWindow() {
         action: "allow",
         overrideBrowserWindowOptions: {
           fullscreenable: true,
-          backgroundColor: "black",
           webPreferences: {
             contextIsolation: true,
             preload: path.resolve(__dirname, "preload.js"),

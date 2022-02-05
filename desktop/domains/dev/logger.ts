@@ -105,7 +105,7 @@ export function makeLogger(prefix: Prefix) {
 
       return result;
     },
-    warning<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
+    warn<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
       const result = add({
         severity: "Warning",
         textOrError: joinInputs(textOrError, args),
