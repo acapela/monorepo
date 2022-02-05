@@ -15,6 +15,7 @@ import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
+import { LoggerWindow, isLoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
 
@@ -31,22 +32,39 @@ const BuiltInStyles = createGlobalStyle`
   ${globalStyles}
 `;
 
-render(
-  <>
-    <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-      <DesktopThemeProvider>
-        <BuiltInStyles />
-        <GlobalDesktopStyles />
-        <PromiseUIRenderer />
-        <TooltipsRenderer />
-        <ToastsRenderer />
-        <ServiceWorkerConsolidation />
-        <SystemBar />
-        <CommandMenuManager />
-        <RootView />
-        <DebugView />
-      </DesktopThemeProvider>
-    </MotionConfig>
-  </>,
-  rootElement
-);
+if (isLoggerWindow()) {
+  render(
+    <>
+      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+        <DesktopThemeProvider>
+          <BuiltInStyles />
+          <GlobalDesktopStyles />
+          <LoggerWindow />
+        </DesktopThemeProvider>
+      </MotionConfig>
+    </>,
+    rootElement
+  );
+} else {
+  // Main app
+  render(
+    <>
+      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+        <DesktopThemeProvider>
+          <BuiltInStyles />
+          <GlobalDesktopStyles />
+          <LoggerWindow />
+          <PromiseUIRenderer />
+          <TooltipsRenderer />
+          <ToastsRenderer />
+          <ServiceWorkerConsolidation />
+          <SystemBar />
+          <CommandMenuManager />
+          <RootView />
+          <DebugView />
+        </DesktopThemeProvider>
+      </MotionConfig>
+    </>,
+    rootElement
+  );
+}

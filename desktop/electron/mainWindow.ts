@@ -47,13 +47,13 @@ export function initializeMainWindow() {
 
   // mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(
-    IS_DEV
-      ? // In dev mode - load from local dev server
-        "http://localhost:3005"
-      : // In production - load static, bundled file
-        `file://${INDEX_HTML_FILE}`
-  );
+  const acapelaAppPathUrl = IS_DEV
+    ? // In dev mode - load from local dev server
+      "http://localhost:3005"
+    : // In production - load static, bundled file
+      `file://${INDEX_HTML_FILE}`;
+
+  mainWindow.loadURL(acapelaAppPathUrl);
 
   log.transports.file.level = "info";
   autoUpdater.logger = log;
@@ -96,6 +96,28 @@ export function initializeMainWindow() {
     mainWindow.getBrowserViews().forEach((view) => {
       mainWindow.removeBrowserView(view);
     });
+  });
+
+  // Used to pass the context of the window to child windows
+  // only windows with the `about:blank` url will be created.
+  // e.g, window.open("","frameName");
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.includes(acapelaAppPathUrl)) {
+      return {
+        action: "allow",
+        overrideBrowserWindowOptions: {
+          fullscreenable: true,
+          backgroundColor: "black",
+          webPreferences: {
+            contextIsolation: true,
+            preload: path.resolve(__dirname, "preload.js"),
+            additionalArguments: [JSON.stringify(env)],
+          },
+        },
+      };
+    }
+    // This should be way more restrictive
+    return { action: "allow" };
   });
 
   return mainWindow;
