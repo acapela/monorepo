@@ -6,52 +6,66 @@ import { getUUID } from "@aca/shared/uuid";
 export function makeLogger(prefix: Prefix) {
   const now = () => new Date().toISOString();
 
-  function add({ severity, textOrError }: { severity: Severity; textOrError: string | Error }) {
-    console.info("[[[LOG]]] SENDING");
-    const text = isError(textOrError)
+  function add<T extends string | Error>({ severity, textOrError }: { severity: Severity; textOrError: T }): T {
+    const text: string = isError(textOrError)
       ? `${textOrError.name} - ${textOrError.message}: ${textOrError.stack}`
       : textOrError;
 
+    const timestamp = now();
     const logEntry = {
       id: getUUID(),
       prefix,
       severity,
-      timestamp: now(),
+      timestamp,
       text,
     };
     logStorage.send(logEntry);
-    console.info(JSON.stringify(logEntry));
-    console.info(text);
+
+    const result = `[${prefix}][${severity}][${timestamp}]: ${text}`;
+
+    return (isError(textOrError) ? new Error(result) : result) as T;
   }
 
   return {
     error<T extends string | Error>(textOrError: T): T {
-      add({
+      const result = add({
         severity: "Error",
         textOrError,
       });
-      return textOrError;
+
+      console.error(result);
+
+      return result;
     },
     warning<T extends string | Error>(textOrError: T): T {
-      add({
+      const result = add({
         severity: "Warning",
         textOrError,
       });
-      return textOrError;
+
+      console.warn(result);
+
+      return result;
     },
     info<T extends string | Error>(textOrError: T): T {
-      add({
+      const result = add({
         severity: "Info",
         textOrError,
       });
-      return textOrError;
+
+      console.info(result);
+
+      return result;
     },
     debug<T extends string | Error>(textOrError: T): T {
-      add({
+      const result = add({
         severity: "Debug",
         textOrError,
       });
-      return textOrError;
+
+      // console.debug(result);
+
+      return result;
     },
   };
 }

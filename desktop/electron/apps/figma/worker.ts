@@ -6,6 +6,7 @@ import WebSocket from "ws";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { makeLogger } from "@aca/desktop/domains/dev/logger";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 
@@ -24,6 +25,7 @@ interface FigmaSessionData {
   trackingSessionId: string;
 }
 
+const log = makeLogger("Figma-Worker");
 function isUserNotification(payload: FigmaUserNotification | undefined): payload is FigmaUserNotification {
   return payload !== undefined;
 }
@@ -37,16 +39,15 @@ export function isFigmaReadyToSync() {
 }
 export async function startFigmaSync() {
   let figmaSessionData;
-  console.info("[Figma] Fetching session variables");
+  log.info("Fetching session variables");
   try {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
-    console.info("[Figma] Error getting figma session data", e);
-    Sentry.captureException(e);
+    Sentry.captureException(log.error("Error getting figma session data," + JSON.stringify(e)));
     figmaAuthTokenBridgeValue.set(null);
     return;
   }
-  console.info("[Figma] Done fetching session variables");
+  log.info("Done fetching session variables");
   // First sync extract all of the notifications from a standard rest endpoint.
   // This sync will get and sync all relevant notifications since last app open
   // Relevant notification: !read && !resolved && !rejected && created less than 2 weeks ago
@@ -90,10 +91,10 @@ export async function getFigmaSessionData(): Promise<FigmaSessionData> {
     .map((cookie) => cookie.name + "=" + cookie.value)
     .join("; ");
 
-  assert(release_git_tag, "Cant find figma release tag");
-  assert(figmaUserId, "Cant find figma user is");
-  assert(trackingSessionId, "cant find tracking session id");
-  assert(cookie, "cant find figma cookie");
+  assert(release_git_tag, "Cant find figma release tag", log.error);
+  assert(figmaUserId, "Cant find figma user is", log.error);
+  assert(trackingSessionId, "cant find tracking session id", log.error);
+  assert(cookie, "cant find figma cookie", log.error);
 
   return {
     release_git_tag,
@@ -115,10 +116,9 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
     },
   });
 
-  if (response.status === 401) {
-    Sentry.captureException(new Error("[Figma] unauthorized, 401"));
+  if (!response.ok) {
     figmaAuthTokenBridgeValue.set(null);
-    throw new Error("[Figma] Unauthorized");
+    throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
   }
 
   const result = (await response.json()) as GetFigmaUserNotificationsResponse;
@@ -128,7 +128,7 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
 
   const relevantFigmaNotifications = result.meta.feed.filter(isNotificationRelevant);
 
-  console.info(`[Figma] Attempting to sync ${relevantFigmaNotifications.length} relevant notifications`);
+  log.info(`Attempting to sync ${relevantFigmaNotifications.length} relevant notifications`);
 
   transformAndSyncFigmaNotifications(relevantFigmaNotifications, figmaUserId);
 }
@@ -155,8 +155,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
   }
 
   if (!figmaRealtimeUserToken) {
-    console.info("[Figma] unable to extract figma real time user token");
-    Sentry.captureException("[Figma] unable to extract figma real time user token");
+    Sentry.captureException(log.error("unable to extract figma real time user token"));
     return;
   }
 
@@ -180,7 +179,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
 
     // Subscription to messages related to user, including user notifications
     ws.send(`tok:${figmaRealtimeUserToken}`);
-    console.info("[Figma] opening socket connection");
+    log.info("Opening socket connection");
   });
 
   ws.on("message", function message(data) {
@@ -202,7 +201,7 @@ async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag 
       return;
     }
 
-    console.info("[Figma] Received socket user notification");
+    log.info("Received socket user notification");
 
     const userNotificationMessage: FigmaUserNotification = message.user_notification;
 

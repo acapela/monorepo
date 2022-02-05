@@ -1,13 +1,7 @@
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 
-export type Prefix =
-  | "Electron-Boot-Sequence"
-  | "Notion-Worker"
-  | "Figma-Worker"
-  | "Notion-Consolidation"
-  | "Figma-Consolidation"
-  | "Preview";
+export type Prefix = "Electron-Boot-Sequence" | "Notion-Worker" | "Figma-Worker" | "Worker-Consolidation" | "Preview";
 
 export type Severity = "Error" | "Warning" | "Info" | "Debug";
 

@@ -8,6 +8,10 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { authStore } from "@aca/desktop/store/authStore";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
+import { makeLogger } from "../domains/dev/logger";
+
+const log = makeLogger("Worker-Consolidation");
+
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = getNullableDb();
   const user = authStore.nullableUser;
@@ -16,26 +20,26 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
   useEffect(() => {
     if (db && user && !isReadyToSync) {
-      console.info("[Service Worker Consolidation] Enable worker sync");
+      log.info("Worker Sync Enabled");
       workerSyncStart(true).then(setReadyToSync);
     }
   }, [db, user, isReadyToSync]);
 
   useEffect(() => {
     if (!isReadyToSync) {
-      console.info("[Service Worker Consolidation] still waiting for client session");
+      log.debug("Still waiting for client session - Not ready to sync");
       return;
     }
 
-    console.info("[Service Worker Consolidation] Enable worker subscription handling");
+    log.debug("Begin worker consolidation sync subscriptions");
 
     notionSyncPayload.subscribe((data) => {
       if (!db || !user) {
-        console.info("[Service Worker Consolidation] still waiting for client session");
+        log.debug("[notionSyncPayload] Still waiting for client session");
         return;
       }
 
-      console.info(`[Service Worker Consolidation] Syncing ${data.length} Notion notifications`);
+      log.debug(`Syncing ${data.length} Notion notifications`);
       for (const { notification, notionNotification, type } of data) {
         const existingNotification = db.notificationNotion.findByUniqueIndex(
           "notion_original_notification_id",
@@ -71,11 +75,11 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
     figmaSyncPayload.subscribe((data) => {
       if (!db || !user) {
-        console.info("[Service Worker Consolidation] still waiting for client session");
+        log.debug("[figmaSyncPayload] still waiting for client session");
         return;
       }
 
-      console.info("[Service Worker Consolidation] Syncing Figma notifications");
+      log.debug(`Syncing ${data.length} Figma notifications`);
       for (const { notification, commentNotification } of data) {
         // TODO: Refactor once we have other figma notification types
         if (!commentNotification) {
