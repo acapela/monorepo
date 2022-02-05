@@ -22,7 +22,7 @@ export const ListView = observer(({ listId }: Props) => {
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
 
-  const allNotifications = displayedList?.getAllNotifications().all;
+  const allNotifications = displayedList?.getAllNotifications();
 
   const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 

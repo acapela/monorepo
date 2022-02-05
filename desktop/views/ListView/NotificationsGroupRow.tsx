@@ -13,6 +13,7 @@ import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
@@ -36,6 +37,8 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
   mobxTicks.minute.reportObserved();
 
   const isFocused = uiStore.useFocus(group, (group) => group?.id);
+
+  const isFocusedForAWhile = useDebouncedValue(isFocused, { onDelay: 200, offDelay: 0 });
 
   useEffect(() => {
     if (!isFocused) return;
@@ -73,7 +76,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
     <>
       <ActionTrigger action={toggleNotificationsGroup} target={group}>
         {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
-        {isFocused &&
+        {isFocusedForAWhile &&
           group.notifications.slice(0, 3).map((notificationToPreload) => {
             return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}

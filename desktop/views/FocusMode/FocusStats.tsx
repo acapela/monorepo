@@ -46,7 +46,7 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
    *
    * We however want to include new items if they appear in the list
    */
-  const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications().all);
+  const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications());
 
   const groups = groupNotifications(allNotificationsWhenFocusStarted);
 

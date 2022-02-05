@@ -61,7 +61,7 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
 export function orderNotificationsByGroups(notifications: NotificationEntity[]) {
   const groupedList = groupNotifications(notifications);
 
-  const result: NotificationOrGroup[] = [];
+  const result: NotificationEntity[] = [];
 
   groupedList.forEach((notificationOrGroup) => {
     if (getIsNotificationsGroup(notificationOrGroup)) {

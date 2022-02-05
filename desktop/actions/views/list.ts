@@ -51,7 +51,7 @@ export const listPageView = createActionView((context) => {
 });
 
 function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
-  const groupedList = groupNotifications(list.getAllNotifications().all);
+  const groupedList = groupNotifications(list.getAllNotifications());
 
   const result: NotificationOrGroup[] = [];
 

@@ -11,7 +11,7 @@ export const focusPageView = createActionView((context) => {
   const notification = context.assertTarget("notification");
 
   // Let's cache grouping and ordering notifications
-  const orderedNotifications = cachedComputed(() => orderNotificationsByGroups(list.getAllNotifications().all));
+  const orderedNotifications = list.getAllNotifications;
 
   const view = {
     list,

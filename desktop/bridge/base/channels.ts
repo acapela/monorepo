@@ -9,6 +9,8 @@
  *
  */
 
+import { toJS } from "mobx";
+
 export type ElectronChannelSubscriber<T> = (data: T, event: ElectronChannelEventUnified<T>) => void;
 export type ElectronSubscribeCleanup = () => void;
 
@@ -33,13 +35,21 @@ export function createChannelBridge<Data>(key: string) {
    *
    */
   function send(data: Data) {
-    if (process.env.ELECTRON_CONTEXT === "client") {
-      return window.electronBridge.send(key, data);
-    } else {
-      global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
-        targetWindow.webContents.send(key, data);
-      });
+    console.log({ data, key });
+    //
+    try {
+      if (process.env.ELECTRON_CONTEXT === "client") {
+        return window.electronBridge.send(key, toJS(data));
+      } else {
+        global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
+          targetWindow.webContents.send(key, toJS(data));
+        });
+      }
+    } catch (error) {
+      console.info(`Failed to send message for channel ${key}`, { data });
+      throw error;
     }
+    console.log("done", { key });
   }
 
   return {
