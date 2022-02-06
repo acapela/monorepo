@@ -105,7 +105,8 @@ interface PageBlockValue extends BlockValueCommon<"page"> {
   last_edited_by: string;
 
   properties: {
-    title: Array<string[]>;
+    title: BlockDataItem[];
+    [key: string]: unknown;
   };
 }
 
@@ -139,21 +140,19 @@ interface ActivityValueCommon<T extends ActivityType> {
 }
 
 type ActivityEdit<T extends ActivityType> = T extends "commented"
-  ? {
-      authors: {
-        id: string;
-      }[];
-      edits: (CommentCreatedActivityEdit | CommentChangedActivityEdit)[];
-    }
+  ? CommentCreatedActivityEdit | CommentChangedActivityEdit
   : {
       authors: {
         id: string;
-      }[];
+      };
     };
 
 type CommentEditedDataType = "comment-created" | "comment-changed";
 
 interface CommonCommentActivityEdit<T extends CommentEditedDataType> {
+  authors: {
+    id: string;
+  }[];
   comment_id: string;
   discussion_id: string;
   navigable_block_id: string;
@@ -162,9 +161,9 @@ interface CommonCommentActivityEdit<T extends CommentEditedDataType> {
   type: T;
 }
 
-interface CommentData {
+export interface ActivityCommentEditData {
   id: string;
-  text: CommentDataText;
+  text: BlockDataItem[];
   alive: boolean;
   version: number;
   space_id: string;
@@ -177,13 +176,13 @@ interface CommentData {
 }
 
 interface CommentCreatedActivityEdit extends CommonCommentActivityEdit<"comment-created"> {
-  comment_data: CommentData;
+  comment_data: ActivityCommentEditData;
 }
 
 interface CommentChangedActivityEdit extends CommonCommentActivityEdit<"comment-changed"> {
   comment_data: {
-    after: CommentData;
-    before: CommentData;
+    after: ActivityCommentEditData;
+    before: ActivityCommentEditData;
   };
 }
 
@@ -191,20 +190,30 @@ type NotionUserId = string;
 type NotionSpaceId = string;
 type NotionBlockId = string;
 
-type CommentDataText = (TextOnlyCommentData | MentionCommentData | PageReferenceCommentData | DateCommentData)[];
-type TextOnlyCommentData = [string];
-type MentionCommentData = ["‣", [["u", NotionUserId]]];
-type PageReferenceCommentData = ["‣", [["p", NotionBlockId, NotionSpaceId]]];
-type DateCommentData = [
-  "‣",
+export const NotionBlockDSLDataIndicator = "‣";
+export const NotionUserDataIndicator = "u";
+export const NotionPageReferenceDataIndicator = "p";
+export const NotionDateDataIndicator = "d";
+export type BlockDataItem = BlockTextItem | BlockMentionItem | BlockPageReferenceItem | BlockDateItem;
+export type BlockTextItem = [string];
+export type BlockMentionItem = [typeof NotionBlockDSLDataIndicator, [[typeof NotionUserDataIndicator, NotionUserId]]];
+export type BlockPageReferenceItem = [
+  typeof NotionBlockDSLDataIndicator,
+  [[typeof NotionPageReferenceDataIndicator, NotionBlockId, NotionSpaceId]]
+];
+export type BlockDateItem = [
+  typeof NotionBlockDSLDataIndicator,
   [
-    {
-      start_date: string; //e.g. 2022-02-12
-      end_date?: string; //e.g. 2022-02-12
-      start_time?: string; //e.g. 00:15
-      end_time?: string; //e.g. 23:59
-      time_zone?: string; //e.g. Pacific/Honolulu
-    }
+    [
+      typeof NotionDateDataIndicator,
+      {
+        start_date: string; //e.g. 2022-02-12
+        end_date?: string; //e.g. 2022-02-12
+        start_time?: string; //e.g. 00:15
+        end_time?: string; //e.g. 23:59
+        time_zone?: string; //e.g. Pacific/Honolulu
+      }
+    ]
   ]
 ];
 
@@ -212,11 +221,11 @@ interface UserInvitedActivityValue extends ActivityValueCommon<"user-invited"> {
   invited_user_id: string;
 }
 
-interface CommentedActivityValue extends ActivityValueCommon<"commented"> {
+export interface CommentedActivityValue extends ActivityValueCommon<"commented"> {
   discussion_id: string;
 }
 
-interface UserMentionedActivityValue extends ActivityValueCommon<"user-mentioned"> {
+export interface UserMentionedActivityValue extends ActivityValueCommon<"user-mentioned"> {
   mentioned_block_id: string;
   mentioned_property: string;
   mentioned_user_id: string;

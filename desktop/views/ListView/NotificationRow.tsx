@@ -16,7 +16,7 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
-import { UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   notification: NotificationEntity;
@@ -56,7 +56,10 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
       <UIHolder ref={elementRef} $isFocused={isFocused}>
         <NotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
+
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
+        <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
+
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>

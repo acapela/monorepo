@@ -28,6 +28,7 @@ const notificationFragment = gql`
     id
     from
     url
+    text_preview
     resolved_at
     updated_at
     created_at
@@ -67,13 +68,24 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     user_id: getContextValue(userIdContext) ?? undefined,
     resolved_at: null,
     snoozed_until: null,
+    text_preview: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
     notificationFragment,
     {
-      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id", "from", "snoozed_until"],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until"],
+      insertColumns: [
+        "id",
+        "created_at",
+        "resolved_at",
+        "updated_at",
+        "url",
+        "user_id",
+        "from",
+        "snoozed_until",
+        "text_preview",
+      ],
+      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview"],
       upsertConstraint: "notification_pkey",
     }
   ),
