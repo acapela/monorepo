@@ -8,7 +8,7 @@ import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
-import { makeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import {
   DesktopNotificationFragment,
   Notification_Bool_Exp,

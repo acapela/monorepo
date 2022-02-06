@@ -9,7 +9,7 @@ import {
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { makeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";

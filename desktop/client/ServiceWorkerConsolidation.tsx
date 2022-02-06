@@ -8,7 +8,7 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { authStore } from "@aca/desktop/store/authStore";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
-import { makeLogger } from "../domains/dev/logger";
+import { makeLogger } from "../domains/dev/makeLogger";
 
 const log = makeLogger("Worker-Consolidation");
 

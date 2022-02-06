@@ -6,7 +6,8 @@ import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action } from "mobx";
 
-import { InitializeLogger, makeLogger } from "../domains/dev/logger";
+import { InitializeLogger } from "../domains/dev/logger";
+import { makeLogger } from "../domains/dev/makeLogger";
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
@@ -35,10 +36,10 @@ function initializeApp() {
   log.info(`Initialize main window`);
   initializeMainWindow();
 
-  log.info(`Initialize main window`);
+  log.info(`Initialize logger`);
   InitializeLogger();
 
-  log.info(`Initialize main window`);
+  log.info(`Initialize service sync`);
   initializeServiceSync();
 
   initializeGlobalShortcuts();

@@ -4,7 +4,7 @@ import { assert } from "@aca/shared/assert";
 import { asyncComputedWithCleanup } from "@aca/shared/mobx/utils";
 import { wait } from "@aca/shared/time";
 
-import { makeLogger } from "../domains/dev/logger";
+import { makeLogger } from "../domains/dev/makeLogger";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
 const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid, setSelf }) => {

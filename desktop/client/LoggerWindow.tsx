@@ -6,30 +6,15 @@ import styled from "styled-components";
 import { theme } from "@aca/ui/theme";
 
 import { LogEntry, getAllLogsBridge, logStorage } from "../bridge/logger";
-import { desktopRouter } from "../routes";
-
-const LOGGER_WINDOW_NAME = "logger";
-
-export function isLoggerWindow() {
-  return window.name === LOGGER_WINDOW_NAME;
-}
 
 export const LoggerWindow = observer(function LoggerWindow() {
   const [allLogs, { push: addLog, set: setLogEntryList }] = useList<LogEntry>([]);
   useEffectOnce(() => {
-    if (!isLoggerWindow()) {
-      window.open(desktopRouter.createURL("home"), LOGGER_WINDOW_NAME);
-    } else {
-      getAllLogsBridge().then((logs) => setLogEntryList(logs));
-      logStorage.subscribe((entry) => {
-        addLog(entry);
-      });
-    }
+    getAllLogsBridge().then((logs) => setLogEntryList(logs));
+    logStorage.subscribe((entry) => {
+      addLog(entry);
+    });
   });
-
-  if (!isLoggerWindow()) {
-    return <></>;
-  }
 
   return (
     <UILogEntryList>

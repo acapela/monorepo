@@ -8,7 +8,7 @@ import {
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
-import { makeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";

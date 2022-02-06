@@ -5,7 +5,7 @@ import WebSocket from "ws";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { makeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 

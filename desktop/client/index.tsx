@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/electron/dist/renderer";
 import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
@@ -15,16 +14,9 @@ import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
-import { LoggerWindow, isLoggerWindow } from "./LoggerWindow";
+import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
-
-if (!window.electronBridge.env.isDev) {
-  Sentry.init({
-    dsn: window.electronBridge.env.sentryDsn,
-    release: window.electronBridge.env.version,
-  });
-}
 
 const rootElement = document.getElementById("root");
 
@@ -32,7 +24,7 @@ const BuiltInStyles = createGlobalStyle`
   ${globalStyles}
 `;
 
-if (isLoggerWindow()) {
+if (window.electronBridge.env.windowName === "Logger") {
   render(
     <>
       <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
@@ -53,7 +45,6 @@ if (isLoggerWindow()) {
         <DesktopThemeProvider>
           <BuiltInStyles />
           <GlobalDesktopStyles />
-          <LoggerWindow />
           <PromiseUIRenderer />
           <TooltipsRenderer />
           <ToastsRenderer />
