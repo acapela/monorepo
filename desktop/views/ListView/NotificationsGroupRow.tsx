@@ -21,7 +21,7 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UINotificationGroupTitle, UISendersLabel } from "./shared";
 
 interface Props {
   group: NotificationsGroup;
@@ -132,7 +132,7 @@ const UIHolder = styled.div<{ $isFocused: boolean }>`
   }
 `;
 
-const UITitle = styled(UINotificationRowTitle)`
+const UITitle = styled(UINotificationGroupTitle)`
   display: flex;
   gap: 8px;
   align-items: center;
