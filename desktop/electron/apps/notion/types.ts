@@ -105,7 +105,8 @@ interface PageBlockValue extends BlockValueCommon<"page"> {
   last_edited_by: string;
 
   properties: {
-    title: Array<string[]>;
+    title: BlockDataItem[];
+    [key: string]: unknown;
   };
 }
 
@@ -162,7 +163,7 @@ interface CommonCommentActivityEdit<T extends CommentEditedDataType> {
 
 export interface ActivityCommentEditData {
   id: string;
-  text: CommentDataText[];
+  text: BlockDataItem[];
   alive: boolean;
   version: number;
   space_id: string;
@@ -189,18 +190,18 @@ type NotionUserId = string;
 type NotionSpaceId = string;
 type NotionBlockId = string;
 
-export const NotionDSLDataIndicator = "‣";
+export const NotionBlockDSLDataIndicator = "‣";
 export const NotionUserDataIndicator = "u";
 export const NotionPageReferenceDataIndicator = "p";
-export type CommentDataText = TextOnlyCommentData | MentionCommentData | PageReferenceCommentData | DateCommentData;
-export type TextOnlyCommentData = [string];
-export type MentionCommentData = [typeof NotionDSLDataIndicator, [[typeof NotionUserDataIndicator, NotionUserId]]];
-export type PageReferenceCommentData = [
-  typeof NotionDSLDataIndicator,
+export type BlockDataItem = BlockTextItem | BlockMentionItem | BlockPageReferenceItem | BlockDateItem;
+export type BlockTextItem = [string];
+export type BlockMentionItem = [typeof NotionBlockDSLDataIndicator, [[typeof NotionUserDataIndicator, NotionUserId]]];
+export type BlockPageReferenceItem = [
+  typeof NotionBlockDSLDataIndicator,
   [[typeof NotionPageReferenceDataIndicator, NotionBlockId, NotionSpaceId]]
 ];
-export type DateCommentData = [
-  typeof NotionDSLDataIndicator,
+export type BlockDateItem = [
+  typeof NotionBlockDSLDataIndicator,
   [
     {
       start_date: string; //e.g. 2022-02-12
@@ -220,7 +221,7 @@ export interface CommentedActivityValue extends ActivityValueCommon<"commented">
   discussion_id: string;
 }
 
-interface UserMentionedActivityValue extends ActivityValueCommon<"user-mentioned"> {
+export interface UserMentionedActivityValue extends ActivityValueCommon<"user-mentioned"> {
   mentioned_block_id: string;
   mentioned_property: string;
   mentioned_user_id: string;

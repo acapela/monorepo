@@ -14,7 +14,7 @@ import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
-import { extractNotionComment } from "./commentExtractor";
+import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import type {
   ActivityPayload,
   BlockPayload,
@@ -226,7 +226,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const { url, type, text_preview } = notificationProperties;
 
     const pageId = notification.navigable_block_id;
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
 
     const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
@@ -278,6 +278,7 @@ function getNotificationProperties(
     return {
       type: "notification_notion_user_mentioned",
       url,
+      text_preview: extractBlockMention(activity, recordMap),
     };
   }
 
