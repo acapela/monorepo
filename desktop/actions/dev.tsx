@@ -4,6 +4,7 @@ import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/sy
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { IconKeyboard } from "@aca/ui/icons";
 
+import { requestToggleLoggerWindow } from "../bridge/logger";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -63,5 +64,14 @@ export const toggleDevtools = defineAction({
   keywords: ["dev"],
   handler() {
     toggleDevtoolsRequest(false);
+  },
+});
+
+export const toggleOpenLoggerWindow = defineAction({
+  icon: devIcon,
+  name: "Toggle dev logs window",
+  group: devActionsGroup,
+  handler() {
+    requestToggleLoggerWindow();
   },
 });

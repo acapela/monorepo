@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/electron";
 import { differenceInMinutes } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
@@ -10,6 +9,7 @@ import {
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
@@ -22,6 +22,8 @@ const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
 let currentInterval: NodeJS.Timer | null = null;
 let timeOfLastSync: Date | null = null;
 let isSyncing = false;
+
+const log = makeLogger("Notion-Worker");
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
 export const notionURL = "https://www.notion.so";
@@ -51,14 +53,14 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
   });
 
   if (!cookies) {
-    throw new Error("[Notion] unable to sync: no cookies");
+    throw log.error(new Error("Unable to sync: no cookies"));
   }
 
   window.close();
 
   const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id")?.value;
 
-  assert(notionUserId, "[Notion] Unable to extract notion user id from cookies");
+  assert(notionUserId, "Unable to extract notion user id from cookies", log.error);
 
   const cookie = cookies
     .filter((cookie) => cookie.domain?.includes("notion.so"))
@@ -87,17 +89,16 @@ export function startNotionSync(): ServiceSyncController {
 
     try {
       isSyncing = true;
-      console.info(`[Notion](${new Date().toISOString()}) Capturing started`);
+      log.info(`Capturing started`);
       const notificationLog = await fetchNotionNotificationLog(sessionData);
 
       notionSyncPayload.send(extractNotifications(notificationLog));
 
       timeOfLastSync = new Date();
 
-      console.info(`[Notion](${new Date().toISOString()}) Capturing complete`);
-    } catch (e) {
-      console.info("[Notion] Error syncing notion", e);
-      Sentry.captureException(e);
+      log.info(`Capturing complete`);
+    } catch (e: unknown) {
+      log.error(new Error("Worker failed"), e as Error);
     } finally {
       isSyncing = false;
     }
@@ -136,7 +137,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
   const spaceId = await fetchCurrentSpace(sessionData);
 
   if (!spaceId) {
-    throw new Error("[Notion] Unable to fetch spaceId");
+    throw log.error(new Error("Unable to fetch spaceId"));
   }
 
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
@@ -153,9 +154,9 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
     }),
   });
 
-  if (response.status === 401) {
+  if (!response.ok) {
     clearNotionSessionData();
-    throw new Error("[Notion] Unauthorized");
+    throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
   const result = (await response.json()) as GetNotificationLogResult;
@@ -173,9 +174,9 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
     body: JSON.stringify({}),
   });
 
-  if (response.status === 401) {
+  if (!response.ok) {
     clearNotionSessionData();
-    throw new Error("[Notion] 401 - Unauthorized");
+    throw log.error(new Error(`getSpaces`), `${response.status} - ${response.statusText}`);
   }
 
   const getSpacesResult = (await response.json()) as GetSpacesResult;
@@ -185,7 +186,7 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
   const allSpaces = Object.values(currentUserSpaces).map((space) => ({ id: space.value.id, name: space.value.name }));
 
   if (allSpaces.length === 0) {
-    throw new Error("[Notion] Unable to find any spaces in account");
+    throw log.error(new Error(`Unable to find any spaces in account`));
   }
 
   const savedSpaces = notionSelectedSpaceValue.get();
@@ -210,8 +211,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const urlAndType = getUrlAndType(notification, recordMap);
     if (!urlAndType) {
-      console.info(`[Notion] Unable to handle notification ${id} of type ${notification.type}`);
-      Sentry.captureException(`[Notion] Unable to handle notification of type ${notification.type}`);
+      log.error(`Unable to handle notification ${id} of type ${notification.type}`);
       continue;
     }
 
@@ -227,8 +227,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
 
     if (pageBlock.type !== "page") {
-      console.info(`[Notion] Block is not page type, instead its: '${notification.type}'`);
-      Sentry.captureException(`[Notion] Block is not page type, instead its: '${notification.type}'`);
+      log.error(`Block is not page type, instead its`, (pageBlock.type as string) ?? "");
       continue;
     }
 
