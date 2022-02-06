@@ -4,6 +4,7 @@ import {
   CommentedActivityValue,
   GetNotificationLogResult,
   NotionBlockDSLDataIndicator,
+  NotionDateDataIndicator,
   NotionPageReferenceDataIndicator,
   NotionUserDataIndicator,
   UserMentionedActivityValue,
@@ -80,19 +81,24 @@ function extractTextFromBlockDataItem(
 
   const notionDSLData = item[1][0];
 
-  if (Array.isArray(notionDSLData) && notionDSLData[0] === NotionUserDataIndicator) {
+  if (!Array.isArray(notionDSLData)) {
+    return;
+  }
+
+  if (notionDSLData[0] === NotionUserDataIndicator) {
     const mentionedUserId = notionDSLData[1];
     return `@${recordMap.notion_user[mentionedUserId].value.name} `;
   }
 
-  if (Array.isArray(notionDSLData) && notionDSLData[0] === NotionPageReferenceDataIndicator) {
+  if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
     return `📄${(recordMap.block[pageId] as BlockPayload<"page">).value.properties.title[0][0]} `;
   }
 
-  if (notionDSLData.start_date) {
-    const start = `${notionDSLData.start_date} ${notionDSLData.start_time ?? ""}`.trim();
-    const end = `${notionDSLData.end_date ?? ""} ${notionDSLData.end_time ?? ""}`.trim();
-    return end ? `${start} - ${end} ` : `${start} `;
+  if (notionDSLData[0] === NotionDateDataIndicator) {
+    const { start_date, start_time, end_date, end_time } = notionDSLData[1];
+    const startText = `${start_date} ${start_time ?? ""}`.trim();
+    const endText = `${end_date ?? ""} ${end_time ?? ""}`.trim();
+    return endText ? `${startText} - ${endText} ` : `${startText} `;
   }
 }

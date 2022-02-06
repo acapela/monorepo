@@ -193,6 +193,7 @@ type NotionBlockId = string;
 export const NotionBlockDSLDataIndicator = "‣";
 export const NotionUserDataIndicator = "u";
 export const NotionPageReferenceDataIndicator = "p";
+export const NotionDateDataIndicator = "d";
 export type BlockDataItem = BlockTextItem | BlockMentionItem | BlockPageReferenceItem | BlockDateItem;
 export type BlockTextItem = [string];
 export type BlockMentionItem = [typeof NotionBlockDSLDataIndicator, [[typeof NotionUserDataIndicator, NotionUserId]]];
@@ -203,13 +204,16 @@ export type BlockPageReferenceItem = [
 export type BlockDateItem = [
   typeof NotionBlockDSLDataIndicator,
   [
-    {
-      start_date: string; //e.g. 2022-02-12
-      end_date?: string; //e.g. 2022-02-12
-      start_time?: string; //e.g. 00:15
-      end_time?: string; //e.g. 23:59
-      time_zone?: string; //e.g. Pacific/Honolulu
-    }
+    [
+      typeof NotionDateDataIndicator,
+      {
+        start_date: string; //e.g. 2022-02-12
+        end_date?: string; //e.g. 2022-02-12
+        start_time?: string; //e.g. 00:15
+        end_time?: string; //e.g. 23:59
+        time_zone?: string; //e.g. Pacific/Honolulu
+      }
+    ]
   ]
 ];
 
