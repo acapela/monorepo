@@ -14,7 +14,14 @@ import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
-import { ActivityPayload, BlockPayload, GetNotificationLogResult, GetSpacesResult, NotificationPayload } from "./types";
+import { extractNotionComment } from "./commentExtractor";
+import type {
+  ActivityPayload,
+  BlockPayload,
+  GetNotificationLogResult,
+  GetSpacesResult,
+  NotificationPayload,
+} from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
@@ -98,7 +105,7 @@ export function startNotionSync(): ServiceSyncController {
 
       log.info(`Capturing complete`);
     } catch (e: unknown) {
-      log.error(new Error("Worker failed"), e as Error);
+      log.error(e as Error);
     } finally {
       isSyncing = false;
     }
@@ -206,16 +213,17 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
   const result: NotionWorkerSync = [];
 
+  log.debug(`Found ${notificationIds.length} notifications`);
   for (const id of notificationIds) {
     const notification = recordMap.notification[id].value;
 
-    const urlAndType = getUrlAndType(notification, recordMap);
-    if (!urlAndType) {
+    const notificationProperties = getNotificationProperties(notification, recordMap);
+    if (!notificationProperties) {
       log.error(`Unable to handle notification ${id} of type ${notification.type}`);
       continue;
     }
 
-    const { url, type } = urlAndType;
+    const { url, type, text_preview } = notificationProperties;
 
     const pageId = notification.navigable_block_id;
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
@@ -235,6 +243,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     result.push({
       notification: {
         url,
+        text_preview,
         created_at,
         updated_at,
         from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
@@ -252,10 +261,10 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
   return result;
 }
 
-function getUrlAndType(
+function getNotificationProperties(
   notification: NotificationPayload["value"],
   recordMap: GetNotificationLogResult["recordMap"]
-): { type: NotionNotificationType; url: string } | undefined {
+): { type: NotionNotificationType; url: string; text_preview?: string | undefined } | undefined {
   const pageId = notification.navigable_block_id;
 
   if (notification.type === "user-mentioned") {
@@ -288,6 +297,7 @@ function getUrlAndType(
     return {
       type: "notification_notion_commented",
       url,
+      text_preview: extractNotionComment(activity, recordMap),
     };
   }
 

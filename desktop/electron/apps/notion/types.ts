@@ -139,21 +139,19 @@ interface ActivityValueCommon<T extends ActivityType> {
 }
 
 type ActivityEdit<T extends ActivityType> = T extends "commented"
-  ? {
-      authors: {
-        id: string;
-      }[];
-      edits: (CommentCreatedActivityEdit | CommentChangedActivityEdit)[];
-    }
+  ? CommentCreatedActivityEdit | CommentChangedActivityEdit
   : {
       authors: {
         id: string;
-      }[];
+      };
     };
 
 type CommentEditedDataType = "comment-created" | "comment-changed";
 
 interface CommonCommentActivityEdit<T extends CommentEditedDataType> {
+  authors: {
+    id: string;
+  }[];
   comment_id: string;
   discussion_id: string;
   navigable_block_id: string;
@@ -162,9 +160,9 @@ interface CommonCommentActivityEdit<T extends CommentEditedDataType> {
   type: T;
 }
 
-interface CommentData {
+export interface ActivityCommentEditData {
   id: string;
-  text: CommentDataText;
+  text: CommentDataText[];
   alive: boolean;
   version: number;
   space_id: string;
@@ -177,13 +175,13 @@ interface CommentData {
 }
 
 interface CommentCreatedActivityEdit extends CommonCommentActivityEdit<"comment-created"> {
-  comment_data: CommentData;
+  comment_data: ActivityCommentEditData;
 }
 
 interface CommentChangedActivityEdit extends CommonCommentActivityEdit<"comment-changed"> {
   comment_data: {
-    after: CommentData;
-    before: CommentData;
+    after: ActivityCommentEditData;
+    before: ActivityCommentEditData;
   };
 }
 
@@ -191,12 +189,18 @@ type NotionUserId = string;
 type NotionSpaceId = string;
 type NotionBlockId = string;
 
-type CommentDataText = (TextOnlyCommentData | MentionCommentData | PageReferenceCommentData | DateCommentData)[];
-type TextOnlyCommentData = [string];
-type MentionCommentData = ["‣", [["u", NotionUserId]]];
-type PageReferenceCommentData = ["‣", [["p", NotionBlockId, NotionSpaceId]]];
-type DateCommentData = [
-  "‣",
+export const NotionDSLDataIndicator = "‣";
+export const NotionUserDataIndicator = "u";
+export const NotionPageReferenceDataIndicator = "p";
+export type CommentDataText = TextOnlyCommentData | MentionCommentData | PageReferenceCommentData | DateCommentData;
+export type TextOnlyCommentData = [string];
+export type MentionCommentData = [typeof NotionDSLDataIndicator, [[typeof NotionUserDataIndicator, NotionUserId]]];
+export type PageReferenceCommentData = [
+  typeof NotionDSLDataIndicator,
+  [[typeof NotionPageReferenceDataIndicator, NotionBlockId, NotionSpaceId]]
+];
+export type DateCommentData = [
+  typeof NotionDSLDataIndicator,
   [
     {
       start_date: string; //e.g. 2022-02-12
@@ -212,7 +216,7 @@ interface UserInvitedActivityValue extends ActivityValueCommon<"user-invited"> {
   invited_user_id: string;
 }
 
-interface CommentedActivityValue extends ActivityValueCommon<"commented"> {
+export interface CommentedActivityValue extends ActivityValueCommon<"commented"> {
   discussion_id: string;
 }
 
