@@ -14,6 +14,7 @@ import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
+import { initializeDefaultSession } from "./session";
 import { initializeSingleInstanceLock } from "./singleInstance";
 
 // Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
@@ -43,6 +44,8 @@ function initializeApp() {
   initializeServiceSync();
 
   initializeGlobalShortcuts();
+
+  initializeDefaultSession();
 }
 
 app.on("ready", action(initializeApp));
