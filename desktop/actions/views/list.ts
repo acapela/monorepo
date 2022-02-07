@@ -45,7 +45,7 @@ export const listPageView = createActionView((context) => {
     displayZenModeOrFocusNextItem() {
       const { list } = view;
 
-      if (list.getAllNotifications().hasItems) {
+      if (list.getAllNotifications().length) {
         return view.focusNextItem();
       }
 
@@ -61,7 +61,7 @@ export const listPageView = createActionView((context) => {
 });
 
 function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
-  const groupedList = groupNotifications(list.getAllNotifications().all);
+  const groupedList = groupNotifications(list.getAllNotifications());
 
   const result: NotificationOrGroup[] = [];
 

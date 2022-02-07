@@ -2,6 +2,7 @@ import { action, observable } from "mobx";
 import { useObserver } from "mobx-react";
 
 import { createChannel } from "@aca/shared/channel";
+import { runUntracked } from "@aca/shared/mobx/utils";
 import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 
 import { createChannelBridge } from "./channels";
@@ -20,7 +21,7 @@ interface BridgeValueConfig<T> {
 export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
   const localChannel = createChannel<T>();
 
-  const observableValue = observable.box<T>(getDefault());
+  const observableValue = observable.box<T>(getDefault(), { deep: false });
 
   const isReady = observable.box(!isPersisted);
 
@@ -64,9 +65,11 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
   }
 
   function update(updater: ValueUpdater<T>) {
-    const newValue = updateValue(get(), updater);
+    runUntracked(() => {
+      const newValue = updateValue(get(), updater);
 
-    set(newValue);
+      set(newValue);
+    });
   }
 
   function get() {

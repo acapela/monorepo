@@ -19,7 +19,7 @@ import { openConfirmPrompt } from "@aca/frontend/utils/confirm";
 import { DecisionVoting } from "@aca/frontend/views/RequestView/TopicWithMessages/Decision/DecisionVoting";
 import { assert } from "@aca/shared/assert";
 import { styledObserver } from "@aca/shared/component";
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useIsHashActive } from "@aca/shared/hooks/useHashChangeEffect";
 import { REQUEST_DECISION } from "@aca/shared/requests";
 import { select } from "@aca/shared/sharedState";
@@ -87,7 +87,7 @@ export const Message = styledObserver<Props>(
       }
     }
 
-    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly && !message.topic?.isClosed, {
+    const shouldShowTools = useDebouncedBoolean(!isInEditMode && !isReadonly && !message.topic?.isClosed, {
       onDelay: 0,
       offDelay: 200,
     });

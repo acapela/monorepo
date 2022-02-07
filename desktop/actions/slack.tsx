@@ -8,12 +8,12 @@ import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
 import { apolloClient } from "../apolloClient";
 import { connectSlackBridge } from "../bridge/auth";
-import { getDb } from "../clientdb";
+import { getNullableDb } from "../clientdb";
 import { authStore } from "../store/authStore";
 import { defineAction } from "./action";
 import { accountActionsGroup } from "./auth";
 
-const getAuthUser = () => getDb().user.findById(authStore.user.id);
+const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
 async function querySlackInstallationURL() {
   const {

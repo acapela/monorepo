@@ -40,7 +40,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
   const listActions = lists.slice(0, 10).map((list) =>
     defineAction({
       name: list.name,
-      supplementaryLabel: () => pluralize`${list.getAllNotifications().count} ${["notification"]}`,
+      supplementaryLabel: () => pluralize`${list.getAllNotifications().length} ${["notification"]}`,
       group: searchListActionsGroup,
       icon: <IconFolder />,
       handler() {

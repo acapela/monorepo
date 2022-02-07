@@ -18,6 +18,12 @@ export interface PreviewPosition {
   right: number;
 }
 
+export enum PreviewLoadingPriority {
+  current = 0,
+  next = 1,
+  following = 2,
+}
+
 function getViewportSize(): Point {
   return {
     x: window.innerWidth,

@@ -36,6 +36,17 @@ export const toggleDebugFocus = defineAction({
   },
 });
 
+export const toggleDebugPreloading = defineAction({
+  icon: devIcon,
+  name: "Toggle debug preloading",
+  group: devActionsGroup,
+  keywords: ["dev"],
+  supplementaryLabel: () => (devSettingsStore.debugPreloading ? "Will disable" : "Will enable"),
+  handler() {
+    devSettingsStore.debugPreloading = !devSettingsStore.debugPreloading;
+  },
+});
+
 export const toggleHidePreviews = defineAction({
   icon: devIcon,
   name: "Toggle hide previews",

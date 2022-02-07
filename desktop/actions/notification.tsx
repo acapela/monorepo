@@ -9,6 +9,7 @@ import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
 import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
+import { PreviewLoadingPriority } from "../domains/preview";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeOrFocusNextItem } from "./views/common";
@@ -149,13 +150,13 @@ export const openFocusMode = defineAction({
     const notification = context.getTarget("notification");
 
     if (notification) {
-      return requestPreviewPreload({ url: notification.url });
+      return requestPreviewPreload({ url: notification.url, priority: PreviewLoadingPriority.next });
     }
 
     const group = context.getTarget("group");
 
     if (group) {
-      requestPreviewPreload({ url: group.notifications[0].url });
+      requestPreviewPreload({ url: group.notifications[0].url, priority: PreviewLoadingPriority.next });
     }
   },
 });
