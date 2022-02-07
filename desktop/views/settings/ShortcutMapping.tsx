@@ -23,7 +23,6 @@ const buildElectronShortcutStringFromKeyboardEvent = (event: React.KeyboardEvent
 export const ShortcutMapping = observer(() => {
   const currentValue = globalShortcutsValue.get().show;
   const [value, setValue] = useState(currentValue);
-  const isUpdateDisabled = !value || value == currentValue;
   return (
     <HStack>
       <div style={{ width: "100%" }}>
@@ -51,11 +50,10 @@ export const ShortcutMapping = observer(() => {
       </Button>
       <Button
         kind="primary"
-        disabled={isUpdateDisabled}
+        isDisabled={!value || value == currentValue}
         onClick={() => {
           globalShortcutsValue.set({ show: value });
         }}
-        style={isUpdateDisabled ? { opacity: 0.5 } : {}}
       >
         {currentValue ? "Update" : "Enable"}
       </Button>

@@ -11,14 +11,18 @@ function showMainWindow() {
 
 export function initializeGlobalShortcuts() {
   let currentShortcut: string | null = null;
+  function unregisterGlobalShowShortcut() {
+    if (currentShortcut) {
+      globalShortcut.unregister(currentShortcut);
+    }
+  }
+
   autorun(() => {
     if (!globalShortcutsValue.isReady) {
       return;
     }
 
-    if (currentShortcut) {
-      globalShortcut.unregister(currentShortcut);
-    }
+    unregisterGlobalShowShortcut();
     currentShortcut = globalShortcutsValue.get().show;
     const didRegister = currentShortcut && globalShortcut.register(currentShortcut, showMainWindow);
     if (!didRegister) {
@@ -27,9 +31,7 @@ export function initializeGlobalShortcuts() {
   });
 
   appState.mainWindow?.on("focus", () => {
-    if (currentShortcut) {
-      globalShortcut.unregister(currentShortcut);
-    }
+    unregisterGlobalShowShortcut();
   });
   appState.mainWindow?.on("blur", () => {
     if (currentShortcut) {
@@ -40,8 +42,6 @@ export function initializeGlobalShortcuts() {
   });
 
   app.on("will-quit", () => {
-    if (currentShortcut) {
-      globalShortcut.unregister(currentShortcut);
-    }
+    unregisterGlobalShowShortcut();
   });
 }
