@@ -3,7 +3,7 @@ import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { unsafeAssertType } from "@aca/shared/assert";
 
-import { groupNotifications, orderNotificationsByGroups } from "../group/groupNotifications";
+import { orderNotificationsByGroups } from "../group/groupNotifications";
 
 interface DefineListConfig {
   id: string;

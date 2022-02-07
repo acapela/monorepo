@@ -34,6 +34,8 @@ function informURLLoading(url: string, isLoading: boolean, isReady?: boolean) {
  * Attaching views always have top priority.
  *
  * Preload items can manually set it up.
+ *
+ * @see previewPreloadQueue : getPriority
  */
 const preloadingPriorityMap = new Map<string, number>();
 
@@ -52,8 +54,6 @@ const previewPreloadQueue = warmupQueue<PreviewManager>({
     manager.preload().then(() => {
       informURLLoading(manager.url, true, true);
     });
-
-    //
   },
   cleanup(manager) {
     manager.destroy();
