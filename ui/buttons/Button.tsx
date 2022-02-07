@@ -23,7 +23,7 @@ export interface ButtonStyleProps {
   size?: ButtonSize;
 }
 
-export interface ButtonProps extends HTMLMotionProps<"button">, ButtonStyleProps {
+export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "disabled">, ButtonStyleProps {
   icon?: ReactNode;
   iconAtStart?: boolean;
   isLoading?: boolean;

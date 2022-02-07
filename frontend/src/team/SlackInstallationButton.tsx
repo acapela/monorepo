@@ -77,7 +77,7 @@ export const AddSlackInstallationButton = observer(function AddSlackInstallation
 
   return (
     <UISlackButton
-      disabled={loading}
+      isDisabled={loading}
       onClick={() => {
         window.location.href = assertDefined(
           slackInstallationData?.slackInstallation,
@@ -179,7 +179,7 @@ export const SlackInstallationButton = observer(function SlackInstallationButton
 
 const UISlackButton = styled(Button)`
   ${(props) =>
-    props.disabled &&
+    props.isDisabled &&
     css`
       opacity: 0.6;
       cursor: initial;
@@ -187,5 +187,5 @@ const UISlackButton = styled(Button)`
 `;
 
 const SlackLoadingButton = (props: React.ComponentProps<typeof UISlackButton>) => (
-  <UISlackButton icon={<SlackLogo />} iconAtStart isWide disabled {...props} />
+  <UISlackButton icon={<SlackLogo />} iconAtStart isWide isDisabled {...props} />
 );
