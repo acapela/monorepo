@@ -4,10 +4,13 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { styledObserver } from "@aca/shared/component";
 
 //@ts-ignore
 import figma from "./figma.svg";
+//@ts-ignore
+import linear from "./linear.svg";
 //@ts-ignore
 import notion from "./notion.svg";
 //@ts-ignore
@@ -22,7 +25,7 @@ interface Props {
 export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   notification,
   className,
-  isOnDarkBackground,
+  isOnDarkBackground = uiStore.isInDarkMode,
 }: Props) {
   const targetNotification = notification.inner;
 
@@ -40,6 +43,10 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
 
   if (targetNotification.__typename === "notification_notion") {
     return <UIIcon className={className} src={notion} $invert={isOnDarkBackground} />;
+  }
+
+  if (targetNotification.__typename === "notification_linear") {
+    return <UIIcon className={className} src={linear} />;
   }
 
   return unknownNode;

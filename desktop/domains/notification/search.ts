@@ -8,7 +8,7 @@ import { getNotificationTitle } from "./title";
 export const getNotificationSearchTerms = cachedComputed((notification: NotificationEntity) => {
   const title = getNotificationTitle(notification);
 
-  return [title];
+  return [title, notification.from];
 });
 
 export function notificationsFuzzySearch(keyword: string) {

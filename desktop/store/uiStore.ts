@@ -36,8 +36,20 @@ export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
   isSidebarOpened: false,
   isInDarkMode: false,
+  isDisplayingZenImage: false,
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
+  },
+  useFocus<T>(item: T, keyGetter?: (item: T | null) => string | undefined) {
+    function getIsFocused() {
+      if (!keyGetter) return item === uiStore.focusedTarget;
+
+      return keyGetter(item) === keyGetter(uiStore.focusedTarget as T | null);
+    }
+
+    const isFocused = getIsFocused();
+
+    return isFocused;
   },
   get isFullscreen() {
     return isFullscreenValue.get();
@@ -60,10 +72,13 @@ export const uiStore = makeAutoObservable({
 });
 
 /**
- * After each route change, make sure sidebar is closed.
+ * After each route change, make sure sidebar is closed and the zen image is removed.
  */
 desktopRouter.subscribe(() => {
   uiStore.isSidebarOpened = false;
+  uiStore.focusedTarget = null;
+
+  uiStore.isDisplayingZenImage = false;
 });
 
 autorun(() => {

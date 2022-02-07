@@ -4,6 +4,7 @@ import { Nullish, isNotNullish } from "./nullish";
 export class AssertError extends Error {
   constructor(message: string) {
     super(`Assert error - ${message}`);
+    this.name = "AssertError";
   }
 }
 
@@ -23,7 +24,11 @@ export function assertDefined<T>(input: T | Nullish, messageOrError: MessageOrEr
   return input;
 }
 
-export function assert(input: unknown, messageOrError: MessageOrError): asserts input {
+export function assert(
+  input: unknown,
+  messageOrError: MessageOrError,
+  logger: typeof console.error = console.error.bind(console)
+): asserts input {
   if (input) {
     return;
   }
@@ -31,10 +36,14 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   const error = getErrorFromMessageOrError(messageOrError);
 
   if (IS_DEV) {
-    console.error(error);
+    logger(error);
   }
 
   throw error;
+}
+
+export function unsafeAssert(input: unknown): asserts input {
+  //
 }
 
 export function unsafeAssertType<T>(input: unknown): asserts input is T {
@@ -51,5 +60,13 @@ export async function assertGetAsync<T>(promise: Promise<T | Nullish>, messageOr
     const error = getErrorFromMessageOrError(messageOrError);
 
     throw error;
+  }
+}
+
+export function getGuarded<T>(callback: () => T, fallback: T): T {
+  try {
+    return callback();
+  } catch (error) {
+    return fallback;
   }
 }

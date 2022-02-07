@@ -23,6 +23,7 @@
     "@godaddy/terminus": "^4.10.2",
     "@google-cloud/storage": "^5.18.1",
     "@install-binary/berglas": "^0.6.2",
+    "@linear/sdk": "^1.22.0",
     "@sentry/node": "^6.17.3",
     "@slack/bolt": "^3.9.0",
     "@slack/web-api": "^6.6.0",

@@ -22,7 +22,7 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
         case "notification_notion_commented":
           return `Comment in "${innerNotification?.page_title}"`;
         case "notification_notion_user_invited":
-          return `Invitation: "${innerNotification?.page_title}"`;
+          return `Invited you to "${innerNotification?.page_title}"`;
         case "notification_notion_user_mentioned":
           return `Mentioned you in "${innerNotification?.page_title}"`;
         default:
@@ -30,7 +30,13 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
       }
     }
     case "notification_figma_comment": {
-      return `New ${innerNotification.is_mention ? "mention" : "comment"} in ${innerNotification?.file_name}`;
+      return `${innerNotification.is_mention ? "Mentioned you" : "Comment"} in "${innerNotification?.file_name}"`;
+    }
+    case "notification_linear": {
+      if (innerNotification.type === "Comment") {
+        return `Commented in "${innerNotification?.issue_title}"`;
+      }
+      return `Created issue "${innerNotification?.issue_title}"`;
     }
     default:
       return "Unhandled notification!!";

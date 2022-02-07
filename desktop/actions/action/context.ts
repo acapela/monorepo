@@ -4,7 +4,7 @@ import { makeObservable, observable } from "mobx";
 
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
-import { getAllInboxListsById } from "@aca/desktop/domains/list/preconfigured";
+import { getInboxListsById } from "@aca/desktop/domains/list/preconfigured";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { isNotNullish } from "@aca/shared/nullish";
@@ -21,7 +21,7 @@ const routeTargets = cachedComputed((): unknown[] => {
 
   if (focusRoute) {
     const { notificationId, listId } = focusRoute;
-    return [getDb().notification.findById(notificationId), getAllInboxListsById(listId)];
+    return [getDb().notification.findById(notificationId), getInboxListsById(listId)];
   }
 
   const listRoute = getRouteParamsIfActive("list");
@@ -29,7 +29,7 @@ const routeTargets = cachedComputed((): unknown[] => {
   if (listRoute) {
     const { listId } = listRoute;
 
-    return [getAllInboxListsById(listId)];
+    return [getInboxListsById(listId)];
   }
 
   return [];

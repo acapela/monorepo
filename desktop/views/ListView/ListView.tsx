@@ -4,14 +4,11 @@ import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import {
-  getAllInboxListsById,
-  inboxLists,
-  isInboxList,
-  outOfInboxLists,
-} from "@aca/desktop/domains/list/preconfigured";
-import { PreloadNotificationEmbed } from "@aca/desktop/domains/notification/NotificationEmbedView";
+import { getInboxListsById, inboxLists, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
+import { uiStore } from "@aca/desktop/store/uiStore";
+import { theme } from "@aca/ui/theme";
 
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
@@ -23,7 +20,7 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const displayedList = getAllInboxListsById(listId);
+  const displayedList = getInboxListsById(listId);
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
 
@@ -31,16 +28,22 @@ export const ListView = observer(({ listId }: Props) => {
 
   const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 
+  const isInCelebrationMode = uiStore.isDisplayingZenImage;
+
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      {!displayedList && <>Unknown list</>}
-      {displayedList && (
+      {isInCelebrationMode && (
+        <UINotificationZeroHolder>
+          <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
+        </UINotificationZeroHolder>
+      )}
+      {!isInCelebrationMode && displayedList && (
         <>
           {displayedList.getNotificationsToPreload().map((notificationToPreload) => {
-            return <PreloadNotificationEmbed key={notificationToPreload.id} url={notificationToPreload.url} />;
+            return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
           })}
           <UINotifications>
             {notificationGroups?.map((notificationOrGroup) => {
@@ -78,4 +81,24 @@ const UINotifications = styled.div`
 const UITabsBar = styled.div`
   padding-top: 2px;
   padding-bottom: 24px;
+`;
+
+const UINotificationZeroHolder = styled.div`
+  position: absolute;
+  display: block;
+
+  left: 90px;
+  bottom: 200px;
+`;
+
+const UINotificationZeroPanel = styled.div`
+  height: 60px;
+  width: 300px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  display: inline-flex;
+  ${theme.colors.layout.background.opacity(0.7).asBg};
+  backdrop-filter: blur(16px);
+  ${theme.radius.primaryItem}
 `;

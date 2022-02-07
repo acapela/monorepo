@@ -130,3 +130,6 @@ gql/schema.graphql
 db/schema.prisma
 dist-electron/
 desktop/lib/env/generated.js
+desktop/dist-electron-production/
+desktop/dist-electron-staging/
+desktop/dist-final/

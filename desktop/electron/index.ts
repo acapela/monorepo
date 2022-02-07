@@ -6,6 +6,8 @@ import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action } from "mobx";
 
+import { InitializeLogger } from "../domains/dev/logger";
+import { makeLogger } from "../domains/dev/makeLogger";
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
@@ -22,17 +24,22 @@ if (!IS_DEV) {
   initializeSingleInstanceLock();
 }
 
+const log = makeLogger("Electron-Boot-Sequence");
+
 function initializeApp() {
-  console.info(`Initialize bridge handlers`);
+  log.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
 
-  console.info(`Initialize protocol handlers`);
+  log.info(`Initialize protocol handlers`);
   initializeProtocolHandlers();
 
-  console.info(`Initialize main window`);
+  log.info(`Initialize main window`);
   initializeMainWindow();
 
-  console.info(`Initialize main window`);
+  log.info(`Initialize logger`);
+  InitializeLogger();
+
+  log.info(`Initialize service sync`);
   initializeServiceSync();
 
   initializeGlobalShortcuts();

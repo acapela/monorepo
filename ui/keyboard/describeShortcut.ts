@@ -56,5 +56,6 @@ export function getShortcutNiceKeys(shortcut: ShortcutDefinition): string[] {
 export function describeShortcut(shortcutDefinition: ShortcutDefinition) {
   const niceKeys = getShortcutNiceKeys(shortcutDefinition);
 
-  return niceKeys.join(" + ");
+  // \xa0 = non-breakable-space
+  return niceKeys.join("\xa0+\xa0");
 }

@@ -24,7 +24,7 @@ import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
-import { AppThemeProvider, theme } from "@aca/ui/theme";
+import { AppThemeProvider } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 export interface AppConfig {
@@ -49,7 +49,7 @@ function initSentry(appConfig: AppConfig) {
   });
 }
 
-const BuiltInStyles = createGlobalStyle`
+export const BuiltInStyles = createGlobalStyle`
   ${globalStyles}
 `;
 
@@ -87,15 +87,12 @@ export default function App({
   if (isNextAuthErrorPage) {
     return (
       <>
-        <BuiltInStyles />
         <CommonMetadata />
         <RequiredSessionProvider dontRequireSession={isNextAuthErrorPage} session={appConfig.session}>
-          <AppThemeProvider theme={theme}>
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            {renderWithPageLayout(Component, { appConfig, ...pageProps })}
-          </AppThemeProvider>
+          <PromiseUIRenderer />
+          <TooltipsRenderer />
+          <ToastsRenderer />
+          {renderWithPageLayout(Component, { appConfig, ...pageProps })}
         </RequiredSessionProvider>
       </>
     );
@@ -103,13 +100,13 @@ export default function App({
 
   return (
     <>
-      <BuiltInStyles />
       <CommonMetadata />
       <Sentry.ErrorBoundary fallback={sentryFallbackErrorRenderer}>
         <RequiredSessionProvider session={appConfig.session}>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
             <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
-              <AppThemeProvider theme={theme}>
+              <AppThemeProvider>
+                <BuiltInStyles />
                 <CurrentTeamProvider>
                   <ClientDbProvider>
                     <AppStateStoreProvider>

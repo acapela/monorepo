@@ -5,6 +5,7 @@ import {
   isFullscreenValue,
   openLinkRequest,
   restartAppRequest,
+  toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
 } from "@aca/desktop/bridge/system";
@@ -50,6 +51,19 @@ export function initializeSystemHandlers() {
     } else {
       senderWindow.setFullScreen(true);
     }
+  });
+
+  toggleDevtoolsRequest.handle(async (alsoMaximize, event) => {
+    if (!event) return;
+
+    const senderWindow = getSourceWindowFromIPCEvent(event);
+
+    if (!senderWindow) return;
+
+    if (alsoMaximize) {
+      senderWindow.maximize();
+    }
+    senderWindow.webContents.toggleDevTools();
   });
 
   openLinkRequest.handle(async ({ url }) => {

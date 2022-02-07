@@ -2,6 +2,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { orderNotificationsByGroups } from "@aca/desktop/domains/group/groupNotifications";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
 export const focusPageView = createActionView((context) => {
@@ -22,14 +23,28 @@ export const focusPageView = createActionView((context) => {
     get prevNotification() {
       return getPreviousItemInArray(orderedNotifications(), notification);
     },
+    displayZenModeOrFocusNextItem() {
+      const { list } = view;
+
+      if (list.getAllNotifications().hasItems) {
+        return view.goToNextNotification();
+      }
+
+      desktopRouter.navigate("list", { listId: list.id });
+      uiStore.isDisplayingZenImage = true;
+      return null;
+    },
     goToNextNotification() {
       const { nextNotification } = view;
+
       if (!nextNotification) {
         desktopRouter.navigate("list", { listId: list.id });
-        return;
+        return null;
       }
 
       desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
+
+      return nextNotification;
     },
   };
 

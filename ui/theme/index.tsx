@@ -33,8 +33,8 @@ export const darkTheme: typeof defaultTheme = {
   colors: darkThemeColors,
 };
 
-export function AppThemeProvider<T extends object>({ theme, children }: PropsWithChildren<{ theme: T }>) {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
+  return <ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>;
 }
 
 export const theme = buildStyledTheme(defaultTheme);

@@ -51,6 +51,9 @@ const requiredEnvVarNamesBackend = [
   "SONIX_API_KEY",
   "SONIX_CALLBACK_SECRET",
   "FRONTEND_URL",
+  "LINEAR_CLIENT_ID",
+  "LINEAR_CLIENT_SECRET",
+  "LINEAR_OAUTH_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = [
