@@ -1,23 +1,47 @@
 import { app, globalShortcut } from "electron";
+import { autorun } from "mobx";
+
+import { globalShortcutsValue } from "@aca/desktop/bridge/system";
 
 import { appState } from "./appState";
 
-const SHOW_ACAPELA_SHORTCUT = "CommandOrControl+Shift+A";
+function showMainWindow() {
+  appState.mainWindow?.show();
+}
 
 export function initializeGlobalShortcuts() {
-  const didRegister = globalShortcut.register(SHOW_ACAPELA_SHORTCUT, () => {
-    const { mainWindow } = appState;
+  let currentShortcut: string | null = null;
+  autorun(() => {
+    if (!globalShortcutsValue.isReady) {
+      return;
+    }
 
-    if (!mainWindow) return;
+    if (currentShortcut) {
+      globalShortcut.unregister(currentShortcut);
+    }
+    currentShortcut = globalShortcutsValue.get().show;
+    const didRegister = currentShortcut && globalShortcut.register(currentShortcut, showMainWindow);
+    if (!didRegister) {
+      console.warn(`Failed to register 'show acapela' global shortcut`);
+    }
+  });
 
-    mainWindow.show();
+  appState.mainWindow?.on("focus", () => {
+    if (currentShortcut) {
+      globalShortcut.unregister(currentShortcut);
+    }
+  });
+  appState.mainWindow?.on("blur", () => {
+    if (currentShortcut) {
+      // We can deregister the show shortcut when the main window is already shown, that way it can also be used within
+      // the app
+      globalShortcut.register(currentShortcut, showMainWindow);
+    }
   });
 
   app.on("will-quit", () => {
-    globalShortcut.unregister(SHOW_ACAPELA_SHORTCUT);
+    if (currentShortcut) {
+      globalShortcut.unregister(currentShortcut);
+    }
   });
-
-  if (!didRegister) {
-    console.warn(`Failed to register 'show acapela' global shortcut`);
-  }
 }
