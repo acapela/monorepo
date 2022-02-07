@@ -112,9 +112,9 @@ function initializeAnalytics() {
   /**
    * Navigation by default is weird in electron as it is nor app nor website (eg. url tracking makes no point as files are local)
    *
-   * It can be solved with Signal middleware like here: https://www.nedrockson.com/posts/electron/segment-analytics-work/
+   * It can be solved with Segment middleware like here: https://www.nedrockson.com/posts/electron/segment-analytics-work/
    *
-   * But we can simply track our router we have and manually tell Signal what page we're in.
+   * But we can simply track our router we have and manually tell Segment what page we're in.
    */
   function updatePage() {
     const { search, url } = desktopRouter.getLocation();
