@@ -10,6 +10,7 @@ import { figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 
 import {
+  FigmaCommentMessageMeta,
   FigmaCommentNotification,
   FigmaSessionState,
   FigmaSocketMessage,
@@ -228,6 +229,7 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
         updated_at: userNotification.created_at,
         from: commentNotification.from.handle,
         url: commentNotification.reply_url,
+        text_preview: getMessageText(commentNotification.comment.message_meta),
       },
       commentNotification: {
         file_id: commentNotification.file_key,
@@ -243,4 +245,18 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
   if (syncPayload.length > 0) {
     figmaSyncPayload.send(syncPayload);
   }
+}
+
+function getMessageText(commentParts: FigmaCommentMessageMeta[]): string {
+  let result = "";
+
+  for (const commentPart of commentParts) {
+    if (commentPart.user_annotated) {
+      result += `@${commentPart.user_annotated.handle} `;
+    } else {
+      result += `${commentPart.t} `;
+    }
+  }
+
+  return result;
 }
