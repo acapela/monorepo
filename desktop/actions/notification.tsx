@@ -54,6 +54,8 @@ export const resolveNotification = defineAction({
 
     return ctx.isContextual ? "Resolve" : "Resolve Notification";
   },
+  // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
+  // Thus it seems easier to track directly in notif.resolve() handler
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,

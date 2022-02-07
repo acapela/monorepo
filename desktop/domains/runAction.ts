@@ -1,15 +1,22 @@
 import { runInAction } from "mobx";
 
-import { ActionData } from "@aca/desktop/actions/action";
+import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 
+import { trackEvent } from "../analytics";
 import { createCommandMenuSession } from "./commandMenu/session";
 import { commandMenuStore } from "./commandMenu/store";
 
 export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+  const { analyticsEvent } = resolveActionData(action, context);
+
   if (!action.canApply(context)) {
     return;
+  }
+
+  if (analyticsEvent) {
+    trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
   }
 
   try {
@@ -18,7 +25,9 @@ export function runAction(action: ActionData, context: ActionContext = createAct
       return action.handler(context);
     });
 
-    if (!actionResult) return;
+    if (!actionResult) {
+      return;
+    }
 
     context.searchKeyword = "";
 

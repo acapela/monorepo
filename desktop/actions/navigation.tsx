@@ -1,5 +1,6 @@
 import React from "react";
 
+import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
@@ -69,6 +70,7 @@ export const goToSettings = defineAction({
   name: "Settings",
   group: navigationActionsGroup,
   icon: <IconSlidersHoriz />,
+  analyticsEvent: "Opened Settings",
   canApply: () => !getExactIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
@@ -80,6 +82,7 @@ export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
   icon: <IconFolderCheck />,
+  analyticsEvent: trackingEvent("Opened Predefined List", { list_id: "resolved" }),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });

@@ -129,17 +129,18 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
       const notification = context.getTarget("notification");
       const group = context.getTarget("group");
 
-      const dateISO = suggestion.date.toISOString();
+      const date = suggestion.date;
 
       displayZenModeOrFocusNextItem(context);
 
       if (notification) {
-        notification.update({ snoozed_until: dateISO });
+        notification.snooze(date);
       }
 
       if (group) {
         group.notifications.forEach((notification) => {
-          notification.update({ snoozed_until: dateISO });
+          notification.snooze;
+          notification.snooze(date);
         });
       }
     },

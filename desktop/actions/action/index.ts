@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/desktop/analytics/types";
 import { MaybeCleanup } from "@aca/shared/types";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
@@ -14,11 +15,13 @@ type ChildActionsResult = {
 };
 
 export type ActionResult = ChildActionsResult;
+
 export interface ActionCreateInput {
   id?: string;
   analyticsName?: string;
   name: ActionDataThunk<string>;
   supplementaryLabel?: ActionDataThunk<string | undefined | null>;
+  analyticsEvent?: ActionDataThunk<AnalyticsEventInput>;
   private?: boolean;
   group?: ActionDataThunk<ActionGroupData>;
   keywords?: ActionDataThunk<string[]>;
@@ -47,6 +50,12 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
     keywords: resolveActionDataThunk(action.keywords, context),
     group: resolveActionDataThunk(action.group, context),
     supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
+    get analyticsEvent() {
+      const eventInput = resolveActionDataThunk(action.analyticsEvent, context);
+      if (!eventInput) return;
+
+      return resolveAnalyticsEventInput(eventInput);
+    },
   };
 }
 

@@ -2,18 +2,18 @@ import { gql } from "@apollo/client";
 import { autorun } from "mobx";
 import React from "react";
 
+import { apolloClient } from "@aca/desktop/apolloClient";
+import { connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { getNullableDb } from "@aca/desktop/clientdb";
+import { authStore } from "@aca/desktop/store/authStore";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
-import { apolloClient } from "../apolloClient";
-import { connectSlackBridge } from "../bridge/auth";
-import { getDb } from "../clientdb";
-import { authStore } from "../store/authStore";
 import { defineAction } from "./action";
 import { accountActionsGroup } from "./auth";
 
-const getAuthUser = () => getDb().user.findById(authStore.user.id);
+const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id);
 
 async function querySlackInstallationURL() {
   const {

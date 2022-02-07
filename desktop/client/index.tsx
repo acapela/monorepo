@@ -1,3 +1,5 @@
+import "@aca/desktop/analytics";
+
 import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
