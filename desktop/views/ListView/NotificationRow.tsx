@@ -4,21 +4,23 @@ import styled, { css } from "styled-components";
 import { openFocusMode } from "@aca/desktop/actions/notification";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
-import { UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
 
 interface Props {
   notification: NotificationEntity;
@@ -29,7 +31,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
   const isFocused = uiStore.useFocus(notification);
   const elementRef = useRef<HTMLDivElement>(null);
 
-  const isFocusedForAWhile = useDebouncedValue(isFocused, { onDelay: 150, offDelay: 0 });
+  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 150, offDelay: 0 });
 
   mobxTicks.minute.reportObserved();
 
@@ -55,23 +57,34 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
       {isFocusedForAWhile &&
         list.getNotificationsToPreload(notification).map((notificationToPreload) => {
-          return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
+          return (
+            <PreloadNotificationPreview
+              priority={
+                notificationToPreload === notification ? PreviewLoadingPriority.next : PreviewLoadingPriority.following
+              }
+              key={notificationToPreload.id}
+              url={notificationToPreload.url}
+            />
+          );
         })}
       <UIHolder
         ref={elementRef}
         $isFocused={isFocused}
-        $isPreloading={preloadingNotificationsBridgeChannel.get()[notification.url]}
+        $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
       >
         <NotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
+
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
+        <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
+
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>
   );
 })``;
 
-const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "ready" }>`
+const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "ready" | false }>`
   padding: 8px 8px;
   display: flex;
   align-items: center;

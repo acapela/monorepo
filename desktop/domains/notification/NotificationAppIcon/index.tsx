@@ -4,6 +4,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { uiStore } from "@aca/desktop/store/uiStore";
 import { styledObserver } from "@aca/shared/component";
 
 //@ts-ignore
@@ -24,7 +25,7 @@ interface Props {
 export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   notification,
   className,
-  isOnDarkBackground,
+  isOnDarkBackground = uiStore.isInDarkMode,
 }: Props) {
   const targetNotification = notification.inner;
 

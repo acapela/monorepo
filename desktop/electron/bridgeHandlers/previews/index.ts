@@ -4,28 +4,31 @@ import {
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
-import { createLogger } from "@aca/shared/log";
 
-import { addPreviewWarmupRequest, getAlivePreviewManager } from "./previewQueue";
+import { addPreviewWarmupRequest, getAlivePreviewManager, setPreloadingPriority } from "./previewQueue";
 
-const log = createLogger("BrowserView");
+const log = makeLogger("BrowserView");
 
 export function initPreviewHandler() {
-  requestPreviewPreload.handle(async ({ url }) => {
+  requestPreviewPreload.handle(async ({ url, priority }) => {
+    setPreloadingPriority(url, priority);
     const { stopRequesting } = addPreviewWarmupRequest(url);
 
     return stopRequesting;
   });
 
   requestAttachPreview.handle(async ({ url, position }, event) => {
-    assert(event, "Show browser view can only be called from client side");
+    setPreloadingPriority(url, PreviewLoadingPriority.current);
+    assert(event, "Show browser view can only be called from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
-    assert(targetWindow, "No target window for showing browser view");
+    assert(targetWindow, "No target window for showing browser view", log.error);
 
-    log("will attach view", { url, position });
+    log.debug("will attach view", { url, position });
 
     const { stopRequesting, manager } = addPreviewWarmupRequest(url);
 
@@ -42,15 +45,13 @@ export function initPreviewHandler() {
 
     if (!aliveManager) return;
 
-    log("updating preview position requirements", position);
+    log.debug("updating preview position requirements", position);
 
     aliveManager.currentWindowAttachment?.updatePosition(position);
   });
 
   requestPreviewFocus.handle(async ({ url }) => {
     const aliveManager = getAlivePreviewManager(url);
-
-    console.log("FOC", { url, aliveManager });
 
     if (!aliveManager) return;
 

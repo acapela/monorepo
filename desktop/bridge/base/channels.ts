@@ -35,8 +35,6 @@ export function createChannelBridge<Data>(key: string) {
    *
    */
   function send(data: Data) {
-    console.log({ data, key });
-    //
     try {
       if (process.env.ELECTRON_CONTEXT === "client") {
         return window.electronBridge.send(key, toJS(data));
@@ -49,7 +47,6 @@ export function createChannelBridge<Data>(key: string) {
       console.info(`Failed to send message for channel ${key}`, { data });
       throw error;
     }
-    console.log("done", { key });
   }
 
   return {

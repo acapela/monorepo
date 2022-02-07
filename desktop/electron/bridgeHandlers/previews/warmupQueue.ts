@@ -1,3 +1,5 @@
+import { sortBy, throttle } from "lodash";
+
 import { removeElementFromArray } from "@aca/shared/array";
 import { assert, unsafeAssert } from "@aca/shared/assert";
 import { createChannel } from "@aca/shared/channel";
@@ -9,13 +11,14 @@ interface WarmupQueueConfig<T> {
   initialize: (item: T) => void;
   cleanup: (item: T) => void;
   timeout: number;
+  getPriority?: (item: T) => number;
 }
 
 interface WarmupRequestSession<T> {
   item: T;
 }
 
-export function warmupQueue<T>({ maxItems, initialize, cleanup, timeout }: WarmupQueueConfig<T>) {
+export function warmupQueue<T>({ maxItems, initialize, cleanup, getPriority }: WarmupQueueConfig<T>) {
   type Session = WarmupRequestSession<T>;
   const queueList = queueWithMaxSize<T>(maxItems);
   const requestSessions: Session[] = [];
@@ -24,11 +27,33 @@ export function warmupQueue<T>({ maxItems, initialize, cleanup, timeout }: Warmu
     return requestSessions.some((session) => session.item === item);
   }
 
+  const pendingInitializationItems = new Set<T>();
+
+  const flushInitialize = throttle(
+    () => {
+      const itemsToFlus = Array.from(pendingInitializationItems);
+      pendingInitializationItems.clear();
+
+      const itemsSortedByPriority = sortBy(itemsToFlus, (item) => {
+        return getPriority?.(item) ?? Number.MAX_SAFE_INTEGER;
+      });
+
+      itemsSortedByPriority.forEach((item) => {
+        initialize(item);
+      });
+    },
+    20,
+    { leading: false, trailing: true }
+  );
+
   queueList.onAdded.subscribe((item) => {
+    pendingInitializationItems.add(item);
+    flushInitialize();
     initialize(item);
   });
 
   queueList.onRemoved.subscribe((item) => {
+    pendingInitializationItems.delete(item);
     cleanup(item);
   });
 
@@ -83,15 +108,9 @@ function queueWithMaxSize<T>(maxSize: number) {
 
   const items: T[] = [];
 
-  const urls = () => items.map((i) => i.url);
-
   function add(item: T) {
-    const url = item.url;
-    console.log("adding", url, urls(), { maxSize });
     if (items.includes(item)) {
-      console.log("before", urls());
       arrayMoveItemToStart(items, item);
-      console.log("item", url, "already present", urls());
       return;
     }
 
@@ -108,11 +127,6 @@ function queueWithMaxSize<T>(maxSize: number) {
 
   function remove(item: T) {
     const didRemove = removeElementFromArray(items, item);
-    console.log(
-      "removing",
-      item.url,
-      items.map((i) => i.url)
-    );
 
     if (didRemove) {
       //

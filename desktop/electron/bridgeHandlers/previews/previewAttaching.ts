@@ -4,6 +4,8 @@ import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { assert } from "@aca/shared/assert";
 import { createLogger } from "@aca/shared/log";
 
+import { expectedPreviewPosition } from "./preloadingWindow";
+
 const log = createLogger("BrowserView");
 
 /**
@@ -39,11 +41,14 @@ export function attachBrowserViewToWindow(
   //
   targetWindow.addBrowserView(view);
 
+  expectedPreviewPosition.set(initialPosition);
+
   function updateViewPositionAndSize() {
     updateBrowserViewSize(view, targetWindow, currentPosition);
   }
 
   function updatePosition(position: PreviewPosition) {
+    expectedPreviewPosition.set(initialPosition);
     currentPosition = position;
     updateViewPositionAndSize();
   }
@@ -62,17 +67,14 @@ export function attachBrowserViewToWindow(
     assertViewIsAttachedToWindow(view, targetWindow);
     log("will detach view");
 
-    console.log("A");
     targetWindow.off("resize", updateViewPositionAndSize);
-    console.log("C");
     targetWindow.removeBrowserView(view);
-    console.log("B");
+    // getPreloadingWindow().addBrowserView(view);
 
     return true;
   }
 
   function focus() {
-    console.log("FOCIS REQ");
     view.webContents.focus();
   }
 
@@ -86,7 +88,7 @@ export function attachBrowserViewToWindow(
 
 export type PreviewAttachManager = ReturnType<typeof attachBrowserViewToWindow>;
 
-function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
+export function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
   assertViewIsAttachedToWindow(view, window);
 
   // Get desired distance to all the edges. Then get window size and calculate needed size rect.

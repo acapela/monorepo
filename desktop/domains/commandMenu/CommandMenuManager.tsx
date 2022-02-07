@@ -42,10 +42,10 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
   });
 
   return (
-    <AnimatePresence exitBeforeEnter>
+    <AnimatePresence>
       {!!currentSession && (
         <CommandMenuView
-          key={getObjectKey(currentSession.actionContext)}
+          key={getObjectKey(currentSession)}
           session={currentSession}
           onActionSelected={handleActionSelected}
         />

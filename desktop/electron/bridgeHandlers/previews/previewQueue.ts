@@ -1,7 +1,5 @@
-import { memoize } from "lodash";
-
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
-import { toggleElementInArray } from "@aca/shared/array";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { SECOND } from "@aca/shared/time";
 
@@ -24,11 +22,19 @@ function informURLLoading(url: string, isLoading: boolean, isReady?: boolean) {
   }
 }
 
+const preloadingPriorityMap = new Map<string, number>();
+
+export function setPreloadingPriority(url: string, priority: number) {
+  preloadingPriorityMap.set(url, priority);
+}
+
 const previewPreloadQueue = warmupQueue<PreviewManager>({
   maxItems: MAX_PRELOADING_COUNT,
   timeout: SECOND * 30,
+  getPriority(manager) {
+    return preloadingPriorityMap.get(manager.url) ?? PreviewLoadingPriority.following;
+  },
   initialize(manager) {
-    console.log("WILL START", manager.url);
     informURLLoading(manager.url, true);
     manager.preload().then(() => {
       informURLLoading(manager.url, true, true);
@@ -37,7 +43,6 @@ const previewPreloadQueue = warmupQueue<PreviewManager>({
     //
   },
   cleanup(manager) {
-    console.log("WILL STOP", manager.url);
     manager.destroy();
     alivePreviewManagers.delete(manager.url);
     informURLLoading(manager.url, false);

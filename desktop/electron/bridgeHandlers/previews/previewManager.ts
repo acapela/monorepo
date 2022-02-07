@@ -1,55 +1,36 @@
-import { BrowserView, BrowserWindow, app, session } from "electron";
+import { BrowserView, BrowserWindow } from "electron";
 import { isEqual } from "lodash";
-import { memoize } from "lodash";
 
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { assert } from "@aca/shared/assert";
 import { createChannel } from "@aca/shared/channel";
 import { createResolvablePromise } from "@aca/shared/promises";
-import { wait } from "@aca/shared/time";
 
-import { appState } from "../../appState";
 import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "../../utils/webContentsLink";
+import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
 import { PreviewAttachManager, attachBrowserViewToWindow } from "./previewAttaching";
 import { loadURLWithFilters } from "./siteFilters";
-
-const dummyWindow = memoize(() => {
-  const window = new BrowserWindow({ opacity: 0, transparent: true, focusable: true });
-  window.setIgnoreMouseEvents(true);
-
-  return window;
-});
 
 function getViewHostWindow(view: BrowserView) {
   const allWindows = BrowserWindow.getAllWindows();
   return (
     allWindows.find((window) => {
-      if (window === dummyWindow()) return false;
+      if (window === getPreloadingWindow()) return false;
       return window.getBrowserViews().includes(view);
     }) ?? null
   );
 }
 
-app.whenReady().then(() => {
-  return;
-  session.defaultSession.setCertificateVerifyProc((proc, cb) => {
-    cb(0);
-  });
-});
-
 export function createPreviewManager(url: string) {
   const browserView = new BrowserView({ webPreferences: { preload: "" } });
-  const preloadingWindow = dummyWindow();
+  const preloadingWindow = getPreloadingWindow();
 
   browserView.webContents.session.preconnect({ url });
 
   let currentWindowAttachment: PreviewAttachManager | null = null;
 
-  preloadingWindow.addBrowserView(browserView);
-  // getTargetWindow().addBrowserView(browserView);
-
-  // browserView.setBounds({ height: 100, width: 100, x: 100, y: 100 });
+  attachViewToPreloadingWindow(browserView);
 
   browserView.webContents.setAudioMuted(true);
 
@@ -106,25 +87,7 @@ export function createPreviewManager(url: string) {
     if (browserView.webContents.isLoading()) return;
 
     try {
-      const windowToRestoreFocus = getCurrentlyFocusedWindow();
-      // browserView.webContents.focus();
-      // await wait(10);
-      // windowToRestoreFocus?.focus();
       await loadURLWithFilters(browserView, url);
-      browserView.webContents.focus();
-      // await wait(200);
-
-      if (isDestroyed) return;
-
-      await evaluateFunctionInWebContents(browserView.webContents, () => {
-        window.focus();
-        // window.document.body.click();
-      });
-
-      // browserView.webContents.focus();
-      // await wait(10);
-      windowToRestoreFocus?.focus();
-      getCurrentlyFocusedWindow()?.focus();
     } catch (error) {
       //
     }
@@ -132,14 +95,6 @@ export function createPreviewManager(url: string) {
     if (isDestroyed) return;
 
     loadingPromise.resolve();
-
-    if (currentWindowAttachment) return;
-    // probablyMainWindow.setBrowserView(browserView);
-    // if (!currentWindowAttachment) {
-    //   probablyMainWindow.setBrowserView(browserView);
-    //   await wait(200);
-    //   probablyMainWindow.removeBrowserView(browserView);
-    // }
   };
 
   let isDestroyed = false;
@@ -172,7 +127,6 @@ export function createPreviewManager(url: string) {
   function detach() {
     assert(currentWindowAttachment, "Not attached");
 
-    console.log("DETACHING");
     //
     currentWindowAttachment.detach();
 
@@ -213,15 +167,4 @@ function destroyBrowserView(view: BrowserView) {
   // https://github.com/electron/electron/issues/10096#issuecomment-882837830
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (view.webContents as any).destroy();
-}
-
-function getCurrentlyFocusedWindow() {
-  //
-  return (
-    BrowserWindow.getAllWindows().find((window) => {
-      return window.isFocused();
-    }) ??
-    appState.mainWindow ??
-    BrowserWindow.getAllWindows()[0]
-  );
 }

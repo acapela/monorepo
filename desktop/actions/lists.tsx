@@ -87,7 +87,7 @@ export const goToNextList = defineAction({
   },
   icon: <IconArrowRight />,
   supplementaryLabel: (context) => context.assertView(listPageView).nextList?.name,
-  shortcut: "ArrowRight",
+  shortcut: ["Tab"],
   handler(context) {
     const nextList = context.assertView(listPageView).nextList;
 
@@ -105,7 +105,7 @@ export const goToPreviousList = defineAction({
     return getIsRouteActive("list");
   },
   supplementaryLabel: (context) => context.assertView(listPageView).prevList?.name,
-  shortcut: "ArrowLeft",
+  shortcut: ["Shift", "Tab"],
   handler(context) {
     const prevList = context.assertView(listPageView).prevList;
 
@@ -141,7 +141,8 @@ export const toggleNotificationsGroup = defineAction({
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {
-    return !!context.view(listPageView)?.focusedGroup;
+    const focusedGroup = context.view(listPageView)?.focusedGroup;
+    return Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
   },
   handler(context) {
     const group = context.view(listPageView)?.focusedGroup;

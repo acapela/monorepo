@@ -17,7 +17,9 @@ import { getClosestElementTooltipHost, useElementTooltipConfig } from "./tooltip
 export function TooltipsRenderer() {
   const [currentTooltipAnchor, setCurrentTooltipAnchor] = useState<HTMLElement | null>(null);
 
-  const tooltipAnchorToRender = useDebouncedValue(currentTooltipAnchor, { onDelay: 150, offDelay: 0 });
+  const tooltipAnchorToRender = useDebouncedValue(currentTooltipAnchor, (currentTooltipAnchor) =>
+    currentTooltipAnchor ? 150 : 0
+  );
 
   const anchorRef = useRef(tooltipAnchorToRender ?? null);
 

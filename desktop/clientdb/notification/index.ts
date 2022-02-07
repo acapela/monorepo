@@ -8,6 +8,7 @@ import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import {
   DesktopNotificationFragment,
   Notification_Bool_Exp,
@@ -27,6 +28,7 @@ const notificationFragment = gql`
     id
     from
     url
+    text_preview
     resolved_at
     updated_at
     created_at
@@ -48,6 +50,8 @@ const innerEntities = [
   notificationLinearEntity,
 ];
 
+const log = makeLogger("Notification-Events");
+
 export type NotificationInner = EntityDataByDefinition<typeof innerEntities[number]>;
 
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
@@ -64,13 +68,24 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     user_id: getContextValue(userIdContext) ?? undefined,
     resolved_at: null,
     snoozed_until: null,
+    text_preview: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
     notificationFragment,
     {
-      insertColumns: ["id", "created_at", "resolved_at", "updated_at", "url", "user_id", "from", "snoozed_until"],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until"],
+      insertColumns: [
+        "id",
+        "created_at",
+        "resolved_at",
+        "updated_at",
+        "url",
+        "user_id",
+        "from",
+        "snoozed_until",
+        "text_preview",
+      ],
+      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview"],
       upsertConstraint: "notification_pkey",
     }
   ),
@@ -132,13 +147,13 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       const notificationData = notification.getData();
       const notificationInnerData = notification.inner.getData();
 
-      console.info(`[Push Resolve] Notification ${notification.id} of type ${notificationInnerData.__typename}`);
+      log.info(`Resolving Notification ${notification.id} of type ${notificationInnerData.__typename}`);
       notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
     },
   })
   .addAccessValidation((notification) => {
     if (!notification.inner) {
-      console.warn(`No inner for entity`, notification);
+      log.error(`No inner for entity ${notification.id}`);
     }
 
     return !!notification.inner;

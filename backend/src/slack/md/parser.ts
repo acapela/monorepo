@@ -288,6 +288,9 @@ export type TransformContext = {
   mentionedUsersBySlackId?: {
     [slackId: string]: EditorMentionData;
   };
+  mentionedNamesBySlackId?: {
+    [slackId: string]: string;
+  };
 };
 
 function transformNode(node: markdown.SingleASTNode, context: TransformContext = {}) {
@@ -337,7 +340,7 @@ function transformNode(node: markdown.SingleASTNode, context: TransformContext =
           },
         };
       }
-      return createBoldText(`@${textToString(node.content) || node.id}`);
+      return createBoldText(`@${textToString(node.content) || context.mentionedNamesBySlackId?.[node.id] || node.id}`);
     case "slackChannel":
     case "slackUserGroup":
       return createLink(
