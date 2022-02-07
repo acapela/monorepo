@@ -34,9 +34,9 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
     }
     case "notification_linear": {
       if (innerNotification.type === "Comment") {
-        return `$Commented in "${innerNotification?.issue_title}"`;
+        return `Commented in "${innerNotification?.issue_title}"`;
       }
-      return `Created the issue "${innerNotification?.issue_title}"`;
+      return `Created issue "${innerNotification?.issue_title}"`;
     }
     default:
       return "Unhandled notification!!";
