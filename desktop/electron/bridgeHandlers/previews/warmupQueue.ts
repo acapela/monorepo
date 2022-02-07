@@ -10,7 +10,15 @@ interface WarmupQueueConfig<T> {
   maxItems: number;
   initialize: (item: T) => void;
   cleanup: (item: T) => void;
+  /**
+   * If every requestors stop requesting some warmup - how long to wait before actually cleaning up
+   * the item.
+   */
   timeout: number;
+  /**
+   * Items are not initialized instantly. They wait a brief moment to see if more were added together
+   * with them. If so, it will order them by priority and call init's in this order.
+   */
   getPriority?: (item: T) => number;
 }
 
@@ -18,7 +26,17 @@ interface WarmupRequestSession<T> {
   item: T;
 }
 
-export function warmupQueue<T>({ maxItems, initialize, cleanup, getPriority }: WarmupQueueConfig<T>) {
+/**
+ * Goal of warmup queue to allow requesting given items to be 'warm' (aka preloaded).
+ *
+ * - it has max count of 'warmed' items
+ * - each item is initialized / cleaned up on being added or pushed away from list
+ * - each time item is requested it is added to start
+ *   - if it was already present - it is moved to start
+ * - each item can be requested several times. As long as some requester does not 'give up' - it
+ * will not be removed (unless pushed away by other, newer items)
+ */
+export function warmupQueue<T>({ maxItems, initialize, cleanup, getPriority, timeout }: WarmupQueueConfig<T>) {
   type Session = WarmupRequestSession<T>;
   const queueList = queueWithMaxSize<T>(maxItems);
   const requestSessions: Session[] = [];
@@ -75,7 +93,7 @@ export function warmupQueue<T>({ maxItems, initialize, cleanup, getPriority }: W
       if (isItemByAnySessionRequested(item)) return;
 
       queueList.remove(item);
-    }, 10000);
+    }, timeout);
     //
     cleanupsMap.set(item, cancelNew);
   }

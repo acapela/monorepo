@@ -6,8 +6,14 @@ import { SECOND } from "@aca/shared/time";
 import { PreviewManager, createPreviewManager } from "./previewManager";
 import { warmupQueue } from "./warmupQueue";
 
+/**
+ * How many previews are allowed to be alive at any time.
+ */
 const MAX_PRELOADING_COUNT = 10;
-//
+
+/**
+ * Bridge informing UI about loading state
+ */
 function informURLLoading(url: string, isLoading: boolean, isReady?: boolean) {
   const urls = preloadingNotificationsBridgeChannel.get();
 
@@ -22,6 +28,13 @@ function informURLLoading(url: string, isLoading: boolean, isReady?: boolean) {
   }
 }
 
+/**
+ * We keep map about preloading priority.
+ *
+ * Attaching views always have top priority.
+ *
+ * Preload items can manually set it up.
+ */
 const preloadingPriorityMap = new Map<string, number>();
 
 export function setPreloadingPriority(url: string, priority: number) {

@@ -9,20 +9,6 @@ import { expectedPreviewPosition } from "./preloadingWindow";
 const log = createLogger("BrowserView");
 
 /**
- * Requests preview for given url to be loaded.
- *
- * Will initialize new view if one is not present, or will re-use existing one.
- *
- * Returns function to stop requesting and inform 'url preview is not needed anymore'.
- *
- * If every request is stopped, view will be scheduled to be destroyed.
- *
- * Returns preview state object and function to stop requesting.
- *
- * Note: it is possible that multiple places will request the same url to be 'warm'
- */
-
-/**
  * Will attach preview to given window at given initial position.
  *
  * Returns function that will detach it.

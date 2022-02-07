@@ -127,13 +127,10 @@ export function createPreviewManager(url: string) {
   function detach() {
     assert(currentWindowAttachment, "Not attached");
 
-    //
     currentWindowAttachment.detach();
 
     currentWindowAttachment = null;
   }
-
-  //
 
   const manager = {
     url,
@@ -150,8 +147,6 @@ export function createPreviewManager(url: string) {
   };
 
   return manager;
-
-  //
 }
 
 export type PreviewManager = ReturnType<typeof createPreviewManager>;

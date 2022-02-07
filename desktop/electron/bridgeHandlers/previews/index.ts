@@ -13,6 +13,9 @@ import { addPreviewWarmupRequest, getAlivePreviewManager, setPreloadingPriority 
 
 const log = makeLogger("BrowserView");
 
+/**
+ * Here we initialize client bridge handlers for previews
+ */
 export function initPreviewHandler() {
   requestPreviewPreload.handle(async ({ url, priority }) => {
     setPreloadingPriority(url, priority);
@@ -22,6 +25,12 @@ export function initPreviewHandler() {
   });
 
   requestAttachPreview.handle(async ({ url, position }, event) => {
+    /**
+     * When attaching - always demand top-priority for preloading
+     *
+     * This avoids situation when eg. in focus mode 'previous' item has bigger loading priority
+     * than current one.
+     */
     setPreloadingPriority(url, PreviewLoadingPriority.current);
     assert(event, "Show browser view can only be called from client side", log.error);
 
@@ -46,6 +55,10 @@ export function initPreviewHandler() {
     if (!aliveManager) return;
 
     log.debug("updating preview position requirements", position);
+
+    if (!aliveManager.currentWindowAttachment) {
+      log.warn("trying to update preview size, but preview is not attached to any window");
+    }
 
     aliveManager.currentWindowAttachment?.updatePosition(position);
   });
