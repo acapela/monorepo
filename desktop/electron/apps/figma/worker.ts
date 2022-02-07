@@ -1,4 +1,4 @@
-import { differenceInWeeks } from "date-fns";
+import { differenceInDays, differenceInWeeks } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 import WebSocket from "ws";
@@ -105,10 +105,13 @@ export async function getFigmaSessionData(): Promise<FigmaSessionData> {
 }
 
 const isLessThan2WeeksOld = (isoString: string) => differenceInWeeks(new Date(), new Date(isoString)) < 2;
+const isLessThan2DaysOld = (isoString: string) => differenceInDays(new Date(), new Date(isoString)) < 2;
 
 async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   console.info(`[Figma] Getting initial notifications`);
 
+  // WARNING!
+  // Figma notifications are all marked as read whenever this api call is made
   const response = await fetch(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
     method: "GET",
     headers: {
@@ -123,8 +126,18 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
 
   const result = (await response.json()) as GetFigmaUserNotificationsResponse;
 
-  const isNotificationRelevant = ({ read_at, rejected_at, resolved_at, created_at }: FigmaUserNotification) =>
-    !read_at && !resolved_at && !rejected_at && isLessThan2WeeksOld(created_at);
+  // This is the case of someone that goes on vacation and doesn't go into figma
+  const isUnreadButLessThan2WeeksOld = ({ read_at, created_at }: FigmaUserNotification) =>
+    !read_at && isLessThan2WeeksOld(created_at);
+
+  // The `isLessThat2DaysOld` covers the corner case of people actively checking notifications in Figma app.
+  // Since clicking on the notification bell marks all comments as unread, we only check if
+  // the notification is very recent regardless if its read or not
+  // We also don't want extremely old notifications to be synced. That's why we have a check to get
+  // unread notifications that are more than 2 weeks old. This covers that case of someone going out on vacation
+  // and getting back to see the recently actionable things they have to do
+  const isNotificationRelevant = (n: FigmaUserNotification) =>
+    !n.resolved_at && !n.rejected_at && (isLessThan2DaysOld(n.created_at) || isUnreadButLessThan2WeeksOld(n));
 
   const relevantFigmaNotifications = result.meta.feed.filter(isNotificationRelevant);
 
