@@ -45,7 +45,7 @@ export const listPageView = createActionView((context) => {
     displayZenModeOrFocusNextItem() {
       const { list } = view;
 
-      if (list.getAllNotifications().hasItems) {
+      if (list.getAllNotifications().length) {
         return view.focusNextItem();
       }
 
