@@ -8,6 +8,7 @@ import { groupNotifications } from "@aca/desktop/domains/group/groupNotification
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { trackingEvent } from "../analytics";
 import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
@@ -18,6 +19,7 @@ export const openNotificationInApp = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "O"],
+  analyticsEvent: trackingEvent("Notification Deeplink Opened"), // TODO: add which app's deeplink it is
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },

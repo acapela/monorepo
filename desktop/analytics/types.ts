@@ -44,11 +44,17 @@ export type AnalyticsEventsMap = {
 
   // Feature related events
 
-  "Opened App": void;
-  "Opened Settings": void;
-  "Opened Predefined List": { list_id: string };
   "Notification Resolved": { notification_id: string };
   "Notification Snoozed": { notification_id: string };
+
+  // Navigation related events
+
+  "App Opened": void;
+  "Settings Opened": void;
+  "Snoozed Notifications Opened": void;
+  "Resolved Notifications Opened": void;
+  "Notification Deeplink Opened": void;
+  "Notification Group Toggled": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
