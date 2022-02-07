@@ -69,6 +69,7 @@ function getVisibleGroupedElementsInList(list: NotificationsList): NotificationO
     result.push(notificationOrGroup);
     if (
       getIsNotificationsGroup(notificationOrGroup) &&
+      !notificationOrGroup.isOnePreviewEnough &&
       openedNotificationsGroupsStore.getIsOpened(notificationOrGroup.id)
     ) {
       result.push(...notificationOrGroup.notifications);

@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
+import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
@@ -71,7 +72,11 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   return (
     <>
-      <ActionTrigger action={toggleNotificationsGroup} target={group}>
+      <ActionTrigger
+        {...(group.isOnePreviewEnough
+          ? { action: openFocusMode, target: group.notifications[group.notifications.length - 1] }
+          : { action: toggleNotificationsGroup, target: group })}
+      >
         {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
         {isFocused &&
           group.notifications.slice(0, 3).map((notificationToPreload) => {
@@ -89,12 +94,14 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             )}
           </UISendersLabel>
           <UITitle>
-            <UIToggleIconAnimator
-              animate={{ rotateZ: isOpened ? `90deg` : `0deg` }}
-              initial={{ rotateZ: isOpened ? `90deg` : `0deg` }}
-            >
-              <IconChevronRight />
-            </UIToggleIconAnimator>
+            {!group.isOnePreviewEnough && (
+              <UIToggleIconAnimator
+                animate={{ rotateZ: isOpened ? `90deg` : `0deg` }}
+                initial={{ rotateZ: isOpened ? `90deg` : `0deg` }}
+              >
+                <IconChevronRight />
+              </UIToggleIconAnimator>
+            )}
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
@@ -102,7 +109,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
           </UITitle>
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
-        {isOpened && (
+        {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
             <NotificationsRows notifications={group.notifications} list={list} />
           </UINotifications>

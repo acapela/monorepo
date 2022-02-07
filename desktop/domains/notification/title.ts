@@ -15,7 +15,7 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
 
   switch (type) {
     case "notification_slack_message": {
-      return `${innerNotification?.conversation_name}`;
+      return `${innerNotification?.conversation_name}${innerNotification.slack_thread_ts ? " in Thread" : ""}`;
     }
     case "notification_notion": {
       switch (innerNotification.type) {
