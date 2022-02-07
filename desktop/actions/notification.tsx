@@ -11,7 +11,7 @@ import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget 
 import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { goToOrFocusNextItem } from "./views/common";
+import { displayZenModeOrFocusNextItem } from "./views/common";
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
@@ -86,13 +86,13 @@ export const resolveNotification = defineAction({
         null;
     }
 
-    goToOrFocusNextItem(context);
-
     notification?.resolve();
 
     group?.notifications.forEach((notification) => {
       notification.resolve();
     });
+
+    displayZenModeOrFocusNextItem(context);
   },
 });
 
@@ -110,7 +110,7 @@ export const unresolveNotification = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    goToOrFocusNextItem(context);
+    displayZenModeOrFocusNextItem(context);
 
     notification?.update({ resolved_at: null });
     group?.notifications.forEach((notification) => {

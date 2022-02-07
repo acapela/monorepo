@@ -9,6 +9,7 @@ import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
 import * as notificationActions from "./notification";
 import * as settingsActions from "./settings";
+import * as slackActions from "./slack";
 import * as snoozeActions from "./snooze";
 
 /**
@@ -16,6 +17,7 @@ import * as snoozeActions from "./snooze";
  */
 export const allActions = composeActionsFromImports(
   authActions,
+  slackActions,
   listsActions,
   navigationActions,
   devActions,
