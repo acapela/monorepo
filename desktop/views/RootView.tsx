@@ -8,8 +8,10 @@ import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/authStore";
 
 import { ErrorRecoveryButtons } from "../domains/errorRecovery/ErrorRecoveryButtons";
+import { onboardingStore } from "../store/onboardingStore";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
+import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
@@ -45,6 +47,10 @@ export const RootView = observer(function RootView() {
         }}
       />
     );
+  }
+
+  if (onboardingStore.onboardingStatus === "ongoing") {
+    return <InitialIntegrationsView />;
   }
 
   return <Router />;

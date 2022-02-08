@@ -13,30 +13,45 @@ import {
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconAtom, IconLogIn, IconLogOut } from "@aca/ui/icons";
+import { IconLogOut, IconPlus } from "@aca/ui/icons";
+import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
+import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
   name: "Account",
 });
 
-export const loginToAcapela = defineAction({
-  name: "Log in",
+export function getContextualServiceName(name: string) {
+  return (ctx: ActionContext) => (ctx.isContextual ? "Connect" : `Connect ${name}`);
+}
+
+export const loginToAcapelaWithGoogle = defineAction({
+  name: "Continue with Google",
   group: accountActionsGroup,
-  icon: <IconLogIn />,
-  canApply: () => {
-    return !authTokenBridgeValue.get();
-  },
+  icon: <GoogleGLogoIcon />,
+  canApply: () => !authTokenBridgeValue.get(),
   async handler() {
-    await loginBridge();
+    await loginBridge("google");
+  },
+});
+
+export const loginToAcapelaWithSlack = defineAction({
+  name: "Continue with Slack",
+  group: accountActionsGroup,
+  icon: <SlackLogo />,
+  canApply: () => !authTokenBridgeValue.get(),
+  async handler() {
+    await loginBridge("slack");
   },
 });
 
 export const connectGoogle = defineAction({
-  name: "Connect Google",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Google"),
+  icon: <GoogleGLogoIcon />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
   async handler() {
@@ -45,8 +60,8 @@ export const connectGoogle = defineAction({
 });
 
 export const connectFigma = defineAction({
-  name: "Connect Figma",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Figma"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !figmaAuthTokenBridgeValue.get(),
   analyticsEvent: "Figma Integration Added",
@@ -56,8 +71,8 @@ export const connectFigma = defineAction({
 });
 
 export const connectNotion = defineAction({
-  name: "Connect Notion",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Notion"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !notionAuthTokenBridgeValue.get(),
   analyticsEvent: "Notion Integration Added",
@@ -67,7 +82,8 @@ export const connectNotion = defineAction({
 });
 
 export const connectLinear = defineAction({
-  name: "Connect Linear",
+  name: getContextualServiceName("Linear"),
+  icon: <IconPlus />,
   canApply: () => !linearAuthTokenBridgeValue.get(),
   analyticsEvent: "Linear Integration Added",
   async handler() {

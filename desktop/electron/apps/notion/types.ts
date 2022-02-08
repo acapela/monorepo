@@ -95,7 +95,7 @@ interface BlockValueCommon<T extends BlockType = "page"> {
   last_edited_by_table: string;
 }
 
-interface PageBlockValue extends BlockValueCommon<"page"> {
+export interface PageBlockValue extends BlockValueCommon<"page"> {
   alive: boolean;
   content: string[];
   created_by_id: string;

@@ -1,18 +1,14 @@
-import { toJS } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { connectFigma, connectGoogle, connectLinear, connectNotion } from "@aca/desktop/actions/auth";
-import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
-import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
-import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
+import { NotionSpaceSelector } from "./NotionSpaceSelector";
 import { ShortcutMapping } from "./ShortcutMapping";
 import { SlackActions } from "./SlackActions";
 import { ThemeSelector } from "./ThemeSelector";
@@ -22,67 +18,23 @@ export const SettingsView = observer(function SettingsView() {
     <TraySidebarLayout>
       <UIHolder>
         <UIHeader>Settings</UIHeader>
-
         <ShortcutMapping />
-
-        <ActionButton action={connectGoogle} />
+        Google <ActionButton action={connectGoogle} />
+        Notion{" "}
         <HStack alignItems="center" gap={10}>
           <ActionButton action={connectNotion} />
           <NotionSpaceSelector />
         </HStack>
-        <ActionButton action={connectFigma} />
-
-        <SlackActions />
-
-        <ActionButton action={connectLinear} />
-
+        Figma <ActionButton action={connectFigma} />
+        Slack <SlackActions />
+        Linear <ActionButton action={connectLinear} />
         <ThemeSelector />
-
         <UIVersionInfo>
           v{window.electronBridge.env.version}
           {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
         </UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
-  );
-});
-
-const NotionSpaceSelector = observer(function NotionSpaceSelector() {
-  const savedSpaces = notionSelectedSpaceValue.use();
-  const notionAuthBridge = notionAuthTokenBridgeValue.use();
-
-  useEffect(() => {
-    // Covers corner case of losing notion session without resetting spaces
-    if (!notionAuthBridge) {
-      notionSelectedSpaceValue.reset();
-    }
-  }, [notionAuthBridge]);
-
-  if (!savedSpaces?.selected?.length) {
-    return <></>;
-  }
-
-  const { selected, allSpaces } = toJS(savedSpaces);
-
-  const selectedItem = allSpaces.filter((space) => selected.includes(space.id))[0];
-
-  function handleItemSelected(space: NotionSpace) {
-    notionSelectedSpaceValue.set({
-      selected: [space.id],
-      allSpaces,
-    });
-    forceWorkerSyncRun(["notion"]);
-  }
-
-  return (
-    <SingleOptionDropdown<NotionSpace>
-      items={allSpaces}
-      keyGetter={(space) => space.id}
-      labelGetter={(space) => space.name}
-      selectedItem={selectedItem}
-      onChange={handleItemSelected}
-      placeholder="Selected Notion Space"
-    />
   );
 });
 

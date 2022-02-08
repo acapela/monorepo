@@ -24,7 +24,6 @@ import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
-import { AppThemeProvider } from "@aca/ui/theme";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 export interface AppConfig {
@@ -82,13 +81,13 @@ export default function App({
   }, [appConfig]);
 
   const { route } = useRouter();
-  const isNextAuthErrorPage = route === "/auth/error";
+  const isSessionNotRequired = route === "/auth/error" || route.startsWith("/app");
 
-  if (isNextAuthErrorPage) {
+  if (isSessionNotRequired) {
     return (
       <>
         <CommonMetadata />
-        <RequiredSessionProvider dontRequireSession={isNextAuthErrorPage} session={appConfig.session}>
+        <RequiredSessionProvider dontRequireSession={isSessionNotRequired} session={appConfig.session}>
           <PromiseUIRenderer />
           <TooltipsRenderer />
           <ToastsRenderer />
@@ -105,19 +104,17 @@ export default function App({
         <RequiredSessionProvider session={appConfig.session}>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
             <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
-              <AppThemeProvider>
-                <BuiltInStyles />
-                <CurrentTeamProvider>
-                  <ClientDbProvider>
-                    <AppStateStoreProvider>
-                      <PromiseUIRenderer />
-                      <TooltipsRenderer />
-                      <ToastsRenderer />
-                      {renderWithPageLayout(Component, { appConfig, ...pageProps })}
-                    </AppStateStoreProvider>
-                  </ClientDbProvider>
-                </CurrentTeamProvider>
-              </AppThemeProvider>
+              <BuiltInStyles />
+              <CurrentTeamProvider>
+                <ClientDbProvider>
+                  <AppStateStoreProvider>
+                    <PromiseUIRenderer />
+                    <TooltipsRenderer />
+                    <ToastsRenderer />
+                    {renderWithPageLayout(Component, { appConfig, ...pageProps })}
+                  </AppStateStoreProvider>
+                </ClientDbProvider>
+              </CurrentTeamProvider>
             </ApolloProvider>
           </MotionConfig>
         </RequiredSessionProvider>
