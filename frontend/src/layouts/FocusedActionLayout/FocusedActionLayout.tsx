@@ -1,8 +1,9 @@
+import React from "react";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-import { Logo } from "@aca/frontend/ui/Logo";
 import { PopPresenceAnimator } from "@aca/ui/animations";
+import { Logo } from "@aca/ui/icons/logos/AcapelaLogo";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 

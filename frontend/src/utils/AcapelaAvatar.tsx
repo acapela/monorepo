@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { Logo } from "@aca/frontend/ui/Logo";
+import { Logo } from "@aca/ui/icons/logos/AcapelaLogo";
 import { theme } from "@aca/ui/theme";
 
 interface Props {

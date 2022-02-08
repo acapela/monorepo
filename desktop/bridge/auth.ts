@@ -8,7 +8,7 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
   getDefault: () => null,
   isPersisted: true,
 });
-export const loginBridge = createInvokeBridge("login");
+export const loginBridge = createInvokeBridge<"google" | "slack">("login");
 
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {
   getDefault: () => null,

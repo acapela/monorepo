@@ -15,6 +15,7 @@ import {
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
 import { IconLogOut, IconPlus } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
+import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -28,13 +29,23 @@ export function getContextualServiceName(name: string) {
   return (ctx: ActionContext) => (ctx.isContextual ? "Connect" : `Connect ${name}`);
 }
 
-export const loginToAcapela = defineAction({
+export const loginToAcapelaWithGoogle = defineAction({
   name: "Continue with Google",
   group: accountActionsGroup,
   icon: <GoogleGLogoIcon />,
   canApply: () => !authTokenBridgeValue.get(),
   handler() {
-    loginBridge();
+    loginBridge("google");
+  },
+});
+
+export const loginToAcapelaWithSlack = defineAction({
+  name: "Continue with Slack",
+  group: accountActionsGroup,
+  icon: <SlackLogo />,
+  canApply: () => !authTokenBridgeValue.get(),
+  handler() {
+    loginBridge("slack");
   },
 });
 
