@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/desktop/analytics/types";
+import { MaybePromise } from "@aca/shared/promises";
 import { MaybeCleanup } from "@aca/shared/types";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
@@ -14,7 +15,7 @@ type ChildActionsResult = {
   getActions: (context: ActionContext) => ActionData[];
 };
 
-export type ActionResult = ChildActionsResult;
+export type ActionResult = MaybePromise<ChildActionsResult>;
 
 export interface ActionCreateInput {
   id?: string;
@@ -30,7 +31,7 @@ export interface ActionCreateInput {
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
-  handler: ActionContextCallback<void | ActionResult>;
+  handler: ActionContextCallback<void | Promise<void> | ActionResult>;
 }
 
 export interface ActionData extends ActionCreateInput {

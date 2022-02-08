@@ -29,8 +29,8 @@ export const loginToAcapela = defineAction({
   canApply: () => {
     return !authTokenBridgeValue.get();
   },
-  handler() {
-    loginBridge();
+  async handler() {
+    await loginBridge();
   },
 });
 
@@ -39,8 +39,8 @@ export const connectGoogle = defineAction({
   icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
-  handler() {
-    loginGoogleBridge();
+  async handler() {
+    await loginGoogleBridge();
   },
 });
 
@@ -49,8 +49,9 @@ export const connectFigma = defineAction({
   icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !figmaAuthTokenBridgeValue.get(),
-  handler() {
-    loginFigmaBridge();
+  analyticsEvent: "Figma Integration Added",
+  async handler() {
+    await loginFigmaBridge();
   },
 });
 
@@ -59,16 +60,18 @@ export const connectNotion = defineAction({
   icon: <IconAtom />,
   group: accountActionsGroup,
   canApply: () => !notionAuthTokenBridgeValue.get(),
-  handler() {
-    loginNotionBridge();
+  analyticsEvent: "Notion Integration Added",
+  async handler() {
+    await loginNotionBridge();
   },
 });
 
 export const connectLinear = defineAction({
   name: "Connect Linear",
   canApply: () => !linearAuthTokenBridgeValue.get(),
-  handler() {
-    loginLinearBridge();
+  analyticsEvent: "Linear Integration Added",
+  async handler() {
+    await loginLinearBridge();
   },
 });
 
@@ -78,7 +81,7 @@ export const restartAndClearElectronData = defineAction({
   group: accountActionsGroup,
   analyticsEvent: "Logged Out",
   keywords: ["reload"],
-  handler() {
+  async handler() {
     clearAllDataRequest();
   },
 });

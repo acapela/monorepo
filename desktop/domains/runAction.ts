@@ -8,22 +8,22 @@ import { trackEvent } from "../analytics";
 import { createCommandMenuSession } from "./commandMenu/session";
 import { commandMenuStore } from "./commandMenu/store";
 
-export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
   const { analyticsEvent } = resolveActionData(action, context);
 
   if (!action.canApply(context)) {
     return;
   }
 
-  if (analyticsEvent) {
-    trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
-  }
-
   try {
     // Let's always run actions as mobx-actions so mobx will not complain
-    const actionResult = runInAction(() => {
+    const actionResult = await runInAction(() => {
       return action.handler(context);
     });
+
+    if (analyticsEvent) {
+      trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
+    }
 
     if (!actionResult) {
       return;
