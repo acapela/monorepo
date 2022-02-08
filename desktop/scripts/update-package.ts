@@ -8,8 +8,12 @@ if (arg === "reset") {
   pkgJson.version = "999.0.0-do-not-autouptdate";
   pkgJson.repository = "github:weareacapela/releases";
   pkgJson.build.appId = "com.desktop.acapela";
+  pkgJson.build.productName = "Acapela";
 } else {
   const isStaging = arg === "staging";
+  pkgJson.version = require("./release-version");
+  console.info(`updating version to ${pkgJson.version}`);
+
   // this is required to show the correct app name (instead of @aca/desktop)
   if (isStaging) pkgJson.name = "Acapela-Staging";
   else pkgJson.name = "Acapela";
@@ -19,13 +23,13 @@ if (arg === "reset") {
   else pkgJson.build.appId = "com.desktop.acapela";
   console.info(`updating appId to ${pkgJson.build.appId}`);
 
-  pkgJson.version = require("./release-version");
-  console.info(`updating version to ${pkgJson.version}`);
+  if (isStaging) pkgJson.repository = "github:weareacapela/releases-staging";
+  else pkgJson.repository = "github:weareacapela/releases";
+  console.info(`updating repository to ${pkgJson.repository}`);
 
-  if (isStaging) {
-    pkgJson.repository = "github:weareacapela/releases-staging";
-    console.info(`updating repository to ${pkgJson.repository}`);
-  }
+  if (isStaging) pkgJson.build.productName = "Acapela-Staging";
+  else pkgJson.build.productName = "Acapela";
+  console.info(`updating productName to ${pkgJson.build.productName}`);
 
   if (isStaging) copyFileSync("./build/icon-staging.png", "./build/icon.png");
   else copyFileSync("./build/icon-production.png", "./build/icon.png");
