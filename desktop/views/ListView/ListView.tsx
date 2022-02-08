@@ -16,6 +16,7 @@ import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
+import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
   listId: string;
@@ -43,7 +44,7 @@ export const ListView = observer(({ listId }: Props) => {
           <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
         </UINotificationZeroHolder>
       )}
-      {!isInCelebrationMode && displayedList && (
+      {!isInCelebrationMode && displayedList && notificationGroups && notificationGroups.length > 0 && (
         <>
           {!hasSettledFocusedTarget &&
             displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
@@ -74,6 +75,8 @@ export const ListView = observer(({ listId }: Props) => {
           </UINotifications>
         </>
       )}
+
+      {!isInCelebrationMode && displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications />}
     </TraySidebarLayout>
   );
 });
