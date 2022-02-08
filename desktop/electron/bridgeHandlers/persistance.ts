@@ -1,6 +1,5 @@
 import path from "path";
 
-import IS_DEV from "electron-is-dev";
 import storage from "electron-json-storage";
 
 import {
@@ -10,11 +9,7 @@ import {
 } from "@aca/desktop/bridge/base/persistance";
 import { unsafeAssertType } from "@aca/shared/assert";
 
-const PERSISTANCE_DIR = path.resolve(
-  storage.getDefaultDataPath(),
-  "com.acapela.acapela",
-  IS_DEV ? "dev" : "production"
-);
+const PERSISTANCE_DIR = path.resolve(storage.getDefaultDataPath(), "com.acapela.acapela", process.env.STAGE);
 
 export async function clearPersistance() {
   return new Promise<void>((resolve) => {
