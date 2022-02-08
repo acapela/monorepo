@@ -1,5 +1,10 @@
 /* eslint-disable no-undef */
 // https://app.segment.com/acapela-analytics/sources/development/overview
+
+const IS_PROD = !window.electronBridge?.env?.isDev;
+
+const SEGMENT_KEY = IS_PROD ? "s40GL4Wcl4uYgcy2MdDNFfw9ajeN192y" : "HoxOQAFv8u7an2BwA5nAWKmmiCN0Fb2C";
+
 !(function () {
   var analytics = (window.analytics = window.analytics || []);
   if (!analytics.initialize)
@@ -49,9 +54,9 @@
         n.parentNode.insertBefore(t, n);
         analytics._loadOptions = e;
       };
-      analytics._writeKey = "HoxOQAFv8u7an2BwA5nAWKmmiCN0Fb2C";
+      analytics._writeKey = SEGMENT_KEY;
       analytics.SNIPPET_VERSION = "4.15.3";
-      analytics.load("HoxOQAFv8u7an2BwA5nAWKmmiCN0Fb2C");
+      analytics.load(SEGMENT_KEY);
       analytics.page();
     }
 })();
