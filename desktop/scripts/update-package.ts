@@ -11,7 +11,7 @@ if (arg === "reset") {
 } else {
   const isStaging = arg === "staging";
   // this is required to show the correct app name (instead of @aca/desktop)
-  if (isStaging) pkgJson.name = "Acapela Staging";
+  if (isStaging) pkgJson.name = "Acapela-Staging";
   else pkgJson.name = "Acapela";
   console.info(`updating name to ${pkgJson.name}`);
 
