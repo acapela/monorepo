@@ -36,7 +36,7 @@ export async function loginAcapela() {
 
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
-  window.webContents.loadURL(FRONTEND_URL + `/app/login`);
+  window.webContents.loadURL(FRONTEND_URL + `/app/login?provider=google`);
 
   window.webContents.on("did-navigate-in-page", async () => {
     const token = await getAcapelaAuthToken();

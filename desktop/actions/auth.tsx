@@ -23,7 +23,7 @@ export const accountActionsGroup = defineGroup({
 });
 
 export const loginToAcapela = defineAction({
-  name: "Log in",
+  name: "Continue with Google",
   group: accountActionsGroup,
   icon: <IconLogIn />,
   canApply: () => !authTokenBridgeValue.get(),
