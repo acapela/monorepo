@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import { action, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { useObserver } from "mobx-react";
 
 import { createChannel } from "@aca/shared/channel";
@@ -119,7 +119,9 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     reset,
     observables: {
       isReady,
-      value: observableValueData,
+      get value() {
+        return computed(() => observableValueData.get().value);
+      },
     },
   };
 }
