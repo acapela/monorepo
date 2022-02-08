@@ -21,6 +21,7 @@ import type {
   GetNotificationLogResult,
   GetSpacesResult,
   NotificationPayload,
+  PageBlockValue,
 } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
@@ -232,10 +233,10 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
 
-    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
+    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value as PageBlockValue | undefined;
 
-    if (pageBlock.type !== "page") {
-      log.error(`Block is not page type, instead its`, (pageBlock.type as string) ?? "");
+    if (pageBlock?.type !== "page") {
+      log.error(`Block is not page type, instead its`, recordMap.block[pageId] ?? "");
       continue;
     }
 
