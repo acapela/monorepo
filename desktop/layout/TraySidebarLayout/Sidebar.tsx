@@ -22,8 +22,7 @@ export function Sidebar() {
         </UIItemGroup>
 
         <UIItemGroup>
-          {getInboxLists
-            .get()
+          {getInboxLists()
             .filter((list) => list.id !== allNotificationsList.id)
             .map((list) => (
               <UISidebarItem key={list.id} action={goToList} target={list} />
