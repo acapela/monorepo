@@ -8,6 +8,7 @@ import { groupNotifications } from "@aca/desktop/domains/group/groupNotification
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { trackingEvent } from "../analytics";
 import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
 import { PreviewLoadingPriority } from "../domains/preview";
 import { defineAction } from "./action";
@@ -19,6 +20,7 @@ export const openNotificationInApp = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "O"],
+  analyticsEvent: trackingEvent("Notification Deeplink Opened"), // TODO: add which app's deeplink it is
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
@@ -55,6 +57,8 @@ export const resolveNotification = defineAction({
 
     return ctx.isContextual ? "Resolve" : "Resolve Notification";
   },
+  // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
+  // Thus it seems easier to track directly in notif.resolve() handler
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,

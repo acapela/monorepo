@@ -12,6 +12,7 @@ import {
   IconArrowTop,
 } from "@aca/ui/icons";
 
+import { trackingEvent } from "../analytics";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -127,6 +128,7 @@ function getGroupInfo(context: ActionContext) {
 
 export const toggleNotificationsGroup = defineAction({
   icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
+  analyticsEvent: trackingEvent("Notification Group Toggled"),
   group: currentListActionsGroup,
   name: (context) => {
     const isOpened = getGroupInfo(context)?.isOpened;

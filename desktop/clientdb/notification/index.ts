@@ -7,6 +7,7 @@ import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { trackEvent } from "@aca/desktop/analytics";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import {
@@ -132,6 +133,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
         return true;
       },
+      snooze(date: Date = new Date()) {
+        if (!connections.canSnooze) return;
+
+        updateSelf({ snoozed_until: date.toISOString() });
+      },
     };
 
     return connections;
@@ -139,6 +145,15 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   .addEventHandlers({
     itemUpdated(notification, dataBefore) {
       const isResolvedNow = !dataBefore.resolved_at && notification.resolved_at;
+      const isSnoozedNow = !dataBefore.snoozed_until && notification.snoozed_until;
+
+      if (isResolvedNow) {
+        trackEvent("Notification Resolved", { notification_id: notification.id });
+      }
+
+      if (isSnoozedNow) {
+        trackEvent("Notification Snoozed", { notification_id: notification.id });
+      }
 
       if (!isResolvedNow) return;
 

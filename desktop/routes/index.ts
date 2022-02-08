@@ -33,7 +33,7 @@ devAssignWindowVariable("router", desktopRouter);
  */
 
 // Atom that will be 'pinged' on each route change
-const routeChangeAtom = createAtom("route-change");
+export const routeChangeAtom = createAtom("route-change");
 
 // Let's ping atom on route changes
 desktopRouter.subscribe(() => {

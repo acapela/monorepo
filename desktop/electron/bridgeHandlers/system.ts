@@ -13,6 +13,8 @@ import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
+import { clearPersistance } from "./persistance";
+
 export function initializeSystemHandlers() {
   restartAppRequest.handle(async () => {
     app.relaunch();
@@ -20,6 +22,7 @@ export function initializeSystemHandlers() {
   });
 
   clearAllDataRequest.handle(async () => {
+    await clearPersistance();
     await session.defaultSession.clearStorageData();
     app.relaunch();
     app.exit();
