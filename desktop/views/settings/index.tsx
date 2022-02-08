@@ -18,22 +18,17 @@ export const SettingsView = observer(function SettingsView() {
     <TraySidebarLayout>
       <UIHolder>
         <UIHeader>Settings</UIHeader>
-
         <ShortcutMapping />
-
-        <ActionButton action={connectGoogle} />
+        Google <ActionButton action={connectGoogle} />
+        Notion{" "}
         <HStack alignItems="center" gap={10}>
           <ActionButton action={connectNotion} />
           <NotionSpaceSelector />
         </HStack>
-        <ActionButton action={connectFigma} />
-
-        <SlackActions />
-
-        <ActionButton action={connectLinear} />
-
+        Figma <ActionButton action={connectFigma} />
+        Slack <SlackActions />
+        Linear <ActionButton action={connectLinear} />
         <ThemeSelector />
-
         <UIVersionInfo>
           v{window.electronBridge.env.version}
           {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}

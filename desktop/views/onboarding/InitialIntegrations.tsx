@@ -2,9 +2,11 @@ import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
+import { defineAction } from "@aca/desktop/actions/action";
 import { connectFigma, connectLinear, connectNotion } from "@aca/desktop/actions/auth";
+import { onboardingStore } from "@aca/desktop/store/onboardingStore";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { IconAtom } from "@aca/ui/icons";
+import { IconArrowRight, IconAtom } from "@aca/ui/icons";
 import FigmaLogo from "@aca/ui/icons/default/FigmaLogo";
 import NotionLogo from "@aca/ui/icons/default/NotionLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
@@ -31,7 +33,7 @@ const integrations: ServiceIntegration[] = [
     name: "Notion",
     icon: <NotionLogo />,
     description: "Comments, mentions and page invitations.",
-    actions: [<ActionButton action={connectNotion} />, <NotionSpaceSelector />],
+    actions: [<ActionButton action={connectNotion} notApplicableMode="hide" />, <NotionSpaceSelector />],
   },
   {
     name: "Figma",
@@ -47,17 +49,26 @@ const integrations: ServiceIntegration[] = [
   },
 ];
 
+const completeOnboarding = defineAction({
+  name: "Continue",
+  icon: <IconArrowRight />,
+  private: true,
+  canApply: () => !!onboardingStore.linkedAppsStatus,
+  handler() {
+    onboardingStore.onboardingStatus = "complete";
+  },
+});
+
 export const InitialIntegrationsView = observer(function InitialIntegrationsView() {
   return (
     <UIHolder>
       <UIHeader>Setup Integrations</UIHeader>
       <UIDescription>To help you stay on top of things, and make the most of the tools you already use.</UIDescription>
 
-      <UIIntegrationsTitle>Available integrations</UIIntegrationsTitle>
-
       <UIIntegrationsTable>
+        <UIIntegrationsTitle>Available integrations</UIIntegrationsTitle>
         {integrations.map(({ name, description, icon, actions }) => (
-          <UIIntegrationRow>
+          <UIIntegrationRow key={name}>
             <UIIntegrationIcon>{icon}</UIIntegrationIcon>
             <UIIntegrationText>
               <h3>{name}</h3>
@@ -67,28 +78,32 @@ export const InitialIntegrationsView = observer(function InitialIntegrationsView
           </UIIntegrationRow>
         ))}
       </UIIntegrationsTable>
+      <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
     </UIHolder>
   );
 });
 
 const UIHolder = styled.div<{}>`
   padding: 80px;
-  width: 50vw;
+  width: 60vw;
 
   display: flex;
   flex-direction: column;
-
-  ${theme.spacing.pageSections.asGap}
 `;
 
 const UIHeader = styled.div<{}>`
   ${theme.typo.pageTitle.medium};
+  margin-bottom: 16px;
 `;
 
-const UIDescription = styled.div``;
+const UIDescription = styled.div`
+  ${theme.typo.content};
+  margin-bottom: 48px;
+  max-width: 300px;
+`;
 
 const UIIntegrationsTitle = styled.h2`
-  ${theme.typo.secondaryTitle};
+  ${theme.typo.secondaryTitle.medium};
 `;
 
 const UIIntegrationRow = styled.div`
@@ -96,23 +111,29 @@ const UIIntegrationRow = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 16px;
+
+  /* Using instead of flex gap in order to display border line in better way */
+  padding-top: 16px;
+  padding-bottom: 16px;
 `;
 
 const UIIntegrationsTable = styled.div`
   display: flex;
   flex-grow: 1;
   min-width: 540px;
+  max-width: 800px;
+
+  margin-bottom: 40px;
 
   flex-direction: column;
-  gap: 16px;
 
-  ${UIIntegrationRow}:last-child {
-    border: 0;
+  ${UIIntegrationRow} + ${UIIntegrationRow} {
+    border-top: 1px solid ${theme.colors.layout.divider.withBorder};
   }
 `;
 
 const UIIntegrationIcon = styled.div`
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid ${theme.colors.layout.divider.withBorder};
   box-sizing: border-box;
   border-radius: 9px;
 
@@ -143,4 +164,8 @@ const UIIntegrationActions = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+`;
+
+const UIActionButton = styled(ActionButton)`
+  width: 160px;
 `;

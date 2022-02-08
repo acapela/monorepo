@@ -7,6 +7,7 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/authStore";
 
+import { onboardingStore } from "../store/onboardingStore";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
 import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
@@ -31,7 +32,7 @@ export const RootView = observer(function RootView() {
     return <LoadingScreen />;
   }
 
-  if (!authStore.hasLinkedApps) {
+  if (onboardingStore.onboardingStatus === "ongoing") {
     return <InitialIntegrationsView />;
   }
 

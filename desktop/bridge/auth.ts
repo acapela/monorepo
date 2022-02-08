@@ -1,5 +1,6 @@
 import { createInvokeWithCleanupBridge } from "@aca/desktop/bridge/base/invokeWithCleanup";
 
+import { notionSelectedSpaceValue } from "./apps/notion";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
 
@@ -34,6 +35,22 @@ export const linearAuthTokenBridgeValue = createBridgeValue<boolean>("linear-aut
   isPersisted: true,
 });
 export const loginLinearBridge = createInvokeBridge("login-linear");
+
+/*
+  NEW SERVICE!?!?!?
+  Add new services here! Until refactored
+*/
+
+const allServices = [
+  notionAuthTokenBridgeValue,
+  notionSelectedSpaceValue,
+  figmaAuthTokenBridgeValue,
+  linearAuthTokenBridgeValue,
+];
+
+export function resetAllServices() {
+  allServices.forEach((s) => s.reset());
+}
 
 export async function logout() {
   authTokenBridgeValue.set(null);

@@ -4,7 +4,9 @@ import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/sy
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { IconKeyboard } from "@aca/ui/icons";
 
+import { resetAllServices } from "../bridge/auth";
 import { requestToggleLoggerWindow } from "../bridge/logger";
+import { onboardingStore } from "../store/onboardingStore";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -84,5 +86,23 @@ export const toggleOpenLoggerWindow = defineAction({
   group: devActionsGroup,
   handler() {
     requestToggleLoggerWindow();
+  },
+});
+
+export const clearAllIntegrations = defineAction({
+  icon: devIcon,
+  name: "Reset all integrations",
+  group: devActionsGroup,
+  handler() {
+    resetAllServices();
+  },
+});
+
+export const restartOnboarding = defineAction({
+  icon: devIcon,
+  name: "Restart onboarding",
+  group: devActionsGroup,
+  handler() {
+    onboardingStore.onboardingStatus = "ongoing";
   },
 });

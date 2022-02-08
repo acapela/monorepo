@@ -1,19 +1,12 @@
 import jwt from "jsonwebtoken";
 import { makeAutoObservable } from "mobx";
 
-import {
-  authTokenBridgeValue,
-  figmaAuthTokenBridgeValue,
-  linearAuthTokenBridgeValue,
-  notionAuthTokenBridgeValue,
-} from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { assert } from "@aca/shared/assert";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { watchUserTeamId } from "./currentTeam";
-
-const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
 /**
  * Store responsible for keeping information about current user and team.
@@ -54,17 +47,6 @@ export const authStore = makeAutoObservable({
     assert(team, "authStore.team is undefined. Consider using authStore.nullableTeam");
 
     return team;
-  },
-  get hasLinkedApps() {
-    const user = getAuthUser();
-    const hasSlackInstallation = Boolean(user && user.has_slack_installation);
-
-    const notion = notionAuthTokenBridgeValue.get();
-    const figma = figmaAuthTokenBridgeValue.get();
-    const linear = linearAuthTokenBridgeValue.get();
-    const slack = hasSlackInstallation;
-
-    return [notion, figma, linear, slack].some((t) => !!t);
   },
 });
 
