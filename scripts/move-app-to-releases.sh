@@ -21,7 +21,7 @@ fi
 
 echo "installing ghr..."
 wget https://github.com/tcnksm/ghr/releases/download/v0.14.0/ghr_v0.14.0_linux_amd64.tar.gz
-unzip ghr_*
+tar xvf ghr_*
 mv ghr_*/ghr ./ghr
 ./ghr --version
 
