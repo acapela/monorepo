@@ -25,7 +25,7 @@ export const RootView = observer(function RootView() {
         longLoadingFallback={{
           timeout: 5000,
           fallbackNode: <ErrorRecoveryButtons />,
-          hint: "Seems its taking too long...",
+          hint: "Seems it is taking too long...",
         }}
       />
     );
@@ -41,7 +41,7 @@ export const RootView = observer(function RootView() {
         longLoadingFallback={{
           timeout: 5000,
           fallbackNode: <ErrorRecoveryButtons />,
-          hint: "Seems its taking too long...",
+          hint: "Seems it is taking too long...",
         }}
       />
     );
