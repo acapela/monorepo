@@ -27,7 +27,7 @@ type Subscriber<T> = (value: T) => void;
  *
  * In such case, instead of passing value and setter to the context, we pass channel that can be subscribed to or published to.
  */
-export function createChannel<T>(): Channel<T> {
+export function createChannel<T = void>(): Channel<T> {
   const subscribers = new Set<Subscriber<T>>();
 
   let lastValue: ValueWrapper<T> = null;

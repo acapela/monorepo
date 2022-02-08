@@ -1,3 +1,4 @@
+import { useIsPresent } from "framer-motion";
 import { useEffect } from "react";
 
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -27,19 +28,23 @@ export function useOptionalShortcut(
 }
 
 export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutOptions) {
+  const isPresent = useIsPresent();
   const keys = resolveShortcutsDefinition(shortcut);
 
   useEffect(() => {
+    if (!isPresent) return;
     if (!callback) return;
 
     return createShortcutListener(keys, { callback, options });
-  }, [keys, callback, options]);
+  }, [keys, callback, options, isPresent]);
 
   return describeShortcut(shortcut);
 }
 
 export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: ShortcutCallback, options?: ShortcutOptions) {
+  const isPresent = useIsPresent();
   useEffect(() => {
+    if (!isPresent) return;
     if (!callback) return;
 
     const cleanup = createCleanupObject();
@@ -51,5 +56,5 @@ export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: Shortcu
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback, options]);
+  }, [shortcuts, callback, options, isPresent]);
 }

@@ -5,6 +5,7 @@ import React from "react";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { runAction } from "@aca/desktop/domains/runAction";
+import { authStore } from "@aca/desktop/store/authStore";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getObjectKey } from "@aca/shared/object";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
@@ -14,6 +15,7 @@ import { createDefaultCommandMenuSession } from "./defaultSession";
 import { commandMenuStore } from "./store";
 
 export const CommandMenuManager = observer(function CommandMenuManager() {
+  const isLoggedIn = !!authStore.nullableUser;
   const currentSession = commandMenuStore.session;
   useShortcut(
     ["Mod", "K"],
@@ -41,11 +43,13 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
     runAction(action, currentSession.actionContext);
   });
 
+  if (!isLoggedIn) return null;
+
   return (
-    <AnimatePresence exitBeforeEnter>
+    <AnimatePresence>
       {!!currentSession && (
         <CommandMenuView
-          key={getObjectKey(currentSession.actionContext)}
+          key={getObjectKey(currentSession)}
           session={currentSession}
           onActionSelected={handleActionSelected}
         />

@@ -42,6 +42,16 @@ export const listPageView = createActionView((context) => {
     get prevListItem() {
       return getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
     },
+    displayZenModeOrFocusNextItem() {
+      const { list } = view;
+
+      if (list.getAllNotifications().length) {
+        return view.focusNextItem();
+      }
+
+      uiStore.isDisplayingZenImage = true;
+      return null;
+    },
     focusNextItem() {
       uiStore.focusedTarget = view.nextListItem;
     },
@@ -51,7 +61,7 @@ export const listPageView = createActionView((context) => {
 });
 
 function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
-  const groupedList = groupNotifications(list.getAllNotifications().all);
+  const groupedList = groupNotifications(list.getAllNotifications());
 
   const result: NotificationOrGroup[] = [];
 
@@ -59,6 +69,7 @@ function getVisibleGroupedElementsInList(list: NotificationsList): NotificationO
     result.push(notificationOrGroup);
     if (
       getIsNotificationsGroup(notificationOrGroup) &&
+      !notificationOrGroup.isOnePreviewEnough &&
       openedNotificationsGroupsStore.getIsOpened(notificationOrGroup.id)
     ) {
       result.push(...notificationOrGroup.notifications);

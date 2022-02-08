@@ -12,6 +12,7 @@ import {
   IconArrowTop,
 } from "@aca/ui/icons";
 
+import { trackingEvent } from "../analytics";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -87,7 +88,7 @@ export const goToNextList = defineAction({
   },
   icon: <IconArrowRight />,
   supplementaryLabel: (context) => context.assertView(listPageView).nextList?.name,
-  shortcut: "ArrowRight",
+  shortcut: ["Tab"],
   handler(context) {
     const nextList = context.assertView(listPageView).nextList;
 
@@ -105,7 +106,7 @@ export const goToPreviousList = defineAction({
     return getIsRouteActive("list");
   },
   supplementaryLabel: (context) => context.assertView(listPageView).prevList?.name,
-  shortcut: "ArrowLeft",
+  shortcut: ["Shift", "Tab"],
   handler(context) {
     const prevList = context.assertView(listPageView).prevList;
 
@@ -127,6 +128,7 @@ function getGroupInfo(context: ActionContext) {
 
 export const toggleNotificationsGroup = defineAction({
   icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
+  analyticsEvent: trackingEvent("Notification Group Toggled"),
   group: currentListActionsGroup,
   name: (context) => {
     const isOpened = getGroupInfo(context)?.isOpened;
@@ -141,7 +143,8 @@ export const toggleNotificationsGroup = defineAction({
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {
-    return !!context.view(listPageView)?.focusedGroup;
+    const focusedGroup = context.view(listPageView)?.focusedGroup;
+    return Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
   },
   handler(context) {
     const group = context.view(listPageView)?.focusedGroup;

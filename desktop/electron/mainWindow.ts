@@ -3,19 +3,21 @@ import path from "path";
 import * as Sentry from "@sentry/electron";
 import { BrowserWindow, app, dialog } from "electron";
 import IS_DEV from "electron-is-dev";
-import log from "electron-log";
+import * as electronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 import { action, runInAction } from "mobx";
 
 import { AppEnvData } from "@aca/desktop/envData";
 
+import { makeLogger } from "../domains/dev/makeLogger";
 import { appState } from "./appState";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
 const DIST_PATH = path.resolve(__dirname, "../client");
 const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
-const sentryDsn = "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771";
+export const PRELOAD_SCRIPT_PATH = path.resolve(__dirname, "preload.js");
+export const sentryDsn = "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771";
 
 if (!IS_DEV) {
   Sentry.init({
@@ -25,7 +27,7 @@ if (!IS_DEV) {
 }
 
 function loadAppInWindow(window: BrowserWindow) {
-  window.loadURL(
+  return window.loadURL(
     IS_DEV
       ? // In dev mode - load from local dev server
         "http://localhost:3005"
@@ -34,12 +36,20 @@ function loadAppInWindow(window: BrowserWindow) {
   );
 }
 
+export const acapelaAppPathUrl = IS_DEV
+  ? // In dev mode - load from local dev server
+    "http://localhost:3005/"
+  : // In production - load static, bundled file
+    `file://${INDEX_HTML_FILE}`;
+
 export function initializeMainWindow() {
   const env: AppEnvData = {
     sentryDsn,
     isDev: IS_DEV,
     version: app.getVersion(),
+    windowName: "Root",
   };
+
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -51,16 +61,53 @@ export function initializeMainWindow() {
     },
     minWidth: 900,
     minHeight: 680,
-    titleBarStyle: "hidden",
+    titleBarStyle: "hiddenInset",
     fullscreenable: true,
   });
 
+  mainWindow.focus();
   // mainWindow.webContents.openDevTools();
 
-  loadAppInWindow(mainWindow);
+  loadAppInWindow(mainWindow).then(() => {
+    mainWindow.focus();
+  });
 
-  log.transports.file.level = "info";
-  autoUpdater.logger = log;
+  setupAutoUpdater();
+
+  runInAction(() => {
+    appState.mainWindow = mainWindow;
+  });
+
+  mainWindow.on(
+    "closed",
+    action(() => {
+      appState.mainWindow = null;
+    })
+  );
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.getBrowserViews().forEach((view) => {
+      mainWindow.removeBrowserView(view);
+    });
+  });
+
+  mainWindow.webContents.on("did-fail-load", () => {
+    loadAppInWindow(mainWindow);
+  });
+
+  return mainWindow;
+}
+
+function setupAutoUpdater() {
+  const log = makeLogger("AutoUpdater");
+
+  electronLog.transports.file.level = "info";
+  autoUpdater.logger = {
+    debug: (message: string) => log.debug(message),
+    info: (message: string) => log.info(message),
+    warn: (message: string) => log.warn(message),
+    error: (message: string) => log.error(message),
+  };
 
   setInterval(() => {
     autoUpdater.checkForUpdates();
@@ -81,30 +128,6 @@ export function initializeMainWindow() {
   });
 
   autoUpdater.on("error", (message) => {
-    console.error("There was a problem updating the application");
-    console.error(message);
+    log.error("There was a problem updating the application", message);
   });
-
-  runInAction(() => {
-    appState.mainWindow = mainWindow;
-  });
-
-  mainWindow.on(
-    "closed",
-    action(() => {
-      appState.mainWindow = null;
-    })
-  );
-
-  mainWindow.webContents.on("did-fail-load", () => {
-    loadAppInWindow(mainWindow);
-  });
-
-  mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow.getBrowserViews().forEach((view) => {
-      mainWindow.removeBrowserView(view);
-    });
-  });
-
-  return mainWindow;
 }

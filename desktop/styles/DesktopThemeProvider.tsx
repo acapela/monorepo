@@ -8,7 +8,7 @@ import { darkTheme, defaultTheme } from "@aca/ui/theme";
 import { uiStore } from "../store/uiStore";
 
 export const DesktopThemeProvider = observer(function AppThemeProvider({ children }: PropsWithChildren<{}>) {
-  const selectedTheme = uiStore.isInDarkMode ? darkTheme : defaultTheme;
+  const selectedTheme = uiStore.isInDarkMode || uiStore.isDisplayingZenImage ? darkTheme : defaultTheme;
 
   return <ThemeProvider theme={selectedTheme}>{children}</ThemeProvider>;
 });

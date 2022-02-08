@@ -36,3 +36,5 @@ export type AsyncReturnType<T> = T extends (...args: any[]) => PromiseLike<infer
 
 export type Cleanup = () => void;
 export type MaybeCleanup = Cleanup | void;
+
+export type VoidableArgument<T> = T extends void ? [] : [T];

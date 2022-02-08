@@ -1,4 +1,5 @@
-import * as Sentry from "@sentry/electron/dist/renderer";
+import "@aca/desktop/analytics";
+
 import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
@@ -14,16 +15,11 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { RootErrorBoundary } from "../domains/errorRecovery/RootErrorBoundary";
 import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
+import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
-
-if (!window.electronBridge.env.isDev) {
-  Sentry.init({
-    dsn: window.electronBridge.env.sentryDsn,
-    release: window.electronBridge.env.version,
-  });
-}
 
 const rootElement = document.getElementById("root");
 
@@ -31,22 +27,40 @@ const BuiltInStyles = createGlobalStyle`
   ${globalStyles}
 `;
 
-render(
-  <>
-    <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-      <DesktopThemeProvider>
-        <BuiltInStyles />
-        <GlobalDesktopStyles />
-        <PromiseUIRenderer />
-        <TooltipsRenderer />
-        <ToastsRenderer />
-        <ServiceWorkerConsolidation />
-        <SystemBar />
-        <CommandMenuManager />
-        <RootView />
-        <DebugView />
-      </DesktopThemeProvider>
-    </MotionConfig>
-  </>,
-  rootElement
-);
+if (window.electronBridge.env.windowName === "Logger") {
+  render(
+    <>
+      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+        <DesktopThemeProvider>
+          <BuiltInStyles />
+          <GlobalDesktopStyles />
+          <LoggerWindow />
+        </DesktopThemeProvider>
+      </MotionConfig>
+    </>,
+    rootElement
+  );
+} else {
+  // Main app
+  render(
+    <>
+      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+        <DesktopThemeProvider>
+          <BuiltInStyles />
+          <GlobalDesktopStyles />
+          <PromiseUIRenderer />
+          <TooltipsRenderer />
+          <ToastsRenderer />
+          <ServiceWorkerConsolidation />
+          <SystemBar />
+          <RootErrorBoundary>
+            <CommandMenuManager />
+            <RootView />
+            <DebugView />
+          </RootErrorBoundary>
+        </DesktopThemeProvider>
+      </MotionConfig>
+    </>,
+    rootElement
+  );
+}

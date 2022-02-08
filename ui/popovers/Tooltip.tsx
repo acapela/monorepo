@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { createChannel } from "@aca/shared/channel";
 import { createDocumentEvent, createWindowEvent, useElementEvent } from "@aca/shared/domEvents";
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useId } from "@aca/shared/id";
 
 import { TooltipLabel, TooltipLabelProps } from "./TooltipLabel";
@@ -31,7 +31,7 @@ export const Tooltip = styled<TooltipLabelProps>((props) => {
 
   const isActive = activeTooltipIdChannel.useLastValueSelector<boolean>((activeTooltipId) => activeTooltipId === id);
 
-  const shouldRender = useDebouncedValue(isActive, { onDelay: 150, offDelay: 0 });
+  const shouldRender = useDebouncedBoolean(isActive, { onDelay: 150, offDelay: 0 });
 
   useElementEvent(
     props.anchorRef,

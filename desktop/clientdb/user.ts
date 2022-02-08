@@ -1,3 +1,4 @@
+import { differenceInSeconds } from "date-fns";
 import gql from "graphql-tag";
 
 import { defineEntity } from "@aca/clientdb";
@@ -6,6 +7,8 @@ import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
+
+import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 const userFragment = gql`
   fragment DesktopUser on user {
@@ -37,6 +40,15 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {
     updateColumns: ["is_slack_auto_resolve_enabled"],
   }),
+}).addConnections((user, { getEntity }) => {
+  return {
+    get slackInstallation() {
+      return getEntity(userSlackInstallationEntity).query({ user_id: user.id }).first ?? null;
+    },
+    get isNew() {
+      return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
+    },
+  };
 });
 
 export type UserEntity = EntityByDefinition<typeof userEntity>;

@@ -98,6 +98,7 @@ __metadata:
     "@sentry/electron": ^2.5.4
     "@types/electron-json-storage": ^4.5.0
     "@types/node-cleanup": ^2.1.2
+    "@types/segment-analytics": ^0.0.34
     dotenv: ^15.0.0
     electron: 16.0.8
     electron-builder: ^22.14.13
@@ -6537,6 +6538,13 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/segment-analytics@npm:^0.0.34":
+  version: 0.0.34
+  resolution: "@types/segment-analytics@npm:0.0.34"
+  checksum: 022e2dc171a7e2015fe1492f259a6184a6d2271c3ea106f72c84a3edacc992bfd62fe24b7b4d710ec3c1de24c6132caaeda6724270b43605e62e2ab25e0ae2d8
   languageName: node
   linkType: hard
 

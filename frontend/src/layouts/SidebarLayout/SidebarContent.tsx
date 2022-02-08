@@ -28,7 +28,7 @@ export const SidebarContent = observer(function SidebarContent({ onMobileCloseRe
   const searchInputRef = useRef<HTMLInputElement>(null);
   const appState = useAppStateStore();
 
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, { timeFactory: () => 30 });
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, 30);
   const finalSearchTerm = DEBOUNCE_SEARCH ? debouncedSearchTerm : searchTerm;
   const isInSearchMode = finalSearchTerm.trim().length > 0;
 

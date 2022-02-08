@@ -1,71 +1,25 @@
-import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { apolloClient } from "@aca/desktop/apolloClient";
-import { connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { connectSlack, toggleSlackAutoResolve } from "@aca/desktop/actions/slack";
 import { getDb } from "@aca/desktop/clientdb";
 import { authStore } from "@aca/desktop/store/authStore";
-import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
-import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
-import { Button } from "@aca/ui/buttons/Button";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { HStack } from "@aca/ui/Stack";
 import { Toggle } from "@aca/ui/toggle";
 
 export const SlackActions = observer(() => {
-  const [installationURL, setInstallationURL] = useState<string | null>(null);
   const user = getDb().user.findById(authStore.user.id);
-  const [closeConnectBridge, setCloseConnectBridge] = useState<(() => void) | null>(null);
-
-  useAsyncEffect(async ({ getIsCancelled }) => {
-    const {
-      data: { slackInstallation },
-    } = await apolloClient.query<
-      GetIndividualSlackInstallationUrlQuery,
-      GetIndividualSlackInstallationUrlQueryVariables
-    >({
-      query: gql`
-        query GetIndividualSlackInstallationURL($input: GetSlackInstallationURLInput!) {
-          slackInstallation: get_slack_installation_url(input: $input) {
-            url
-          }
-        }
-      `,
-      variables: { input: { redirectURL: "" } },
-    });
-    if (!getIsCancelled()) {
-      setInstallationURL(slackInstallation?.url ?? null);
-    }
-  });
-
-  useEffect(() => {
-    if (user?.has_slack_installation) {
-      closeConnectBridge?.();
-    }
-  }, [user]);
-
   return (
     <HStack alignItems="center" gap={10}>
-      <Button
-        isDisabled={!user || user.has_slack_installation || !installationURL}
-        onClick={() => {
-          if (installationURL) {
-            const cleanup = connectSlackBridge({ url: installationURL });
-            setCloseConnectBridge(cleanup ?? null);
-          }
-        }}
-      >
-        Connect Slack
-      </Button>
+      <ActionButton action={connectSlack} />
       {user?.has_slack_installation && (
         <HStack alignItems="center" gap={5}>
-          <Toggle
-            isSet={user.is_slack_auto_resolve_enabled}
-            onChange={(value) => {
-              user.update({ is_slack_auto_resolve_enabled: value });
-            }}
-          />
-          Automatically resolve Slack messages to which you reply or react
+          <ActionTrigger action={toggleSlackAutoResolve}>
+            <Toggle isDisabled isSet={user.is_slack_auto_resolve_enabled} />
+            Automatically resolve Slack messages to which you reply or react
+          </ActionTrigger>
         </HStack>
       )}
     </HStack>

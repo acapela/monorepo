@@ -2,19 +2,25 @@ import React from "react";
 
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
+import { getDb } from "@aca/desktop/clientdb";
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { trackingEvent } from "../analytics";
 import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
+import { PreviewLoadingPriority } from "../domains/preview";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { goToOrFocusNextItem } from "./views/common";
+import { displayZenModeOrFocusNextItem } from "./views/common";
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "O"],
+  analyticsEvent: trackingEvent("Notification Deeplink Opened"), // TODO: add which app's deeplink it is
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
@@ -51,6 +57,8 @@ export const resolveNotification = defineAction({
 
     return ctx.isContextual ? "Resolve" : "Resolve Notification";
   },
+  // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
+  // Thus it seems easier to track directly in notif.resolve() handler
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
@@ -71,15 +79,25 @@ export const resolveNotification = defineAction({
   },
   handler(context) {
     const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
+    let group = context.getTarget("group");
 
-    goToOrFocusNextItem(context);
+    if (!group && notification) {
+      // If the given notification is part of a group which can be previewed through a single notification, we treat
+      // marking one of them as done as marking the whole group as done
+      group =
+        groupNotifications(getDb().notification.query({ isResolved: false }).all)
+          .filter(getIsNotificationsGroup)
+          .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
+        null;
+    }
 
     notification?.resolve();
 
     group?.notifications.forEach((notification) => {
       notification.resolve();
     });
+
+    displayZenModeOrFocusNextItem(context);
   },
 });
 
@@ -97,7 +115,7 @@ export const unresolveNotification = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    goToOrFocusNextItem(context);
+    displayZenModeOrFocusNextItem(context);
 
     notification?.update({ resolved_at: null });
     group?.notifications.forEach((notification) => {
@@ -136,13 +154,13 @@ export const openFocusMode = defineAction({
     const notification = context.getTarget("notification");
 
     if (notification) {
-      return requestPreviewPreload({ url: notification.url });
+      return requestPreviewPreload({ url: notification.url, priority: PreviewLoadingPriority.next });
     }
 
     const group = context.getTarget("group");
 
     if (group) {
-      requestPreviewPreload({ url: group.notifications[0].url });
+      requestPreviewPreload({ url: group.notifications[0].url, priority: PreviewLoadingPriority.next });
     }
   },
 });

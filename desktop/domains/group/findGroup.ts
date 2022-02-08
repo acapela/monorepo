@@ -8,7 +8,7 @@ export function getNotificationParentGroupInList(
   notification: NotificationEntity,
   list: NotificationsList
 ): NotificationsGroup | null {
-  const groupsList = groupNotifications(list.getAllNotifications().all);
+  const groupsList = groupNotifications(list.getAllNotifications());
 
   const groups = groupsList.filter(getIsNotificationsGroup);
 

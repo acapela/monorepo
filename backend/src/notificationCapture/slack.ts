@@ -5,9 +5,10 @@ import { uniq } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
-import { parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
+import { parseAndTransformToTipTapJSON, parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
 import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlackInstallation";
 import { db } from "@aca/db";
+import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
@@ -55,6 +56,24 @@ async function findSlackUserTokenForEvent(eventContextId: string): Promise<strin
   });
   return (userSlackInstallation?.data as unknown as SlackInstallation).user.token ?? null;
 }
+
+const createTextPreviewFromSlackMessage = async (
+  userToken: string,
+  slackMessageText: string,
+  mentionedSlackUserIds: string[]
+) =>
+  convertMessageContentToPlainText(
+    parseAndTransformToTipTapJSON(slackMessageText, {
+      mentionedNamesBySlackId: Object.fromEntries(
+        await Promise.all(
+          mentionedSlackUserIds.map(async (slackUserId) => [
+            slackUserId,
+            (await slackClient.users.info({ token: userToken, user: slackUserId })).user?.real_name ?? "Unknown",
+          ])
+        )
+      ),
+    })
+  );
 
 /**
  * Creates notifications for Acapela users who are in the Slack IM conversation in which the message was posted. If the
@@ -107,7 +126,8 @@ async function createNotificationsFromMessage(eventContextId: string, message: G
   }
 
   // Extract all mentioned users and set/overwrite them as mentions in the slackUsersToNotify Map
-  const mentionedMembers = new Set(extractMentionedSlackUserIdsFromMd(message.text).filter((id) => members.has(id)));
+  const mentionedSlackUserIds = extractMentionedSlackUserIdsFromMd(message.text);
+  const mentionedMembers = new Set(mentionedSlackUserIds.filter((id) => members.has(id)));
   slackUserIdsToNotify.push(...mentionedMembers);
 
   // Find Acapela users for all the Slack users that would be notified
@@ -136,6 +156,8 @@ async function createNotificationsFromMessage(eventContextId: string, message: G
   assert(permalink, `could not get permalink for message ${messageTs} in channel ${message.channel}`);
   assert(author, `could not get slack user for id ${authorSlackUserId}`);
 
+  const textPreview = await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds);
+
   const isIM = message.channel_type == "im";
   // We have to use a transaction due to Prisma not supporting relation-creation within createMany
   await db.$transaction(
@@ -145,6 +167,7 @@ async function createNotificationsFromMessage(eventContextId: string, message: G
           user_id,
           from: author.real_name ?? "Unknown",
           url: permalink,
+          text_preview: textPreview,
           notification_slack_message: {
             create: {
               slack_conversation_id: message.channel,

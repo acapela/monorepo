@@ -7,12 +7,13 @@ import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
 
 import { FRONTEND_URL, WEBSOCKET_URL } from "@aca/desktop/lib/env";
-import { createDateParseLink } from "@aca/frontend/src/apollo/dateStringParseLink";
 import { TypedTypePolicies } from "@aca/gql";
 import { IS_DEV } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 import { Maybe } from "@aca/shared/types";
 import { addToast } from "@aca/ui/toasts/data";
+
+import { createDateParseLink } from "./dateStringParseLink";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
