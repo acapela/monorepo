@@ -34,8 +34,8 @@ export const loginToAcapelaWithGoogle = defineAction({
   group: accountActionsGroup,
   icon: <GoogleGLogoIcon />,
   canApply: () => !authTokenBridgeValue.get(),
-  handler() {
-    loginBridge("google");
+  async handler() {
+    await loginBridge("google");
   },
 });
 
@@ -44,8 +44,8 @@ export const loginToAcapelaWithSlack = defineAction({
   group: accountActionsGroup,
   icon: <SlackLogo />,
   canApply: () => !authTokenBridgeValue.get(),
-  handler() {
-    loginBridge("slack");
+  async handler() {
+    await loginBridge("slack");
   },
 });
 
@@ -54,8 +54,8 @@ export const connectGoogle = defineAction({
   icon: <GoogleGLogoIcon />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
-  handler() {
-    loginGoogleBridge();
+  async handler() {
+    await loginGoogleBridge();
   },
 });
 
@@ -64,8 +64,9 @@ export const connectFigma = defineAction({
   icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !figmaAuthTokenBridgeValue.get(),
-  handler() {
-    loginFigmaBridge();
+  analyticsEvent: "Figma Integration Added",
+  async handler() {
+    await loginFigmaBridge();
   },
 });
 
@@ -74,8 +75,9 @@ export const connectNotion = defineAction({
   icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !notionAuthTokenBridgeValue.get(),
-  handler() {
-    loginNotionBridge();
+  analyticsEvent: "Notion Integration Added",
+  async handler() {
+    await loginNotionBridge();
   },
 });
 
@@ -83,8 +85,9 @@ export const connectLinear = defineAction({
   name: getContextualServiceName("Linear"),
   icon: <IconPlus />,
   canApply: () => !linearAuthTokenBridgeValue.get(),
-  handler() {
-    loginLinearBridge();
+  analyticsEvent: "Linear Integration Added",
+  async handler() {
+    await loginLinearBridge();
   },
 });
 
@@ -92,8 +95,9 @@ export const restartAndClearElectronData = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
   group: accountActionsGroup,
+  analyticsEvent: "Logged Out",
   keywords: ["reload"],
-  handler() {
+  async handler() {
     clearAllDataRequest();
   },
 });

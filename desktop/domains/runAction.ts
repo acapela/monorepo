@@ -1,24 +1,33 @@
 import { runInAction } from "mobx";
 
-import { ActionData } from "@aca/desktop/actions/action";
+import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 
+import { trackEvent } from "../analytics";
 import { createCommandMenuSession } from "./commandMenu/session";
 import { commandMenuStore } from "./commandMenu/store";
 
-export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+  const { analyticsEvent } = resolveActionData(action, context);
+
   if (!action.canApply(context)) {
     return;
   }
 
   try {
     // Let's always run actions as mobx-actions so mobx will not complain
-    const actionResult = runInAction(() => {
+    const actionResult = await runInAction(() => {
       return action.handler(context);
     });
 
-    if (!actionResult) return;
+    if (analyticsEvent) {
+      trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
+    }
+
+    if (!actionResult) {
+      return;
+    }
 
     context.searchKeyword = "";
 

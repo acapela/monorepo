@@ -1,3 +1,5 @@
+import "@aca/desktop/analytics";
+
 import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
@@ -13,6 +15,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { RootErrorBoundary } from "../domains/errorRecovery/RootErrorBoundary";
 import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
@@ -50,9 +53,11 @@ if (window.electronBridge.env.windowName === "Logger") {
           <ToastsRenderer />
           <ServiceWorkerConsolidation />
           <SystemBar />
-          <CommandMenuManager />
-          <RootView />
-          <DebugView />
+          <RootErrorBoundary>
+            <CommandMenuManager />
+            <RootView />
+            <DebugView />
+          </RootErrorBoundary>
         </DesktopThemeProvider>
       </MotionConfig>
     </>,

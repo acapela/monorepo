@@ -1,4 +1,5 @@
-import { action, observable } from "mobx";
+import { isEqual } from "lodash";
+import { action, computed, observable } from "mobx";
 import { useObserver } from "mobx-react";
 
 import { createChannel } from "@aca/shared/channel";
@@ -9,9 +10,17 @@ import { createChannelBridge } from "./channels";
 import { createInvokeBridge } from "./invoke";
 
 export const requestPersistValue = createInvokeBridge<{ key: string; data: unknown }, boolean>("requestPersistValue");
-export const requestGetPersistedValue = createInvokeBridge<string, unknown>("requestGetPersistedValue");
+export const requestGetPersistedValue = createInvokeBridge<string, ValueWithUpdateDate<unknown> | null>(
+  "requestGetPersistedValue"
+);
 
-export const bridgeValueChangeChannel = createChannelBridge<{ key: string; data: unknown }>("bridgeValueChangeChannel");
+export const bridgeValueChangeChannel =
+  createChannelBridge<{ key: string; data: ValueWithUpdateDate<unknown> }>("bridgeValueChangeChannel");
+
+export interface ValueWithUpdateDate<T> {
+  value: T;
+  updatedAt: Date | null;
+}
 
 interface BridgeValueConfig<T> {
   getDefault: () => T;
@@ -19,15 +28,19 @@ interface BridgeValueConfig<T> {
 }
 
 export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
-  const localChannel = createChannel<T>();
+  type ValueData = ValueWithUpdateDate<T>;
+  const localChannel = createChannel<ValueData>();
 
-  const observableValue = observable.box<T>(getDefault(), { deep: false });
+  const observableValueData = observable.box<ValueData>(
+    { updatedAt: null, value: getDefault() },
+    { deep: false, equals: isEqual }
+  );
 
   const isReady = observable.box(!isPersisted);
 
   localChannel.subscribe(
     action((value) => {
-      observableValue.set(value);
+      observableValueData.set(value);
       isReady.set(true);
     })
   );
@@ -39,7 +52,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     setTimeout(() => {
       requestGetPersistedValue(valueKey).then((value) => {
         if (value !== null) {
-          localChannel.publish(value as T);
+          localChannel.publish(value as ValueData);
         } else {
           isReady.set(true);
         }
@@ -51,13 +64,21 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
 
   bridgeValueChangeChannel.subscribe(({ key, data }) => {
     if (key !== valueKey) return;
-    localChannel.publish(data as T);
+    localChannel.publish(data as ValueData);
   });
 
   function set(value: T) {
-    localChannel.publish(value);
+    if (isEqual(get(), value)) {
+      return;
+    }
 
-    bridgeValueChangeChannel.send({ key: valueKey, data: value });
+    const valueData: ValueData = {
+      value,
+      updatedAt: new Date(),
+    };
+    localChannel.publish(valueData);
+
+    bridgeValueChangeChannel.send({ key: valueKey, data: valueData });
 
     if (isPersisted) {
       requestPersistValue({ key: valueKey, data: value });
@@ -73,7 +94,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
   }
 
   function get() {
-    return observableValue.get();
+    return observableValueData.get().value;
   }
 
   function use() {
@@ -88,6 +109,9 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     get isReady() {
       return isReady.get();
     },
+    get lastUpdateDate() {
+      return observableValueData.get().updatedAt;
+    },
     get,
     set,
     use,
@@ -95,7 +119,11 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     reset,
     observables: {
       isReady,
-      value: observableValue,
+      get value() {
+        return computed(() => observableValueData.get().value);
+      },
     },
   };
 }
+
+//

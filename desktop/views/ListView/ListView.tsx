@@ -23,7 +23,6 @@ interface Props {
 
 export const ListView = observer(({ listId }: Props) => {
   const displayedList = getInboxListsById(listId);
-
   const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;

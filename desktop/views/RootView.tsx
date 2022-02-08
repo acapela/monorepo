@@ -7,6 +7,7 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/authStore";
 
+import { ErrorRecoveryButtons } from "../domains/errorRecovery/ErrorRecoveryButtons";
 import { onboardingStore } from "../store/onboardingStore";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
@@ -21,7 +22,15 @@ export const RootView = observer(function RootView() {
   const user = authStore.nullableUser;
 
   if (!authStore.isReady) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen
+        longLoadingFallback={{
+          timeout: 5000,
+          fallbackNode: <ErrorRecoveryButtons />,
+          hint: "Seems it is taking too long...",
+        }}
+      />
+    );
   }
 
   if (!user) {
@@ -29,7 +38,15 @@ export const RootView = observer(function RootView() {
   }
 
   if (!db) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen
+        longLoadingFallback={{
+          timeout: 5000,
+          fallbackNode: <ErrorRecoveryButtons />,
+          hint: "Seems it is taking too long...",
+        }}
+      />
+    );
   }
 
   if (onboardingStore.onboardingStatus === "ongoing") {
