@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { linearAuthTokenBridgeValue, loginLinearBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
@@ -21,6 +22,7 @@ export async function loginLinear() {
         linearAuthTokenBridgeValue.set(true);
         window.close();
         resolve();
+        trackEvent("Linear Integration Added");
         return;
       }
       setTimeout(checkIfCallbackSuccessful, 1000);

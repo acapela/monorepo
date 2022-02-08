@@ -70,7 +70,7 @@ export const goToSettings = defineAction({
   name: "Settings",
   group: navigationActionsGroup,
   icon: <IconSlidersHoriz />,
-  analyticsEvent: "Opened Settings",
+  analyticsEvent: "Settings Opened",
   canApply: () => !getExactIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
@@ -82,7 +82,7 @@ export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
   icon: <IconFolderCheck />,
-  analyticsEvent: trackingEvent("Opened Predefined List", { list_id: "resolved" }),
+  analyticsEvent: trackingEvent("Resolved Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
@@ -93,6 +93,7 @@ export const goToSnoozed = defineAction({
   name: "Show snoozed notifications",
   group: navigationActionsGroup,
   icon: <IconClockZzz />,
+  analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: snoozedList.id });

@@ -38,7 +38,6 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
     email: user.email,
     name: user.name,
     created_at: new Date(user.created_at), // will convert string into Date type if necessary,
-    createdAt: new Date(user.created_at),
     avatar: user.avatar_url,
 
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,

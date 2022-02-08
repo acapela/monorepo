@@ -1,5 +1,6 @@
 import { BrowserWindow, session } from "electron";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
@@ -34,6 +35,7 @@ export async function loginFigma() {
 
       figmaAuthTokenBridgeValue.set(token);
       resolve();
+      trackEvent("Figma Integration Added");
     });
   });
 }
