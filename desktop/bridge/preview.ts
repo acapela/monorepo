@@ -1,11 +1,13 @@
-import { PreviewPosition } from "@aca/desktop/domains/preview";
+import { PreviewLoadingPriority, PreviewPosition } from "@aca/desktop/domains/preview";
 
 import { createChannelBridge } from "./base/channels";
 import { createInvokeWithCleanupBridge } from "./base/invokeWithCleanup";
 
 type PreviewGenericData = { url: string };
 
-export const requestPreviewPreload = createInvokeWithCleanupBridge<PreviewGenericData>("preload-preview");
+export const requestPreviewPreload = createInvokeWithCleanupBridge<
+  PreviewGenericData & { priority: PreviewLoadingPriority }
+>("preload-preview");
 
 export const requestAttachPreview = createInvokeWithCleanupBridge<PreviewGenericData & { position: PreviewPosition }>(
   "attach-preview"

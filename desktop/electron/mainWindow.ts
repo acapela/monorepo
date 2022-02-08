@@ -51,13 +51,16 @@ export function initializeMainWindow() {
     },
     minWidth: 900,
     minHeight: 680,
-    titleBarStyle: "hidden",
+    titleBarStyle: "hiddenInset",
     fullscreenable: true,
   });
 
+  mainWindow.focus();
   // mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(acapelaAppPathUrl);
+  mainWindow.loadURL(acapelaAppPathUrl).then(() => {
+    mainWindow.focus();
+  });
 
   setupAutoUpdater();
 

@@ -1,6 +1,4 @@
-import { cachedComputed } from "@aca/clientdb";
 import { createActionView } from "@aca/desktop/actions/action/view";
-import { orderNotificationsByGroups } from "@aca/desktop/domains/group/groupNotifications";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
@@ -12,7 +10,7 @@ export const focusPageView = createActionView((context) => {
   const notification = context.assertTarget("notification");
 
   // Let's cache grouping and ordering notifications
-  const orderedNotifications = cachedComputed(() => orderNotificationsByGroups(list.getAllNotifications().all));
+  const orderedNotifications = list.getAllNotifications;
 
   const view = {
     list,
@@ -26,7 +24,7 @@ export const focusPageView = createActionView((context) => {
     displayZenModeOrFocusNextItem() {
       const { list } = view;
 
-      if (list.getAllNotifications().hasItems) {
+      if (list.getAllNotifications().length > 0) {
         return view.goToNextNotification();
       }
 

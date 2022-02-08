@@ -12,7 +12,6 @@ export async function loginLinear() {
 
   // LOGOUT
   // await new Promise((resolve) => setTimeout(resolve, 3000));
-  // console.log(await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore")'));
 
   return new Promise<void>((resolve) => {
     function checkIfCallbackSuccessful() {

@@ -74,6 +74,11 @@ export function initializeServiceSync() {
 
     mainWindow.on("blur", handleWindowBlur);
     mainWindow.on("focus", handleWindowFocus);
+
+    return () => {
+      mainWindow.off("blur", handleWindowBlur);
+      mainWindow.off("focus", handleWindowFocus);
+    };
   });
 }
 

@@ -13,6 +13,7 @@ import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
+import { ShortcutMapping } from "./ShortcutMapping";
 import { SlackActions } from "./SlackActions";
 import { ThemeSelector } from "./ThemeSelector";
 
@@ -21,6 +22,8 @@ export const SettingsView = observer(function SettingsView() {
     <TraySidebarLayout>
       <UIHolder>
         <UIHeader>Settings</UIHeader>
+
+        <ShortcutMapping />
 
         <ActionButton action={connectGoogle} />
         <HStack alignItems="center" gap={10}>

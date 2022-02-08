@@ -2,6 +2,8 @@ import { RefObject, useEffect } from "react";
 
 import { createDocumentEvent, createElementEvent } from "@aca/shared/domEvents";
 
+import { createCleanupObject } from "../cleanup";
+
 /**
  * Will watch if user focused on some element.
  *
@@ -20,7 +22,7 @@ createDocumentEvent("mousemove", () => {
 const TIME_SINCE_LAST_MOVE_TO_CONSIDER_USER_ACTION = 50;
 
 function getIsUserEnterOrLeaveEvent() {
-  if (!lastCursorMoveTime) return;
+  if (!lastCursorMoveTime) return true;
   return Math.abs(Date.now() - lastCursorMoveTime) <= TIME_SINCE_LAST_MOVE_TO_CONSIDER_USER_ACTION;
 }
 
@@ -34,7 +36,9 @@ export function useUserFocusedOnElement(
 
     if (!element) return;
 
-    const cleanEnter = createElementEvent(element, "mouseenter", () => {
+    const cleanup = createCleanupObject();
+
+    cleanup.next = createElementEvent(element, "mouseenter", () => {
       if (!getIsUserEnterOrLeaveEvent()) {
         return;
       }
@@ -42,7 +46,11 @@ export function useUserFocusedOnElement(
       focusCallback?.();
     });
 
-    const cleanLeave = createElementEvent(element, "mouseleave", () => {
+    cleanup.next = createElementEvent(element, "mousemove", () => {
+      focusCallback?.();
+    });
+
+    cleanup.next = createElementEvent(element, "mouseleave", () => {
       if (!getIsUserEnterOrLeaveEvent()) {
         return;
       }
@@ -50,9 +58,6 @@ export function useUserFocusedOnElement(
       blurCallback?.();
     });
 
-    return () => {
-      cleanEnter();
-      cleanLeave();
-    };
+    return cleanup.clean;
   }, [ref, focusCallback, blurCallback]);
 }

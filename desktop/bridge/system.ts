@@ -14,3 +14,8 @@ export const isFullscreenValue = createBridgeValue<boolean>("is-fullscreen", {
     return false;
   },
 });
+
+export const globalShortcutsValue = createBridgeValue<{ show: string | null }>("global-shortcuts", {
+  isPersisted: true,
+  getDefault: () => ({ show: "CommandOrControl+Shift+A" }),
+});

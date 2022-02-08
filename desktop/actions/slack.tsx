@@ -13,7 +13,7 @@ import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 import { defineAction } from "./action";
 import { accountActionsGroup } from "./auth";
 
-const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id);
+const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
 async function querySlackInstallationURL() {
   const {

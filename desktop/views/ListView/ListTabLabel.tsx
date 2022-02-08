@@ -17,7 +17,7 @@ export const ListTabLabel = observer(function ListTabLabel({ activeListId, list,
   return (
     <UIHolder action={goToList} target={list} className={className}>
       <UILabel>{list.name}</UILabel>
-      <UICount>{list.getAllNotifications().count}</UICount>
+      <UICount>{list.getAllNotifications().length}</UICount>
       <UIActiveIndicator $isVisible={list.id === activeListId} />
     </UIHolder>
   );

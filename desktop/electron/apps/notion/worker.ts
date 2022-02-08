@@ -267,6 +267,8 @@ function getNotificationProperties(
 ): { type: NotionNotificationType; url: string; text_preview?: string | undefined } | undefined {
   const pageId = notification.navigable_block_id;
 
+  if (!pageId) return;
+
   if (notification.type === "user-mentioned") {
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
     const url =

@@ -6,8 +6,10 @@ import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { getInboxListsById, inboxLists, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/uiStore";
+import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { theme } from "@aca/ui/theme";
 
 import { ListsTabBar } from "./ListsTabBar";
@@ -22,9 +24,11 @@ interface Props {
 export const ListView = observer(({ listId }: Props) => {
   const displayedList = getInboxListsById(listId);
 
+  const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
+
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
 
-  const allNotifications = displayedList?.getAllNotifications().all;
+  const allNotifications = displayedList?.getAllNotifications();
 
   const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 
@@ -42,9 +46,16 @@ export const ListView = observer(({ listId }: Props) => {
       )}
       {!isInCelebrationMode && displayedList && (
         <>
-          {displayedList.getNotificationsToPreload().map((notificationToPreload) => {
-            return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
-          })}
+          {!hasSettledFocusedTarget &&
+            displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
+              return (
+                <PreloadNotificationPreview
+                  priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                  key={notificationToPreload.id}
+                  url={notificationToPreload.url}
+                />
+              );
+            })}
           <UINotifications>
             {notificationGroups?.map((notificationOrGroup) => {
               if (getIsNotificationsGroup(notificationOrGroup)) {
