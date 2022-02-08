@@ -1,8 +1,11 @@
 import React from "react";
 
+import { getDb } from "@aca/desktop/clientdb";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
+import { IS_DEV } from "@aca/shared/dev";
 import {
   IconArrowBottom,
   IconArrowCornerCwLt,
@@ -10,6 +13,9 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconArrowTop,
+  IconEdit,
+  IconListOrdered,
+  IconTrash,
 } from "@aca/ui/icons";
 
 import { trackingEvent } from "../analytics";
@@ -155,5 +161,36 @@ export const toggleNotificationsGroup = defineAction({
     if (!isOpenedNow) {
       uiStore.focusedTarget = group;
     }
+  },
+});
+
+export const createNotificationList = defineAction({
+  icon: <IconListOrdered />,
+  name: "Create list",
+  canApply: () => IS_DEV,
+  handler() {
+    const notificationFilter = getDb().notificationFilter.create({ title: "New List", data: {} });
+    desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
+  },
+});
+
+export const editNotificationList = defineAction({
+  icon: <IconEdit />,
+  name: (ctx) => `Edit list "${ctx.assertView(listPageView).list.name}"`,
+  canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
+  },
+});
+
+export const deleteNotificationList = defineAction({
+  icon: <IconTrash />,
+  name: (ctx) => `Delete list "${ctx.assertView(listPageView).list.name}"`,
+  canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: allNotificationsList.id });
+    getDb().notificationFilter.removeById(list.id);
   },
 });

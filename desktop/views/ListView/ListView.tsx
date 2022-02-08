@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import { getInboxListsById, inboxLists, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { getInboxLists, getInboxListsById, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
@@ -14,19 +14,21 @@ import { theme } from "@aca/ui/theme";
 
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
+import { NotificationFilterForm } from "./NotificationFilterForm";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
   listId: string;
+  isEditing: boolean;
 }
 
-export const ListView = observer(({ listId }: Props) => {
+export const ListView = observer(({ listId, isEditing }: Props) => {
   const displayedList = getInboxListsById(listId);
   const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
 
-  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? inboxLists : outOfInboxLists;
+  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? getInboxLists() : outOfInboxLists;
 
   const allNotifications = displayedList?.getAllNotifications();
 
@@ -44,6 +46,7 @@ export const ListView = observer(({ listId }: Props) => {
           <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
         </UINotificationZeroHolder>
       )}
+      {isEditing && <NotificationFilterForm listId={listId} />}
       {!isInCelebrationMode && displayedList && notificationGroups && notificationGroups.length > 0 && (
         <>
           {!hasSettledFocusedTarget &&

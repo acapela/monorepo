@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { focusOnNotificationPreview } from "@aca/desktop/actions/focus";
 import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
-import { getInboxListsById } from "@aca/desktop/domains/list/preconfigured";
+import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { NotificationPreview, PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";

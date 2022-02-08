@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
-import { allNotificationsList, inboxLists, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
@@ -22,7 +22,8 @@ export function Sidebar() {
         </UIItemGroup>
 
         <UIItemGroup>
-          {inboxLists
+          {getInboxLists
+            .get()
             .filter((list) => list.id !== allNotificationsList.id)
             .map((list) => (
               <UISidebarItem key={list.id} action={goToList} target={list} />

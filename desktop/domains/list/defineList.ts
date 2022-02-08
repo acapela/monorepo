@@ -8,10 +8,11 @@ import { orderNotificationsByGroups } from "../group/groupNotifications";
 interface DefineListConfig {
   id: string;
   name: string;
+  isCustom?: boolean;
   filter: (notification: NotificationEntity) => boolean;
 }
 
-export function defineNotificationsList({ id, name, filter }: DefineListConfig) {
+export function defineNotificationsList({ id, name, isCustom, filter }: DefineListConfig) {
   const getAllNotifications = cachedComputed(() => {
     const db = getDb();
     const rawAll = db.notification.query(filter);
@@ -74,6 +75,7 @@ export function defineNotificationsList({ id, name, filter }: DefineListConfig) 
     kind: "notificationsList" as const,
     id,
     name,
+    isCustom,
     getAllNotifications,
     getNotificationIndex,
     getNextNotification,

@@ -2,7 +2,7 @@ import React from "react";
 
 import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { resolvedList, snoozedList } from "@aca/desktop/domains/list/preconfigured";
+import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
 import {

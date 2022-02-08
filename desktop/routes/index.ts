@@ -11,7 +11,7 @@ const routes = {
   home: "/",
   settings: "/settings",
   notification: "/notifications/:notificationId",
-  list: "/list/:listId",
+  list: "/list/:listId?:isEditing",
   focus: "/focus/:listId/:notificationId",
 } as const;
 
@@ -51,11 +51,14 @@ type BasePath = string;
 
 export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathArguments<Routes[R]> | null {
   const router = getObservedRouter();
-  const currentRouteUrl = router.getLocation().url;
+  const currentRouteURL = router.getLocation().url;
+  // queries are treated as optional, thus their presence should not affect equality
+  const [currentRouteURLWithoutQuery] = currentRouteURL.split("?");
 
   const pattern = routes[route];
+  const [patternWithoutQuery] = pattern.split("?");
 
-  return parseUrlWithPattern(pattern, currentRouteUrl);
+  return parseUrlWithPattern(patternWithoutQuery as typeof pattern, currentRouteURLWithoutQuery);
 }
 
 export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): PathArguments<Routes[R]> {

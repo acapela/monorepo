@@ -158,7 +158,6 @@ async function createNotificationsFromMessage(eventContextId: string, message: G
 
   const textPreview = await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds);
 
-  const isIM = message.channel_type == "im";
   // We have to use a transaction due to Prisma not supporting relation-creation within createMany
   await db.$transaction(
     userSlackInstallations.map(({ user_id, data }) =>
@@ -170,19 +169,17 @@ async function createNotificationsFromMessage(eventContextId: string, message: G
           text_preview: textPreview,
           notification_slack_message: {
             create: {
+              slack_user_id: message.user,
               slack_conversation_id: message.channel,
               slack_thread_ts: threadTs,
               slack_message_ts: messageTs,
               is_mention: mentionedMembers.has((data as unknown as SlackInstallation).user.id),
-              ...(channel
-                ? {
-                    conversation_name: (channel.is_private ? "🔒" : "#") + channel.name_normalized,
-                    is_private_conversation: channel.is_private,
-                  }
-                : {
-                    conversation_name: isIM ? "Direct Message" : "Group Chat",
-                    is_private_conversation: true,
-                  }),
+              conversation_type: message.channel_type,
+              conversation_name: channel
+                ? (channel.is_private ? "🔒" : "#") + channel.name_normalized
+                : message.channel_type == "im"
+                ? "Direct Message"
+                : "Group Chat",
             },
           },
         },

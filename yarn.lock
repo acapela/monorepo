@@ -251,6 +251,7 @@ __metadata:
     ts-node-dev: ^1.1.8
     unicode-emoji-json: ^0.3.0
     uuid: ^8.3.2
+    zod: ^3.11.6
   peerDependencies:
     date-fns: "*"
   languageName: unknown
@@ -25225,6 +25226,13 @@ fsevents@^1.2.7:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.11.6":
+  version: 3.11.6
+  resolution: "zod@npm:3.11.6"
+  checksum: 044ac416450f179a0c88240f27849d2886c777cebade42df10e5f04125b0265cec82d9bd741a7dcb11796b2ea88b32c86be7d36932a4bed6af57002560359db1
   languageName: node
   linkType: hard
 

@@ -1,5 +1,10 @@
+import { omit } from "lodash";
+
+import { cachedComputed } from "@aca/clientdb";
+import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { isEqualForPick } from "@aca/shared/object";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 
@@ -53,48 +58,48 @@ export const snoozedList = defineNotificationsList({
   filter: (notification) => notification.isSnoozed,
 });
 
-export const inboxLists = [allNotificationsList, slackList, notionList, figmaList];
+export const getInboxLists = cachedComputed(() => [
+  allNotificationsList,
+  slackList,
+  notionList,
+  figmaList,
 
-export const inboxListIdMap = {
-  allNotifications: allNotificationsList,
-  slack: slackList,
-  notion: notionList,
-  figma: figmaList,
-};
+  ...getDb().notificationFilter.all.map((notificationFilter) =>
+    defineNotificationsList({
+      id: notificationFilter.id,
+      name: notificationFilter.title,
+      isCustom: true,
+      filter: (notification) =>
+        !notification.isResolved &&
+        notificationFilter.filters.some(
+          (filter) =>
+            filter.kind == notification.inner?.__typename &&
+            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "kind")) as never)
+        ),
+    })
+  ),
+]);
 
 export const outOfInboxLists = [snoozedList, resolvedList];
 
-export const outOfInboxListIdMap = {
-  resolved: resolvedList,
-  snoozed: snoozedList,
-};
-
-export const allInboxLists = inboxLists.concat(outOfInboxLists);
-
-export const allInboxListsIdMap = {
-  ...inboxListIdMap,
-  ...outOfInboxListIdMap,
-};
-
 export function getInboxListById(id: string): NotificationsList | null {
-  return inboxListIdMap[id as keyof typeof inboxListIdMap] ?? null;
+  return getInboxLists().find((list) => list.id === id) ?? null;
 }
 
-export function isInboxList(id: string): boolean {
-  return !!inboxListIdMap[id as keyof typeof inboxListIdMap];
-}
+export const isInboxList = (id: string) => Boolean(getInboxListById(id));
 
 export function getOutOfInboxListsById(id: string): NotificationsList | null {
-  return outOfInboxListIdMap[id as keyof typeof outOfInboxListIdMap] ?? null;
+  return outOfInboxLists.find((list) => list.id === id) ?? null;
 }
 
 export function getInboxListsById(id: string): NotificationsList | null {
-  return allInboxListsIdMap[id as keyof typeof allInboxListsIdMap] ?? null;
+  return getInboxListById(id) ?? getOutOfInboxListsById(id) ?? null;
 }
 
 export function getNextNotificationsList(list: NotificationsList) {
-  if (inboxLists.includes(list)) {
-    return getNextItemInArray(inboxLists, list, { loop: true });
+  const inboxListsValue = getInboxLists();
+  if (inboxListsValue.includes(list)) {
+    return getNextItemInArray(inboxListsValue, list, { loop: true });
   }
 
   if (outOfInboxLists.includes(list)) {
@@ -105,8 +110,9 @@ export function getNextNotificationsList(list: NotificationsList) {
 }
 
 export function getPreviousNotificationsList(list: NotificationsList) {
-  if (inboxLists.includes(list)) {
-    return getPreviousItemInArray(inboxLists, list, { loop: true });
+  const inboxListsValue = getInboxLists();
+  if (inboxListsValue.includes(list)) {
+    return getPreviousItemInArray(inboxListsValue, list, { loop: true });
   }
 
   if (outOfInboxLists.includes(list)) {
