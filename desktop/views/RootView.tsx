@@ -9,6 +9,7 @@ import { authStore } from "@aca/desktop/store/authStore";
 
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
+import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
@@ -28,6 +29,10 @@ export const RootView = observer(function RootView() {
 
   if (!db) {
     return <LoadingScreen />;
+  }
+
+  if (!authStore.hasLinkedApps) {
+    return <InitialIntegrationsView />;
   }
 
   return <Router />;

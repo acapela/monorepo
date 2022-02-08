@@ -14,7 +14,7 @@ interface Props extends ButtonStyleProps, SharedActionButtonProps {
 }
 
 export const ActionButton = styledObserver(function ActionButton({ action, target }: Props) {
-  const context = createActionContext(target);
+  const context = createActionContext(target, { isContextual: true });
   const { name, icon } = resolveActionData(action, context);
 
   const canApply = action.canApply(context);
