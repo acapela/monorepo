@@ -26,7 +26,9 @@ export const loginToAcapela = defineAction({
   name: "Log in",
   group: accountActionsGroup,
   icon: <IconLogIn />,
-  canApply: () => !authTokenBridgeValue.get(),
+  canApply: () => {
+    return !authTokenBridgeValue.get();
+  },
   handler() {
     loginBridge();
   },
@@ -74,6 +76,7 @@ export const restartAndClearElectronData = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
   group: accountActionsGroup,
+  analyticsEvent: "Logged Out",
   keywords: ["reload"],
   handler() {
     clearAllDataRequest();

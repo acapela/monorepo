@@ -1,7 +1,13 @@
 import { autorun } from "mobx";
 
+import {
+  figmaAuthTokenBridgeValue,
+  linearAuthTokenBridgeValue,
+  notionAuthTokenBridgeValue,
+} from "@aca/desktop/bridge/auth";
 import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
+import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
 import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
@@ -9,6 +15,7 @@ import { VoidableArgument } from "@aca/shared/types";
 import { getNullableDb } from "../clientdb";
 import { desktopRouter } from "../routes";
 import { authStore } from "../store/authStore";
+import { watchForUserAuthorized } from "./auth";
 import {
   AnalyticsEvent,
   AnalyticsEventName,
@@ -33,7 +40,11 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
     created_at: new Date(user.created_at), // will convert string into Date type if necessary,
     createdAt: new Date(user.created_at),
     avatar: user.avatar_url,
-    // TODO integrations installation time
+
+    figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
+    notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,
+    linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
+    slack_installed_at: nullableDate(getAuthUser()?.slackInstallation?.updated_at) ?? undefined,
   };
 }
 
@@ -82,6 +93,7 @@ export function trackingEvent<N extends AnalyticsEventName>(
 
 function initializeAnalytics() {
   const cleanup = createCleanupObject();
+  cleanup.next = trackAuthorization();
   // Keep identity updated all the time
   cleanup.next = autorun(() => {
     const profile = getUserAnalyticsProfile();
@@ -90,7 +102,7 @@ function initializeAnalytics() {
       return;
     }
 
-    log("updating profile", profile);
+    log("updating profile", { profile });
 
     // ?
     analytics.identify(profile.id, profile);
@@ -104,7 +116,7 @@ function initializeAnalytics() {
       return;
     }
 
-    log("updating team", team);
+    log("updating team", { team });
 
     analytics.group(team.id, team);
   });
@@ -138,3 +150,19 @@ function initializeAnalytics() {
 onDocumentReady(() => {
   initializeAnalytics();
 });
+
+function trackAuthorization() {
+  return watchForUserAuthorized((user) => {
+    if (user.isNew) {
+      trackEvent("Signed Up", {
+        email: user.email,
+        name: user.name,
+        type: "invited",
+        first_name: null,
+        last_name: null,
+      });
+    } else {
+      trackEvent("Logged In");
+    }
+  });
+}
