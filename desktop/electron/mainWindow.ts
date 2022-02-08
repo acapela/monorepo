@@ -26,6 +26,16 @@ if (!IS_DEV) {
   });
 }
 
+function loadAppInWindow(window: BrowserWindow) {
+  return window.loadURL(
+    IS_DEV
+      ? // In dev mode - load from local dev server
+        "http://localhost:3005"
+      : // In production - load static, bundled file
+        `file://${INDEX_HTML_FILE}`
+  );
+}
+
 export const acapelaAppPathUrl = IS_DEV
   ? // In dev mode - load from local dev server
     "http://localhost:3005/"
@@ -58,7 +68,7 @@ export function initializeMainWindow() {
   mainWindow.focus();
   // mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(acapelaAppPathUrl).then(() => {
+  loadAppInWindow(mainWindow).then(() => {
     mainWindow.focus();
   });
 
@@ -79,6 +89,10 @@ export function initializeMainWindow() {
     mainWindow.getBrowserViews().forEach((view) => {
       mainWindow.removeBrowserView(view);
     });
+  });
+
+  mainWindow.webContents.on("did-fail-load", () => {
+    loadAppInWindow(mainWindow);
   });
 
   return mainWindow;
