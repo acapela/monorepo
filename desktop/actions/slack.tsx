@@ -4,14 +4,14 @@ import React from "react";
 
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
-import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
+import { IconPlus, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
 import { apolloClient } from "../apolloClient";
 import { connectSlackBridge } from "../bridge/auth";
 import { getNullableDb } from "../clientdb";
 import { authStore } from "../store/authStore";
 import { defineAction } from "./action";
-import { accountActionsGroup } from "./auth";
+import { accountActionsGroup, getContextualServiceName } from "./auth";
 
 const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
@@ -42,8 +42,8 @@ autorun(() => {
   }
 });
 export const connectSlack = defineAction({
-  name: "Connect Slack",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Slack"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => {
     const user = getAuthUser();

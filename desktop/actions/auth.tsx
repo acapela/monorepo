@@ -13,19 +13,25 @@ import {
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconAtom, IconLogIn, IconLogOut } from "@aca/ui/icons";
+import { IconLogOut, IconPlus } from "@aca/ui/icons";
+import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
   name: "Account",
 });
 
+export function getContextualServiceName(name: string) {
+  return (ctx: ActionContext) => (ctx.isContextual ? "Connect" : `Connect ${name}`);
+}
+
 export const loginToAcapela = defineAction({
   name: "Continue with Google",
   group: accountActionsGroup,
-  icon: <IconLogIn />,
+  icon: <GoogleGLogoIcon />,
   canApply: () => !authTokenBridgeValue.get(),
   handler() {
     loginBridge();
@@ -33,8 +39,8 @@ export const loginToAcapela = defineAction({
 });
 
 export const connectGoogle = defineAction({
-  name: "Connect Google",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Google"),
+  icon: <GoogleGLogoIcon />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
   handler() {
@@ -43,8 +49,8 @@ export const connectGoogle = defineAction({
 });
 
 export const connectFigma = defineAction({
-  name: "Connect Figma",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Figma"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !figmaAuthTokenBridgeValue.get(),
   handler() {
@@ -53,8 +59,8 @@ export const connectFigma = defineAction({
 });
 
 export const connectNotion = defineAction({
-  name: "Connect Notion",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Notion"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => !notionAuthTokenBridgeValue.get(),
   handler() {
@@ -63,7 +69,8 @@ export const connectNotion = defineAction({
 });
 
 export const connectLinear = defineAction({
-  name: "Connect Linear",
+  name: getContextualServiceName("Linear"),
+  icon: <IconPlus />,
   canApply: () => !linearAuthTokenBridgeValue.get(),
   handler() {
     loginLinearBridge();
