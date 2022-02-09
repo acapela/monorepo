@@ -43,4 +43,8 @@ const UIOption = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-end;
+
+  /* Same size of "+ Connect" button */
+  min-width: 135px;
 `;

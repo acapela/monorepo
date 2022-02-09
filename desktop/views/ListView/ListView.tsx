@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -30,11 +30,17 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
 
   const listsToDisplay = isInboxList(displayedList?.id ?? "") ? getInboxLists() : outOfInboxLists;
 
-  const allNotifications = displayedList?.getAllNotifications();
+  const allNotifications = displayedList?.getAllNotifications() ?? [];
 
   const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
 
   const isInCelebrationMode = uiStore.isDisplayingZenImage;
+
+  useEffect(() => {
+    if (isInCelebrationMode && allNotifications.length > 0) {
+      uiStore.isDisplayingZenImage = false;
+    }
+  }, [isInCelebrationMode, allNotifications.length]);
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>

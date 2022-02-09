@@ -1,43 +1,58 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useRef } from "react";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
 
-export const Sidebar = observer(() => (
-  <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
-    <UITopTools>
-      <ActionIconButton action={closeNavigationMenu} />
-    </UITopTools>
-    <UIItems>
-      <UIItemGroup>
-        <UISidebarItem action={goToList} target={allNotificationsList} />
-      </UIItemGroup>
+export const Sidebar = observer(() => {
+  const sideBarRef = useRef<HTMLDivElement | null>(null);
 
-      <UIItemGroup>
-        {getInboxLists()
-          .filter((list) => list.id !== allNotificationsList.id)
-          .map((list) => (
-            <UISidebarItem key={list.id} action={goToList} target={list} />
-          ))}
-      </UIItemGroup>
-      <UIItemGroup>
-        {outOfInboxLists.map((list) => (
-          <UISidebarItem key={list.id} action={goToList} target={list} />
-        ))}
-      </UIItemGroup>
+  useClickAway(sideBarRef, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    runAction(closeNavigationMenu);
+  });
 
-      <UISidebarItem action={goToSettings} />
-    </UIItems>
-  </UIHolder>
-));
+  return (
+    <ScreenCover>
+      <UIHolder ref={sideBarRef} presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
+        <UITopTools>
+          <ActionIconButton action={closeNavigationMenu} />
+        </UITopTools>
+        <UIItems>
+          <UIItemGroup>
+            <UISidebarItem action={goToList} target={allNotificationsList} />
+          </UIItemGroup>
+
+          <UIItemGroup>
+            {getInboxLists()
+              .filter((list) => list.id !== allNotificationsList.id)
+              .map((list) => (
+                <UISidebarItem key={list.id} action={goToList} target={list} />
+              ))}
+          </UIItemGroup>
+          <UIItemGroup>
+            {outOfInboxLists.map((list) => (
+              <UISidebarItem key={list.id} action={goToList} target={list} />
+            ))}
+          </UIItemGroup>
+
+          <UISidebarItem action={goToSettings} />
+        </UIItems>
+      </UIHolder>
+    </ScreenCover>
+  );
+});
 
 const UIHolder = styled(PresenceAnimator)`
   position: fixed;
