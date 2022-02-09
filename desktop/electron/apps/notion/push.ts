@@ -2,9 +2,10 @@ import * as Sentry from "@sentry/electron";
 import fetch from "node-fetch";
 
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { notionURL } from "@aca/desktop/electron/auth/notion";
 import { getUUID } from "@aca/shared/uuid";
 
-import { getNotionSessionData, notionURL } from "./worker";
+import { getNotionSessionData } from "./worker";
 
 export async function initializeNotionPush() {
   console.info("[Notion] Starting push handling");

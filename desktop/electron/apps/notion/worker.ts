@@ -1,5 +1,5 @@
 import { differenceInMinutes } from "date-fns";
-import { BrowserWindow } from "electron";
+import { session } from "electron";
 import fetch from "node-fetch";
 
 import {
@@ -11,7 +11,7 @@ import {
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
-import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
@@ -34,7 +34,6 @@ let isSyncing = false;
 const log = makeLogger("Notion-Worker");
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
-export const notionURL = "https://www.notion.so";
 
 export function isNotionReadyToSync() {
   return authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
@@ -46,25 +45,13 @@ export interface NotionSessionData {
 }
 
 export async function getNotionSessionData(): Promise<NotionSessionData> {
-  const window = new BrowserWindow({
-    width: 0,
-    height: 0,
-    webPreferences: {
-      contextIsolation: true,
-    },
-  });
-
-  window.hide();
-
-  const cookies = await window.webContents.session.cookies.get({
+  const cookies = await session.defaultSession.cookies.get({
     url: notionURL,
   });
 
   if (!cookies) {
     throw log.error(new Error("Unable to sync: no cookies"));
   }
-
-  window.close();
 
   const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id")?.value;
 

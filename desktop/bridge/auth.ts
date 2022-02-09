@@ -4,6 +4,8 @@ import { notionSelectedSpaceValue } from "./apps/notion";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
 
+export const clearServiceCookiesBridge = createInvokeBridge<{ url: string }>("disconnect-service");
+
 export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token", {
   getDefault: () => null,
   isPersisted: true,
