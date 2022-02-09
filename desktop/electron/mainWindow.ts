@@ -109,9 +109,12 @@ function setupAutoUpdater() {
     error: (message: string) => log.error(message),
   };
 
-  setInterval(() => {
+  const checkForUpdates = () => {
     autoUpdater.checkForUpdates();
-  }, 10 * 60 * 1000); // check for updates every 10 minutes
+    setTimeout(checkForUpdates, 10 * 60 * 1000); // check for updates every 10 minutes
+  };
+
+  checkForUpdates();
 
   autoUpdater.on("update-downloaded", (_event, _releaseNotes, releaseName) => {
     const dialogOpts = {
