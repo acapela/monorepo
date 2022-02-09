@@ -11,7 +11,7 @@ import {
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
-import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
@@ -34,7 +34,6 @@ let isSyncing = false;
 const log = makeLogger("Notion-Worker");
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
-export const notionURL = "https://www.notion.so";
 
 export function isNotionReadyToSync() {
   return authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;

@@ -7,7 +7,7 @@ import {
   loginGoogleBridge,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconLogOut, IconPlus } from "@aca/ui/icons";
+import { IconCross, IconLogOut, IconPlus } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
@@ -62,6 +62,28 @@ export const connectIntegration = defineAction({
     const integration = ctx.assertTarget("integration");
 
     return integration.connect();
+  },
+});
+
+export const disconnectIntegration = defineAction({
+  name: (ctx) => {
+    const integration = ctx.assertTarget("integration");
+
+    return ctx.isContextual ? "Disconnect" : `Disconnect ${integration.name}`;
+  },
+  icon: <IconCross />,
+  group: accountActionsGroup,
+  canApply: (ctx) => {
+    const integration = ctx.getTarget("integration");
+
+    if (!integration) return false;
+
+    return integration.getIsConnected() && !!integration.disconnect;
+  },
+  async handler(ctx) {
+    const integration = ctx.assertTarget("integration");
+
+    return integration.disconnect?.();
   },
 });
 

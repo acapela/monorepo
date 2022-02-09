@@ -6,7 +6,7 @@ import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
 import { authWindowDefaultOptions } from "./utils";
 
-const notionURL = "https://www.notion.so";
+export const notionURL = "https://www.notion.so";
 
 export async function getNotionAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: notionURL });

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { connectIntegration } from "@aca/desktop/actions/auth";
+import { connectIntegration, disconnectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { theme } from "@aca/ui/theme";
@@ -22,7 +22,18 @@ export function IntegrationCard({ service }: Props) {
             <UIDescription>{description}</UIDescription>
           </UIInfoAboutIntegration>
           <UIConnectAction>
-            <ActionButton action={connectIntegration} target={service} notApplicableLabel="Connected" />
+            <ActionButton
+              action={connectIntegration}
+              target={service}
+              notApplicableLabel="Connected"
+              notApplicableMode={service.disconnect && "hide"}
+            />
+            <ActionButton
+              action={disconnectIntegration}
+              target={service}
+              notApplicableMode="hide"
+              kind="primarySubtle"
+            />
           </UIConnectAction>
         </UIHead>
         {additionalSettings && <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>}
