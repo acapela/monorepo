@@ -12,6 +12,9 @@ if (arg === "reset") {
   pkgJson.repository = "github:weareacapela/releases";
   pkgJson.build.appId = "com.desktop.acapela";
   pkgJson.build.productName = "Acapela";
+  pkgJson.build.directories.output = "dist-electron";
+  pkgJson.main = "./dist/electron/index.js";
+  pkgJson.build.files[1] = "dist";
 } else {
   const isStaging = arg === "staging";
   pkgJson.version = require("./release-version");
@@ -20,22 +23,36 @@ if (arg === "reset") {
   // this is required to show the correct app name (instead of @aca/desktop)
   if (isStaging) pkgJson.name = "Alepaca";
   else pkgJson.name = "Acapela";
-  console.info(`updating name to ${pkgJson.name}`);
-
-  if (isStaging) pkgJson.build.appId = "com.desktop.acapela.staging";
-  else pkgJson.build.appId = "com.desktop.acapela";
-  console.info(`updating appId to ${pkgJson.build.appId}`);
+  console.info(`updated name to ${pkgJson.name}`);
 
   if (isStaging) pkgJson.repository = "github:weareacapela/releases-staging";
   else pkgJson.repository = "github:weareacapela/releases";
-  console.info(`updating repository to ${pkgJson.repository}`);
+  console.info(`updated repository to ${pkgJson.repository}`);
+
+  if (isStaging) pkgJson.build.appId = "com.desktop.acapela.staging";
+  else pkgJson.build.appId = "com.desktop.acapela";
+  console.info(`updated appId to ${pkgJson.build.appId}`);
 
   if (isStaging) pkgJson.build.productName = "Alepaca";
   else pkgJson.build.productName = "Acapela";
-  console.info(`updating productName to ${pkgJson.build.productName}`);
+  console.info(`updated productName to ${pkgJson.build.productName}`);
+
+  if (isStaging) pkgJson.build.directories.output = "dist-electron-staging";
+  else pkgJson.build.directories.output = "dist-electron-production";
+  console.info(`updated directories.output to ${pkgJson.build.directories.output}`);
+
+  if (isStaging) {
+    pkgJson.main = "./dist-staging/electron/index.js";
+    pkgJson.build.files[1] = "dist-staging";
+  } else {
+    pkgJson.main = "./dist-production/electron/index.js";
+    pkgJson.build.files[1] = "dist-production";
+  }
+  console.info(`updated main to ${pkgJson.main} [files: ${pkgJson.build.files[1]}]`);
 
   if (isStaging) copyFileSync("./build/icon-staging.png", "./build/icon.png");
   else copyFileSync("./build/icon-production.png", "./build/icon.png");
+  console.info("updated icon");
 }
 
 writeFileSync("./package.json", JSON.stringify(pkgJson, null, 2) + "\n");

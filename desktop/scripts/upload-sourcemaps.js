@@ -21,7 +21,7 @@ async function main() {
   for (let env of ["staging", "production"]) {
     console.info(`uploading ${env} sourcemaps...`);
     await cli.execute(
-      ["releases", "files", version, "upload-sourcemaps", `./dist-${env}`, "--url-prefix", "app:///dist"],
+      ["releases", "files", version, "upload-sourcemaps", `./dist-${env}`, "--url-prefix", `app:///dist-${env}`],
       true
     );
   }

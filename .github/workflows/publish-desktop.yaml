@@ -17,8 +17,8 @@ jobs:
             desktop/dist-staging
             desktop/dist-production
           key: desktop-dist-${{ github.sha }}
-      - run: yarn build:bundle
-      - run: yarn upload-sourcemaps
+      - run: yarn desktop build:bundle
+      - run: yarn desktop upload-sourcemaps
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -26,16 +26,26 @@ jobs:
   publish:
     name: Publish
     runs-on: macos-latest
+    #    needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/node-and-yarn
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Install dependencies
+        run: |
+          npm i "electron-builder@$(jq -r '.devDependencies["electron-builder"]' ./desktop/package.json)" -g --force
+          electron-builder --version
+          npm i "electron-notarize@$(jq -r '.devDependencies["electron-notarize"]' ./desktop/package.json)" -g --force
+          echo "NODE_PATH=$(npm root -g)" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
           path: |
             desktop/dist-staging
             desktop/dist-production
           key: desktop-dist-${{ github.sha }}
-      - run: yarn desktop publish
+      - run: node -e 'console.log(require("electron-notarize"))'
+      - run: yarn desktop nooooop
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
