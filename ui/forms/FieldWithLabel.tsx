@@ -125,6 +125,7 @@ const sharedPlaceholderStyles = css`
   text-overflow: ellipsis; /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
   height: 1.5em;
   ${theme.font.secondary};
+  ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
 const UIPlaceholder = styled(motion.div)<{}>`
@@ -137,11 +138,9 @@ const UIFocusedPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   align-self: flex-start;
   font-size: 12px;
-  background-color: #fff;
 
   /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
   margin-top: calc(-0.75em + 2px);
-  box-shadow: 0 0 0px 6px #fff;
 `;
 
 const UIContentHolder = styled.div<{}>`

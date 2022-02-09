@@ -1,42 +1,55 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { goToList } from "@aca/desktop/actions/lists";
 import { closeNavigationMenu, goToSettings } from "@aca/desktop/actions/navigation";
 import { allNotificationsList, inboxLists, outOfInboxLists } from "@aca/desktop/domains/list/preconfigured";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
 
 export function Sidebar() {
-  return (
-    <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
-      <UITopTools>
-        <ActionIconButton action={closeNavigationMenu} />
-      </UITopTools>
-      <UIItems>
-        <UIItemGroup>
-          <UISidebarItem action={goToList} target={allNotificationsList} />
-        </UIItemGroup>
+  const sideBarRef = useRef<HTMLDivElement | null>(null);
 
-        <UIItemGroup>
-          {inboxLists
-            .filter((list) => list.id !== allNotificationsList.id)
-            .map((list) => (
+  useClickAway(sideBarRef, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    runAction(closeNavigationMenu);
+  });
+
+  return (
+    <ScreenCover>
+      <UIHolder ref={sideBarRef} presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
+        <UITopTools>
+          <ActionIconButton action={closeNavigationMenu} />
+        </UITopTools>
+        <UIItems>
+          <UIItemGroup>
+            <UISidebarItem action={goToList} target={allNotificationsList} />
+          </UIItemGroup>
+
+          <UIItemGroup>
+            {inboxLists
+              .filter((list) => list.id !== allNotificationsList.id)
+              .map((list) => (
+                <UISidebarItem key={list.id} action={goToList} target={list} />
+              ))}
+          </UIItemGroup>
+          <UIItemGroup>
+            {outOfInboxLists.map((list) => (
               <UISidebarItem key={list.id} action={goToList} target={list} />
             ))}
-        </UIItemGroup>
-        <UIItemGroup>
-          {outOfInboxLists.map((list) => (
-            <UISidebarItem key={list.id} action={goToList} target={list} />
-          ))}
-        </UIItemGroup>
+          </UIItemGroup>
 
-        <UISidebarItem action={goToSettings} />
-      </UIItems>
-    </UIHolder>
+          <UISidebarItem action={goToSettings} />
+        </UIItems>
+      </UIHolder>
+    </ScreenCover>
   );
 }
 
