@@ -49,3 +49,26 @@ export function createResolvablePromise<T = void>(): ResolvablePromise<T> {
     getIsComplete,
   };
 }
+
+/**
+ * Creates an async function wrapper that will make sure only one 'instance' of it is
+ * running at given time.
+ */
+export function createSharedPromise<T>(getter: () => Promise<T>) {
+  let currentPromise: Promise<T> | null;
+
+  async function get() {
+    if (currentPromise) return currentPromise;
+
+    currentPromise = getter();
+
+    try {
+      const result = await currentPromise;
+      return result;
+    } finally {
+      currentPromise = null;
+    }
+  }
+
+  return get;
+}

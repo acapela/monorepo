@@ -11,6 +11,7 @@ import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { RootView } from "@aca/desktop/views/RootView";
+import { ToastsAndCommunicatesView } from "@aca/desktop/views/ToastsAndCommunicates";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
@@ -53,7 +54,9 @@ if (window.electronBridge.env.windowName === "Logger") {
           <ToastsRenderer />
           <ServiceWorkerConsolidation />
           <SystemBar />
+
           <RootErrorBoundary>
+            <ToastsAndCommunicatesView />
             <CommandMenuManager />
             <RootView />
             <DebugView />

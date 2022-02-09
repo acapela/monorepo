@@ -1,7 +1,6 @@
 import { autorun, makeAutoObservable, observable } from "mobx";
 
-import { appWindowValue } from "@aca/desktop/bridge/appWindow";
-import { isFullscreenValue } from "@aca/desktop/bridge/system";
+import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { desktopRouter } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
@@ -51,11 +50,11 @@ export const uiStore = makeAutoObservable({
     return isFocused;
   },
   get isFullscreen() {
-    return isFullscreenValue.get();
+    return applicationStateBridge.get().isFullscreen;
   },
   // Any part of the app is focused
   get isAppFocused() {
-    return appWindowValue.get().isFocused;
+    return applicationStateBridge.get().isFocused;
   },
   get isAnyPreviewFocused() {
     // If 'client' is directly focused, there is no way some preview is

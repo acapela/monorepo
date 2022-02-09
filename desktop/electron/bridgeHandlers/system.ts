@@ -1,8 +1,8 @@
 import { app, session, shell } from "electron";
 
 import {
+  applicationStateBridge,
   clearAllDataRequest,
-  isFullscreenValue,
   openLinkRequest,
   restartAppRequest,
   toggleDevtoolsRequest,
@@ -78,10 +78,10 @@ export function initializeSystemHandlers() {
 
     if (!mainWindow) return;
 
-    isFullscreenValue.set(mainWindow.isFullScreen());
+    applicationStateBridge.update({ isFullscreen: mainWindow.isFullScreen() });
 
-    const handleEnterFullscreen = () => isFullscreenValue.set(true);
-    const handleLeaveFullscreen = () => isFullscreenValue.set(false);
+    const handleEnterFullscreen = () => applicationStateBridge.update({ isFullscreen: true });
+    const handleLeaveFullscreen = () => applicationStateBridge.update({ isFullscreen: false });
 
     mainWindow.on("enter-full-screen", handleEnterFullscreen);
     mainWindow.on("leave-full-screen", handleLeaveFullscreen);
