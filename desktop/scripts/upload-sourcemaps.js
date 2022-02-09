@@ -1,11 +1,13 @@
-import fs from "fs";
+#!/usr/bin/env node
 
-import SentryCli from "@sentry/cli";
-import glob from "glob-promise";
+/* eslint-disable @typescript-eslint/no-var-requires */
+const fs = require("fs");
+const SentryCli = require("@sentry/cli");
+const glob = require("glob-promise");
 
 const cli = new SentryCli("./sentry.properties");
 
-async function main(): Promise<void> {
+async function main() {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const version = require("./release-version");
   if (!version) {

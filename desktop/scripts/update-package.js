@@ -1,4 +1,7 @@
-import { copyFileSync, readFileSync, writeFileSync } from "fs";
+#!/usr/bin/env node
+
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { copyFileSync, readFileSync, writeFileSync } = require("fs");
 
 const pkgJson = JSON.parse(readFileSync("./package.json", "utf-8"));
 const arg = process.argv.pop();
