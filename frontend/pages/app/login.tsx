@@ -1,6 +1,6 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
 import { LoadingScreen } from "@aca/frontend/clientdb/LoadingScreen";
@@ -17,13 +17,20 @@ export default function LoginPage(): JSX.Element {
 
   const queryParams = router.query as { provider: string } | undefined;
 
-  if (queryParams?.provider === "google") {
-    signIn("google");
-    return <LoadingScreen />;
-  }
+  // Runs `singIn` in client side
+  useEffect(() => {
+    if (queryParams?.provider === "google") {
+      signIn("google");
+    } else if (queryParams?.provider === "slack") {
+      signIn("slack");
+    } else {
+      setIsComponentMounted(true);
+    }
+  }, [queryParams]);
 
-  if (queryParams?.provider === "slack") {
-    signIn("slack");
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
+
+  if (!isComponentMounted) {
     return <LoadingScreen />;
   }
 
