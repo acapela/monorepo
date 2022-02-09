@@ -26,6 +26,7 @@ router.use(
       `http://localhost`,
       `http://localhost:3000`,
       `https://landing-page-git-v3-acapela.vercel.app`,
+      `https://acapela-v1.webflow.io/`,
     ],
   })
 );

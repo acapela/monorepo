@@ -5,15 +5,50 @@ on:
       - "v*"
 
 jobs:
-  publish:
-    name: Publish
-    runs-on: macos-latest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
-      - run: yarn desktop publish
+      - uses: actions/cache@v2
+        with:
+          path: |
+            desktop/dist-staging
+            desktop/dist-production
+          key: desktop-dist-${{ github.sha }}
+      - run: yarn desktop build:bundle
+      - run: yarn desktop upload-sourcemaps
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          RELEASE_VERSION: ${{ github.ref_name }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+  publish:
+    name: Publish
+    runs-on: macos-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Install dependencies
+        run: |
+          npm i "electron-builder@$(jq -r '.devDependencies["electron-builder"]' ./desktop/package.json)" -g --force
+          electron-builder --version
+          npm i "electron-notarize@$(jq -r '.devDependencies["electron-notarize"]' ./desktop/package.json)" -g --force
+          echo "NODE_PATH=$(npm root -g)" >> $GITHUB_ENV
+      - uses: actions/cache@v2
+        with:
+          path: |
+            desktop/dist-staging
+            desktop/dist-production
+          key: desktop-dist-${{ github.sha }}
+      - name: Publish
+        run: |
+          cd desktop/
+          ./scripts/publish.sh
+        env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
@@ -21,4 +56,3 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           RELEASE_VERSION: ${{ github.ref_name }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

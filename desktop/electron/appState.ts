@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
 import { autorun, makeObservable, observable, runInAction } from "mobx";
 
-import { appWindowValue } from "@aca/desktop/bridge/appWindow";
+import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 export const appState = makeObservable(
@@ -20,14 +20,14 @@ autorunEffect(() => {
 
   if (!mainWindow) return;
 
-  appWindowValue.update({ isFocused: mainWindow.isFocused() });
+  applicationStateBridge.update({ isFocused: mainWindow.isFocused() });
 
   const handleFocus = () => {
-    appWindowValue.update({ isFocused: true });
+    applicationStateBridge.update({ isFocused: true });
   };
 
   const handleBlur = () => {
-    appWindowValue.update({ isFocused: false });
+    applicationStateBridge.update({ isFocused: false });
   };
 
   mainWindow.on("focus", handleFocus);

@@ -71,12 +71,9 @@ function extractTextFromBlockDataItem(
     return;
   }
 
-  if (item.length === 1) {
+  // It's a string with or without formatting e.g bold and italic -> ["this string", [["b","i"]]]
+  if (item.length === 1 || item[0] !== NotionBlockDSLDataIndicator) {
     return item[0];
-  }
-
-  if (item[0] !== NotionBlockDSLDataIndicator) {
-    return;
   }
 
   const notionDSLData = item[1][0];
@@ -87,12 +84,12 @@ function extractTextFromBlockDataItem(
 
   if (notionDSLData[0] === NotionUserDataIndicator) {
     const mentionedUserId = notionDSLData[1];
-    return `@${recordMap.notion_user[mentionedUserId].value.name} `;
+    return `@${recordMap.notion_user[mentionedUserId].value.name}`;
   }
 
   if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
-    return `📄${(recordMap.block[pageId] as BlockPayload<"page">).value.properties.title[0][0]} `;
+    return `📄${(recordMap.block[pageId] as BlockPayload<"page">).value.properties.title[0][0]}`;
   }
 
   if (notionDSLData[0] === NotionDateDataIndicator) {

@@ -2,7 +2,7 @@ import { upperFirst } from "lodash";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
 
-import { globalShortcutsValue } from "@aca/desktop/bridge/system";
+import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Button } from "@aca/ui/buttons/Button";
 import { TextInput } from "@aca/ui/forms/TextInput";
@@ -21,7 +21,7 @@ const buildElectronShortcutStringFromKeyboardEvent = (event: React.KeyboardEvent
     .join("+");
 
 export const ShortcutMapping = observer(() => {
-  const currentValue = globalShortcutsValue.get().show;
+  const currentValue = applicationWideSettingsBridge.get().globalShowAppShortcut;
   const [value, setValue] = useState(currentValue);
   return (
     <HStack>
@@ -43,7 +43,7 @@ export const ShortcutMapping = observer(() => {
         kind="transparent"
         onClick={() => {
           setValue(null);
-          globalShortcutsValue.set({ show: null });
+          applicationWideSettingsBridge.update({ globalShowAppShortcut: null });
         }}
       >
         Disable
@@ -52,7 +52,7 @@ export const ShortcutMapping = observer(() => {
         kind="primary"
         isDisabled={!value || value == currentValue}
         onClick={() => {
-          globalShortcutsValue.set({ show: value });
+          applicationWideSettingsBridge.set({ globalShowAppShortcut: value });
         }}
       >
         {currentValue ? "Update" : "Enable"}
