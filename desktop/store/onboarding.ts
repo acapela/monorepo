@@ -5,7 +5,8 @@ import {
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
-} from "../bridge/auth";
+} from "@aca/desktop/bridge/auth";
+
 import { accountStore } from "./account";
 
 /**

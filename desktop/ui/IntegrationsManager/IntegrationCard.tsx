@@ -3,9 +3,8 @@ import styled from "styled-components";
 
 import { connectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { theme } from "@aca/ui/theme";
-
-import { ActionButton } from "../ActionButton";
 
 interface Props {
   service: IntegrationClient;

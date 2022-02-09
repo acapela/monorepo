@@ -1,12 +1,12 @@
 import React from "react";
 
+import { resetAllServices } from "@aca/desktop/bridge/auth";
+import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { IconKeyboard } from "@aca/ui/icons";
 
-import { resetAllServices } from "../bridge/auth";
-import { requestToggleLoggerWindow } from "../bridge/logger";
-import { onboardingStore } from "../store/onboarding";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

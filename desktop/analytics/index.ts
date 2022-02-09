@@ -5,6 +5,8 @@ import {
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { desktopRouter } from "@aca/desktop/routes";
+import { accountStore } from "@aca/desktop/store/account";
 import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
@@ -12,8 +14,6 @@ import { onDocumentReady } from "@aca/shared/document";
 import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
 
-import { desktopRouter } from "../routes";
-import { accountStore } from "../store/account";
 import { watchForUserAuthorized } from "./auth";
 import {
   AnalyticsEvent,

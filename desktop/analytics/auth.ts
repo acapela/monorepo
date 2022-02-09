@@ -1,17 +1,16 @@
 import { differenceInSeconds } from "date-fns";
 import { autorun } from "mobx";
 
+import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { UserEntity } from "@aca/desktop/clientdb/user";
+import { accountStore } from "@aca/desktop/store/account";
 import { createLogger } from "@aca/shared/log";
-
-import { authTokenBridgeValue } from "../bridge/auth";
-import { UserEntity } from "../clientdb/user";
-import { authStore } from "../store/auth";
 
 const log = createLogger("Analytics - auth", false);
 
 export function watchForUserAuthorized(callback: (user: UserEntity) => void) {
   return autorun(() => {
-    const authorizedUser = authStore.user;
+    const authorizedUser = accountStore.user;
     const authStateChangeDate = authTokenBridgeValue.lastUpdateDate;
 
     log({ authorizedUser, authStateChangeDate });

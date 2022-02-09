@@ -6,6 +6,8 @@ import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
+import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
+import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { RootView } from "@aca/desktop/views/RootView";
@@ -15,8 +17,6 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { RootErrorBoundary } from "../domains/errorRecovery/RootErrorBoundary";
-import { DesktopThemeProvider } from "../styles/DesktopThemeProvider";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";

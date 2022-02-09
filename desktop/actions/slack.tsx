@@ -1,10 +1,10 @@
 import React from "react";
 
+import { integrationClients } from "@aca/desktop/domains/integrations";
+import { accountStore } from "@aca/desktop/store/account";
 import { assertDefined } from "@aca/shared/assert";
 import { IconPlus, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
-import { integrationClients } from "../domains/integrations";
-import { accountStore } from "../store/account";
 import { defineAction } from "./action";
 import { accountActionsGroup, getContextualServiceName } from "./auth";
 

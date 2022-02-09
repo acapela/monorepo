@@ -2,9 +2,9 @@ import { runInAction } from "mobx";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
+import { trackEvent } from "@aca/desktop/analytics";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 
-import { trackEvent } from "../analytics";
 import { createCommandMenuSession } from "./commandMenu/session";
 import { commandMenuStore } from "./commandMenu/store";
 

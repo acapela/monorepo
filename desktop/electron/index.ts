@@ -6,8 +6,9 @@ import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action } from "mobx";
 
-import { InitializeLogger } from "../domains/dev/logger";
-import { makeLogger } from "../domains/dev/makeLogger";
+import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
