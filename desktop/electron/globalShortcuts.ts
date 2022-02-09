@@ -23,7 +23,7 @@ export function initializeGlobalShortcuts() {
     }
 
     unregisterGlobalShowShortcut();
-    currentShortcut = applicationWideSettingsBridge.get().show;
+    currentShortcut = applicationWideSettingsBridge.get().globalShowAppShortcut;
     const didRegister = currentShortcut && globalShortcut.register(currentShortcut, showMainWindow);
     if (!didRegister) {
       console.warn(`Failed to register 'show acapela' global shortcut`);

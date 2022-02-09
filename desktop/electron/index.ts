@@ -11,6 +11,7 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
+import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeMainWindow } from "./mainWindow";
@@ -49,6 +50,8 @@ function initializeApp() {
   initializeGlobalShortcuts();
 
   initializeDefaultSession();
+
+  setupAutoUpdater();
 }
 
 app.on("ready", action(initializeApp));

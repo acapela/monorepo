@@ -1,3 +1,5 @@
+import { PublicErrorData } from "../domains/errors/types";
+import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
 
@@ -6,6 +8,9 @@ export const clearAllDataRequest = createInvokeBridge("clear-all-data");
 export const toggleMaximizeRequest = createInvokeBridge("toggle-maximize");
 export const toggleFullscreenRequest = createInvokeBridge("toggle-fullscreen");
 export const toggleDevtoolsRequest = createInvokeBridge<boolean>("toggle-devtools");
+export const appUpdateAndRestartRequest = createInvokeBridge("update-and-restart");
+export const checkForUpdatesRequest = createInvokeBridge("check-for-updates");
+export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 
 export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
 
@@ -14,7 +19,8 @@ export const applicationStateBridge = createBridgeValue("application-state", {
     // Note: as we have browser view, focus 'true' does not mean our React app has focus
     isFocused: false,
     isFullscreen: false,
-    isUpdateAvaliable: false,
+    isUpdateReadyToInstall: false,
+    updateDownloadingPercent: null as number | null,
   }),
 });
 
