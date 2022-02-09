@@ -1,16 +1,13 @@
 import { autorun, makeAutoObservable } from "mobx";
 
-import { getNullableDb } from "@aca/desktop/clientdb";
-
 import {
   authTokenBridgeValue,
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
-} from "../bridge/auth";
-import { authStore } from "./authStore";
+} from "@aca/desktop/bridge/auth";
 
-const getAuthUser = () => getNullableDb()?.user.findById(authStore.nullableUser?.id) ?? null;
+import { accountStore } from "./account";
 
 /**
  * Store responsible for keeping information about current onboarding.
@@ -23,7 +20,7 @@ export const onboardingStore = makeAutoObservable({
 
   // TODO: Figure out how the hell this scales. Feels super hacky and unscalable
   get linkedAppsStatus(): { isReady: boolean; hasLinkedApps?: boolean } {
-    const user = getAuthUser();
+    const user = accountStore.user;
 
     const notion = notionAuthTokenBridgeValue;
     const figma = figmaAuthTokenBridgeValue;

@@ -7,9 +7,9 @@ import * as electronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 import { action, runInAction } from "mobx";
 
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { AppEnvData } from "@aca/desktop/envData";
 
-import { makeLogger } from "../domains/dev/makeLogger";
 import { appState } from "./appState";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.

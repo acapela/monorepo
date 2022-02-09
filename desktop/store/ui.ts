@@ -2,10 +2,9 @@ import { autorun, makeAutoObservable, observable } from "mobx";
 
 import { appWindowValue } from "@aca/desktop/bridge/appWindow";
 import { isFullscreenValue } from "@aca/desktop/bridge/system";
+import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { desktopRouter } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
-
-import { uiSettingsBridge } from "../bridge/ui";
 
 /**
  * Note on focus:

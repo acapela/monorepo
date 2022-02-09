@@ -1,6 +1,6 @@
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
 export const focusPageView = createActionView((context) => {

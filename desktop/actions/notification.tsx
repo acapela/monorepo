@@ -1,16 +1,16 @@
 import React from "react";
 
+import { trackingEvent } from "@aca/desktop/analytics";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { getDb } from "@aca/desktop/clientdb";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
+import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
-import { trackingEvent } from "../analytics";
-import { openedNotificationsGroupsStore } from "../domains/group/openedStore";
-import { PreviewLoadingPriority } from "../domains/preview";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeOrFocusNextItem } from "./views/common";

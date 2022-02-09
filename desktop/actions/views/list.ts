@@ -6,7 +6,7 @@ import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/opene
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/preconfigured";
 import { getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
 export const listPageView = createActionView((context) => {
