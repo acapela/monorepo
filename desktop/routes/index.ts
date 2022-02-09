@@ -1,4 +1,4 @@
-import { createAtom } from "mobx";
+import { computed, createAtom } from "mobx";
 import { createRouter } from "react-chicane";
 import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
@@ -41,10 +41,14 @@ desktopRouter.subscribe(() => {
   routeChangeAtom.reportChanged();
 });
 
-// It simply returns router, but in case this function is called in mobx context, mobx will know to re-run it if route changes
-export function getObservedRouter() {
+const observedRouterComputed = computed(() => {
   routeChangeAtom.reportObserved();
   return desktopRouter;
+});
+
+// It simply returns router, but in case this function is called in mobx context, mobx will know to re-run it if route changes
+export function getObservedRouter() {
+  return observedRouterComputed.get();
 }
 
 type Routes = typeof routes;

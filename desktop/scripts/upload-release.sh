@@ -11,7 +11,7 @@ mv ghr_*/ghr ./ghr
 ./ghr --version
 
 echo "adding staging release..."
-cp ./dist-electron-staging/Acapela-* ./dist-final
+cp ./dist-electron-staging/Alepaca-* ./dist-final
 cp ./dist-electron-staging/latest-mac.yml ./dist-final
 echo "uploading staging release..."
 ./ghr -u weareacapela -r releases-staging "$RELEASE_VERSION" ./dist-final

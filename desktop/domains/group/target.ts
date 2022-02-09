@@ -1,11 +1,12 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { IntegrationType } from "@aca/desktop/domains/integrations/types";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+
+import { SupportedIntegration } from "../integrations";
 
 export interface NotificationGroupTarget {
   id: string;
   name: string;
-  integration: IntegrationType;
+  integration: SupportedIntegration | "unknown";
   integrationTitle: string;
   isOnePreviewEnough?: boolean;
 }

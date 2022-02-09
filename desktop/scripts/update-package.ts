@@ -15,7 +15,7 @@ if (arg === "reset") {
   console.info(`updating version to ${pkgJson.version}`);
 
   // this is required to show the correct app name (instead of @aca/desktop)
-  if (isStaging) pkgJson.name = "Acapela-Staging";
+  if (isStaging) pkgJson.name = "Alepaca";
   else pkgJson.name = "Acapela";
   console.info(`updating name to ${pkgJson.name}`);
 
@@ -27,7 +27,7 @@ if (arg === "reset") {
   else pkgJson.repository = "github:weareacapela/releases";
   console.info(`updating repository to ${pkgJson.repository}`);
 
-  if (isStaging) pkgJson.build.productName = "Acapela-Staging";
+  if (isStaging) pkgJson.build.productName = "Alepaca";
   else pkgJson.build.productName = "Acapela";
   console.info(`updating productName to ${pkgJson.build.productName}`);
 

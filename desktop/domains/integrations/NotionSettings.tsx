@@ -6,9 +6,10 @@ import { useEffect } from "react";
 import { forceWorkerSyncRun } from "@aca/desktop/bridge/apps";
 import { NotionSpace, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
-export const NotionSpaceSelector = observer(function NotionSpaceSelector() {
+export const NotionSettings = observer(function NotionSpaceSelector() {
   const savedSpaces = notionSelectedSpaceValue.use();
   const notionAuthBridge = notionAuthTokenBridgeValue.use();
 
@@ -36,13 +37,15 @@ export const NotionSpaceSelector = observer(function NotionSpaceSelector() {
   }
 
   return (
-    <SingleOptionDropdown<NotionSpace>
-      items={allSpaces}
-      keyGetter={(space) => space.id}
-      labelGetter={(space) => space.name}
-      selectedItem={selectedItem}
-      onChange={handleItemSelected}
-      placeholder="Selected Notion Space"
-    />
+    <SettingRow title="Active workspace" description="Workspace you wish to import notifications from.">
+      <SingleOptionDropdown<NotionSpace>
+        items={allSpaces}
+        keyGetter={(space) => space.id}
+        labelGetter={(space) => space.name}
+        selectedItem={selectedItem}
+        onChange={handleItemSelected}
+        placeholder="Selected Notion Space"
+      />
+    </SettingRow>
   );
 });

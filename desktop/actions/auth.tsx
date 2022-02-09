@@ -2,15 +2,9 @@ import React from "react";
 
 import {
   authTokenBridgeValue,
-  figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
-  linearAuthTokenBridgeValue,
   loginBridge,
-  loginFigmaBridge,
   loginGoogleBridge,
-  loginLinearBridge,
-  loginNotionBridge,
-  notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
 import { IconLogOut, IconPlus } from "@aca/ui/icons";
@@ -49,45 +43,36 @@ export const loginToAcapelaWithSlack = defineAction({
   },
 });
 
+export const connectIntegration = defineAction({
+  name: (ctx) => {
+    const integration = ctx.assertTarget("integration");
+
+    return ctx.isContextual ? "Connect" : `Connect ${integration.name}`;
+  },
+  icon: <IconPlus />,
+  group: accountActionsGroup,
+  canApply: (ctx) => {
+    const integration = ctx.getTarget("integration");
+
+    if (!integration) return false;
+
+    return !integration.getIsConnected() && integration.getCanConnect?.() !== false;
+  },
+  async handler(ctx) {
+    const integration = ctx.assertTarget("integration");
+
+    return integration.connect();
+  },
+});
+
 export const connectGoogle = defineAction({
   name: getContextualServiceName("Google"),
+  private: true,
   icon: <GoogleGLogoIcon />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
   async handler() {
     await loginGoogleBridge();
-  },
-});
-
-export const connectFigma = defineAction({
-  name: getContextualServiceName("Figma"),
-  icon: <IconPlus />,
-  group: accountActionsGroup,
-  canApply: () => !figmaAuthTokenBridgeValue.get(),
-  analyticsEvent: "Figma Integration Added",
-  async handler() {
-    await loginFigmaBridge();
-  },
-});
-
-export const connectNotion = defineAction({
-  name: getContextualServiceName("Notion"),
-  icon: <IconPlus />,
-  group: accountActionsGroup,
-  canApply: () => !notionAuthTokenBridgeValue.get(),
-  analyticsEvent: "Notion Integration Added",
-  async handler() {
-    await loginNotionBridge();
-  },
-});
-
-export const connectLinear = defineAction({
-  name: getContextualServiceName("Linear"),
-  icon: <IconPlus />,
-  canApply: () => !linearAuthTokenBridgeValue.get(),
-  analyticsEvent: "Linear Integration Added",
-  async handler() {
-    await loginLinearBridge();
   },
 });
 

@@ -33,6 +33,7 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
     "Esc",
     () => {
       commandMenuStore.session = null;
+      return true;
     },
     { isEnabled: !!currentSession }
   );
