@@ -18,6 +18,10 @@ jobs:
             desktop/dist-production
           key: desktop-dist-${{ github.sha }}
       - run: yarn build:bundle
+      - run: yarn upload-sourcemaps
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
   publish:
     name: Publish
@@ -41,4 +45,3 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           RELEASE_VERSION: ${{ github.ref_name }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

@@ -20,8 +20,8 @@
     "upload-sourcemaps": "./scripts/upload-sourcemaps.ts",
     "build:release:staging": "./scripts/update-package.ts staging && electron-builder build --mac zip --universal -p never && ./scripts/update-package.ts reset",
     "build:release:production": "./scripts/update-package.ts && electron-builder build --mac zip --universal -p never && ./scripts/update-package.ts reset",
-    "build:production": "cp -r dist-production/ dist && yarn upload-sourcemaps update && yarn build:release:production && mv ./dist-electron ./dist-electron-production",
-    "build:staging": "cp -r dist-staging/ dist && yarn upload-sourcemaps && yarn build:release:staging && mv ./dist-electron ./dist-electron-staging",
+    "build:production": "cp -r dist-production/ dist && yarn build:release:production && mv ./dist-electron ./dist-electron-production",
+    "build:staging": "cp -r dist-staging/ dist && yarn build:release:staging && mv ./dist-electron ./dist-electron-staging",
     "release": "(rm -rf dist-electron* || true) && yarn build:staging && rm -rf dist/ && yarn build:production",
     "publish": "yarn release && ./scripts/upload-release.sh"
   },
