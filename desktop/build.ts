@@ -28,7 +28,8 @@ async function startBuildForEnv(env: BuildEnvironment) {
 
 async function start() {
   console.info(`Building desktop app...`);
-  await Promise.all([startBuildForEnv("staging"), startBuildForEnv("production")]);
+  await startBuildForEnv("staging");
+  await startBuildForEnv("production");
 }
 
 start();
