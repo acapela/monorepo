@@ -15,6 +15,7 @@ const notificationSlackMessageFragment = gql`
     updated_at
     is_mention
     slack_conversation_id
+    slack_user_id
     slack_message_ts
     slack_thread_ts
     conversation_name

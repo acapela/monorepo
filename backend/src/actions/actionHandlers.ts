@@ -1,7 +1,12 @@
 import { getUploadUrl } from "@aca/backend/src/attachments/attachments";
 import { inviteUser } from "@aca/backend/src/inviteUser";
 import { getIndividualSlackInstallationURLHandler } from "@aca/backend/src/notificationCapture/hasuraActions";
-import { getTeamSlackInstallationURLHandler, slackUser, uninstallSlack } from "@aca/backend/src/slack/hasuraActions";
+import {
+  getTeamSlackInstallationURLHandler,
+  slackUser,
+  slackUsers,
+  uninstallSlack,
+} from "@aca/backend/src/slack/hasuraActions";
 import { joinTopicHandler } from "@aca/backend/src/topics/actions";
 
 export interface ActionHandler<DataT, ResponseT> {
@@ -18,5 +23,6 @@ export const handlers: ActionHandler<any, any>[] = [
   inviteUser,
   joinTopicHandler,
   slackUser,
+  slackUsers,
   uninstallSlack,
 ];

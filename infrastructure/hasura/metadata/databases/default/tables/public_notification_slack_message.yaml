@@ -9,6 +9,7 @@ select_permissions:
 - permission:
     columns:
     - conversation_name
+    - conversation_type
     - created_at
     - id
     - is_mention
@@ -17,6 +18,7 @@ select_permissions:
     - slack_conversation_id
     - slack_message_ts
     - slack_thread_ts
+    - slack_user_id
     - updated_at
     filter:
       notification:

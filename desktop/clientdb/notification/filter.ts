@@ -17,20 +17,22 @@ import {
 import { isNotNullish } from "@aca/shared/nullish";
 
 /**
- * Defines all properties per inner notification entity which can be filtered for. Since we store filters as blobs
+ * We define all properties per inner notification entity which can be filtered for. Since we store filters as blobs
  * we use zod to parse the blob data.
  * Any non-additive change requires migration, make sure to include a SQL migration for these. Non-parseable filters
  * won't be applied and will show up as error logs in our Sentry.
  */
+export const slackMessageFilter = z.object({
+  kind: z.literal("notification_slack_message"),
+  slack_user_id: z.string().optional(),
+  is_mention: z.boolean().optional(),
+  conversation_type: z.union([z.literal("im"), z.literal("mpim"), z.literal("group"), z.literal("channel")]).optional(),
+});
+
+export type SlackMessageFilter = z.infer<typeof slackMessageFilter>;
+
 export const innerNotificationFilter = z.union([
-  z.object({
-    kind: z.literal("notification_slack_message"),
-    slack_user_id: z.string().optional(),
-    is_mention: z.boolean().optional(),
-    conversation_type: z
-      .union([z.literal("im"), z.literal("mpim"), z.literal("group"), z.literal("channel")])
-      .optional(),
-  }),
+  slackMessageFilter,
   z.object({
     kind: z.literal("notification_notion"),
     page_id: z.string().optional(),
