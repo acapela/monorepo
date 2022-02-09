@@ -25,6 +25,7 @@ export const typo = {
   item: {
     // Used for message title, topic list title, options section title etc
     title: textTitle,
+    description: subtitle.medium.secondary,
     // Used for topic message snippet, options section item description, team member email etc.
     subtitle: subtitle,
     // Used eg. for attachment titles

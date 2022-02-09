@@ -1,58 +1,25 @@
-import { gql } from "@apollo/client";
-import { autorun } from "mobx";
 import React from "react";
 
-import { apolloClient } from "@aca/desktop/apolloClient";
-import { connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { authStore } from "@aca/desktop/store/authStore";
-import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 import { IconPlus, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
+import { integrationClients } from "../domains/integrations";
 import { defineAction } from "./action";
 import { accountActionsGroup, getContextualServiceName } from "./auth";
 
 const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
-async function querySlackInstallationURL() {
-  const {
-    data: { slackInstallation },
-  } = await apolloClient.query<GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables>(
-    {
-      query: gql`
-        query GetIndividualSlackInstallationURL($input: GetSlackInstallationURLInput!) {
-          slackInstallation: get_slack_installation_url(input: $input) {
-            url
-          }
-        }
-      `,
-      variables: { input: { redirectURL: "" } },
-    }
-  );
-  return assertDefined(slackInstallation?.url, "missing slack installation url");
-}
-
-// We want to close any Slack install windows, as soon as the user has a Slack installation
-let closeSlackInstallWindow: Function | void = void null;
-autorun(() => {
-  const user = getAuthUser();
-  if (user?.has_slack_installation) {
-    closeSlackInstallWindow?.();
-  }
-});
 export const connectSlack = defineAction({
   name: getContextualServiceName("Slack"),
   icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => {
-    const user = getAuthUser();
-    return Boolean(user && !user.has_slack_installation);
+    return !integrationClients.slack.getIsConnected();
   },
   handler() {
-    querySlackInstallationURL().then((url) => {
-      closeSlackInstallWindow = connectSlackBridge({ url });
-    });
+    return integrationClients.slack.connect();
   },
 });
 

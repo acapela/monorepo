@@ -64,7 +64,9 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
 
   width: 100%;
 
-  ${theme.colors.layout.background.asBg};
+  ${theme.transitions.hover()}
+
+  ${theme.colors.layout.background.interactive};
   ${(props) =>
     props.hasError
       ? css`
@@ -79,7 +81,16 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   outline: none;
   min-height: 16px;
 
-  cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
+  ${(props) => {
+    const { cursorType } = props;
+
+    if (cursorType === "input")
+      return css`
+        cursor: text;
+      `;
+
+    return theme.common.clickable;
+  }}
 `;
 
 const UIFlyingOverlay = styled.div<{}>`
@@ -145,5 +156,5 @@ const UIDropdownIcon = styled(IconChevronDown)<{}>`
   opacity: 0.6;
   align-self: center;
   margin-right: 16px;
-  cursor: pointer;
+  ${theme.common.clickable}
 `;

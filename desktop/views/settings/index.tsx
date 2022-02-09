@@ -2,15 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { connectFigma, connectGoogle, connectLinear, connectNotion } from "@aca/desktop/actions/auth";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
-import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { HStack } from "@aca/ui/Stack";
+import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
 import { theme } from "@aca/ui/theme";
 
-import { NotionSpaceSelector } from "./NotionSpaceSelector";
 import { ShortcutMapping } from "./ShortcutMapping";
-import { SlackActions } from "./SlackActions";
 import { ThemeSelector } from "./ThemeSelector";
 
 export const SettingsView = observer(function SettingsView() {
@@ -18,17 +14,10 @@ export const SettingsView = observer(function SettingsView() {
     <TraySidebarLayout>
       <UIHolder>
         <UIHeader>Settings</UIHeader>
-        <ShortcutMapping />
-        Google <ActionButton action={connectGoogle} />
-        Notion{" "}
-        <HStack alignItems="center" gap={10}>
-          <ActionButton action={connectNotion} />
-          <NotionSpaceSelector />
-        </HStack>
-        Figma <ActionButton action={connectFigma} />
-        Slack <SlackActions />
-        Linear <ActionButton action={connectLinear} />
+
+        <IntegrationsManager />
         <ThemeSelector />
+        <ShortcutMapping />
         <UIVersionInfo>
           v{window.electronBridge.env.version}
           {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
@@ -43,6 +32,7 @@ const UIHolder = styled.div<{}>`
 
   display: flex;
   flex-direction: column;
+  max-width: 840px;
 
   ${theme.spacing.pageSections.asGap}
 `;
