@@ -6,7 +6,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";

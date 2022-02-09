@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { defineAction } from "@aca/desktop/actions/action";
-import { onboardingStore } from "@aca/desktop/store/onboardingStore";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
 import { IconArrowRight } from "@aca/ui/icons";

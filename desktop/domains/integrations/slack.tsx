@@ -5,8 +5,7 @@ import React from "react";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
-import { getNullableDb } from "@aca/desktop/clientdb";
-import { authStore } from "@aca/desktop/store/authStore";
+import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 
@@ -15,7 +14,7 @@ import { SlackSettings } from "./SlackSettings";
 import { IntegrationClient } from "./types";
 
 const getIsConnected = () => {
-  const user = getAuthUser();
+  const user = accountStore.user;
   return Boolean(user && user.has_slack_installation);
 };
 
@@ -30,7 +29,7 @@ export const slackIntegrationClient: IntegrationClient = {
     return getIsConnected();
   },
   getCanConnect() {
-    return !!getAuthUser();
+    return !!accountStore.user;
   },
   async connect() {
     if (getIsConnected()) return;
@@ -50,8 +49,6 @@ export const slackIntegrationClient: IntegrationClient = {
     });
   },
 };
-
-const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
 
 async function querySlackInstallationURL() {
   const {

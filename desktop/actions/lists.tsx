@@ -1,10 +1,11 @@
 import React from "react";
 
+import { trackingEvent } from "@aca/desktop/analytics";
 import { getDb } from "@aca/desktop/clientdb";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import {
   IconArrowBottom,
   IconArrowCornerCwLt,
@@ -17,7 +18,6 @@ import {
   IconTrash,
 } from "@aca/ui/icons";
 
-import { trackingEvent } from "../analytics";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -171,7 +171,7 @@ export const createNotificationList = defineAction({
   canApply: () => IS_DEV,
   handler() {
     const notificationFilter = getDb().notificationFilter.create({ title: "New List", data: {} });
-    desktopRouter.navigate("listEdit", { listId: notificationFilter.id });
+    desktopRouter.navigate("list", { listId: notificationFilter.id });
   },
 });
 
@@ -181,7 +181,7 @@ export const editNotificationList = defineAction({
   canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
-    desktopRouter.navigate("listEdit", { listId: list.id });
+    desktopRouter.navigate("list", { listId: list.id });
   },
 });
 

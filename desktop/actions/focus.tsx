@@ -2,7 +2,7 @@ import React from "react";
 
 import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard } from "@aca/ui/icons";
 
 import { defineAction } from "./action";

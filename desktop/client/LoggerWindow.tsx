@@ -3,9 +3,8 @@ import React from "react";
 import { useEffectOnce, useList } from "react-use";
 import styled from "styled-components";
 
+import { LogEntry, getAllLogsBridge, logStorage } from "@aca/desktop/bridge/logger";
 import { theme } from "@aca/ui/theme";
-
-import { LogEntry, getAllLogsBridge, logStorage } from "../bridge/logger";
 
 export const LoggerWindow = observer(function LoggerWindow() {
   const [allLogs, { push: addLog, set: setLogEntryList }] = useList<LogEntry>([]);

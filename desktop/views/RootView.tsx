@@ -4,11 +4,11 @@ import React, { useEffect } from "react";
 import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { ErrorRecoveryButtons } from "@aca/desktop/domains/errorRecovery/ErrorRecoveryButtons";
 import { Router } from "@aca/desktop/routes/Router";
-import { authStore } from "@aca/desktop/store/authStore";
+import { authStore } from "@aca/desktop/store/auth";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
 
-import { ErrorRecoveryButtons } from "../domains/errorRecovery/ErrorRecoveryButtons";
-import { onboardingStore } from "../store/onboardingStore";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
 import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
@@ -19,7 +19,7 @@ export const RootView = observer(function RootView() {
     attachActionsShortcutsHandler(allActions);
   }, []);
 
-  const user = authStore.nullableUser;
+  const user = authStore.userTokenData;
 
   if (!authStore.isReady) {
     return (

@@ -5,6 +5,8 @@ import {
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { desktopRouter } from "@aca/desktop/routes";
+import { accountStore } from "@aca/desktop/store/account";
 import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
@@ -12,9 +14,6 @@ import { onDocumentReady } from "@aca/shared/document";
 import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
 
-import { getNullableDb } from "../clientdb";
-import { desktopRouter } from "../routes";
-import { authStore } from "../store/authStore";
 import { watchForUserAuthorized } from "./auth";
 import {
   AnalyticsEvent,
@@ -26,10 +25,8 @@ import {
 
 const log = createLogger("Analytics");
 
-const getAuthUser = () => getNullableDb()?.user.findById(authStore.user.id) ?? null;
-
 export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
-  const user = getAuthUser();
+  const user = accountStore.user;
 
   if (!user) return null;
 
@@ -43,12 +40,12 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
     notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,
     linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
-    slack_installed_at: nullableDate(getAuthUser()?.slackInstallation?.updated_at) ?? undefined,
+    slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
   };
 }
 
 function getUserTeamGroupTraits(): AnalyticsGroupsMap["Team"] | null {
-  const team = authStore.nullableTeam;
+  const team = accountStore.team;
 
   if (!team) {
     return null;

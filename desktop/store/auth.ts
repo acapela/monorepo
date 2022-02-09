@@ -2,21 +2,27 @@ import jwt from "jsonwebtoken";
 import { makeAutoObservable } from "mobx";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { getNullableDb } from "@aca/desktop/clientdb";
 import { assert } from "@aca/shared/assert";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { watchUserTeamId } from "./currentTeam";
 
 /**
- * Store responsible for keeping information about current user and team.
+ * Store responsible for keeping information about current user JWT token and team id.
+ *
+ * Important! This store should not manage 'clientdb' user/team connection in any way.
+ * This is because ClientDB is reading from this store so it'd create circular dependency.
+ *
+ * User (clientdb) is managed in accountStore
  */
 
 export const authStore = makeAutoObservable({
   get isReady() {
     return authTokenBridgeValue.isReady;
   },
-  get nullableUser() {
+  get userTokenData() {
+    if (!authStore.isReady) return null;
+
     const rawToken = authTokenBridgeValue.get();
 
     if (!rawToken) return null;
@@ -25,41 +31,26 @@ export const authStore = makeAutoObservable({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return jwt.decode(rawToken) as Record<string, any>;
   },
-  get user() {
-    const user = authStore.nullableUser;
+  get assertUserTokenData() {
+    const user = authStore.userTokenData;
 
     assert(user, "authStore.user is undefined. Consider using authStore.nullableUser");
 
     return user;
   },
   teamId: null as string | null,
-  get nullableTeam() {
-    const db = getNullableDb();
-    const { teamId } = authStore;
-
-    if (!db || !teamId) return null;
-
-    return db.team.findById(teamId);
-  },
-  get team() {
-    const team = authStore.nullableTeam;
-
-    assert(team, "authStore.team is undefined. Consider using authStore.nullableTeam");
-
-    return team;
-  },
 });
 
 autorunEffect(() => {
-  const { nullableUser } = authStore;
+  const { userTokenData } = authStore;
 
   authStore.teamId = null;
 
-  if (!nullableUser) {
+  if (!userTokenData) {
     return;
   }
 
-  return watchUserTeamId(nullableUser.id, (teamId) => {
+  return watchUserTeamId(userTokenData.id, (teamId) => {
     authStore.teamId = teamId;
   });
 });

@@ -5,7 +5,7 @@ import { allRouteNames, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
-import { SettingsView } from "@aca/desktop/views/settings";
+import { SettingsView } from "@aca/desktop/views/SettingsView";
 
 import { Redirect } from "./Redirect";
 
