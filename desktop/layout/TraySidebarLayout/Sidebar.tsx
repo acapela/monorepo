@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -10,35 +11,33 @@ import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
 
-export function Sidebar() {
-  return (
-    <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
-      <UITopTools>
-        <ActionIconButton action={closeNavigationMenu} />
-      </UITopTools>
-      <UIItems>
-        <UIItemGroup>
-          <UISidebarItem action={goToList} target={allNotificationsList} />
-        </UIItemGroup>
+export const Sidebar = observer(() => (
+  <UIHolder presenceStyles={{ opacity: [0, 1], x: [-200, 0] }}>
+    <UITopTools>
+      <ActionIconButton action={closeNavigationMenu} />
+    </UITopTools>
+    <UIItems>
+      <UIItemGroup>
+        <UISidebarItem action={goToList} target={allNotificationsList} />
+      </UIItemGroup>
 
-        <UIItemGroup>
-          {getInboxLists()
-            .filter((list) => list.id !== allNotificationsList.id)
-            .map((list) => (
-              <UISidebarItem key={list.id} action={goToList} target={list} />
-            ))}
-        </UIItemGroup>
-        <UIItemGroup>
-          {outOfInboxLists.map((list) => (
+      <UIItemGroup>
+        {getInboxLists()
+          .filter((list) => list.id !== allNotificationsList.id)
+          .map((list) => (
             <UISidebarItem key={list.id} action={goToList} target={list} />
           ))}
-        </UIItemGroup>
+      </UIItemGroup>
+      <UIItemGroup>
+        {outOfInboxLists.map((list) => (
+          <UISidebarItem key={list.id} action={goToList} target={list} />
+        ))}
+      </UIItemGroup>
 
-        <UISidebarItem action={goToSettings} />
-      </UIItems>
-    </UIHolder>
-  );
-}
+      <UISidebarItem action={goToSettings} />
+    </UIItems>
+  </UIHolder>
+));
 
 const UIHolder = styled(PresenceAnimator)`
   position: fixed;
