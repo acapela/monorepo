@@ -26,7 +26,7 @@ jobs:
   publish:
     name: Publish
     runs-on: macos-latest
-    #    needs: [build]
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -44,10 +44,10 @@ jobs:
             desktop/dist-staging
             desktop/dist-production
           key: desktop-dist-${{ github.sha }}
-      - run: node -e 'console.log(require("electron-notarize"))'
-      - run: yarn desktop nooooop
+      - run: |
+          cd desktop/
+          ./scripts/publish.sh
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}

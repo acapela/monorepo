@@ -17,11 +17,7 @@
     "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac zip --universal -p never",
     "build": "yarn build:bundle && yarn build:electron",
-    "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
-    "build:staging": "./scripts/update-package.js staging && electron-builder build --mac zip --universal -p never && ./scripts/update-package.js reset",
-    "build:production": "./scripts/update-package.js && electron-builder build --mac zip --universal -p never && ./scripts/update-package.js reset",
-    "release": "(rm -rf dist-electron* || true) && yarn build:staging && yarn build:production",
-    "publish": "yarn release && ./scripts/upload-release.sh"
+    "upload-sourcemaps": "./scripts/upload-sourcemaps.js"
   },
   "source": ".",
   "devDependencies": {
