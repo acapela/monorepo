@@ -1,7 +1,7 @@
 import { app, globalShortcut } from "electron";
 import { autorun } from "mobx";
 
-import { globalShortcutsValue } from "@aca/desktop/bridge/system";
+import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 
 import { appState } from "./appState";
 
@@ -18,12 +18,12 @@ export function initializeGlobalShortcuts() {
   }
 
   autorun(() => {
-    if (!globalShortcutsValue.isReady) {
+    if (!applicationWideSettingsBridge.isReady) {
       return;
     }
 
     unregisterGlobalShowShortcut();
-    currentShortcut = globalShortcutsValue.get().show;
+    currentShortcut = applicationWideSettingsBridge.get().show;
     const didRegister = currentShortcut && globalShortcut.register(currentShortcut, showMainWindow);
     if (!didRegister) {
       console.warn(`Failed to register 'show acapela' global shortcut`);

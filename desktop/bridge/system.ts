@@ -9,13 +9,18 @@ export const toggleDevtoolsRequest = createInvokeBridge<boolean>("toggle-devtool
 
 export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
 
-export const isFullscreenValue = createBridgeValue<boolean>("is-fullscreen", {
-  getDefault() {
-    return false;
-  },
+export const applicationStateBridge = createBridgeValue("application-state", {
+  getDefault: () => ({
+    // Note: as we have browser view, focus 'true' does not mean our React app has focus
+    isFocused: false,
+    isFullscreen: false,
+    isUpdateAvaliable: false,
+  }),
 });
 
-export const globalShortcutsValue = createBridgeValue<{ show: string | null }>("global-shortcuts", {
+export const applicationWideSettingsBridge = createBridgeValue("app-wide-settings", {
   isPersisted: true,
-  getDefault: () => ({ show: "CommandOrControl+Shift+A" }),
+  getDefault: () => ({
+    globalShowAppShortcut: "CommandOrControl+Shift+A" as string | null,
+  }),
 });
