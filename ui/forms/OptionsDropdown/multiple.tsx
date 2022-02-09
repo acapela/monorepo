@@ -7,6 +7,7 @@ import { useBoundingBox } from "@aca/shared/hooks/useBoundingBox";
 import { FieldWithLabel } from "@aca/ui/forms/FieldWithLabel";
 import { IconPlus } from "@aca/ui/icons";
 import { Popover } from "@aca/ui/popovers/Popover";
+import { theme } from "@aca/ui/theme";
 
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
@@ -91,6 +92,7 @@ export function MultipleOptionsDropdown<I>({
       pushLabel={hasSelection}
       icon={icon}
       indicateDropdown
+      cursorType="action"
     >
       <UIHolder>
         <UIMenuOpener>
@@ -144,7 +146,7 @@ const UIHolder = styled.div<{}>`
   min-width: 0;
   display: flex;
   flex-grow: 1;
-  cursor: pointer;
+  ${theme.common.clickable};
 `;
 
 const UIMenuOpener = styled.div<{}>`
@@ -152,7 +154,9 @@ const UIMenuOpener = styled.div<{}>`
   display: flex;
 `;
 
-const UIDropdownHolder = styled.div<{}>``;
+const UIDropdownHolder = styled.div<{}>`
+  min-width: 150px;
+`;
 
 const UISelectedItemsPreview = styled.div<{}>`
   display: flex;

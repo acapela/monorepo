@@ -5,7 +5,7 @@ import UrlPattern from "url-pattern";
  * Utility types that convert string /foo/:bar/:baz into {bar: string, baz: string}
  */
 
-type PathSegments<Path extends string> = Split<Path, "/">;
+type PathSegments<Path extends string> = Split<Path, "/" | "?">;
 type PathSegment<Path extends string> = PathSegments<Path>[number];
 type PathSegmentArgName<Segment extends string> = Segment extends `:${infer ArgName}` ? ArgName : never;
 type PathArgNames<Path extends string> = PathSegmentArgName<PathSegment<Path>>;

@@ -11,12 +11,14 @@ import { SharedActionButtonProps } from "./actionShared";
 interface Props extends Omit<ButtonProps, "icon">, SharedActionButtonProps {
   action: ActionData;
   target?: unknown;
+  notApplicableLabel?: string;
 }
 
 export const ActionButton = styledObserver(function ActionButton({
   action,
   target,
   notApplicableMode,
+  notApplicableLabel,
   ...buttonProps
 }: Props) {
   const context = createActionContext(target, { isContextual: true });
@@ -28,6 +30,16 @@ export const ActionButton = styledObserver(function ActionButton({
     return <></>;
   }
 
+  function getLabel() {
+    if (canApply) {
+      return name;
+    }
+
+    if (notApplicableLabel) return notApplicableLabel;
+
+    return name;
+  }
+
   return (
     <Button
       icon={icon}
@@ -37,7 +49,7 @@ export const ActionButton = styledObserver(function ActionButton({
       }}
       {...buttonProps}
     >
-      {name}
+      {getLabel()}
     </Button>
   );
 })``;
