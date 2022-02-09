@@ -11,7 +11,8 @@ const routes = {
   home: "/",
   settings: "/settings",
   notification: "/notifications/:notificationId",
-  list: "/list/:listId?:isEditing",
+  list: "/list/:listId",
+  listEdit: "/list/:listId/edit",
   focus: "/focus/:listId/:notificationId",
 } as const;
 

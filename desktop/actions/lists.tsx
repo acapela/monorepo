@@ -170,7 +170,7 @@ export const createNotificationList = defineAction({
   canApply: () => IS_DEV,
   handler() {
     const notificationFilter = getDb().notificationFilter.create({ title: "New List", data: {} });
-    desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
+    desktopRouter.navigate("listEdit", { listId: notificationFilter.id });
   },
 });
 
@@ -180,7 +180,7 @@ export const editNotificationList = defineAction({
   canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
-    desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
+    desktopRouter.navigate("listEdit", { listId: list.id });
   },
 });
 
