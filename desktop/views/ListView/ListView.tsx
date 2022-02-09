@@ -8,7 +8,7 @@ import { getInboxListsById, inboxLists, isInboxList, outOfInboxLists } from "@ac
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { theme } from "@aca/ui/theme";
 

@@ -4,7 +4,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 
 //@ts-ignore

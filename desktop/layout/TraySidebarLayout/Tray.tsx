@@ -4,7 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { openNavigationMenu } from "@aca/desktop/actions/navigation";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
 import { Sidebar } from "./Sidebar";

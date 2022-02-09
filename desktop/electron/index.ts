@@ -17,6 +17,8 @@ import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
 import { initializeSingleInstanceLock } from "./singleInstance";
 
+//
+
 // Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
 protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
 

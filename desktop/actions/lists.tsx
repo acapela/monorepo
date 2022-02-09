@@ -2,7 +2,7 @@ import React from "react";
 
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import {
   IconArrowBottom,
   IconArrowCornerCwLt,

@@ -10,7 +10,7 @@ import { NotificationAppIcon } from "@aca/desktop/domains/notification/Notificat
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";

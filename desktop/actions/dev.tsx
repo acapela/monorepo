@@ -6,7 +6,7 @@ import { IconKeyboard } from "@aca/ui/icons";
 
 import { resetAllServices } from "../bridge/auth";
 import { requestToggleLoggerWindow } from "../bridge/logger";
-import { onboardingStore } from "../store/onboardingStore";
+import { onboardingStore } from "../store/onboarding";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
