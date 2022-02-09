@@ -44,7 +44,8 @@ jobs:
             desktop/dist-staging
             desktop/dist-production
           key: desktop-dist-${{ github.sha }}
-      - run: |
+      - name: Publish
+        run: |
           cd desktop/
           ./scripts/publish.sh
         env:
