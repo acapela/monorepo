@@ -1,5 +1,5 @@
 import { differenceInMinutes } from "date-fns";
-import { BrowserWindow } from "electron";
+import { session } from "electron";
 import fetch from "node-fetch";
 
 import {
@@ -45,25 +45,13 @@ export interface NotionSessionData {
 }
 
 export async function getNotionSessionData(): Promise<NotionSessionData> {
-  const window = new BrowserWindow({
-    width: 0,
-    height: 0,
-    webPreferences: {
-      contextIsolation: true,
-    },
-  });
-
-  window.hide();
-
-  const cookies = await window.webContents.session.cookies.get({
+  const cookies = await session.defaultSession.cookies.get({
     url: notionURL,
   });
 
   if (!cookies) {
     throw log.error(new Error("Unable to sync: no cookies"));
   }
-
-  window.close();
 
   const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id")?.value;
 
