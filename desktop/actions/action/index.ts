@@ -43,7 +43,7 @@ export interface ActionData extends ActionCreateInput {
 /**
  * Some action fields might be functions that depend on context - this will resolve final data providing some specific context.
  */
-export function resolveActionData(action: ActionData, context: ActionContext = createActionContext()) {
+export function resolveActionData(action: ActionData, context: ActionContext) {
   return {
     ...action,
     name: resolveActionDataThunk(action.name, context),
