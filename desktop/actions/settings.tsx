@@ -1,8 +1,8 @@
 import React from "react";
 
+import { uiSettings } from "@aca/desktop/store/uiSettings";
 import { IconChartLine } from "@aca/ui/icons";
 
-import { uiSettings } from "../store/uiSettings";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

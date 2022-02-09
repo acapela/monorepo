@@ -4,7 +4,7 @@ import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/preconfigured";
 import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import {
   IconArrowLeft,
   IconClockZzz,

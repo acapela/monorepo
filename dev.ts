@@ -32,6 +32,7 @@ async function runCommandsInParell(commands: CommandInfo[]) {
 }
 
 async function start() {
+  await runCommandIfNeeded({ command: $`yarn install`, name: "Yarn install", dependsOnFiles: "yarn.lock" });
   await runCommandIfNeeded({ command: $`yarn run docker:up:detach`, name: "Docker" });
   await runCommandIfNeeded({
     command: $`yarn hasura:update`,

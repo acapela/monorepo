@@ -15,6 +15,8 @@ export function attachActionsShortcutsHandler(actions: ActionData[]) {
     (event) => {
       if (commandMenuStore.session) return;
 
+      // TODO: Do not run actions if any input is focused
+
       const actionContext = createActionContext();
 
       const targetActions = actions

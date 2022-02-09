@@ -5,16 +5,15 @@ import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
-import { authStore } from "@aca/desktop/store/authStore";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { authStore } from "@aca/desktop/store/auth";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
-
-import { makeLogger } from "../domains/dev/makeLogger";
 
 const log = makeLogger("Worker-Consolidation");
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = getNullableDb();
-  const user = authStore.nullableUser;
+  const user = authStore.userTokenData;
 
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 

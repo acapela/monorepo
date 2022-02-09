@@ -63,7 +63,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
 
   display: flex;
   align-items: center;
-  cursor: pointer;
+  ${theme.common.clickable};
 
   ${theme.transitions.hover()};
   ${background.interactive};

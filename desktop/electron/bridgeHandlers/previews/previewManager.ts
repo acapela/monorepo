@@ -3,11 +3,11 @@ import { isEqual } from "lodash";
 
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
+import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";
 import { assert } from "@aca/shared/assert";
 import { createChannel } from "@aca/shared/channel";
 import { createResolvablePromise } from "@aca/shared/promises";
 
-import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
 import { PreviewAttachManager, attachBrowserViewToWindow } from "./previewAttaching";
 import { loadURLWithFilters } from "./siteFilters";

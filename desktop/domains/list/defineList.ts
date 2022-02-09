@@ -1,9 +1,8 @@
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { orderNotificationsByGroups } from "@aca/desktop/domains/group/groupNotifications";
 import { unsafeAssertType } from "@aca/shared/assert";
-
-import { orderNotificationsByGroups } from "../group/groupNotifications";
 
 interface DefineListConfig {
   id: string;

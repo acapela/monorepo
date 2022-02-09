@@ -10,6 +10,7 @@ import {
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewLoadingPriority, PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
@@ -18,8 +19,6 @@ import { BodyPortal } from "@aca/ui/BodyPortal";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
-
-import { devSettingsStore } from "../../dev/store";
 
 type PreloadBrowserViewProps = { url: string; priority?: PreviewLoadingPriority };
 
