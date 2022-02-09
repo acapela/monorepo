@@ -5,7 +5,6 @@ import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/opene
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/uiStore";
-import { IS_DEV } from "@aca/shared/dev";
 import {
   IconArrowBottom,
   IconArrowCornerCwLt,
@@ -23,6 +22,8 @@ import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 import { listPageView } from "./views/list";
+
+const IS_DEV = window.electronBridge.env.isDev;
 
 export const currentListActionsGroup = defineGroup({
   name: (ctx) => {
@@ -176,7 +177,7 @@ export const createNotificationList = defineAction({
 
 export const editNotificationList = defineAction({
   icon: <IconEdit />,
-  name: (ctx) => `Edit list "${ctx.assertView(listPageView).list.name}"`,
+  name: (ctx) => `Edit list "${ctx.view(listPageView)?.list.name}"`,
   canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
@@ -186,7 +187,7 @@ export const editNotificationList = defineAction({
 
 export const deleteNotificationList = defineAction({
   icon: <IconTrash />,
-  name: (ctx) => `Delete list "${ctx.assertView(listPageView).list.name}"`,
+  name: (ctx) => `Delete list "${ctx.view(listPageView)?.list.name}"`,
   canApply: (ctx) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom),
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
