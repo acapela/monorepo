@@ -27,7 +27,7 @@ const routeTargets = cachedComputed((): unknown[] => {
   const listRoute = getRouteParamsIfActive("list");
 
   if (listRoute) {
-    const { listId } = listRoute;
+    const { listId } = listRoute as unknown as { listId: string };
 
     return [getInboxListsById(listId)];
   }
