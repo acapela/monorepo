@@ -1,0 +1,1 @@
+drop function get_user_slack_installation_slack_team_id(user_slack_installation_row user_slack_installation);

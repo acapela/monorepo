@@ -12,6 +12,7 @@ const userSlackInstallationFragment = gql`
     user_id
     updated_at
     created_at
+    slack_team_id
   }
 `;
 
