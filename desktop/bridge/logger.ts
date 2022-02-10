@@ -1,23 +1,11 @@
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 
-export type Prefix =
-  | "Electron-Boot-Sequence"
-  | "Notion-Worker"
-  | "Figma-Worker"
-  | "Worker-Consolidation"
-  | "Preview"
-  | "Notification-Events"
-  | "ClientDb"
-  | "BrowserView"
-  | "AutoUpdater"
-  | "Integration-Mapper";
-
 export type Severity = "Error" | "Warning" | "Info" | "Debug";
 
 export interface LogEntry {
   id: string;
-  prefix: Prefix;
+  prefix: string;
   severity: Severity;
   timestamp: string;
   text: string;
