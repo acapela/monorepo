@@ -8,7 +8,7 @@ import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
-import { displayZenModeOrFocusNextItem } from "./views/common";
+import { displayZenMode, focusNextItem } from "./views/common";
 
 function canApplySnooze(context: ActionContext) {
   if (context.getTarget("notification")?.canSnooze === true) return true;
@@ -131,7 +131,7 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
 
       const date = suggestion.date;
 
-      displayZenModeOrFocusNextItem(context);
+      focusNextItem(context);
 
       if (notification) {
         notification.snooze(date);
@@ -143,6 +143,8 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
           notification.snooze(date);
         });
       }
+
+      displayZenMode(context);
     },
   });
 }
