@@ -1,5 +1,7 @@
 import { app } from "electron";
+import Protocol from "protocol-registry";
 
+import { getIsAppInstalledLocally } from "@aca/desktop/bridge/apps";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
@@ -27,5 +29,9 @@ export function initializeProtocolHandlers() {
   // TODO: In production build we'll need Info.plist protocol declaration.
   app.on("open-url", (event, url) => {
     handleAppReceivedUrl(url);
+  });
+
+  getIsAppInstalledLocally.handle(async (urlScheme) => {
+    return await Protocol.checkifExists(urlScheme);
   });
 }

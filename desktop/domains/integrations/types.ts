@@ -5,7 +5,7 @@ export interface IntegrationClient {
   name: string;
   description: string;
   icon: ReactNode;
-  customUrlSchemeProtocol?: string;
+  convertToLocalAppUrl?: (url: string) => Promise<string>;
   getCanConnect?(): boolean;
   getIsConnected(): boolean;
   connect(): Promise<void>;

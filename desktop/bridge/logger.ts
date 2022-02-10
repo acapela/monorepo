@@ -10,7 +10,8 @@ export type Prefix =
   | "Notification-Events"
   | "ClientDb"
   | "BrowserView"
-  | "AutoUpdater";
+  | "AutoUpdater"
+  | "Integration-Mapper";
 
 export type Severity = "Error" | "Warning" | "Info" | "Debug";
 

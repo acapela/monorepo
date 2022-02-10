@@ -11,9 +11,29 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { getIntegration } from "../bridge/apps/shared";
+import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeOrFocusNextItem } from "./views/common";
+
+async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<string> {
+  const notificationKind = notification.kind;
+  const originalUrl = notification.url;
+
+  // This corner cases shouldn't really ever appear
+  if (!notificationKind) {
+    return originalUrl;
+  }
+
+  const urlConverter = getIntegration(notificationKind)?.convertToLocalAppUrl;
+
+  if (urlConverter) {
+    return await urlConverter(originalUrl);
+  } else {
+    return originalUrl;
+  }
+}
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
@@ -24,10 +44,12 @@ export const openNotificationInApp = defineAction({
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
-  handler(context) {
+  async handler(context) {
     const notification = context.assertTarget("notification");
 
-    openLinkRequest({ url: notification.url });
+    const url = await convertToLocalAppUrlIfAny(notification);
+
+    openLinkRequest({ url });
   },
 });
 
