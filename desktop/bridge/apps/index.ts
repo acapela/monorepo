@@ -18,4 +18,11 @@ export const forceWorkerSyncRun = createInvokeBridge<WorkerService[]>("worker-sy
   We need to check is the `protocol` or `url scheme` is registered locally. This allows
   us to just open the app locally instead of going through the URL.
 */
-export const getIsAppInstalledLocally = createInvokeBridge<string, boolean>("is-app-installed-locally");
+
+export interface OpenAppUrl {
+  protocol?: string;
+  localUrl?: string;
+  fallback: string;
+}
+
+export const openAppUrl = createInvokeBridge<OpenAppUrl, boolean>("is-app-installed-locally");

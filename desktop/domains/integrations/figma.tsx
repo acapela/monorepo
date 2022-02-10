@@ -1,7 +1,6 @@
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { getIsAppInstalledLocally } from "@aca/desktop/bridge/apps";
 import { clearServiceCookiesBridge, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 
 import { IntegrationIcon } from "./IntegrationIcon";
@@ -19,12 +18,12 @@ export const figmaIntegrationClient: IntegrationClient = {
     figmaAuthTokenBridgeValue.reset();
     await clearServiceCookiesBridge({ url: figmaURL });
   },
-  convertToLocalAppUrl: async (url: string) => {
-    const isAppInstalledLocally = await getIsAppInstalledLocally(FIGMA_URL_SCHEME);
-    if (isAppInstalledLocally) {
-      return url.replace(figmaURL, FIGMA_URL_SCHEME);
-    }
-    return url;
+  convertToLocalAppUrl: async ({ url }) => {
+    return {
+      protocol: "figma",
+      localUrl: url.replace(figmaURL, FIGMA_URL_SCHEME),
+      fallback: url,
+    };
   },
   async connect() {
     await loginFigmaBridge();

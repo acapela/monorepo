@@ -2,7 +2,6 @@ import React from "react";
 
 import { trackingEvent } from "@aca/desktop/analytics";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
-import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { getDb } from "@aca/desktop/clientdb";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -11,27 +10,28 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { OpenAppUrl, openAppUrl } from "../bridge/apps";
 import { getIntegration } from "../bridge/apps/shared";
 import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeOrFocusNextItem } from "./views/common";
 
-async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<string> {
+async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<OpenAppUrl> {
   const notificationKind = notification.kind;
-  const originalUrl = notification.url;
+  const fallback = notification.url;
 
   // This corner cases shouldn't really ever appear
   if (!notificationKind) {
-    return originalUrl;
+    return { fallback };
   }
 
   const urlConverter = getIntegration(notificationKind)?.convertToLocalAppUrl;
 
   if (urlConverter) {
-    return await urlConverter(originalUrl);
+    return await urlConverter(notification);
   } else {
-    return originalUrl;
+    return { fallback };
   }
 }
 
@@ -54,7 +54,7 @@ export const openNotificationInApp = defineAction({
 
     const url = await convertToLocalAppUrlIfAny(notification);
 
-    openLinkRequest({ url });
+    await openAppUrl(url);
   },
 });
 

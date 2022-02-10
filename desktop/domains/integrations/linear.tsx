@@ -1,7 +1,6 @@
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { getIsAppInstalledLocally } from "@aca/desktop/bridge/apps";
 import { linearAuthTokenBridgeValue, loginLinearBridge } from "@aca/desktop/bridge/auth";
 
 import { IntegrationIcon } from "./IntegrationIcon";
@@ -15,12 +14,12 @@ export const linearIntegrationClient: IntegrationClient = {
   name: "Linear",
   description: "New issues, task assignments and comments.",
   getIsConnected: () => !!linearAuthTokenBridgeValue.get(),
-  convertToLocalAppUrl: async (url: string) => {
-    const isAppInstalledLocally = await getIsAppInstalledLocally(LINEAR_URL_SCHEME);
-    if (isAppInstalledLocally) {
-      return url.replace(linearURL, LINEAR_URL_SCHEME);
-    }
-    return url;
+  convertToLocalAppUrl: async ({ url }) => {
+    return {
+      protocol: "linear",
+      localUrl: url.replace(linearURL, LINEAR_URL_SCHEME),
+      fallback: url,
+    };
   },
   async connect() {
     await loginLinearBridge();

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { getIsAppInstalledLocally } from "@aca/desktop/bridge/apps";
 import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 
@@ -19,12 +18,12 @@ export const notionIntegrationClient: IntegrationClient = {
   name: "Notion",
   description: "Comments, mentions and page invitations.",
   getIsConnected: () => !!notionAuthTokenBridgeValue.get(),
-  convertToLocalAppUrl: async (url) => {
-    const isAppInstalledLocally = await getIsAppInstalledLocally(NOTION_URL_SCHEME);
-    if (isAppInstalledLocally) {
-      return url.replace(`${notionURL}/`, NOTION_URL_SCHEME);
-    }
-    return url;
+  convertToLocalAppUrl: async ({ url }) => {
+    return {
+      protocol: "notion",
+      localUrl: url.replace(`${notionURL}/`, NOTION_URL_SCHEME),
+      fallback: url,
+    };
   },
   disconnect: async () => {
     notionAuthTokenBridgeValue.reset();

@@ -1,11 +1,14 @@
 import { ReactNode } from "react";
 
+import { OpenAppUrl } from "@aca/desktop/bridge/apps";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+
 export interface IntegrationClient {
   kind: "integration";
   name: string;
   description: string;
   icon: ReactNode;
-  convertToLocalAppUrl?: (url: string) => Promise<string>;
+  convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
   getCanConnect?(): boolean;
   getIsConnected(): boolean;
   connect(): Promise<void>;
