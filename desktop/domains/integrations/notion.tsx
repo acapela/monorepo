@@ -22,7 +22,7 @@ export const notionIntegrationClient: IntegrationClient = {
   convertToLocalAppUrl: async (url) => {
     const isAppInstalledLocally = await getIsAppInstalledLocally(NOTION_URL_SCHEME);
     if (isAppInstalledLocally) {
-      return url.replace(`${notionURL}/`, `${NOTION_URL_SCHEME}`);
+      return url.replace(`${notionURL}/`, NOTION_URL_SCHEME);
     }
     return url;
   },
