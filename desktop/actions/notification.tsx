@@ -40,7 +40,12 @@ export const openNotificationInApp = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "O"],
-  analyticsEvent: trackingEvent("Notification Deeplink Opened"), // TODO: add which app's deeplink it is
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
+    return trackingEvent("Notification Deeplink Opened", { service_name });
+  },
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
