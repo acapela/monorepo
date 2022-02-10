@@ -53,7 +53,7 @@ export type AnalyticsEventsMap = {
   "Settings Opened": void;
   "Snoozed Notifications Opened": void;
   "Resolved Notifications Opened": void;
-  "Notification Deeplink Opened": void;
+  "Notification Deeplink Opened": { service_name: string | undefined };
   "Notification Group Toggled": void;
 
   // Integration related events
