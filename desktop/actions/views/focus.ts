@@ -17,12 +17,12 @@ export const focusPageView = createActionView((context) => {
     get prevNotification() {
       return list.getPreviousNotification(notification);
     },
-    focusNextItem() {
+    focusNextItemIfAvailable() {
       if (view.list.getAllNotifications().length > 0) {
         return view.goToNextNotification();
       }
     },
-    displayZenMode() {
+    displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
         desktopRouter.navigate("list", { listId: list.id });
         uiStore.isDisplayingZenImage = true;

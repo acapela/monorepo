@@ -3,12 +3,10 @@ import { ActionContext } from "@aca/desktop/actions/action/context";
 import { focusPageView } from "./focus";
 import { listPageView } from "./list";
 
-export function focusNextItem(context: ActionContext) {
-  context.view(focusPageView)?.focusNextItem();
-  context.view(listPageView)?.focusNextItem();
+export function focusNextItemIfAvailable(context: ActionContext) {
+  (context.view(focusPageView) ?? context.view(listPageView))?.focusNextItemIfAvailable();
 }
 
-export function displayZenMode(context: ActionContext) {
-  context.view(focusPageView)?.displayZenMode();
-  context.view(listPageView)?.displayZenMode();
+export function displayZenModeIfFinished(context: ActionContext) {
+  (context.view(focusPageView) ?? context.view(listPageView))?.displayZenModeIfFinished();
 }

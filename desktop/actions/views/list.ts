@@ -42,10 +42,10 @@ export const listPageView = createActionView((context) => {
     get prevListItem() {
       return getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
     },
-    focusNextItem() {
+    focusNextItemIfAvailable() {
       uiStore.focusedTarget = view.nextListItem;
     },
-    displayZenMode() {
+    displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
         uiStore.isDisplayingZenImage = true;
       }
