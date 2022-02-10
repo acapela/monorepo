@@ -13,7 +13,7 @@ import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget 
 
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { displayZenModeOrFocusNextItem } from "./views/common";
+import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
@@ -81,6 +81,8 @@ export const resolveNotification = defineAction({
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
 
+    focusNextItemIfAvailable(context);
+
     if (!group && notification) {
       // If the given notification is part of a group which can be previewed through a single notification, we treat
       // marking one of them as done as marking the whole group as done
@@ -97,7 +99,7 @@ export const resolveNotification = defineAction({
       notification.resolve();
     });
 
-    displayZenModeOrFocusNextItem(context);
+    displayZenModeIfFinished(context);
   },
 });
 
@@ -115,12 +117,14 @@ export const unresolveNotification = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    displayZenModeOrFocusNextItem(context);
+    focusNextItemIfAvailable(context);
 
     notification?.update({ resolved_at: null });
     group?.notifications.forEach((notification) => {
       notification.update({ resolved_at: null });
     });
+
+    displayZenModeIfFinished(context);
   },
 });
 
