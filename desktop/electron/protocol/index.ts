@@ -3,6 +3,7 @@ import Protocol from "protocol-registry";
 
 import { openAppUrl } from "@aca/desktop/bridge/apps";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
 export const APP_PROTOCOL = "acapela";
@@ -21,6 +22,8 @@ function handleAppReceivedUrl(url: string) {
   });
 }
 
+const log = makeLogger("App-Openner");
+
 export function initializeProtocolHandlers() {
   // Register app as capable of handling acapela:// protocol
   app.setAsDefaultProtocolClient(APP_PROTOCOL);
@@ -32,9 +35,13 @@ export function initializeProtocolHandlers() {
   });
 
   openAppUrl.handle(async (appUrlProps) => {
-    if (appUrlProps.protocol && appUrlProps.localUrl && (await Protocol.checkifExists(appUrlProps.protocol))) {
-      shell.openExternal(appUrlProps.localUrl);
-      return true;
+    try {
+      if (appUrlProps.protocol && appUrlProps.localUrl && (await Protocol.checkifExists(appUrlProps.protocol))) {
+        shell.openExternal(appUrlProps.localUrl);
+        return true;
+      }
+    } catch (e) {
+      log.error(e as Error);
     }
 
     shell.openExternal(appUrlProps.fallback);

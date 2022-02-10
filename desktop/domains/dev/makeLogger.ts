@@ -1,6 +1,6 @@
 import { isError } from "lodash";
 
-import { Prefix, Severity, logStorage } from "@aca/desktop/bridge/logger";
+import { Severity, logStorage } from "@aca/desktop/bridge/logger";
 import { getUUID } from "@aca/shared/uuid";
 
 /*
@@ -56,7 +56,7 @@ function joinInputs<T extends string | Error>(textOrError: T, args: unknown[]): 
   return compiled as T;
 }
 
-export function makeLogger(prefix: Prefix) {
+export function makeLogger(prefix: string) {
   const now = () => new Date().toISOString();
 
   function add<T extends string | Error>({ severity, textOrError }: { severity: Severity; textOrError: T }): T {
