@@ -7,6 +7,8 @@ import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { NotificationSlackMessageFragment } from "@aca/gql";
 
+import { userSlackInstallationEntity } from "../../userSlackInstallation";
+
 const notificationSlackMessageFragment = gql`
   fragment NotificationSlackMessage on notification_slack_message {
     id
@@ -30,6 +32,12 @@ export const notificationSlackMessageEntity = defineEntity<NotificationSlackMess
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
+}).addConnections((slackMessage, { getEntity }) => {
+  return {
+    get slackTeamId() {
+      return getEntity(userSlackInstallationEntity).all[0].slack_team_id;
+    },
+  };
 });
 
 export type NotificationSlackMessageEntity = EntityByDefinition<typeof notificationSlackMessageEntity>;
