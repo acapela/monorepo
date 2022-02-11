@@ -41,6 +41,7 @@ export const SettingsView = observer(function SettingsView() {
             {settingsSections.map((section) => {
               return (
                 <UINavItem
+                  key={section.id}
                   $isActive={section.id === activeSection.id}
                   onClick={() => {
                     setActiveSection(section);
