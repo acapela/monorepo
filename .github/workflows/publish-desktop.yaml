@@ -39,17 +39,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist-staging
+          path: desktop/dist-staging
       - name: Install dependencies
         run: |
           npm i "electron-builder@$(jq -r '.devDependencies["electron-builder"]' ./desktop/package.json)" -g --force
           electron-builder --version
           npm i "electron-notarize@$(jq -r '.devDependencies["electron-notarize"]' ./desktop/package.json)" -g --force
           echo "NODE_PATH=$(npm root -g)" >> $GITHUB_ENV
-      - uses: actions/download-artifact@v2
-        with:
-          name: dist-staging
-          path: desktop/dist-staging
-      - run: ls desktop/dist-staging
       - name: Publish
         run: |
           cd desktop/
