@@ -15,8 +15,7 @@
   "scripts": {
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
-    "build:electron": "electron-builder build --mac zip --universal -p never",
-    "build": "yarn build:bundle && yarn build:electron",
+    "build:electron": "electron-builder build --mac dmg --universal -p never",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.js"
   },
   "source": ".",
@@ -40,7 +39,9 @@
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
     "node-cleanup": "^2.1.2",
+    "node-fetch": "^2.6.7",
     "parcel": "^2.2.1",
+    "protocol-registry": "^1.3.13",
     "react-chicane": "^0.6.1",
     "ts-node": "^10.4.0",
     "url-pattern": "^1.0.3"
@@ -63,9 +64,5 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist"
     }
-  },
-  "dependencies": {
-    "node-fetch": "^2.6.7",
-    "protocol-registry": "^1.3.13"
   }
 }
