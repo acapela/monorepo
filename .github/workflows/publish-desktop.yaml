@@ -15,13 +15,16 @@ jobs:
         with:
           path: |
             desktop/dist-staging
-            desktop/dist-production
           key: desktop-dist-${{ github.sha }}
       - run: yarn desktop build:bundle
       - run: yarn desktop upload-sourcemaps
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      - run: yarn desktop upload-bundle
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
 
   publish:
     name: Publish
@@ -42,12 +45,11 @@ jobs:
         with:
           path: |
             desktop/dist-staging
-            desktop/dist-production
           key: desktop-dist-${{ github.sha }}
       - name: Publish
         run: |
           cd desktop/
-          ./scripts/publish.sh
+          ./scripts/publish.sh staging
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
