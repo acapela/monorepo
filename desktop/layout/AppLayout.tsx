@@ -56,7 +56,9 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
     `}
 `;
 
-const UIFooter = styled.div``;
+const UIFooter = styled.div`
+  z-index: 2;
+`;
 
 const AppLayoutHolder = styled.div<{}>`
   padding-top: 48px;
