@@ -2,15 +2,13 @@
 
 set -euo pipefail
 
-echo "building staging electron app..."
-./scripts/update-package.js staging
-electron-builder build --mac default --universal -p never
-./scripts/update-package.js reset
+if [ -z "${1:-}" ]; then
+  echo "stage not set"
+  exit 1
+fi
+stage=$1
 
-echo "building production electron app..."
-./scripts/update-package.js
-electron-builder build --mac default --universal -p never
+echo "building and publishing electron app for $stage..."
+./scripts/update-package.js "$stage"
+electron-builder build --mac default --universal -p always
 ./scripts/update-package.js reset
-
-echo "uploading release..."
-./scripts/upload-release.sh
