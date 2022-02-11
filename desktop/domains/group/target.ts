@@ -50,5 +50,14 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
     };
   }
 
+  if (targetNotification.__typename === "notification_linear") {
+    return {
+      id: targetNotification.issue_id,
+      name: targetNotification.issue_title,
+      integration: "linear",
+      integrationTitle: "Linear issue",
+    };
+  }
+
   return unknownTarget;
 }
