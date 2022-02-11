@@ -1,15 +1,9 @@
 import * as electronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 
-import {
-  appUpdateAndRestartRequest,
-  applicationStateBridge,
-  checkForUpdatesRequest,
-  showErrorToUserChannel,
-} from "@aca/desktop/bridge/system";
+import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequest } from "@aca/desktop/bridge/system";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
-import { getUUID } from "@aca/shared/uuid";
 
 const log = makeLogger("AutoUpdater");
 
@@ -36,8 +30,7 @@ export function setupAutoUpdater() {
   nextCheckForUpdate();
 
   autoUpdater.on("error", (error) => {
-    const textError = error?.message ?? `${error}`;
-    showErrorToUserChannel.send({ id: getUUID(), message: textError });
+    log.error(error);
   });
 
   autoUpdater.on("update-downloaded", () => {
