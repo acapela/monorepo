@@ -45,7 +45,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   const actionsToShow = fuzzySearch(
     applicableActions,
     (action) => {
-      const { name, keywords = [] } = resolveActionData(action);
+      const { name, keywords = [] } = resolveActionData(action, actionContext);
       return [name, ...keywords].filter(isNotNullish);
     },
     actionContext.searchKeyword

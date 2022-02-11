@@ -3,8 +3,8 @@ import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/fin
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/all";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
-import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/preconfigured";
 import { getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";

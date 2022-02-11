@@ -86,6 +86,10 @@ export function swapPlainObjectKeysWithValues<K extends Keyable, V extends Keyab
   return result;
 }
 
-export function isEqualForPick<O extends object, K extends keyof O>(obj1: O, obj2: O, fields: K[]) {
+export function isEqualForPick<O1 extends object, O2 extends object, K extends keyof O1>(
+  obj1: O1,
+  obj2: O2,
+  fields: K[]
+) {
   return isPlainObjectEqual(pick(obj1, fields), pick(obj2, fields));
 }

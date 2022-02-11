@@ -53,7 +53,7 @@
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --all-databases --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev",
-    "hasura:migrations:mark-as-applied": "func(){ hasura migrate apply --version \"$1\" --skip-execution --project infrastructure/hasura --admin-secret dev; }; func",
+    "hasura:migrations:mark-as-applied": "hasura migrate apply --version \"$1\" --skip-execution --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds": "hasura seed apply --database-name default --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",

@@ -22,6 +22,10 @@ type Query {
   slack_user(team_id: uuid!): SlackUserOutput
 }
 
+type Query {
+  slack_users: [SlackUser!]!
+}
+
 type Mutation {
   uninstall_slack(team_id: uuid!): UninstallSlackOutput!
 }
@@ -96,4 +100,11 @@ type JoinTopicOutput {
 
 type GetSlackInstallationURLOutput {
   url: String!
+}
+
+type SlackUser {
+  id: String!
+  display_name: String!
+  real_name: String
+  avatar_url: String
 }

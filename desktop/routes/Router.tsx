@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import { allNotificationsList } from "@aca/desktop/domains/list/preconfigured";
+import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { allRouteNames, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
@@ -30,7 +30,7 @@ export function Router() {
     case "notification":
       return <NotificationView notificationId={activeRoute.params.notificationId} />;
     case "list":
-      return <ListView listId={activeRoute.params.listId} />;
+      return <ListView listId={activeRoute.params.listId} isEditing={!!activeRoute.params.isEditing} />;
     case "focus":
       return <FocusModeView notificationId={activeRoute.params.notificationId} listId={activeRoute.params.listId} />;
   }

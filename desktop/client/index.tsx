@@ -1,10 +1,12 @@
 import "@aca/desktop/analytics";
 
+import { ApolloProvider } from "@apollo/client";
 import { MotionConfig } from "framer-motion";
 import React from "react";
 import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
+import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
 import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
@@ -45,24 +47,25 @@ if (window.electronBridge.env.windowName === "Logger") {
   // Main app
   render(
     <>
-      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-        <DesktopThemeProvider>
-          <BuiltInStyles />
-          <GlobalDesktopStyles />
-          <PromiseUIRenderer />
-          <TooltipsRenderer />
-          <ToastsRenderer />
-          <ServiceWorkerConsolidation />
-          <SystemBar />
-
-          <RootErrorBoundary>
-            <ToastsAndCommunicatesView />
-            <CommandMenuManager />
-            <RootView />
-            <DebugView />
-          </RootErrorBoundary>
-        </DesktopThemeProvider>
-      </MotionConfig>
+      <ApolloProvider client={apolloClient}>
+        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+          <DesktopThemeProvider>
+            <BuiltInStyles />
+            <GlobalDesktopStyles />
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
+            <ServiceWorkerConsolidation />
+            <SystemBar />
+            <RootErrorBoundary>
+              <ToastsAndCommunicatesView />
+              <CommandMenuManager />
+              <RootView />
+              <DebugView />
+            </RootErrorBoundary>
+          </DesktopThemeProvider>
+        </MotionConfig>
+      </ApolloProvider>
     </>,
     rootElement
   );

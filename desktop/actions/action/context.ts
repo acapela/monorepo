@@ -4,7 +4,7 @@ import { makeObservable, observable } from "mobx";
 
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
-import { getInboxListsById } from "@aca/desktop/domains/list/preconfigured";
+import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { isNotNullish } from "@aca/shared/nullish";
@@ -27,7 +27,7 @@ const routeTargets = cachedComputed((): unknown[] => {
   const listRoute = getRouteParamsIfActive("list");
 
   if (listRoute) {
-    const { listId } = listRoute;
+    const { listId } = listRoute as unknown as { listId: string };
 
     return [getInboxListsById(listId)];
   }
