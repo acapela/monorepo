@@ -11,11 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
-      - uses: actions/cache@v2
-        with:
-          path: |
-            desktop/dist-staging
-          key: desktop-dist-${{ github.sha }}
       - run: yarn desktop build:bundle
       - run: yarn desktop upload-sourcemaps
         env:
