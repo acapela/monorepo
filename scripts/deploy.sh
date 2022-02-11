@@ -71,7 +71,8 @@ if [[ "${APP_NAME}" == "all" ]]; then
   ./scripts/deploy.sh -s "$STAGE" -a api -v "$APP_VERSION" -S
   ./scripts/deploy.sh -s "$STAGE" -a frontend -v "$APP_VERSION" -S
   ./scripts/wait-for-release.sh "$STAGE" "$APP_VERSION"
-  ./scripts/move-app-to-releases.sh "$STAGE" "$APP_VERSION"
+  echo "creating deploy-info.txt"
+  echo "${STAGE}@${APP_VERSION}" > deploy-info.txt
   exit
 fi
 
