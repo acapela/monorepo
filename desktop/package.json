@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
-    "build:electron": "electron-builder build --mac dmg --universal -p never",
+    "build:electron": "electron-builder build --mac default --universal -p never",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.js"
   },
   "source": ".",

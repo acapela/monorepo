@@ -4,12 +4,12 @@ set -euo pipefail
 
 echo "building staging electron app..."
 ./scripts/update-package.js staging
-electron-builder build --mac dmg --universal -p never
+electron-builder build --mac default --universal -p never
 ./scripts/update-package.js reset
 
 echo "building production electron app..."
 ./scripts/update-package.js
-electron-builder build --mac dmg --universal -p never
+electron-builder build --mac default --universal -p never
 ./scripts/update-package.js reset
 
 echo "uploading release..."

@@ -7,7 +7,12 @@ module.exports = async function (params) {
   if (process.platform !== "darwin") {
     return;
   }
-  let appId = "com.desktop.acapela";
+  let appId = params.packager.appInfo.id;
+
+  if (appId === "com.desktop.acapela.staging") {
+    console.info(`skip notarizing for staging app`);
+    return;
+  }
 
   let appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
   if (!fs.existsSync(appPath)) {
