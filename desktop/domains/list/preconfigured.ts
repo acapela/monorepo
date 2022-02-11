@@ -41,6 +41,14 @@ export const figmaList = defineNotificationsList({
   },
 });
 
+export const linearList = defineNotificationsList({
+  id: "linear",
+  name: "Linear",
+  filter: (notification) => {
+    return notification.kind === "notification_linear" && getShouldNotificationBeInInboxList(notification);
+  },
+});
+
 export const resolvedList = defineNotificationsList({
   id: "resolved",
   name: "Resolved",
@@ -53,13 +61,14 @@ export const snoozedList = defineNotificationsList({
   filter: (notification) => notification.isSnoozed,
 });
 
-export const inboxLists = [allNotificationsList, slackList, notionList, figmaList];
+export const inboxLists = [allNotificationsList, slackList, notionList, figmaList, linearList];
 
 export const inboxListIdMap = {
   allNotifications: allNotificationsList,
   slack: slackList,
   notion: notionList,
   figma: figmaList,
+  linear: linearList,
 };
 
 export const outOfInboxLists = [snoozedList, resolvedList];
