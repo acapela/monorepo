@@ -35,8 +35,7 @@ export const ToastsAndCommunicatesView = observer(() => {
           <Toast
             key="downloading"
             title="Downloading update"
-            description={`${updateDownloadingPercent}%`}
-            action={installUpdate}
+            description={`${Math.round(updateDownloadingPercent)}%`}
           />
         )}
         {errors.map((error) => {
