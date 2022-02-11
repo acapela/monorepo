@@ -19,6 +19,7 @@ import type {
   ActivityPayload,
   BlockPayload,
   GetNotificationLogResult,
+  GetPublicSpaceDataResult,
   GetSpacesResult,
   NotificationPayload,
   PageBlockValue,
@@ -160,7 +161,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
 }
 
 async function fetchCurrentSpace(sessionData: NotionSessionData) {
-  const response = await fetch(notionURL + "/api/v3/getSpaces", {
+  const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -169,16 +170,48 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
     body: JSON.stringify({}),
   });
 
-  if (!response.ok) {
+  if (!getSpacesResponse.ok) {
     clearNotionSessionData();
-    throw log.error(new Error(`getSpaces`), `${response.status} - ${response.statusText}`);
+    throw log.error(new Error(`getSpaces`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
-  const getSpacesResult = (await response.json()) as GetSpacesResult;
+  /*
+    The getSpaces endpoint includes information about the spaces that users is a member from.
+    It also includes the concept of a `space_view` which includes a bit of information about all
+    the spaces the user is involved with, i.e including spaces where there user is a guest.
+  */
+  const getSpacesResult = (await getSpacesResponse.json()) as GetSpacesResult;
 
-  const currentUserSpaces = getSpacesResult[sessionData.notionUserId].space;
+  // Includes spaces that you're a member of and spaces where you're a guest
+  const allSpaceIds = Object.values(getSpacesResult[sessionData.notionUserId].space_view).map(
+    (view) => view.value.space_id
+  );
 
-  const allSpaces = Object.values(currentUserSpaces).map((space) => ({ id: space.value.id, name: space.value.name }));
+  /*
+    We use the getPublicSpaceData endpoint to get the name of all spaces. Using the result from `getSpaces`
+    didn't provide us with the name of spaces the user was a guest in.
+    We're still able to get notifications from spaces in which the user only has guest access.
+  */
+  const getPublicSpaceDataResponse = await fetch(notionURL + "/api/v3/getPublicSpaceData", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      cookie: sessionData.cookie,
+    },
+    body: JSON.stringify({
+      spaceIds: allSpaceIds,
+      type: "space-ids",
+    }),
+  });
+
+  if (!getPublicSpaceDataResponse.ok) {
+    clearNotionSessionData();
+    throw log.error(new Error(`getPublicSpaceData`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+  }
+
+  const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
+
+  const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
   if (allSpaces.length === 0) {
     throw log.error(new Error(`Unable to find any spaces in account`));

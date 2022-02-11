@@ -9,7 +9,7 @@ export function IntegrationsManager() {
   return (
     <UIHolder>
       {integrationClientList.map((integration) => {
-        return <IntegrationCard service={integration} />;
+        return <IntegrationCard key={integration.name} service={integration} />;
       })}
     </UIHolder>
   );

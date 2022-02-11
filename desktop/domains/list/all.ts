@@ -46,6 +46,14 @@ export const figmaList = defineNotificationsList({
   },
 });
 
+export const linearList = defineNotificationsList({
+  id: "linear",
+  name: "Linear",
+  filter: (notification) => {
+    return notification.kind === "notification_linear" && getShouldNotificationBeInInboxList(notification);
+  },
+});
+
 export const resolvedList = defineNotificationsList({
   id: "resolved",
   name: "Resolved",
@@ -63,6 +71,7 @@ export const getInboxLists = cachedComputed(() => [
   slackList,
   notionList,
   figmaList,
+  linearList,
 
   ...getDb().notificationFilter.all.map((notificationFilter) =>
     defineNotificationsList({
