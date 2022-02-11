@@ -13,3 +13,16 @@ export const workerSyncStart = createInvokeBridge<boolean>("worker-sync-ready");
   In some cases we need the worker syncs to run on changes in some other threads.
 */
 export const forceWorkerSyncRun = createInvokeBridge<WorkerService[]>("worker-sync-run");
+
+/*
+  We need to check is the `protocol` or `url scheme` is registered locally. This allows
+  us to just open the app locally instead of going through the URL.
+*/
+
+export interface OpenAppUrl {
+  protocol?: string;
+  localUrl?: string;
+  fallback: string;
+}
+
+export const openAppUrl = createInvokeBridge<OpenAppUrl, boolean>("is-app-installed-locally");

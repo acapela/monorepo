@@ -1,8 +1,12 @@
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { orderNotificationsByGroups } from "@aca/desktop/domains/group/groupNotifications";
-import { unsafeAssertType } from "@aca/shared/assert";
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
+import { findAndMap } from "@aca/shared/array";
+import { assert, unsafeAssertType } from "@aca/shared/assert";
+import { None } from "@aca/shared/none";
+import { isNotNullish } from "@aca/shared/nullish";
 
 interface DefineListConfig {
   id: string;
@@ -11,62 +15,105 @@ interface DefineListConfig {
   filter: (notification: NotificationEntity) => boolean;
 }
 
+// For non-grouped notifications the index is a single number
+// For grouped notifications the index is a number tuple, containing both the group's index and the within group index
+type GroupedNotificationsIndex = number | [number, number];
+
 export function defineNotificationsList({ id, name, isCustom, filter }: DefineListConfig) {
-  const getAllNotifications = cachedComputed(() => {
+  const getAllGroupedNotifications = cachedComputed(() => {
     const db = getDb();
     const rawAll = db.notification.query(filter);
-
-    const orderedAll = orderNotificationsByGroups(rawAll.all);
-
-    return orderedAll;
+    return groupNotifications(rawAll.all);
   });
 
+  const getFlattenedNotifications = cachedComputed(() =>
+    getAllGroupedNotifications().flatMap((notificationOrGroup) =>
+      getIsNotificationsGroup(notificationOrGroup) ? notificationOrGroup.notifications : [notificationOrGroup]
+    )
+  );
+
   const getNotificationIndex = cachedComputed((notification: NotificationEntity) => {
-    const allNotifications = orderNotificationsByGroups(getAllNotifications());
+    const groupedNotifications = getAllGroupedNotifications();
 
-    const index = allNotifications.indexOf(notification);
+    const index: GroupedNotificationsIndex | undefined = findAndMap(groupedNotifications, (notificationOrGroup, i) => {
+      if (getIsNotificationsGroup(notificationOrGroup)) {
+        const notificationIndex = notificationOrGroup.notifications.indexOf(notification);
+        if (notificationIndex != -1) {
+          return [i, notificationIndex];
+        }
+      } else if (notificationOrGroup == notification) {
+        return i;
+      }
+      return None;
+    });
 
-    if (index === -1) return null;
+    if (index === undefined) return null;
 
     return index;
   });
 
-  const getNextNotification = cachedComputed((notification: NotificationEntity) => {
+  const getAdjacentNotification = cachedComputed((notification: NotificationEntity, direction: -1 | 1) => {
     const index = getNotificationIndex(notification);
 
     if (index === null) return null;
 
-    return getAllNotifications()[index + 1] ?? null;
+    const groupedNotifications = getAllGroupedNotifications();
+    let nextNotificationOrGroup: NotificationOrGroup;
+    if (Array.isArray(index)) {
+      const group = groupedNotifications[index[0]];
+      assert(getIsNotificationsGroup(group), "must be a notification group");
+      const nextNotification = group.notifications[index[1] + direction];
+      if (!group.isOnePreviewEnough && nextNotification) {
+        return nextNotification;
+      }
+      nextNotificationOrGroup = groupedNotifications[index[0] + direction];
+    } else {
+      nextNotificationOrGroup = groupedNotifications[index + direction];
+    }
+
+    if (!nextNotificationOrGroup) {
+      return null;
+    }
+    if (getIsNotificationsGroup(nextNotificationOrGroup)) {
+      const group = nextNotificationOrGroup;
+      return direction == -1 && !group.isOnePreviewEnough
+        ? group.notifications[group.notifications.length - 1]
+        : group.notifications[0];
+    } else {
+      return nextNotificationOrGroup;
+    }
   });
 
-  const getPreviousNotification = cachedComputed((notification: NotificationEntity) => {
-    const index = getNotificationIndex(notification);
+  const getNextNotification = cachedComputed((notification: NotificationEntity) =>
+    getAdjacentNotification(notification, +1)
+  );
 
-    if (index === null) return null;
+  const getPreviousNotification = cachedComputed((notification: NotificationEntity) =>
+    getAdjacentNotification(notification, -1)
+  );
 
-    return getAllNotifications()[index - 1] ?? null;
-  });
-
-  const NOTIFICATIONS_TO_PRELOAD_COUNT = 5;
-
+  const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
   const getNotificationsToPreload = cachedComputed((openedNotification?: NotificationEntity) => {
-    const orderedNotifications = getAllNotifications();
-    if (!openedNotification) {
-      return orderedNotifications.slice(0, NOTIFICATIONS_TO_PRELOAD_COUNT);
+    const [firstNotificationOrGroup] = getAllGroupedNotifications();
+    if (!firstNotificationOrGroup) {
+      return [];
     }
-
-    const notificationIndex = getNotificationIndex(openedNotification);
-
-    if (notificationIndex === null) {
-      return orderedNotifications.slice(0, NOTIFICATIONS_TO_PRELOAD_COUNT);
+    const firstNotification = getIsNotificationsGroup(firstNotificationOrGroup)
+      ? firstNotificationOrGroup.notifications[0]
+      : firstNotificationOrGroup;
+    // // We limit the amount of notifications to preload to the previous one and the next 3
+    const notificationsToPreload = openedNotification
+      ? [getPreviousNotification(openedNotification)].filter(isNotNullish)
+      : [];
+    let currentNotification = openedNotification ?? firstNotification;
+    for (let i = 0; i < NOTIFICATIONS_TO_PRELOAD_COUNT - notificationsToPreload.length; i++) {
+      const nextNotification = getNextNotification(currentNotification);
+      if (!nextNotification) {
+        break;
+      }
+      notificationsToPreload.push(nextNotification);
+      currentNotification = nextNotification;
     }
-
-    // We limit the amount of notifications to preload to the previous one and the next 3
-    const notificationsToPreload = orderedNotifications.slice(
-      Math.max(notificationIndex - 1, 0),
-      notificationIndex + NOTIFICATIONS_TO_PRELOAD_COUNT - 2
-    );
-
     return notificationsToPreload;
   });
 
@@ -75,7 +122,7 @@ export function defineNotificationsList({ id, name, isCustom, filter }: DefineLi
     id,
     name,
     isCustom,
-    getAllNotifications,
+    getAllNotifications: getFlattenedNotifications,
     getNotificationIndex,
     getNextNotification,
     getPreviousNotification,

@@ -42,18 +42,13 @@ export const listPageView = createActionView((context) => {
     get prevListItem() {
       return getPreviousVisibleItemInList(list, notification ?? group ?? undefined);
     },
-    displayZenModeOrFocusNextItem() {
-      const { list } = view;
-
-      if (list.getAllNotifications().length) {
-        return view.focusNextItem();
-      }
-
-      uiStore.isDisplayingZenImage = true;
-      return null;
-    },
-    focusNextItem() {
+    focusNextItemIfAvailable() {
       uiStore.focusedTarget = view.nextListItem;
+    },
+    displayZenModeIfFinished() {
+      if (view.list.getAllNotifications().length == 0) {
+        uiStore.isDisplayingZenImage = true;
+      }
     },
   };
 
@@ -85,7 +80,7 @@ function getNextVisibleItemInList(list: NotificationsList, currentItem?: Notific
   if (!currentItem) return visibleElements[0];
 
   return getNextItemInArray(visibleElements, currentItem, {
-    keyGetter: (item) => (getIsNotificationsGroup(item) ? item.id : item.id),
+    keyGetter: (item) => item.id,
   });
 }
 
@@ -95,6 +90,6 @@ function getPreviousVisibleItemInList(list: NotificationsList, currentItem?: Not
   if (!currentItem) return visibleElements[visibleElements.length - 1];
 
   return getPreviousItemInArray(visibleElements, currentItem, {
-    keyGetter: (item) => (getIsNotificationsGroup(item) ? item.id : item.id),
+    keyGetter: (item) => item.id,
   });
 }

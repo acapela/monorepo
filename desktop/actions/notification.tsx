@@ -2,7 +2,6 @@ import React from "react";
 
 import { trackingEvent } from "@aca/desktop/analytics";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
-import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { getDb } from "@aca/desktop/clientdb";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -11,23 +10,51 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { OpenAppUrl, openAppUrl } from "../bridge/apps";
+import { getIntegration } from "../bridge/apps/shared";
+import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { displayZenModeOrFocusNextItem } from "./views/common";
+import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
+
+async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<OpenAppUrl> {
+  const notificationKind = notification.kind;
+  const fallback = notification.url;
+
+  // This corner cases shouldn't really ever appear
+  if (!notificationKind) {
+    return { fallback };
+  }
+
+  const urlConverter = getIntegration(notificationKind)?.convertToLocalAppUrl;
+
+  if (urlConverter) {
+    return await urlConverter(notification);
+  } else {
+    return { fallback };
+  }
+}
 
 export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
   shortcut: ["Mod", "O"],
-  analyticsEvent: trackingEvent("Notification Deeplink Opened"), // TODO: add which app's deeplink it is
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
+    return trackingEvent("Notification Deeplink Opened", { service_name });
+  },
   canApply: (ctx) => {
     return ctx.hasTarget("notification");
   },
-  handler(context) {
+  async handler(context) {
     const notification = context.assertTarget("notification");
 
-    openLinkRequest({ url: notification.url });
+    const url = await convertToLocalAppUrlIfAny(notification);
+
+    await openAppUrl(url);
   },
 });
 
@@ -81,6 +108,8 @@ export const resolveNotification = defineAction({
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
 
+    focusNextItemIfAvailable(context);
+
     if (!group && notification) {
       // If the given notification is part of a group which can be previewed through a single notification, we treat
       // marking one of them as done as marking the whole group as done
@@ -97,7 +126,7 @@ export const resolveNotification = defineAction({
       notification.resolve();
     });
 
-    displayZenModeOrFocusNextItem(context);
+    displayZenModeIfFinished(context);
   },
 });
 
@@ -115,12 +144,14 @@ export const unresolveNotification = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    displayZenModeOrFocusNextItem(context);
+    focusNextItemIfAvailable(context);
 
     notification?.update({ resolved_at: null });
     group?.notifications.forEach((notification) => {
       notification.update({ resolved_at: null });
     });
+
+    displayZenModeIfFinished(context);
   },
 });
 

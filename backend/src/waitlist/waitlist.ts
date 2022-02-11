@@ -27,6 +27,7 @@ router.use(
       `http://localhost:3000`,
       `https://landing-page-git-v3-acapela.vercel.app`,
       `https://acapela-v1.webflow.io/`,
+      `https://dev.acapela.com`,
     ],
   })
 );
@@ -39,7 +40,7 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
 
   if (!email) {
     logger.info("Waitlist endpoint called with missing parameters");
-    return res.status(HttpStatus.BAD_REQUEST).end();
+    return res.status(HttpStatus.BAD_REQUEST).send("Waitlist endpoint called with missing parameters: email");
   }
   logger.info(`Handling waitlist signup for ${email}`);
 

@@ -181,9 +181,13 @@ export function flattenWithDivider<T, D>(input: T[][], dividerGetter: () => D): 
  * Applies function to elements of the given array and returns the first non-none result
  * @see None
  */
-export function findAndMap<I, R>(input: I[], finderAndMapper: (item: I) => R | typeof None): R | undefined {
-  for (const item of input) {
-    const result = finderAndMapper(item);
+export function findAndMap<I, R>(
+  input: I[],
+  finderAndMapper: (item: I, index: number) => R | typeof None
+): R | undefined {
+  for (let i = 0; i < input.length; i++) {
+    const item = input[i];
+    const result = finderAndMapper(item, i);
     if (result !== None) {
       return result;
     }

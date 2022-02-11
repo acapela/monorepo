@@ -1,12 +1,12 @@
 import { BrowserWindow, session } from "electron";
 
 import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
-import { loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
 import { authWindowDefaultOptions } from "./utils";
 
-const notionURL = "https://www.notion.so";
+export const notionURL = "https://www.notion.so";
 
 export async function getNotionAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: notionURL });
@@ -54,4 +54,5 @@ export function initializeNotionAuthHandler() {
 export function clearNotionSessionData() {
   notionAuthTokenBridgeValue.reset();
   notionSelectedSpaceValue.reset();
+  clearServiceCookiesBridge({ url: notionURL });
 }

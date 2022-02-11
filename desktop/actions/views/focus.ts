@@ -1,7 +1,6 @@
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
-import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 
 export const focusPageView = createActionView((context) => {
   if (!getIsRouteActive("focus")) return null;
@@ -9,28 +8,25 @@ export const focusPageView = createActionView((context) => {
   const list = context.assertTarget("list", true);
   const notification = context.assertTarget("notification");
 
-  // Let's cache grouping and ordering notifications
-  const orderedNotifications = list.getAllNotifications;
-
   const view = {
     list,
     notification,
     get nextNotification() {
-      return getNextItemInArray(orderedNotifications(), notification);
+      return list.getNextNotification(notification);
     },
     get prevNotification() {
-      return getPreviousItemInArray(orderedNotifications(), notification);
+      return list.getPreviousNotification(notification);
     },
-    displayZenModeOrFocusNextItem() {
-      const { list } = view;
-
-      if (list.getAllNotifications().length > 0) {
+    focusNextItemIfAvailable() {
+      if (view.list.getAllNotifications().length > 0) {
         return view.goToNextNotification();
       }
-
-      desktopRouter.navigate("list", { listId: list.id });
-      uiStore.isDisplayingZenImage = true;
-      return null;
+    },
+    displayZenModeIfFinished() {
+      if (view.list.getAllNotifications().length == 0) {
+        desktopRouter.navigate("list", { listId: list.id });
+        uiStore.isDisplayingZenImage = true;
+      }
     },
     goToNextNotification() {
       const { nextNotification } = view;
