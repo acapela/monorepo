@@ -107,7 +107,8 @@ const UINotifications = styled.div`
   min-height: 0;
   overflow-y: auto;
   padding-right: 15px;
-  padding-bottom: 16px;
+  /* Prevents the last notification in the list from hiding under the footer */
+  padding-bottom: 60px;
 `;
 
 const UITabsBar = styled.div`

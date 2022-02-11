@@ -29,5 +29,6 @@ const UIHolder = styled.div`
   justify-content: center;
   gap: 8px;
   border-top: 1px solid ${theme.colors.layout.divider.value};
+  ${theme.colors.layout.background.asBg};
   padding: 4px 12px;
 `;
