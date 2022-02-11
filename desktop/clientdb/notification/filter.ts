@@ -31,13 +31,17 @@ export const slackMessageFilter = z.object({
 
 export type SlackMessageFilter = z.infer<typeof slackMessageFilter>;
 
-export const innerNotificationFilter = z.union([
-  slackMessageFilter,
-  z.object({
-    kind: z.literal("notification_notion"),
-    page_id: z.string().optional(),
-  }),
-]);
+const notionFilter = z.object({
+  kind: z.literal("notification_notion"),
+  page_id: z.string().optional(),
+});
+
+const figmaCommentFilter = z.object({
+  kind: z.literal("notification_figma_comment"),
+  is_mention: z.boolean().optional(),
+});
+
+export const innerNotificationFilter = z.union([figmaCommentFilter, notionFilter, slackMessageFilter]);
 export type InnerNotificationFilter = z.infer<typeof innerNotificationFilter>;
 
 const notificationFragment = gql`

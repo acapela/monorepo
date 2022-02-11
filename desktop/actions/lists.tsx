@@ -24,8 +24,6 @@ import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 import { listPageView } from "./views/list";
 
-const IS_DEV = window.electronBridge.env.isDev;
-
 export const currentListActionsGroup = defineGroup({
   name: (ctx) => {
     const list = ctx.view(listPageView)?.list;
@@ -169,14 +167,13 @@ export const toggleNotificationsGroup = defineAction({
 export const createNotificationList = defineAction({
   icon: <IconListOrdered />,
   name: "Create list",
-  canApply: () => IS_DEV,
   handler() {
     const notificationFilter = getDb().notificationFilter.create({ title: "New List", data: {} });
     desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
   },
 });
 
-const canApplyCustomListAction = (ctx: ActionContext) => Boolean(IS_DEV && ctx.view(listPageView)?.list.isCustom);
+const canApplyCustomListAction = (ctx: ActionContext) => Boolean(ctx.view(listPageView)?.list.isCustom);
 
 export const renameNotificationList = defineAction({
   icon: <IconPenTool />,

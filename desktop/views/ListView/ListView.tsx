@@ -10,6 +10,7 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
 import { ListsTabBar } from "./ListsTabBar";
@@ -47,45 +48,54 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      {isInCelebrationMode && (
+
+      {isInCelebrationMode ? (
         <UINotificationZeroHolder>
           <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
         </UINotificationZeroHolder>
-      )}
-      {isEditing && <NotificationFilterForm listId={listId} />}
-      {!isInCelebrationMode && displayedList && notificationGroups && notificationGroups.length > 0 && (
-        <>
-          {!hasSettledFocusedTarget &&
-            displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
-              return (
-                <PreloadNotificationPreview
-                  priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                  key={notificationToPreload.id}
-                  url={notificationToPreload.url}
-                />
-              );
-            })}
-          <UINotifications>
-            {notificationGroups?.map((notificationOrGroup) => {
-              if (getIsNotificationsGroup(notificationOrGroup)) {
-                return (
-                  <NotificationsGroupRow
-                    list={displayedList}
-                    key={notificationOrGroup.id}
-                    group={notificationOrGroup}
-                  />
-                );
-              }
+      ) : (
+        <HStack style={{ height: "100%" }}>
+          {isEditing && <NotificationFilterForm listId={listId} />}
 
-              return (
-                <NotificationRow list={displayedList} key={notificationOrGroup.id} notification={notificationOrGroup} />
-              );
-            })}
-          </UINotifications>
-        </>
-      )}
+          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications />}
 
-      {!isInCelebrationMode && displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications />}
+          {displayedList && notificationGroups && notificationGroups.length > 0 && (
+            <>
+              {!hasSettledFocusedTarget &&
+                displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
+                  return (
+                    <PreloadNotificationPreview
+                      priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                      key={notificationToPreload.id}
+                      url={notificationToPreload.url}
+                    />
+                  );
+                })}
+              <UINotifications>
+                {notificationGroups?.map((notificationOrGroup) => {
+                  if (getIsNotificationsGroup(notificationOrGroup)) {
+                    return (
+                      <NotificationsGroupRow
+                        list={displayedList}
+                        key={notificationOrGroup.id}
+                        group={notificationOrGroup}
+                      />
+                    );
+                  }
+
+                  return (
+                    <NotificationRow
+                      list={displayedList}
+                      key={notificationOrGroup.id}
+                      notification={notificationOrGroup}
+                    />
+                  );
+                })}
+              </UINotifications>
+            </>
+          )}
+        </HStack>
+      )}
     </TraySidebarLayout>
   );
 });
