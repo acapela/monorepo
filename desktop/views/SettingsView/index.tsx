@@ -56,25 +56,26 @@ export const SettingsView = observer(function SettingsView() {
             {activeSection.id === "integrations" && <IntegrationsManager />}
             {activeSection.id === "experimental" && <ExperimentalSettings />}
             {activeSection.id === "account" && <AccountSettings />}
+            <UIVersionInfo>
+              v{window.electronBridge.env.version}
+              {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
+            </UIVersionInfo>
           </UIActiveSection>
         </UIBody>
-        <UIVersionInfo>
-          v{window.electronBridge.env.version}
-          {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
-        </UIVersionInfo>
       </UIHolder>
     </TraySidebarLayout>
   );
 });
 
 const UIHolder = styled.div<{}>`
-  padding: 26px 20px;
+  padding: 0 20px;
 
   display: flex;
   flex-direction: column;
   ${theme.layout.settingsPageMaxWidth}
 
   ${theme.spacing.pageSections.asGap}
+  overflow: hidden;
 `;
 
 const UINav = styled.nav`
@@ -89,10 +90,16 @@ const UINav = styled.nav`
 const UIBody = styled.div`
   display: flex;
   gap: 24px;
+  overflow: auto;
 `;
 
 const UIActiveSection = styled.div`
   flex-grow: 1;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+  }
 `;
 
 const UIHeader = styled.div<{}>`
@@ -104,6 +111,7 @@ const UIHeader = styled.div<{}>`
 
 const UIVersionInfo = styled.div`
   ${theme.typo.label.secondary.center};
+  margin-top: 24px;
 `;
 
 const UINavItem = styled.div<{ $isActive: boolean }>`
