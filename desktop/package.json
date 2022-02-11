@@ -16,10 +16,12 @@
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac default --universal -p never",
-    "upload-sourcemaps": "./scripts/upload-sourcemaps.js"
+    "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
+    "upload-bundle": "./scripts/upload-bundle.sh"
   },
   "source": ".",
   "devDependencies": {
+    "@install-binary/ghr": "^0.14.0",
     "@parcel/config-default": "^2.2.1",
     "@parcel/core": "^2.2.1",
     "@sentry/cli": "^1.72.1",

@@ -92,6 +92,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aca/desktop@workspace:desktop"
   dependencies:
+    "@install-binary/ghr": ^0.14.0
     "@parcel/config-default": ^2.2.1
     "@parcel/core": ^2.2.1
     "@sentry/cli": ^1.72.1
@@ -2958,6 +2959,67 @@ __metadata:
   bin:
     berglas: run.js
   checksum: 2a1c2f8d394e2175f8e49bb05c4df5e68ebed45cfd936ecec616c367db2543c4bb018dfb83b6815580c5d36b9c06e115ba7ba9f9295a3fcb551720d97f14d739
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-darwin-arm64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-darwin-arm64@npm:0.14.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-darwin-x64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-darwin-x64@npm:0.14.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-arm64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-arm64@npm:0.14.0"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-arm@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-arm@npm:0.14.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-x64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-x64@npm:0.14.0"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr@npm:0.14.0"
+  dependencies:
+    "@install-binary/ghr-darwin-arm64": 0.14.0
+    "@install-binary/ghr-darwin-x64": 0.14.0
+    "@install-binary/ghr-linux-arm": 0.14.0
+    "@install-binary/ghr-linux-arm64": 0.14.0
+    "@install-binary/ghr-linux-x64": 0.14.0
+  dependenciesMeta:
+    "@install-binary/ghr-darwin-arm64":
+      optional: true
+    "@install-binary/ghr-darwin-x64":
+      optional: true
+    "@install-binary/ghr-linux-arm":
+      optional: true
+    "@install-binary/ghr-linux-arm64":
+      optional: true
+    "@install-binary/ghr-linux-x64":
+      optional: true
+  bin:
+    ghr: run.js
+  checksum: 38caba1be214eab8ffa3d563375e1ce5370aa657a7b01f2685dc2645d8d80f28a24f50a24f334c8faa349d6c5dbdc966b5ede4955f4c55d2412b6b0366e95893
   languageName: node
   linkType: hard
 
