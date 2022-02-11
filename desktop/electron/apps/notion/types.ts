@@ -5,12 +5,19 @@ export type GetSpacesResult = Record<
     notion_user: Record<string, NotionUserPayload>;
     user_root: unknown;
     user_settings: unknown;
-    space_view: unknown;
+    space_view: Record<string, SpaceView>;
     space: Record<string, SpacePayload>;
     block: unknown;
     collection: unknown;
   }
 >;
+
+interface SpaceView {
+  role: Role;
+  value: {
+    space_id: string;
+  };
+}
 
 interface SpacePayload {
   role: Role;
@@ -40,6 +47,14 @@ export interface UserPermission {
   role: Role;
   type: "user_permission";
   user_id: string;
+}
+
+export interface GetPublicSpaceDataResult {
+  results: {
+    id: string;
+    name: string;
+    // A lot of properties ignored
+  }[];
 }
 
 export interface GetNotificationLogResult {
