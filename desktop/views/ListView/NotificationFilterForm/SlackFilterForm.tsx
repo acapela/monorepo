@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { SlackMessageFilter } from "@aca/desktop/clientdb/notification/filter";
 import { SlackUsersQuery } from "@aca/gql";
 import { typedKeys } from "@aca/shared/object";
 import { Button } from "@aca/ui/buttons/Button";
@@ -38,7 +37,11 @@ export const SlackFilterForm = observer(({ filters, produceFiltersUpdate }: Inte
 
   const slackUsers = data?.slack_users ?? [];
 
-  const produceFilterUpdate = (i: number, fn: (filter: Draft<SlackMessageFilter>) => void) =>
+  const produceFilterUpdate = (
+    i: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fn: (filter: Draft<any>) => void
+  ) =>
     produceFiltersUpdate((filters) => {
       const filter = filters[i];
       assert(filter.kind == "notification_slack_message", `invalid filter kind ${filter.kind} at ${i}`);

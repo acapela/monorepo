@@ -13,7 +13,6 @@ select_permissions:
     - created_at
     - id
     - is_mention
-    - is_private_conversation
     - notification_id
     - slack_conversation_id
     - slack_message_ts

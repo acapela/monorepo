@@ -93,3 +93,15 @@ export function isEqualForPick<O1 extends object, O2 extends object, K extends k
 ) {
   return isPlainObjectEqual(pick(obj1, fields), pick(obj2, fields));
 }
+
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
+type Cast<X, Y> = X extends Y ? X : Y;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FromEntries<T> = T extends [infer Key, any][]
+  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { [K in Cast<Key, string>]: Extract<ArrayElement<T>, [K, any]>[1] }
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { [key in string]: any };
+
+export type FromEntriesWithReadOnly<T> = FromEntries<DeepWriteable<T>>;

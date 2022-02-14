@@ -168,7 +168,7 @@ export const createNotificationList = defineAction({
   icon: <IconListOrdered />,
   name: "Create list",
   handler() {
-    const notificationFilter = getDb().notificationFilter.create({ title: "New List", data: {} });
+    const notificationFilter = getDb().notificationList.create({ title: "New List", filters: [] });
     desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
   },
 });
@@ -193,7 +193,7 @@ export const renameNotificationList = defineAction({
           if (!title) {
             return;
           }
-          getDb().notificationFilter.findById(list.id)?.update({ title });
+          getDb().notificationList.findById(list.id)?.update({ title });
         },
       }),
     ],
@@ -217,6 +217,6 @@ export const deleteNotificationList = defineAction({
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     desktopRouter.navigate("list", { listId: allNotificationsList.id });
-    getDb().notificationFilter.removeById(list.id);
+    getDb().notificationList.removeById(list.id);
   },
 });
