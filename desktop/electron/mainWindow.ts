@@ -1,7 +1,7 @@
 import path from "path";
 
 import * as Sentry from "@sentry/electron";
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, Menu, MenuItemConstructorOptions, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action, runInAction } from "mobx";
 
@@ -62,6 +62,8 @@ export function initializeMainWindow() {
     fullscreenable: true,
   });
 
+  addCustomMenu();
+
   mainWindow.focus();
   // mainWindow.webContents.openDevTools();
 
@@ -91,4 +93,29 @@ export function initializeMainWindow() {
   });
 
   return mainWindow;
+}
+
+function addCustomMenu() {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: app.name,
+      submenu: [
+        { role: "about" },
+        { type: "separator" },
+        { role: "hide" },
+        { role: "hideOthers" },
+        { role: "unhide" },
+        { type: "separator" },
+        { role: "quit" },
+      ],
+    },
+
+    {
+      label: "Debug",
+      submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 }
