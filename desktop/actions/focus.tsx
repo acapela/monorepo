@@ -6,8 +6,13 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
+import { ActionContext, ActionContextCallback } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { focusPageView } from "./views/focus";
+
+export function isNotFocusingPreviewAnd(fn: ActionContextCallback<boolean>) {
+  return (ctx: ActionContext) => !uiStore.getIsAnyPreviewFocused() && fn(ctx);
+}
 
 export const exitFocusMode = defineAction({
   name: (ctx) => (ctx.isContextual ? "Exit" : "Go back to list"),
@@ -15,7 +20,7 @@ export const exitFocusMode = defineAction({
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",
-  canApply: () => getIsRouteActive("focus"),
+  canApply: isNotFocusingPreviewAnd(() => getIsRouteActive("focus")),
   handler(context) {
     const notification = context.view(focusPageView)?.notification;
     const { listId } = assertGetActiveRouteParams("focus");
@@ -33,9 +38,8 @@ export const focusOnNotificationPreview = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Focus" : "Focus on notification screen"),
   shortcut: ["Mod", "Enter"],
-  canApply: () => {
-    return getIsRouteActive("focus") && !uiStore.isAnyPreviewFocused;
-  },
+  canApply: isNotFocusingPreviewAnd(() => getIsRouteActive("focus")),
+
   handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -48,9 +52,7 @@ export const goToNextNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Next" : "Go to next notification"),
   shortcut: "ArrowDown",
-  canApply: (context) => {
-    return !!context.view(focusPageView)?.nextNotification;
-  },
+  canApply: isNotFocusingPreviewAnd((context) => !!context.view(focusPageView)?.nextNotification),
   handler(context) {
     const nextNotification = context.view(focusPageView)?.nextNotification;
 
@@ -68,9 +70,7 @@ export const goToPreviousNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Previous" : "Go to previous notification"),
   shortcut: "ArrowUp",
-  canApply: (context) => {
-    return !!context.view(focusPageView)?.prevNotification;
-  },
+  canApply: isNotFocusingPreviewAnd((context) => !!context.view(focusPageView)?.prevNotification),
   handler(context) {
     const previousNotification = context.view(focusPageView)?.prevNotification;
 
