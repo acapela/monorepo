@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
-import { User as SlackUser } from "@slack/web-api/dist/response/UsersInfoResponse";
+import type { User as SlackUser } from "@slack/web-api/dist/response/UsersInfoResponse";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
