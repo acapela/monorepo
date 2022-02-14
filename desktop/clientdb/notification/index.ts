@@ -19,10 +19,7 @@ import {
 } from "@aca/gql";
 import { mobxTickAt } from "@aca/shared/mobx/time";
 
-import { notificationFigmaCommentEntity } from "./figma/comment";
-import { notificationLinearEntity } from "./linear/issue";
-import { notificationNotionEntity } from "./notion/baseNotification";
-import { notificationSlackMessageEntity } from "./slack/message";
+import { innerEntities } from "./inner";
 
 const notificationFragment = gql`
   fragment DesktopNotification on notification {
@@ -43,13 +40,6 @@ type DesktopNotificationConstraints = {
   update: Notification_Set_Input;
   where: Notification_Bool_Exp;
 };
-
-export const innerEntities = [
-  notificationNotionEntity,
-  notificationSlackMessageEntity,
-  notificationFigmaCommentEntity,
-  notificationLinearEntity,
-];
 
 const log = makeLogger("Notification-Events");
 

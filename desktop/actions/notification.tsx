@@ -14,6 +14,7 @@ import { OpenAppUrl, openAppUrl } from "../bridge/apps";
 import { getIntegration } from "../bridge/apps/shared";
 import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
+import { isNotFocusingPreviewAnd } from "./focus";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
@@ -46,9 +47,7 @@ export const openNotificationInApp = defineAction({
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: (ctx) => {
-    return ctx.hasTarget("notification");
-  },
+  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   async handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -64,9 +63,7 @@ export const copyNotificationLink = defineAction({
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
   shortcut: ["Mod", "Shift", "C"],
   keywords: ["url", "share"],
-  canApply: (ctx) => {
-    return ctx.hasTarget("notification");
-  },
+  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -89,7 +86,7 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  canApply: (ctx) => {
+  canApply: isNotFocusingPreviewAnd((ctx) => {
     const notification = ctx.getTarget("notification");
 
     if (notification) {
@@ -103,7 +100,7 @@ export const resolveNotification = defineAction({
     }
 
     return false;
-  },
+  }),
   handler(context) {
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
@@ -137,9 +134,9 @@ export const unresolveNotification = defineAction({
   shortcut: ["Mod", "Shift", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark"],
-  canApply: (ctx) => {
+  canApply: isNotFocusingPreviewAnd((ctx) => {
     return ctx.hasTarget("notification") || ctx.hasTarget("group");
-  },
+  }),
   handler(context) {
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
@@ -160,12 +157,12 @@ export const openFocusMode = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
   shortcut: "Enter",
-  canApply: ({ hasTarget }) => {
+  canApply: isNotFocusingPreviewAnd(({ hasTarget }) => {
     if (getIsRouteActive("focus") || !hasTarget("list", true)) return false;
     if (!hasTarget("notification") && !hasTarget("group")) return false;
 
     return true;
-  },
+  }),
   handler(context) {
     const list = context.assertTarget("list", true);
     const notification = context.getTarget("notification");

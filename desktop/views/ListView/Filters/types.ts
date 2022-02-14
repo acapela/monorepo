@@ -1,5 +1,5 @@
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
-import { innerEntities } from "@aca/desktop/clientdb/notification";
+import { innerEntities } from "@aca/desktop/clientdb/notification/inner";
 
 type FiltersData<T> = {
   [Key in keyof T]?: FilterValue<T[Key]>;

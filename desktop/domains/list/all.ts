@@ -73,17 +73,17 @@ export const getInboxLists = cachedComputed(() => [
   figmaList,
   linearList,
 
-  ...getDb().notificationFilter.all.map((notificationFilter) =>
+  ...getDb().notificationList.all.map((notificationFilter) =>
     defineNotificationsList({
       id: notificationFilter.id,
       name: notificationFilter.title,
       isCustom: true,
       filter: (notification) =>
         !notification.isResolved &&
-        notificationFilter.filters.some(
+        notificationFilter.typedFilters.some(
           (filter) =>
-            filter.kind == notification.inner?.__typename &&
-            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "kind")) as never)
+            filter.__typename == notification.inner?.__typename &&
+            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "__typename")) as never)
         ),
     })
   ),

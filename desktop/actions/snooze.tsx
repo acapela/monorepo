@@ -5,12 +5,14 @@ import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
 
+import { uiStore } from "../store/ui";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 function canApplySnooze(context: ActionContext) {
+  if (uiStore.isAnyPreviewFocused) return false;
   if (context.getTarget("notification")?.canSnooze === true) return true;
   if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
 
