@@ -1,10 +1,12 @@
 import styled from "styled-components";
 
+import { NotificationFilter } from "@aca/desktop/clientdb/list";
+
 import { FilterEditorFigma } from "./FilterEditorFigma";
 import { FilterEditorLinear } from "./FilterEditorLinear";
 import { FilterEditorNotion } from "./FilterEditorNotion";
 import { FilterEditorSlack } from "./FilterEditorSlack";
-import { NotificationFilter, getIsFilterOfType } from "./types";
+import { getIsFilterOfType } from "./types";
 
 interface Props {
   filter: NotificationFilter;

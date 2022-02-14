@@ -1,23 +1,4 @@
-import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
-import { innerEntities } from "@aca/desktop/clientdb/notification/inner";
-
-type FiltersData<T> = {
-  [Key in keyof T]?: FilterValue<T[Key]>;
-};
-
-type FilterValue<T> = T | { $in: T[] } | { $not: T | { $in: T[] } };
-
-type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]>;
-
-type FiltersUnion<U> = U extends infer T
-  ? T extends { __typename: infer TN }
-    ? {
-        __typename: TN;
-      } & FiltersData<Omit<T, "__typename">>
-    : never
-  : never;
-
-export type NotificationFilter = FiltersUnion<NotificationInnerDataUnion>;
+import { NotificationFilter } from "@aca/desktop/clientdb/list";
 
 export type FilterKindName = NotificationFilter["__typename"];
 
