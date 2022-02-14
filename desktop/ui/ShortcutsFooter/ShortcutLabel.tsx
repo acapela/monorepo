@@ -53,7 +53,7 @@ const UIHolder = styled(ActionTrigger)<{ $isEnabled: boolean }>`
 
 const UIName = styled.div`
   ${theme.typo.content.medium};
-  ${theme.common.ellipsisText};
+  white-space: nowrap;
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`
