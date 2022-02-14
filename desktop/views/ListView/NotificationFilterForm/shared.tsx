@@ -1,10 +1,10 @@
 import { Draft } from "immer";
 
-import { InnerNotificationFilter } from "@aca/desktop/clientdb/notification/filter";
+import { NotificationFilter } from "@aca/desktop/clientdb/notification/list";
 
-export type ProduceFiltersUpdate = (fn: (filter: Draft<InnerNotificationFilter[]>) => void) => void;
+export type ProduceFiltersUpdate = (fn: (filter: Draft<NotificationFilter[]>) => void) => void;
 
 export type IntegrationFilterFormProps = {
-  filters: InnerNotificationFilter[];
+  filters: NotificationFilter[];
   produceFiltersUpdate: ProduceFiltersUpdate;
 };

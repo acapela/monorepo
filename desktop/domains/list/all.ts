@@ -82,8 +82,8 @@ export const getInboxLists = cachedComputed(() => [
         !notification.isResolved &&
         notificationFilter.typedFilters.some(
           (filter) =>
-            filter.kind == notification.inner?.__typename &&
-            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "kind")) as never)
+            filter.__typename == notification.inner?.__typename &&
+            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "__typename")) as never)
         ),
     })
   ),

@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { NotificationFilter } from "@aca/desktop/clientdb/notification/list";
 import { SlackUsersQuery } from "@aca/gql";
 import { typedKeys } from "@aca/shared/object";
 import { Button } from "@aca/ui/buttons/Button";
@@ -39,19 +40,18 @@ export const SlackFilterForm = observer(({ filters, produceFiltersUpdate }: Inte
 
   const produceFilterUpdate = (
     i: number,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fn: (filter: Draft<any>) => void
+    fn: (filter: Draft<Extract<NotificationFilter, { __typename: "notification_slack_message" }>>) => void
   ) =>
     produceFiltersUpdate((filters) => {
       const filter = filters[i];
-      assert(filter.kind == "notification_slack_message", `invalid filter kind ${filter.kind} at ${i}`);
+      assert(filter.__typename == "notification_slack_message", `invalid filter kind ${filter.__typename} at ${i}`);
       fn(filter);
     });
 
   return (
     <>
       {filters.map((filter, i) => {
-        if (filter.kind !== "notification_slack_message") {
+        if (filter.__typename !== "notification_slack_message") {
           return null;
         }
         return (
@@ -102,7 +102,7 @@ export const SlackFilterForm = observer(({ filters, produceFiltersUpdate }: Inte
       <Button
         onClick={() =>
           produceFiltersUpdate((filters) => {
-            filters.push({ kind: "notification_slack_message" });
+            filters.push({ __typename: "notification_slack_message" });
           })
         }
       >

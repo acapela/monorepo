@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -14,10 +15,23 @@ import {
   Notification_List_Set_Input,
 } from "@aca/gql";
 
-type WithFilters<T extends { __typename: string }> = { kind: T["__typename"] } & {
-  [Key in keyof Omit<T, "__typename">]?: T[Key] | { $in: T[Key][] } | { $not: T[Key] | { $in: T[Key][] } };
+type FiltersData<T> = {
+  [Key in keyof T]?: FilterValue<T[Key]>;
 };
-export type NotificationFilter = WithFilters<EntityByDefinition<typeof innerEntities[number]>>;
+
+type FilterValue<T> = T | { $in: T[] } | { $not: T | { $in: T[] } };
+
+type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]>;
+
+type FiltersUnion<U> = U extends infer T
+  ? T extends { __typename: infer TN }
+    ? {
+        __typename: TN;
+      } & FiltersData<Omit<T, "__typename">>
+    : never
+  : never;
+
+export type NotificationFilter = FiltersUnion<NotificationInnerDataUnion>;
 
 const notificationFragment = gql`
   fragment NotificationList on notification_list {
