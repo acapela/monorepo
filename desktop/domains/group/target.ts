@@ -42,7 +42,10 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
 
   if (targetNotification.__typename === "notification_slack_message") {
     return {
-      id: targetNotification.slack_conversation_id + "#" + (targetNotification.slack_thread_ts ?? ""),
+      id:
+        targetNotification.slack_conversation_id +
+        "#" +
+        (targetNotification.slack_thread_ts ?? targetNotification.slack_message_ts),
       name: getNotificationTitle(notification),
       integration: "slack",
       integrationTitle: "Slack conversation",
