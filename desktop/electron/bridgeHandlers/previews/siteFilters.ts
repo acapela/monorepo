@@ -9,11 +9,14 @@ const siteFilters: SiteFilter[] = [
     on: (url) => isHostSlack(url),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
     css: `.p-workspace-layout {
-            grid-template-columns: 100% !important;
+            grid-template-columns: 1fr fit-content(40%) !important;
             grid-template-areas: 'p-workspace__primary_view p-workspace__secondary_view' !important;  
           }
           .p-workspace__sidebar {
             display: none !important;
+          }
+          .p-workspace__secondary_view {
+            min-width: 400px !important;
           }
           `,
   },
