@@ -16,7 +16,9 @@ const OPTIONS = {
 };
 
 export const FigmaFilterForm = observer(({ filters, produceFiltersUpdate }: IntegrationFilterFormProps) => {
-  const figmaFilter = findAndMap(filters, (filter) => (filter.kind === "notification_figma_comment" ? filter : None));
+  const figmaFilter = findAndMap(filters, (filter) =>
+    filter.__typename === "notification_figma_comment" ? filter : None
+  );
   const selectedItem: keyof typeof OPTIONS = figmaFilter ? (figmaFilter.is_mention ? "onlyMentions" : "all") : "none";
   return (
     <UIHolder>
@@ -29,15 +31,15 @@ export const FigmaFilterForm = observer(({ filters, produceFiltersUpdate }: Inte
           produceFiltersUpdate((filters) => {
             for (let i = 0; i < filters.length; i++) {
               const filter = filters[i];
-              if (filter.kind === "notification_figma_comment") {
+              if (filter.__typename === "notification_figma_comment") {
                 delete filters[i];
               }
             }
 
             if (selected == "all") {
-              filters.push({ kind: "notification_figma_comment" });
+              filters.push({ __typename: "notification_figma_comment" });
             } else if (selected == "onlyMentions") {
-              filters.push({ kind: "notification_figma_comment", is_mention: true });
+              filters.push({ __typename: "notification_figma_comment", is_mention: true });
             }
           });
         }}

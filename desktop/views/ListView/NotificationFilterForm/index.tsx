@@ -1,11 +1,13 @@
 import produce, { Draft } from "immer";
+import { toJS } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
-import { NotificationFilterEntity } from "@aca/desktop/clientdb/notification/filter";
+import { NotificationListEntity } from "@aca/desktop/clientdb/notification/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { isNotNullish } from "@aca/shared/nullish";
 import { theme } from "@aca/ui/theme";
 
 import { FigmaFilterForm } from "./FigmaFilterForm";
@@ -23,13 +25,13 @@ const IntegrationForms: Partial<Record<IntegrationKey, React.FunctionComponent<I
 };
 
 export const NotificationFilterForm = observer(({ listId }: { listId: string }) => {
-  const notificationFilter = getDb().notificationFilter.assertFindById(listId);
+  const list = getDb().notificationList.assertFindById(listId);
 
   const produceFiltersUpdate: ProduceFiltersUpdate = (
-    fn: (filter: Draft<NotificationFilterEntity["filters"]>) => void
+    fn: (filters: Draft<NotificationListEntity["filters"]>) => void
   ) => {
-    notificationFilter.update({
-      data: produce(notificationFilter.filters, fn),
+    list.update({
+      filters: produce(toJS(list.typedFilters), fn).filter(isNotNullish),
     });
   };
 
@@ -48,7 +50,7 @@ export const NotificationFilterForm = observer(({ listId }: { listId: string }) 
                 <UIIntegrationIcon>{integration.icon}</UIIntegrationIcon>
                 {integration.name}
               </UIIntegrationTitle>
-              <IntegrationForm filters={notificationFilter.filters} produceFiltersUpdate={produceFiltersUpdate} />
+              <IntegrationForm filters={list.typedFilters} produceFiltersUpdate={produceFiltersUpdate} />
             </div>
           );
         })}
