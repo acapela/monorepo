@@ -103,6 +103,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
 const UINotifications = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
