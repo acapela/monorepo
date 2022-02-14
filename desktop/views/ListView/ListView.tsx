@@ -103,17 +103,18 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
 const UINotifications = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
+  margin-top: 24px;
   padding-right: 15px;
   /* Prevents the last notification in the list from hiding under the footer */
-  padding-bottom: 60px;
+  padding-bottom: 48px;
 `;
 
 const UITabsBar = styled.div`
   padding-top: 2px;
-  padding-bottom: 24px;
 `;
 
 const UINotificationZeroHolder = styled.div`
