@@ -1,0 +1,10 @@
+table:
+  name: service
+  schema: public
+is_enum: true
+select_permissions:
+- permission:
+    columns:
+    - value
+    filter: {}
+  role: user

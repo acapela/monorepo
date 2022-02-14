@@ -77,13 +77,13 @@
         "mpim:read",
 
         "users:read",
+        "users:read.email",
 
         "reactions:read",
         "chat:write",
         "im:write",
         "mpim:write",
-        "users.profile:read",
-        "users:read.email"
+        "users.profile:read"
       ]
     }
   },

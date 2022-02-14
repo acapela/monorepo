@@ -2,6 +2,9 @@ table:
   name: notification
   schema: public
 object_relationships:
+- name: actor
+  using:
+    foreign_key_constraint_on: actor_id
 - name: slack_mention
   using:
     manual_configuration:
@@ -18,6 +21,7 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
+    - actor_id
     - created_at
     - from
     - id
@@ -31,6 +35,7 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
+    - actor_id
     - created_at
     - from
     - id
@@ -48,6 +53,7 @@ update_permissions:
 - permission:
     check: null
     columns:
+    - actor_id
     - from
     - resolved_at
     - snoozed_until

@@ -18,6 +18,8 @@
 - "!include public_notification_notion_user_mentioned.yaml"
 - "!include public_notification_slack_message.yaml"
 - "!include public_priority.yaml"
+- "!include public_service.yaml"
+- "!include public_service_user.yaml"
 - "!include public_slack_conversation_type.yaml"
 - "!include public_slack_notification_queue.yaml"
 - "!include public_sync_request.yaml"

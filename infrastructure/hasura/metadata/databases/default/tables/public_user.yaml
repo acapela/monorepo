@@ -6,6 +6,20 @@ object_relationships:
   using:
     foreign_key_constraint_on: current_team_id
 array_relationships:
+- name: accounts
+  using:
+    foreign_key_constraint_on:
+      column: user_id
+      table:
+        name: account
+        schema: public
+- name: caused_notifications
+  using:
+    foreign_key_constraint_on:
+      column: actor_id
+      table:
+        name: notification
+        schema: public
 - name: messages
   using:
     manual_configuration:
@@ -40,6 +54,17 @@ computed_fields:
       name: has_slack_installation
       schema: public
   name: has_slack_installation
+insert_permissions:
+- permission:
+    backend_only: false
+    check: {}
+    columns:
+    - created_at
+    - email
+    - id
+    - name
+    - updated_at
+  role: user
 select_permissions:
 - permission:
     columns:

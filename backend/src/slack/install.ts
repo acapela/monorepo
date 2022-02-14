@@ -18,6 +18,7 @@ const NEW_ACAPELA_USER_SCOPES = [
   "mpim:read",
 
   "users:read",
+  "users:read.email",
 ];
 
 const getRedirectURI = async () =>
