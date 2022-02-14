@@ -56,13 +56,20 @@ export const uiStore = makeAutoObservable({
   get isAppFocused() {
     return applicationStateBridge.get().isFocused;
   },
-  get isAnyPreviewFocused() {
+  get isAnyPreviewFocused(): boolean {
     // If 'client' is directly focused, there is no way some preview is
     if (hasDirectFocus.get()) return false;
 
     // 'client' is not directly focused. Thus if app is focused - it must be some preview
     return uiStore.isAppFocused;
   },
+
+  // This is useful in when we don't want the current value
+  // of `isAnyPreviewFocused` used in closures
+  getIsAnyPreviewFocused() {
+    return this.isAnyPreviewFocused;
+  },
+
   // Main 'client' part is focused
   get hasDirectFocus() {
     return hasDirectFocus.get();
