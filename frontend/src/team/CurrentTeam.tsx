@@ -21,7 +21,7 @@ async function fetchCurrentTeamId(apollo: ApolloClient<unknown>, userId: string)
     },
     fetchPolicy: "no-cache",
     query: gql`
-      query DesktopCurrentTeamInitial($userId: uuid!) {
+      query CurrentTeamInitial($userId: uuid!) {
         user: user_by_pk(id: $userId) {
           current_team {
             id
@@ -47,7 +47,7 @@ async function subscribeToCurrentTeamId(
         userId,
       },
       query: gql`
-        subscription DesktopCurrentTeam($userId: uuid!) {
+        subscription CurrentTeam($userId: uuid!) {
           user: user_by_pk(id: $userId) {
             current_team {
               id
