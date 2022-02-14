@@ -111,6 +111,24 @@ function addCustomMenu() {
     },
 
     {
+      label: "Edit",
+      submenu: [
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+
+        { role: "pasteAndMatchStyle" },
+        { role: "delete" },
+        { role: "selectAll" },
+        { type: "separator" },
+        {
+          label: "Speech",
+          submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+        },
+      ],
+    },
+
+    {
       label: "Debug",
       submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
     },
