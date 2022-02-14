@@ -44,7 +44,7 @@ type DesktopNotificationConstraints = {
   where: Notification_Bool_Exp;
 };
 
-const innerEntities = [
+export const innerEntities = [
   notificationNotionEntity,
   notificationSlackMessageEntity,
   notificationFigmaCommentEntity,
