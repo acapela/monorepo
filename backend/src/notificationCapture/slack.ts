@@ -54,7 +54,7 @@ async function findSlackUserTokenForEvent(eventContextId: string): Promise<strin
         .map((auth) => getUserSlackInstallationFilter({ teamId: auth.team_id, userId: auth.user_id })),
     },
   });
-  return (userSlackInstallation?.data as unknown as SlackInstallation).user.token ?? null;
+  return (userSlackInstallation?.data as unknown as SlackInstallation)?.user.token ?? null;
 }
 
 const createTextPreviewFromSlackMessage = async (
