@@ -104,6 +104,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       resolve() {
         if (notification.resolved_at) return;
         updateSelf({ resolved_at: new Date().toISOString() });
+        connections.markAsSeen();
+      },
+      markAsSeen() {
+        if (notification.first_seen_at) return;
+        updateSelf({ first_seen_at: new Date().toISOString() });
       },
 
       get isSnoozed() {
@@ -130,6 +135,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         if (!connections.canSnooze) return;
 
         updateSelf({ snoozed_until: date.toISOString() });
+        connections.markAsSeen();
       },
     };
 

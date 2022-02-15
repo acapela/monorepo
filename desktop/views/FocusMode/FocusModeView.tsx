@@ -32,7 +32,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
   useEffect(() => {
     if (!notification.first_seen_at) {
-      notification.update({ first_seen_at: new Date().toISOString() });
+      notification.markAsSeen();
     }
   }, [notification]);
 
