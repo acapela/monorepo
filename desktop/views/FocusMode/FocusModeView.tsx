@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { focusOnNotificationPreview } from "@aca/desktop/actions/focus";
@@ -29,6 +29,12 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const notification = db.notification.assertFindById(notificationId);
 
   const list = getInboxListsById(listId);
+
+  useEffect(() => {
+    if (!notification.first_seen_at) {
+      notification.update({ first_seen_at: new Date().toISOString() });
+    }
+  }, [notification]);
 
   return (
     <AppLayout tray={<FocusModeTray />} footer={<FocusModeFooter />}>
