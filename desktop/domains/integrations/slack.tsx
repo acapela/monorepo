@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { autorun } from "mobx";
+import { autorun, computed } from "mobx";
 import React from "react";
 
 import { trackEvent } from "@aca/desktop/analytics";
@@ -28,6 +28,9 @@ export const slackIntegrationClient: IntegrationClient = {
   icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
 
   additionalSettings: <SlackSettings />,
+  get isReady() {
+    return computed(() => accountStore.user !== null);
+  },
   getIsConnected: () => {
     return getIsConnected();
   },
