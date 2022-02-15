@@ -14,8 +14,13 @@ import {
   IconArrowRight,
   IconArrowTop,
   IconEdit,
+  IconEdit2,
+  IconEdit3,
+  IconFolderPlus,
   IconListOrdered,
   IconPenTool,
+  IconSlidersHoriz,
+  IconStarSlash,
   IconTrash,
 } from "@aca/ui/icons";
 
@@ -31,6 +36,67 @@ export const currentListActionsGroup = defineGroup({
     if (list) return `List - ${list.name}`;
 
     return "List";
+  },
+});
+
+const canApplyCustomListAction = (ctx: ActionContext) => Boolean(ctx.view(listPageView)?.list.isCustom);
+
+export const renameNotificationList = defineAction({
+  icon: <IconEdit2 />,
+  name: "Rename list",
+  keywords: ["change", "name", "title"],
+  group: currentListActionsGroup,
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  canApply: canApplyCustomListAction,
+  handler: () => ({
+    searchPlaceholder: "List name...",
+    getActions: () => [
+      defineAction({
+        name: (ctx) =>
+          `Rename list "${ctx.view(listPageView)?.list.name}"` +
+          (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+        handler(ctx) {
+          const { list } = ctx.assertView(listPageView);
+          const title = ctx.searchKeyword.trim();
+          if (!title) {
+            return;
+          }
+          getDb().notificationList.findById(list.id)?.update({ title });
+        },
+      }),
+    ],
+  }),
+});
+
+export const editNotificationList = defineAction({
+  icon: <IconSlidersHoriz />,
+  group: currentListActionsGroup,
+
+  name: "Edit list filters",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  keywords: ["filters"],
+  canApply: canApplyCustomListAction,
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
+  },
+});
+
+export const deleteNotificationList = defineAction({
+  icon: <IconTrash />,
+  group: currentListActionsGroup,
+
+  name: (ctx) => "Delete list",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  keywords: ["remove", "trash"],
+  canApply: canApplyCustomListAction,
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: allNotificationsList.id });
+    getDb().notificationList.removeById(list.id);
   },
 });
 
@@ -165,58 +231,23 @@ export const toggleNotificationsGroup = defineAction({
 });
 
 export const createNotificationList = defineAction({
-  icon: <IconListOrdered />,
-  name: "Create list",
-  handler() {
-    const notificationFilter = getDb().notificationList.create({ title: "New List", filters: [] });
-    desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
-  },
-});
-
-const canApplyCustomListAction = (ctx: ActionContext) => Boolean(ctx.view(listPageView)?.list.isCustom);
-
-export const renameNotificationList = defineAction({
-  icon: <IconPenTool />,
-  name: (ctx) => `Rename list "${ctx.view(listPageView)?.list.name}"`,
-  keywords: (ctx) => [ctx.searchKeyword],
-  canApply: canApplyCustomListAction,
+  icon: <IconFolderPlus />,
+  name: "Create new notifications list",
+  keywords: ["new list", "bucket", "add"],
   handler: () => ({
-    searchPlaceholder: "New name",
+    searchPlaceholder: "New list name...",
     getActions: () => [
       defineAction({
-        name: (ctx) =>
-          `Rename list "${ctx.view(listPageView)?.list.name}"` +
-          (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+        name: (ctx) => `Create list "${ctx.searchKeyword}"`,
         handler(ctx) {
-          const { list } = ctx.assertView(listPageView);
           const title = ctx.searchKeyword.trim();
           if (!title) {
-            return;
+            return false;
           }
-          getDb().notificationList.findById(list.id)?.update({ title });
+          const notificationFilter = getDb().notificationList.create({ title, filters: [] });
+          desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
         },
       }),
     ],
   }),
-});
-
-export const editNotificationList = defineAction({
-  icon: <IconEdit />,
-  name: (ctx) => `Edit list "${ctx.view(listPageView)?.list.name}"`,
-  canApply: canApplyCustomListAction,
-  handler(ctx) {
-    const { list } = ctx.assertView(listPageView);
-    desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
-  },
-});
-
-export const deleteNotificationList = defineAction({
-  icon: <IconTrash />,
-  name: (ctx) => `Delete list "${ctx.view(listPageView)?.list.name}"`,
-  canApply: canApplyCustomListAction,
-  handler(ctx) {
-    const { list } = ctx.assertView(listPageView);
-    desktopRouter.navigate("list", { listId: allNotificationsList.id });
-    getDb().notificationList.removeById(list.id);
-  },
 });

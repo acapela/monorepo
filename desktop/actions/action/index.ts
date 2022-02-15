@@ -15,7 +15,7 @@ type ChildActionsResult = {
   getActions: (context: ActionContext) => ActionData[];
 };
 
-export type ActionResult = MaybePromise<ChildActionsResult>;
+export type ActionResult = MaybePromise<ChildActionsResult | false>;
 
 export interface ActionCreateInput {
   id?: string;

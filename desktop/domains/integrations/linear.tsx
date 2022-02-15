@@ -11,6 +11,7 @@ const linearURL = "https://linear.app";
 
 export const linearIntegrationClient: IntegrationClient = {
   kind: "integration",
+  notificationTypename: "notification_linear",
   name: "Linear",
   description: "New issues, task assignments and comments.",
   getIsConnected: () => !!linearAuthTokenBridgeValue.get(),

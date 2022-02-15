@@ -5,6 +5,7 @@ import { theme } from "@aca/ui/theme";
 
 import { MultipleOptionsDropdown } from "./multiple";
 import { OptionLabel } from "./OptionLabel";
+import { SelectedOptionPreview } from "./SelectedOptionPreview";
 
 interface Props<I> {
   name?: string;
@@ -57,7 +58,7 @@ export function SingleOptionDropdown<I>({
           return <UIBody>{placeholder}</UIBody>;
         }
 
-        return <OptionLabel label={labelGetter(item)} icon={iconGetter?.(item)} />;
+        return <SelectedOptionPreview label={labelGetter(item)} icon={iconGetter?.(item)} />;
       }}
     />
   );

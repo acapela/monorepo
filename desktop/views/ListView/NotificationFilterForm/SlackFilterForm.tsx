@@ -1,13 +1,12 @@
 import assert from "assert";
 
-import { gql, useQuery } from "@apollo/client";
 import { Draft } from "immer";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/notification/list";
-import { SlackUsersQuery } from "@aca/gql";
+import { useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
 import { typedKeys } from "@aca/shared/object";
 import { Button } from "@aca/ui/buttons/Button";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
@@ -23,20 +22,7 @@ const OPTIONS = {
 };
 
 export const SlackFilterForm = observer(({ filters, produceFiltersUpdate }: IntegrationFilterFormProps) => {
-  const { data } = useQuery<SlackUsersQuery>(
-    gql`
-      query SlackUsers {
-        slack_users {
-          id
-          display_name
-          real_name
-          avatar_url
-        }
-      }
-    `
-  );
-
-  const slackUsers = data?.slack_users ?? [];
+  const slackUsers = useSlackUsers();
 
   const produceFilterUpdate = (
     i: number,

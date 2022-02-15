@@ -49,9 +49,10 @@ export function MultipleOptionsDropdown<I>({
   selectedItemsPreviewRenderer,
   icon,
   isDisabled,
+  placeholder,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
-  const [isOpen, { unset: close, toggle }] = useBoolean(false);
+  const [isOpen, { unset: close, set: open }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
 
   const hasSelection = selectedKeys.length > 0;
@@ -81,63 +82,66 @@ export function MultipleOptionsDropdown<I>({
     onChange?.(newSelectedItems);
   }
 
-  const { width: menuOpenerWidth } = useBoundingBox(openerRef);
-
   return (
-    <FieldWithLabel
-      isDisabled={isDisabled}
-      ref={openerRef}
-      label={name}
-      onClick={toggle}
-      pushLabel={hasSelection}
-      icon={icon}
-      indicateDropdown
-      cursorType="action"
-    >
-      <UIHolder>
-        <UIMenuOpener>
-          <UISelectedItemsPreview>
-            {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
-            {!selectedItemsPreviewRenderer &&
-              selectedItems.map((selectedItem) => {
-                const key = keyGetter(selectedItem);
-                const label = labelGetter(selectedItem);
-                return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
-              })}
-          </UISelectedItemsPreview>
-        </UIMenuOpener>
-        <AnimatePresence>
-          {isOpen && (
-            <Popover anchorRef={openerRef} placement="bottom-start">
-              <UIDropdownHolder role="listbox" style={{ width: `${menuOpenerWidth}px` }}>
-                <ItemsDropdown
-                  items={items}
-                  keyGetter={keyGetter}
-                  labelGetter={labelGetter}
-                  onItemSelected={handleItemPicked}
-                  selectedItems={selectedItems}
-                  onCloseRequest={close}
-                  iconGetter={iconGetter}
-                  shouldScrollSelectedIntoView={true}
-                  additionalContent={
-                    newItem && (
-                      <DropdownItem
-                        icon={<IconPlus />}
-                        label={newItem.label}
-                        onClick={() => {
-                          close();
-                          newItem.onCreateRequest();
-                        }}
-                      />
-                    )
-                  }
-                />
-              </UIDropdownHolder>
-            </Popover>
-          )}
-        </AnimatePresence>
-      </UIHolder>
-    </FieldWithLabel>
+    <>
+      <FieldWithLabel
+        isDisabled={isDisabled}
+        label={name}
+        onClick={open}
+        pushLabel={hasSelection}
+        icon={icon}
+        indicateDropdown
+        cursorType="action"
+        ref={openerRef}
+      >
+        <UIHolder>
+          <UIMenuOpener>
+            <UISelectedItemsPreview>
+              {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
+              {!selectedItemsPreviewRenderer &&
+                selectedItems.map((selectedItem) => {
+                  const key = keyGetter(selectedItem);
+                  const label = labelGetter(selectedItem);
+                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
+                })}
+
+              {!selectedItems.length && <SelectedOptionPreview label={placeholder ?? "Select..."} />}
+            </UISelectedItemsPreview>
+          </UIMenuOpener>
+        </UIHolder>
+      </FieldWithLabel>
+      <AnimatePresence>
+        {isOpen && (
+          <Popover anchorRef={openerRef} placement="bottom-start" onCloseRequest={close} enableScreenCover>
+            <UIDropdownHolder role="listbox">
+              <ItemsDropdown
+                items={items}
+                keyGetter={keyGetter}
+                labelGetter={labelGetter}
+                onItemSelected={handleItemPicked}
+                selectedItems={selectedItems}
+                onCloseRequest={() => {
+                  close();
+                }}
+                iconGetter={iconGetter}
+                additionalContent={
+                  newItem && (
+                    <DropdownItem
+                      icon={<IconPlus />}
+                      label={newItem.label}
+                      onClick={() => {
+                        close();
+                        newItem.onCreateRequest();
+                      }}
+                    />
+                  )
+                }
+              />
+            </UIDropdownHolder>
+          </Popover>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -150,7 +154,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIMenuOpener = styled.div<{}>`
-  padding: 12px 0;
+  min-height: 42px;
   display: flex;
 `;
 
@@ -163,4 +167,6 @@ const UISelectedItemsPreview = styled.div<{}>`
   flex-wrap: wrap;
   justify-content: flex-start;
   grid-gap: 8px;
+  flex-direction: column;
+  padding: 8px 0;
 `;

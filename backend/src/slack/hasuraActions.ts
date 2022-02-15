@@ -57,6 +57,7 @@ export const slackUsers: ActionHandler<void, SlackUser[]> = {
     const { members, error } = await slackClient.users.list({
       token: (userSlackInstallation?.data as unknown as SlackInstallation).user.token,
     });
+
     if (error) {
       Sentry.captureException(error);
       throw new Error("Error while fetching slack users");

@@ -1,4 +1,4 @@
-import { autorun, makeAutoObservable, observable } from "mobx";
+import { action, autorun, makeAutoObservable, observable, runInAction } from "mobx";
 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
@@ -19,13 +19,19 @@ import { createWindowEvent } from "@aca/shared/domEvents";
 
 const hasDirectFocus = observable.box(true);
 
-createWindowEvent("focus", () => {
-  hasDirectFocus.set(true);
-});
+createWindowEvent(
+  "focus",
+  action(() => {
+    hasDirectFocus.set(true);
+  })
+);
 
-createWindowEvent("blur", () => {
-  hasDirectFocus.set(false);
-});
+createWindowEvent(
+  "blur",
+  action(() => {
+    hasDirectFocus.set(false);
+  })
+);
 
 /**
  * Store holding global state of the UI
@@ -102,7 +108,9 @@ autorun(() => {
     const isInDarkMode = persistedSettings.get().isDarkMode;
 
     if (typeof isInDarkMode !== "undefined") {
-      uiStore.isInDarkMode = isInDarkMode;
+      runInAction(() => {
+        uiStore.isInDarkMode = isInDarkMode;
+      });
     }
   }
 });

@@ -1,4 +1,5 @@
 import { entries } from "lodash";
+import { isPrimitive } from "utility-types";
 
 export type FiltersData<T> = {
   [Key in keyof T]?: FilterValue<T[Key]>;
@@ -22,7 +23,15 @@ export function getIsItemMatchingAnyOfFilters<T extends object>(item: T, filters
   return filters.some((filter) => getIsItemMatchingFilters(item, filter));
 }
 
-function getIsValueMatchingFilter<T>(value: T, filter: FilterValue<T>) {
+export function getIsValueMatchingFilter<T>(filter: FilterValue<T>, value: T) {
+  if (!filter) {
+    return filter === value;
+  }
+
+  if (isPrimitive(filter)) {
+    return filter === value;
+  }
+
   if ("$in" in filter) {
     return filter.$in.includes(value);
   }

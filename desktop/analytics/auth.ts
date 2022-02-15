@@ -19,7 +19,7 @@ export function watchForUserAuthorized(callback: (user: UserEntity) => void) {
       return;
     }
 
-    const diffInSecondsSinceAuthChange = differenceInSeconds(new Date(), authStateChangeDate);
+    const diffInSecondsSinceAuthChange = differenceInSeconds(new Date(), new Date(authStateChangeDate));
 
     log({ diffInSecondsSinceAuthChange });
     if (diffInSecondsSinceAuthChange > 5) {

@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
+import { createNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { getInboxLists, getInboxListsById, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/all";
@@ -9,10 +10,12 @@ import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/No
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
+import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
+import { ListFilters } from "./Filters";
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationFilterForm } from "./NotificationFilterForm";
@@ -48,6 +51,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
+      <ListFilters />
 
       {isInCelebrationMode ? (
         <UINotificationZeroHolder>
@@ -57,7 +61,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
         <HStack style={{ height: "100%" }}>
           {isEditing && <NotificationFilterForm listId={listId} />}
 
-          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications />}
+          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
           {displayedList && notificationGroups && notificationGroups.length > 0 && (
             <>
@@ -115,6 +119,7 @@ const UINotifications = styled.div`
 
 const UITabsBar = styled.div`
   padding-top: 2px;
+  margin-bottom: 24px;
 `;
 
 const UINotificationZeroHolder = styled.div`

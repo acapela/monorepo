@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
@@ -42,14 +43,14 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
 
   useUserFocusedOnElement(
     elementRef,
-    () => {
+    action(() => {
       uiStore.focusedTarget = notification;
-    },
-    () => {
+    }),
+    action(() => {
       if (isFocused) {
         uiStore.focusedTarget = null;
       }
-    }
+    })
   );
 
   return (

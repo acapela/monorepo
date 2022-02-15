@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { makeAutoObservable } from "mobx";
+import { action, makeAutoObservable, runInAction } from "mobx";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { assert } from "@aca/shared/assert";
@@ -44,13 +44,18 @@ export const authStore = makeAutoObservable({
 autorunEffect(() => {
   const { userTokenData } = authStore;
 
-  authStore.teamId = null;
+  runInAction(() => {
+    authStore.teamId = null;
+  });
 
   if (!userTokenData) {
     return;
   }
 
-  return watchUserTeamId(userTokenData.id, (teamId) => {
-    authStore.teamId = teamId;
-  });
+  return watchUserTeamId(
+    userTokenData.id,
+    action((teamId) => {
+      authStore.teamId = teamId;
+    })
+  );
 });

@@ -3,16 +3,12 @@ import { runInAction } from "mobx";
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { trackEvent } from "@aca/desktop/analytics";
-import { devAssignWindowVariable } from "@aca/shared/dev";
-
-import { createCommandMenuSession } from "./commandMenu/session";
-import { commandMenuStore } from "./commandMenu/store";
 
 export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
   const { analyticsEvent } = resolveActionData(action, context);
 
   if (!action.canApply(context)) {
-    return;
+    return false;
   }
 
   try {
@@ -25,23 +21,7 @@ export async function runAction(action: ActionData, context: ActionContext = cre
       trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
     }
 
-    if (!actionResult) {
-      return;
-    }
-
-    context.searchKeyword = "";
-
-    devAssignWindowVariable("ctx", context);
-
-    commandMenuStore.session = createCommandMenuSession({
-      actionContext: createActionContext(context.forcedTarget, {
-        isContextual: actionResult.isContextual ?? context.isContextual,
-        searchPlaceholder: actionResult.searchPlaceholder,
-      }),
-      getActions(context) {
-        return actionResult.getActions(context);
-      },
-    });
+    return actionResult;
   } catch (error) {
     /**
      * In case action throws an error, provide every detail we have.
@@ -51,6 +31,8 @@ export async function runAction(action: ActionData, context: ActionContext = cre
      */
     console.error(`Error occured when running action. Logging action, context and error below`, action, context);
     console.error(error);
+
+    return false;
   }
 }
 

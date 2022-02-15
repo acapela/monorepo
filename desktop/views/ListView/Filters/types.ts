@@ -1,8 +1,15 @@
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
+import { FunctionUpdater } from "@aca/shared/updateValue";
 
 export type FilterKindName = NotificationFilter["__typename"];
 
 export type NotificationFilterKind<K extends FilterKindName> = NotificationFilter & { __typename: K };
+
+export interface NotificationFilterOption<F extends NotificationFilter> {
+  label: string;
+  updater: FunctionUpdater<F>;
+  isActive: (filter: F) => boolean;
+}
 
 export function narrowFilterType<T extends FilterKindName>(
   filter: NotificationFilter,
