@@ -14,6 +14,7 @@ export type {
   topic_event as TopicEvent,
   topic_member as TopicMember,
   user as User,
+  user_slack_installation as UserSlackInstallation,
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
