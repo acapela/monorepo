@@ -93,7 +93,7 @@ export const goToNextList = defineAction({
     return getIsRouteActive("list");
   },
   icon: <IconArrowRight />,
-  supplementaryLabel: (context) => context.assertView(listPageView).nextList?.name,
+  supplementaryLabel: (context) => context.view(listPageView)?.nextList?.name,
   shortcut: ["Tab"],
   handler(context) {
     const nextList = context.assertView(listPageView).nextList;
@@ -111,7 +111,7 @@ export const goToPreviousList = defineAction({
   canApply: () => {
     return getIsRouteActive("list");
   },
-  supplementaryLabel: (context) => context.assertView(listPageView).prevList?.name,
+  supplementaryLabel: (context) => context.view(listPageView)?.prevList?.name,
   shortcut: ["Shift", "Tab"],
   handler(context) {
     const prevList = context.assertView(listPageView).prevList;
