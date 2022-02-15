@@ -3,8 +3,9 @@ import { omit } from "lodash";
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { integrationClients } from "@aca/desktop/domains/integrations";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-import { isEqualForPick } from "@aca/shared/object";
+import { isEqualForPick, typedKeys } from "@aca/shared/object";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 
@@ -54,6 +55,8 @@ export const linearList = defineNotificationsList({
   },
 });
 
+const integrationLists = { slack: slackList, notion: notionList, figma: figmaList, linear: linearList };
+
 export const resolvedList = defineNotificationsList({
   id: "resolved",
   name: "Resolved",
@@ -66,14 +69,12 @@ export const snoozedList = defineNotificationsList({
   filter: (notification) => notification.isSnoozed,
 });
 
-export const getInboxLists = cachedComputed(() => [
-  allNotificationsList,
-  slackList,
-  notionList,
-  figmaList,
-  linearList,
+export const getInboxLists = cachedComputed(() => {
+  const availableIntegrationLists = typedKeys(integrationLists)
+    .filter((key) => integrationClients[key].getIsConnected())
+    .map((key) => integrationLists[key]);
 
-  ...getDb().notificationList.all.map((notificationFilter) =>
+  const customLists = getDb().notificationList.all.map((notificationFilter) =>
     defineNotificationsList({
       id: notificationFilter.id,
       name: notificationFilter.title,
@@ -86,8 +87,10 @@ export const getInboxLists = cachedComputed(() => [
             isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "__typename")) as never)
         ),
     })
-  ),
-]);
+  );
+
+  return [allNotificationsList, ...availableIntegrationLists, ...customLists];
+});
 
 export const outOfInboxLists = [snoozedList, resolvedList];
 
