@@ -7,14 +7,15 @@ import { integrationClients } from "../domains/integrations";
 /**
  * Store responsible for keeping information about current onboarding.
  */
+const clients = Object.values(integrationClients);
 
 export const onboardingStore = makeAutoObservable({
   get isReady() {
-    return authTokenBridgeValue.observables.isReady;
+    return authTokenBridgeValue.observables.isReady && clients.every((client) => client.isReady.get());
   },
 
-  get hasLinkedApps(): boolean {
-    return Object.values(integrationClients).some((ic) => ic.getIsConnected());
+  get hasLinkedApps() {
+    return clients.some((ic) => ic.getIsConnected());
   },
 
   onboardingStatus: "unknown" as "unknown" | "ongoing" | "complete",

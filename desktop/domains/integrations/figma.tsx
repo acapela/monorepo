@@ -13,6 +13,7 @@ export const figmaIntegrationClient: IntegrationClient = {
   kind: "integration",
   name: "Figma",
   description: "Get important updates and comments",
+  isReady: figmaAuthTokenBridgeValue.observables.isReady,
   getIsConnected: () => !!figmaAuthTokenBridgeValue.get(),
   disconnect: async () => {
     figmaAuthTokenBridgeValue.reset();
