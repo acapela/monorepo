@@ -13,7 +13,7 @@ interface Props {
   onChange: (filter: FigmaFilter) => void;
 }
 
-const notificationOptions: NotificationFilterOption<FigmaFilter>[] = [
+export const figmaNotificationOptions: NotificationFilterOption<FigmaFilter>[] = [
   {
     label: "Comments and Mentions",
     updater: (filter) => {
@@ -33,10 +33,10 @@ export function FilterEditorFigma({ filter, onChange }: Props) {
     <UIHolder>
       <SettingRow title="Notification type">
         <SingleOptionDropdown<NotificationFilterOption<FigmaFilter>>
-          items={notificationOptions}
+          items={figmaNotificationOptions}
           keyGetter={(option) => option.label}
           labelGetter={(option) => option.label}
-          selectedItem={notificationOptions.find((option) => option.isActive(filter))}
+          selectedItem={figmaNotificationOptions.find((option) => option.isActive(filter))}
           onChange={(option) => {
             onChange(updateValue(filter, option.updater));
           }}

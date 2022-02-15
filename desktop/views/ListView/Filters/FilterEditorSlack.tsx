@@ -18,7 +18,7 @@ interface Props {
   onChange: (filter: SlackFilter) => void;
 }
 
-const notificationOptions: NotificationFilterOption<SlackFilter>[] = [
+export const slackNotificationTypeOptions: NotificationFilterOption<SlackFilter>[] = [
   {
     label: "All messages",
     updater: (filter) => {
@@ -30,11 +30,6 @@ const notificationOptions: NotificationFilterOption<SlackFilter>[] = [
     label: "Only mentions",
     updater: (filter) => (filter.is_mention = true),
     isActive: (filter) => filter.is_mention === true,
-  },
-  {
-    label: "All messages except mentions",
-    updater: (filter) => (filter.is_mention = false),
-    isActive: (filter) => filter.is_mention === false,
   },
 ];
 
@@ -49,10 +44,10 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
     <UIHolder>
       <SettingRow title="Message type">
         <SingleOptionDropdown<NotificationFilterOption<SlackFilter>>
-          items={notificationOptions}
+          items={slackNotificationTypeOptions}
           keyGetter={(option) => option.label}
           labelGetter={(option) => option.label}
-          selectedItem={notificationOptions.find((option) => option.isActive(filter))}
+          selectedItem={slackNotificationTypeOptions.find((option) => option.isActive(filter))}
           onChange={(option) => {
             onChange(updateValue(filter, option.updater));
           }}
@@ -70,6 +65,11 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
           onChange={(users) => {
             onChange(
               updateValue(filter, (filter) => {
+                if (users.length === 0) {
+                  delete filter.slack_user_id;
+                  return;
+                }
+
                 filter.slack_user_id = { $in: users.map((u) => u.id) };
               })
             );

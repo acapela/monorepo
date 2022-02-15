@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
@@ -18,7 +19,7 @@ import { FiltersData, getIsItemMatchingFilters } from "@aca/shared/filters";
 
 import { NotificationEntity, notificationEntity } from "./notification";
 
-type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]>;
+type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]> & { id: string };
 
 type FiltersUnion<U> = U extends infer T
   ? T extends { __typename: infer TN }
@@ -57,6 +58,9 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     user_id: getContextValue(userIdContext) ?? undefined,
     ...getGenericDefaultData(),
   }),
+  customObservableAnnotations: {
+    filters: observable.ref,
+  },
   sync: createHasuraSyncSetupFromFragment<NotificationListFragment, NotificationListConstraints>(notificationFragment, {
     insertColumns: ["id", "created_at", "updated_at", "user_id", "title", "filters"],
     updateColumns: ["updated_at", "title", "filters"],
@@ -95,7 +99,9 @@ const getIsNotificationPassingFilter = cachedComputed(
     const notificationInner = notification.inner;
     if (!notificationInner) return false;
 
-    return getIsItemMatchingFilters(notificationInner, filter);
+    const { id, ...actualFilter } = filter;
+
+    return getIsItemMatchingFilters(notificationInner, actualFilter);
   }
 );
 

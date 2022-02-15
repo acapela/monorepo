@@ -38,6 +38,7 @@ const UIHolder = styled(ActionTrigger)`
   gap: 8px;
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
+  ${theme.common.ellipsisText}
   position: relative;
 `;
 

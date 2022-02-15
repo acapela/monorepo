@@ -51,7 +51,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      <ListFilters />
+      {displayedList?.isCustom && <ListFilters listId={listId} />}
 
       {isInCelebrationMode ? (
         <UINotificationZeroHolder>

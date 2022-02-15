@@ -76,7 +76,7 @@ export const getInboxLists = cachedComputed(() => [
       name: notificationFilter.title,
       isCustom: true,
       getNotifications() {
-        return notificationFilter.notifications.all;
+        return notificationFilter.notifications.query({ isResolved: false }).all;
       },
     })
   ),
