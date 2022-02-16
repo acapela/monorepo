@@ -16,7 +16,6 @@ const userFragment = gql`
     name
     email
     avatar_url
-    has_slack_installation
     is_slack_auto_resolve_enabled
     updated_at
     created_at

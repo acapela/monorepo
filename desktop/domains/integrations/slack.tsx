@@ -5,7 +5,7 @@ import React from "react";
 import { trackEvent } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { clearServiceCookiesBridge, connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
@@ -16,7 +16,7 @@ import { IntegrationClient } from "./types";
 
 const getIsConnected = () => {
   const user = accountStore.user;
-  return Boolean(user && user.has_slack_installation);
+  return Boolean(user && user.slackInstallation);
 };
 
 const SLACK_URL_SCHEME = "slack://";
@@ -82,6 +82,12 @@ export const slackIntegrationClient: IntegrationClient = {
         }
       });
     });
+  },
+  async disconnect() {
+    if (getIsConnected()) {
+      await clearServiceCookiesBridge({ url: "https://slack.com" });
+      accountStore.user?.slackInstallation?.remove();
+    }
   },
 };
 

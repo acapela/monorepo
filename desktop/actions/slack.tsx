@@ -26,7 +26,7 @@ export const toggleSlackAutoResolve = defineAction({
   name: () => (getIsAutoResolveEnabled() ? "Disable Slack Auto Resolve" : "Enable Slack Auto Resolve"),
   group: accountActionsGroup,
   icon: () => (getIsAutoResolveEnabled() ? <IconToggleOn /> : <IconToggleOff />),
-  canApply: () => Boolean(accountStore.user?.has_slack_installation),
+  canApply: () => Boolean(accountStore.user?.slackInstallation),
   handler() {
     const user = assertDefined(accountStore.user, "missing user");
     user.update({ is_slack_auto_resolve_enabled: !user.is_slack_auto_resolve_enabled });
