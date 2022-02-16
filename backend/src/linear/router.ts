@@ -101,11 +101,10 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
 
 async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook) {
   const linearClient = getRandomLinearClient(usersForOrg);
-  const creator = await linearClient.user(payload.data.creatorId);
+  const { creatorId } = payload.data;
+  const creator = await linearClient.user(creatorId);
   const notificationPromises = usersForOrg
-    .filter(
-      (u) => u.linear_user_id !== payload.data.creatorId && payload.data.subscriberIds.includes(u.linear_user_id || "")
-    )
+    .filter((u) => u.linear_user_id !== creatorId && payload.data.subscriberIds.includes(u.linear_user_id || ""))
     .map((u) =>
       db.notification_linear.create({
         data: {
@@ -116,6 +115,7 @@ async function saveIssue(usersForOrg: LinearOauthToken[], payload: IssueWebhook)
               from: creator.name,
             },
           },
+          creator_id: creatorId,
           type: payload.type,
           issue_id: payload.data.id,
           issue_title: payload.data.title,
