@@ -44,9 +44,9 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
   keys: getFragmentKeys<TeamMemberFragment>(teamMemberFragment),
   getDefaultValues: () => ({
     __typename: "team_member",
-    timezone: undefined,
-    work_start_hour_in_utc: undefined,
-    work_end_hour_in_utc: undefined,
+    timezone: null,
+    work_start_hour_in_utc: null,
+    work_end_hour_in_utc: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TeamMemberFragment, TeamMemberConstraints>(teamMemberFragment, {

@@ -55,7 +55,8 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
   keys: getFragmentKeys<NotificationListFragment>(notificationFragment),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification_list",
-    user_id: getContextValue(userIdContext) ?? undefined,
+    user_id: getContextValue(userIdContext) ?? null,
+    filters: [],
     ...getGenericDefaultData(),
   }),
   customObservableAnnotations: {

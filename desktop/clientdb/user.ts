@@ -35,6 +35,8 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   keys: getFragmentKeys<DesktopUserFragment>(userFragment),
   getDefaultValues: () => ({
     __typename: "user",
+    has_slack_installation: null,
+    avatar_url: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {

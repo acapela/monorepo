@@ -50,6 +50,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   keys: getFragmentKeys<NotificationNotionFragment>(notificationNotion),
   getDefaultValues: () => ({
     __typename: "notification_notion",
+    space_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationNotionFragment, NotificationNotionConstraints>(
