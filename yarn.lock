@@ -114,7 +114,6 @@ __metadata:
     node-cleanup: ^2.1.2
     node-fetch: ^2.6.7
     parcel: ^2.2.1
-    protocol-registry: ^1.3.13
     react-chicane: ^0.6.1
     ts-node: ^10.4.0
     url-pattern: ^1.0.3
@@ -2859,22 +2858,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hoek@npm:^9.0.0":
-  version: 9.2.1
-  resolution: "@hapi/hoek@npm:9.2.1"
-  checksum: 6a439f672df5f12f1d08d56967b4cb364ce05d81e95e3c3c1b88c5a98b917ca91c70e78cc0b2b4219a760cceec1f22d6658bfc93a83670cecc1ce9ca2247ebd8
-  languageName: node
-  linkType: hard
-
-"@hapi/topo@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "@hapi/topo@npm:5.1.0"
-  dependencies:
-    "@hapi/hoek": ^9.0.0
-  checksum: 604dfd5dde76d5c334bd03f9001fce69c7ce529883acf92da96f4fe7e51221bf5e5110e964caca287a6a616ba027c071748ab636ff178ad750547fba611d6014
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.9.2":
   version: 0.9.2
   resolution: "@humanwhocodes/config-array@npm:0.9.2"
@@ -5037,29 +5020,6 @@ __metadata:
   dependencies:
     "@sentry/cli": ^1.72.0
   checksum: 753e0ba4dc0e4e27f62424819f32c143658c5fc4bdd5ca7a5c8f436c2ba210f5148b540fe750356f6866c9388a355e5fb6da0e61143f7cfcb74df4e3471d2336
-  languageName: node
-  linkType: hard
-
-"@sideway/address@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "@sideway/address@npm:4.1.3"
-  dependencies:
-    "@hapi/hoek": ^9.0.0
-  checksum: 3c1faf6ef37a0b59b62ce42b59c012c00ef1fc4194ad6776c65c2f9a6dd6c1710c6f6362b3ca3fa582fdb93984f0cb64ca44f9f5e02940634805f5e561279c22
-  languageName: node
-  linkType: hard
-
-"@sideway/formula@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@sideway/formula@npm:3.0.0"
-  checksum: 8ae26a0ed6bc84f7310be6aae6eb9d81e97f382619fc69025d346871a707eaab0fa38b8c857e3f0c35a19923de129f42d35c50b8010c928d64aab41578580ec4
-  languageName: node
-  linkType: hard
-
-"@sideway/pinpoint@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@sideway/pinpoint@npm:2.0.0"
-  checksum: 0f4491e5897fcf5bf02c46f5c359c56a314e90ba243f42f0c100437935daa2488f20482f0f77186bd6bf43345095a95d8143ecf8b1f4d876a7bc0806aba9c3d2
   languageName: node
   linkType: hard
 
@@ -16038,19 +15998,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"joi@npm:^17.4.0":
-  version: 17.6.0
-  resolution: "joi@npm:17.6.0"
-  dependencies:
-    "@hapi/hoek": ^9.0.0
-    "@hapi/topo": ^5.0.0
-    "@sideway/address": ^4.1.3
-    "@sideway/formula": ^3.0.0
-    "@sideway/pinpoint": ^2.0.0
-  checksum: eaf62f6c02f2edb1042f1ab04fc23a5918a2cb8f54bec84c6e1033624d8a462c10ae9518af55a3ba84f1793960450d58094eda308e7ef93c17edd4e3c8ef31d5
-  languageName: node
-  linkType: hard
-
 "join-component@npm:^1.1.0":
   version: 1.1.0
   resolution: "join-component@npm:1.1.0"
@@ -19414,7 +19361,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"plist@npm:^3.0.1, plist@npm:^3.0.2, plist@npm:^3.0.4":
+"plist@npm:^3.0.1, plist@npm:^3.0.4":
   version: 3.0.4
   resolution: "plist@npm:3.0.4"
   dependencies:
@@ -20740,19 +20687,6 @@ fsevents@^1.2.7:
   version: 1.2.4
   resolution: "proto-list@npm:1.2.4"
   checksum: 4d4826e1713cbfa0f15124ab0ae494c91b597a3c458670c9714c36e8baddf5a6aad22842776f2f5b137f259c8533e741771445eb8df82e861eea37a6eaba03f7
-  languageName: node
-  linkType: hard
-
-"protocol-registry@npm:^1.3.13":
-  version: 1.3.13
-  resolution: "protocol-registry@npm:1.3.13"
-  dependencies:
-    ejs: ^3.1.6
-    is-wsl: ^2.2.0
-    joi: ^17.4.0
-    plist: ^3.0.2
-    winreg: ^1.2.4
-  checksum: 191bd9518f86a25a52bbd441b9553c302cfbf975bddd89a32dbd35e058011629e0fdb36dedfc9cc99a33eabb4bb620223a6c029dc9cac6b22a212718dcf91cc5
   languageName: node
   linkType: hard
 
@@ -24963,13 +24897,6 @@ fsevents@^1.2.7:
   dependencies:
     string-width: ^4.0.0
   checksum: 03db6c9d0af9329c37d74378ff1d91972b12553c7d72a6f4e8525fe61563fa7adb0b9d6e8d546b7e059688712ea874edd5ded475999abdeedf708de9849310e0
-  languageName: node
-  linkType: hard
-
-"winreg@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "winreg@npm:1.2.4"
-  checksum: 6b28ed0c289bdbae87bd05c69fe676765fa51ca28a904cceb89a30ee1ddd61ae1432d0d4f51621a86c4fbdefa8ad380e9eaa90cbdc722ccae11396231475e3cf
   languageName: node
   linkType: hard
 
