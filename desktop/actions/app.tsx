@@ -52,3 +52,19 @@ export const checkForUpdates = defineAction({
     checkForUpdatesRequest();
   },
 });
+
+/**
+ * This is a bit unique case - this is only used for visual indication of this command in shortcuts footer.
+ *
+ * Command menu opening is not an action itself, as it is something that is running actions.
+ */
+export const showCommandMenu = defineAction({
+  name: "More commands",
+  private: true,
+  shortcut: ["Mod", "K"],
+  group: appActionsGroup,
+  icon: <IconBox />,
+  handler() {
+    //
+  },
+});

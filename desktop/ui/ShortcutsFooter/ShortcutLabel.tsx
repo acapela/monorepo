@@ -56,7 +56,7 @@ const UIName = styled.div`
   white-space: nowrap;
 `;
 
-const UIShortcut = styled(ShortcutDescriptor)`
+export const UIShortcut = styled(ShortcutDescriptor)`
   ${theme.colors.layout.backgroundAccent.asBg};
   padding: 3px;
   ${theme.transitions.hover("all")};
