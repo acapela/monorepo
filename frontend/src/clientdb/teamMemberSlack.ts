@@ -24,6 +24,7 @@ export const teamMemberSlackEntity = defineEntity<TeamMemberSlackFragment>({
   uniqueIndexes: ["team_member_id"],
   getDefaultValues: () => ({
     __typename: "team_member_slack",
+    slack_scopes: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TeamMemberSlackFragment, { where: Team_Member_Slack_Bool_Exp }>(

@@ -39,6 +39,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       __typename: "task",
       done_at: null,
       seen_at: null,
+      type: null,
       ...getGenericDefaultData(),
     };
   },

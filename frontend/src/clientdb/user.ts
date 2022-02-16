@@ -33,6 +33,8 @@ export const userEntity = defineEntity<UserFragment>({
     return {
       __typename: "user",
       is_bot: false,
+      avatar_url: null,
+      has_account: null,
       ...getGenericDefaultData(),
     };
   },
