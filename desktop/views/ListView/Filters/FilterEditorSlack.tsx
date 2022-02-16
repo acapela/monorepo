@@ -7,8 +7,8 @@ import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
-import { theme } from "@aca/ui/theme";
 
+import { UIAvatar } from "./shared";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
@@ -82,12 +82,4 @@ const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const UIAvatar = styled.div`
-  height: 1em;
-  width: 1em;
-  ${theme.radius.circle};
-  background-size: cover;
-  background-color: #8884;
 `;
