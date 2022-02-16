@@ -1,14 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-import { SlackQueryUser, useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
+import { useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
-import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { updateValue } from "@aca/shared/updateValue";
-import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
-import { UIAvatar } from "./shared";
+import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
@@ -50,30 +48,12 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
           }}
         />
       </SettingRow>
-      <SettingRow title="People">
-        <MultipleOptionsDropdown<SlackQueryUser>
-          items={slackUsers}
-          keyGetter={(user) => user.id}
-          labelGetter={(user) => user.real_name ?? user.display_name}
-          iconGetter={(user) => <UIAvatar style={{ backgroundImage: `url(${user.avatar_url})` }} />}
-          selectedItems={slackUsers.filter((user) => {
-            return getIsValueMatchingFilter(filter.slack_user_id, user.id);
-          })}
-          onChange={(users) => {
-            onChange(
-              updateValue(filter, (filter) => {
-                if (users.length === 0) {
-                  delete filter.slack_user_id;
-                  return;
-                }
-
-                filter.slack_user_id = { $in: users.map((u) => u.id) };
-              })
-            );
-          }}
-          placeholder="Everyone"
-        />
-      </SettingRow>
+      <ServiceUsersFilterRow<SlackFilter>
+        users={slackUsers}
+        filter={filter}
+        field="slack_user_id"
+        onChange={onChange}
+      />
     </UIHolder>
   );
 }
