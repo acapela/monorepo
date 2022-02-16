@@ -31,6 +31,7 @@ export type {
   Prisma,
   notification_linear as NotificationLinear,
   linear_oauth_token as LinearOauthToken,
+  linear_issue as LinearIssue,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");
