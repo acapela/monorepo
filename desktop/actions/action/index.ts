@@ -15,7 +15,9 @@ type ChildActionsResult = {
   getActions: (context: ActionContext) => ActionData[];
 };
 
-export type ActionResult = MaybePromise<ChildActionsResult | false>;
+export type ActionResult = ChildActionsResult | false | void;
+
+export type ActionHandlerResult = MaybePromise<ActionResult>;
 
 export interface ActionCreateInput {
   id?: string;
@@ -31,7 +33,7 @@ export interface ActionCreateInput {
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
-  handler: ActionContextCallback<void | Promise<void> | ActionResult>;
+  handler: ActionContextCallback<ActionHandlerResult>;
 }
 
 export interface ActionData extends ActionCreateInput {

@@ -27,6 +27,7 @@ export const FilterLabel = observer(function FilterLabel({ filter, onChange, onR
     <>
       <UILabel ref={labelRef}>
         <Button
+          tooltip="Edit or remove filter..."
           icon={getFilterIntegration(filter)?.icon}
           onClick={action(() => {
             filtersEditStore.editedFilter = filter;

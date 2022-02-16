@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { createNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { getInboxLists, getInboxListsById, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/all";
@@ -10,7 +9,6 @@ import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/No
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
-import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
@@ -18,17 +16,15 @@ import { theme } from "@aca/ui/theme";
 import { ListFilters } from "./Filters";
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
-import { NotificationFilterForm } from "./NotificationFilterForm";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
   listId: string;
-  isEditing: boolean;
 }
 
-export const ListView = observer(({ listId, isEditing }: Props) => {
+export const ListView = observer(({ listId }: Props) => {
   const displayedList = getInboxListsById(listId);
   const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
 
@@ -59,8 +55,6 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
         </UINotificationZeroHolder>
       ) : (
         <HStack style={{ height: "100%" }}>
-          {isEditing && <NotificationFilterForm listId={listId} />}
-
           {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
           {displayedList && notificationGroups && notificationGroups.length > 0 && (

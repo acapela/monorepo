@@ -1,8 +1,11 @@
 import { runInAction } from "mobx";
 
-import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
+import { ActionData, ActionResult, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { trackEvent } from "@aca/desktop/analytics";
+import { createChannel } from "@aca/shared/channel";
+
+export const actionResultChannel = createChannel<ActionResult>();
 
 export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
   const { analyticsEvent } = resolveActionData(action, context);
@@ -20,6 +23,8 @@ export async function runAction(action: ActionData, context: ActionContext = cre
     if (analyticsEvent) {
       trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
     }
+
+    actionResultChannel.publish(actionResult);
 
     return actionResult;
   } catch (error) {
