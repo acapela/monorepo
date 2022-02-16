@@ -1,4 +1,4 @@
-export type Key =
+export type ShortcutKey =
   | "Backspace"
   | "Tab"
   | "Enter"
