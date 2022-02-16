@@ -279,8 +279,13 @@ export function setupSlackActionHandlers(slackApp: App) {
     }
   });
 
-  slackApp.event("app_uninstalled", async ({ body }) => {
+  slackApp.event("app_uninstalled", async ({ body, context }) => {
     const slack_team_id = body.team_id;
+    if (context.userToken) {
+      await db.user_slack_installation.deleteMany({
+        where: { data: { path: ["user", "token"], equals: context.userToken } },
+      });
+    }
     await db.$transaction([
       db.team_slack_installation.deleteMany({ where: { slack_team_id } }),
       db.team_member_slack.deleteMany({
