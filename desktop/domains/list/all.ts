@@ -1,11 +1,9 @@
-import { omit } from "lodash";
-
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
-import { isEqualForPick, typedKeys } from "@aca/shared/object";
+import { typedKeys } from "@aca/shared/object";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 
@@ -79,13 +77,9 @@ export const getInboxLists = cachedComputed(() => {
       id: notificationFilter.id,
       name: notificationFilter.title,
       isCustom: true,
-      filter: (notification) =>
-        !notification.isResolved &&
-        notificationFilter.typedFilters.some(
-          (filter) =>
-            filter.__typename == notification.inner?.__typename &&
-            isEqualForPick(filter, notification.inner, Object.keys(omit(filter, "__typename")) as never)
-        ),
+      getNotifications() {
+        return notificationFilter.notifications.query({ isResolved: false }).all;
+      },
     })
   );
 

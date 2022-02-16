@@ -227,3 +227,19 @@ export function createArrayNeighbourList<T>(array: T[]): NeigbourAwareIteration<
     return { index, item: array[index], previous: array[index - 1] ?? null, next: array[index + 1] ?? null };
   });
 }
+
+export function pushElement<T>(list: T[], item: T) {
+  list.push(item);
+
+  return () => {
+    removeElementFromArray(list, item);
+  };
+}
+
+export function unshiftElement<T>(list: T[], item: T) {
+  list.unshift(item);
+
+  return () => {
+    removeElementFromArray(list, item);
+  };
+}

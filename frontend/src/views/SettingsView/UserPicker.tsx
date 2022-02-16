@@ -46,7 +46,7 @@ export const UserPicker = observer(({ alreadyPickedIds, onPick }: UserPickerProp
         }}
       />
       {isOpen && (
-        <Popover anchorRef={anchorRef} placement="top-start" onClickOutside={hide} enableScreenCover>
+        <Popover anchorRef={anchorRef} placement="top-start" onCloseRequest={hide} enableScreenCover>
           <PopPresenceAnimator>
             <SelectList<UserEntity>
               items={foundUsers}

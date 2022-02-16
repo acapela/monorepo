@@ -11,6 +11,7 @@ const figmaURL = "https://www.figma.com";
 
 export const figmaIntegrationClient: IntegrationClient = {
   kind: "integration",
+  notificationTypename: "notification_figma_comment",
   name: "Figma",
   description: "Get important updates and comments",
   isReady: figmaAuthTokenBridgeValue.observables.isReady,

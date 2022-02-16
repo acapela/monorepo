@@ -28,7 +28,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
 
   return (
     <LayoutGroup>
-      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
+      <UIHolder className="FOOBAR" onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -61,6 +61,8 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   flex-direction: row;
   align-items: stretch;
   padding-left: 16px;
+  padding-right: 16px;
+  gap: 4px;
 
   width: 100%;
 
@@ -154,6 +156,5 @@ const UIDropdownIcon = styled(IconChevronDown)<{}>`
   font-size: 1.5rem;
   opacity: 0.6;
   align-self: center;
-  margin-right: 16px;
   ${theme.common.clickable}
 `;

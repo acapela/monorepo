@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
+import { observable } from "mobx";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
@@ -14,14 +15,11 @@ import {
   Notification_List_Insert_Input,
   Notification_List_Set_Input,
 } from "@aca/gql";
+import { FiltersData, getIsItemMatchingFilters } from "@aca/shared/filters";
 
-type FiltersData<T> = {
-  [Key in keyof T]?: FilterValue<T[Key]>;
-};
+import { NotificationEntity, notificationEntity } from "./notification";
 
-type FilterValue<T> = T | { $in: T[] } | { $not: T | { $in: T[] } };
-
-type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]>;
+type NotificationInnerDataUnion = EntityDataByDefinition<typeof innerEntities[number]> & { id: string };
 
 type FiltersUnion<U> = U extends infer T
   ? T extends { __typename: infer TN }
@@ -60,15 +58,59 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     user_id: getContextValue(userIdContext) ?? undefined,
     ...getGenericDefaultData(),
   }),
+  customObservableAnnotations: {
+    filters: observable.ref,
+  },
   sync: createHasuraSyncSetupFromFragment<NotificationListFragment, NotificationListConstraints>(notificationFragment, {
     insertColumns: ["id", "created_at", "updated_at", "user_id", "title", "filters"],
     updateColumns: ["updated_at", "title", "filters"],
     upsertConstraint: "notification_filter_pkey",
   }),
-}).addConnections((list) => ({
-  get typedFilters(): NotificationFilter[] {
-    return Array.isArray(list.filters) ? list.filters : [];
-  },
-}));
+}).addConnections((list, { getEntity }) => {
+  const passingNotifications = cachedComputed(() => {
+    if (connections.typedFilters.length === 0)
+      return getEntity(notificationEntity).query({
+        // TODO: did it for type-safety. We should probably have .emptyQuery
+        // I used simpleQuery for speed (instead of () => false) query
+        id: "NO_EXISTING",
+      });
+
+    return getEntity(notificationEntity).query((notification) => {
+      return getIsNotificationPassingFilters(notification, connections.typedFilters);
+    });
+  });
+
+  const connections = {
+    get typedFilters(): NotificationFilter[] {
+      return Array.isArray(list.filters) ? list.filters : [];
+    },
+    get notifications() {
+      return passingNotifications();
+    },
+  };
+
+  return connections;
+});
 
 export type NotificationListEntity = EntityByDefinition<typeof notificationListEntity>;
+
+const getIsNotificationPassingFilter = cachedComputed(
+  (notification: NotificationEntity, filter: NotificationFilter) => {
+    const notificationInner = notification.inner;
+    if (!notificationInner) return false;
+
+    const { id, ...actualFilter } = filter;
+    id;
+
+    return getIsItemMatchingFilters(notificationInner, actualFilter);
+  }
+);
+
+export const getIsNotificationPassingFilters = cachedComputed(
+  (notification: NotificationEntity, filters: NotificationFilter[]) => {
+    const notificationInner = notification.inner;
+    if (!notificationInner) return false;
+
+    return filters.some((filter) => getIsNotificationPassingFilter(notification, filter));
+  }
+);

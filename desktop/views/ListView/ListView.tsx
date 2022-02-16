@@ -13,19 +13,18 @@ import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
+import { ListFilters } from "./Filters";
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
-import { NotificationFilterForm } from "./NotificationFilterForm";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
   listId: string;
-  isEditing: boolean;
 }
 
-export const ListView = observer(({ listId, isEditing }: Props) => {
+export const ListView = observer(({ listId }: Props) => {
   const displayedList = getInboxListsById(listId);
   const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
 
@@ -48,6 +47,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
+      {displayedList?.isCustom && <ListFilters listId={listId} />}
 
       {isInCelebrationMode ? (
         <UINotificationZeroHolder>
@@ -55,9 +55,7 @@ export const ListView = observer(({ listId, isEditing }: Props) => {
         </UINotificationZeroHolder>
       ) : (
         <HStack style={{ height: "100%" }}>
-          {isEditing && <NotificationFilterForm listId={listId} />}
-
-          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications />}
+          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
           {displayedList && notificationGroups && notificationGroups.length > 0 && (
             <>
@@ -115,6 +113,7 @@ const UINotifications = styled.div`
 
 const UITabsBar = styled.div`
   padding-top: 2px;
+  margin-bottom: 24px;
 `;
 
 const UINotificationZeroHolder = styled.div`

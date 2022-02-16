@@ -50,13 +50,15 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
       return;
     }
     setTimeout(() => {
-      requestGetPersistedValue(valueKey).then((value) => {
-        if (value !== null) {
-          localChannel.publish(value as ValueData);
-        } else {
-          isReady.set(true);
-        }
-      });
+      requestGetPersistedValue(valueKey).then(
+        action((value) => {
+          if (value !== null) {
+            localChannel.publish(value as ValueData);
+          } else {
+            isReady.set(true);
+          }
+        })
+      );
     }, 1);
   }
 

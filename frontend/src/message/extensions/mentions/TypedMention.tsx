@@ -63,7 +63,7 @@ export const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeP
         <Popover
           anchorRef={anchorRef}
           placement="top-start"
-          onClickOutside={closeMentionTypePicker}
+          onCloseRequest={closeMentionTypePicker}
           isDisabled={!isEditable}
           enableScreenCover
         >

@@ -23,6 +23,7 @@ const UIHolder = styled.div<{}>`
   flex: 1;
   align-items: center;
   user-select: none;
+  ${theme.common.ellipsisText}
 
   ${() => UIBody} {
     flex: 1;
@@ -35,6 +36,7 @@ const UIHolder = styled.div<{}>`
 
 const UIBody = styled.div`
   ${theme.typo.content};
+  ${theme.common.ellipsisText}
 `;
 
 const UIIcon = styled.div<{}>`

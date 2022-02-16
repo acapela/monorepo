@@ -23,6 +23,7 @@ const SLACK_URL_SCHEME = "slack://";
 
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
+  notificationTypename: "notification_slack_message",
   name: "Slack",
   description: "Important or urgent conversations.",
   icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
