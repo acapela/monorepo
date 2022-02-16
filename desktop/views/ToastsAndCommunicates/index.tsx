@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { defineAction } from "@aca/desktop/actions/action";
 import { installUpdate } from "@aca/desktop/actions/app";
 import { applicationStateBridge, setBadgeCountRequest, showErrorToUserChannel } from "@aca/desktop/bridge/system";
-import { getDb } from "@aca/desktop/clientdb";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
@@ -23,7 +23,10 @@ export const ToastsAndCommunicatesView = observer(() => {
   });
 
   useAutorun(() => {
-    const unresolvedNotifications = getDb().notification.query({ isResolved: false, isSnoozed: false }).count;
+    const unresolvedNotifications = getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).count;
+
+    if (unresolvedNotifications === undefined) return;
+
     setBadgeCountRequest(unresolvedNotifications);
   });
 
