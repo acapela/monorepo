@@ -33,7 +33,7 @@ export function getIsItemMatchingFilters<T extends object>(item: T, filters: Fil
   return filterEntries.every(([key, filter]) => {
     const itemValue = Reflect.get(item, key);
 
-    return getIsValueMatchingFilter(itemValue, filter);
+    return getIsValueMatchingFilter(filter, itemValue);
   });
 }
 

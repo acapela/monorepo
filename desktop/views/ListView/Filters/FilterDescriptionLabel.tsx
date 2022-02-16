@@ -14,6 +14,13 @@ interface Props {
   filter: NotificationFilter;
 }
 
+const PeopleDescription = ({ count }: { count: number }) => (
+  <>
+    from
+    <UILabel>{count === 0 ? "Everyone" : pluralize`${count} ${["person"]}`}</UILabel>
+  </>
+);
+
 export function FilterDescriptionLabel({ filter }: Props) {
   if (getIsFilterOfType(filter, "notification_figma_comment")) {
     const typeLabel = figmaNotificationOptions.find((option) => option.isActive(filter))?.label;
@@ -28,9 +35,7 @@ export function FilterDescriptionLabel({ filter }: Props) {
     return (
       <>
         {typeLabel && <UILabel>{typeLabel}</UILabel>}
-        from
-        {peopleCount === 0 && <UILabel>Everyone</UILabel>}
-        {peopleCount > 0 && <UILabel>{pluralize`${peopleCount} ${["person"]}`}</UILabel>}
+        <PeopleDescription count={peopleCount} />
       </>
     );
   }
@@ -44,9 +49,11 @@ export function FilterDescriptionLabel({ filter }: Props) {
   }
 
   if (getIsFilterOfType(filter, "notification_linear")) {
+    const peopleCount = getFilterValueAllowedValues(filter.creator_id).length;
     return (
       <>
         <UILabel>All notifications</UILabel>
+        <PeopleDescription count={peopleCount} />
       </>
     );
   }
