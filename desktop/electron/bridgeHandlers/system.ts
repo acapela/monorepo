@@ -5,6 +5,7 @@ import {
   clearAllDataRequest,
   openLinkRequest,
   restartAppRequest,
+  setBadgeCountRequest,
   toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
@@ -71,6 +72,10 @@ export function initializeSystemHandlers() {
 
   openLinkRequest.handle(async ({ url }) => {
     shell.openExternal(url);
+  });
+
+  setBadgeCountRequest.handle(async (count) => {
+    app.setBadgeCount(count);
   });
 
   autorunEffect(() => {
