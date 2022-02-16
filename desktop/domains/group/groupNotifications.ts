@@ -12,7 +12,7 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
   const result: NotificationOrGroup[] = [];
 
   notifications.forEach((notification) => {
-    const target = getNotificationGroupTarget(notification);
+    const target = getNotificationGroupTarget(notification, notifications);
 
     // Should not happen - but consider as single notification then
     if (!target) {

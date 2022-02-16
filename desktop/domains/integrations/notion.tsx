@@ -18,6 +18,7 @@ export const notionIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_notion",
   name: "Notion",
   description: "Comments, mentions and page invitations.",
+  isReady: notionAuthTokenBridgeValue.observables.isReady,
   getIsConnected: () => !!notionAuthTokenBridgeValue.get(),
   convertToLocalAppUrl: async ({ url }) => {
     return {

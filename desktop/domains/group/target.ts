@@ -17,7 +17,10 @@ const unknownTarget: NotificationGroupTarget = {
   integrationTitle: "Slack conversation",
 };
 
-export function getNotificationGroupTarget(notification: NotificationEntity): NotificationGroupTarget {
+export function getNotificationGroupTarget(
+  notification: NotificationEntity,
+  notifications: NotificationEntity[]
+): NotificationGroupTarget {
   const targetNotification = notification.inner;
 
   if (!targetNotification) return unknownTarget;
@@ -41,8 +44,13 @@ export function getNotificationGroupTarget(notification: NotificationEntity): No
   }
 
   if (targetNotification.__typename === "notification_slack_message") {
+    const { slack_thread_ts: threadTs, slack_message_ts: ts } = targetNotification;
+    const hasReplies = () =>
+      notifications.some(
+        ({ inner }) => inner?.__typename === "notification_slack_message" && inner.slack_thread_ts === ts
+      );
     return {
-      id: targetNotification.slack_conversation_id + "#" + (targetNotification.slack_thread_ts ?? ""),
+      id: targetNotification.slack_conversation_id + "#" + (threadTs ?? (hasReplies() ? ts : "")),
       name: getNotificationTitle(notification),
       integration: "slack",
       integrationTitle: "Slack conversation",
