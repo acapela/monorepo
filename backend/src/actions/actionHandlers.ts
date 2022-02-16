@@ -1,5 +1,6 @@
 import { getUploadUrl } from "@aca/backend/src/attachments/attachments";
 import { inviteUser } from "@aca/backend/src/inviteUser";
+import { linearUsers } from "@aca/backend/src/linear/hasuraActions";
 import { getIndividualSlackInstallationURLHandler } from "@aca/backend/src/notificationCapture/hasuraActions";
 import {
   getTeamSlackInstallationURLHandler,
@@ -22,6 +23,7 @@ export const handlers: ActionHandler<any, any>[] = [
   getUploadUrl,
   inviteUser,
   joinTopicHandler,
+  linearUsers,
   slackUser,
   slackUsers,
   uninstallSlack,

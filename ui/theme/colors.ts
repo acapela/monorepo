@@ -33,7 +33,7 @@ const blue = color("hsl(204, 100%, 50%)");
 
 const green = color("hsl(169,100%,37%)");
 
-const divider = color("#E0E0E0");
+const divider = color("#8883");
 
 const selectedTab = color("#f3f4f6");
 
@@ -99,17 +99,17 @@ export const darkThemeColors: typeof defaultColors = {
   ...defaultColors,
   text: white,
   layout: {
-    actionPanel: blue,
+    actionPanel: darkGrey.hover,
     // Root background of the app
     background: darkGrey,
     // Used eg. for app sidebar
-    backgroundAccent: white.opacity(0.2),
+    backgroundAccent: darkGrey.hover,
     divider,
   },
   panels: {
+    ...defaultColors.panels,
     popover: white,
     secondaryPopover: darkGrey,
-    tooltip: white,
     notification: primary,
     modal: darkGrey,
     selectedTab,
@@ -117,5 +117,6 @@ export const darkThemeColors: typeof defaultColors = {
   action: {
     ...defaultColors.action,
     transparent: darkGrey,
+    secondary: darkGrey.hover,
   },
 };

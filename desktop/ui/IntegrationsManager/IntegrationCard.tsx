@@ -45,7 +45,7 @@ export function IntegrationCard({ service }: Props) {
 const UIHolder = styled.div`
   display: flex;
   gap: 16px;
-  border: 1px solid #cdcdcd3b;
+  border: 1px solid #8882;
   padding: 16px;
   border-radius: 8px;
 `;
