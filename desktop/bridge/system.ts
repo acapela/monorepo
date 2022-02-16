@@ -10,6 +10,7 @@ export const toggleFullscreenRequest = createInvokeBridge("toggle-fullscreen");
 export const toggleDevtoolsRequest = createInvokeBridge<boolean>("toggle-devtools");
 export const appUpdateAndRestartRequest = createInvokeBridge("update-and-restart");
 export const checkForUpdatesRequest = createInvokeBridge("check-for-updates");
+export const setBadgeCountRequest = createInvokeBridge<number>("set-badge-count");
 export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 
 export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
