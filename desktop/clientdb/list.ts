@@ -100,6 +100,7 @@ const getIsNotificationPassingFilter = cachedComputed(
     if (!notificationInner) return false;
 
     const { id, ...actualFilter } = filter;
+    id;
 
     return getIsItemMatchingFilters(notificationInner, actualFilter);
   }

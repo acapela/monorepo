@@ -3,7 +3,6 @@ import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
-import { useBoundingBox } from "@aca/shared/hooks/useBoundingBox";
 import { FieldWithLabel } from "@aca/ui/forms/FieldWithLabel";
 import { IconPlus } from "@aca/ui/icons";
 import { Popover } from "@aca/ui/popovers/Popover";

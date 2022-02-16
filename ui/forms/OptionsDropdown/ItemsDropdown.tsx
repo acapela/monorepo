@@ -1,8 +1,8 @@
 import React, { ReactNode, useRef, useState } from "react";
-import { useClickAway, useWindowSize } from "react-use";
+import { useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
 
-import { fuzzySearch, useFuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { useFuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 import { useBoundingBox } from "@aca/shared/hooks/useBoundingBox";
 import { CANCEL_CLICK_OUTSIDE_CLASSNAME, useHandleCloseRequest } from "@aca/shared/hooks/useClickOutside";
 import { useEqualDependencyChangeEffect } from "@aca/shared/hooks/useEqualEffect";

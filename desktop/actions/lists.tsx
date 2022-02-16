@@ -13,14 +13,9 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconArrowTop,
-  IconEdit,
   IconEdit2,
-  IconEdit3,
   IconFolderPlus,
-  IconListOrdered,
-  IconPenTool,
   IconSlidersHoriz,
-  IconStarSlash,
   IconTrash,
 } from "@aca/ui/icons";
 
@@ -88,7 +83,7 @@ export const deleteNotificationList = defineAction({
   icon: <IconTrash />,
   group: currentListActionsGroup,
 
-  name: (ctx) => "Delete list",
+  name: () => "Delete list",
   supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
 
   keywords: ["remove", "trash"],

@@ -9,7 +9,6 @@ import { useRefValue } from "@aca/shared/hooks/useRefValue";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { useValueRef } from "@aca/shared/hooks/useValueRef";
 import { BodyPortal } from "@aca/ui/BodyPortal";
-import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { theme } from "@aca/ui/theme";
 

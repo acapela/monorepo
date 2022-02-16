@@ -3,7 +3,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
-import { theme } from "@aca/ui/theme";
 
 import { FilterLabel } from "./FilterLabel";
 import { NewFilterCreator } from "./NewFilterCreator";
@@ -64,8 +63,4 @@ const UIFilters = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-`;
-
-const UILabel = styled.div`
-  ${theme.typo.content.medium.secondary}
 `;

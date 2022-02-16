@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
-import { integrationClientList } from "@aca/desktop/domains/integrations";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconCheck, IconTrash } from "@aca/ui/icons";
 

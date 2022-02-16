@@ -10,5 +10,5 @@ interface Props {
 export function FilterEditorLinear({ filter }: Props) {
   filter.type;
 
-  return null;
+  return <></>;
 }

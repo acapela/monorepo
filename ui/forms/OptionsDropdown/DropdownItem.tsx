@@ -1,10 +1,8 @@
 import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { styledForwardRef } from "@aca/shared/component";
 import { handleWithStopPropagation } from "@aca/shared/events";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
-import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { IconCheck } from "@aca/ui/icons";
@@ -58,7 +56,6 @@ export const DropdownItem = styled<Props>(function DropdownItem({
       className={className}
       $isHighlighted={isHighlighted}
       onClick={handleWithStopPropagation(onClick)}
-      onClickCapture={console.log}
     >
       <OptionLabel icon={icon} label={label} />
       {isSelected && <IconCheck />}

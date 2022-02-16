@@ -53,8 +53,6 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
-  console.log({ notification });
-
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}

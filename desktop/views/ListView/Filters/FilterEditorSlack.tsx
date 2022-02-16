@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import { getIsNotificationPassingFilters } from "@aca/desktop/clientdb/list";
 import { SlackQueryUser, useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { getIsValueMatchingFilter } from "@aca/shared/filters";
@@ -37,8 +36,6 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
   filter.conversation_name;
 
   const slackUsers = useSlackUsers();
-
-  console.log({ slackUsers, filter });
 
   return (
     <UIHolder>

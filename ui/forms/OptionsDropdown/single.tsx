@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { theme } from "@aca/ui/theme";
 
 import { MultipleOptionsDropdown } from "./multiple";
-import { OptionLabel } from "./OptionLabel";
 import { SelectedOptionPreview } from "./SelectedOptionPreview";
 
 interface Props<I> {

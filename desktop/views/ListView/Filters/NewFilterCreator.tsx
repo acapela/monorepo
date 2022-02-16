@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
 import { getUUID } from "@aca/shared/uuid";
 import { Button } from "@aca/ui/buttons/Button";
-import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconPlus } from "@aca/ui/icons";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
 import { theme } from "@aca/ui/theme";

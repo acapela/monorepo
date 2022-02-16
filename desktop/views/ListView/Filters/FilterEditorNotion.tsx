@@ -10,5 +10,5 @@ interface Props {
 export function FilterEditorNotion({ filter }: Props) {
   filter.page_title;
 
-  return null;
+  return <></>;
 }

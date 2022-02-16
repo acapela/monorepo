@@ -46,11 +46,3 @@ const UIClient = styled.div`
 
   align-items: center;
 `;
-
-const UIIcon = styled.div`
-  font-size: 2em;
-`;
-
-const UIName = styled.div`
-  ${theme.typo.content.medium}
-`;
