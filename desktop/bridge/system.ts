@@ -1,3 +1,5 @@
+import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
+
 import { PublicErrorData } from "../domains/errors/types";
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
@@ -28,6 +30,6 @@ export const applicationStateBridge = createBridgeValue("application-state", {
 export const applicationWideSettingsBridge = createBridgeValue("app-wide-settings", {
   isPersisted: true,
   getDefault: () => ({
-    globalShowAppShortcut: "CommandOrControl+Shift+A" as string | null,
+    globalShowAppShortcut: ["Meta", "Shift", "A"] as ShortcutKeys | null,
   }),
 });

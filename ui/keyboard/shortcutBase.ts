@@ -5,11 +5,11 @@ import { convertMaybeArrayToArray, removeElementFromArray } from "@aca/shared/ar
 import { onDocumentReady } from "@aca/shared/document";
 import { mapGetOrCreate } from "@aca/shared/map";
 
-import { Key } from "./codes";
+import { ShortcutKey } from "./codes";
 
-export type ShortcutDefinition = Key | Key[];
+export type ShortcutDefinition = ShortcutKey | ShortcutKey[];
 
-export type ShortcutKeys = Key[];
+export type ShortcutKeys = ShortcutKey[];
 
 export interface ShortcutOptions {
   isEnabled?: boolean;

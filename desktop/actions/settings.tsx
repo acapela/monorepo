@@ -26,6 +26,7 @@ export const toggleFocusModeStats = defineAction({
 export const toggleDarkTheme = defineAction({
   name: "Toggle dark theme",
   group: settingsActionsGroup,
+  keywords: ["dark mode", "mode"],
   icon: <IconBulb />,
   handler() {
     const newDarkModeValue = !uiStore.isInDarkMode;
