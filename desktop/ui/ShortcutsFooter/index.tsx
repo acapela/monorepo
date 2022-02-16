@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { showCommandMenu } from "@aca/desktop/actions/app";
 import { theme } from "@aca/ui/theme";
 
 import { FooterShortcutLabel } from "./ShortcutLabel";
@@ -20,6 +21,7 @@ export const ShortcutsFooter = observer(function ShortcutsFooter({ actions, targ
       {actions.map((action) => {
         return <FooterShortcutLabel action={action} context={context} key={action.id} />;
       })}
+      <FooterShortcutLabel action={showCommandMenu} context={context} key={showCommandMenu.id} />
     </UIHolder>
   );
 });
