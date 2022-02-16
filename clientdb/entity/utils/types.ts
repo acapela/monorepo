@@ -21,6 +21,6 @@ type PickOptional<T> = PickByPartialMatch<T, null | void>;
 /**
  * Create type when optional (null or ?) values must be explicitly filled,
  *
- * eg. PartialWithExplicitOptionals<{ foo?: Maybe<string>, bar: string }> = { foo: string | null, bar?: string }
+ * eg. PartialWithExplicitOptionals<{ foo?: Maybe<string>, bar: string }> = { foo: string | null, bar: string }
  */
 export type PartialWithExplicitOptionals<T> = Required<PickOptional<T>> & Partial<T>;

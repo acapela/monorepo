@@ -58,6 +58,7 @@ export const messageEntity = defineEntity<MessageFragment>({
     return {
       __typename: "message",
       user_id: getContextValue(userIdContext) ?? undefined,
+      content: null,
       replied_to_message_id: null,
       is_first_completion_enough: false,
       ...getGenericDefaultData(),

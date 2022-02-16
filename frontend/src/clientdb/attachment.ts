@@ -42,6 +42,8 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
   getDefaultValues() {
     return {
       __typename: "attachment",
+      message_id: null,
+      transcription_id: null,
       ...getGenericDefaultData(),
     };
   },
