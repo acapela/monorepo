@@ -1,5 +1,5 @@
 import { action } from "mobx";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/notification";
@@ -54,14 +54,12 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
-  // const unreadIndicatorType: "snooze-ended" | "not-read" | undefined = useMemo(() => {
-  //   if (!notification.last_seen_at) {
-  //     return "not-read";
-  //   }
-  //   if (isNotificationSnoozeEnded(notification)) {
-  //     return "snooze-ended";
-  //   }
-  // }, [notification]);
+  const isUnread: boolean = useMemo(() => {
+    if (notification.isResolved) {
+      return false;
+    }
+    return !notification.last_seen_at;
+  }, [notification]);
 
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
@@ -83,7 +81,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         $isFocused={isFocused}
         $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
       >
-        <NotificationAppIcon notification={notification} />
+        <NotificationAppIcon notification={notification} displayUnreadNotification={isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>

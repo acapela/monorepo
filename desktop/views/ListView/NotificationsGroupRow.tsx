@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
@@ -75,23 +75,18 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   const allPeople = uniq(group.notifications.map((notification) => notification.from));
 
-  // const unreadIndicatorType: "snooze-ended" | "not-read" | undefined = useMemo(() => {
-  //   if (group.isOnePreviewEnough) {
-  //     // We treat "one preview enough" notification groups as a single notification
-  //     // So in this case, we won't display the unread indicator
-  //     if (group.notifications.every((n) => !n.last_seen_at)) {
-  //       return "not-read";
-  //     }
-  //   } else {
-  //     if (group.notifications.some((n) => !n.last_seen_at)) {
-  //       return "not-read";
-  //     }
-  //   }
+  const isUnread: boolean = useMemo(() => {
+    if (group.notifications.every((n) => n.isResolved)) {
+      return false;
+    }
 
-  //   if (group.notifications.some(isNotificationSnoozeEnded)) {
-  //     return "snooze-ended";
-  //   }
-  // }, [group]);
+    if (group.isOnePreviewEnough) {
+      // We treat "one preview enough" notification groups as a single notification
+      // So in this case, we won't display the unread indicator
+      return group.notifications.every((n) => !n.last_seen_at);
+    }
+    return group.notifications.some((n) => !n.last_seen_at);
+  }, [group]);
 
   return (
     <>
@@ -112,7 +107,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             );
           })}
         <UIHolder ref={elementRef} $isFocused={isFocused}>
-          <NotificationAppIcon notification={firstNotification} />
+          <NotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
           <UISendersLabel data-tooltip={allPeople.length > 1 ? allPeople.join(", ") : undefined}>
             {allPeople.length === 1 && allPeople[0]}
             {allPeople.length > 1 && (
