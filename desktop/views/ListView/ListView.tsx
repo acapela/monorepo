@@ -13,6 +13,7 @@ import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
+import { ListEditTools } from "./EditTools";
 import { ListFilters } from "./Filters";
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
@@ -47,7 +48,12 @@ export const ListView = observer(({ listId }: Props) => {
       <UITabsBar>
         <ListsTabBar activeListId={listId} lists={listsToDisplay} />
       </UITabsBar>
-      {displayedList?.isCustom && <ListFilters listId={listId} />}
+      {displayedList?.isCustom && (
+        <UIListTools>
+          <ListFilters listId={listId} />
+          <ListEditTools listId={listId} />
+        </UIListTools>
+      )}
 
       {isInCelebrationMode ? (
         <UINotificationZeroHolder>
@@ -134,4 +140,21 @@ const UINotificationZeroPanel = styled.div`
   ${theme.colors.layout.background.opacity(0.7).asBg};
   backdrop-filter: blur(16px);
   ${theme.radius.primaryItem}
+`;
+
+const UIListTools = styled.div`
+  display: flex;
+  min-width: 0;
+  ${theme.spacing.actions.asGap}
+  padding-right: 16px;
+  align-items: flex-start;
+
+  ${ListFilters} {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  ${ListEditTools} {
+    padding-top: 4px;
+  }
 `;
