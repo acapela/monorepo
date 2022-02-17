@@ -3,23 +3,25 @@ import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
 import { getFilterValueAllowedValues } from "@aca/shared/filters";
+import { isNotNullish } from "@aca/shared/nullish";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { theme } from "@aca/ui/theme";
 
 import { figmaNotificationOptions } from "./FilterEditorFigma";
-import { slackNotificationTypeOptions } from "./FilterEditorSlack";
+import { slackConversationTypeLabels, slackConversationTypes, slackNotificationTypeOptions } from "./FilterEditorSlack";
 import { getIsFilterOfType } from "./types";
 
 interface Props {
   filter: NotificationFilter;
 }
 
-const PeopleDescription = ({ count }: { count: number }) => (
-  <>
-    from
-    <UILabel>{count === 0 ? "Everyone" : pluralize`${count} ${["person"]}`}</UILabel>
-  </>
-);
+const PeopleDescription = ({ count }: { count: number }) =>
+  count == 0 ? null : (
+    <>
+      from
+      <UILabel>{pluralize`${count} ${["person"]}`}</UILabel>
+    </>
+  );
 
 export function FilterDescriptionLabel({ filter }: Props) {
   if (getIsFilterOfType(filter, "notification_figma_comment")) {
@@ -30,12 +32,30 @@ export function FilterDescriptionLabel({ filter }: Props) {
 
   if (getIsFilterOfType(filter, "notification_slack_message")) {
     const typeLabel = slackNotificationTypeOptions.find((option) => option.isActive(filter))?.label;
-
     const peopleCount = getFilterValueAllowedValues(filter.slack_user_id).length;
+    const conversationTypes = getFilterValueAllowedValues(filter.conversation_type).filter(
+      isNotNullish
+    ) as typeof slackConversationTypes;
+    const hasThreadFilter = filter.slack_thread_ts !== undefined;
     return (
       <>
         {typeLabel && <UILabel>{typeLabel}</UILabel>}
         <PeopleDescription count={peopleCount} />
+        {conversationTypes.length > 0 && (
+          <>
+            in{" "}
+            <UILabel>
+              {conversationTypes
+                .map((type) => <>{slackConversationTypeLabels[type]}</>)
+                .reduce((prev, cur, i, { length }) => (
+                  <>
+                    {prev} {i + 1 < length ? "," : "and"} {cur}
+                  </>
+                ))}
+            </UILabel>
+          </>
+        )}
+        {hasThreadFilter && <>*</>}
       </>
     );
   }
