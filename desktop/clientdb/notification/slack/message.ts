@@ -21,6 +21,7 @@ const notificationSlackMessageFragment = gql`
     slack_message_ts
     slack_thread_ts
     conversation_name
+    conversation_type
   }
 `;
 
