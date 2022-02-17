@@ -55,7 +55,7 @@ export interface ToState {
 
 export async function fetchCreatorAndIssueHistory(
   linearClient: LinearClient,
-  id: string
+  issueId: string
 ): Promise<[User, IssueHistory[]]> {
   const historyRes = await linearClient.client.rawRequest(
     `
@@ -90,9 +90,8 @@ query Issue($id: String!) {
       }
     }
   }
-}
-`,
-    { id: id }
+}`,
+    { id: issueId }
   );
   if (historyRes.status != 200) {
     throw new Error(`linear api request error: ${historyRes.status}`);
@@ -124,4 +123,50 @@ export function findMatchingActor(
       name: h?.source?.name || "Unknown",
     }
   );
+}
+
+export async function fetchSubscribers(linearClient: LinearClient, issueId: string): Promise<string[]> {
+  const subscribersRes = await linearClient.client.rawRequest(
+    `
+query Issue($id: String!) {
+  issue(id: $id) {
+    subscribers {
+      nodes {
+        id
+      }
+    }
+  }
+}`,
+    { id: issueId }
+  );
+  if (subscribersRes.status != 200) {
+    throw new Error(`linear api request error: ${subscribersRes.status}`);
+  }
+  return map(get(subscribersRes.data, "issue.subscribers.nodes", []), "id");
+}
+
+export type Viewer = {
+  id: string;
+  organizationId: string;
+};
+export async function fetchViewer(linearClient: LinearClient): Promise<Viewer> {
+  const viewerRes = await linearClient.client.rawRequest(
+    `
+query Me {
+  viewer {
+    id
+    organization {
+      id
+    }
+  }
+}
+`
+  );
+  if (viewerRes.status != 200) {
+    throw new Error(`linear api request error: ${viewerRes.status}`);
+  }
+  const id = get(viewerRes.data, "viewer.id");
+  const organizationId = get(viewerRes.data, "viewer.organization.id");
+  if (!id || !organizationId) throw new Error(`fetchViewer: id or organization.id missing`);
+  return { id, organizationId };
 }
