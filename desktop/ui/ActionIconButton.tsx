@@ -5,6 +5,7 @@ import { createActionContext } from "@aca/desktop/actions/action/context";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { styledObserver } from "@aca/shared/component";
 import { IconButton } from "@aca/ui/buttons/IconButton";
+import { ButtonKind } from "@aca/ui/buttons/variants";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   target?: unknown;
   hideShortcutTooltip?: boolean;
   showTitleInTooltip?: boolean;
+  kind?: ButtonKind;
 }
 
 export const ActionIconButton = styledObserver(function ActionIconButton({
@@ -19,6 +21,7 @@ export const ActionIconButton = styledObserver(function ActionIconButton({
   target,
   hideShortcutTooltip = false,
   showTitleInTooltip = false,
+  kind,
 }: Props) {
   const context = createActionContext(target);
   const { icon, canApply, shortcut, name } = resolveActionData(action, context);
@@ -45,6 +48,7 @@ export const ActionIconButton = styledObserver(function ActionIconButton({
 
   return (
     <IconButton
+      kind={kind}
       icon={icon}
       isDisabled={isDisabled}
       tooltip={getTooltip()}
