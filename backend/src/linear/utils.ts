@@ -119,7 +119,7 @@ export function findMatchingActor(
   return (
     h.actor || {
       id: null,
-      name: h.source?.name || "",
+      name: h.source?.name || "Unknown",
     }
   );
 }
