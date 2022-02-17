@@ -3,10 +3,11 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 
+import { makeLogger } from "../../dev/makeLogger";
 //@ts-ignore
 import figma from "./figma.svg";
 //@ts-ignore
@@ -18,38 +19,65 @@ import slack from "./slack.svg";
 
 interface Props {
   notification: NotificationEntity;
+  displayUnreadNotification?: boolean;
   isOnDarkBackground?: boolean;
   className?: string;
 }
+
+function getIconSource(notification: NotificationInner, isOnDarkBackground: boolean) {
+  if (notification.__typename === "notification_slack_message") {
+    return { icon: slack, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_figma_comment") {
+    return { icon: figma, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_notion") {
+    return { icon: notion, isInverted: isOnDarkBackground };
+  }
+
+  if (notification.__typename === "notification_linear") {
+    return { icon: linear, isInverted: false };
+  }
+}
+
+const log = makeLogger("Notification App Icon");
 
 export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   notification,
   className,
   isOnDarkBackground = uiStore.isInDarkMode,
+  displayUnreadNotification = false,
 }: Props) {
   const targetNotification = notification.inner;
 
   const unknownNode = <UIUnknown className={className}>?</UIUnknown>;
 
-  if (!targetNotification) return unknownNode;
-
-  if (targetNotification.__typename === "notification_slack_message") {
-    return <UIIcon className={className} src={slack} />;
+  if (!targetNotification) {
+    log.error(`unable to find inner notification for notification id ${notification.id}`);
+    return unknownNode;
   }
 
-  if (targetNotification.__typename === "notification_figma_comment") {
-    return <UIIcon className={className} src={figma} />;
+  const iconProps = getIconSource(targetNotification, isOnDarkBackground);
+
+  if (!iconProps) {
+    log.error(`icon not defined for notification ${targetNotification.__typename}`);
+    return unknownNode;
   }
 
-  if (targetNotification.__typename === "notification_notion") {
-    return <UIIcon className={className} src={notion} $invert={isOnDarkBackground} />;
-  }
+  return (
+    <UIHolder>
+      <UIIcon
+        className={className}
+        src={iconProps.icon}
+        $invert={iconProps.isInverted}
+        $isUnread={displayUnreadNotification}
+      />
 
-  if (targetNotification.__typename === "notification_linear") {
-    return <UIIcon className={className} src={linear} />;
-  }
-
-  return unknownNode;
+      {/* <UIUnreadIndicator /> */}
+    </UIHolder>
+  );
 })``;
 
 const iconStyles = css`
@@ -57,7 +85,11 @@ const iconStyles = css`
   width: 1em;
 `;
 
-const UIIcon = styled.img<{ $invert?: boolean }>`
+const UIHolder = styled.div`
+  position: relative;
+`;
+
+const UIIcon = styled.img<{ $invert?: boolean; $isUnread?: boolean }>`
   ${iconStyles};
 
   ${(props) =>
@@ -70,3 +102,16 @@ const UIIcon = styled.img<{ $invert?: boolean }>`
 const UIUnknown = styled.div`
   ${iconStyles}
 `;
+
+// export const UIUnreadIndicator = styled.div<{}>`
+//   position: absolute;
+//   top: -4px;
+//   right: -4px;
+//   width: 10px;
+//   height: 10px;
+//   border: 1px solid ${theme.colors.layout.background.value};
+
+//   ${theme.colors.primary.asBg}
+
+//   ${theme.radius.circle}
+// `;
