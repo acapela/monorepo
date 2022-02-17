@@ -15,16 +15,20 @@ import {
 
 export async function handleLinearIssueChanges(event: HasuraEvent<LinearIssue>) {
   if (event.type === "create" && event.item.last_webhook_action === "update") {
-    // we just saved an issue for the first time, so we are not sure what has been updated
+    // we just saved an issue for the first time, so we cannot find out what has been updated
     return;
   }
 
+  const issueData = event.item.data as unknown as IssueData;
   if (event.type === "create" && event.item.last_webhook_action === "create") {
-    // this issue was just created, so we can already notify the subscribers
-    await saveIssue(event.item, "create");
+    if (issueData.assigneeId) {
+      await saveIssue(event.item, "assign", [issueData.assigneeId]);
+      return;
+    }
+    // this issue was just created but has no assignee
     return;
   }
-  const issueData = event.item.data as unknown as IssueData;
+
   const issueDataBefore = event.itemBefore?.data as unknown as IssueData;
   const changes = detailedDiff(issueDataBefore || {}, issueData || {}) as {
     added: IssueData;
