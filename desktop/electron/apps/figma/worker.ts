@@ -251,6 +251,7 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
         created_at: userNotification.created_at,
         updated_at: userNotification.created_at,
         figma_notification_id: userNotification.id,
+        thread_comment_id: commentNotification.parent_comment?.id,
       },
     });
   }
