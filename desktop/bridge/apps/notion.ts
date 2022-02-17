@@ -17,6 +17,7 @@ export type NotionWorkerSync = {
   notification: NotificationPartial;
   notionNotification: NotificationNotionPartial;
   type: NotionNotificationType;
+  discussion_id: string | undefined;
 }[];
 
 export const notionSyncPayload = createChannelBridge<NotionWorkerSync>("notion-worker-sync");

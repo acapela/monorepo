@@ -17,6 +17,11 @@ const unknownTarget: NotificationGroupTarget = {
   integrationTitle: "Slack conversation",
 };
 
+const getNotionDiscussionId = (inner: NotificationEntity["inner"]) =>
+  (inner && inner.__typename == "notification_notion" && inner.inner.__typename == "notification_notion_commented"
+    ? inner.inner.discussion_id
+    : null) ?? null;
+
 export function getNotificationGroupTarget(
   notification: NotificationEntity,
   notifications: NotificationEntity[]
@@ -35,22 +40,30 @@ export function getNotificationGroupTarget(
   }
 
   if (targetNotification.__typename === "notification_notion") {
+    const discussionId = getNotionDiscussionId(targetNotification);
+    const hasReplies = Boolean(
+      discussionId &&
+        notifications.some((n) => n.id !== notification.id && getNotionDiscussionId(n.inner) === discussionId)
+    );
     return {
-      id: targetNotification.page_id,
-      name: targetNotification.page_title,
+      id: targetNotification.page_id + "#" + (hasReplies ? discussionId : ""),
+      name: (hasReplies ? "Comment Thread in " : "") + targetNotification.page_title,
       integration: "notion",
       integrationTitle: "Notion page",
+      isOnePreviewEnough: hasReplies,
     };
   }
 
   if (targetNotification.__typename === "notification_slack_message") {
     const { slack_thread_ts: threadTs, slack_message_ts: ts } = targetNotification;
-    const hasReplies = () =>
-      notifications.some(
-        ({ inner }) => inner?.__typename === "notification_slack_message" && inner.slack_thread_ts === ts
-      );
+    const hasReplies = Boolean(
+      !threadTs &&
+        notifications.some(
+          ({ inner }) => inner?.__typename === "notification_slack_message" && inner.slack_thread_ts === ts
+        )
+    );
     return {
-      id: targetNotification.slack_conversation_id + "#" + (threadTs ?? (hasReplies() ? ts : "")),
+      id: targetNotification.slack_conversation_id + "#" + (threadTs ?? (hasReplies ? ts : "")),
       name: getNotificationTitle(notification),
       integration: "slack",
       integrationTitle: "Slack conversation",
@@ -64,6 +77,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
+      isOnePreviewEnough: true,
     };
   }
 

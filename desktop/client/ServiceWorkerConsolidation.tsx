@@ -39,7 +39,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
       }
 
       log.debug(`Syncing ${data.length} Notion notifications`);
-      for (const { notification, notionNotification, type } of data) {
+      for (const { notification, notionNotification, type, discussion_id } of data) {
         const existingNotification = db.notificationNotion.findByUniqueIndex(
           "notion_original_notification_id",
           notionNotification.notion_original_notification_id
@@ -63,7 +63,10 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         });
 
         if (type === "notification_notion_commented") {
-          db.notificationNotionCommented.create({ notification_notion_id: createdNotionNotification.id });
+          db.notificationNotionCommented.create({
+            notification_notion_id: createdNotionNotification.id,
+            discussion_id,
+          });
         } else if (type === "notification_notion_user_mentioned") {
           db.notificationNotionUserMentioned.create({ notification_notion_id: createdNotionNotification.id });
         } else if (type === "notification_notion_user_invited") {

@@ -16,6 +16,7 @@ const notificationNotionCommented = gql`
   fragment NotificationNotionCommented on notification_notion_commented {
     id
     notification_notion_id
+    discussion_id
     created_at
     updated_at
   }
@@ -36,12 +37,13 @@ export const notificationNotionCommentedEntity = defineEntity<NotificationNotion
   keys: getFragmentKeys<NotificationNotionCommentedFragment>(notificationNotionCommented),
   getDefaultValues: () => ({
     __typename: "notification_notion_commented",
+    discussion_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationNotionCommentedFragment, NotificationNotionCommentedConstraints>(
     notificationNotionCommented,
     {
-      insertColumns: ["id", "notification_notion_id", "created_at", "updated_at"],
+      insertColumns: ["id", "notification_notion_id", "created_at", "updated_at", "discussion_id"],
       updateColumns: ["updated_at"],
       upsertConstraint: "notification_notion_commented_pkey",
     }
