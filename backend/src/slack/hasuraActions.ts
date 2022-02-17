@@ -4,7 +4,7 @@ import { db } from "@aca/db";
 import {
   GetTeamSlackInstallationUrlInput,
   GetTeamSlackInstallationUrlOutput,
-  SlackUser,
+  ServiceUser,
   SlackUserOutput,
   UninstallSlackOutput,
 } from "@aca/gql";
@@ -46,7 +46,7 @@ export const getTeamSlackInstallationURLHandler: ActionHandler<
   },
 };
 
-export const slackUsers: ActionHandler<void, SlackUser[]> = {
+export const slackUsers: ActionHandler<void, ServiceUser[]> = {
   actionName: "slack_users",
 
   async handle(userId) {
@@ -57,6 +57,7 @@ export const slackUsers: ActionHandler<void, SlackUser[]> = {
     const { members, error } = await slackClient.users.list({
       token: (userSlackInstallation?.data as unknown as SlackInstallation).user.token,
     });
+
     if (error) {
       Sentry.captureException(error);
       throw new Error("Error while fetching slack users");
@@ -67,7 +68,7 @@ export const slackUsers: ActionHandler<void, SlackUser[]> = {
       display_name: assertDefined(member.name, `missing name for member ${JSON.stringify(member)}`),
       real_name: member.real_name ?? null,
       avatar_url: member.profile?.image_original ?? null,
-    })) as SlackUser[];
+    })) as ServiceUser[];
   },
 };
 

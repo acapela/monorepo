@@ -23,6 +23,7 @@ export const userSlackInstallationEntity = defineEntity<DesktopUserSlackInstalla
   keys: getFragmentKeys<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),
   getDefaultValues: () => ({
     __typename: "user_slack_installation",
+    slack_team_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),

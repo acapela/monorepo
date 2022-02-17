@@ -30,7 +30,7 @@ export function Router() {
     case "notification":
       return <NotificationView notificationId={activeRoute.params.notificationId} />;
     case "list":
-      return <ListView listId={activeRoute.params.listId} isEditing={!!activeRoute.params.isEditing} />;
+      return <ListView listId={activeRoute.params.listId} />;
     case "focus":
       return <FocusModeView notificationId={activeRoute.params.notificationId} listId={activeRoute.params.listId} />;
   }

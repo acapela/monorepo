@@ -7,6 +7,7 @@ import { DatabaseLinker } from "./entitiesConnections";
 import { SortResult } from "./query";
 import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
+import { PartialWithExplicitOptionals } from "./utils/types";
 
 type EntityAccessValidator<Data, Connections> = (entity: Entity<Data, Connections>, linker: DatabaseLinker) => boolean;
 
@@ -17,7 +18,16 @@ interface DefineEntityConfig<Data, Connections> {
   updatedAtField: keyof Data;
   uniqueIndexes?: Array<keyof Data>;
   getIsDeleted?: (item: Data) => boolean;
-  getDefaultValues?: (linker: DatabaseLinker) => Partial<Data>;
+  /**
+   * We require optional values (null and undefined) to be explicitly provided.
+   *
+   * Context: entity has to include all the fields that are possible at creation time (even if they are 'undefined')
+   * This is thus easy to create human-error when adding new optional field and not including it in default.
+   * Later on entity would throw on creation as some field would be missing.
+   *
+   * Thus for { foo?: Maybe<string> } it would be required to provide { foo: null } as a default instead of {}
+   */
+  getDefaultValues?: (linker: DatabaseLinker) => PartialWithExplicitOptionals<Data>;
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
   customObservableAnnotations?: AnnotationsMap<Data, never>;

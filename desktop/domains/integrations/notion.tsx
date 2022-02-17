@@ -15,6 +15,7 @@ const notionURL = "https://www.notion.so";
 
 export const notionIntegrationClient: IntegrationClient = {
   kind: "integration",
+  notificationTypename: "notification_notion",
   name: "Notion",
   description: "Comments, mentions and page invitations.",
   isReady: notionAuthTokenBridgeValue.observables.isReady,

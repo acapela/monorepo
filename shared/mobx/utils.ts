@@ -1,4 +1,4 @@
-import { action, autorun, observable, untracked } from "mobx";
+import { action, autorun, observable, runInAction, untracked } from "mobx";
 
 import { getUUID } from "@aca/shared/uuid";
 
@@ -83,7 +83,10 @@ export function asyncComputedWithCleanup<T>(
       currentCleanup();
       currentCleanup = undefined;
     }
-    busy.set(true);
+    runInAction(() => {
+      busy.set(true);
+    });
+
     const runId = getUUID();
     currentRun = runId;
 
@@ -102,20 +105,22 @@ export function asyncComputedWithCleanup<T>(
     }
 
     creator({ assertStillValid, setSelf, getStillValid })
-      .then((newValue) => {
-        if (!getStillValid()) {
-          if (newValue.cleanup) {
-            newValue.cleanup();
+      .then(
+        action((newValue) => {
+          if (!getStillValid()) {
+            if (newValue.cleanup) {
+              newValue.cleanup();
+            }
+            return;
           }
-          return;
-        }
-        if (newValue.cleanup) {
-          currentCleanup = newValue.cleanup;
-        }
+          if (newValue.cleanup) {
+            currentCleanup = newValue.cleanup;
+          }
 
-        value.set(newValue.value);
-        busy.set(false);
-      })
+          value.set(newValue.value);
+          busy.set(false);
+        })
+      )
       .catch((error) => {
         if (error === InvalidError) return;
 

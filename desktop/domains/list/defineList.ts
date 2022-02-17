@@ -12,18 +12,33 @@ interface DefineListConfig {
   id: string;
   name: string;
   isCustom?: boolean;
-  filter: (notification: NotificationEntity) => boolean;
+  filter?: (notification: NotificationEntity) => boolean;
+  getNotifications?: () => NotificationEntity[];
 }
 
 // For non-grouped notifications the index is a single number
 // For grouped notifications the index is a number tuple, containing both the group's index and the within group index
 type GroupedNotificationsIndex = number | [number, number];
 
-export function defineNotificationsList({ id, name, isCustom, filter }: DefineListConfig) {
-  const getAllGroupedNotifications = cachedComputed(() => {
+export function defineNotificationsList({ id, name, isCustom, filter, getNotifications }: DefineListConfig) {
+  assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
+
+  const getAllNotifications = cachedComputed(() => {
     const db = getDb();
-    const rawAll = db.notification.query(filter);
-    return groupNotifications(rawAll.all);
+
+    if (filter) {
+      return db.notification.query(filter).all;
+    }
+
+    if (getNotifications) {
+      return getNotifications();
+    }
+
+    return [];
+  });
+
+  const getAllGroupedNotifications = cachedComputed(() => {
+    return groupNotifications(getAllNotifications());
   });
 
   const getFlattenedNotifications = cachedComputed(() =>

@@ -19,11 +19,15 @@ type Mutation {
 }
 
 type Query {
+  linear_users: [ServiceUser!]!
+}
+
+type Query {
   slack_user(team_id: uuid!): SlackUserOutput
 }
 
 type Query {
-  slack_users: [SlackUser!]!
+  slack_users: [ServiceUser!]!
 }
 
 type Mutation {
@@ -103,6 +107,13 @@ type GetSlackInstallationURLOutput {
 }
 
 type SlackUser {
+  id: String!
+  display_name: String!
+  real_name: String
+  avatar_url: String
+}
+
+type ServiceUser {
   id: String!
   display_name: String!
   real_name: String

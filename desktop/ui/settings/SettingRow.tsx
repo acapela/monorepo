@@ -23,6 +23,7 @@ export function SettingRow({ title, description, children }: Props) {
 
 const UIHolder = styled.div`
   display: flex;
+  align-items: center;
   gap: 16px;
 `;
 
@@ -33,6 +34,7 @@ const UIInfo = styled.div`
 
 const UITitle = styled.div`
   ${theme.typo.item.title}
+  ${theme.common.ellipsisText}
 `;
 
 const UIDescription = styled.div`

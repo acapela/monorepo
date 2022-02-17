@@ -26,11 +26,19 @@ export const toggleFocusModeStats = defineAction({
 export const toggleDarkTheme = defineAction({
   name: "Toggle dark theme",
   group: settingsActionsGroup,
+  keywords: ["dark mode", "mode"],
   icon: <IconBulb />,
   handler() {
     const newDarkModeValue = !uiStore.isInDarkMode;
 
     const prev = uiSettingsBridge.get();
+
+    // Avoid 'animated' change where all the buttons might change theme in a slightly different time.
+    document.body.classList.add("no-transitions");
     uiSettingsBridge.set({ ...prev, isDarkMode: newDarkModeValue });
+
+    setTimeout(() => {
+      document.body.classList.remove("no-transitions");
+    }, 500);
   },
 });

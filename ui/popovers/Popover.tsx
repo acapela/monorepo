@@ -2,27 +2,26 @@ import { Placement } from "@popperjs/core";
 import { throttle } from "lodash";
 import React, { ReactNode, RefObject, useState } from "react";
 import { usePopper } from "react-popper";
-import { useClickAway } from "react-use";
 import styled from "styled-components";
 
+import { useHandleCloseRequest } from "@aca/shared/hooks/useClickOutside";
 import { useRefValue } from "@aca/shared/hooks/useRefValue";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 import { useValueRef } from "@aca/shared/hooks/useValueRef";
 import { BodyPortal } from "@aca/ui/BodyPortal";
-import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { ScreenCover } from "@aca/ui/Modal/ScreenCover";
 import { theme } from "@aca/ui/theme";
 
 export type PopoverPlacement = Placement;
 
-interface PopoverProps {
+export interface PopoverProps {
   anchorRef: RefObject<HTMLElement>;
   children: ReactNode;
   isDisabled?: boolean;
   className?: string;
   placement?: PopoverPlacement;
   distance?: number;
-  onClickOutside?: () => void;
+  onCloseRequest?: () => void;
   enableScreenCover?: boolean;
 }
 
@@ -32,7 +31,7 @@ export const Popover = styled<PopoverProps>(
     anchorRef,
     children,
     isDisabled,
-    onClickOutside,
+    onCloseRequest,
     distance = 5,
     placement = "auto",
     enableScreenCover = false,
@@ -65,16 +64,16 @@ export const Popover = styled<PopoverProps>(
 
     const poperRef = useValueRef(popperElement);
 
-    useClickAway(poperRef, () => {
-      onClickOutside?.();
+    useHandleCloseRequest(poperRef, () => {
+      onCloseRequest?.();
+    });
+
+    useResizeCallback(anchorRef, () => {
+      throttledUpdate?.();
     });
 
     useResizeCallback(poperRef, () => {
       throttledUpdate?.();
-    });
-
-    useShortcut("Esc", () => {
-      onClickOutside?.();
     });
 
     if (isDisabled) return null;

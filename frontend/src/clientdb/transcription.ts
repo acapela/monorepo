@@ -23,6 +23,7 @@ export const transcriptionEntity = defineEntity<TranscriptionFragment>({
   keys: getFragmentKeys<TranscriptionFragment>(transcriptionFragment),
   getDefaultValues: () => ({
     __typename: "transcription",
+    transcript: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TranscriptionFragment, { where: Transcription_Bool_Exp }>(

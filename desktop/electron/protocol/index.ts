@@ -1,9 +1,9 @@
 import { app, shell } from "electron";
-import Protocol from "protocol-registry";
 
 import { openAppUrl } from "@aca/desktop/bridge/apps";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { checkIfAppExists } from "@aca/desktop/electron/utils/checkIfAppExists";
 import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
 export const APP_PROTOCOL = "acapela";
@@ -36,7 +36,7 @@ export function initializeProtocolHandlers() {
 
   openAppUrl.handle(async (appUrlProps) => {
     try {
-      if (appUrlProps.protocol && appUrlProps.localUrl && (await Protocol.checkifExists(appUrlProps.protocol))) {
+      if (appUrlProps.protocol && appUrlProps.localUrl && (await checkIfAppExists(appUrlProps.protocol))) {
         shell.openExternal(appUrlProps.localUrl);
         return true;
       }

@@ -4,7 +4,6 @@ import { defineEntity } from "@aca/clientdb";
 import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { NotificationLinearFragment } from "@aca/gql";
 
 const notificationLinearFragment = gql`
@@ -16,6 +15,7 @@ const notificationLinearFragment = gql`
     type
     issue_id
     issue_title
+    creator_id
   }
 `;
 
@@ -24,10 +24,6 @@ export const notificationLinearEntity = defineEntity<NotificationLinearFragment>
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<NotificationLinearFragment>(notificationLinearFragment),
-  getDefaultValues: () => ({
-    __typename: "notification_linear",
-    ...getGenericDefaultData(),
-  }),
   sync: createHasuraSyncSetupFromFragment<NotificationLinearFragment>(notificationLinearFragment),
 });
 

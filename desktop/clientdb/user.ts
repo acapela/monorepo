@@ -16,7 +16,6 @@ const userFragment = gql`
     name
     email
     avatar_url
-    has_slack_installation
     is_slack_auto_resolve_enabled
     updated_at
     created_at
@@ -35,6 +34,8 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   keys: getFragmentKeys<DesktopUserFragment>(userFragment),
   getDefaultValues: () => ({
     __typename: "user",
+    has_slack_installation: null,
+    avatar_url: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {

@@ -1,7 +1,9 @@
 import { sortBy } from "lodash";
+import { useMemo } from "react";
 
 import { MaybeArray, convertMaybeArrayToArray } from "@aca/shared/array";
 
+import { useMethod } from "../hooks/useMethod";
 import { commandScore } from "./commandScore";
 
 type TermsResult = MaybeArray<string>;
@@ -57,4 +59,17 @@ export function fuzzySearch<T>(
     .map((result) => {
       return result.item;
     });
+}
+
+export function useFuzzySearch<T>(
+  items: T[],
+  termsGetter: TermGetter<T>,
+  keyword: string,
+  minScore = DEFAULT_FUZZY_SEARCH_TRESHOLD
+) {
+  const termsGetterRef = useMethod(termsGetter);
+  return useMemo(
+    () => fuzzySearch(items, termsGetterRef, keyword, minScore),
+    [items, termsGetterRef, keyword, minScore]
+  );
 }

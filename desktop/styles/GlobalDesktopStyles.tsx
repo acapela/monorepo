@@ -15,6 +15,12 @@ export const GlobalDesktopStyles = createGlobalStyle`
     ${theme.colors.layout.background.asBg}    
   }
 
+  body.no-transitions {
+    * {
+      transition: none !important;
+    }
+  }
+
   * {
     cursor: default;
   }

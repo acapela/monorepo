@@ -7,9 +7,9 @@ import { slackIntegrationClient } from "./slack";
 import { IntegrationClient } from "./types";
 
 export const integrationClients = {
+  slack: slackIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,
-  slack: slackIntegrationClient,
   linear: linearIntegrationClient,
 };
 

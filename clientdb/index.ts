@@ -23,6 +23,9 @@ interface ClientDbConfig {
 }
 
 type EntitiesClientsMap<Entities extends EntitiesMap> = {
+  // If you're brave - go for it! You've been warned.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   [key in keyof Entities]: EntityClientByDefinition<Entities[key]>;
 };
 
@@ -41,7 +44,11 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   assert(isClient, "Client DB can only be created on client side");
 
-  const [persistanceDb, cacheTable] = await initializePersistance(definitions, db, onDestroyRequest);
+  const [persistanceDb, cacheTable] = await initializePersistance(
+    definitions as EntityDefinition<unknown, unknown>[],
+    db,
+    onDestroyRequest
+  );
   const persistedCacheManager = await initializePersistedKeyValueCache(cacheTable);
 
   const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);
@@ -50,7 +57,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
     entityCache: entityPersistedCacheManager,
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
-        return client.definition === definition;
+        return (client as EntityClient<Data, Connections>).definition === definition;
       });
 
       if (!foundClient) {
@@ -59,7 +66,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
         );
       }
 
-      return foundClient;
+      return foundClient as EntityClient<Data, Connections>;
     },
     getContextValue<V>(context: DbContext<V>) {
       if (!contexts) {

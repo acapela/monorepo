@@ -27,7 +27,7 @@ export const CollapsedTasksButton = styledObserver(function CollapsedTasks({ tas
         +{tasks.length}
       </Button>
       {isPopoverOpen && (
-        <Popover anchorRef={ref} placement="left" onClickOutside={closePopover} enableScreenCover>
+        <Popover anchorRef={ref} placement="left" onCloseRequest={closePopover} enableScreenCover>
           <UICollapsedTasks>
             {tasks.map((task) => (
               <MessageTask key={task.id} task={task} />

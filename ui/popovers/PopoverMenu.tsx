@@ -39,7 +39,7 @@ export const PopoverMenu = styled<Props>(
         placement={placement}
         isDisabled={isDisabled}
         enableScreenCover
-        onClickOutside={onCloseRequest}
+        onCloseRequest={onCloseRequest}
       >
         <UIPopoverMenuModal ref={popoverRef} className={className} onClick={(event) => event.stopPropagation()}>
           {options.map((option) => {

@@ -1,7 +1,7 @@
 import produce from "immer";
 import { isPrimitive } from "utility-types";
 
-type FunctionUpdater<T> = (draft: T) => void;
+export type FunctionUpdater<T> = (draft: T) => void;
 
 export type ValueUpdater<T> = FunctionUpdater<T> | Partial<T>;
 
