@@ -125,6 +125,7 @@ async function createNotificationFromMessage(
   await db.notification.create({
     data: {
       user_id: userSlackInstallation.user_id,
+      // For Slack-Connect users the name was only found within the profile object
       from: authorUser.profile?.real_name ?? authorUser.real_name ?? "Unknown",
       url: permalink,
       text_preview: await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds),
