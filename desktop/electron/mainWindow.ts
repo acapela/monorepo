@@ -9,6 +9,7 @@ import { AppEnvData } from "@aca/desktop/envData";
 
 import { appState } from "./appState";
 import { initializeChildWindowHandlers } from "./childWindows";
+import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
@@ -95,6 +96,8 @@ export function initializeMainWindow() {
   });
 
   initializeChildWindowHandlers(mainWindow);
+
+  makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
   return mainWindow;
 }
