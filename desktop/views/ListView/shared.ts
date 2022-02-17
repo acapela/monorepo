@@ -1,8 +1,12 @@
 import styled from "styled-components";
 
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { theme } from "@aca/ui/theme";
 
 const SENDERS_WIDTH = 150;
+
+export const isNotificationSnoozeEnded = ({ snoozed_until, last_seen_at }: NotificationEntity) =>
+  snoozed_until && last_seen_at && new Date(snoozed_until).getTime() > new Date(last_seen_at).getTime();
 
 export const UISendersLabel = styled.div`
   ${theme.typo.content.semibold};
@@ -32,4 +36,12 @@ export const UINotificationPreviewText = styled.div`
   margin-left: -18px;
   flex-grow: 1;
   flex-basis: 0;
+`;
+
+export const UIUnreadIndicator = styled.div<{ $type: "snooze-ended" | "not-read" }>`
+  width: 10px;
+  height: 10px;
+  ${(props) => (props.$type === "not-read" ? theme.colors.primary.asBg : theme.colors.tags.feedback.asBg)}
+
+  ${theme.radius.circle}
 `;

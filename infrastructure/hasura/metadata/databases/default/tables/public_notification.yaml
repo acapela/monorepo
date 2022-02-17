@@ -19,7 +19,7 @@ insert_permissions:
         _eq: X-Hasura-User-Id
     columns:
     - created_at
-    - first_seen_at
+    - last_seen_at
     - from
     - id
     - resolved_at
@@ -33,7 +33,7 @@ select_permissions:
 - permission:
     columns:
     - created_at
-    - first_seen_at
+    - last_seen_at
     - from
     - id
     - resolved_at
@@ -50,7 +50,7 @@ update_permissions:
 - permission:
     check: null
     columns:
-    - first_seen_at
+    - last_seen_at
     - from
     - resolved_at
     - snoozed_until

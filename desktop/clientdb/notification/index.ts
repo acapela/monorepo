@@ -30,7 +30,7 @@ const notificationFragment = gql`
     resolved_at
     updated_at
     created_at
-    first_seen_at
+    last_seen_at
     snoozed_until
   }
 `;
@@ -61,7 +61,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     resolved_at: null,
     snoozed_until: null,
     text_preview: null,
-    first_seen_at: null,
+    last_seen_at: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
@@ -77,9 +77,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "from",
         "snoozed_until",
         "text_preview",
-        "first_seen_at",
+        "last_seen_at",
       ],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview", "first_seen_at"],
+      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview", "last_seen_at"],
       upsertConstraint: "notification_pkey",
     }
   ),
@@ -107,8 +107,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         connections.markAsSeen();
       },
       markAsSeen() {
-        if (notification.first_seen_at) return;
-        updateSelf({ first_seen_at: new Date().toISOString() });
+        updateSelf({ last_seen_at: new Date().toISOString() });
       },
 
       get isSnoozed() {

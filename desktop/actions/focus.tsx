@@ -54,14 +54,8 @@ export const goToNextNotification = defineAction({
   shortcut: "ArrowDown",
   canApply: isNotFocusingPreviewAnd((context) => !!context.view(focusPageView)?.nextNotification),
   handler(context) {
-    const nextNotification = context.view(focusPageView)?.nextNotification;
-
-    if (!nextNotification) return;
-
-    desktopRouter.navigate("focus", {
-      listId: context.assertTarget("list", true).id,
-      notificationId: nextNotification.id,
-    });
+    const focusView = context.view(focusPageView);
+    focusView?.goToNextNotification();
   },
 });
 
@@ -72,13 +66,7 @@ export const goToPreviousNotification = defineAction({
   shortcut: "ArrowUp",
   canApply: isNotFocusingPreviewAnd((context) => !!context.view(focusPageView)?.prevNotification),
   handler(context) {
-    const previousNotification = context.view(focusPageView)?.prevNotification;
-
-    if (!previousNotification) return;
-
-    desktopRouter.navigate("focus", {
-      listId: context.assertTarget("list", true).id,
-      notificationId: previousNotification.id,
-    });
+    const focusView = context.view(focusPageView);
+    focusView?.goToPreviousNotification();
   },
 });

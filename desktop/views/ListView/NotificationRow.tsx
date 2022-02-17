@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/notification";
@@ -20,7 +20,13 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import {
+  UINotificationPreviewText,
+  UINotificationRowTitle,
+  UISendersLabel,
+  UIUnreadIndicator,
+  isNotificationSnoozeEnded,
+} from "./shared";
 
 interface Props {
   notification: NotificationEntity;
@@ -52,6 +58,15 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     }
   );
 
+  const unreadIndicatorType: "snooze-ended" | "not-read" | undefined = useMemo(() => {
+    if (!notification.last_seen_at) {
+      return "not-read";
+    }
+    if (isNotificationSnoozeEnded(notification)) {
+      return "snooze-ended";
+    }
+  }, [notification]);
+
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -72,6 +87,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         $isFocused={isFocused}
         $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
       >
+        {unreadIndicatorType && <UIUnreadIndicator $type={unreadIndicatorType} />}
         <NotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
