@@ -32,7 +32,10 @@ export const ExperimentalSettings = observer(function ThemeSelector() {
           }}
         />
       </SettingRow>
-      <SettingRow title="Peek view shortcut" description="System wide shortcut that will show up Acapela">
+      <SettingRow
+        title="Peek view shortcut"
+        description="System wide shortcut that will show up quick preview of pending notifications"
+      >
         <ShortcutPicker
           currentShortcut={settings.globalPeekShortcut ?? undefined}
           onChange={(newShortcut) => {
