@@ -22,6 +22,7 @@ const notificationFigmaComment = gql`
     file_name
     is_mention
     figma_notification_id
+    thread_comment_id
   }
 `;
 
@@ -40,6 +41,7 @@ export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaComm
   keys: getFragmentKeys<NotificationFigmaCommentFragment>(notificationFigmaComment),
   getDefaultValues: () => ({
     __typename: "notification_figma_comment",
+    thread_comment_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationFigmaCommentFragment, NotificationFigmaCommentConstraints>(
@@ -54,6 +56,7 @@ export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaComm
         "file_name",
         "is_mention",
         "figma_notification_id",
+        "thread_comment_id",
       ],
       updateColumns: ["updated_at", "file_name"],
       upsertConstraint: "notification_figma_comment_pkey",

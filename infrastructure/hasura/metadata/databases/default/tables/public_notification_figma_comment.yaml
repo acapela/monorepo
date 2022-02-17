@@ -20,6 +20,7 @@ insert_permissions:
     - id
     - is_mention
     - notification_id
+    - thread_comment_id
     - updated_at
   role: user
 select_permissions:
@@ -32,6 +33,7 @@ select_permissions:
     - id
     - is_mention
     - notification_id
+    - thread_comment_id
     - updated_at
     filter:
       notification:

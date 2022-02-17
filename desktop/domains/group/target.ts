@@ -31,11 +31,13 @@ export function getNotificationGroupTarget(
   if (!targetNotification) return unknownTarget;
 
   if (targetNotification.__typename === "notification_figma_comment") {
+    const isThread = !!targetNotification.thread_comment_id;
     return {
-      id: targetNotification.file_id,
-      name: targetNotification.file_name,
+      id: targetNotification.file_id + "#" + targetNotification.thread_comment_id,
+      name: (isThread ? "Comment Thread in " : "") + targetNotification.file_name,
       integration: "figma",
       integrationTitle: "Figma file",
+      isOnePreviewEnough: isThread,
     };
   }
 
