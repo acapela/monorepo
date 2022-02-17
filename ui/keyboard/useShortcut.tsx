@@ -2,6 +2,7 @@ import { useIsPresent } from "framer-motion";
 import { useEffect } from "react";
 
 import { createCleanupObject } from "@aca/shared/cleanup";
+import { useDocument } from "@aca/shared/context/window";
 
 import { describeShortcut } from "./describeShortcut";
 import {
@@ -9,14 +10,26 @@ import {
   ShortcutDefinition,
   ShortcutOptions,
   createShortcutListener,
+  initializeDocumentShortcuts,
   resolveShortcutsDefinition,
 } from "./shortcutBase";
+
+function useInitializeDocumentShortcuts() {
+  const document = useDocument();
+
+  useEffect(() => {
+    if (document) {
+      initializeDocumentShortcuts(document);
+    }
+  }, [document]);
+}
 
 export function useOptionalShortcut(
   shortcut?: ShortcutDefinition,
   callback?: ShortcutCallback,
   options?: ShortcutOptions
 ) {
+  useInitializeDocumentShortcuts();
   const keys = shortcut ? resolveShortcutsDefinition(shortcut) : null;
 
   useEffect(() => {
@@ -28,6 +41,7 @@ export function useOptionalShortcut(
 }
 
 export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutOptions) {
+  useInitializeDocumentShortcuts();
   const isPresent = useIsPresent();
   const keys = resolveShortcutsDefinition(shortcut);
 
@@ -42,6 +56,7 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
 }
 
 export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: ShortcutCallback, options?: ShortcutOptions) {
+  useInitializeDocumentShortcuts();
   const isPresent = useIsPresent();
   useEffect(() => {
     if (!isPresent) return;
