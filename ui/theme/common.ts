@@ -32,4 +32,7 @@ export const common = {
     border: none;
     outline: none;
   `,
+  dragWindow: css`
+    -webkit-app-region: drag;
+  `,
 };

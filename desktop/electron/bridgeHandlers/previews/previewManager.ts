@@ -8,6 +8,7 @@ import { assert } from "@aca/shared/assert";
 import { createChannel } from "@aca/shared/channel";
 import { createResolvablePromise } from "@aca/shared/promises";
 
+import { makeLinksOpenInDefaultBrowser } from "../../utils/openLinks";
 import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
 import { PreviewAttachManager, attachBrowserViewToWindow } from "./previewAttaching";
 import { loadURLWithFilters } from "./siteFilters";
@@ -31,6 +32,8 @@ export function createPreviewManager(url: string) {
   let currentWindowAttachment: PreviewAttachManager | null = null;
 
   attachViewToPreloadingWindow(browserView);
+
+  makeLinksOpenInDefaultBrowser(browserView.webContents);
 
   browserView.webContents.setAudioMuted(true);
 

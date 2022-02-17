@@ -8,6 +8,8 @@ import { action, runInAction } from "mobx";
 import { AppEnvData } from "@aca/desktop/envData";
 
 import { appState } from "./appState";
+import { initializeChildWindowHandlers } from "./childWindows";
+import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
@@ -55,6 +57,7 @@ export function initializeMainWindow() {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
       additionalArguments: [JSON.stringify(env)],
+      backgroundThrottling: false,
     },
     minWidth: 900,
     minHeight: 680,
@@ -91,6 +94,10 @@ export function initializeMainWindow() {
   mainWindow.webContents.on("did-fail-load", () => {
     loadAppInWindow(mainWindow);
   });
+
+  initializeChildWindowHandlers(mainWindow);
+
+  makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
   return mainWindow;
 }

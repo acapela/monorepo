@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import { handleAttachmentUpdates } from "@aca/backend/src/attachments/events";
 import { extractAndAssertBearerToken } from "@aca/backend/src/authentication";
 import { AuthenticationError } from "@aca/backend/src/errors/errorTypes";
+import { handleLinearIssueChanges } from "@aca/backend/src/linear/events";
 import { handleMessageChanges, handleMessageReactionChanges } from "@aca/backend/src/messages/events";
 import {
   handleTaskSlackMessageChanges,
@@ -39,6 +40,7 @@ hasuraEvents.addHandler("message_task_due_date_updates", ["INSERT", "UPDATE"], h
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addHandler("team_member_updates", ["INSERT"], handleTeamMemberAdded);
 hasuraEvents.addHandler("user_updates", ["INSERT", "UPDATE"], handleUserUpdates);
+hasuraEvents.addHandler("linear_issue_updates", ["INSERT", "UPDATE"], handleLinearIssueChanges);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {

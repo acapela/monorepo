@@ -1,20 +1,21 @@
-import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
+import { styledObserver } from "@aca/shared/component";
 
 import { FilterLabel } from "./FilterLabel";
 import { NewFilterCreator } from "./NewFilterCreator";
 
 interface Props {
   listId: string;
+  className?: string;
 }
 
-export const ListFilters = observer(function ListFilters({ listId }: Props) {
+export const ListFilters = styledObserver(function ListFilters({ listId, className }: Props) {
   const list = getDb().notificationList.assertFindById(listId);
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       <UIFilters>
         <NewFilterCreator
           onCreateRequest={(filter) => {
@@ -50,7 +51,7 @@ export const ListFilters = observer(function ListFilters({ listId }: Props) {
       </UIFilters>
     </UIHolder>
   );
-});
+})``;
 
 const UIHolder = styled.div`
   display: flex;

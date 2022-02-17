@@ -1,21 +1,18 @@
-import { noop } from "lodash";
 import { RefObject, useEffect } from "react";
 
-import { isServer } from "@aca/shared/isServer";
-
+import { getDocument, getWindow, useDocument } from "./context/window";
 import { useBoolean } from "./hooks/useBoolean";
 
 export function createWindowEvent<K extends keyof WindowEventMap>(
   type: K,
   handler: (event: WindowEventMap[K]) => void,
-  options?: AddEventListenerOptions
+  options?: AddEventListenerOptions,
+  window = getWindow()
 ) {
-  if (isServer) return noop;
-
-  window.addEventListener(type, handler, options);
+  window?.addEventListener(type, handler, options);
 
   return function cancel() {
-    window.removeEventListener(type, handler, options);
+    window?.removeEventListener(type, handler, options);
   };
 }
 
@@ -32,14 +29,13 @@ export function useWindowEvent<K extends keyof WindowEventMap>(
 export function createDocumentEvent<K extends keyof DocumentEventMap>(
   type: K,
   handler: (event: DocumentEventMap[K]) => void,
-  options?: AddEventListenerOptions
+  options?: AddEventListenerOptions,
+  document = getDocument()
 ) {
-  if (typeof document === "undefined") return noop;
-
-  document.addEventListener(type, handler, options);
+  document?.addEventListener(type, handler, options);
 
   return function cancel() {
-    document.removeEventListener(type, handler, options);
+    document?.removeEventListener(type, handler, options);
   };
 }
 
@@ -52,9 +48,10 @@ export function useDocumentEvent<K extends keyof DocumentEventMap>(
   handler: (event: DocumentEventMap[K]) => void,
   options?: HookEventOptions
 ) {
+  const document = useDocument();
   useEffect(() => {
     if (options?.isEnabled === false) return;
-    return createDocumentEvent(type, handler, options);
+    return createDocumentEvent(type, handler, options, document);
   }, [type, handler, options]);
 }
 

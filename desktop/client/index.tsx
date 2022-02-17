@@ -12,6 +12,7 @@ import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorB
 import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
+import { GlobalShortcutsManager } from "@aca/desktop/views/GlobalShortcutsManager";
 import { RootView } from "@aca/desktop/views/RootView";
 import { ToastsAndCommunicatesView } from "@aca/desktop/views/ToastsAndCommunicates";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
@@ -20,6 +21,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { PeekView } from "../views/PeekView";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 import { SystemBar } from "./SystemBar";
@@ -52,6 +54,7 @@ if (window.electronBridge.env.windowName === "Logger") {
           <DesktopThemeProvider>
             <BuiltInStyles />
             <GlobalDesktopStyles />
+            <GlobalShortcutsManager />
             <PromiseUIRenderer />
             <TooltipsRenderer />
             <ToastsRenderer />
@@ -59,6 +62,7 @@ if (window.electronBridge.env.windowName === "Logger") {
             <SystemBar />
             <RootErrorBoundary>
               <ToastsAndCommunicatesView />
+              <PeekView />
               <CommandMenuManager />
               <RootView />
               <DebugView />

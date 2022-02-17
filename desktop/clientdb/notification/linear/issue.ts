@@ -16,6 +16,7 @@ const notificationLinearFragment = gql`
     issue_id
     issue_title
     creator_id
+    origin
   }
 `;
 

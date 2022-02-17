@@ -12,7 +12,7 @@ import { Toggle } from "@aca/ui/toggle";
 
 export const ExperimentalSettings = observer(function ThemeSelector() {
   const isDarkMode = uiStore.isInDarkMode;
-  const openShortcut = applicationWideSettingsBridge.get().globalShowAppShortcut;
+  const settings = applicationWideSettingsBridge.get();
 
   return (
     <SettingsList>
@@ -23,12 +23,26 @@ export const ExperimentalSettings = observer(function ThemeSelector() {
       </SettingRow>
       <SettingRow title="Global shortcut" description="System wide shortcut that will show up Acapela">
         <ShortcutPicker
-          currentShortcut={openShortcut ?? undefined}
+          currentShortcut={settings.globalShowAppShortcut ?? undefined}
           onChange={(newShortcut) => {
             applicationWideSettingsBridge.update({ globalShowAppShortcut: newShortcut });
           }}
           onClearRequest={() => {
             applicationWideSettingsBridge.update({ globalShowAppShortcut: null });
+          }}
+        />
+      </SettingRow>
+      <SettingRow
+        title="Peek view shortcut"
+        description="System wide shortcut that will show up quick preview of pending notifications"
+      >
+        <ShortcutPicker
+          currentShortcut={settings.globalPeekShortcut ?? undefined}
+          onChange={(newShortcut) => {
+            applicationWideSettingsBridge.update({ globalPeekShortcut: newShortcut });
+          }}
+          onClearRequest={() => {
+            applicationWideSettingsBridge.update({ globalPeekShortcut: null });
           }}
         />
       </SettingRow>
