@@ -5,7 +5,13 @@ import { HasuraEvent } from "@aca/backend/src/hasura";
 import { LinearIssue, db } from "@aca/db";
 
 import { IssueData } from "./types";
-import { getRandomLinearClient, getUsersForOrganizationId } from "./utils";
+import {
+  NotificationOrigin,
+  fetchCreatorAndIssueHistory,
+  findMatchingActor,
+  getRandomLinearClient,
+  getUsersForOrganizationId,
+} from "./utils";
 
 export async function handleLinearIssueChanges(event: HasuraEvent<LinearIssue>) {
   if (event.type === "create" && event.item.last_webhook_action === "update") {
@@ -32,27 +38,24 @@ export async function handleLinearIssueChanges(event: HasuraEvent<LinearIssue>) 
   if ("assigneeId" in changes.added || "assigneeId" in changes.updated) {
     // issue was assigned to someone, notify only the assignee
     await saveIssue(event.item, "assign", [changes.added.assigneeId || changes.updated.assigneeId]);
-    return;
   }
+
   if ("state" in changes.updated && changes.updated.state.type === "canceled") {
     // issue was canceled
     await saveIssue(event.item, "cancel");
-    return;
   }
 }
 
-async function saveIssue(payload: LinearIssue, origin: string, notifyOnly?: string[]) {
-  const usersForOrg = await getUsersForOrganizationId(payload.organization_id, notifyOnly);
-  const linearClient = getRandomLinearClient(usersForOrg);
+async function saveIssue(payload: LinearIssue, origin: NotificationOrigin, notifyOnly?: string[]) {
   const issueData = payload.data as unknown as IssueData;
-  const { creatorId } = issueData;
-  const creator = await linearClient.user(creatorId);
-  const notificationPromises = usersForOrg
-    .filter((u) => {
-      if (!issueData.subscriberIds.includes(u.linear_user_id || "")) return false;
-      if (!notifyOnly) return u.linear_user_id !== creatorId;
-      return true;
-    })
+  const userIds = notifyOnly ? notifyOnly : issueData.subscriberIds;
+  const usersToNotify = await getUsersForOrganizationId(payload.organization_id, userIds);
+  if (!usersToNotify.length) return;
+  const linearClient = getRandomLinearClient(usersToNotify);
+  const [creator, history] = await fetchCreatorAndIssueHistory(linearClient, issueData.id);
+  const actor = findMatchingActor(origin, issueData, creator, history);
+  const notificationPromises = usersToNotify
+    .filter((u) => u.linear_user_id !== actor.id)
     .map((u) =>
       db.notification_linear.create({
         data: {
@@ -60,10 +63,10 @@ async function saveIssue(payload: LinearIssue, origin: string, notifyOnly?: stri
             create: {
               user_id: u.user_id,
               url: payload.url || "",
-              from: creator.name,
+              from: actor.name,
             },
           },
-          creator_id: creatorId,
+          creator_id: actor.id,
           type: "Issue",
           issue_id: issueData.id,
           issue_title: issueData.title,

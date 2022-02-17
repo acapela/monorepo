@@ -103,6 +103,7 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
 
 async function saveComment(payload: CommentWebhook) {
   const usersForOrg = await getUsersForOrganizationId(payload.organizationId);
+  if (!usersForOrg.length) return;
   const linearClient = getRandomLinearClient(usersForOrg);
   const subscribersRes = await linearClient.client.rawRequest(
     `
