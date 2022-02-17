@@ -35,6 +35,7 @@ export const notificationSlackMessageEntity = defineEntity<NotificationSlackMess
     slack_message_ts: null,
     slack_thread_ts: null,
     slack_user_id: null,
+    conversation_type: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
