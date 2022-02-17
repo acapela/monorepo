@@ -1,15 +1,9 @@
 import { app, globalShortcut } from "electron";
 
-import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { createLogger } from "@aca/shared/log";
-import { autorunEffect } from "@aca/shared/mobx/utils";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
-import { appState } from "./appState";
-
-function showMainWindow() {
-  appState.mainWindow?.show();
-}
+import { globalShortcutPressed, registerGlobalShortcutRequest } from "../bridge/globalShortcuts";
 
 const aliases: Record<string, string> = {
   meta: "CommandOrControl",
@@ -26,34 +20,29 @@ function convertShortcutKeysToElectronShortcut(keys: ShortcutKeys) {
 }
 
 export function initializeGlobalShortcuts() {
-  const clear = autorunEffect(() => {
-    if (!applicationWideSettingsBridge.isReady) {
-      return;
-    }
-
-    if (appState.isMainWindowFocused) return;
-
-    const currentShortcut = applicationWideSettingsBridge.get().globalShowAppShortcut;
-
-    if (!currentShortcut) return;
-
-    const electronShortcut = convertShortcutKeysToElectronShortcut(currentShortcut);
+  registerGlobalShortcutRequest.handle(({ shortcut }) => {
+    const electronShortcut = convertShortcutKeysToElectronShortcut(shortcut);
 
     log(`Registering - ${electronShortcut}`);
-    const didRegister = globalShortcut.register(electronShortcut, showMainWindow);
+    const didRegister = globalShortcut.register(electronShortcut, () => {
+      log(`Global Shortcut pressed - ${electronShortcut}`);
+      globalShortcutPressed.send({ shortcut });
+    });
 
     if (!didRegister) {
       log(`Failed to register 'show acapela' global shortcut`);
       return;
     }
 
-    return () => {
+    const clear = () => {
       log("Clearing shortcut");
       globalShortcut.unregister(electronShortcut);
     };
-  });
 
-  app.on("will-quit", () => {
-    clear();
+    app.on("will-quit", () => {
+      clear();
+    });
+
+    return clear;
   });
 }
