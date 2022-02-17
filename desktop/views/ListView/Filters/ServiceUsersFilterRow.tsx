@@ -8,19 +8,21 @@ import { updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { theme } from "@aca/ui/theme";
 
+type FilterUser = Omit<ServiceUser, "__typename">;
+
 export const ServiceUsersFilterRow = <F extends FiltersData<unknown>>({
   users,
   filter,
   field,
   onChange,
 }: {
-  users: ServiceUser[];
+  users: FilterUser[];
   filter: F;
   field: keyof F;
   onChange: (filter: F) => void;
 }) => (
   <SettingRow title="People">
-    <MultipleOptionsDropdown<ServiceUser>
+    <MultipleOptionsDropdown<FilterUser>
       items={users}
       keyGetter={(user) => user.id}
       labelGetter={(user) => user.real_name ?? user.display_name}

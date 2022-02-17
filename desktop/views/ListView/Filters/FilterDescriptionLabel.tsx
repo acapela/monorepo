@@ -61,9 +61,11 @@ export function FilterDescriptionLabel({ filter }: Props) {
   }
 
   if (getIsFilterOfType(filter, "notification_notion")) {
+    const peopleCount = getFilterValueAllowedValues(filter.author_id).length;
     return (
       <>
         <UILabel>All notifications</UILabel>
+        <PeopleDescription count={peopleCount} />
       </>
     );
   }
