@@ -24,7 +24,8 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
@@ -135,6 +136,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             </UICountIndicator>
             <UITitleText>{group.name}</UITitleText>
           </UITitle>
+          <SnoozeLabel notificationOrGroup={group} />
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
@@ -175,10 +177,6 @@ const UITitle = styled(UINotificationGroupTitle)`
 
 const UITitleText = styled.div`
   ${theme.common.ellipsisText}
-`;
-
-const UIDate = styled.div`
-  opacity: 0.6;
 `;
 
 const UINotifications = styled.div`

@@ -21,7 +21,8 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   notification: NotificationEntity;
@@ -88,6 +89,8 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
+        <SnoozeLabel notificationOrGroup={notification} />
+
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
     </ActionTrigger>
@@ -116,8 +119,4 @@ const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "
   ${NotificationAppIcon} {
     font-size: 24px;
   }
-`;
-
-const UIDate = styled.div`
-  opacity: 0.6;
 `;

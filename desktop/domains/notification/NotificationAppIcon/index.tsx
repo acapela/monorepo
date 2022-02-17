@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
+import { theme } from "@aca/ui/theme";
 
 import { makeLogger } from "../../dev/makeLogger";
 //@ts-ignore
@@ -68,14 +69,9 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
 
   return (
     <UIHolder>
-      <UIIcon
-        className={className}
-        src={iconProps.icon}
-        $invert={iconProps.isInverted}
-        $isUnread={displayUnreadNotification}
-      />
+      <UIIcon className={className} src={iconProps.icon} $invert={iconProps.isInverted} />
 
-      {/* <UIUnreadIndicator /> */}
+      {displayUnreadNotification && <UIUnreadIndicator />}
     </UIHolder>
   );
 })``;
@@ -89,7 +85,7 @@ const UIHolder = styled.div`
   position: relative;
 `;
 
-const UIIcon = styled.img<{ $invert?: boolean; $isUnread?: boolean }>`
+const UIIcon = styled.img<{ $invert?: boolean }>`
   ${iconStyles};
 
   ${(props) =>
@@ -103,15 +99,15 @@ const UIUnknown = styled.div`
   ${iconStyles}
 `;
 
-// export const UIUnreadIndicator = styled.div<{}>`
-//   position: absolute;
-//   top: -4px;
-//   right: -4px;
-//   width: 10px;
-//   height: 10px;
-//   border: 1px solid ${theme.colors.layout.background.value};
+export const UIUnreadIndicator = styled.div<{}>`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border: 1px solid ${theme.colors.layout.background.value};
 
-//   ${theme.colors.primary.asBg}
+  ${theme.colors.primary.asBg}
 
-//   ${theme.radius.circle}
-// `;
+  ${theme.radius.circle}
+`;
