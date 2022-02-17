@@ -18,6 +18,11 @@ export type IssueTeam = {
   key: string;
 };
 
+export type IssueAssignee = {
+  name: string;
+  id: string;
+};
+
 export type IssueData = {
   id: string;
   createdAt: Date;
@@ -36,6 +41,8 @@ export type IssueData = {
   labelIds: string[];
   state: IssueState;
   team: IssueTeam;
+  assignee: IssueAssignee;
+  assigneeId: string;
 };
 
 export type IssueWebhook = {

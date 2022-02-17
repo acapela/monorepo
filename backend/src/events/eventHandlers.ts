@@ -1,6 +1,7 @@
 import {
   Attachment,
   DecisionVote,
+  LinearIssue,
   Message,
   MessageReaction,
   MessageTaskDueDate,
@@ -34,4 +35,5 @@ export const hasuraEvents = createHasuraEventsHandler<{
   transcription_updates: Transcription;
   team_member_updates: TeamMember;
   user_updates: User;
+  linear_issue_updates: LinearIssue;
 }>();

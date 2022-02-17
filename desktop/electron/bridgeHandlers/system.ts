@@ -6,6 +6,7 @@ import {
   openLinkRequest,
   restartAppRequest,
   setBadgeCountRequest,
+  showMainWindowRequest,
   toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
@@ -27,6 +28,10 @@ export function initializeSystemHandlers() {
     await session.defaultSession.clearStorageData();
     app.relaunch();
     app.exit();
+  });
+
+  showMainWindowRequest.handle(async () => {
+    appState.mainWindow?.show();
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {

@@ -1,5 +1,5 @@
 import { HotKey, compareHotkey, parseHotkey } from "is-hotkey";
-import { sortBy } from "lodash";
+import { memoize, sortBy } from "lodash";
 
 import { convertMaybeArrayToArray, removeElementFromArray } from "@aca/shared/array";
 import { onDocumentReady } from "@aca/shared/document";
@@ -84,10 +84,8 @@ interface RunningShortcutInfo {
   options?: ShortcutOptions;
 }
 
-/**
- * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
- */
-onDocumentReady(() => {
+// It is possible we want to support shortcuts in multiple windows
+export const initializeDocumentShortcuts = memoize((document: Document) => {
   document.body.addEventListener(
     "keydown",
     (event) => {
@@ -131,6 +129,13 @@ onDocumentReady(() => {
     },
     { capture: true }
   );
+});
+
+/**
+ * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
+ */
+onDocumentReady(() => {
+  initializeDocumentShortcuts(document);
 });
 
 export function createShortcutListener(keys: ShortcutKeys, info: RunningShortcutInfo) {

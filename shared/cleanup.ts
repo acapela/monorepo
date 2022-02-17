@@ -27,7 +27,9 @@ export function createCleanupObject() {
         cleanups.add(cleanupToAdd);
       });
     },
-    set next(cleanupToAdd: CleanupFunction) {
+    set next(cleanupToAdd: CleanupFunction | void) {
+      if (!cleanupToAdd) return;
+
       cleanups.add(cleanupToAdd);
     },
   };
