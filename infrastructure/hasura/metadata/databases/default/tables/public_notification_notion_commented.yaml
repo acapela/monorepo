@@ -14,18 +14,20 @@ insert_permissions:
           user_id:
             _eq: X-Hasura-User-Id
     columns:
-    - id
     - created_at
-    - updated_at
+    - discussion_id
+    - id
     - notification_notion_id
+    - updated_at
   role: user
 select_permissions:
 - permission:
     columns:
     - created_at
-    - updated_at
+    - discussion_id
     - id
     - notification_notion_id
+    - updated_at
     filter:
       notification_notion:
         notification:

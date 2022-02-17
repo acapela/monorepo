@@ -276,6 +276,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
         page_title: pageBlock.properties.title[0][0],
         space_id: notification.space_id,
       },
+      discussion_id: notificationProperties.discussion_id,
     });
   }
 
@@ -285,7 +286,9 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 function getNotificationProperties(
   notification: NotificationPayload["value"],
   recordMap: GetNotificationLogResult["recordMap"]
-): { type: NotionNotificationType; url: string; text_preview?: string | undefined } | undefined {
+):
+  | { type: NotionNotificationType; url: string; text_preview?: string | undefined; discussion_id?: string | undefined }
+  | undefined {
   const pageId = notification.navigable_block_id;
 
   if (!pageId) return;
@@ -322,6 +325,7 @@ function getNotificationProperties(
       type: "notification_notion_commented",
       url,
       text_preview: extractNotionComment(activity, recordMap),
+      discussion_id: activity.discussion_id,
     };
   }
 
