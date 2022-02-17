@@ -83,7 +83,7 @@ export const resolveNotification = defineAction({
   },
   // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
   // Thus it seems easier to track directly in notif.resolve() handler
-  keywords: ["done", "next", "mark"],
+  keywords: ["done", "next", "mark", "complete"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: isNotFocusingPreviewAnd((ctx) => {
@@ -133,7 +133,7 @@ export const unresolveNotification = defineAction({
   name: "Undo resolve",
   shortcut: ["Mod", "Shift", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["undo", "todo", "mark"],
+  keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: isNotFocusingPreviewAnd((ctx) => {
     return ctx.hasTarget("notification") || ctx.hasTarget("group");
   }),
