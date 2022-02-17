@@ -103,7 +103,7 @@ query Issue($id: String!) {
   ];
 }
 
-export type NotificationOrigin = "create" | "assign" | "cancel";
+export type NotificationOrigin = "assign" | "cancel";
 
 export function findMatchingActor(
   origin: NotificationOrigin,
@@ -111,15 +111,17 @@ export function findMatchingActor(
   creator: User,
   issueHistory: IssueHistory[]
 ): User {
-  if (origin === "create") return creator;
   let h: IssueHistory | undefined;
-  if (origin === "assign") h = issueHistory.find((h) => h.toAssignee?.id === issueData.assigneeId);
+  if (origin === "assign") {
+    h = issueHistory.find((h) => h.toAssignee?.id === issueData.assigneeId);
+    // the issue was just created, and we have no history yet
+    if (!h) return creator;
+  }
   if (origin === "cancel") h = issueHistory.find((h) => h.toState?.type === "canceled");
-  if (!h) return { id: null, name: "Unknown" };
   return (
-    h.actor || {
+    h?.actor || {
       id: null,
-      name: h.source?.name || "Unknown",
+      name: h?.source?.name || "Unknown",
     }
   );
 }
