@@ -1,7 +1,7 @@
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
@@ -132,11 +132,23 @@ export function defineNotificationsList({ id, name, isCustom, filter, getNotific
     return notificationsToPreload;
   });
 
+  const getNotificationGroup = (notification: NotificationEntity) => {
+    const groups = getAllGroupedNotifications();
+
+    return groups.find((groupOrNotification) => {
+      if (groupOrNotification.kind === "group") {
+        return groupOrNotification.notifications.some((n) => n.id === notification.id);
+      }
+      return false;
+    }) as NotificationsGroup | undefined;
+  };
+
   return {
     kind: "notificationsList" as const,
     id,
     name,
     isCustom,
+    getNotificationGroup,
     getAllNotifications: getFlattenedNotifications,
     getNotificationIndex,
     getNextNotification,

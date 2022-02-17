@@ -83,7 +83,7 @@ export const resolveNotification = defineAction({
   },
   // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
   // Thus it seems easier to track directly in notif.resolve() handler
-  keywords: ["done", "next", "mark"],
+  keywords: ["done", "next", "mark", "complete"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: isNotFocusingPreviewAnd((ctx) => {
@@ -133,7 +133,7 @@ export const unresolveNotification = defineAction({
   name: "Undo resolve",
   shortcut: ["Mod", "Shift", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["undo", "todo", "mark"],
+  keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: isNotFocusingPreviewAnd((ctx) => {
     return ctx.hasTarget("notification") || ctx.hasTarget("group");
   }),
@@ -169,12 +169,18 @@ export const openFocusMode = defineAction({
     const group = context.getTarget("group");
 
     if (notification) {
+      notification.markAsSeen();
       desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
       return;
     }
 
     if (group) {
       openedNotificationsGroupsStore.open(group.id);
+      // When there's a single preview enabled, only one notification out of many is shown in focus
+      // This check attempts to mark all of the notifications inside a single preview group as seen
+      if (group.isOnePreviewEnough) {
+        group.notifications.forEach((n) => n.markAsSeen());
+      }
       desktopRouter.navigate("focus", { listId: list.id, notificationId: group.notifications[0].id });
     }
   },

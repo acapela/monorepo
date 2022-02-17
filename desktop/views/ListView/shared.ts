@@ -33,3 +33,9 @@ export const UINotificationPreviewText = styled.div`
   flex-grow: 1;
   flex-basis: 0;
 `;
+
+export const UIDate = styled.div`
+  opacity: 0.6;
+  min-width: 3ch;
+  text-align: right;
+`;

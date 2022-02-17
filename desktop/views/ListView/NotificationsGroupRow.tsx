@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
@@ -24,7 +24,8 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
@@ -74,6 +75,19 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   const allPeople = uniq(group.notifications.map((notification) => notification.from));
 
+  const isUnread: boolean = useMemo(() => {
+    if (group.notifications.every((n) => n.isResolved)) {
+      return false;
+    }
+
+    if (group.isOnePreviewEnough) {
+      // We treat "one preview enough" notification groups as a single notification
+      // So in this case, we won't display the unread indicator
+      return group.notifications.every((n) => !n.last_seen_at);
+    }
+    return group.notifications.some((n) => !n.last_seen_at);
+  }, [group]);
+
   return (
     <>
       <ActionTrigger
@@ -93,7 +107,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             );
           })}
         <UIHolder ref={elementRef} $isFocused={isFocused}>
-          <NotificationAppIcon notification={firstNotification} />
+          <NotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
           <UISendersLabel data-tooltip={allPeople.length > 1 ? allPeople.join(", ") : undefined}>
             {allPeople.length === 1 && allPeople[0]}
             {allPeople.length > 1 && (
@@ -117,6 +131,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             </UICountIndicator>
             <UITitleText>{group.name}</UITitleText>
           </UITitle>
+          <SnoozeLabel notificationOrGroup={group} />
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
@@ -157,10 +172,6 @@ const UITitle = styled(UINotificationGroupTitle)`
 
 const UITitleText = styled.div`
   ${theme.common.ellipsisText}
-`;
-
-const UIDate = styled.div`
-  opacity: 0.6;
 `;
 
 const UINotifications = styled.div`

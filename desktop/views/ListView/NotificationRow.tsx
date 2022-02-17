@@ -1,5 +1,5 @@
 import { action } from "mobx";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/notification";
@@ -21,7 +21,8 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   notification: NotificationEntity;
@@ -53,6 +54,13 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
+  const isUnread: boolean = useMemo(() => {
+    if (notification.isResolved) {
+      return false;
+    }
+    return !notification.last_seen_at;
+  }, [notification]);
+
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -73,11 +81,13 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         $isFocused={isFocused}
         $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
       >
-        <NotificationAppIcon notification={notification} />
+        <NotificationAppIcon notification={notification} displayUnreadNotification={isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
+
+        <SnoozeLabel notificationOrGroup={notification} />
 
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>
@@ -107,8 +117,4 @@ const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "
   ${NotificationAppIcon} {
     font-size: 24px;
   }
-`;
-
-const UIDate = styled.div`
-  opacity: 0.6;
 `;
