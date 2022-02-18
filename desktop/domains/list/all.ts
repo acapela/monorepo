@@ -103,14 +103,16 @@ export function getInboxListsById(id: string): NotificationsList | null {
   return getInboxListById(id) ?? getOutOfInboxListsById(id) ?? null;
 }
 
+const getArrayItemOptions = { loop: true, keyGetter: (l: NotificationsList) => l.id };
+
 export function getNextNotificationsList(list: NotificationsList) {
   const inboxListsValue = getInboxLists();
-  if (inboxListsValue.includes(list)) {
-    return getNextItemInArray(inboxListsValue, list, { loop: true });
-  }
 
-  if (outOfInboxLists.includes(list)) {
-    return getNextItemInArray(outOfInboxLists, list, { loop: true });
+  if (inboxListsValue.some((inboxList) => inboxList.id === list.id)) {
+    return getNextItemInArray(inboxListsValue, list, getArrayItemOptions);
+  }
+  if (outOfInboxLists.some((outOfInboxList) => outOfInboxList.id === list.id)) {
+    return getNextItemInArray(outOfInboxLists, list, getArrayItemOptions);
   }
 
   return null;
@@ -118,12 +120,12 @@ export function getNextNotificationsList(list: NotificationsList) {
 
 export function getPreviousNotificationsList(list: NotificationsList) {
   const inboxListsValue = getInboxLists();
-  if (inboxListsValue.includes(list)) {
-    return getPreviousItemInArray(inboxListsValue, list, { loop: true });
+  if (inboxListsValue.some((inboxList) => inboxList.id === list.id)) {
+    return getPreviousItemInArray(inboxListsValue, list, getArrayItemOptions);
   }
 
-  if (outOfInboxLists.includes(list)) {
-    return getPreviousItemInArray(outOfInboxLists, list, { loop: true });
+  if (outOfInboxLists.some((outOfInboxList) => outOfInboxList.id === list.id)) {
+    return getPreviousItemInArray(outOfInboxLists, list, getArrayItemOptions);
   }
 
   return null;
