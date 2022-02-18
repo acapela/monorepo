@@ -29,3 +29,7 @@ export function getTotal<T>(items: T[], numberGetter: (item: T) => number): numb
 
   return total;
 }
+
+export function floorNumberByInterval(value: number, interval: number) {
+  return Math.floor(value / interval) * interval;
+}

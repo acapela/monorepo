@@ -61,6 +61,8 @@ export const uiStore = makeAutoObservable({
   },
   // Any part of the app is focused
   get isAppFocused() {
+    if (!applicationStateBridge.isReady) return true;
+
     return applicationStateBridge.get().isFocused;
   },
   get isAnyPreviewFocused(): boolean {

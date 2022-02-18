@@ -21,10 +21,11 @@ export function createAntiSpamGuard({ perMinute, perHour }: AntiSpamConfig) {
     });
   }
 
-  function callGuarded<R>(callback: () => R): R | null {
+  function callGuarded<R>(callback: () => R, rejectedCallback?: () => void): R | null {
     const now = new Date();
 
     if (shouldBlock(now)) {
+      rejectedCallback?.();
       return null;
     }
 

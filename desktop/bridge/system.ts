@@ -22,10 +22,18 @@ export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
 export const applicationStateBridge = createBridgeValue("application-state", {
   getDefault: () => ({
     // Note: as we have browser view, focus 'true' does not mean our React app has focus
-    isFocused: false,
+    isFocused: true,
     isFullscreen: false,
     isUpdateReadyToInstall: false,
     updateDownloadingPercent: null as number | null,
+  }),
+});
+
+export const persistedApplicationStateBridge = createBridgeValue("persisted-application-state", {
+  getDefault: () => ({
+    // Note: as we have browser view, focus 'true' does not mean our React app has focus
+    lastAppFocusDateTs: Date.now(),
+    lastAppBlurredDateTs: Date.now(),
   }),
 });
 

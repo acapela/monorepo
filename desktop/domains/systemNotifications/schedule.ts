@@ -1,5 +1,7 @@
 import { addDays, isAfter, isBefore } from "date-fns";
-import { range } from "lodash";
+
+import { assert } from "@aca/shared/assert";
+import { floorNumberByInterval } from "@aca/shared/numbers";
 
 type DayHourAndMinute = [hour: number, minute: number];
 
@@ -21,8 +23,17 @@ interface GetNextScheduledDataInput {
   intervalInMs?: number;
 }
 
-function getBetweenDatesByInterval(start: Date, end: Date, intervalInMs: number) {
-  return range(start.getTime(), end.getTime(), intervalInMs).map((stamp) => new Date(stamp));
+function getNextDateAfterByIntervalFromStart(startDate: Date, afterDate: Date, intervalMs: number) {
+  const startTs = startDate.getTime();
+  const afterTs = afterDate.getTime();
+
+  const differenceMs = afterTs - startTs;
+
+  assert(differenceMs >= 0, "getNextDateAfterByIntervalFromStart");
+
+  const nextDateTs = startTs + floorNumberByInterval(differenceMs, intervalMs) + intervalMs;
+
+  return new Date(nextDateTs);
 }
 
 export function getNextScheduledDate(
@@ -46,13 +57,11 @@ export function getNextScheduledDate(
     return nextDayStart;
   }
 
-  const optimalDates = getBetweenDatesByInterval(dayStart, dayEnd, intervalInMs);
+  const nextDateByInterval = getNextDateAfterByIntervalFromStart(dayStart, referenceDate, intervalInMs);
 
-  const optimalDateToday = optimalDates.find((date) => isAfter(date, referenceDate))!;
-
-  if (optimalDateToday) {
-    return optimalDateToday;
+  if (isAfter(nextDateByInterval, dayEnd)) {
+    return nextDayStart;
   }
 
-  return nextDayStart;
+  return nextDateByInterval;
 }

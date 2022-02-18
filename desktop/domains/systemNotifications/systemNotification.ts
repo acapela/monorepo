@@ -22,29 +22,43 @@ function createDateTimeout(callback: () => void, date: Date) {
 
 const log = createLogger("System notifications");
 
-function _scheduleNotification(scheduledNotification: ScheduledNotification) {
-  const { date, title, body, onClick } = scheduledNotification;
+function showNotification(scheduledNotification: ScheduledNotification) {
+  const { title, body, date, onClick } = scheduledNotification;
+
+  const didShow = antiSpamGuard(
+    () => {
+      const notification = new Notification(title, { body: body, timestamp: date.getTime() });
+
+      notification.addEventListener("click", () => onClick?.(notification));
+      return true;
+    },
+    () => {
+      log("Notification ignored due to frequency filter");
+    }
+  );
+
+  return didShow ?? false;
+}
+
+export function scheduleNotification(scheduledNotification: ScheduledNotification) {
+  const { date } = scheduledNotification;
   const { promise, resolve } = createResolvablePromise<boolean>();
 
-  log(`Scheduling: ${niceFormatDateTime(date)}`, { scheduledNotification });
+  log(`🔔 Scheduling notification: ${niceFormatDateTime(date)}`, { scheduledNotification });
 
   const cancelSchedule = createDateTimeout(async () => {
     await waitForDoNotDisturbToFinish();
 
-    log(`Flushing: ${niceFormatDateTime(date)}`, { scheduledNotification });
+    log(`🔔 Flushing notification`, { scheduledNotification });
 
     if (isCancelled) {
-      log(`Flushing2: ${niceFormatDateTime(date)}`, { scheduledNotification });
       resolve(false);
       return;
     }
-    log(`Flushin3: ${niceFormatDateTime(date)}`, { scheduledNotification });
 
-    const notification = new Notification(title, { body: body, timestamp: date.getTime() });
+    const didShow = showNotification(scheduledNotification);
 
-    notification.addEventListener("click", () => onClick?.(notification));
-
-    resolve(true);
+    resolve(didShow);
   }, date);
 
   let isCancelled = false;
@@ -59,11 +73,3 @@ function _scheduleNotification(scheduledNotification: ScheduledNotification) {
 }
 
 const antiSpamGuard = createAntiSpamGuard({ perMinute: 2, perHour: 5 });
-
-export function getWouldBeSpammyNotification() {
-  return antiSpamGuard.shouldBlock();
-}
-
-export function scheduleNotification(scheduledNotification: ScheduledNotification) {
-  return antiSpamGuard(() => _scheduleNotification(scheduledNotification));
-}

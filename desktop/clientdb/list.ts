@@ -38,6 +38,8 @@ const notificationFragment = gql`
     created_at
     title
     filters
+    notifications_interval_ms
+    seen_at
   }
 `;
 
@@ -56,6 +58,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification_list",
     user_id: getContextValue(userIdContext) ?? null,
+    notifications_interval_ms: null,
     filters: [],
     ...getGenericDefaultData(),
   }),
@@ -63,8 +66,17 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     filters: observable.ref,
   },
   sync: createHasuraSyncSetupFromFragment<NotificationListFragment, NotificationListConstraints>(notificationFragment, {
-    insertColumns: ["id", "created_at", "updated_at", "user_id", "title", "filters"],
-    updateColumns: ["updated_at", "title", "filters"],
+    insertColumns: [
+      "id",
+      "created_at",
+      "updated_at",
+      "user_id",
+      "title",
+      "filters",
+      "notifications_interval_ms",
+      "seen_at",
+    ],
+    updateColumns: ["updated_at", "title", "filters", "notifications_interval_ms", "seen_at"],
     upsertConstraint: "notification_filter_pkey",
   }),
 }).addConnections((list, { getEntity }) => {
@@ -81,6 +93,16 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     });
   });
 
+  const inboxNotifications = cachedComputed(() => {
+    return passingNotifications().query({ isResolved: false, isSnoozed: false });
+  });
+
+  const inboxNotificationsSinceLastSeen = cachedComputed(() => {
+    return inboxNotifications().query((notification) => {
+      return new Date(notification.updated_at) > new Date(list.seen_at);
+    });
+  });
+
   const connections = {
     get typedFilters(): NotificationFilter[] {
       return Array.isArray(list.filters) ? list.filters : [];
@@ -89,7 +111,10 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
       return passingNotifications();
     },
     get inboxNotifications() {
-      return passingNotifications().query({ isResolved: false, isSnoozed: false });
+      return inboxNotifications();
+    },
+    get inboxNotificationsSinceLastSeen() {
+      return inboxNotificationsSinceLastSeen();
     },
   };
 

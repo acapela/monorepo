@@ -1,3 +1,4 @@
+import { subDays } from "date-fns";
 import React from "react";
 
 import { resetAllServices } from "@aca/desktop/bridge/auth";
@@ -5,10 +6,11 @@ import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
-import { IconKeyboard } from "@aca/ui/icons";
+import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
+import { listPageView } from "./views/list";
 
 export const devActionsGroup = defineGroup({
   name: "Developer",
@@ -104,5 +106,19 @@ export const restartOnboarding = defineAction({
   group: devActionsGroup,
   handler() {
     onboardingStore.onboardingStatus = "ongoing";
+  },
+});
+
+export const simulateListWasNotSeen = defineAction({
+  icon: <IconClock />,
+  group: devActionsGroup,
+
+  name: () => "Simulate list was not seen",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  canApply: (ctx) => !!ctx.view(listPageView),
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    list.listEntity?.update({ seen_at: subDays(new Date(), 180).toISOString() });
   },
 });

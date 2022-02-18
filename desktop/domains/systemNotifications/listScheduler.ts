@@ -1,29 +1,37 @@
-import { commaListsAnd, oneLine } from "common-tags";
+import { commaListsAnd, oneLineInlineLists } from "common-tags";
 import { isEqual, maxBy } from "lodash";
 
 import { cachedComputed } from "@aca/clientdb";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { areArraysShallowEqual } from "@aca/shared/array";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
+import { createLogger } from "@aca/shared/log";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { getTotal } from "@aca/shared/numbers";
 import { pluralize } from "@aca/shared/text/pluralize";
-import { HOUR, MINUTE } from "@aca/shared/time";
+import { MINUTE, SECOND } from "@aca/shared/time";
 
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";
 import { ScheduledNotification } from "./types";
 
-const INTERVAL = HOUR * 3;
-
 const MAX_DISTANCE_TO_BUNDLE = MINUTE * 15;
 
-function getNextNotificationDateForList(list: NotificationListEntity): Date | null {
-  return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: INTERVAL });
+const log = createLogger("List notifications scheduler", false);
+
+function getNextListNotificationWindow(list: NotificationListEntity): Date | null {
+  // Notification disabled
+  if (list.notifications_interval_ms === null) return null;
+
+  // If want notification instantly - still batch them just a little bit
+  if (list.notifications_interval_ms === 0) {
+    return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: SECOND * 30 });
+  }
+
+  return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: list.notifications_interval_ms });
 }
 
 type BundledListsNotification = BundledItem<NotificationListEntity, ScheduledNotification>;
@@ -32,29 +40,34 @@ const bundleListNotifications = cachedComputed(
   function bundleListNotifications(lists: NotificationListEntity[]): BundledListsNotification[] {
     return bundleScheduledItems<NotificationListEntity, ScheduledNotification>(
       lists,
-      (list) => getNextNotificationDateForList(list)!,
+      (list) => getNextListNotificationWindow(list)!,
       (listsWithCloseNotifications, date) => {
         if (listsWithCloseNotifications.length === 1) {
           const [list] = listsWithCloseNotifications;
 
-          const latestNotification = maxBy(list.inboxNotifications.all, (n) => new Date(n.created_at))!;
+          const newNotifications = list.inboxNotificationsSinceLastSeen;
+
+          const latestNotification = maxBy(newNotifications.all, (n) => new Date(n.created_at));
 
           return {
             date,
-            title: pluralize`${list.inboxNotifications.count} ${["notification"]} in list ${list.title}`,
-            body: `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification.created_at))}`,
+            title: pluralize`${newNotifications.count} ${["notification"]} in list ${list.title}`,
+            body: `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification?.created_at ?? date))}`,
           };
         }
 
-        const totalNotifications = getTotal(listsWithCloseNotifications, (list) => list.inboxNotifications.count);
+        const totalNotifications = getTotal(
+          listsWithCloseNotifications,
+          (list) => list.inboxNotificationsSinceLastSeen.count
+        );
 
         return {
           date,
           body: commaListsAnd`${listsWithCloseNotifications.map((l) => l.title)}`,
-          title: oneLine`
+          title: oneLineInlineLists`
           ${pluralize`${totalNotifications} ${["notification"]}`} 
           in
-          ${pluralize`${listsWithCloseNotifications.length} ${["list"]}`}
+          ${pluralize`${listsWithCloseNotifications.length} ${["list", "lists"]}`}
         `,
         };
       },
@@ -64,49 +77,46 @@ const bundleListNotifications = cachedComputed(
   { equals: isEqual }
 );
 
-function doesListNeedNotification(list: NotificationListEntity) {
-  return list.notifications.hasItems && !!getNextNotificationDateForList(list);
-}
+const doesListNeedNotification = cachedComputed(function doesListNeedNotification(list: NotificationListEntity) {
+  if (!getNextListNotificationWindow(list)) {
+    log(`list ${list.title} has notifications disabled`, list);
+    return false;
+  }
 
-const getListsToScheduleNotifications = cachedComputed(
-  function getListsToScheduleNotifications() {
-    const db = getDb();
+  if (!list.inboxNotificationsSinceLastSeen.hasItems) {
+    log(`list ${list.title} has no new notifications since last seen`);
+    return false;
+  }
 
-    const allLists = db.notificationList.all;
+  return true;
+});
 
-    const listsToScheduleNotifications = allLists.filter((list) => {
-      if (!doesListNeedNotification(list)) return false;
-
-      return true;
-    });
-
-    return listsToScheduleNotifications;
-  },
-  { equals: areArraysShallowEqual }
+const getListsToScheduleNotifications = cachedComputed(() =>
+  getDb().notificationList.query((list) => {
+    // ! Don't convert it to filter(doesListNeedNotification) - it'd break caching as it'd pass 3 arguments
+    return doesListNeedNotification(list);
+  })
 );
 
 function tryToScheduleNextNotifications() {
-  const cleanup = createCleanupObject();
+  log("Trying to schedule next batch");
+  const notificationCleanups = createCleanupObject();
+
   const listsToScheduleNotifications = getListsToScheduleNotifications();
 
-  const notifications = bundleListNotifications(listsToScheduleNotifications);
+  const bundledNotifications = bundleListNotifications(listsToScheduleNotifications.all);
 
-  notifications.forEach((bundledNotification) => {
+  log("Notifications to schedule", bundledNotifications);
+
+  bundledNotifications.forEach((bundledNotification) => {
     const { bundled: notification } = bundledNotification;
 
-    const scheduleResult = scheduleNotification(notification);
+    const [, cancelNotification] = scheduleNotification(notification);
 
-    if (!scheduleResult) {
-      // Could be dismissed due to being spammy
-      return;
-    }
-
-    const [, cancelNotification] = scheduleResult;
-
-    cleanup.next = cancelNotification;
+    notificationCleanups.next = cancelNotification;
   });
 
-  return cleanup.clean;
+  return notificationCleanups.clean;
 }
 
 export function initializeListNotificationsScheduling() {

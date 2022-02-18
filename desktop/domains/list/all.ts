@@ -72,13 +72,14 @@ export const getInboxLists = cachedComputed(() => {
     .filter((key) => integrationClients[key].getIsConnected())
     .map((key) => integrationLists[key]);
 
-  const customLists = getDb().notificationList.all.map((notificationFilter) =>
+  const customLists = getDb().notificationList.all.map((listEntity) =>
     defineNotificationsList({
-      id: notificationFilter.id,
-      name: notificationFilter.title,
+      id: listEntity.id,
+      name: listEntity.title,
+      listEntity: listEntity,
       isCustom: true,
       getNotifications() {
-        return notificationFilter.notifications.query({ isResolved: false }).all;
+        return listEntity.notifications.query({ isResolved: false }).all;
       },
     })
   );

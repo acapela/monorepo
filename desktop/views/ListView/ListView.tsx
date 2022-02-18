@@ -38,6 +38,16 @@ export const ListView = observer(({ listId }: Props) => {
   const isInCelebrationMode = uiStore.isDisplayingZenImage;
 
   useEffect(() => {
+    if (!displayedList) return;
+
+    displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+
+    return () => {
+      displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+    };
+  }, [displayedList]);
+
+  useEffect(() => {
     if (isInCelebrationMode && allNotifications.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
