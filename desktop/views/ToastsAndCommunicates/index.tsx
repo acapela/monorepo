@@ -1,10 +1,16 @@
+import { uniq } from "lodash";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { defineAction } from "@aca/desktop/actions/action";
 import { installUpdate } from "@aca/desktop/actions/app";
-import { applicationStateBridge, setBadgeCountRequest, showErrorToUserChannel } from "@aca/desktop/bridge/system";
+import {
+  applicationStateBridge,
+  applicationWideSettingsBridge,
+  setBadgeCountRequest,
+  showErrorToUserChannel,
+} from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { useAutorun } from "@aca/shared/sharedState";
@@ -23,7 +29,24 @@ export const ToastsAndCommunicatesView = observer(() => {
   });
 
   useAutorun(() => {
-    const unresolvedNotifications = getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).count;
+    if (!applicationWideSettingsBridge.get().showNotificationsCountBadge) {
+      setBadgeCountRequest(0);
+      return;
+    }
+    const listIdsToShowBadge = applicationWideSettingsBridge.get().notificationsCountBadgeListIds;
+
+    function getCount() {
+      if (!listIdsToShowBadge?.length) {
+        return getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).count;
+      }
+
+      const lists = getNullableDb()?.notificationList.query({ id: listIdsToShowBadge }).all ?? [];
+
+      const uniqueNotifications = uniq(lists.map((l) => l.inboxNotifications.all).flat());
+      return uniqueNotifications.length;
+    }
+
+    const unresolvedNotifications = getCount();
 
     if (unresolvedNotifications === undefined) return;
 

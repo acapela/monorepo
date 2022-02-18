@@ -2,7 +2,7 @@ import "@aca/desktop/analytics";
 
 import { ApolloProvider } from "@apollo/client";
 import { MotionConfig } from "framer-motion";
-import React from "react";
+import React, { useEffect } from "react";
 import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
@@ -21,6 +21,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { initializeListNotificationsScheduling } from "../domains/systemNotifications/listScheduler";
 import { PeekView } from "../views/PeekView";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
@@ -32,22 +33,12 @@ const BuiltInStyles = createGlobalStyle`
   ${globalStyles}
 `;
 
-if (window.electronBridge.env.windowName === "Logger") {
-  render(
-    <>
-      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-        <DesktopThemeProvider>
-          <BuiltInStyles />
-          <GlobalDesktopStyles />
-          <LoggerWindow />
-        </DesktopThemeProvider>
-      </MotionConfig>
-    </>,
-    rootElement
-  );
-} else {
-  // Main app
-  render(
+function App() {
+  useEffect(() => {
+    return initializeListNotificationsScheduling();
+  }, []);
+
+  return (
     <>
       <ApolloProvider client={apolloClient}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
@@ -70,7 +61,24 @@ if (window.electronBridge.env.windowName === "Logger") {
           </DesktopThemeProvider>
         </MotionConfig>
       </ApolloProvider>
+    </>
+  );
+}
+
+if (window.electronBridge.env.windowName === "Logger") {
+  render(
+    <>
+      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+        <DesktopThemeProvider>
+          <BuiltInStyles />
+          <GlobalDesktopStyles />
+          <LoggerWindow />
+        </DesktopThemeProvider>
+      </MotionConfig>
     </>,
     rootElement
   );
+} else {
+  // Main app
+  render(<App />, rootElement);
 }

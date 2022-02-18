@@ -108,6 +108,7 @@ __metadata:
     electron-json-storage: ^4.5.0
     electron-log: ^4.4.5
     electron-notarize: ^1.1.1
+    electron-notification-state: ^1.0.4
     electron-updater: ^4.6.5
     glob: ^7.2.0
     glob-promise: ^4.2.2
@@ -311,6 +312,7 @@ __metadata:
     "@aca/tooling": 0.1.0
     "@install-binary/hasura": 2.1.1
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
+    "@types/common-tags": ^1.8.1
     "@types/express": ^4.17.13
     "@types/glob": ^7.2.0
     "@types/glob-watcher": ^5.0.2
@@ -326,6 +328,7 @@ __metadata:
     "@vvo/tzdb": ^6.44.0
     axios: ^0.24.0
     commitizen: ^4.2.4
+    common-tags: ^1.8.2
     cz-conventional-changelog: ^3.3.0
     date-fns: ^2.28.0
     date-fns-tz: ^1.2.2
@@ -5918,6 +5921,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/common-tags@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@types/common-tags@npm:1.8.1"
+  checksum: bec6f68c8c434834380abd1dc057aa6ba26661bb0c65c700b65049e9b104d7be96a987d93dbe8726be68554a23a52514a6967d8903fdb51fb8c78cf909d1e4c1
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -8059,7 +8069,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bindings@npm:^1.5.0":
+"bindings@npm:^1.3.0, bindings@npm:^1.5.0":
   version: 1.5.0
   resolution: "bindings@npm:1.5.0"
   dependencies:
@@ -9353,7 +9363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"common-tags@npm:1.8.2":
+"common-tags@npm:1.8.2, common-tags@npm:^1.8.2":
   version: 1.8.2
   resolution: "common-tags@npm:1.8.2"
   checksum: 767a6255a84bbc47df49a60ab583053bb29a7d9687066a18500a516188a062c4e4cd52de341f22de0b07062e699b1b8fe3cfa1cb55b241cb9301aeb4f45b4dff
@@ -11072,6 +11082,17 @@ __metadata:
     debug: ^4.1.1
     fs-extra: ^9.0.1
   checksum: c1f822761277c817c3b7b5ed1ef2a2aabf70733f79e670b2f0b5bac31b9d63fb9ef4d9fae2051192727d811c6b6007de846e39844ab51d13986c1771d5d04d28
+  languageName: node
+  linkType: hard
+
+"electron-notification-state@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "electron-notification-state@npm:1.0.4"
+  dependencies:
+    macos-notification-state: ^1.1.0
+    windows-notification-state: ^1.3.0
+    windows-quiet-hours: ^1.2.2
+  checksum: 71aee541e35d5fa0f569694b4d4be328ed404803b7565791fbd8a2e62a74264ca133785d303351fb47b0722a390c8f93ba5b5b586a480b2933cf6701908619b4
   languageName: node
   linkType: hard
 
@@ -17020,6 +17041,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"macos-notification-state@npm:^1.1.0":
+  version: 1.3.6
+  resolution: "macos-notification-state@npm:1.3.6"
+  dependencies:
+    bindings: ^1.5.0
+    node-gyp: latest
+  checksum: 0984e90e996c24eb9f607a38943cec86ac60b56ec83f8c1885ca21e7a7598b268ec5ca4d939a077ebeb4ecb470d5d6eb22351cae636a9601e2e079a4b990d770
+  languageName: node
+  linkType: hard
+
 "madge@npm:^4.0.1":
   version: 4.0.2
   resolution: "madge@npm:4.0.2"
@@ -17731,7 +17762,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.12.1, nan@npm:^2.14.2":
+"nan@npm:^2.12.1, nan@npm:^2.14.0, nan@npm:^2.14.2, nan@npm:^2.7.0":
   version: 2.15.0
   resolution: "nan@npm:2.15.0"
   dependencies:
@@ -24897,6 +24928,28 @@ fsevents@^1.2.7:
   dependencies:
     string-width: ^4.0.0
   checksum: 03db6c9d0af9329c37d74378ff1d91972b12553c7d72a6f4e8525fe61563fa7adb0b9d6e8d546b7e059688712ea874edd5ded475999abdeedf708de9849310e0
+  languageName: node
+  linkType: hard
+
+"windows-notification-state@npm:^1.3.0":
+  version: 1.3.4
+  resolution: "windows-notification-state@npm:1.3.4"
+  dependencies:
+    bindings: ^1.5.0
+    nan: ^2.14.0
+    node-gyp: latest
+  checksum: 80e85a86517bfd314e712ab4caecc330432a95b15ec74d088da6c2e1a7a174d7acf03466205f0cc1478fb66998f509dd947b0b34a19263750c57884d1d7b7889
+  languageName: node
+  linkType: hard
+
+"windows-quiet-hours@npm:^1.2.2":
+  version: 1.2.7
+  resolution: "windows-quiet-hours@npm:1.2.7"
+  dependencies:
+    bindings: ^1.3.0
+    nan: ^2.7.0
+    node-gyp: latest
+  checksum: 57c266528e1dd8673d34b97c5663be971a2a9eb717b11d3cdfddd03aadca225e6d3b50876f5dd84ad3e36f9dad30745c94defcd4e502ce396e81135d5e15bea0
   languageName: node
   linkType: hard
 

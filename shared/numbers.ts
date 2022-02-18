@@ -19,3 +19,13 @@ export function getNumbersAverage(input: number[]) {
 export function roundNumber(input: number, decimalPlaces = 2) {
   return Number(input.toFixed(decimalPlaces));
 }
+
+export function getTotal<T>(items: T[], numberGetter: (item: T) => number): number {
+  let total = 0;
+
+  for (const item of items) {
+    total += numberGetter(item);
+  }
+
+  return total;
+}

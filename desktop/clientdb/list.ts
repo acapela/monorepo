@@ -88,6 +88,9 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     get notifications() {
       return passingNotifications();
     },
+    get inboxNotifications() {
+      return passingNotifications().query({ isResolved: false, isSnoozed: false });
+    },
   };
 
   return connections;

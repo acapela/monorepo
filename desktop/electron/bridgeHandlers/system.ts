@@ -10,12 +10,14 @@ import {
   toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
+  waitForDoNotDisturbToFinish,
 } from "@aca/desktop/bridge/system";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { clearPersistance } from "./persistance";
+import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
 export function initializeSystemHandlers() {
   restartAppRequest.handle(async () => {
@@ -32,6 +34,10 @@ export function initializeSystemHandlers() {
 
   showMainWindowRequest.handle(async () => {
     appState.mainWindow?.show();
+  });
+
+  waitForDoNotDisturbToFinish.handle(async () => {
+    await waitForDoNotDisturbToEnd();
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {

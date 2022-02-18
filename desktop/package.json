@@ -69,5 +69,8 @@
       "provider": "github",
       "releaseType": "release"
     }
+  },
+  "dependencies": {
+    "electron-notification-state": "^1.0.4"
   }
 }

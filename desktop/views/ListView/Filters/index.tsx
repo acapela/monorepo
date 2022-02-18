@@ -23,9 +23,10 @@ export const ListFilters = styledObserver(function ListFilters({ listId, classNa
             //
           }}
         />
-        {list.typedFilters.map((filter) => {
+        {list.typedFilters.map((filter, index) => {
           return (
             <FilterLabel
+              key={(filter.id as string) ?? index}
               filter={filter}
               onChange={(changedFilter) => {
                 const newFilters = list.typedFilters.map((existingFilter) => {

@@ -3,3 +3,7 @@ export function nullableDate(input?: string | null) {
 
   return new Date(input);
 }
+
+export function cloneDate(date: Date): Date {
+  return new Date(date.getTime());
+}

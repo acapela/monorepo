@@ -1,4 +1,5 @@
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
@@ -33,7 +34,7 @@ interface Props<I> {
   isDisabled?: boolean;
 }
 
-export function MultipleOptionsDropdown<I>({
+export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown<I>({
   name,
   items,
   selectedItems,
@@ -142,7 +143,7 @@ export function MultipleOptionsDropdown<I>({
       </AnimatePresence>
     </>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   position: relative;

@@ -25,7 +25,7 @@ export function removeElementsFromArrayByFilter<T>(arr: T[], filter: (item: T) =
 export type MaybeArray<T> = T | T[];
 
 export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
-  if (Array.isArray(input)) return input;
+  if (Array.isArray(input)) return [...input];
 
   return [input];
 }
@@ -242,4 +242,16 @@ export function unshiftElement<T>(list: T[], item: T) {
   return () => {
     removeElementFromArray(list, item);
   };
+}
+
+export function areArraysShallowEqual<T>(a: T[], b: T[]) {
+  if (a === b) return true;
+
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+
+  if (!Array.isArray(a)) return false;
+
+  if (a.length !== b.length) return false;
+
+  return a.every((item, index) => item === b[index]);
 }

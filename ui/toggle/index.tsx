@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { useId } from "@aca/shared/id";
@@ -40,18 +40,16 @@ interface Props {
   onChange?: (value: boolean) => void;
 }
 
-export const Toggle = ({ isSet, size = "large", isDisabled, onChange }: Props) => {
+export const Toggle = ({ isSet = false, size = "small", isDisabled, onChange }: Props) => {
   const id = useId();
 
-  function onSwitch(e: ChangeEvent<HTMLInputElement>) {
-    e.stopPropagation();
-
-    onChange?.(e.target.checked);
+  function onSwitch() {
+    onChange?.(!isSet);
   }
 
   return (
-    <UIToggle dimensions={getDimensions(size)}>
-      <input type="checkbox" checked={isSet} id={id} onChange={onSwitch} disabled={isDisabled} />
+    <UIToggle dimensions={getDimensions(size)} onClick={onSwitch}>
+      <input type="checkbox" checked={isSet} id={id} disabled={isDisabled} />
       <label htmlFor={id} />
     </UIToggle>
   );

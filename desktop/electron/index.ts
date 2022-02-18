@@ -56,6 +56,7 @@ function initializeApp() {
 
 app.on("ready", action(initializeApp));
 
+///
 app.on("window-all-closed", () => {
   // On Mac - closing app window does not quit it - it can still be visible in system 'cmd-tab' etc.
   if (process.platform === "darwin") {

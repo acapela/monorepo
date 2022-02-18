@@ -26,7 +26,7 @@ export function Router() {
     case "home":
       return <Redirect to={desktopRouter.createURL("list", { listId: allNotificationsList.id })} />;
     case "settings":
-      return <SettingsView />;
+      return <SettingsView sectionId={activeRoute.params.section} />;
     case "notification":
       return <NotificationView notificationId={activeRoute.params.notificationId} />;
     case "list":

@@ -15,6 +15,7 @@ export const checkForUpdatesRequest = createInvokeBridge("check-for-updates");
 export const setBadgeCountRequest = createInvokeBridge<number>("set-badge-count");
 export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 export const showMainWindowRequest = createInvokeBridge("show-main-window");
+export const waitForDoNotDisturbToFinish = createInvokeBridge("wait-for-do-not-disturb-to-finish");
 
 export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
 
@@ -33,5 +34,8 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
   getDefault: () => ({
     globalShowAppShortcut: ["Meta", "Shift", "A"] as ShortcutKeys | null,
     globalPeekShortcut: null as ShortcutKeys | null,
+    enableDesktopNotifications: true,
+    showNotificationsCountBadge: true,
+    notificationsCountBadgeListIds: [] as string[],
   }),
 });

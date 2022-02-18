@@ -1,20 +1,22 @@
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
+import { desktopRouter } from "@aca/desktop/routes";
 import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
 import { theme } from "@aca/ui/theme";
 
 import { AccountSettings } from "./Account";
 import { ExperimentalSettings } from "./Experimental";
+import { NotificationsSettings } from "./Notifications";
 
 interface SettingsSection {
   id: string;
   label: string;
 }
 
-const settingsSections: SettingsSection[] = [
+export const settingsSections: SettingsSection[] = [
   {
     id: "integrations",
     label: "Integrations",
@@ -24,13 +26,23 @@ const settingsSections: SettingsSection[] = [
     label: "Account",
   },
   {
+    id: "notifications",
+    label: "Notifications",
+  },
+  {
     id: "experimental",
     label: "Experimental",
   },
 ];
 
-export const SettingsView = observer(function SettingsView() {
-  const [activeSection, setActiveSection] = useState(settingsSections[0]);
+interface Props {
+  sectionId: string;
+}
+
+export const SettingsView = observer(function SettingsView({ sectionId }: Props) {
+  function goToSection(sectionId: string) {
+    desktopRouter.navigate("settings", { section: sectionId });
+  }
   return (
     <TraySidebarLayout>
       <UIHolder>
@@ -42,9 +54,9 @@ export const SettingsView = observer(function SettingsView() {
               return (
                 <UINavItem
                   key={section.id}
-                  $isActive={section.id === activeSection.id}
+                  $isActive={section.id === sectionId}
                   onClick={() => {
-                    setActiveSection(section);
+                    goToSection(section.id);
                   }}
                 >
                   {section.label}
@@ -53,9 +65,10 @@ export const SettingsView = observer(function SettingsView() {
             })}
           </UINav>
           <UIActiveSection>
-            {activeSection.id === "integrations" && <IntegrationsManager />}
-            {activeSection.id === "experimental" && <ExperimentalSettings />}
-            {activeSection.id === "account" && <AccountSettings />}
+            {sectionId === "integrations" && <IntegrationsManager />}
+            {sectionId === "experimental" && <ExperimentalSettings />}
+            {sectionId === "notifications" && <NotificationsSettings />}
+            {sectionId === "account" && <AccountSettings />}
             <UIVersionInfo>
               v{window.electronBridge.env.version}
               {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}

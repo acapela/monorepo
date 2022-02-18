@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { showMainWindowRequest } from "@aca/desktop/bridge/system";
 import { NewBrowserWindow } from "@aca/desktop/domains/window/NewBrowserWindow";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { useDocumentEvent, useWindowEvent } from "@aca/shared/domEvents";
 import { PopPresenceAnimator } from "@aca/ui/animations";
@@ -28,6 +29,7 @@ function Events() {
     if (event.key === "Enter") {
       showMainWindowRequest();
       uiStore.isShowingPeekView = false;
+      desktopRouter.navigate("home");
     }
   });
 

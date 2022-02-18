@@ -131,8 +131,8 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (equals(latestValue, newValue!)) {
-      return;
+    if (!equals(latestValue, newValue!)) {
+      latestValue = newValue!;
     }
   };
 
