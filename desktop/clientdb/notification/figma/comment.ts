@@ -4,6 +4,7 @@ import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { notificationEntity } from "@aca/desktop/clientdb/notification";
 import {
   NotificationFigmaCommentFragment,
   Notification_Figma_Comment_Bool_Exp,
@@ -23,6 +24,7 @@ const notificationFigmaComment = gql`
     is_mention
     figma_notification_id
     thread_comment_id
+    author_id
   }
 `;
 
@@ -42,6 +44,7 @@ export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaComm
   getDefaultValues: () => ({
     __typename: "notification_figma_comment",
     thread_comment_id: null,
+    author_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationFigmaCommentFragment, NotificationFigmaCommentConstraints>(
@@ -57,11 +60,16 @@ export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaComm
         "is_mention",
         "figma_notification_id",
         "thread_comment_id",
+        "author_id",
       ],
       updateColumns: ["updated_at", "file_name"],
       upsertConstraint: "notification_figma_comment_pkey",
     }
   ),
-});
+}).addConnections((figmaComment, { getEntity }) => ({
+  get notification() {
+    return getEntity(notificationEntity).findById(figmaComment.notification_id);
+  },
+}));
 
 export type NotificationFigmaCommentEntity = EntityByDefinition<typeof notificationFigmaCommentEntity>;

@@ -1,7 +1,12 @@
+import { uniqBy } from "lodash";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { getDb } from "@aca/desktop/clientdb";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
+import { ServiceUsersFilterRow } from "@aca/desktop/views/ListView/Filters/ServiceUsersFilterRow";
+import { isNotNullish } from "@aca/shared/nullish";
 import { updateValue } from "@aca/shared/updateValue";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
@@ -28,9 +33,22 @@ export const figmaNotificationOptions: NotificationFilterOption<FigmaFilter>[] =
   },
 ];
 
-export function FilterEditorFigma({ filter, onChange }: Props) {
+export const FilterEditorFigma = observer(({ filter, onChange }: Props) => {
+  const figmaUsers = uniqBy(getDb().notificationFigmaComment.all, (n) => n.author_id)
+    .map((n) => {
+      const from = n.notification?.from;
+      return n.author_id && from
+        ? {
+            id: n.author_id,
+            display_name: from,
+            real_name: from,
+          }
+        : null;
+    })
+    .filter(isNotNullish);
   return (
     <UIHolder>
+      <ServiceUsersFilterRow<FigmaFilter> users={figmaUsers} filter={filter} field="author_id" onChange={onChange} />
       <SettingRow title="Notification type">
         <SingleOptionDropdown<NotificationFilterOption<FigmaFilter>>
           items={figmaNotificationOptions}
@@ -44,7 +62,7 @@ export function FilterEditorFigma({ filter, onChange }: Props) {
       </SettingRow>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;

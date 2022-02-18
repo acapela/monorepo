@@ -25,9 +25,15 @@ const PeopleDescription = ({ count }: { count: number }) =>
 
 export function FilterDescriptionLabel({ filter }: Props) {
   if (getIsFilterOfType(filter, "notification_figma_comment")) {
+    const peopleCount = getFilterValueAllowedValues(filter.author_id).length;
     const typeLabel = figmaNotificationOptions.find((option) => option.isActive(filter))?.label;
 
-    return <>{typeLabel && <UILabel>{typeLabel}</UILabel>}</>;
+    return (
+      <>
+        {typeLabel && <UILabel>{typeLabel}</UILabel>}
+        <PeopleDescription count={peopleCount} />
+      </>
+    );
   }
 
   if (getIsFilterOfType(filter, "notification_slack_message")) {
