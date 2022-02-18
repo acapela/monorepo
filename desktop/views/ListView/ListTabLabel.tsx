@@ -38,12 +38,14 @@ const UIHolder = styled(ActionTrigger)`
   display: flex;
   gap: 8px;
 
+  box-sizing: border-box;
+
   /* this allows enough space for the active indicator to be shown */
   padding-bottom: 4px;
 
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
-  ${theme.common.ellipsisText}
+  white-space: nowrap;
 `;
 
 const UICount = styled.div`
@@ -52,10 +54,11 @@ const UICount = styled.div`
 
 const UIActiveIndicator = styled.div<{ $isVisible: boolean }>`
   position: absolute;
+  box-sizing: border-box;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 2px;
+  height: 3px;
   ${theme.colors.primary.asBg};
   opacity: ${(props) => (props.$isVisible ? 1 : 0)};
   transition: 0.15s all;

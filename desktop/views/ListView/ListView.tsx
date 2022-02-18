@@ -45,64 +45,72 @@ export const ListView = observer(({ listId }: Props) => {
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
-      <UITabsBar>
-        <ListsTabBar activeListId={listId} lists={listsToDisplay} />
-      </UITabsBar>
-      {displayedList?.isCustom && (
-        <UIListTools>
-          <ListFilters listId={listId} />
-          <ListEditTools listId={listId} />
-        </UIListTools>
-      )}
+      <UIHolder>
+        <UITabsBar>
+          <ListsTabBar activeListId={listId} lists={listsToDisplay} />
+        </UITabsBar>
+        {displayedList?.isCustom && (
+          <UIListTools>
+            <ListFilters listId={listId} />
+            <ListEditTools listId={listId} />
+          </UIListTools>
+        )}
 
-      {isInCelebrationMode ? (
-        <UINotificationZeroHolder>
-          <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
-        </UINotificationZeroHolder>
-      ) : (
-        <HStack style={{ height: "100%" }}>
-          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
+        {isInCelebrationMode ? (
+          <UINotificationZeroHolder>
+            <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
+          </UINotificationZeroHolder>
+        ) : (
+          <HStack style={{ height: "100%" }}>
+            {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
-          {displayedList && notificationGroups && notificationGroups.length > 0 && (
-            <>
-              {!hasSettledFocusedTarget &&
-                displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
-                  return (
-                    <PreloadNotificationPreview
-                      priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                      key={notificationToPreload.id}
-                      url={notificationToPreload.url}
-                    />
-                  );
-                })}
-              <UINotifications>
-                {notificationGroups?.map((notificationOrGroup) => {
-                  if (getIsNotificationsGroup(notificationOrGroup)) {
+            {displayedList && notificationGroups && notificationGroups.length > 0 && (
+              <>
+                {!hasSettledFocusedTarget &&
+                  displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
                     return (
-                      <NotificationsGroupRow
-                        list={displayedList}
-                        key={notificationOrGroup.id}
-                        group={notificationOrGroup}
+                      <PreloadNotificationPreview
+                        priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                        key={notificationToPreload.id}
+                        url={notificationToPreload.url}
                       />
                     );
-                  }
+                  })}
+                <UINotifications>
+                  {notificationGroups?.map((notificationOrGroup) => {
+                    if (getIsNotificationsGroup(notificationOrGroup)) {
+                      return (
+                        <NotificationsGroupRow
+                          list={displayedList}
+                          key={notificationOrGroup.id}
+                          group={notificationOrGroup}
+                        />
+                      );
+                    }
 
-                  return (
-                    <NotificationRow
-                      list={displayedList}
-                      key={notificationOrGroup.id}
-                      notification={notificationOrGroup}
-                    />
-                  );
-                })}
-              </UINotifications>
-            </>
-          )}
-        </HStack>
-      )}
+                    return (
+                      <NotificationRow
+                        list={displayedList}
+                        key={notificationOrGroup.id}
+                        notification={notificationOrGroup}
+                      />
+                    );
+                  })}
+                </UINotifications>
+              </>
+            )}
+          </HStack>
+        )}
+      </UIHolder>
     </TraySidebarLayout>
   );
 });
+
+const UIHolder = styled.div<{}>`
+  height: 100%;
+  width: 100%;
+  overflow-y: hidden;
+`;
 
 const UINotifications = styled.div`
   display: flex;
@@ -122,6 +130,15 @@ const UINotifications = styled.div`
 
 const UITabsBar = styled.div`
   padding-top: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  margin-right: 16px;
+
+  &::-webkit-scrollbar {
+    width: 0; /* Remove scrollbar space */
+    height: 0;
+  }
 `;
 
 const UINotificationZeroHolder = styled.div`
