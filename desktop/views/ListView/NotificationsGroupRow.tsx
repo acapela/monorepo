@@ -92,7 +92,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
     <>
       <ActionTrigger
         {...(group.isOnePreviewEnough
-          ? { action: openFocusMode, target: group.notifications[group.notifications.length - 1] }
+          ? { action: openFocusMode, target: group }
           : { action: toggleNotificationsGroup, target: group })}
       >
         {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
