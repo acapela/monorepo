@@ -7,6 +7,7 @@ import styled, { css } from "styled-components";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
 
+import { PopPresenceAnimator } from "./animations";
 import { IconButton } from "./buttons/IconButton";
 import { IconArrowLeft, IconArrowRight } from "./icons";
 import { theme } from "./theme";
@@ -108,10 +109,14 @@ export const HorizontalScroller = styled(function HorizontalScroller({ className
     <UIHolder className={className}>
       <UIScrollHolder ref={listTabRef}>{children}</UIScrollHolder>
       {canScrollLeft && (
-        <UIFlyingButton $position="left" kind="secondary" icon={<IconArrowLeft />} onClick={scrollLeft} />
+        <UIFlyingPresence $position="left">
+          <IconButton kind="secondary" icon={<IconArrowLeft />} onClick={scrollLeft} />
+        </UIFlyingPresence>
       )}
       {canScrollRight && (
-        <UIFlyingButton $position="right" kind="secondary" icon={<IconArrowRight />} onClick={scrollRight} />
+        <UIFlyingPresence $position="right">
+          <IconButton kind="secondary" icon={<IconArrowRight />} onClick={scrollRight} />
+        </UIFlyingPresence>
       )}
     </UIHolder>
   );
@@ -133,7 +138,7 @@ const UIScrollHolder = styled.div`
   scroll-behavior: smooth;
 `;
 
-const UIFlyingButton = styled(IconButton)<{ $position: "left" | "right" }>`
+const UIFlyingPresence = styled(PopPresenceAnimator)<{ $position: "left" | "right" }>`
   position: absolute;
   ${theme.shadow.item}
   top: 0;
