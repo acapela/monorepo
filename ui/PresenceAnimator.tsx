@@ -2,13 +2,14 @@ import { HTMLMotionProps, Target as MotionAnimations, motion } from "framer-moti
 import React from "react";
 import styled from "styled-components";
 
+import { styledForwardRef } from "@aca/shared/component";
 import { objectMap } from "@aca/shared/object";
-import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 
 import { POP_ANIMATION_CONFIG } from "./animations";
 
 interface Props extends HTMLMotionProps<"div"> {
   presenceStyles: PresenceStyles;
+  className?: string;
 }
 
 type MakePresenceTuple<T> = [initialAndExit: T, animate: T] | [initial: T, animate: T, exit: T];
@@ -17,8 +18,8 @@ export type PresenceStyles = {
   [key in keyof MotionAnimations]: MakePresenceTuple<MotionAnimations[key]>;
 };
 
-export const PresenceAnimator = namedForwardRef<HTMLDivElement, Props>(function PresenceAnimator(
-  { presenceStyles, transition, ...motionProps }: Props,
+export const PresenceAnimator = styledForwardRef<HTMLDivElement, Props>(function PresenceAnimator(
+  { presenceStyles, transition, className, ...motionProps }: Props,
   ref
 ) {
   transition = { ...POP_ANIMATION_CONFIG, ...transition };
@@ -26,6 +27,7 @@ export const PresenceAnimator = namedForwardRef<HTMLDivElement, Props>(function 
   return (
     <UIHolder
       ref={ref}
+      className={className}
       transition={transition}
       initial={initial}
       animate={animate}
@@ -33,7 +35,7 @@ export const PresenceAnimator = namedForwardRef<HTMLDivElement, Props>(function 
       {...motionProps}
     ></UIHolder>
   );
-});
+})``;
 
 const UIHolder = styled(motion.div)<{}>`
   position: relative;

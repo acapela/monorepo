@@ -10,6 +10,7 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
@@ -45,64 +46,72 @@ export const ListView = observer(({ listId }: Props) => {
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
-      <UITabsBar>
-        <ListsTabBar activeListId={listId} lists={listsToDisplay} />
-      </UITabsBar>
-      {displayedList?.isCustom && (
-        <UIListTools>
-          <ListFilters listId={listId} />
-          <ListEditTools listId={listId} />
-        </UIListTools>
-      )}
+      <UIHolder>
+        <UITabsBar>
+          <ListsTabBar activeListId={listId} lists={listsToDisplay} />
+        </UITabsBar>
+        {displayedList?.isCustom && (
+          <UIListTools>
+            <ListFilters listId={listId} />
+            <ListEditTools listId={listId} />
+          </UIListTools>
+        )}
 
-      {isInCelebrationMode ? (
-        <UINotificationZeroHolder>
-          <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
-        </UINotificationZeroHolder>
-      ) : (
-        <HStack style={{ height: "100%" }}>
-          {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
+        {isInCelebrationMode ? (
+          <UINotificationZeroHolder>
+            <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
+          </UINotificationZeroHolder>
+        ) : (
+          <HStack style={{ height: "100%" }}>
+            {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
-          {displayedList && notificationGroups && notificationGroups.length > 0 && (
-            <>
-              {!hasSettledFocusedTarget &&
-                displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
-                  return (
-                    <PreloadNotificationPreview
-                      priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                      key={notificationToPreload.id}
-                      url={notificationToPreload.url}
-                    />
-                  );
-                })}
-              <UINotifications>
-                {notificationGroups?.map((notificationOrGroup) => {
-                  if (getIsNotificationsGroup(notificationOrGroup)) {
+            {displayedList && notificationGroups && notificationGroups.length > 0 && (
+              <>
+                {!hasSettledFocusedTarget &&
+                  displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
                     return (
-                      <NotificationsGroupRow
-                        list={displayedList}
-                        key={notificationOrGroup.id}
-                        group={notificationOrGroup}
+                      <PreloadNotificationPreview
+                        priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                        key={notificationToPreload.id}
+                        url={notificationToPreload.url}
                       />
                     );
-                  }
+                  })}
+                <UINotifications>
+                  {notificationGroups?.map((notificationOrGroup) => {
+                    if (getIsNotificationsGroup(notificationOrGroup)) {
+                      return (
+                        <NotificationsGroupRow
+                          list={displayedList}
+                          key={notificationOrGroup.id}
+                          group={notificationOrGroup}
+                        />
+                      );
+                    }
 
-                  return (
-                    <NotificationRow
-                      list={displayedList}
-                      key={notificationOrGroup.id}
-                      notification={notificationOrGroup}
-                    />
-                  );
-                })}
-              </UINotifications>
-            </>
-          )}
-        </HStack>
-      )}
+                    return (
+                      <NotificationRow
+                        list={displayedList}
+                        key={notificationOrGroup.id}
+                        notification={notificationOrGroup}
+                      />
+                    );
+                  })}
+                </UINotifications>
+              </>
+            )}
+          </HStack>
+        )}
+      </UIHolder>
     </TraySidebarLayout>
   );
 });
+
+const UIHolder = styled.div<{}>`
+  height: 100%;
+  width: 100%;
+  overflow-y: hidden;
+`;
 
 const UINotifications = styled.div`
   display: flex;
@@ -111,15 +120,18 @@ const UINotifications = styled.div`
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
-  margin-top: 24px;
+
   padding-right: 15px;
   /* Prevents the last notification in the list from hiding under the footer */
   padding-bottom: 48px;
+
+  /* Sums up to 24px when adding up the padding-bottom in ListTabLabel */
+  margin-top: 20px;
 `;
 
-const UITabsBar = styled.div`
+const UITabsBar = styled(HorizontalScroller)`
   padding-top: 2px;
-  margin-bottom: 24px;
+  margin-right: 16px;
 `;
 
 const UINotificationZeroHolder = styled.div`
@@ -148,6 +160,8 @@ const UIListTools = styled.div`
   ${theme.spacing.actions.asGap}
   padding-right: 16px;
   align-items: flex-start;
+
+  padding-top: 16px;
 
   ${ListFilters} {
     flex-grow: 1;
