@@ -10,6 +10,7 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
@@ -128,17 +129,9 @@ const UINotifications = styled.div`
   margin-top: 20px;
 `;
 
-const UITabsBar = styled.div`
+const UITabsBar = styled(HorizontalScroller)`
   padding-top: 2px;
-  overflow-x: auto;
-  overflow-y: hidden;
-
   margin-right: 16px;
-
-  &::-webkit-scrollbar {
-    width: 0; /* Remove scrollbar space */
-    height: 0;
-  }
 `;
 
 const UINotificationZeroHolder = styled.div`
