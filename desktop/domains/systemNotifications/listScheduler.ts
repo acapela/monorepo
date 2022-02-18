@@ -13,6 +13,7 @@ import { getTotal } from "@aca/shared/numbers";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
+import { getNotificationTitle } from "../notification/title";
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";
@@ -28,7 +29,7 @@ function getNextListNotificationWindow(list: NotificationListEntity): Date | nul
 
   // If want notification instantly - still batch them just a little bit
   if (list.notifications_interval_ms === 0) {
-    return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: SECOND * 30 });
+    return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: SECOND * 10 });
   }
 
   return getNextScheduledDate({ workStartHour: 9, workEndHour: 17, intervalInMs: list.notifications_interval_ms });
@@ -47,12 +48,26 @@ const bundleListNotifications = cachedComputed(
 
           const newNotifications = list.inboxNotificationsSinceLastSeen;
 
-          const latestNotification = maxBy(newNotifications.all, (n) => new Date(n.created_at));
+          const getBody = () => {
+            const notifications = newNotifications.all;
+
+            if (!notifications.length) return;
+
+            if (notifications.length === 1) {
+              const [notification] = notifications;
+
+              return `${getNotificationTitle(notification)} from ${notification.from}`;
+            }
+
+            const latestNotification = maxBy(newNotifications.all, (n) => new Date(n.created_at));
+
+            return `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification?.created_at ?? date))}`;
+          };
 
           return {
             date,
             title: pluralize`${newNotifications.count} ${["notification"]} in list ${list.title}`,
-            body: `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification?.created_at ?? date))}`,
+            body: getBody(),
           };
         }
 
