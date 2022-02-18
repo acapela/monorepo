@@ -8,21 +8,25 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
-    - filters
-    - title
     - created_at
-    - updated_at
+    - filters
     - id
+    - notifications_interval_ms
+    - seen_at
+    - title
+    - updated_at
     - user_id
   role: user
 select_permissions:
 - permission:
     columns:
-    - filters
-    - title
     - created_at
-    - updated_at
+    - filters
     - id
+    - notifications_interval_ms
+    - seen_at
+    - title
+    - updated_at
     - user_id
     filter:
       user_id:
@@ -32,11 +36,13 @@ update_permissions:
 - permission:
     check: null
     columns:
-    - filters
-    - title
     - created_at
-    - updated_at
+    - filters
     - id
+    - notifications_interval_ms
+    - seen_at
+    - title
+    - updated_at
     - user_id
     filter:
       user_id:

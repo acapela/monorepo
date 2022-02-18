@@ -42,7 +42,15 @@ export const allActions = composeActionsFromImports(
 function pickActions(actions: AnyStarImport): ActionData[] {
   const allImports = convertStarImportsToList(actions);
 
-  return allImports.filter(getIsAction) as unknown as ActionData[];
+  return allImports
+    .filter((someImport) => {
+      if (getIsAction(someImport)) return true;
+
+      if (Array.isArray(someImport) && getIsAction(someImport[0])) return true;
+
+      return false;
+    })
+    .flat() as unknown as ActionData[];
 }
 
 /**

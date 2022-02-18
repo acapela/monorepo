@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React, { ReactNode, useRef, useState } from "react";
 import { useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
@@ -25,7 +26,7 @@ interface Props<I> {
   dividerIndexes?: number[];
 }
 
-export function ItemsDropdown<I>({
+export const ItemsDropdown = observer(function ItemsDropdown<I>({
   items,
   selectedItems,
   keyGetter,
@@ -129,7 +130,7 @@ export function ItemsDropdown<I>({
       {additionalContent}
     </UIMenu>
   );
-}
+});
 
 const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
   ${({ $maxHeight }) =>

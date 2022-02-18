@@ -3,7 +3,7 @@ import React from "react";
 import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
-import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter, getExactIsRouteActive, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import {
   IconArrowLeft,
@@ -16,6 +16,7 @@ import {
   IconSlidersHoriz,
 } from "@aca/ui/icons";
 
+import { settingsSections } from "../views/SettingsView";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -71,11 +72,27 @@ export const goToSettings = defineAction({
   group: navigationActionsGroup,
   icon: <IconSlidersHoriz />,
   analyticsEvent: "Settings Opened",
-  canApply: () => !getExactIsRouteActive("settings"),
+  keywords: ["options"],
+  canApply: () => !getIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
-    desktopRouter.navigate("settings");
+    desktopRouter.navigate("settings", { section: settingsSections[0].id });
   },
+});
+
+export const goToSettingSectionsActions = settingsSections.map((section) => {
+  return defineAction({
+    name: "Settings",
+    supplementaryLabel: section.label,
+    group: navigationActionsGroup,
+    icon: <IconSlidersHoriz />,
+    keywords: ["options"],
+    analyticsEvent: "Settings Opened",
+    canApply: () => !getExactIsRouteActive("settings", { section: section.id }),
+    handler() {
+      desktopRouter.navigate("settings", { section: section.id });
+    },
+  });
 });
 
 export const goToResolved = defineAction({
@@ -104,7 +121,7 @@ export const exitSettings = defineAction({
   name: "Exit settings",
   group: navigationActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: () => getExactIsRouteActive("settings") && !uiStore.isSidebarOpened,
+  canApply: () => getIsRouteActive("settings") && !uiStore.isSidebarOpened,
   shortcut: ["Esc"],
   handler() {
     desktopRouter.navigate("home");

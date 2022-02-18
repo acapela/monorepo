@@ -1,5 +1,6 @@
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
+import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -14,13 +15,21 @@ interface DefineListConfig {
   isCustom?: boolean;
   filter?: (notification: NotificationEntity) => boolean;
   getNotifications?: () => NotificationEntity[];
+  listEntity?: NotificationListEntity;
 }
 
 // For non-grouped notifications the index is a single number
 // For grouped notifications the index is a number tuple, containing both the group's index and the within group index
 type GroupedNotificationsIndex = number | [number, number];
 
-export function defineNotificationsList({ id, name, isCustom, filter, getNotifications }: DefineListConfig) {
+export function defineNotificationsList({
+  id,
+  name,
+  isCustom,
+  filter,
+  getNotifications,
+  listEntity,
+}: DefineListConfig) {
   assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
   const getAllNotifications = cachedComputed(() => {
@@ -154,6 +163,7 @@ export function defineNotificationsList({ id, name, isCustom, filter, getNotific
     getNextNotification,
     getPreviousNotification,
     getNotificationsToPreload,
+    listEntity,
   };
 }
 

@@ -1,4 +1,4 @@
-type CleanupFunction = () => void;
+import { Cleanup, MaybeCleanup } from "./types";
 
 /**
  * Useful for cases when we have to clean multiple things in effects.
@@ -14,7 +14,7 @@ type CleanupFunction = () => void;
  * })
  */
 export function createCleanupObject() {
-  const cleanups = new Set<CleanupFunction>();
+  const cleanups = new Set<Cleanup>();
   const cleanupObject = {
     clean() {
       cleanups.forEach((cleanup) => {
@@ -22,12 +22,12 @@ export function createCleanupObject() {
         cleanup();
       });
     },
-    enqueue(...cleanupsToAdd: Array<CleanupFunction>) {
+    enqueue(...cleanupsToAdd: Array<Cleanup>) {
       cleanupsToAdd.forEach((cleanupToAdd) => {
         cleanups.add(cleanupToAdd);
       });
     },
-    set next(cleanupToAdd: CleanupFunction | void) {
+    set next(cleanupToAdd: MaybeCleanup | void) {
       if (!cleanupToAdd) return;
 
       cleanups.add(cleanupToAdd);

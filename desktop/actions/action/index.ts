@@ -88,16 +88,16 @@ export function defineAction(input: ActionCreateInput): ActionData {
     keywords(context) {
       const keywords = resolvedRawKeywords(context);
 
-      const group = resolveActionDataThunk(input.group, context);
-
-      if (group) {
-        keywords.push(resolveActionDataThunk(group.name, context));
-      }
-
       const supplementaryLabel = resolveActionDataThunk(input.supplementaryLabel, context);
 
       if (supplementaryLabel) {
         keywords.push(supplementaryLabel);
+      }
+
+      const group = resolveActionDataThunk(input.group, context);
+
+      if (group) {
+        keywords.push(resolveActionDataThunk(group.name, context));
       }
 
       return keywords;

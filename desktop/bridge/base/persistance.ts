@@ -1,6 +1,7 @@
 import { isEqual } from "lodash";
 import { action, computed, observable } from "mobx";
 import { useObserver } from "mobx-react";
+import { isPrimitive } from "utility-types";
 
 import { createChannel } from "@aca/shared/channel";
 import { runUntracked } from "@aca/shared/mobx/utils";
@@ -87,6 +88,17 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     }
   }
 
+  function getWithDefaults() {
+    const defaultValue = getDefault();
+    const currentValue = observableValueData.get().value;
+
+    if (isPrimitive(defaultValue)) {
+      return currentValue;
+    }
+
+    return { ...defaultValue, ...currentValue };
+  }
+
   function update(updater: ValueUpdater<T>) {
     runUntracked(() => {
       const newValue = updateValue(get(), updater);
@@ -96,7 +108,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
   }
 
   function get() {
-    return observableValueData.get().value;
+    return getWithDefaults();
   }
 
   function use() {
@@ -122,7 +134,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     observables: {
       isReady,
       get value() {
-        return computed(() => observableValueData.get().value);
+        return computed(() => getWithDefaults());
       },
     },
   };

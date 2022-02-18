@@ -9,7 +9,7 @@ import { PathArguments, parseUrlWithPattern } from "@aca/shared/urlPattern";
 
 const routes = {
   home: "/",
-  settings: "/settings",
+  settings: "/settings/:section",
   notification: "/notifications/:notificationId",
   list: "/list/:listId?:isEditing",
   focus: "/focus/:listId/:notificationId",

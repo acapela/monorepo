@@ -1,6 +1,8 @@
-import { action, autorun, observable, runInAction, untracked } from "mobx";
+import { action, autorun, observable, reaction, runInAction, untracked } from "mobx";
 
 import { getUUID } from "@aca/shared/uuid";
+
+import { MaybeCleanup } from "../types";
 
 /**
  * Escape hatch for using mobx observables outside of observers without mobx warning
@@ -30,6 +32,21 @@ export function autorunEffect(callback: () => Cleanup | void) {
     }
 
     stop();
+  };
+}
+
+export function reactionEffect<R>(expression: () => R, effect: (value: R) => MaybeCleanup) {
+  let effectCleanup: MaybeCleanup;
+  const cancelReaction = reaction(expression, (value) => {
+    if (effectCleanup) {
+      effectCleanup();
+    }
+    effectCleanup = effect(value);
+  });
+
+  return function cancel() {
+    cancelReaction();
+    effectCleanup?.();
   };
 }
 
