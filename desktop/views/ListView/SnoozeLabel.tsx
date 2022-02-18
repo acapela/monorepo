@@ -94,12 +94,20 @@ function getGroupSnoozeState(group: NotificationsGroup): SnoozeState {
 
     assert(ongoingSnoozeNotification, "could not find snoozed notification");
 
+    const hasAllNotificationsInGroupHaveSameSnoozeTime = group.notifications.every(
+      (n) => n.snoozed_until === ongoingSnoozeNotification.snoozed_until
+    );
+
     return {
       lifecycle: "snooze-ongoing",
       tooltip:
         !group.isOnePreviewEnough && notificationSnoozeCount > 1
           ? `${notificationSnoozeCount} notifications snoozed`
           : getDefaultTooltip(ongoingSnoozeNotification),
+      displayedSnoozedTime: hasAllNotificationsInGroupHaveSameSnoozeTime
+        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          relativeFormatDateTime(new Date(ongoingSnoozeNotification.snoozed_until!))
+        : undefined,
     };
   }
 
