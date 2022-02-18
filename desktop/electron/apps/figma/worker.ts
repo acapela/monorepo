@@ -245,6 +245,7 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
         text_preview: getMessageText(commentNotification.comment.message_meta),
       },
       commentNotification: {
+        author_id: commentNotification.user_id,
         file_id: commentNotification.file_key,
         file_name: commentNotification.file.name,
         is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
