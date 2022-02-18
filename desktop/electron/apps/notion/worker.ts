@@ -261,13 +261,14 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     }
 
     const updated_at = created_at;
+    const authorId = activity.edits[0].authors[0].id;
     result.push({
       notification: {
         url,
         text_preview,
         created_at,
         updated_at,
-        from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
+        from: recordMap.notion_user[authorId]?.value?.name ?? "Notion",
       },
       type,
       notionNotification: {
@@ -275,6 +276,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
         page_id: pageId,
         page_title: pageBlock.properties.title[0][0],
         space_id: notification.space_id,
+        author_id: authorId,
       },
       discussion_id: notificationProperties.discussion_id,
     });
