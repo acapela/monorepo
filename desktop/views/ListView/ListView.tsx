@@ -111,15 +111,17 @@ const UINotifications = styled.div`
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
-  margin-top: 24px;
+
   padding-right: 15px;
   /* Prevents the last notification in the list from hiding under the footer */
   padding-bottom: 48px;
+
+  /* Sums up to 24px when adding up the padding-bottom in ListTabLabel */
+  margin-top: 20px;
 `;
 
 const UITabsBar = styled.div`
   padding-top: 2px;
-  margin-bottom: 24px;
 `;
 
 const UINotificationZeroHolder = styled.div`
@@ -148,6 +150,8 @@ const UIListTools = styled.div`
   ${theme.spacing.actions.asGap}
   padding-right: 16px;
   align-items: flex-start;
+
+  padding-top: 16px;
 
   ${ListFilters} {
     flex-grow: 1;

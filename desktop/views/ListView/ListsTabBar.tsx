@@ -16,7 +16,7 @@ export function ListsTabBar({ lists, activeListId }: Props) {
   return (
     <UIHolder>
       {lists.map((list) => {
-        return <ListTabLabel key={list.id} list={list} activeListId={activeListId} />;
+        return <ListTabLabel key={list.id} list={list} isActive={activeListId === list.id} />;
       })}
       <ActionIconButton action={createNotificationList} showTitleInTooltip />
     </UIHolder>
