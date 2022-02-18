@@ -55,8 +55,6 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
 
   const notificationsResolvedSinceStart = allNotificationsWhenFocusStarted.filter((n) => n.isResolved);
 
-  // function
-
   function getCurrentGroupProgressInfo(): GroupProgress {
     if (!currentGroup) {
       return { ...createProgress(0, 1), group: currentGroup };

@@ -141,7 +141,6 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
 
       if (group) {
         group.notifications.forEach((notification) => {
-          notification.snooze;
           notification.snooze(date);
         });
       }

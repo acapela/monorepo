@@ -116,7 +116,7 @@ export function defineNotificationsList({ id, name, isCustom, filter, getNotific
     const firstNotification = getIsNotificationsGroup(firstNotificationOrGroup)
       ? firstNotificationOrGroup.notifications[0]
       : firstNotificationOrGroup;
-    // // We limit the amount of notifications to preload to the previous one and the next 3
+    // We limit the amount of notifications to preload to the previous one and the next 3
     const notificationsToPreload = openedNotification
       ? [getPreviousNotification(openedNotification)].filter(isNotNullish)
       : [];
