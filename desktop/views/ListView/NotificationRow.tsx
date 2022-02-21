@@ -96,7 +96,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
 })``;
 
 const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "ready" | false }>`
-  padding: 8px 8px;
+  padding: 10px 8px;
   display: flex;
   align-items: center;
   gap: 24px;

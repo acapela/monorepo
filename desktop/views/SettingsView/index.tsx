@@ -9,6 +9,7 @@ import { theme } from "@aca/ui/theme";
 
 import { AccountSettings } from "./Account";
 import { ExperimentalSettings } from "./Experimental";
+import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
 
 interface SettingsSection {
@@ -20,6 +21,10 @@ export const settingsSections: SettingsSection[] = [
   {
     id: "integrations",
     label: "Integrations",
+  },
+  {
+    id: "general",
+    label: "General",
   },
   {
     id: "account",
@@ -66,6 +71,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
           </UINav>
           <UIActiveSection>
             {sectionId === "integrations" && <IntegrationsManager />}
+            {sectionId === "general" && <GeneralSettings />}
             {sectionId === "experimental" && <ExperimentalSettings />}
             {sectionId === "notifications" && <NotificationsSettings />}
             {sectionId === "account" && <AccountSettings />}

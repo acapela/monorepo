@@ -25,7 +25,7 @@ const secondary = color("hsl(34, 100%, 68%)", {
 });
 
 const lightGray = color("hsl(220, 33%, 98%)", {
-  hover: color("hsla(0, 0%, 0%, 0.03)"),
+  hover: color("hsla(0, 0%, 0%, 0.05)"),
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
