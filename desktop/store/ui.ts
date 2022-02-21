@@ -2,6 +2,7 @@ import { action, autorun, makeAutoObservable, observable, runInAction } from "mo
 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { desktopRouter } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
 
@@ -42,6 +43,7 @@ export const uiStore = makeAutoObservable({
   isInDarkMode: false,
   isDisplayingZenImage: false,
   isShowingPeekView: false,
+  focusedNotification: null as null | NotificationEntity,
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },
@@ -91,6 +93,7 @@ export const uiStore = makeAutoObservable({
 desktopRouter.subscribe(() => {
   uiStore.isSidebarOpened = false;
   uiStore.focusedTarget = null;
+  uiStore.focusedNotification = null;
 
   uiStore.isDisplayingZenImage = false;
 });

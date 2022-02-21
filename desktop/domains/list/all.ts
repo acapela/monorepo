@@ -2,17 +2,16 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { typedKeys } from "@aca/shared/object";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 
 function getShouldNotificationBeInInboxList(notification: NotificationEntity) {
+  if (uiStore.focusedNotification?.id == notification.id) return true;
   if (notification.resolved_at !== null) return false;
-  if (notification.isSnoozed) return false;
-  if (!notification.inner) return false;
-
-  return true;
+  return !notification.isSnoozed && Boolean(notification.inner);
 }
 
 export const allNotificationsList = defineNotificationsList({
