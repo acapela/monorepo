@@ -4,6 +4,7 @@ import { linearUsers } from "@aca/backend/src/linear/hasuraActions";
 import { getIndividualSlackInstallationURLHandler } from "@aca/backend/src/notificationCapture/hasuraActions";
 import {
   getTeamSlackInstallationURLHandler,
+  slackConversations,
   slackUser,
   slackUsers,
   uninstallSlack,
@@ -26,5 +27,6 @@ export const handlers: ActionHandler<any, any>[] = [
   linearUsers,
   slackUser,
   slackUsers,
+  slackConversations,
   uninstallSlack,
 ];
