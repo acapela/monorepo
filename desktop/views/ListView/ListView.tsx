@@ -11,7 +11,6 @@ import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySid
 import { uiStore } from "@aca/desktop/store/ui";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
-import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
 import { ListEditTools } from "./EditTools";
@@ -72,7 +71,7 @@ export const ListView = observer(({ listId }: Props) => {
             <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
           </UINotificationZeroHolder>
         ) : (
-          <HStack style={{ height: "100%" }}>
+          <UIListsScroller>
             {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
 
             {displayedList && notificationGroups && notificationGroups.length > 0 && (
@@ -110,7 +109,7 @@ export const ListView = observer(({ listId }: Props) => {
                 </UINotifications>
               </>
             )}
-          </HStack>
+          </UIListsScroller>
         )}
       </UIHolder>
     </TraySidebarLayout>
@@ -118,9 +117,10 @@ export const ListView = observer(({ listId }: Props) => {
 });
 
 const UIHolder = styled.div<{}>`
-  height: 100%;
-  width: 100%;
-  overflow-y: hidden;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 const UINotifications = styled.div`
@@ -180,4 +180,11 @@ const UIListTools = styled.div`
   ${ListEditTools} {
     padding-top: 4px;
   }
+`;
+
+const UIListsScroller = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 `;
