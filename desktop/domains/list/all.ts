@@ -11,7 +11,8 @@ import { NotificationsList, defineNotificationsList } from "./defineList";
 function getShouldNotificationBeInInboxList(notification: NotificationEntity) {
   if (uiStore.focusedNotification?.id == notification.id) return true;
   if (notification.resolved_at !== null) return false;
-  return !notification.isSnoozed && Boolean(notification.inner);
+  if (notification.isSnoozed) return false;
+  return Boolean(notification.inner);
 }
 
 export const allNotificationsList = defineNotificationsList({
