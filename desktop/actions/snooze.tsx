@@ -1,11 +1,11 @@
 import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
 import React from "react";
 
+import { uiStore } from "@aca/desktop/store/ui";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
 
-import { uiStore } from "../store/ui";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";

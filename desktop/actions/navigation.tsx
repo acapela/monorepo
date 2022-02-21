@@ -5,6 +5,7 @@ import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getExactIsRouteActive, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
+import { settingsSections } from "@aca/desktop/views/SettingsView";
 import {
   IconArrowLeft,
   IconClockZzz,
@@ -16,7 +17,6 @@ import {
   IconSlidersHoriz,
 } from "@aca/ui/icons";
 
-import { settingsSections } from "../views/SettingsView";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

@@ -5,9 +5,8 @@ import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { userSlackInstallationEntity } from "@aca/desktop/clientdb/userSlackInstallation";
 import { NotificationSlackMessageFragment } from "@aca/gql";
-
-import { userSlackInstallationEntity } from "../../userSlackInstallation";
 
 const notificationSlackMessageFragment = gql`
   fragment NotificationSlackMessage on notification_slack_message {

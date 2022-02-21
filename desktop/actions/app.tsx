@@ -7,6 +7,7 @@ import {
   toggleFullscreenRequest,
   toggleMaximizeRequest,
 } from "@aca/desktop/bridge/system";
+import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowsExpand, IconArrowsMove2, IconBox } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
@@ -62,6 +63,7 @@ export const showCommandMenu = defineAction({
   name: "More commands",
   private: true,
   shortcut: ["Mod", "K"],
+  canApply: () => !uiStore.isAnyPreviewFocused,
   group: appActionsGroup,
   icon: <IconBox />,
   handler() {

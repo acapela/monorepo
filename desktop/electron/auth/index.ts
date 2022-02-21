@@ -1,8 +1,8 @@
 import { session } from "electron";
 
 import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
+import { appState } from "@aca/desktop/electron/appState";
 
-import { appState } from "../appState";
 import { initializeLoginHandler } from "./acapela";
 import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGoogleAuthHandler } from "./google";

@@ -1,9 +1,8 @@
 import { app, globalShortcut } from "electron";
 
+import { globalShortcutPressed, registerGlobalShortcutRequest } from "@aca/desktop/bridge/globalShortcuts";
 import { createLogger } from "@aca/shared/log";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
-
-import { globalShortcutPressed, registerGlobalShortcutRequest } from "../bridge/globalShortcuts";
 
 const aliases: Record<string, string> = {
   meta: "CommandOrControl",
