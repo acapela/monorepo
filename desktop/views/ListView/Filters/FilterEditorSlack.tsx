@@ -1,7 +1,9 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
 
 import { useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
+import { SlackConversationsQuery } from "@aca/gql";
 import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 import { typedKeys } from "@aca/shared/object";
@@ -66,10 +68,24 @@ export const slackThreadedOptions: NotificationFilterOption<SlackFilter>[] = [
   },
 ];
 
-export function FilterEditorSlack({ filter, onChange }: Props) {
-  filter.conversation_name;
+export const useSlackConversations = () => {
+  const { data } = useQuery<SlackConversationsQuery>(
+    gql`
+      query SlackConversations {
+        slack_conversations {
+          id
+          name
+          is_private
+        }
+      }
+    `
+  );
+  return data?.slack_conversations ?? [];
+};
 
+export function FilterEditorSlack({ filter, onChange }: Props) {
   const slackUsers = useSlackUsers();
+  const slackConversations = useSlackConversations();
 
   return (
     <UIHolder>
@@ -89,6 +105,28 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
                   delete filter.conversation_type;
                 } else {
                   filter.conversation_type = { $in: types };
+                }
+              })
+            );
+          }}
+        />
+      </FilterSettingRow>
+      <FilterSettingRow title="Conversations">
+        <MultipleOptionsDropdown<typeof slackConversations[number]>
+          placeholder="All"
+          items={slackConversations}
+          keyGetter={(channel) => channel.id}
+          labelGetter={(channel) => (channel.is_private ? "🔒" : "#") + channel.name}
+          selectedItems={slackConversations.filter((channel) =>
+            getIsValueMatchingFilter(filter.slack_conversation_id, channel.id)
+          )}
+          onChange={(channels) => {
+            onChange(
+              updateValue(filter, (filter) => {
+                if (channels.length === 0) {
+                  delete filter.slack_conversation_id;
+                } else {
+                  filter.slack_conversation_id = { $in: channels.map((c) => c.id) };
                 }
               })
             );

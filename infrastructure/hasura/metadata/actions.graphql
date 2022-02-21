@@ -23,6 +23,10 @@ type Query {
 }
 
 type Query {
+  slack_conversations: [SlackConversation!]!
+}
+
+type Query {
   slack_user(team_id: uuid!): SlackUserOutput
 }
 
@@ -118,4 +122,10 @@ type ServiceUser {
   display_name: String!
   real_name: String
   avatar_url: String
+}
+
+type SlackConversation {
+  id: String!
+  name: String!
+  is_private: Boolean!
 }
