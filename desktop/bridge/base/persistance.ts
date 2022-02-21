@@ -50,7 +50,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     if (!isPersisted) {
       return;
     }
-    global.electronGlobal.appReadyPromise.then(() => {
+    setTimeout(() => {
       requestGetPersistedValue(valueKey).then(
         action((value) => {
           if (value !== null) {
@@ -60,7 +60,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
           }
         })
       );
-    });
+    }, 100);
   }
 
   initialize();
