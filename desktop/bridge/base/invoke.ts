@@ -33,10 +33,6 @@ export function createInvokeBridge<Input = void, Result = void>(key: string) {
 
   type Handler = (input: Input, event?: IpcMainInvokeEvent) => Promise<Result>;
 
-  let resolveHandled: Function;
-  const handledPromise = new Promise((_resolve) => {
-    resolveHandled = _resolve;
-  });
   let invokeHandler: Handler | null = null;
 
   /**
@@ -47,16 +43,16 @@ export function createInvokeBridge<Input = void, Result = void>(key: string) {
       throw new Error(`Cannot handle client side`);
     }
 
-    if (!invokeHandler) {
-      resolveHandled();
-    }
-
     invokeHandler = handler;
   };
 
   async function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
-    await handledPromise;
-    return await invokeHandler!(arg, event);
+    if (!invokeHandler) {
+      throw new Error(`No handler for arg ${JSON.stringify(arg)} given event ${JSON.stringify(event)}`);
+    }
+    const result = await invokeHandler(arg, event);
+
+    return result;
   }
 
   if (process.env.ELECTRON_CONTEXT !== "client") {
