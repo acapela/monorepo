@@ -1,9 +1,10 @@
 import React from "react";
 
+import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
-import { IconBulb, IconChartLine } from "@aca/ui/icons";
+import { IconBulb, IconChartLine, IconKeyboardHide } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
@@ -40,5 +41,17 @@ export const toggleDarkTheme = defineAction({
     setTimeout(() => {
       document.body.classList.remove("no-transitions");
     }, 500);
+  },
+});
+
+export const toggleShowShortcutsBar = defineAction({
+  name: "Toggle show shortcuts bar",
+  group: settingsActionsGroup,
+  keywords: ["footer", "hide", "ui"],
+  icon: <IconKeyboardHide />,
+  handler() {
+    applicationWideSettingsBridge.update((settings) => {
+      settings.showShortcutsBar = !settings.showShortcutsBar;
+    });
   },
 });

@@ -45,5 +45,6 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
     enableDesktopNotifications: true,
     showNotificationsCountBadge: true,
     notificationsCountBadgeListIds: [] as string[],
+    showShortcutsBar: true,
   }),
 });

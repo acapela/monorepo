@@ -152,7 +152,7 @@ const UISendersPerson = styled.span`
 const UISendersMore = styled.span``;
 
 const UIHolder = styled.div<{ $isFocused: boolean }>`
-  padding: 8px 8px;
+  padding: 10px 8px;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -177,8 +177,6 @@ const UITitleText = styled.div`
 const UINotifications = styled.div`
   margin-left: 18px;
   padding-left: 20px;
-  margin-top: 8px;
-  margin-bottom: 8px;
   border-left: 2px solid ${theme.colors.layout.divider};
 `;
 
