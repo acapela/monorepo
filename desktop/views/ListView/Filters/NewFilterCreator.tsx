@@ -9,32 +9,19 @@ import { IconPlus } from "@aca/ui/icons";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
 import { theme } from "@aca/ui/theme";
 
-import { FilterEditor } from "./FilterEditor";
 import { FilterIntegrationPicker } from "./FilterIntegrationPicker";
-
-type NewFilterState = boolean | NotificationFilter;
 
 interface Props {
   onCreateRequest: (filter: NotificationFilter) => void;
 }
 
 export function NewFilterCreator({ onCreateRequest }: Props) {
-  const [isCreatingNew, setIsCreatingNew] = useState<NewFilterState>(false);
+  const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   return (
     <>
       <UIHolder>
-        {/* <IconButton
-          ref={buttonRef}
-          tooltip="Add new filter..."
-          kind="primarySubtle"
-          icon={<IconPlus />}
-          onClick={() => {
-            setIsCreatingNew(true);
-          }}
-        >
-          Add filter
-        </IconButton> */}
         <Button
           ref={buttonRef}
           tooltip="Add new filter..."
@@ -60,32 +47,12 @@ export function NewFilterCreator({ onCreateRequest }: Props) {
           >
             <FilterIntegrationPicker
               onPicked={(integration) => {
-                setIsCreatingNew({ __typename: integration.notificationTypename, id: getUUID() });
-              }}
-            />
-          </CompactPopoverPanel>
-        )}
-        {typeof isCreatingNew !== "boolean" && (
-          <CustomizePopoverPanel
-            enableScreenCover
-            key={"customize"}
-            placement="bottom-start"
-            anchorRef={buttonRef}
-            onCloseRequest={() => {
-              setIsCreatingNew(false);
-            }}
-          >
-            <FilterEditor
-              filter={isCreatingNew}
-              onChange={(filter) => {
-                setIsCreatingNew(filter);
-              }}
-              onSubmit={(filter) => {
+                const filter: NotificationFilter = { __typename: integration.notificationTypename, id: getUUID() };
                 setIsCreatingNew(false);
                 onCreateRequest(filter);
               }}
             />
-          </CustomizePopoverPanel>
+          </CompactPopoverPanel>
         )}
       </AnimatePresence>
     </>
@@ -96,8 +63,4 @@ const UIHolder = styled.div``;
 
 const CompactPopoverPanel = styled(PopoverPanel)`
   ${theme.box.popover}
-`;
-
-const CustomizePopoverPanel = styled(PopoverPanel)`
-  width: 400px;
 `;

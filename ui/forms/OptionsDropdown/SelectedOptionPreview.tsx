@@ -8,3 +8,17 @@ export const SelectedOptionPreview = styled(OptionLabel)<{}>`
   ${theme.typo.label.medium}
   ${theme.common.ellipsisText};
 `;
+
+export const CommaSelectedOptionsPreview = styled.div<{}>`
+  ${theme.typo.content.medium};
+  white-space: normal;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  user-select: none;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
+`;

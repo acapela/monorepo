@@ -1,4 +1,5 @@
 import { ComponentType } from "react";
+import React from "react";
 import styled from "styled-components";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

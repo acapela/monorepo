@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
-import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 import { typedKeys } from "@aca/shared/object";
@@ -12,6 +11,7 @@ import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
+import { FilterSettingRow } from "./utils";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
 interface Props {
@@ -73,7 +73,7 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
 
   return (
     <UIHolder>
-      <SettingRow title="Conversation type">
+      <FilterSettingRow title="Conversation type">
         <MultipleOptionsDropdown
           placeholder="All Conversations"
           items={slackConversationTypes}
@@ -94,8 +94,8 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
             );
           }}
         />
-      </SettingRow>
-      <SettingRow title="Message type">
+      </FilterSettingRow>
+      <FilterSettingRow title="Message type">
         <SingleOptionDropdown<NotificationFilterOption<SlackFilter>>
           items={slackNotificationTypeOptions}
           keyGetter={(option) => option.label}
@@ -105,14 +105,14 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
             onChange(updateValue(filter, option.updater));
           }}
         />
-      </SettingRow>
+      </FilterSettingRow>
       <ServiceUsersFilterRow<SlackFilter>
         users={slackUsers}
         filter={filter}
         field="slack_user_id"
         onChange={onChange}
       />
-      <SettingRow title="Threads">
+      <FilterSettingRow title="Threads">
         <SingleOptionDropdown<NotificationFilterOption<SlackFilter>>
           items={slackThreadedOptions}
           keyGetter={(option) => option.label}
@@ -122,7 +122,7 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
             onChange(updateValue(filter, option.updater));
           }}
         />
-      </SettingRow>
+      </FilterSettingRow>
     </UIHolder>
   );
 }

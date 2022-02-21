@@ -16,12 +16,12 @@ import { getFilterIntegration } from "./utils";
 interface Props {
   filter: NotificationFilter;
   onChange: (filter: NotificationFilter) => void;
-  onSubmit: (filter: NotificationFilter) => void;
+  onCloseRequest: () => void;
   onRemove?: (filter: NotificationFilter) => void;
   saveLabel?: string;
 }
 
-export function FilterEditor({ filter, onChange, onSubmit, onRemove, saveLabel = "Save filter" }: Props) {
+export function FilterEditor({ filter, onChange, onRemove, onCloseRequest }: Props) {
   function renderCorrespondingEditor() {
     if (getIsFilterOfType(filter, "notification_figma_comment")) {
       return <FilterEditorFigma filter={filter} onChange={onChange} />;
@@ -57,15 +57,8 @@ export function FilterEditor({ filter, onChange, onSubmit, onRemove, saveLabel =
       {renderIntegrationHeader()}
       {editor}
       <UIButtons>
-        <Button
-          isWide
-          kind="primary"
-          icon={<IconCheck />}
-          onClick={() => {
-            onSubmit(filter);
-          }}
-        >
-          {saveLabel}
+        <Button isWide kind="primary" icon={<IconCheck />} onClick={onCloseRequest}>
+          Done
         </Button>
         {onRemove && (
           <Button

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { theme } from "@aca/ui/theme";
 
@@ -7,16 +7,17 @@ interface Props {
   title: string;
   description?: string;
   children: ReactNode;
+  fixedOptionWidth?: number;
 }
 
-export function SettingRow({ title, description, children }: Props) {
+export function SettingRow({ title, description, children, fixedOptionWidth }: Props) {
   return (
     <UIHolder>
       <UIInfo>
         <UITitle>{title}</UITitle>
         {description && <UIDescription>{description}</UIDescription>}
       </UIInfo>
-      <UIOption>{children}</UIOption>
+      <UIOption $fixedWidth={fixedOptionWidth}>{children}</UIOption>
     </UIHolder>
   );
 }
@@ -41,7 +42,7 @@ const UIDescription = styled.div`
   ${theme.typo.item.description}
 `;
 
-const UIOption = styled.div`
+const UIOption = styled.div<{ $fixedWidth?: number }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -49,4 +50,11 @@ const UIOption = styled.div`
 
   /* Same size of "+ Connect" button */
   min-width: 135px;
+
+  ${(props) =>
+    props.$fixedWidth &&
+    css`
+      width: ${props.$fixedWidth}px;
+      min-width: ${props.$fixedWidth}px;
+    `}
 `;

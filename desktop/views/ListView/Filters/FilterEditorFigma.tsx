@@ -4,13 +4,13 @@ import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
-import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { ServiceUsersFilterRow } from "@aca/desktop/views/ListView/Filters/ServiceUsersFilterRow";
 import { isNotNullish } from "@aca/shared/nullish";
 import { updateValue } from "@aca/shared/updateValue";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
+import { FilterSettingRow } from "./utils";
 
 type FigmaFilter = NotificationFilterKind<"notification_figma_comment">;
 interface Props {
@@ -49,7 +49,7 @@ export const FilterEditorFigma = observer(({ filter, onChange }: Props) => {
   return (
     <UIHolder>
       <ServiceUsersFilterRow<FigmaFilter> users={figmaUsers} filter={filter} field="author_id" onChange={onChange} />
-      <SettingRow title="Notification type">
+      <FilterSettingRow title="Notification type">
         <SingleOptionDropdown<NotificationFilterOption<FigmaFilter>>
           items={figmaNotificationOptions}
           keyGetter={(option) => option.label}
@@ -59,7 +59,7 @@ export const FilterEditorFigma = observer(({ filter, onChange }: Props) => {
             onChange(updateValue(filter, option.updater));
           }}
         />
-      </SettingRow>
+      </FilterSettingRow>
     </UIHolder>
   );
 });
