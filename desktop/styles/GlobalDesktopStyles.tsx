@@ -23,6 +23,7 @@ export const GlobalDesktopStyles = createGlobalStyle`
 
   * {
     cursor: default;
+    user-select: none;
   }
 
   * {

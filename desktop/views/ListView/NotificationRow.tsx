@@ -2,9 +2,17 @@ import { action } from "mobx";
 import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { openFocusMode } from "@aca/desktop/actions/notification";
+import { composeActionsFromImports, notificationActions } from "@aca/desktop/actions/all";
+import {
+  openFocusMode,
+  openNotificationInApp,
+  resolveNotification,
+  unresolveNotification,
+} from "@aca/desktop/actions/notification";
+import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -32,6 +40,19 @@ interface Props {
 export const NotificationRow = styledObserver(({ notification, list }: Props) => {
   const isFocused = uiStore.useFocus(notification);
   const elementRef = useRef<HTMLDivElement>(null);
+
+  useActionsContextMenu(
+    elementRef,
+    [
+      openFocusMode,
+      openNotificationInApp,
+      resolveNotification,
+      snoozeNotification,
+      unresolveNotification,
+      unsnoozeNotification,
+    ],
+    notification
+  );
 
   const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 150, offDelay: 0 });
 

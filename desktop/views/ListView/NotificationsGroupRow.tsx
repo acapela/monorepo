@@ -3,8 +3,11 @@ import { uniq } from "lodash";
 import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
-import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
-import { openFocusMode } from "@aca/desktop/actions/notification";
+import { composeActionsFromImports, notificationActions } from "@aca/desktop/actions/all";
+import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
+import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
+import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
+import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
@@ -36,6 +39,19 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
   const elementRef = useRef<HTMLDivElement>(null);
 
   const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
+
+  useActionsContextMenu(
+    elementRef,
+    [
+      toggleNotificationsGroup,
+      openFocusMode,
+      snoozeNotification,
+      resolveNotification,
+      unresolveNotification,
+      unsnoozeNotification,
+    ],
+    group
+  );
 
   mobxTicks.minute.reportObserved();
 

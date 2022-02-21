@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { runAction } from "@aca/desktop/domains/runAction";
-import { styledObserver } from "@aca/shared/component";
+import { styledObserver, styledObserverForwardRef } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -21,18 +21,15 @@ interface Props {
  *
  * Useful for rendering action buttons that have custom UI (nor Button or IconButton, etc.)
  */
-export const ActionTrigger = styledObserver<Props>(function ActionTrigger({
-  action,
-  target,
-  children,
-  className,
-  onMouseEnter,
-  onMouseLeave,
-}: Props) {
+export const ActionTrigger = styledObserverForwardRef<HTMLDivElement, Props>(function ActionTrigger(
+  { action, target, children, className, onMouseEnter, onMouseLeave },
+  ref
+) {
   const context = createActionContext(target);
 
   return (
     <UIHolder
+      ref={ref}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={className}

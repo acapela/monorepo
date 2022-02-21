@@ -35,4 +35,7 @@ export const common = {
   dragWindow: css`
     -webkit-app-region: drag;
   `,
+  selectable: css`
+    user-select: auto;
+  `,
 };
