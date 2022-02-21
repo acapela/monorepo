@@ -16,32 +16,34 @@ import { createDefaultCommandMenuSession } from "./defaultSession";
 import { createCommandMenuSession } from "./session";
 import { commandMenuStore } from "./store";
 
-actionResultChannel.subscribe((actionResult) => {
-  const currentSession = commandMenuStore.session;
+actionResultChannel.subscribe(
+  action((actionResult) => {
+    const currentSession = commandMenuStore.session;
 
-  if (actionResult === false) {
-    return;
-  }
+    if (actionResult === false) {
+      return;
+    }
 
-  if (actionResult === undefined) {
-    commandMenuStore.session = null;
-    return;
-  }
+    if (actionResult === undefined) {
+      commandMenuStore.session = null;
+      return;
+    }
 
-  commandMenuStore.session = createCommandMenuSession({
-    actionContext: createActionContext(currentSession?.actionContext.forcedTarget, {
-      isContextual: actionResult.isContextual ?? currentSession?.actionContext.isContextual,
-      searchPlaceholder: actionResult.searchPlaceholder,
-    }),
-    getActions(context) {
-      return actionResult.getActions(context);
-    },
-  });
+    commandMenuStore.session = createCommandMenuSession({
+      actionContext: createActionContext(currentSession?.actionContext.forcedTarget, {
+        isContextual: actionResult.isContextual ?? currentSession?.actionContext.isContextual,
+        searchPlaceholder: actionResult.searchPlaceholder,
+      }),
+      getActions(context) {
+        return actionResult.getActions(context);
+      },
+    });
 
-  if (currentSession) {
-    currentSession.actionContext.searchKeyword = "";
-  }
-});
+    if (currentSession) {
+      currentSession.actionContext.searchKeyword = "";
+    }
+  })
+);
 
 export const CommandMenuManager = observer(function CommandMenuManager() {
   const isLoggedIn = !!authStore.userTokenData;

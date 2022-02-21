@@ -102,6 +102,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   useShortcut("Enter", () => {
     if (activeAction) {
       onActionSelected(activeAction);
+      return true;
     }
   });
 
