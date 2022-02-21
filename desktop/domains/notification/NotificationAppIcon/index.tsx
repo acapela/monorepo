@@ -4,11 +4,11 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
-import { makeLogger } from "../../dev/makeLogger";
 //@ts-ignore
 import figma from "./figma.svg";
 //@ts-ignore

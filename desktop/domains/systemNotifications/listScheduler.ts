@@ -5,6 +5,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
 import { createLogger } from "@aca/shared/log";
@@ -13,7 +14,6 @@ import { getTotal } from "@aca/shared/numbers";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
-import { getNotificationTitle } from "../notification/title";
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";

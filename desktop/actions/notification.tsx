@@ -1,8 +1,11 @@
 import React from "react";
 
 import { trackingEvent } from "@aca/desktop/analytics";
+import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
+import { getIntegration } from "@aca/desktop/bridge/apps/shared";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { getDb } from "@aca/desktop/clientdb";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
@@ -10,9 +13,6 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
 
-import { OpenAppUrl, openAppUrl } from "../bridge/apps";
-import { getIntegration } from "../bridge/apps/shared";
-import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
 import { isNotFocusingPreviewAnd } from "./focus";
 import { currentNotificationActionsGroup } from "./groups";

@@ -1,10 +1,10 @@
 import React from "react";
 
+import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
+import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 import { IconBulb, IconChartLine } from "@aca/ui/icons";
 
-import { uiSettingsBridge } from "../bridge/ui";
-import { uiStore } from "../store/ui";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 

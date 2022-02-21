@@ -1,6 +1,6 @@
+import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
-import { PublicErrorData } from "../domains/errors/types";
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
