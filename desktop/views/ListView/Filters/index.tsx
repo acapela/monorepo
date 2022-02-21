@@ -6,6 +6,7 @@ import { styledObserver } from "@aca/shared/component";
 
 import { FilterLabel } from "./FilterLabel";
 import { NewFilterCreator } from "./NewFilterCreator";
+import { filtersEditStore } from "./store";
 
 interface Props {
   listId: string;
@@ -20,7 +21,7 @@ export const ListFilters = styledObserver(function ListFilters({ listId, classNa
         <NewFilterCreator
           onCreateRequest={(filter) => {
             list.update({ filters: [...list.filters, filter] });
-            //
+            filtersEditStore.editedFilter = filter;
           }}
         />
         {list.typedFilters.map((filter, index) => {

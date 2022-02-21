@@ -11,7 +11,7 @@ import { theme } from "@aca/ui/theme";
 
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
-import { SelectedOptionPreview } from "./SelectedOptionPreview";
+import { CommaSelectedOptionsPreview, SelectedOptionPreview } from "./SelectedOptionPreview";
 
 interface Props<I> {
   name?: string;
@@ -32,6 +32,7 @@ interface Props<I> {
   closeAfterItemPicked?: boolean;
   icon?: ReactNode;
   isDisabled?: boolean;
+  className?: string;
 }
 
 export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown<I>({
@@ -50,6 +51,7 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
   icon,
   isDisabled,
   placeholder,
+  className,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isOpen, { unset: close, set: open }] = useBoolean(false);
@@ -93,17 +95,15 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
         indicateDropdown
         cursorType="action"
         ref={openerRef}
+        className={className}
       >
         <UIHolder>
           <UIMenuOpener>
             <UISelectedItemsPreview>
               {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
-              {!selectedItemsPreviewRenderer &&
-                selectedItems.map((selectedItem) => {
-                  const key = keyGetter(selectedItem);
-                  const label = labelGetter(selectedItem);
-                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
-                })}
+              {!selectedItemsPreviewRenderer && selectedItems.length > 0 && (
+                <CommaSelectedOptionsPreview children={selectedItems.map(labelGetter).join(", ")} />
+              )}
 
               {!selectedItems.length && <SelectedOptionPreview label={placeholder ?? "Select..."} />}
             </UISelectedItemsPreview>

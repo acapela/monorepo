@@ -2,8 +2,8 @@ import { LayoutGroup, motion } from "framer-motion";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+import { styledForwardRef } from "@aca/shared/component";
 import { useId } from "@aca/shared/id";
-import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { IconChevronDown } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -19,16 +19,17 @@ export interface Props {
   onClick?: () => void;
   indicateDropdown?: boolean;
   cursorType?: CursorType;
+  className?: string;
 }
-export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
+export const FieldWithLabel = styledForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+  { className, pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
   forwardedRef
 ) {
   const id = useId();
 
   return (
     <LayoutGroup>
-      <UIHolder className="FOOBAR" onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
+      <UIHolder className={className} onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -53,7 +54,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
       </UIHolder>
     </LayoutGroup>
   );
-});
+})``;
 
 const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   position: relative;
