@@ -1,5 +1,5 @@
 import { action } from "mobx";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { openFocusMode } from "@aca/desktop/actions/notification";
@@ -54,13 +54,6 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
-  const isUnread: boolean = useMemo(() => {
-    if (notification.isResolved) {
-      return false;
-    }
-    return !notification.last_seen_at;
-  }, [notification]);
-
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -81,13 +74,13 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         $isFocused={isFocused}
         $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
       >
-        <NotificationAppIcon notification={notification} displayUnreadNotification={isUnread} />
+        <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
-        <SnoozeLabel notificationOrGroup={notification} />
+        {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
 
         <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
       </UIHolder>

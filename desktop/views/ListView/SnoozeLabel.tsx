@@ -1,3 +1,4 @@
+import { isPast } from "date-fns";
 import React from "react";
 import styled, { css } from "styled-components";
 
@@ -5,7 +6,7 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { assert } from "@aca/shared/assert";
 import { styledObserver } from "@aca/shared/component";
-import { relativeFormatDateTime } from "@aca/shared/dates/format";
+import { niceFormatDateTime, relativeFormatDateTime } from "@aca/shared/dates/format";
 import { IconClockZzz } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -41,8 +42,12 @@ interface SnoozeState {
 }
 
 function getDefaultTooltip(notification: NotificationEntity) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return `Snoozed Until: ${new Date(notification.snoozed_until! ?? undefined).toLocaleString()}`;
+  const date = new Date(notification.snoozed_until! ?? undefined);
+
+  if (isPast(date)) {
+    return `Was snoozed until ${niceFormatDateTime(date)} `;
+  }
+  return `Snoozed Until: ${niceFormatDateTime(date)}`;
 }
 
 function getSnoozedNotificationThatFinishedClosestToNow(group: NotificationsGroup) {
@@ -63,7 +68,6 @@ function getNotificationSnoozeState(notification: NotificationEntity): SnoozeSta
   if (notification.isSnoozed) {
     return {
       lifecycle: "snooze-ongoing",
-
       tooltip: getDefaultTooltip(notification),
       displayedSnoozedTime: relativeFormatDateTime(new Date(notification.snoozed_until)),
     };
@@ -78,7 +82,6 @@ function getNotificationSnoozeState(notification: NotificationEntity): SnoozeSta
 
   return {
     lifecycle: "snooze-is-done-and-is-read",
-
     tooltip: getDefaultTooltip(notification),
   };
 }

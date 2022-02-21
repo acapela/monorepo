@@ -36,6 +36,6 @@ export const UINotificationPreviewText = styled.div`
 
 export const UIDate = styled.div`
   opacity: 0.6;
-  min-width: 3ch;
+  min-width: 4ch;
   text-align: right;
 `;

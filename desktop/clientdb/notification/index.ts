@@ -101,6 +101,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       get isResolved() {
         return !!notification.resolved_at;
       },
+      get isUnread() {
+        if (notification.resolved_at) {
+          return false;
+        }
+        return !notification.last_seen_at;
+      },
       resolve() {
         if (notification.resolved_at) return;
         updateSelf({ resolved_at: new Date().toISOString() });

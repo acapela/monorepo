@@ -11,7 +11,7 @@ import { groupNotifications } from "@aca/desktop/domains/group/groupNotification
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
+import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { isNotFocusingPreviewAnd } from "./focus";
@@ -68,6 +68,28 @@ export const copyNotificationLink = defineAction({
     const notification = context.assertTarget("notification");
 
     window.electronBridge.copyToClipboard(notification.url);
+  },
+});
+
+export const markNotificationUnread = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
+  keywords: ["snooze", "remind"],
+  canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
+  handler(context) {
+    context.getTarget("notification")?.update({ last_seen_at: null });
+  },
+});
+
+export const markNotificationRead = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark read" : "Mark notification as read"),
+  keywords: ["seen", "done"],
+  canApply: (ctx) => !ctx.getTarget("notification")?.last_seen_at,
+  handler(context) {
+    context.getTarget("notification")?.update({ last_seen_at: new Date().toISOString() });
   },
 });
 
@@ -135,7 +157,9 @@ export const unresolveNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: isNotFocusingPreviewAnd((ctx) => {
-    return ctx.hasTarget("notification") || ctx.hasTarget("group");
+    return (
+      ctx.getTarget("notification")?.isResolved || !!ctx.getTarget("group")?.notifications.some((n) => n.isResolved)
+    );
   }),
   handler(context) {
     const notification = context.getTarget("notification");

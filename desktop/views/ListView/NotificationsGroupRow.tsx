@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
+import { action } from "mobx";
 import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
@@ -47,23 +48,23 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
     if (!isFocused) return;
     makeElementVisible(elementRef.current);
 
-    return () => {
+    return action(() => {
       if (uiStore.focusedTarget === group) {
         uiStore.focusedTarget = null;
       }
-    };
+    });
   }, [isFocused, group]);
 
   useUserFocusedOnElement(
     elementRef,
-    () => {
+    action(() => {
       uiStore.focusedTarget = group;
-    },
-    () => {
+    }),
+    action(() => {
       if (isFocused) {
         uiStore.focusedTarget = null;
       }
-    }
+    })
   );
 
   const [firstNotification] = group.notifications;
@@ -131,7 +132,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             </UICountIndicator>
             <UITitleText>{group.name}</UITitleText>
           </UITitle>
-          <SnoozeLabel notificationOrGroup={group} />
+          {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
