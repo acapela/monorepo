@@ -90,7 +90,7 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
 
   function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
     if (!invokeHandler) {
-      throw new Error(`No handler`);
+      throw new Error(`No handler for arg ${JSON.stringify(arg)} given event ${JSON.stringify(event)}`);
     }
     const cleanup = invokeHandler(arg, event);
 
