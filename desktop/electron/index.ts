@@ -4,7 +4,7 @@ import "./globals";
 
 import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
-import { action } from "mobx";
+import { runInAction } from "mobx";
 
 import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
@@ -54,7 +54,11 @@ function initializeApp() {
   setupAutoUpdater();
 }
 
-app.on("ready", action(initializeApp));
+log.info(`Waiting for app ready`);
+app.on("ready", () => {
+  log.info(`Electron App is ready`);
+  runInAction(initializeApp);
+});
 
 ///
 app.on("window-all-closed", () => {
