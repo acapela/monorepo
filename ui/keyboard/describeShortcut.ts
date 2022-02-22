@@ -1,6 +1,8 @@
+import { upperFirst } from "lodash";
+
 import { isMac } from "@aca/frontend/src/utils/platformDetection";
 
-import { Key } from "./codes";
+import { ShortcutKey } from "./codes";
 import { ShortcutDefinition, resolveShortcutsDefinition } from "./shortcutBase";
 
 type KeyboardPlatform = "mac" | "windows";
@@ -12,7 +14,7 @@ type KeyNiceVersion = string | Partial<Record<KeyboardPlatform, string>>;
  *
  * It is useful with showing UI hints for shortcuts.
  */
-const shortcutKeyNiceVersionMap: Partial<Record<Key, KeyNiceVersion>> = {
+const shortcutKeyNiceVersionMap: Partial<Record<ShortcutKey, KeyNiceVersion>> = {
   Mod: { mac: "⌘", windows: "CTRL" },
   Alt: { mac: "⌥", windows: "ALT" },
   Meta: { mac: "⌘", windows: "CTRL" },
@@ -29,20 +31,20 @@ const shortcutKeyNiceVersionMap: Partial<Record<Key, KeyNiceVersion>> = {
   ArrowLeft: "←",
   ArrowRight: "→",
   Delete: "⌦",
-  Tab: "⇥",
-  Space: "⎵",
+  // Tab: "⇥",
+  // Space: "⎵",
 };
 
-export function getShortcutKeyNiceVersion(key: Key) {
+export function getShortcutKeyNiceVersion(key: ShortcutKey) {
   const alternativeInfo = shortcutKeyNiceVersionMap[key];
 
-  if (!alternativeInfo) return key;
+  if (!alternativeInfo) return upperFirst(key);
 
-  if (typeof alternativeInfo === "string") return alternativeInfo;
+  if (typeof alternativeInfo === "string") return upperFirst(alternativeInfo);
 
   const platform: KeyboardPlatform = isMac() ? "mac" : "windows";
 
-  return alternativeInfo[platform] ?? key;
+  return upperFirst(alternativeInfo[platform] ?? key);
 }
 
 export function getShortcutNiceKeys(shortcut: ShortcutDefinition): string[] {

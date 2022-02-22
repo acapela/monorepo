@@ -1,12 +1,16 @@
+import { subDays } from "date-fns";
 import React from "react";
 
+import { resetAllServices } from "@aca/desktop/bridge/auth";
+import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
-import { IconKeyboard } from "@aca/ui/icons";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
+import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
-import { requestToggleLoggerWindow } from "../bridge/logger";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
+import { listPageView } from "./views/list";
 
 export const devActionsGroup = defineGroup({
   name: "Developer",
@@ -33,6 +37,17 @@ export const toggleDebugFocus = defineAction({
   supplementaryLabel: () => (devSettingsStore.debugFocus ? "Will disable" : "Will enable"),
   handler() {
     devSettingsStore.debugFocus = !devSettingsStore.debugFocus;
+  },
+});
+
+export const toggleDebugPreloading = defineAction({
+  icon: devIcon,
+  name: "Toggle debug preloading",
+  group: devActionsGroup,
+  keywords: ["dev"],
+  supplementaryLabel: () => (devSettingsStore.debugPreloading ? "Will disable" : "Will enable"),
+  handler() {
+    devSettingsStore.debugPreloading = !devSettingsStore.debugPreloading;
   },
 });
 
@@ -73,5 +88,37 @@ export const toggleOpenLoggerWindow = defineAction({
   group: devActionsGroup,
   handler() {
     requestToggleLoggerWindow();
+  },
+});
+
+export const clearAllIntegrations = defineAction({
+  icon: devIcon,
+  name: "Reset all integrations",
+  group: devActionsGroup,
+  handler() {
+    resetAllServices();
+  },
+});
+
+export const restartOnboarding = defineAction({
+  icon: devIcon,
+  name: "Restart onboarding",
+  group: devActionsGroup,
+  handler() {
+    onboardingStore.onboardingStatus = "ongoing";
+  },
+});
+
+export const simulateListWasNotSeen = defineAction({
+  icon: <IconClock />,
+  group: devActionsGroup,
+
+  name: () => "Simulate list was not seen",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  canApply: (ctx) => !!ctx.view(listPageView),
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    list.listEntity?.update({ seen_at: subDays(new Date(), 180).toISOString() });
   },
 });

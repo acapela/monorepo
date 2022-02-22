@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 
+import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/desktop/analytics/types";
+import { MaybePromise } from "@aca/shared/promises";
 import { MaybeCleanup } from "@aca/shared/types";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
@@ -13,12 +15,16 @@ type ChildActionsResult = {
   getActions: (context: ActionContext) => ActionData[];
 };
 
-export type ActionResult = ChildActionsResult;
+export type ActionResult = ChildActionsResult | false | void;
+
+export type ActionHandlerResult = MaybePromise<ActionResult>;
+
 export interface ActionCreateInput {
   id?: string;
   analyticsName?: string;
   name: ActionDataThunk<string>;
   supplementaryLabel?: ActionDataThunk<string | undefined | null>;
+  analyticsEvent?: ActionDataThunk<AnalyticsEventInput>;
   private?: boolean;
   group?: ActionDataThunk<ActionGroupData>;
   keywords?: ActionDataThunk<string[]>;
@@ -27,7 +33,7 @@ export interface ActionCreateInput {
   icon?: ActionDataThunk<ReactNode>;
   // If not provided - assumes action can always be applied
   canApply?: ActionContextCallback<boolean>;
-  handler: ActionContextCallback<void | ActionResult>;
+  handler: ActionContextCallback<ActionHandlerResult>;
 }
 
 export interface ActionData extends ActionCreateInput {
@@ -39,7 +45,7 @@ export interface ActionData extends ActionCreateInput {
 /**
  * Some action fields might be functions that depend on context - this will resolve final data providing some specific context.
  */
-export function resolveActionData(action: ActionData, context: ActionContext = createActionContext()) {
+export function resolveActionData(action: ActionData, context: ActionContext) {
   return {
     ...action,
     name: resolveActionDataThunk(action.name, context),
@@ -47,6 +53,12 @@ export function resolveActionData(action: ActionData, context: ActionContext = c
     keywords: resolveActionDataThunk(action.keywords, context),
     group: resolveActionDataThunk(action.group, context),
     supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
+    get analyticsEvent() {
+      const eventInput = resolveActionDataThunk(action.analyticsEvent, context);
+      if (!eventInput) return;
+
+      return resolveAnalyticsEventInput(eventInput);
+    },
   };
 }
 
@@ -76,16 +88,16 @@ export function defineAction(input: ActionCreateInput): ActionData {
     keywords(context) {
       const keywords = resolvedRawKeywords(context);
 
-      const group = resolveActionDataThunk(input.group, context);
-
-      if (group) {
-        keywords.push(resolveActionDataThunk(group.name, context));
-      }
-
       const supplementaryLabel = resolveActionDataThunk(input.supplementaryLabel, context);
 
       if (supplementaryLabel) {
         keywords.push(supplementaryLabel);
+      }
+
+      const group = resolveActionDataThunk(input.group, context);
+
+      if (group) {
+        keywords.push(resolveActionDataThunk(group.name, context));
       }
 
       return keywords;

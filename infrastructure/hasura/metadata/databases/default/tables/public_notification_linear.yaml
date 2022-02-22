@@ -9,10 +9,12 @@ select_permissions:
 - permission:
     columns:
     - created_at
+    - creator_id
     - id
     - issue_id
     - issue_title
     - notification_id
+    - origin
     - type
     - updated_at
     filter:

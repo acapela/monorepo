@@ -8,6 +8,7 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
+import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
 import { notificationLinearEntity } from "./notification/linear/issue";
@@ -19,6 +20,7 @@ import { notificationSlackMessageEntity } from "./notification/slack/message";
 import { teamEntity } from "./team";
 import { teamMemberEntity } from "./teamMember";
 import { userEntity } from "./user";
+import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 interface CreateNewClientDbInput {
   userId: string;
@@ -39,6 +41,7 @@ export const appClientDbEntities = {
   teamMember: teamMemberEntity,
 
   notification: notificationEntity,
+  notificationList: notificationListEntity,
   notificationNotion: notificationNotionEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
@@ -46,6 +49,8 @@ export const appClientDbEntities = {
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
+
+  userSlackInstallation: userSlackInstallationEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {

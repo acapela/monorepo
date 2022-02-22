@@ -5,14 +5,21 @@ import UrlPattern from "url-pattern";
  * Utility types that convert string /foo/:bar/:baz into {bar: string, baz: string}
  */
 
-type PathSegments<Path extends string> = Split<Path, "/">;
-type PathSegment<Path extends string> = PathSegments<Path>[number];
+type PathSegments<Path extends string, Delimiter extends string> = Split<Path, Delimiter>;
+type PathSegment<Path extends string, Delimiter extends string> = PathSegments<Path, Delimiter>[number];
 type PathSegmentArgName<Segment extends string> = Segment extends `:${infer ArgName}` ? ArgName : never;
-type PathArgNames<Path extends string> = PathSegmentArgName<PathSegment<Path>>;
+type PathArgNames<Path extends string, Delimiter extends string> = PathSegmentArgName<PathSegment<Path, Delimiter>>;
 
-export type PathArguments<Path extends string> = {
-  [key in PathArgNames<Path>]: string;
-};
+type UrlParts<S extends string> = { params: Split<S, "?">[0]; search: Split<S, "?">[1] };
+
+type PathArgumentsWithDelimiter<Path extends string | undefined, Delimiter extends string> = Path extends string
+  ? {
+      [key in PathArgNames<Path, Delimiter>]: string;
+    }
+  : {};
+
+export type PathArguments<Path extends string> = PathArgumentsWithDelimiter<UrlParts<Path>["params"], "/"> &
+  Partial<PathArgumentsWithDelimiter<UrlParts<Path>["search"], "&">>;
 
 type IsEmptyObject<T> = T[keyof T] extends never ? true : false;
 
@@ -30,7 +37,15 @@ export type PathVoidableArguments<Path extends string> = IsEmptyObject<PathArgum
  * }
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type _Test = PathArguments<"/foo/bar/:baz/daz/:daz">;
+type _Test = PathArguments<"/foo/bar/:baz/daz/:daz?:s1&:s2">;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _test: _Test = {
+  baz: "a",
+  daz: "b",
+  s1: "a",
+  s2: "b",
+};
 
 export function fillUrlWithArguments<Pattern extends string>(pattern: Pattern, args: PathVoidableArguments<Pattern>) {
   const patternMatcher = new UrlPattern(pattern, urlPatternOptions);

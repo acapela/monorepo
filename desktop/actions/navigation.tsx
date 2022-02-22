@@ -1,9 +1,11 @@
 import React from "react";
 
+import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { resolvedList, snoozedList } from "@aca/desktop/domains/list/preconfigured";
-import { desktopRouter, getExactIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
+import { desktopRouter, getExactIsRouteActive, getIsRouteActive } from "@aca/desktop/routes";
+import { uiStore } from "@aca/desktop/store/ui";
+import { settingsSections } from "@aca/desktop/views/SettingsView";
 import {
   IconArrowLeft,
   IconClockZzz,
@@ -69,17 +71,35 @@ export const goToSettings = defineAction({
   name: "Settings",
   group: navigationActionsGroup,
   icon: <IconSlidersHoriz />,
-  canApply: () => !getExactIsRouteActive("settings"),
+  analyticsEvent: "Settings Opened",
+  keywords: ["options"],
+  canApply: () => !getIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
-    desktopRouter.navigate("settings");
+    desktopRouter.navigate("settings", { section: settingsSections[0].id });
   },
+});
+
+export const goToSettingSectionsActions = settingsSections.map((section) => {
+  return defineAction({
+    name: "Settings",
+    supplementaryLabel: section.label,
+    group: navigationActionsGroup,
+    icon: <IconSlidersHoriz />,
+    keywords: ["options"],
+    analyticsEvent: "Settings Opened",
+    canApply: () => !getExactIsRouteActive("settings", { section: section.id }),
+    handler() {
+      desktopRouter.navigate("settings", { section: section.id });
+    },
+  });
 });
 
 export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
   icon: <IconFolderCheck />,
+  analyticsEvent: trackingEvent("Resolved Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
@@ -90,6 +110,7 @@ export const goToSnoozed = defineAction({
   name: "Show snoozed notifications",
   group: navigationActionsGroup,
   icon: <IconClockZzz />,
+  analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: snoozedList.id });
@@ -100,7 +121,7 @@ export const exitSettings = defineAction({
   name: "Exit settings",
   group: navigationActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: () => getExactIsRouteActive("settings") && !uiStore.isSidebarOpened,
+  canApply: () => getIsRouteActive("settings") && !uiStore.isSidebarOpened,
   shortcut: ["Esc"],
   handler() {
     desktopRouter.navigate("home");

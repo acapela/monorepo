@@ -38,7 +38,7 @@ export const MessageTasksPeople = observer(function MessageTasksPeople({ tasks, 
       </UIHolder>
       <AnimatePresence>
         {isPopoverOpen && (
-          <Popover anchorRef={ref} placement="bottom" onClickOutside={() => setIsPopoverOpen(false)} enableScreenCover>
+          <Popover anchorRef={ref} placement="bottom" onCloseRequest={() => setIsPopoverOpen(false)} enableScreenCover>
             <UICollapsedTasks>
               {tasks.map((task) => (
                 <MessageTask key={task.id} task={task} />

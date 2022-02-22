@@ -28,11 +28,14 @@ export const ActionTrigger = styledObserver<Props>(function ActionTrigger({
   className,
   onMouseEnter,
   onMouseLeave,
+  ...restProps
 }: Props) {
   const context = createActionContext(target);
 
   return (
     <UIHolder
+      // Could include eg. tooltip
+      {...restProps}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={className}

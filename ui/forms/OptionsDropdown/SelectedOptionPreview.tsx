@@ -5,10 +5,20 @@ import { theme } from "@aca/ui/theme";
 import { OptionLabel } from "./OptionLabel";
 
 export const SelectedOptionPreview = styled(OptionLabel)<{}>`
-  ${theme.colors.primary.asBgWithReadableText};
-  padding: 4px;
-  padding-right: 12px;
-  min-height: 32px;
-  white-space: nowrap;
-  ${theme.radius.circle};
+  ${theme.typo.label.medium}
+  ${theme.common.ellipsisText};
+`;
+
+export const CommaSelectedOptionsPreview = styled.div<{}>`
+  ${theme.typo.content.medium};
+  white-space: normal;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  user-select: none;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
 `;

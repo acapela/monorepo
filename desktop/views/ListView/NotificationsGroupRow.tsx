@@ -1,18 +1,22 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
-import React, { useEffect, useRef } from "react";
+import { action } from "mobx";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
+import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
+import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
 import { relativeShortFormatDate } from "@aca/shared/dates/format";
+import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
@@ -21,7 +25,8 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
@@ -37,27 +42,29 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   const isFocused = uiStore.useFocus(group, (group) => group?.id);
 
+  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 200, offDelay: 0 });
+
   useEffect(() => {
     if (!isFocused) return;
     makeElementVisible(elementRef.current);
 
-    return () => {
+    return action(() => {
       if (uiStore.focusedTarget === group) {
         uiStore.focusedTarget = null;
       }
-    };
+    });
   }, [isFocused, group]);
 
   useUserFocusedOnElement(
     elementRef,
-    () => {
+    action(() => {
       uiStore.focusedTarget = group;
-    },
-    () => {
+    }),
+    action(() => {
       if (isFocused) {
         uiStore.focusedTarget = null;
       }
-    }
+    })
   );
 
   const [firstNotification] = group.notifications;
@@ -69,16 +76,39 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
 
   const allPeople = uniq(group.notifications.map((notification) => notification.from));
 
+  const isUnread: boolean = useMemo(() => {
+    if (group.notifications.every((n) => n.isResolved)) {
+      return false;
+    }
+
+    if (group.isOnePreviewEnough) {
+      // We treat "one preview enough" notification groups as a single notification
+      // So in this case, we won't display the unread indicator
+      return group.notifications.every((n) => !n.last_seen_at);
+    }
+    return group.notifications.some((n) => !n.last_seen_at);
+  }, [group]);
+
   return (
     <>
-      <ActionTrigger action={toggleNotificationsGroup} target={group}>
+      <ActionTrigger
+        {...(group.isOnePreviewEnough
+          ? { action: openFocusMode, target: group }
+          : { action: toggleNotificationsGroup, target: group })}
+      >
         {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
-        {isFocused &&
-          group.notifications.slice(0, 3).map((notificationToPreload) => {
-            return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
+        {isFocusedForAWhile &&
+          group.notifications.slice(0, 3).map((notificationToPreload, index) => {
+            return (
+              <PreloadNotificationPreview
+                priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                key={notificationToPreload.id}
+                url={notificationToPreload.url}
+              />
+            );
           })}
         <UIHolder ref={elementRef} $isFocused={isFocused}>
-          <NotificationAppIcon notification={firstNotification} />
+          <NotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
           <UISendersLabel data-tooltip={allPeople.length > 1 ? allPeople.join(", ") : undefined}>
             {allPeople.length === 1 && allPeople[0]}
             {allPeople.length > 1 && (
@@ -89,20 +119,23 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             )}
           </UISendersLabel>
           <UITitle>
-            <UIToggleIconAnimator
-              animate={{ rotateZ: isOpened ? `90deg` : `0deg` }}
-              initial={{ rotateZ: isOpened ? `90deg` : `0deg` }}
-            >
-              <IconChevronRight />
-            </UIToggleIconAnimator>
+            {!group.isOnePreviewEnough && (
+              <UIToggleIconAnimator
+                animate={{ rotateZ: isOpened ? `90deg` : `0deg` }}
+                initial={{ rotateZ: isOpened ? `90deg` : `0deg` }}
+              >
+                <IconChevronRight />
+              </UIToggleIconAnimator>
+            )}
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
             <UITitleText>{group.name}</UITitleText>
           </UITitle>
+          {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
-        {isOpened && (
+        {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
             <NotificationsRows notifications={group.notifications} list={list} />
           </UINotifications>
@@ -120,7 +153,7 @@ const UISendersPerson = styled.span`
 const UISendersMore = styled.span``;
 
 const UIHolder = styled.div<{ $isFocused: boolean }>`
-  padding: 8px 8px;
+  padding: 10px 8px;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -142,15 +175,9 @@ const UITitleText = styled.div`
   ${theme.common.ellipsisText}
 `;
 
-const UIDate = styled.div`
-  opacity: 0.6;
-`;
-
 const UINotifications = styled.div`
   margin-left: 18px;
   padding-left: 20px;
-  margin-top: 8px;
-  margin-bottom: 8px;
   border-left: 2px solid ${theme.colors.layout.divider};
 `;
 

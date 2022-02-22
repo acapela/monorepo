@@ -4,17 +4,22 @@ import "./globals";
 
 import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
-import { action } from "mobx";
+import { runInAction } from "mobx";
 
-import { InitializeLogger } from "../domains/dev/logger";
-import { makeLogger } from "../domains/dev/makeLogger";
+import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
+import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
+import { initializeDefaultSession } from "./session";
 import { initializeSingleInstanceLock } from "./singleInstance";
+
+//
 
 // Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
 protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
@@ -43,10 +48,19 @@ function initializeApp() {
   initializeServiceSync();
 
   initializeGlobalShortcuts();
+
+  initializeDefaultSession();
+
+  setupAutoUpdater();
 }
 
-app.on("ready", action(initializeApp));
+log.info(`Waiting for app ready`);
+app.on("ready", () => {
+  log.info(`Electron App is ready`);
+  runInAction(initializeApp);
+});
 
+///
 app.on("window-all-closed", () => {
   // On Mac - closing app window does not quit it - it can still be visible in system 'cmd-tab' etc.
   if (process.platform === "darwin") {

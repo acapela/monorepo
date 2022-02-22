@@ -1,70 +1,34 @@
-import { gql } from "@apollo/client";
-import { autorun } from "mobx";
 import React from "react";
 
-import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
+import { integrationClients } from "@aca/desktop/domains/integrations";
+import { accountStore } from "@aca/desktop/store/account";
 import { assertDefined } from "@aca/shared/assert";
-import { IconAtom, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
+import { IconPlus, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
-import { apolloClient } from "../apolloClient";
-import { connectSlackBridge } from "../bridge/auth";
-import { getDb } from "../clientdb";
-import { authStore } from "../store/authStore";
 import { defineAction } from "./action";
-import { accountActionsGroup } from "./auth";
+import { accountActionsGroup, getContextualServiceName } from "./auth";
 
-const getAuthUser = () => getDb().user.findById(authStore.user.id);
-
-async function querySlackInstallationURL() {
-  const {
-    data: { slackInstallation },
-  } = await apolloClient.query<GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables>(
-    {
-      query: gql`
-        query GetIndividualSlackInstallationURL($input: GetSlackInstallationURLInput!) {
-          slackInstallation: get_slack_installation_url(input: $input) {
-            url
-          }
-        }
-      `,
-      variables: { input: { redirectURL: "" } },
-    }
-  );
-  return assertDefined(slackInstallation?.url, "missing slack installation url");
-}
-
-// We want to close any Slack install windows, as soon as the user has a Slack installation
-let closeSlackInstallWindow: Function | void = void null;
-autorun(() => {
-  const user = getAuthUser();
-  if (user?.has_slack_installation) {
-    closeSlackInstallWindow?.();
-  }
-});
 export const connectSlack = defineAction({
-  name: "Connect Slack",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Slack"),
+  icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => {
-    const user = getAuthUser();
-    return Boolean(user && !user.has_slack_installation);
+    return !integrationClients.slack.getIsConnected();
   },
   handler() {
-    querySlackInstallationURL().then((url) => {
-      closeSlackInstallWindow = connectSlackBridge({ url });
-    });
+    return integrationClients.slack.connect();
   },
 });
 
-const getIsAutoResolveEnabled = () => Boolean(getAuthUser()?.is_slack_auto_resolve_enabled);
+const getIsAutoResolveEnabled = () => Boolean(accountStore.user?.is_slack_auto_resolve_enabled);
 
 export const toggleSlackAutoResolve = defineAction({
   name: () => (getIsAutoResolveEnabled() ? "Disable Slack Auto Resolve" : "Enable Slack Auto Resolve"),
   group: accountActionsGroup,
   icon: () => (getIsAutoResolveEnabled() ? <IconToggleOn /> : <IconToggleOff />),
-  canApply: () => Boolean(getAuthUser()?.has_slack_installation),
+  canApply: () => Boolean(accountStore.user?.slackInstallation),
   handler() {
-    const user = assertDefined(getAuthUser(), "missing user");
+    const user = assertDefined(accountStore.user, "missing user");
     user.update({ is_slack_auto_resolve_enabled: !user.is_slack_auto_resolve_enabled });
   },
 });

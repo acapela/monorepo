@@ -9,9 +9,9 @@ import { PathArguments, parseUrlWithPattern } from "@aca/shared/urlPattern";
 
 const routes = {
   home: "/",
-  settings: "/settings",
+  settings: "/settings/:section",
   notification: "/notifications/:notificationId",
-  list: "/list/:listId",
+  list: "/list/:listId?:isEditing",
   focus: "/focus/:listId/:notificationId",
 } as const;
 
@@ -33,7 +33,7 @@ devAssignWindowVariable("router", desktopRouter);
  */
 
 // Atom that will be 'pinged' on each route change
-const routeChangeAtom = createAtom("route-change");
+export const routeChangeAtom = createAtom("route-change");
 
 // Let's ping atom on route changes
 desktopRouter.subscribe(() => {
@@ -51,11 +51,14 @@ type BasePath = string;
 
 export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathArguments<Routes[R]> | null {
   const router = getObservedRouter();
-  const currentRouteUrl = router.getLocation().url;
+  const currentRouteURL = router.getLocation().url;
+  // queries are treated as optional, thus their presence should not affect equality
+  const [currentRouteURLWithoutQuery] = currentRouteURL.split("?");
 
   const pattern = routes[route];
+  const [patternWithoutQuery] = pattern.split("?");
 
-  return parseUrlWithPattern(pattern, currentRouteUrl);
+  return parseUrlWithPattern(patternWithoutQuery as typeof pattern, currentRouteURLWithoutQuery);
 }
 
 export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): PathArguments<Routes[R]> {

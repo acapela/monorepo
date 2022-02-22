@@ -51,6 +51,11 @@ function isDev(env: BuildEnvironment): boolean {
   return env === "development";
 }
 
+function getDistSuffix(env: BuildEnvironment): string {
+  if (env === "development") return "";
+  return `-${env}`;
+}
+
 /**
  * There are 2 javascript 'entry' points
  * - one for 'main' process (called 'electron' to avoid confusion) - javascript ran to bootstrap and manage electron app
@@ -68,7 +73,7 @@ export function createElectronBundler(env: BuildEnvironment): Parcel {
     targets: {
       default: {
         context: "electron-main",
-        distDir: path.resolve(__dirname, "dist/electron"),
+        distDir: path.resolve(__dirname, `dist${getDistSuffix(env)}/electron`),
         optimize: !isDev(env),
         includeNodeModules: !isDev(env) || [
           "@aca/shared",
@@ -84,7 +89,7 @@ export function createElectronBundler(env: BuildEnvironment): Parcel {
 }
 
 export function createClientBundler(env: BuildEnvironment): Parcel {
-  const distDir = path.resolve(__dirname, "dist/client");
+  const distDir = path.resolve(__dirname, `dist${getDistSuffix(env)}/client`);
   return new Parcel({
     entries: path.resolve(CLIENT_DIR, "index.html"),
     defaultConfig: "@parcel/config-default",

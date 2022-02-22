@@ -1,8 +1,11 @@
 import React from "react";
 
+import { trackingEvent } from "@aca/desktop/analytics";
+import { getDb } from "@aca/desktop/clientdb";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
+import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import {
   IconArrowBottom,
   IconArrowCornerCwLt,
@@ -10,6 +13,10 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconArrowTop,
+  IconEdit2,
+  IconFolderPlus,
+  IconSlidersHoriz,
+  IconTrash,
 } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
@@ -24,6 +31,67 @@ export const currentListActionsGroup = defineGroup({
     if (list) return `List - ${list.name}`;
 
     return "List";
+  },
+});
+
+const canApplyCustomListAction = (ctx: ActionContext) => Boolean(ctx.view(listPageView)?.list.isCustom);
+
+export const renameNotificationList = defineAction({
+  icon: <IconEdit2 />,
+  name: "Rename list",
+  keywords: ["change", "name", "title"],
+  group: currentListActionsGroup,
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  canApply: canApplyCustomListAction,
+  handler: () => ({
+    searchPlaceholder: "List name...",
+    getActions: () => [
+      defineAction({
+        name: (ctx) =>
+          `Rename list "${ctx.view(listPageView)?.list.name}"` +
+          (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+        handler(ctx) {
+          const { list } = ctx.assertView(listPageView);
+          const title = ctx.searchKeyword.trim();
+          if (!title) {
+            return;
+          }
+          getDb().notificationList.findById(list.id)?.update({ title });
+        },
+      }),
+    ],
+  }),
+});
+
+export const editNotificationList = defineAction({
+  icon: <IconSlidersHoriz />,
+  group: currentListActionsGroup,
+
+  name: "Edit list filters",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  keywords: ["filters"],
+  canApply: canApplyCustomListAction,
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
+  },
+});
+
+export const deleteNotificationList = defineAction({
+  icon: <IconTrash />,
+  group: currentListActionsGroup,
+
+  name: () => "Delete list",
+  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+
+  keywords: ["remove", "trash"],
+  canApply: canApplyCustomListAction,
+  handler(ctx) {
+    const { list } = ctx.assertView(listPageView);
+    desktopRouter.navigate("list", { listId: allNotificationsList.id });
+    getDb().notificationList.removeById(list.id);
   },
 });
 
@@ -86,7 +154,7 @@ export const goToNextList = defineAction({
     return getIsRouteActive("list");
   },
   icon: <IconArrowRight />,
-  supplementaryLabel: (context) => context.assertView(listPageView).nextList?.name,
+  supplementaryLabel: (context) => context.view(listPageView)?.nextList?.name,
   shortcut: ["Tab"],
   handler(context) {
     const nextList = context.assertView(listPageView).nextList;
@@ -104,7 +172,7 @@ export const goToPreviousList = defineAction({
   canApply: () => {
     return getIsRouteActive("list");
   },
-  supplementaryLabel: (context) => context.assertView(listPageView).prevList?.name,
+  supplementaryLabel: (context) => context.view(listPageView)?.prevList?.name,
   shortcut: ["Shift", "Tab"],
   handler(context) {
     const prevList = context.assertView(listPageView).prevList;
@@ -127,6 +195,7 @@ function getGroupInfo(context: ActionContext) {
 
 export const toggleNotificationsGroup = defineAction({
   icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
+  analyticsEvent: trackingEvent("Notification Group Toggled"),
   group: currentListActionsGroup,
   name: (context) => {
     const isOpened = getGroupInfo(context)?.isOpened;
@@ -141,7 +210,8 @@ export const toggleNotificationsGroup = defineAction({
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {
-    return !!context.view(listPageView)?.focusedGroup;
+    const focusedGroup = context.view(listPageView)?.focusedGroup;
+    return Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
   },
   handler(context) {
     const group = context.view(listPageView)?.focusedGroup;
@@ -153,4 +223,30 @@ export const toggleNotificationsGroup = defineAction({
       uiStore.focusedTarget = group;
     }
   },
+});
+
+export const createNotificationList = defineAction({
+  icon: <IconFolderPlus />,
+  name: "Create new notifications list",
+  keywords: ["new list", "bucket", "add"],
+  handler: () => ({
+    searchPlaceholder: "New list name...",
+    getActions: () => [
+      defineAction({
+        name: (ctx) => `Create list "${ctx.searchKeyword}"`,
+        handler(ctx) {
+          const title = ctx.searchKeyword.trim();
+          if (!title) {
+            return false;
+          }
+          const notificationFilter = getDb().notificationList.create({
+            title,
+            filters: [],
+            seen_at: new Date().toISOString(),
+          });
+          desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
+        },
+      }),
+    ],
+  }),
 });

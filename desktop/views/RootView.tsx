@@ -4,11 +4,14 @@ import React, { useEffect } from "react";
 import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { ErrorRecoveryButtons } from "@aca/desktop/domains/errorRecovery/ErrorRecoveryButtons";
 import { Router } from "@aca/desktop/routes/Router";
-import { authStore } from "@aca/desktop/store/authStore";
+import { authStore } from "@aca/desktop/store/auth";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
 
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
+import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
@@ -16,10 +19,18 @@ export const RootView = observer(function RootView() {
     attachActionsShortcutsHandler(allActions);
   }, []);
 
-  const user = authStore.nullableUser;
+  const user = authStore.userTokenData;
 
   if (!authStore.isReady) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen
+        longLoadingFallback={{
+          timeout: 5000,
+          fallbackNode: <ErrorRecoveryButtons />,
+          hint: "Seems it is taking too long...",
+        }}
+      />
+    );
   }
 
   if (!user) {
@@ -27,7 +38,19 @@ export const RootView = observer(function RootView() {
   }
 
   if (!db) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen
+        longLoadingFallback={{
+          timeout: 5000,
+          fallbackNode: <ErrorRecoveryButtons />,
+          hint: "Seems it is taking too long...",
+        }}
+      />
+    );
+  }
+
+  if (onboardingStore.onboardingStatus === "ongoing") {
+    return <InitialIntegrationsView />;
   }
 
   return <Router />;

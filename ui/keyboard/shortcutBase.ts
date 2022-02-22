@@ -1,15 +1,15 @@
 import { HotKey, compareHotkey, parseHotkey } from "is-hotkey";
-import { sortBy } from "lodash";
+import { memoize, sortBy } from "lodash";
 
 import { convertMaybeArrayToArray, removeElementFromArray } from "@aca/shared/array";
 import { onDocumentReady } from "@aca/shared/document";
 import { mapGetOrCreate } from "@aca/shared/map";
 
-import { Key } from "./codes";
+import { ShortcutKey } from "./codes";
 
-export type ShortcutDefinition = Key | Key[];
+export type ShortcutDefinition = ShortcutKey | ShortcutKey[];
 
-export type ShortcutKeys = Key[];
+export type ShortcutKeys = ShortcutKey[];
 
 export interface ShortcutOptions {
   isEnabled?: boolean;
@@ -84,10 +84,8 @@ interface RunningShortcutInfo {
   options?: ShortcutOptions;
 }
 
-/**
- * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
- */
-onDocumentReady(() => {
+// It is possible we want to support shortcuts in multiple windows
+export const initializeDocumentShortcuts = memoize((document: Document) => {
   document.body.addEventListener(
     "keydown",
     (event) => {
@@ -122,6 +120,8 @@ onDocumentReady(() => {
 
           // Handled returned true - prevent propagation of event and other shortcut handlers to be called.
           if (callbackResult === true) {
+            // Don't allow handlers, even registered for the same element to receive them. Treat this event totally finished
+            event.stopImmediatePropagation();
             event.stopPropagation();
             event.preventDefault();
             finallyHandledEvents.add(event);
@@ -131,6 +131,13 @@ onDocumentReady(() => {
     },
     { capture: true }
   );
+});
+
+/**
+ * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
+ */
+onDocumentReady(() => {
+  initializeDocumentShortcuts(document);
 });
 
 export function createShortcutListener(keys: ShortcutKeys, info: RunningShortcutInfo) {

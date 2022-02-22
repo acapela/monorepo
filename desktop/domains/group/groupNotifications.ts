@@ -12,7 +12,7 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
   const result: NotificationOrGroup[] = [];
 
   notifications.forEach((notification) => {
-    const target = getNotificationGroupTarget(notification);
+    const target = getNotificationGroupTarget(notification, notifications);
 
     // Should not happen - but consider as single notification then
     if (!target) {
@@ -61,11 +61,15 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
 export function orderNotificationsByGroups(notifications: NotificationEntity[]) {
   const groupedList = groupNotifications(notifications);
 
-  const result: NotificationOrGroup[] = [];
+  const result: NotificationEntity[] = [];
 
   groupedList.forEach((notificationOrGroup) => {
     if (getIsNotificationsGroup(notificationOrGroup)) {
-      result.push(...notificationOrGroup.notifications);
+      if (notificationOrGroup.isOnePreviewEnough) {
+        result.push(notificationOrGroup.notifications[0]);
+      } else {
+        result.push(...notificationOrGroup.notifications);
+      }
       return;
     }
 

@@ -10,7 +10,8 @@ import {
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
-import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
+import { PreviewLoadingPriority, PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -19,16 +20,17 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
-import { devSettingsStore } from "../../dev/store";
-
-type PreloadBrowserViewProps = { url: string };
+type PreloadBrowserViewProps = { url: string; priority?: PreviewLoadingPriority };
 
 type BrowserViewProps = { url: string; onFocus?: () => void; onBlur?: () => void };
 
-export function PreloadNotificationPreview({ url }: PreloadBrowserViewProps) {
+export function PreloadNotificationPreview({
+  url,
+  priority = PreviewLoadingPriority.following,
+}: PreloadBrowserViewProps) {
   useEffect(() => {
-    return requestPreviewPreload({ url });
-  }, [url]);
+    return requestPreviewPreload({ url, priority });
+  }, [url, priority]);
 
   return <></>;
 }

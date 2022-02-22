@@ -1,7 +1,9 @@
-import router from "next/router";
-import React from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
+import { LoadingScreen } from "@aca/frontend/clientdb/LoadingScreen";
 import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { PageMeta } from "@aca/frontend/utils/PageMeta";
 import { LoginOptionsView } from "@aca/frontend/views/LoginOptionsView";
@@ -9,7 +11,28 @@ import { routes } from "@aca/shared/routes";
 import { Button } from "@aca/ui/buttons/Button";
 
 export default function LoginPage(): JSX.Element {
+  const router = useRouter();
+
   const user = useCurrentUserTokenData();
+
+  const queryParams = router.query as { provider: string } | undefined;
+
+  // Runs `singIn` in client side
+  useEffect(() => {
+    if (queryParams?.provider === "google") {
+      signIn("google");
+    } else if (queryParams?.provider === "slack") {
+      signIn("slack");
+    } else {
+      setIsComponentMounted(true);
+    }
+  }, [queryParams]);
+
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
+
+  if (!isComponentMounted) {
+    return <LoadingScreen />;
+  }
 
   function handleReturnToApp() {
     router.push(routes.finishLogInInApp);

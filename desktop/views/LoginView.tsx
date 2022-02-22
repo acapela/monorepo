@@ -1,12 +1,15 @@
 import React from "react";
 
-import { loginToAcapela } from "@aca/desktop/actions/auth";
+import { loginToAcapelaWithGoogle, loginToAcapelaWithSlack } from "@aca/desktop/actions/auth";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
 
 export function LoginView() {
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <ActionButton action={loginToAcapela} />
-    </div>
+    <FocusedActionLayout title="Sign into Acapela">
+      <ActionButton action={loginToAcapelaWithGoogle} />
+      &nbsp;
+      <ActionButton action={loginToAcapelaWithSlack} />
+    </FocusedActionLayout>
   );
 }

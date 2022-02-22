@@ -26,7 +26,7 @@ async function getAcapelaAuthToken() {
   return cookie.value;
 }
 
-export async function loginAcapela() {
+export async function loginAcapela(provider: "slack" | "google") {
   const currentToken = await getAcapelaAuthToken();
   if (currentToken) {
     authTokenBridgeValue.set(currentToken);
@@ -36,7 +36,7 @@ export async function loginAcapela() {
 
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
-  window.webContents.loadURL(FRONTEND_URL + `/app/login`);
+  window.webContents.loadURL(FRONTEND_URL + `/app/login?provider=${provider}`);
 
   window.webContents.on("did-navigate-in-page", async () => {
     const token = await getAcapelaAuthToken();
@@ -65,8 +65,8 @@ export async function loginAcapela() {
 }
 
 export function initializeLoginHandler() {
-  loginBridge.handle(async () => {
-    await loginAcapela();
+  loginBridge.handle(async (loginProvider) => {
+    await loginAcapela(loginProvider);
   });
 
   getAcapelaAuthToken().then((token) => {

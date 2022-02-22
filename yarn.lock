@@ -92,12 +92,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aca/desktop@workspace:desktop"
   dependencies:
+    "@install-binary/ghr": ^0.14.0
     "@parcel/config-default": ^2.2.1
     "@parcel/core": ^2.2.1
     "@sentry/cli": ^1.72.1
     "@sentry/electron": ^2.5.4
     "@types/electron-json-storage": ^4.5.0
     "@types/node-cleanup": ^2.1.2
+    "@types/segment-analytics": ^0.0.34
     dotenv: ^15.0.0
     electron: 16.0.8
     electron-builder: ^22.14.13
@@ -310,6 +312,7 @@ __metadata:
     "@aca/tooling": 0.1.0
     "@install-binary/hasura": 2.1.1
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
+    "@types/common-tags": ^1.8.1
     "@types/express": ^4.17.13
     "@types/glob": ^7.2.0
     "@types/glob-watcher": ^5.0.2
@@ -325,6 +328,7 @@ __metadata:
     "@vvo/tzdb": ^6.44.0
     axios: ^0.24.0
     commitizen: ^4.2.4
+    common-tags: ^1.8.2
     cz-conventional-changelog: ^3.3.0
     date-fns: ^2.28.0
     date-fns-tz: ^1.2.2
@@ -2940,6 +2944,67 @@ __metadata:
   bin:
     berglas: run.js
   checksum: 2a1c2f8d394e2175f8e49bb05c4df5e68ebed45cfd936ecec616c367db2543c4bb018dfb83b6815580c5d36b9c06e115ba7ba9f9295a3fcb551720d97f14d739
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-darwin-arm64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-darwin-arm64@npm:0.14.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-darwin-x64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-darwin-x64@npm:0.14.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-arm64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-arm64@npm:0.14.0"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-arm@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-arm@npm:0.14.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr-linux-x64@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr-linux-x64@npm:0.14.0"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@install-binary/ghr@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@install-binary/ghr@npm:0.14.0"
+  dependencies:
+    "@install-binary/ghr-darwin-arm64": 0.14.0
+    "@install-binary/ghr-darwin-x64": 0.14.0
+    "@install-binary/ghr-linux-arm": 0.14.0
+    "@install-binary/ghr-linux-arm64": 0.14.0
+    "@install-binary/ghr-linux-x64": 0.14.0
+  dependenciesMeta:
+    "@install-binary/ghr-darwin-arm64":
+      optional: true
+    "@install-binary/ghr-darwin-x64":
+      optional: true
+    "@install-binary/ghr-linux-arm":
+      optional: true
+    "@install-binary/ghr-linux-arm64":
+      optional: true
+    "@install-binary/ghr-linux-x64":
+      optional: true
+  bin:
+    ghr: run.js
+  checksum: 38caba1be214eab8ffa3d563375e1ce5370aa657a7b01f2685dc2645d8d80f28a24f50a24f334c8faa349d6c5dbdc966b5ede4955f4c55d2412b6b0366e95893
   languageName: node
   linkType: hard
 
@@ -5856,6 +5921,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/common-tags@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@types/common-tags@npm:1.8.1"
+  checksum: bec6f68c8c434834380abd1dc057aa6ba26661bb0c65c700b65049e9b104d7be96a987d93dbe8726be68554a23a52514a6967d8903fdb51fb8c78cf909d1e4c1
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -6538,6 +6610,13 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/segment-analytics@npm:^0.0.34":
+  version: 0.0.34
+  resolution: "@types/segment-analytics@npm:0.0.34"
+  checksum: 022e2dc171a7e2015fe1492f259a6184a6d2271c3ea106f72c84a3edacc992bfd62fe24b7b4d710ec3c1de24c6132caaeda6724270b43605e62e2ab25e0ae2d8
   languageName: node
   linkType: hard
 
@@ -9284,7 +9363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"common-tags@npm:1.8.2":
+"common-tags@npm:1.8.2, common-tags@npm:^1.8.2":
   version: 1.8.2
   resolution: "common-tags@npm:1.8.2"
   checksum: 767a6255a84bbc47df49a60ab583053bb29a7d9687066a18500a516188a062c4e4cd52de341f22de0b07062e699b1b8fe3cfa1cb55b241cb9301aeb4f45b4dff

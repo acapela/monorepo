@@ -34,7 +34,7 @@ function ResendInviteForm() {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
       />
-      <UISendMailButton kind="primary" disabled={isSubmitting} onClick={noop}>
+      <UISendMailButton kind="primary" isDisabled={isSubmitting} onClick={noop}>
         Resend Invitation
       </UISendMailButton>
     </UIFormRow>

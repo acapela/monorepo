@@ -8,7 +8,7 @@ const header = inter.inter.headerLineHeight;
 const subtitle = readable.size(11);
 const content = readable.size(14);
 
-const textTitle = content.bold;
+const textTitle = content.medium;
 
 export const typo = {
   content: readable.size(14),
@@ -25,6 +25,7 @@ export const typo = {
   item: {
     // Used for message title, topic list title, options section title etc
     title: textTitle,
+    description: subtitle.medium.secondary,
     // Used for topic message snippet, options section item description, team member email etc.
     subtitle: subtitle,
     // Used eg. for attachment titles

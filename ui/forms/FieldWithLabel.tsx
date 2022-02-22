@@ -2,8 +2,8 @@ import { LayoutGroup, motion } from "framer-motion";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
+import { styledForwardRef } from "@aca/shared/component";
 import { useId } from "@aca/shared/id";
-import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { IconChevronDown } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -19,16 +19,17 @@ export interface Props {
   onClick?: () => void;
   indicateDropdown?: boolean;
   cursorType?: CursorType;
+  className?: string;
 }
-export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
+export const FieldWithLabel = styledForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+  { className, pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
   forwardedRef
 ) {
   const id = useId();
 
   return (
     <LayoutGroup>
-      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
+      <UIHolder className={className} onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -53,7 +54,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
       </UIHolder>
     </LayoutGroup>
   );
-});
+})``;
 
 const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   position: relative;
@@ -61,10 +62,14 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   flex-direction: row;
   align-items: stretch;
   padding-left: 16px;
+  padding-right: 16px;
+  gap: 4px;
 
   width: 100%;
 
-  ${theme.colors.layout.background.asBg};
+  ${theme.transitions.hover()}
+
+  ${theme.colors.layout.background.interactive};
   ${(props) =>
     props.hasError
       ? css`
@@ -79,7 +84,16 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   outline: none;
   min-height: 16px;
 
-  cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
+  ${(props) => {
+    const { cursorType } = props;
+
+    if (cursorType === "input")
+      return css`
+        cursor: text;
+      `;
+
+    return theme.common.clickable;
+  }}
 `;
 
 const UIFlyingOverlay = styled.div<{}>`
@@ -114,6 +128,7 @@ const sharedPlaceholderStyles = css`
   text-overflow: ellipsis; /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
   height: 1.5em;
   ${theme.font.secondary};
+  ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
 const UIPlaceholder = styled(motion.div)<{}>`
@@ -126,11 +141,9 @@ const UIFocusedPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   align-self: flex-start;
   font-size: 12px;
-  background-color: #fff;
 
   /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
   margin-top: calc(-0.75em + 2px);
-  box-shadow: 0 0 0px 6px #fff;
 `;
 
 const UIContentHolder = styled.div<{}>`
@@ -144,6 +157,5 @@ const UIDropdownIcon = styled(IconChevronDown)<{}>`
   font-size: 1.5rem;
   opacity: 0.6;
   align-self: center;
-  margin-right: 16px;
-  cursor: pointer;
+  ${theme.common.clickable}
 `;

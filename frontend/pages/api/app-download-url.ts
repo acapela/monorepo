@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const version = versionReleaseUrl.split("/").pop()?.replace("v", "") ?? "";
 
-  const downloadURL = versionReleaseUrl.replace("/tag/", "/download/") + `/Acapela-${version}-universal-mac.zip`;
+  const downloadURL = versionReleaseUrl.replace("/tag/", "/download/") + `/Acapela-${version}-universal.dmg`;
 
   res.send({
     downloadURL,

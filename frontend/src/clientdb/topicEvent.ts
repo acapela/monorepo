@@ -50,7 +50,7 @@ export const topicEventEntity = defineEntity<TopicEventFragment>({
   defaultSort: (event) => new Date(event.created_at).getTime(),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "topic_event",
-    actor_id: getContextValue(userIdContext) ?? undefined,
+    actor_id: getContextValue(userIdContext) ?? null,
     topic_from_closed_at: null,
     topic_to_closed_at: null,
     topic_from_archived_at: null,

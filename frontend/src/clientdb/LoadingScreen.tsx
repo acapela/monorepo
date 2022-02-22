@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import styled, { keyframes } from "styled-components";
 
-import { Logo } from "@aca/frontend/ui/Logo";
 import { useWait } from "@aca/shared/hooks/useWait";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { Logo } from "@aca/ui/icons/logos/AcapelaLogo";
 import { useUnmountPresence } from "@aca/ui/presence";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";

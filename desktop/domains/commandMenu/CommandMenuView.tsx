@@ -45,8 +45,8 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   const actionsToShow = fuzzySearch(
     applicableActions,
     (action) => {
-      const { name, keywords = [] } = resolveActionData(action);
-      return [name, ...keywords].filter(isNotNullish);
+      const { name, keywords = [], supplementaryLabel } = resolveActionData(action, actionContext);
+      return [name, supplementaryLabel, ...keywords].filter(isNotNullish);
     },
     actionContext.searchKeyword
   );
@@ -102,6 +102,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   useShortcut("Enter", () => {
     if (activeAction) {
       onActionSelected(activeAction);
+      return true;
     }
   });
 

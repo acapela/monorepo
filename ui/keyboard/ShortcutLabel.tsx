@@ -1,7 +1,6 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
 
 import { getShortcutNiceKeys } from "./describeShortcut";
@@ -34,13 +33,8 @@ const UIHolder = styled.div`
   user-select: none;
   gap: 2px;
   line-height: 1;
-
-  ${phone(
-    css`
-      display: none;
-    `
-  )}
 `;
+
 const UIKey = styled.div`
   ${theme.typo.content.secondary};
   line-height: 1;

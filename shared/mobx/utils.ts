@@ -1,6 +1,8 @@
-import { action, autorun, observable, untracked } from "mobx";
+import { action, autorun, observable, reaction, runInAction, untracked } from "mobx";
 
 import { getUUID } from "@aca/shared/uuid";
+
+import { MaybeCleanup } from "../types";
 
 /**
  * Escape hatch for using mobx observables outside of observers without mobx warning
@@ -30,6 +32,21 @@ export function autorunEffect(callback: () => Cleanup | void) {
     }
 
     stop();
+  };
+}
+
+export function reactionEffect<R>(expression: () => R, effect: (value: R) => MaybeCleanup) {
+  let effectCleanup: MaybeCleanup;
+  const cancelReaction = reaction(expression, (value) => {
+    if (effectCleanup) {
+      effectCleanup();
+    }
+    effectCleanup = effect(value);
+  });
+
+  return function cancel() {
+    cancelReaction();
+    effectCleanup?.();
   };
 }
 
@@ -83,7 +100,10 @@ export function asyncComputedWithCleanup<T>(
       currentCleanup();
       currentCleanup = undefined;
     }
-    busy.set(true);
+    runInAction(() => {
+      busy.set(true);
+    });
+
     const runId = getUUID();
     currentRun = runId;
 
@@ -102,20 +122,22 @@ export function asyncComputedWithCleanup<T>(
     }
 
     creator({ assertStillValid, setSelf, getStillValid })
-      .then((newValue) => {
-        if (!getStillValid()) {
-          if (newValue.cleanup) {
-            newValue.cleanup();
+      .then(
+        action((newValue) => {
+          if (!getStillValid()) {
+            if (newValue.cleanup) {
+              newValue.cleanup();
+            }
+            return;
           }
-          return;
-        }
-        if (newValue.cleanup) {
-          currentCleanup = newValue.cleanup;
-        }
+          if (newValue.cleanup) {
+            currentCleanup = newValue.cleanup;
+          }
 
-        value.set(newValue.value);
-        busy.set(false);
-      })
+          value.set(newValue.value);
+          busy.set(false);
+        })
+      )
       .catch((error) => {
         if (error === InvalidError) return;
 

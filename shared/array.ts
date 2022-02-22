@@ -6,7 +6,10 @@ export function removeElementFromArray<T>(arr: T[], element: T) {
   const index = arr.indexOf(element);
   if (index > -1) {
     arr.splice(index, 1);
+    return true;
   }
+
+  return false;
 }
 
 export function removeElementsFromArrayByFilter<T>(arr: T[], filter: (item: T) => boolean) {
@@ -22,7 +25,7 @@ export function removeElementsFromArrayByFilter<T>(arr: T[], filter: (item: T) =
 export type MaybeArray<T> = T | T[];
 
 export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
-  if (Array.isArray(input)) return input;
+  if (Array.isArray(input)) return [...input];
 
   return [input];
 }
@@ -178,9 +181,13 @@ export function flattenWithDivider<T, D>(input: T[][], dividerGetter: () => D): 
  * Applies function to elements of the given array and returns the first non-none result
  * @see None
  */
-export function findAndMap<I, R>(input: I[], finderAndMapper: (item: I) => R | typeof None): R | undefined {
-  for (const item of input) {
-    const result = finderAndMapper(item);
+export function findAndMap<I, R>(
+  input: I[],
+  finderAndMapper: (item: I, index: number) => R | typeof None
+): R | undefined {
+  for (let i = 0; i < input.length; i++) {
+    const item = input[i];
+    const result = finderAndMapper(item, i);
     if (result !== None) {
       return result;
     }
@@ -219,4 +226,32 @@ export function createArrayNeighbourList<T>(array: T[]): NeigbourAwareIteration<
   return array.map((item, index) => {
     return { index, item: array[index], previous: array[index - 1] ?? null, next: array[index + 1] ?? null };
   });
+}
+
+export function pushElement<T>(list: T[], item: T) {
+  list.push(item);
+
+  return () => {
+    removeElementFromArray(list, item);
+  };
+}
+
+export function unshiftElement<T>(list: T[], item: T) {
+  list.unshift(item);
+
+  return () => {
+    removeElementFromArray(list, item);
+  };
+}
+
+export function areArraysShallowEqual<T>(a: T[], b: T[]) {
+  if (a === b) return true;
+
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+
+  if (!Array.isArray(a)) return false;
+
+  if (a.length !== b.length) return false;
+
+  return a.every((item, index) => item === b[index]);
 }

@@ -2,10 +2,12 @@ import { gql } from "@apollo/client";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
 import {
-  ChangeCurrentTeamIdMutation,
-  ChangeCurrentTeamIdMutationVariables,
-  CurrentTeamSubscription,
-  CurrentTeamSubscriptionVariables,
+  DesktopChangeCurrentTeamIdMutation,
+  DesktopChangeCurrentTeamIdMutationVariables,
+  DesktopCurrentTeamInitialQuery,
+  DesktopCurrentTeamInitialQueryVariables,
+  DesktopCurrentTeamSubscription,
+  DesktopCurrentTeamSubscriptionVariables,
 } from "@aca/gql";
 
 /**
@@ -13,13 +15,13 @@ import {
  */
 
 async function fetchCurrentTeamId(userId: string) {
-  const result = await apolloClient.query<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>({
+  const result = await apolloClient.query<DesktopCurrentTeamInitialQuery, DesktopCurrentTeamInitialQueryVariables>({
     variables: {
       userId,
     },
     fetchPolicy: "no-cache",
     query: gql`
-      query CurrentTeamInitial($userId: uuid!) {
+      query DesktopCurrentTeamInitial($userId: uuid!) {
         user: user_by_pk(id: $userId) {
           current_team {
             id
@@ -36,12 +38,12 @@ async function fetchCurrentTeamId(userId: string) {
 
 function subscribeToCurrentTeamId(userId: string, onTeamId: (teamId: string | null) => void) {
   const subscription = apolloClient
-    .subscribe<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>({
+    .subscribe<DesktopCurrentTeamSubscription, DesktopCurrentTeamSubscriptionVariables>({
       variables: {
         userId,
       },
       query: gql`
-        subscription CurrentTeam($userId: uuid!) {
+        subscription DesktopCurrentTeam($userId: uuid!) {
           user: user_by_pk(id: $userId) {
             current_team {
               id
@@ -63,10 +65,13 @@ function subscribeToCurrentTeamId(userId: string, onTeamId: (teamId: string | nu
 }
 
 export async function changeTeamId(userId: string, newTeamId: string) {
-  const result = await apolloClient.mutate<ChangeCurrentTeamIdMutation, ChangeCurrentTeamIdMutationVariables>({
+  const result = await apolloClient.mutate<
+    DesktopChangeCurrentTeamIdMutation,
+    DesktopChangeCurrentTeamIdMutationVariables
+  >({
     variables: { userId, teamId: newTeamId },
     mutation: gql`
-      mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid) {
+      mutation DesktopChangeCurrentTeamId($userId: uuid!, $teamId: uuid) {
         update_user_by_pk(pk_columns: { id: $userId }, _set: { current_team_id: $teamId }) {
           id
         }

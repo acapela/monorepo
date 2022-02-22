@@ -9,22 +9,22 @@ import { theme } from "@aca/ui/theme";
 
 interface Props {
   list: NotificationsList;
-  activeListId?: string;
+  isActive?: boolean;
   className?: string;
 }
 
-export const ListTabLabel = observer(function ListTabLabel({ activeListId, list, className }: Props) {
+export const ListTabLabel = observer(function ListTabLabel({ isActive = false, list, className }: Props) {
   return (
     <UIHolder action={goToList} target={list} className={className}>
-      <UILabel>{list.name}</UILabel>
-      <UICount>{list.getAllNotifications().count}</UICount>
-      <UIActiveIndicator $isVisible={list.id === activeListId} />
+      <UILabel $isActive={isActive}>{list.name}</UILabel>
+      <UICount>{list.getAllNotifications().length}</UICount>
+      <UIActiveIndicator $isVisible={isActive} />
     </UIHolder>
   );
 });
 
-const UILabel = styled.div`
-  ${theme.font.medium};
+const UILabel = styled.div<{ $isActive: boolean }>`
+  ${(props) => (props.$isActive ? theme.font.bold : theme.font.medium)};
 
   opacity: 0.8;
 
@@ -34,11 +34,18 @@ const UILabel = styled.div`
 `;
 
 const UIHolder = styled(ActionTrigger)`
+  position: relative;
   display: flex;
   gap: 8px;
+
+  box-sizing: border-box;
+
+  /* this allows enough space for the active indicator to be shown */
+  padding-bottom: 4px;
+
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
-  position: relative;
+  white-space: nowrap;
 `;
 
 const UICount = styled.div`
@@ -47,11 +54,12 @@ const UICount = styled.div`
 
 const UIActiveIndicator = styled.div<{ $isVisible: boolean }>`
   position: absolute;
+  box-sizing: border-box;
   left: 0;
   right: 0;
-  top: 100%;
-  height: 2px;
-  ${theme.colors.layout.divider.asBg};
+  bottom: 0;
+  height: 3px;
+  ${theme.colors.primary.asBg};
   opacity: ${(props) => (props.$isVisible ? 1 : 0)};
   transition: 0.15s all;
 `;

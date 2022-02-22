@@ -2,3 +2,5 @@ backend/dist
 frontend/.next
 gql/generated.ts
 frontend/dist
+desktop/dist/*
+desktop/lib/env/generated.js

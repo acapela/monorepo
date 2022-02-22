@@ -1,5 +1,5 @@
 import { differenceInMinutes } from "date-fns";
-import { BrowserWindow } from "electron";
+import { session } from "electron";
 import fetch from "node-fetch";
 
 import {
@@ -11,7 +11,7 @@ import {
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
-import { clearNotionSessionData } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
@@ -19,8 +19,10 @@ import type {
   ActivityPayload,
   BlockPayload,
   GetNotificationLogResult,
+  GetPublicSpaceDataResult,
   GetSpacesResult,
   NotificationPayload,
+  PageBlockValue,
 } from "./types";
 
 const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
@@ -33,7 +35,6 @@ let isSyncing = false;
 const log = makeLogger("Notion-Worker");
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
-export const notionURL = "https://www.notion.so";
 
 export function isNotionReadyToSync() {
   return authTokenBridgeValue.get() !== null && notionAuthTokenBridgeValue.get() !== null;
@@ -45,25 +46,13 @@ export interface NotionSessionData {
 }
 
 export async function getNotionSessionData(): Promise<NotionSessionData> {
-  const window = new BrowserWindow({
-    width: 0,
-    height: 0,
-    webPreferences: {
-      contextIsolation: true,
-    },
-  });
-
-  window.hide();
-
-  const cookies = await window.webContents.session.cookies.get({
+  const cookies = await session.defaultSession.cookies.get({
     url: notionURL,
   });
 
   if (!cookies) {
     throw log.error(new Error("Unable to sync: no cookies"));
   }
-
-  window.close();
 
   const notionUserId = cookies.find((cookie) => cookie.name === "notion_user_id")?.value;
 
@@ -172,7 +161,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
 }
 
 async function fetchCurrentSpace(sessionData: NotionSessionData) {
-  const response = await fetch(notionURL + "/api/v3/getSpaces", {
+  const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -181,16 +170,48 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
     body: JSON.stringify({}),
   });
 
-  if (!response.ok) {
+  if (!getSpacesResponse.ok) {
     clearNotionSessionData();
-    throw log.error(new Error(`getSpaces`), `${response.status} - ${response.statusText}`);
+    throw log.error(new Error(`getSpaces`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
-  const getSpacesResult = (await response.json()) as GetSpacesResult;
+  /*
+    The getSpaces endpoint includes information about the spaces that users is a member from.
+    It also includes the concept of a `space_view` which includes a bit of information about all
+    the spaces the user is involved with, i.e including spaces where there user is a guest.
+  */
+  const getSpacesResult = (await getSpacesResponse.json()) as GetSpacesResult;
 
-  const currentUserSpaces = getSpacesResult[sessionData.notionUserId].space;
+  // Includes spaces that you're a member of and spaces where you're a guest
+  const allSpaceIds = Object.values(getSpacesResult[sessionData.notionUserId].space_view).map(
+    (view) => view.value.space_id
+  );
 
-  const allSpaces = Object.values(currentUserSpaces).map((space) => ({ id: space.value.id, name: space.value.name }));
+  /*
+    We use the getPublicSpaceData endpoint to get the name of all spaces. Using the result from `getSpaces`
+    didn't provide us with the name of spaces the user was a guest in.
+    We're still able to get notifications from spaces in which the user only has guest access.
+  */
+  const getPublicSpaceDataResponse = await fetch(notionURL + "/api/v3/getPublicSpaceData", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      cookie: sessionData.cookie,
+    },
+    body: JSON.stringify({
+      spaceIds: allSpaceIds,
+      type: "space-ids",
+    }),
+  });
+
+  if (!getPublicSpaceDataResponse.ok) {
+    clearNotionSessionData();
+    throw log.error(new Error(`getPublicSpaceData`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+  }
+
+  const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
+
+  const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
   if (allSpaces.length === 0) {
     throw log.error(new Error(`Unable to find any spaces in account`));
@@ -232,21 +253,22 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
 
-    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value;
+    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value as PageBlockValue | undefined;
 
-    if (pageBlock.type !== "page") {
-      log.error(`Block is not page type, instead its`, (pageBlock.type as string) ?? "");
+    if (pageBlock?.type !== "page") {
+      log.error(`Block is not page type, instead its`, recordMap.block[pageId] ?? "");
       continue;
     }
 
     const updated_at = created_at;
+    const authorId = activity.edits[0].authors[0].id;
     result.push({
       notification: {
         url,
         text_preview,
         created_at,
         updated_at,
-        from: recordMap.notion_user[activity.edits[0].authors[0].id]?.value.name ?? "Notion",
+        from: recordMap.notion_user[authorId]?.value?.name ?? "Notion",
       },
       type,
       notionNotification: {
@@ -254,7 +276,9 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
         page_id: pageId,
         page_title: pageBlock.properties.title[0][0],
         space_id: notification.space_id,
+        author_id: authorId,
       },
+      discussion_id: notificationProperties.discussion_id,
     });
   }
 
@@ -264,8 +288,12 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 function getNotificationProperties(
   notification: NotificationPayload["value"],
   recordMap: GetNotificationLogResult["recordMap"]
-): { type: NotionNotificationType; url: string; text_preview?: string | undefined } | undefined {
+):
+  | { type: NotionNotificationType; url: string; text_preview?: string | undefined; discussion_id?: string | undefined }
+  | undefined {
   const pageId = notification.navigable_block_id;
+
+  if (!pageId) return;
 
   if (notification.type === "user-mentioned") {
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
@@ -299,6 +327,7 @@ function getNotificationProperties(
       type: "notification_notion_commented",
       url,
       text_preview: extractNotionComment(activity, recordMap),
+      discussion_id: activity.discussion_id,
     };
   }
 

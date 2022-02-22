@@ -1,3 +1,5 @@
+import { PickByValue } from "utility-types";
+
 import { Maybe } from "@aca/shared/types";
 
 export type PlanType = "trial" | "free" | "premium";
@@ -42,14 +44,46 @@ export type AnalyticsEventsMap = {
 
   // Feature related events
 
-  "Opened App": void;
   "Notification Resolved": { notification_id: string };
   "Notification Snoozed": { notification_id: string };
+
+  // Navigation related events
+
+  "App Opened": void;
+  "Settings Opened": void;
+  "Snoozed Notifications Opened": void;
+  "Resolved Notifications Opened": void;
+  "Notification Deeplink Opened": { service_name: string | undefined };
+  "Notification Group Toggled": void;
+
+  // Integration related events
+  "Linear Integration Added": void;
+  "Figma Integration Added": void;
+  "Slack Integration Added": void;
+  "Notion Integration Added": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
 
+type AnalyticsEventsWithoutData = PickByValue<AnalyticsEventsMap, void>;
+
 export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEventsMap[Name];
+
+export type AnalyticsEvent<Name extends AnalyticsEventName> = {
+  type: Name;
+} & { payload: AnalyticsEventPayload<Name> };
+
+export type AnyAnalyticsEvent = AnalyticsEvent<AnalyticsEventName>;
+
+export type AnalyticsEventInput = keyof AnalyticsEventsWithoutData | AnalyticsEvent<AnalyticsEventName>;
+
+export function resolveAnalyticsEventInput(input: AnalyticsEventInput): AnalyticsEvent<AnalyticsEventName> {
+  if (typeof input === "string") {
+    return { type: input } as AnalyticsEvent<AnalyticsEventName>;
+  }
+
+  return input;
+}
 
 export type AnalyticsGroupsMap = {
   Team: {
@@ -68,13 +102,12 @@ export type AnalyticsUserProfile = {
   email: string;
   created_at: Date;
   avatar?: Maybe<string>;
-  slack_installed_at: Date;
-  notion_installed_at: Date;
-  figma_installed_at: Date;
-  linear_installed_at: Date;
+  slack_installed_at?: Date;
+  notion_installed_at?: Date;
+  figma_installed_at?: Date;
+  linear_installed_at?: Date;
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
-  // unfortunately we have to use a different case here
-  createdAt: Date;
-  firstName: Maybe<string>;
-  lastName: Maybe<string>;
+  // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
+  first_name?: Maybe<string>;
+  last_name?: Maybe<string>;
 };

@@ -1,9 +1,7 @@
-import { cachedComputed } from "@aca/clientdb";
 import { createActionView } from "@aca/desktop/actions/action/view";
-import { orderNotificationsByGroups } from "@aca/desktop/domains/group/groupNotifications";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { uiStore } from "@aca/desktop/store/uiStore";
-import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { uiStore } from "@aca/desktop/store/ui";
 
 export const focusPageView = createActionView((context) => {
   if (!getIsRouteActive("focus")) return null;
@@ -11,38 +9,60 @@ export const focusPageView = createActionView((context) => {
   const list = context.assertTarget("list", true);
   const notification = context.assertTarget("notification");
 
-  // Let's cache grouping and ordering notifications
-  const orderedNotifications = cachedComputed(() => orderNotificationsByGroups(list.getAllNotifications().all));
+  function navigateToNotification(notification: NotificationEntity) {
+    const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
+
+    // When there's a single preview enabled, only one notification out of many is shown in focus
+    // This check attempts to mark all of the notifications inside a single preview group as seen
+    if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
+      groupThatNotificationBelongsTo.notifications.forEach((n) => n.markAsSeen());
+    } else {
+      notification.markAsSeen();
+    }
+
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+  }
 
   const view = {
     list,
     notification,
     get nextNotification() {
-      return getNextItemInArray(orderedNotifications(), notification);
+      return list.getNextNotification(notification);
     },
     get prevNotification() {
-      return getPreviousItemInArray(orderedNotifications(), notification);
+      return list.getPreviousNotification(notification);
     },
-    displayZenModeOrFocusNextItem() {
-      const { list } = view;
-
-      if (list.getAllNotifications().hasItems) {
+    focusNextItemIfAvailable() {
+      if (view.list.getAllNotifications().length > 0) {
         return view.goToNextNotification();
       }
+    },
+    displayZenModeIfFinished() {
+      if (view.list.getAllNotifications().length == 0) {
+        desktopRouter.navigate("list", { listId: list.id });
+        uiStore.isDisplayingZenImage = true;
+      }
+    },
+    goToPreviousNotification() {
+      const { prevNotification } = view;
 
-      desktopRouter.navigate("list", { listId: list.id });
-      uiStore.isDisplayingZenImage = true;
-      return null;
+      if (!prevNotification) {
+        desktopRouter.navigate("list", { listId: list.id });
+        return null;
+      }
+
+      navigateToNotification(prevNotification);
+
+      return prevNotification;
     },
     goToNextNotification() {
       const { nextNotification } = view;
 
       if (!nextNotification) {
-        desktopRouter.navigate("list", { listId: list.id });
-        return null;
+        return view.goToPreviousNotification();
       }
 
-      desktopRouter.navigate("focus", { listId: list.id, notificationId: nextNotification.id });
+      navigateToNotification(nextNotification);
 
       return nextNotification;
     },

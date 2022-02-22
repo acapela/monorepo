@@ -6,6 +6,7 @@ import { box } from "./box";
 import { darkThemeColors, defaultColors } from "./colors";
 import { common } from "./common";
 import { gradients } from "./gradients";
+import { layout } from "./layout";
 import { shadow } from "./shadow";
 import { spacing } from "./spacing";
 import { transitions } from "./transitions";
@@ -25,7 +26,8 @@ export const defaultTheme = {
   zIndex: zIndexValues,
   box,
   gradients,
-  common: common,
+  common,
+  layout,
 } as const;
 
 export const darkTheme: typeof defaultTheme = {

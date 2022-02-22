@@ -25,4 +25,14 @@ export const common = {
     overflow: hidden;
     text-overflow: ellipsis;
   `,
+  transparentInput: css`
+    font: inherit;
+    background: transparent;
+    color: inherit;
+    border: none;
+    outline: none;
+  `,
+  dragWindow: css`
+    -webkit-app-region: drag;
+  `,
 };

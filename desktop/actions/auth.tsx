@@ -2,71 +2,99 @@ import React from "react";
 
 import {
   authTokenBridgeValue,
-  figmaAuthTokenBridgeValue,
   googleAuthTokenBridgeValue,
-  linearAuthTokenBridgeValue,
   loginBridge,
-  loginFigmaBridge,
   loginGoogleBridge,
-  loginLinearBridge,
-  loginNotionBridge,
-  notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconAtom, IconLogIn, IconLogOut } from "@aca/ui/icons";
+import { IconCross, IconLogOut, IconPlus } from "@aca/ui/icons";
+import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
+import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
   name: "Account",
 });
 
-export const loginToAcapela = defineAction({
-  name: "Log in",
+export function getContextualServiceName(name: string) {
+  return (ctx: ActionContext) => (ctx.isContextual ? "Connect" : `Connect ${name}`);
+}
+
+export const loginToAcapelaWithGoogle = defineAction({
+  name: "Continue with Google",
   group: accountActionsGroup,
-  icon: <IconLogIn />,
+  icon: <GoogleGLogoIcon />,
   canApply: () => !authTokenBridgeValue.get(),
-  handler() {
-    loginBridge();
+  async handler() {
+    await loginBridge("google");
+  },
+});
+
+export const loginToAcapelaWithSlack = defineAction({
+  name: "Continue with Slack",
+  group: accountActionsGroup,
+  icon: <SlackLogo />,
+  canApply: () => !authTokenBridgeValue.get(),
+  async handler() {
+    await loginBridge("slack");
+  },
+});
+
+export const connectIntegration = defineAction({
+  name: (ctx) => {
+    const integration = ctx.assertTarget("integration");
+
+    return ctx.isContextual ? "Connect" : `Connect ${integration.name}`;
+  },
+  icon: <IconPlus />,
+  group: accountActionsGroup,
+  canApply: (ctx) => {
+    const integration = ctx.getTarget("integration");
+
+    if (!integration) return false;
+
+    return !integration.getIsConnected() && integration.getCanConnect?.() !== false;
+  },
+  async handler(ctx) {
+    const integration = ctx.assertTarget("integration");
+
+    return integration.connect();
+  },
+});
+
+export const disconnectIntegration = defineAction({
+  name: (ctx) => {
+    const integration = ctx.assertTarget("integration");
+
+    return ctx.isContextual ? "Disconnect" : `Disconnect ${integration.name}`;
+  },
+  icon: <IconCross />,
+  group: accountActionsGroup,
+  canApply: (ctx) => {
+    const integration = ctx.getTarget("integration");
+
+    if (!integration) return false;
+
+    return integration.getIsConnected() && !!integration.disconnect;
+  },
+  async handler(ctx) {
+    const integration = ctx.assertTarget("integration");
+
+    return integration.disconnect?.();
   },
 });
 
 export const connectGoogle = defineAction({
-  name: "Connect Google",
-  icon: <IconAtom />,
+  name: getContextualServiceName("Google"),
+  private: true,
+  icon: <GoogleGLogoIcon />,
   group: accountActionsGroup,
   canApply: () => !googleAuthTokenBridgeValue.get(),
-  handler() {
-    loginGoogleBridge();
-  },
-});
-
-export const connectFigma = defineAction({
-  name: "Connect Figma",
-  icon: <IconAtom />,
-  group: accountActionsGroup,
-  canApply: () => !figmaAuthTokenBridgeValue.get(),
-  handler() {
-    loginFigmaBridge();
-  },
-});
-
-export const connectNotion = defineAction({
-  name: "Connect Notion",
-  icon: <IconAtom />,
-  group: accountActionsGroup,
-  canApply: () => !notionAuthTokenBridgeValue.get(),
-  handler() {
-    loginNotionBridge();
-  },
-});
-
-export const connectLinear = defineAction({
-  name: "Connect Linear",
-  canApply: () => !linearAuthTokenBridgeValue.get(),
-  handler() {
-    loginLinearBridge();
+  async handler() {
+    await loginGoogleBridge();
   },
 });
 
@@ -74,8 +102,9 @@ export const restartAndClearElectronData = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
   group: accountActionsGroup,
+  analyticsEvent: "Logged Out",
   keywords: ["reload"],
-  handler() {
+  async handler() {
     clearAllDataRequest();
   },
 });

@@ -1,17 +1,23 @@
 import { app, session, shell } from "electron";
 
 import {
+  applicationStateBridge,
   clearAllDataRequest,
-  isFullscreenValue,
   openLinkRequest,
   restartAppRequest,
+  setBadgeCountRequest,
+  showMainWindowRequest,
   toggleDevtoolsRequest,
   toggleFullscreenRequest,
   toggleMaximizeRequest,
+  waitForDoNotDisturbToFinish,
 } from "@aca/desktop/bridge/system";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { autorunEffect } from "@aca/shared/mobx/utils";
+
+import { clearPersistance } from "./persistance";
+import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
 export function initializeSystemHandlers() {
   restartAppRequest.handle(async () => {
@@ -20,9 +26,18 @@ export function initializeSystemHandlers() {
   });
 
   clearAllDataRequest.handle(async () => {
+    await clearPersistance();
     await session.defaultSession.clearStorageData();
     app.relaunch();
     app.exit();
+  });
+
+  showMainWindowRequest.handle(async () => {
+    appState.mainWindow?.show();
+  });
+
+  waitForDoNotDisturbToFinish.handle(async () => {
+    await waitForDoNotDisturbToEnd();
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {
@@ -70,15 +85,19 @@ export function initializeSystemHandlers() {
     shell.openExternal(url);
   });
 
+  setBadgeCountRequest.handle(async (count) => {
+    app.setBadgeCount(count);
+  });
+
   autorunEffect(() => {
     const { mainWindow } = appState;
 
     if (!mainWindow) return;
 
-    isFullscreenValue.set(mainWindow.isFullScreen());
+    applicationStateBridge.update({ isFullscreen: mainWindow.isFullScreen() });
 
-    const handleEnterFullscreen = () => isFullscreenValue.set(true);
-    const handleLeaveFullscreen = () => isFullscreenValue.set(false);
+    const handleEnterFullscreen = () => applicationStateBridge.update({ isFullscreen: true });
+    const handleLeaveFullscreen = () => applicationStateBridge.update({ isFullscreen: false });
 
     mainWindow.on("enter-full-screen", handleEnterFullscreen);
     mainWindow.on("leave-full-screen", handleLeaveFullscreen);

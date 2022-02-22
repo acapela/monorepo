@@ -25,7 +25,7 @@ export function PriorityPicker({
     <>
       <AnimatePresence>
         {isMenuOpen && (
-          <Popover enableScreenCover onClickOutside={closeMenu} anchorRef={ref} placement="bottom">
+          <Popover enableScreenCover onCloseRequest={closeMenu} anchorRef={ref} placement="bottom">
             <UIHolder>
               <ItemsDropdown
                 items={[null, ...["critical", "high", "medium", "low"]] as Priority[]}

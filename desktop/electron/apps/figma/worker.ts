@@ -6,7 +6,7 @@ import WebSocket from "ws";
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { figmaURL } from "@aca/desktop/electron/auth/figma";
+import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
 import { assert } from "@aca/shared/assert";
 
 import {
@@ -44,7 +44,7 @@ export async function startFigmaSync() {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
     log.error("Error getting figma session data," + JSON.stringify(e));
-    figmaAuthTokenBridgeValue.set(null);
+    clearFigmaSessionData();
     return;
   }
   log.info("Done fetching session variables");
@@ -120,7 +120,7 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   });
 
   if (!response.ok) {
-    figmaAuthTokenBridgeValue.set(null);
+    clearFigmaSessionData();
     throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
   }
 
@@ -245,12 +245,14 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
         text_preview: getMessageText(commentNotification.comment.message_meta),
       },
       commentNotification: {
+        author_id: commentNotification.user_id,
         file_id: commentNotification.file_key,
         file_name: commentNotification.file.name,
         is_mention: commentNotification.comment.message_meta.some((meta) => meta.user_annotated?.id === figmaUserId),
         created_at: userNotification.created_at,
         updated_at: userNotification.created_at,
         figma_notification_id: userNotification.id,
+        thread_comment_id: commentNotification.parent_comment?.id,
       },
     });
   }

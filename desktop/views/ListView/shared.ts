@@ -28,7 +28,14 @@ export const UINotificationPreviewText = styled.div`
   ${theme.typo.content.opacity(0.6)};
   ${theme.common.ellipsisText};
   /* @Omar: Not super happy about this one, but it's late and it works */
+  /* This accounts for the gap space between items in a notification row */
   margin-left: -18px;
   flex-grow: 1;
   flex-basis: 0;
+`;
+
+export const UIDate = styled.div`
+  opacity: 0.6;
+  min-width: 4ch;
+  text-align: right;
 `;

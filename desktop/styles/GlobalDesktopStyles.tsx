@@ -11,12 +11,22 @@ export const GlobalDesktopStyles = createGlobalStyle`
   body, html, #root {
     min-height: 100vh;
     max-height: 100vh;
+    margin: 0;
     ${theme.colors.text.asColor};
-    ${theme.colors.layout.background.asBg}    
+  }
+
+  body.no-transitions {
+    * {
+      transition: none !important;
+    }
   }
 
   * {
     cursor: default;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
   input, textarea {

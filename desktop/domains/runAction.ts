@@ -1,38 +1,32 @@
 import { runInAction } from "mobx";
 
-import { ActionData } from "@aca/desktop/actions/action";
+import { ActionData, ActionResult, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
-import { devAssignWindowVariable } from "@aca/shared/dev";
+import { trackEvent } from "@aca/desktop/analytics";
+import { createChannel } from "@aca/shared/channel";
 
-import { createCommandMenuSession } from "./commandMenu/session";
-import { commandMenuStore } from "./commandMenu/store";
+export const actionResultChannel = createChannel<ActionResult>();
 
-export function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+  const { analyticsEvent } = resolveActionData(action, context);
+
   if (!action.canApply(context)) {
-    return;
+    return false;
   }
 
   try {
     // Let's always run actions as mobx-actions so mobx will not complain
-    const actionResult = runInAction(() => {
+    const actionResult = await runInAction(() => {
       return action.handler(context);
     });
 
-    if (!actionResult) return;
+    if (analyticsEvent) {
+      trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
+    }
 
-    context.searchKeyword = "";
+    actionResultChannel.publish(actionResult);
 
-    devAssignWindowVariable("ctx", context);
-
-    commandMenuStore.session = createCommandMenuSession({
-      actionContext: createActionContext(context.forcedTarget, {
-        isContextual: actionResult.isContextual ?? context.isContextual,
-        searchPlaceholder: actionResult.searchPlaceholder,
-      }),
-      getActions(context) {
-        return actionResult.getActions(context);
-      },
-    });
+    return actionResult;
   } catch (error) {
     /**
      * In case action throws an error, provide every detail we have.
@@ -42,6 +36,8 @@ export function runAction(action: ActionData, context: ActionContext = createAct
      */
     console.error(`Error occured when running action. Logging action, context and error below`, action, context);
     console.error(error);
+
+    return false;
   }
 }
 

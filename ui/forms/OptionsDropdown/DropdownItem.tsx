@@ -1,8 +1,10 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { styledForwardRef } from "@aca/shared/component";
 import { handleWithStopPropagation } from "@aca/shared/events";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
+import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
+import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { IconCheck } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -19,33 +21,41 @@ interface Props {
   className?: string;
 }
 
-export const DropdownItem = styledForwardRef<HTMLDivElement, Props>(function DropdownItem(
-  {
-    label,
-    icon,
-    onClick,
-    isHighlighted = false,
-    isSelected = false,
-    onHighlightRequest,
-    onStopHighlightRequest,
-    className,
-  }: Props,
-  ref
-) {
+export const DropdownItem = styled<Props>(function DropdownItem({
+  label,
+  icon,
+  onClick,
+  isHighlighted = false,
+  isSelected = false,
+  onHighlightRequest,
+  onStopHighlightRequest,
+  className,
+}: Props) {
+  const innerRef = useRef<HTMLDivElement>(null);
+
+  useDependencyChangeEffect(() => {
+    if (isHighlighted) {
+      makeElementVisible(innerRef.current);
+    }
+  }, [isHighlighted]);
+
+  useUserFocusedOnElement(
+    innerRef,
+    () => {
+      onHighlightRequest?.();
+    },
+    () => {
+      onStopHighlightRequest?.();
+    }
+  );
+
   return (
     <UIOption
-      ref={ref}
+      ref={innerRef}
       role="option"
       className={className}
-      isHighlighted={isHighlighted}
-      onMouseEnter={onHighlightRequest}
-      onMouseLeave={onStopHighlightRequest}
+      $isHighlighted={isHighlighted}
       onClick={handleWithStopPropagation(onClick)}
-      onMouseMove={() => {
-        if (isHighlighted) return;
-
-        onHighlightRequest?.();
-      }}
     >
       <OptionLabel icon={icon} label={label} />
       {isSelected && <IconCheck />}
@@ -55,17 +65,13 @@ export const DropdownItem = styledForwardRef<HTMLDivElement, Props>(function Dro
 
 const background = theme.colors.panels.popover;
 
-const UIOption = styled.div<{ isHighlighted: boolean }>`
+const UIOption = styled.div<{ $isHighlighted: boolean }>`
   ${theme.box.selectOption};
 
   display: flex;
   align-items: center;
+  ${theme.common.clickable};
 
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-
-  ${theme.transitions.hover()};
   ${background.interactive};
   ${theme.spacing.actions.asGap};
 
@@ -82,7 +88,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   }
 
   ${(props) =>
-    props.isHighlighted &&
+    props.$isHighlighted &&
     css`
       ${background.active.asBg};
     `}

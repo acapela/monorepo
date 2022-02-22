@@ -1,6 +1,7 @@
 import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
 import React from "react";
 
+import { uiStore } from "@aca/desktop/store/ui";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
@@ -8,9 +9,10 @@ import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
-import { displayZenModeOrFocusNextItem } from "./views/common";
+import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 function canApplySnooze(context: ActionContext) {
+  if (uiStore.isAnyPreviewFocused) return false;
   if (context.getTarget("notification")?.canSnooze === true) return true;
   if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
 
@@ -129,19 +131,21 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
       const notification = context.getTarget("notification");
       const group = context.getTarget("group");
 
-      const dateISO = suggestion.date.toISOString();
+      const date = suggestion.date;
 
-      displayZenModeOrFocusNextItem(context);
+      focusNextItemIfAvailable(context);
 
       if (notification) {
-        notification.update({ snoozed_until: dateISO });
+        notification.snooze(date);
       }
 
       if (group) {
         group.notifications.forEach((notification) => {
-          notification.update({ snoozed_until: dateISO });
+          notification.snooze(date);
         });
       }
+
+      displayZenModeIfFinished(context);
     },
   });
 }

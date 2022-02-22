@@ -56,7 +56,7 @@ export function useBoundingBox(ref: RefObject<HTMLElement>) {
 
   useResizeCallback(ref, updateBox);
 
-  useIsomorphicLayoutEffect(updateBox, []);
+  useIsomorphicLayoutEffect(updateBox);
 
   return box;
 }

@@ -58,7 +58,7 @@ export const TaskDueDateSetter = observer(({ dueDate, onChange, isDisabled, size
     <>
       <AnimatePresence>
         {isCalendarOpen && (
-          <Popover enableScreenCover onClickOutside={closeCalendar} anchorRef={ref}>
+          <Popover enableScreenCover onCloseRequest={closeCalendar} anchorRef={ref}>
             <DateTimePicker
               shouldSkipConfirmation={false}
               onSubmit={handleSubmit}

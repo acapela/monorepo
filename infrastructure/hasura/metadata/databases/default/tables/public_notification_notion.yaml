@@ -13,6 +13,7 @@ insert_permissions:
         user_id:
           _eq: X-Hasura-User-Id
     columns:
+    - author_id
     - created_at
     - id
     - notification_id
@@ -25,6 +26,7 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
+    - author_id
     - created_at
     - id
     - notification_id

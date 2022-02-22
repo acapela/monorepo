@@ -1,3 +1,4 @@
+import { uniq } from "lodash";
 import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
@@ -8,6 +9,7 @@ import { searchListActionsGroup, searchNotificationsGroup } from "@aca/desktop/a
 import { goToList } from "@aca/desktop/actions/lists";
 import { openFocusMode } from "@aca/desktop/actions/notification";
 import { getSnoozeOptionsForSearch } from "@aca/desktop/actions/snooze";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
@@ -22,25 +24,43 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
   const { searchKeyword } = context;
   const notifications = notificationsFuzzySearch(searchKeyword);
 
-  const notificationActions = notifications.slice(0, 10).map((notification) =>
-    defineAction({
-      name: getNotificationTitle(notification),
-      supplementaryLabel: () => notification.from,
-      group: searchNotificationsGroup,
-      keywords: [notification.from],
-      icon: <NotificationAppIcon isOnDarkBackground notification={notification} />,
-      handler() {
-        runActionWithTarget(openFocusMode, notification);
-      },
-    })
-  );
+  const notificationActions = groupNotifications(notifications)
+    .slice(0, 10)
+    .map((notificationOrGroup) => {
+      if (notificationOrGroup.kind === "group") {
+        return defineAction({
+          name: notificationOrGroup.name,
+          supplementaryLabel: () => pluralize`${notificationOrGroup.notifications.length} ${["notification"]}`,
+          group: searchNotificationsGroup,
+          keywords: [
+            notificationOrGroup.integrationTitle,
+            ...uniq(notificationOrGroup.notifications.map((n) => n.from)),
+          ],
+          icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup.notifications[0]} />,
+          handler() {
+            runActionWithTarget(openFocusMode, notificationOrGroup.notifications[0]);
+          },
+        });
+      }
+
+      return defineAction({
+        name: getNotificationTitle(notificationOrGroup),
+        supplementaryLabel: () => notificationOrGroup.from,
+        group: searchNotificationsGroup,
+        keywords: [notificationOrGroup.from],
+        icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup} />,
+        handler() {
+          runActionWithTarget(openFocusMode, notificationOrGroup);
+        },
+      });
+    });
 
   const lists = listsFuzzySearch(searchKeyword);
 
   const listActions = lists.slice(0, 10).map((list) =>
     defineAction({
       name: list.name,
-      supplementaryLabel: () => pluralize`${list.getAllNotifications().count} ${["notification"]}`,
+      supplementaryLabel: () => pluralize`${list.getAllNotifications().length} ${["notification"]}`,
       group: searchListActionsGroup,
       icon: <IconFolder />,
       handler() {

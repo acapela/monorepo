@@ -7,7 +7,7 @@ import styled, { css } from "styled-components";
 
 //@ts-ignore
 import zenImage from "@aca/desktop/assets/zen/today.jpg";
-import { uiStore } from "@aca/desktop/store/uiStore";
+import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -56,7 +56,9 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
     `}
 `;
 
-const UIFooter = styled.div``;
+const UIFooter = styled.div`
+  z-index: 2;
+`;
 
 const AppLayoutHolder = styled.div<{}>`
   padding-top: 48px;

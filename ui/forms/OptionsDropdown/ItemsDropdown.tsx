@@ -1,9 +1,12 @@
-import { defer } from "lodash";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
-import { useClickAway, useWindowSize } from "react-use";
+import { observer } from "mobx-react";
+import React, { ReactNode, useRef, useState } from "react";
+import { useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
 
+import { useFuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 import { useBoundingBox } from "@aca/shared/hooks/useBoundingBox";
+import { CANCEL_CLICK_OUTSIDE_CLASSNAME, useHandleCloseRequest } from "@aca/shared/hooks/useClickOutside";
+import { useEqualDependencyChangeEffect } from "@aca/shared/hooks/useEqualEffect";
 import { useListWithNavigation } from "@aca/shared/hooks/useListWithNavigation";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
@@ -21,10 +24,9 @@ interface Props<I> {
   onCloseRequest?: () => void;
   additionalContent?: ReactNode;
   dividerIndexes?: number[];
-  shouldScrollSelectedIntoView?: boolean;
 }
 
-export function ItemsDropdown<I>({
+export const ItemsDropdown = observer(function ItemsDropdown<I>({
   items,
   selectedItems,
   keyGetter,
@@ -34,9 +36,19 @@ export function ItemsDropdown<I>({
   iconGetter,
   additionalContent,
   dividerIndexes,
-  shouldScrollSelectedIntoView,
 }: Props<I>) {
-  const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(items, {
+  const [keyword, setKeyword] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const itemsToShow = useFuzzySearch(
+    items,
+    (item) => {
+      return [labelGetter(item)];
+    },
+    keyword
+  );
+
+  const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(itemsToShow, {
     enableKeyboard: true,
   });
 
@@ -45,6 +57,18 @@ export function ItemsDropdown<I>({
   const menuBoundingBox = useBoundingBox(menuRef);
 
   const selectedItemsKeys = selectedItems.map(keyGetter);
+
+  useEqualDependencyChangeEffect(() => {
+    searchInputRef.current?.focus();
+
+    const areAllVisibleItemsSelectedNow = itemsToShow.every((visibleItem) => {
+      return selectedItemsKeys.includes(keyGetter(visibleItem));
+    });
+
+    if (areAllVisibleItemsSelectedNow) {
+      setKeyword("");
+    }
+  }, [selectedItemsKeys]);
 
   function getIsItemSelected(item: I) {
     return selectedItemsKeys.includes(keyGetter(item));
@@ -62,58 +86,51 @@ export function ItemsDropdown<I>({
   useShortcut("ArrowUp", () => true);
   useShortcut("ArrowDown", () => true);
 
-  useClickAway(menuRef, () => {
+  useHandleCloseRequest(menuRef, () => {
     onCloseRequest?.();
   });
-
-  const [firstSelectedItem, setFirstSelectedItem] = useState<{
-    ref: React.RefObject<HTMLDivElement>;
-    index: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (shouldScrollSelectedIntoView && firstSelectedItem) {
-      // Makes sure rendering is completely done -- Also positions item in center
-      defer(() => firstSelectedItem.ref.current?.scrollIntoView({ block: "center" }));
-    }
-  }, [shouldScrollSelectedIntoView, firstSelectedItem]);
 
   const maxHeight = windowHeight - menuBoundingBox.top - 20;
 
   return (
-    <UIMenu $maxHeight={maxHeight} ref={menuRef}>
-      {items.map((item, index) => {
-        const itemKey = keyGetter(item);
-        const isSelected = getIsItemSelected(item);
-        const isHighlighted = keyGetter(highlightedItem) === itemKey;
-        const ref = useRef<HTMLDivElement>(null);
-        if (isSelected && (!firstSelectedItem || index < firstSelectedItem.index)) {
-          setFirstSelectedItem({
-            ref,
-            index,
-          });
-        }
-        return (
-          <React.Fragment key={itemKey}>
-            {dividerIndexes && dividerIndexes.includes(index) && <UIDivider />}
-            <DropdownItem
-              onClick={() => {
-                onItemSelected(item);
-              }}
-              ref={ref}
-              onHighlightRequest={() => setHighlightedItem(item)}
-              isHighlighted={isHighlighted}
-              isSelected={isSelected}
-              icon={iconGetter?.(item)}
-              label={labelGetter(item)}
-            />
-          </React.Fragment>
-        );
-      })}
+    <UIMenu $maxHeight={Math.min(maxHeight, 400)} ref={menuRef} className={CANCEL_CLICK_OUTSIDE_CLASSNAME}>
+      <UISearch
+        ref={searchInputRef}
+        autoFocus
+        placeholder="Find option..."
+        value={keyword}
+        onChange={(event) => {
+          setKeyword(event.target.value);
+        }}
+      />
+      <UIItems>
+        {itemsToShow.map((item, index) => {
+          const itemKey = keyGetter(item);
+          const isSelected = getIsItemSelected(item);
+          const isHighlighted = keyGetter(highlightedItem) === itemKey;
+
+          return (
+            <React.Fragment key={itemKey}>
+              {dividerIndexes && dividerIndexes.includes(index) && <UIDivider />}
+              <DropdownItem
+                onClick={() => {
+                  onItemSelected(item);
+                }}
+                onHighlightRequest={() => setHighlightedItem(item)}
+                isHighlighted={isHighlighted}
+                isSelected={isSelected}
+                icon={iconGetter?.(item)}
+                label={labelGetter(item)}
+              />
+            </React.Fragment>
+          );
+        })}
+      </UIItems>
+
       {additionalContent}
     </UIMenu>
   );
-}
+});
 
 const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
   ${({ $maxHeight }) =>
@@ -121,12 +138,22 @@ const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
     css`
       max-height: ${$maxHeight}px;
     `}
-  overflow-y: auto;
+
   width: 100%;
   padding: 5px 0;
+  min-width: 220px;
   ${theme.radius.panel};
   ${theme.colors.panels.popover.asBgWithReadableText};
   ${theme.shadow.popover};
+  display: flex;
+  flex-direction: column;
+`;
+
+const UIItems = styled.div`
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 const UIDivider = styled.div<{}>`
@@ -134,4 +161,11 @@ const UIDivider = styled.div<{}>`
   background-color: rgba(255, 255, 255, 0.2);
   height: 1px;
   width: 100%;
+`;
+
+const UISearch = styled.input`
+  ${theme.common.transparentInput}
+  ${theme.box.selectOption};
+  padding-top: 15px;
+  padding-bottom: 15px;
 `;

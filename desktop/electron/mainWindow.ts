@@ -1,16 +1,15 @@
 import path from "path";
 
 import * as Sentry from "@sentry/electron";
-import { BrowserWindow, app, dialog } from "electron";
+import { BrowserWindow, Menu, MenuItemConstructorOptions, app } from "electron";
 import IS_DEV from "electron-is-dev";
-import * as electronLog from "electron-log";
-import { autoUpdater } from "electron-updater";
 import { action, runInAction } from "mobx";
 
 import { AppEnvData } from "@aca/desktop/envData";
 
-import { makeLogger } from "../domains/dev/makeLogger";
 import { appState } from "./appState";
+import { initializeChildWindowHandlers } from "./childWindows";
+import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
@@ -24,6 +23,16 @@ if (!IS_DEV) {
     dsn: sentryDsn,
     release: app.getVersion(),
   });
+}
+
+function loadAppInWindow(window: BrowserWindow) {
+  return window.loadURL(
+    IS_DEV
+      ? // In dev mode - load from local dev server
+        "http://localhost:3005"
+      : // In production - load static, bundled file
+        `file://${INDEX_HTML_FILE}`
+  );
 }
 
 export const acapelaAppPathUrl = IS_DEV
@@ -48,18 +57,22 @@ export function initializeMainWindow() {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
       additionalArguments: [JSON.stringify(env)],
+      backgroundThrottling: false,
     },
     minWidth: 900,
     minHeight: 680,
-    titleBarStyle: "hidden",
+    titleBarStyle: "hiddenInset",
     fullscreenable: true,
   });
 
+  addCustomMenu();
+
+  mainWindow.focus();
   // mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(acapelaAppPathUrl);
-
-  setupAutoUpdater();
+  loadAppInWindow(mainWindow).then(() => {
+    mainWindow.focus();
+  });
 
   runInAction(() => {
     appState.mainWindow = mainWindow;
@@ -78,39 +91,56 @@ export function initializeMainWindow() {
     });
   });
 
+  mainWindow.webContents.on("did-fail-load", () => {
+    loadAppInWindow(mainWindow);
+  });
+
+  initializeChildWindowHandlers(mainWindow);
+
+  makeLinksOpenInDefaultBrowser(mainWindow.webContents);
+
   return mainWindow;
 }
 
-function setupAutoUpdater() {
-  const log = makeLogger("AutoUpdater");
+function addCustomMenu() {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: app.name,
+      submenu: [
+        { role: "about" },
+        { type: "separator" },
+        { role: "hide" },
+        { role: "hideOthers" },
+        { role: "unhide" },
+        { type: "separator" },
+        { role: "quit" },
+      ],
+    },
 
-  electronLog.transports.file.level = "info";
-  autoUpdater.logger = {
-    debug: (message: string) => log.debug(message),
-    info: (message: string) => log.info(message),
-    warn: (message: string) => log.warn(message),
-    error: (message: string) => log.error(message),
-  };
+    {
+      label: "Edit",
+      submenu: [
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
 
-  setInterval(() => {
-    autoUpdater.checkForUpdates();
-  }, 10 * 60 * 1000); // check for updates every 10 minutes
+        { role: "pasteAndMatchStyle" },
+        { role: "delete" },
+        { role: "selectAll" },
+        { type: "separator" },
+        {
+          label: "Speech",
+          submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+        },
+      ],
+    },
 
-  autoUpdater.on("update-downloaded", (_event, _releaseNotes, releaseName) => {
-    const dialogOpts = {
-      type: "info",
-      buttons: ["Restart", "Later"],
-      title: "Application Update",
-      message: releaseName,
-      detail: "A new version of Acapela is available. Restart the app to update.",
-    };
+    {
+      label: "Debug",
+      submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
+    },
+  ];
 
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      if (returnValue.response === 0) autoUpdater.quitAndInstall();
-    });
-  });
-
-  autoUpdater.on("error", (message) => {
-    log.error("There was a problem updating the application", message);
-  });
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 }

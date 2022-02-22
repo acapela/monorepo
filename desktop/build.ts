@@ -14,18 +14,22 @@ async function build(name: string, bundler: Parcel) {
   }
 }
 
+async function startBuildForEnv(env: BuildEnvironment) {
+  const distDir = path.resolve(__dirname, `dist-${env}`);
+  console.info(`[${env}] cleanup dist...`);
+  removeDirectory(distDir);
+
+  // Start client and electron bundler
+  await Promise.all([
+    build(`${env}:client`, createClientBundler(env)),
+    build(`${env}:electron`, createElectronBundler(env)),
+  ]);
+}
+
 async function start() {
   console.info(`Building desktop app...`);
-  // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
-  removeDirectory(path.resolve(__dirname, "dist"));
-
-  let env = "staging" as BuildEnvironment;
-  if (process.argv.pop() === "production") {
-    env = "production";
-  }
-  console.info(`environment: ${env}`);
-  // Start client and electron bundler
-  await Promise.all([build("client", createClientBundler(env)), build("electron", createElectronBundler(env))]);
+  await startBuildForEnv("staging");
+  await startBuildForEnv("production");
 }
 
 start();

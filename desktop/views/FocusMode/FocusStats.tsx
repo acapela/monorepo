@@ -46,7 +46,7 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
    *
    * We however want to include new items if they appear in the list
    */
-  const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications().all);
+  const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications());
 
   const groups = groupNotifications(allNotificationsWhenFocusStarted);
 
@@ -54,8 +54,6 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
     groups.filter(getIsNotificationsGroup).find((group) => group.notifications.includes(currentNotification)) ?? null;
 
   const notificationsResolvedSinceStart = allNotificationsWhenFocusStarted.filter((n) => n.isResolved);
-
-  // function
 
   function getCurrentGroupProgressInfo(): GroupProgress {
     if (!currentGroup) {

@@ -5,16 +5,15 @@ import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
-import { authStore } from "@aca/desktop/store/authStore";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { authStore } from "@aca/desktop/store/auth";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
-
-import { makeLogger } from "../domains/dev/makeLogger";
 
 const log = makeLogger("Worker-Consolidation");
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = getNullableDb();
-  const user = authStore.nullableUser;
+  const user = authStore.userTokenData;
 
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 
@@ -40,7 +39,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
       }
 
       log.debug(`Syncing ${data.length} Notion notifications`);
-      for (const { notification, notionNotification, type } of data) {
+      for (const { notification, notionNotification, type, discussion_id } of data) {
         const existingNotification = db.notificationNotion.findByUniqueIndex(
           "notion_original_notification_id",
           notionNotification.notion_original_notification_id
@@ -64,7 +63,10 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         });
 
         if (type === "notification_notion_commented") {
-          db.notificationNotionCommented.create({ notification_notion_id: createdNotionNotification.id });
+          db.notificationNotionCommented.create({
+            notification_notion_id: createdNotionNotification.id,
+            discussion_id,
+          });
         } else if (type === "notification_notion_user_mentioned") {
           db.notificationNotionUserMentioned.create({ notification_notion_id: createdNotionNotification.id });
         } else if (type === "notification_notion_user_invited") {

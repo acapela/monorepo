@@ -4,6 +4,7 @@ import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { notificationEntity } from "@aca/desktop/clientdb/notification";
 import {
   NotificationNotionFragment,
   Notification_Notion_Bool_Exp,
@@ -26,6 +27,7 @@ const notificationNotion = gql`
     page_id
     page_title
     space_id
+    author_id
   }
 `;
 
@@ -50,6 +52,8 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   keys: getFragmentKeys<NotificationNotionFragment>(notificationNotion),
   getDefaultValues: () => ({
     __typename: "notification_notion",
+    space_id: null,
+    author_id: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotificationNotionFragment, NotificationNotionConstraints>(
@@ -64,6 +68,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
         "created_at",
         "updated_at",
         "page_title",
+        "author_id",
       ],
       updateColumns: ["updated_at", "page_title", "space_id"],
       upsertConstraint: "notification_notion_pkey",
@@ -83,6 +88,9 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
       },
       get type() {
         return connections.inner.__typename;
+      },
+      get notification() {
+        return getEntity(notificationEntity).findById(notificationNotion.notification_id);
       },
     };
 

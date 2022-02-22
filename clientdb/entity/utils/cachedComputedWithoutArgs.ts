@@ -59,10 +59,8 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
 
   function handleBecameUnobserved() {
     aliveLazyReactions--;
-    // console.log("1");
     // It became unobserved as result of other lazyComputed disposing. We don't need to wait for 'keep alive' time
     if (isDisposalCascadeRunning) {
-      // console.log("1");
       // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
 
       setTimeout(dispose, 0);
@@ -133,8 +131,8 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (equals(latestValue, newValue!)) {
-      return;
+    if (!equals(latestValue, newValue!)) {
+      latestValue = newValue!;
     }
   };
 

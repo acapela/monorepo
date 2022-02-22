@@ -88,6 +88,17 @@ Setting Slack up is optional in development, but if you want to work on it you h
    1. **For production:** Just copy `shared/slack/manifest.json`
 2. Paste the manifest into the [testing](https://app.slack.com/app-settings/T01DBMUNM5H/A02RDDW5G3C/app-manifest), [staging](https://app.slack.com/app-settings/T01DBMUNM5H/A02CFBKDZMZ/app-manifest) or the [production](https://app.slack.com/app-settings/T01DBMUNM5H/A012VTBSTNV/app-manifest) app and save it.
 
+## Linear integration
+
+Similar to the slack integration, setting up Linear is optional in development.
+
+1. Go to https://linear.app/acapela/settings/api/applications/new
+2. Use your own name as part of the app name to make it easily distinguishable
+3. Set the callback url to `http://localhost:3000/api/backend/v1/linear/callback`
+4. Make sure to enable webhooks for `Issues` and `Issue comments`
+5. Set the webhook url to `https://<replace-this-with-your-cool-tunnel-name>.ngrok.io/api/backend/v1/linear/webhook`
+6. Fill out `LINEAR_CLIENT_ID`, `LINEAR_CLIENT_SECRET`, in your `.env`, based on your new app's info. Also add `LINEAR_OAUTH_SECRET` which can be any random string.
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.

@@ -4,7 +4,11 @@ import {
   differenceInHours,
   differenceInMinutes,
   formatRelative,
+  isSameDay,
   isThisYear,
+  isToday,
+  isTomorrow,
+  isYesterday,
   startOfWeek,
 } from "date-fns";
 import { upperFirst } from "lodash";
@@ -31,6 +35,10 @@ export function relativeFormatDateTime(date: Date): string {
 }
 
 export function niceFormatDate(date: Date, options?: FormatOptions): string {
+  if (isToday(date)) return `Today`;
+  if (isYesterday(date)) return `Yesterday`;
+  if (isTomorrow(date)) return `Tomorrow`;
+
   return date.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -43,15 +51,15 @@ export function niceFormatDate(date: Date, options?: FormatOptions): string {
 type FormatOptions = Intl.DateTimeFormatOptions;
 
 export function niceFormatDateTime(date: Date, options?: FormatOptions): string {
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    weekday: "short",
-    year: isThisYear(date) ? undefined : "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    ...options,
-  });
+  return `${niceFormatDate(date, options)} at ${niceFormatTime(date)}`;
+}
+
+export function niceFormatTimeAndDateIfNeeded(date: Date, options?: FormatOptions): string {
+  if (isSameDay(date, new Date())) {
+    return niceFormatTime(date);
+  }
+
+  return niceFormatDateTime(date, options);
 }
 
 export function niceFormatTime(date: Date): string {

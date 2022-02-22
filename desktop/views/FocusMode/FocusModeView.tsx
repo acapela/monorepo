@@ -1,15 +1,18 @@
+import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { focusOnNotificationPreview } from "@aca/desktop/actions/focus";
 import { openNotificationInApp } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
-import { getInboxListsById } from "@aca/desktop/domains/list/preconfigured";
+import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { NotificationPreview, PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
+import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { theme } from "@aca/ui/theme";
@@ -27,12 +30,24 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
   const notification = db.notification.assertFindById(notificationId);
 
+  useEffect(() => {
+    runInAction(() => {
+      uiStore.focusedNotification = notification;
+    });
+  }, [notification]);
+
   const list = getInboxListsById(listId);
 
   return (
     <AppLayout tray={<FocusModeTray />} footer={<FocusModeFooter />}>
       {list?.getNotificationsToPreload(notification).map((notificationToPreload) => {
-        return <PreloadNotificationPreview key={notificationToPreload.id} url={notificationToPreload.url} />;
+        return (
+          <PreloadNotificationPreview
+            priority={PreviewLoadingPriority.next}
+            key={notificationToPreload.id}
+            url={notificationToPreload.url}
+          />
+        );
       })}
 
       <UIHeader>

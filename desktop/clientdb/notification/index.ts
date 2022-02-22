@@ -7,6 +7,7 @@ import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { trackEvent } from "@aca/desktop/analytics";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import {
@@ -18,10 +19,7 @@ import {
 } from "@aca/gql";
 import { mobxTickAt } from "@aca/shared/mobx/time";
 
-import { notificationFigmaCommentEntity } from "./figma/comment";
-import { notificationLinearEntity } from "./linear/issue";
-import { notificationNotionEntity } from "./notion/baseNotification";
-import { notificationSlackMessageEntity } from "./slack/message";
+import { innerEntities } from "./inner";
 
 const notificationFragment = gql`
   fragment DesktopNotification on notification {
@@ -32,6 +30,7 @@ const notificationFragment = gql`
     resolved_at
     updated_at
     created_at
+    last_seen_at
     snoozed_until
   }
 `;
@@ -42,13 +41,6 @@ type DesktopNotificationConstraints = {
   update: Notification_Set_Input;
   where: Notification_Bool_Exp;
 };
-
-const innerEntities = [
-  notificationNotionEntity,
-  notificationSlackMessageEntity,
-  notificationFigmaCommentEntity,
-  notificationLinearEntity,
-];
 
 const log = makeLogger("Notification-Events");
 
@@ -69,6 +61,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     resolved_at: null,
     snoozed_until: null,
     text_preview: null,
+    last_seen_at: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
@@ -84,8 +77,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "from",
         "snoozed_until",
         "text_preview",
+        "last_seen_at",
       ],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview"],
+      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview", "last_seen_at"],
       upsertConstraint: "notification_pkey",
     }
   ),
@@ -107,9 +101,18 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       get isResolved() {
         return !!notification.resolved_at;
       },
+      get isUnread() {
+        if (notification.resolved_at) {
+          return false;
+        }
+        return !notification.last_seen_at;
+      },
       resolve() {
         if (notification.resolved_at) return;
         updateSelf({ resolved_at: new Date().toISOString() });
+      },
+      markAsSeen() {
+        updateSelf({ last_seen_at: new Date().toISOString() });
       },
 
       get isSnoozed() {
@@ -132,6 +135,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
         return true;
       },
+      snooze(date: Date = new Date()) {
+        if (!connections.canSnooze) return;
+
+        updateSelf({ snoozed_until: date.toISOString() });
+      },
     };
 
     return connections;
@@ -139,6 +147,15 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   .addEventHandlers({
     itemUpdated(notification, dataBefore) {
       const isResolvedNow = !dataBefore.resolved_at && notification.resolved_at;
+      const isSnoozedNow = !dataBefore.snoozed_until && notification.snoozed_until;
+
+      if (isResolvedNow) {
+        trackEvent("Notification Resolved", { notification_id: notification.id });
+      }
+
+      if (isSnoozedNow) {
+        trackEvent("Notification Snoozed", { notification_id: notification.id });
+      }
 
       if (!isResolvedNow) return;
 

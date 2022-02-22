@@ -1,8 +1,8 @@
 import { cachedComputed } from "@aca/clientdb";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 
+import { getInboxLists } from "./all";
 import { NotificationsList } from "./defineList";
-import { inboxLists } from "./preconfigured";
 
 export const getListSearchTerms = cachedComputed((list: NotificationsList) => {
   return [list.name];
@@ -11,5 +11,5 @@ export const getListSearchTerms = cachedComputed((list: NotificationsList) => {
 export function listsFuzzySearch(keyword: string) {
   if (!keyword.length) return [];
 
-  return fuzzySearch(inboxLists, getListSearchTerms, keyword);
+  return fuzzySearch(getInboxLists(), getListSearchTerms, keyword);
 }

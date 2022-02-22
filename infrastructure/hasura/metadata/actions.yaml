@@ -44,7 +44,34 @@ actions:
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
   permissions:
   - role: user
+- name: linear_users
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: slack_conversations
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
 - name: slack_user
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: slack_users
   definition:
     kind: ""
     handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
@@ -100,4 +127,7 @@ custom_types:
   - name: UninstallSlackOutput
   - name: JoinTopicOutput
   - name: GetSlackInstallationURLOutput
+  - name: SlackUser
+  - name: ServiceUser
+  - name: SlackConversation
   scalars: []

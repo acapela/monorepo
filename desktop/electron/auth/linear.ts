@@ -8,11 +8,13 @@ import { authWindowDefaultOptions } from "./utils";
 export async function loginLinear() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
-  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/linear/auth");
+  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/linear/auth", {
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36",
+  });
 
   // LOGOUT
   // await new Promise((resolve) => setTimeout(resolve, 3000));
-  // console.log(await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore")'));
 
   return new Promise<void>((resolve) => {
     function checkIfCallbackSuccessful() {

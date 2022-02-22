@@ -15,24 +15,20 @@
   "scripts": {
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
-    "build:electron": "electron-builder build --mac zip --universal -p never",
-    "build": "yarn build:bundle && yarn build:electron",
-    "upload-sourcemaps": "ts-node ./scripts/upload-sourcemaps.ts",
-    "build:release:staging": "ts-node ./scripts/update-package.ts staging && electron-builder build --mac zip --universal -p never && ts-node ./scripts/update-package.ts reset",
-    "build:release:production": "ts-node ./scripts/update-package.ts && electron-builder build --mac zip --universal -p never && ts-node ./scripts/update-package.ts reset",
-    "build:production": "yarn build:bundle production && yarn upload-sourcemaps update && yarn build:release:production && mv ./dist-electron ./dist-electron-production",
-    "build:staging": "yarn build:bundle && yarn upload-sourcemaps && yarn build:release:staging && mv ./dist-electron ./dist-electron-staging",
-    "release": "(rm -rf dist-electron* || true) && yarn build:staging && yarn build:production",
-    "publish": "yarn release && ./scripts/upload-release.sh"
+    "build:electron": "electron-builder build --mac default --universal -p never",
+    "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
+    "upload-bundle": "./scripts/upload-bundle.sh"
   },
   "source": ".",
   "devDependencies": {
+    "@install-binary/ghr": "^0.14.0",
     "@parcel/config-default": "^2.2.1",
     "@parcel/core": "^2.2.1",
     "@sentry/cli": "^1.72.1",
     "@sentry/electron": "^2.5.4",
     "@types/electron-json-storage": "^4.5.0",
     "@types/node-cleanup": "^2.1.2",
+    "@types/segment-analytics": "^0.0.34",
     "dotenv": "^15.0.0",
     "electron": "16.0.8",
     "electron-builder": "^22.14.13",
@@ -45,6 +41,7 @@
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
     "node-cleanup": "^2.1.2",
+    "node-fetch": "^2.6.7",
     "parcel": "^2.2.1",
     "react-chicane": "^0.6.1",
     "ts-node": "^10.4.0",
@@ -67,9 +64,10 @@
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
     }
-  },
-  "dependencies": {
-    "node-fetch": "^2.6.7"
   }
 }

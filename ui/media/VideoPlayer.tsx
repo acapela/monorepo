@@ -2,7 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled from "styled-components";
 
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
 import { namedForwardRef } from "@aca/shared/react/namedForwardRef";
@@ -36,7 +36,7 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
 
   useShortcut("Space", togglePlay, { isEnabled: isHovered });
 
-  const shouldShowControls = useDebouncedValue(isHovered || !isPlaying, { offDelay: 1000, onDelay: 100 });
+  const shouldShowControls = useDebouncedBoolean(isHovered || !isPlaying, { offDelay: 1000, onDelay: 100 });
 
   return (
     <UIHolder ref={holderRef}>
