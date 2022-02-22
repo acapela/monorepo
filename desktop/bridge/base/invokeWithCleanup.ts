@@ -75,6 +75,11 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
 
   type Handler = (input: Input, event?: IpcMainInvokeEvent) => MaybePromise<MaybeCleanup>;
 
+  let resolveHandled: Function;
+  const handledPromise = new Promise((_resolve) => {
+    resolveHandled = _resolve;
+  });
+
   let invokeHandler: Handler | null = null;
 
   /**
@@ -85,16 +90,16 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
       throw new Error(`Cannot handle client side`);
     }
 
+    if (!invokeHandler) {
+      resolveHandled();
+    }
+
     invokeHandler = handler;
   };
 
-  function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
-    if (!invokeHandler) {
-      throw new Error(`No handler for arg ${JSON.stringify(arg)} given event ${JSON.stringify(event)}`);
-    }
-    const cleanup = invokeHandler(arg, event);
-
-    return cleanup;
+  async function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
+    await handledPromise;
+    return invokeHandler!(arg, event);
   }
 
   if (process.env.ELECTRON_CONTEXT !== "client") {
