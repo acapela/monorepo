@@ -188,4 +188,4 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_PRODUCT_WEBHOOK_URL: ${{ secrets.SLACK_PRODUCT_WEBHOOK_URL }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      - run: yarn e2e test electron
+#      - run: yarn e2e test electron
