@@ -9,5 +9,8 @@
     "test": "APP=e2e playwright test --workers 1",
     "test:debug": "PWDEBUG=1 APP=e2e playwright test",
     "dev": "ts-node --transpile-only ./cli/dev.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.18.1"
   }
 }
