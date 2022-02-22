@@ -239,7 +239,11 @@ export const createNotificationList = defineAction({
           if (!title) {
             return false;
           }
-          const notificationFilter = getDb().notificationList.create({ title, filters: [] });
+          const notificationFilter = getDb().notificationList.create({
+            title,
+            filters: [],
+            seen_at: new Date().toISOString(),
+          });
           desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
         },
       }),
