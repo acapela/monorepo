@@ -37,7 +37,6 @@
     "electron-json-storage": "^4.5.0",
     "electron-log": "^4.4.5",
     "electron-notarize": "^1.1.1",
-    "electron-notification-state": "^1.0.4",
     "electron-updater": "^4.6.5",
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
