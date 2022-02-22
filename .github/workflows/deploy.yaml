@@ -63,6 +63,7 @@ jobs:
           echo "NODE_PATH=$(npm root -g)" >> $GITHUB_ENV
       - name: Publish
         run: |
+          yarn e2e test electron
           cd desktop/
           ./scripts/fetch-bundle.sh "$RELEASE_VERSION"
           ./scripts/publish.sh production
