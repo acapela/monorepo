@@ -45,7 +45,10 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
         case "assign":
           return `The issue "${innerNotification.issue_title}" was assigned to you`;
         case "cancel":
+        case "state:cancel":
           return `The issue "${innerNotification.issue_title}" was canceled`;
+        case "state:complete":
+          return `The issue "${innerNotification.issue_title}" was completed`;
         default:
           return `Created issue "${innerNotification.issue_title}"`;
       }

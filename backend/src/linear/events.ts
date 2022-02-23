@@ -44,9 +44,10 @@ export async function handleLinearIssueChanges(event: HasuraEvent<LinearIssue>) 
     await saveIssue(event.item, "assign", [changes.added.assigneeId || changes.updated.assigneeId]);
   }
 
-  if ("state" in changes.updated && changes.updated.state.type === "canceled") {
-    // issue was canceled
-    await saveIssue(event.item, "cancel");
+  if ("state" in changes.updated) {
+    const state = changes.updated.state.type;
+    if (state === "canceled") await saveIssue(event.item, "state:cancel");
+    if (state === "completed") await saveIssue(event.item, "state:complete");
   }
 }
 
