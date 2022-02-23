@@ -15,7 +15,7 @@ export const linearIntegrationClient: IntegrationClient = {
   name: "Linear",
   description: "New issues, task assignments and comments.",
   isReady: linearAuthTokenBridgeValue.observables.isReady,
-  getIsConnected: () => !!linearAuthTokenBridgeValue.get(),
+  getIsConnected: () => linearAuthTokenBridgeValue.get(),
   convertToLocalAppUrl: async ({ url }) => {
     return {
       protocol: "linear",
@@ -25,6 +25,9 @@ export const linearIntegrationClient: IntegrationClient = {
   },
   async connect() {
     await loginLinearBridge();
+  },
+  async disconnect() {
+    await loginLinearBridge({ logout: true });
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.linear} />,
 };

@@ -101,6 +101,39 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).end();
 });
 
+async function revokeToken(token: string) {
+  try {
+    await axios.post("https://api.linear.app/oauth/revoke", qs.stringify({ token }), {
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+    });
+  } catch (e) {
+    logger.warn("revoke token error: " + e);
+  }
+}
+
+router.get("/v1/linear/unlink", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+
+  const tokens = await db.linear_oauth_token.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+  if (tokens.length > 0) {
+    // revoke all tokens and delete from database
+    await Promise.all([
+      ...tokens.map((u) => revokeToken(u.access_token)),
+      db.linear_oauth_token.deleteMany({
+        where: {
+          user_id: userId,
+        },
+      }),
+    ]);
+  }
+
+  res.redirect(`https://linear.app/`);
+});
+
 async function saveComment(payload: CommentWebhook) {
   const usersForOrg = await getUsersForOrganizationId(payload.organizationId);
   if (!usersForOrg.length) return;
