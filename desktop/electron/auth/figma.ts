@@ -38,7 +38,7 @@ export async function loginFigma() {
   });
 }
 
-export async function initializeFigmaAuthHandler() {
+export function initializeFigmaAuthHandler() {
   loginFigmaBridge.handle(async () => {
     await loginFigma();
     tryInitializeServiceSync("figma");

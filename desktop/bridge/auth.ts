@@ -36,7 +36,7 @@ export const linearAuthTokenBridgeValue = createBridgeValue<boolean>("linear-aut
   getDefault: () => false,
   isPersisted: true,
 });
-export const loginLinearBridge = createInvokeBridge("login-linear");
+export const loginLinearBridge = createInvokeBridge<{ logout: boolean } | void>("login-linear");
 
 /*
   NEW SERVICE!?!?!?
