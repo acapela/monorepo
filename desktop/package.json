@@ -17,6 +17,7 @@
     "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac default --universal -p never",
     "build:staging": "rm -rf dist && yarn build:bundle staging && cp -r dist-staging dist && yarn build:electron",
+    "build:test": "rm -rf dist && yarn build:bundle staging && cp -r dist-staging dist && electron-builder build --linux dir -p never",
     "build:production": "rm -rf dist && yarn build:bundle production && cp -r dist-production dist && yarn build:electron",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
     "upload-bundle": "./scripts/upload-bundle.sh"
