@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import axios from "axios";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
+import { keyBy, map } from "lodash";
 import qs from "qs";
 
 import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
@@ -105,8 +106,14 @@ async function saveComment(payload: CommentWebhook) {
   if (!usersForOrg.length) return;
   const linearClient = getRandomLinearClient(usersForOrg);
   const subscribers = await fetchSubscribers(linearClient, payload.data.issue.id);
+  const subscriberIds = map(subscribers, "id");
+  const subscriberByName = keyBy(subscribers, "displayName");
+  const mentionIds = [...payload.data.body.matchAll(/@([^\s]+)/gm)]
+    .map((m) => subscriberByName[m[1]])
+    .filter(Boolean)
+    .map((u) => u.id);
   const notificationPromises = usersForOrg
-    .filter((u) => u.linear_user_id !== payload.data.user.id && subscribers.includes(u.linear_user_id || ""))
+    .filter((u) => u.linear_user_id !== payload.data.userId && subscriberIds.includes(u.linear_user_id || ""))
     .map((u) =>
       db.notification_linear.create({
         data: {
@@ -117,9 +124,11 @@ async function saveComment(payload: CommentWebhook) {
               from: payload.data.user.name,
             },
           },
-          type: payload.type,
-          issue_id: payload.data.issue.id,
+          type: "Comment",
+          issue_id: payload.data.issueId,
           issue_title: payload.data.issue.title,
+          creator_id: payload.data.userId,
+          origin: mentionIds.includes(u.linear_user_id) ? "mention" : "comment",
         },
       })
     );

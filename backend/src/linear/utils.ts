@@ -125,7 +125,11 @@ export function findMatchingActor(
   );
 }
 
-export async function fetchSubscribers(linearClient: LinearClient, issueId: string): Promise<string[]> {
+export type Subscriber = {
+  id: string;
+  displayName: string;
+};
+export async function fetchSubscribers(linearClient: LinearClient, issueId: string): Promise<Subscriber[]> {
   const subscribersRes = await linearClient.client.rawRequest(
     `
 query Issue($id: String!) {
@@ -133,6 +137,7 @@ query Issue($id: String!) {
     subscribers {
       nodes {
         id
+        displayName
       }
     }
   }
@@ -142,7 +147,7 @@ query Issue($id: String!) {
   if (subscribersRes.status != 200) {
     throw new Error(`linear api request error: ${subscribersRes.status}`);
   }
-  return map(get(subscribersRes.data, "issue.subscribers.nodes", []), "id");
+  return get(subscribersRes.data, "issue.subscribers.nodes", []);
 }
 
 export type Viewer = {
