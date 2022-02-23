@@ -102,7 +102,7 @@ query Issue($id: String!) {
   ];
 }
 
-export type NotificationOrigin = "assign" | "cancel";
+export type NotificationOrigin = "assign" | "state:cancel" | "state:complete";
 
 export function findMatchingActor(
   origin: NotificationOrigin,
@@ -116,7 +116,8 @@ export function findMatchingActor(
     // the issue was just created, and we have no history yet
     if (!h) return creator;
   }
-  if (origin === "cancel") h = issueHistory.find((h) => h.toState?.type === "canceled");
+  if (origin === "state:cancel") h = issueHistory.find((h) => h.toState?.type === "canceled");
+  if (origin === "state:complete") h = issueHistory.find((h) => h.toState?.type === "completed");
   return (
     h?.actor || {
       id: null,
