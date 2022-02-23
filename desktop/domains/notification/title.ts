@@ -34,7 +34,12 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
     }
     case "notification_linear": {
       if (innerNotification.type === "Comment") {
-        return `Commented in "${innerNotification.issue_title}"`;
+        switch (innerNotification.origin) {
+          case "mention":
+            return `Mentioned you in "${innerNotification.issue_title}"`;
+          default:
+            return `Commented in "${innerNotification.issue_title}"`;
+        }
       }
       switch (innerNotification.origin) {
         case "assign":
