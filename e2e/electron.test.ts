@@ -7,7 +7,7 @@ const launchElectron = () =>
   electron.launch(
     IS_CI
       ? {
-          executablePath: "../desktop/dist-electron/linux-unpacked/@acadesktop",
+          executablePath: "./start-electron.sh",
         }
       : {
           args: ["../desktop/dist/electron/index.js"],
