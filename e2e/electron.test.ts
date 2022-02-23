@@ -7,7 +7,7 @@ const launchElectron = () =>
   electron.launch(
     IS_CI
       ? {
-          executablePath: "../desktop/dist-electron/mac-universal/Acapela.app/Contents/MacOS/Acapela",
+          executablePath: "../desktop/dist-electron/linux-unpacked/@acadesktop",
         }
       : {
           args: ["../desktop/dist/electron/index.js"],
@@ -17,6 +17,6 @@ const launchElectron = () =>
 test("Electron app is starting", async () => {
   const electronApp = await launchElectron();
   const window = await electronApp.firstWindow();
-  await window.waitForSelector("text=Log in");
+  await window.waitForSelector("text=Sign into Acapela");
   await electronApp.close();
 });
