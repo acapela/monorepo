@@ -55,8 +55,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
-      - run: npx playwright install
       - run: yarn desktop build:test
+      #      - uses: lhotari/action-upterm@v1
       - run: yarn e2e test electron
 
   #      - name: Setup dotenv
