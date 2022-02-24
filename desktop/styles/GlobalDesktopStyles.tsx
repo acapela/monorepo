@@ -8,6 +8,10 @@ export const GlobalDesktopStyles = createGlobalStyle`
     -webkit-app-region: no-drag;
   }
 
+  body.main-window {
+    ${theme.colors.layout.background.asBgWithReadableText};
+  }
+
   body, html, #root {
     min-height: 100vh;
     max-height: 100vh;
