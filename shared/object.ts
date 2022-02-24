@@ -1,4 +1,5 @@
-import { pick } from "lodash";
+import { isPlainObject, mergeWith, pick } from "lodash";
+import { DeepPartial } from "utility-types";
 
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 
@@ -105,3 +106,35 @@ type FromEntries<T> = T extends [infer Key, any][]
     { [key in string]: any };
 
 export type FromEntriesWithReadOnly<T> = FromEntries<DeepWriteable<T>>;
+
+export function isObject(item) {
+  return item && typeof item === "object" && !Array.isArray(item);
+}
+
+export function mergeDeep(target, ...sources) {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+}
+
+export function deepMerge<T>(source: T, overwrites: DeepPartial<T>) {
+  return mergeWith(overwrites, source, (value: unknown, srcValue: unknown) => {
+    if (isPlainObject(srcValue) || isPlainObject(value)) {
+      return;
+    }
+
+    return value;
+  }) as T;
+}

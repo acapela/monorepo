@@ -86,7 +86,7 @@ const UIName = styled.div`
 
 const UIShortcut = styled(ShortcutDescriptor)`
   gap: 4px;
-  ${theme.typo.label.semibold};
+  ${theme.typo.label.medium};
   .key {
     line-height: 1;
     ${theme.colors.layout.actionPanel.active.asBg};

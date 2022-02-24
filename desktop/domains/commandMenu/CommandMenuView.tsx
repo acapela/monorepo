@@ -153,7 +153,8 @@ const UICover = styled(FadePresenceAnimator)`
   justify-content: center;
   padding: 20px;
   padding-top: 20vh;
-  ${theme.colors.layout.background.opacity(0.5).asBg}
+  ${theme.colors.layout.background.opacity(0.7).asBg};
+  ${theme.shadow.popover};
 `;
 const UIBody = styled(PopPresenceAnimator)`
   ${theme.colors.layout.actionPanel.asBg};

@@ -122,7 +122,7 @@ const UIActiveSection = styled.div`
 `;
 
 const UIHeader = styled.div<{}>`
-  ${theme.typo.pageTitle.semibold};
+  ${theme.typo.pageTitle.medium};
   display: flex;
   align-items: center;
   ${theme.spacing.actions.asGap}
@@ -139,5 +139,5 @@ const UINavItem = styled.div<{ $isActive: boolean }>`
   ${theme.box.item}
   ${theme.radius.button}
 
-  ${(props) => props.$isActive && theme.font.semibold}
+  ${(props) => props.$isActive && theme.font.medium}
 `;

@@ -35,12 +35,7 @@ export const toggleDarkTheme = defineAction({
     const prev = uiSettingsBridge.get();
 
     // Avoid 'animated' change where all the buttons might change theme in a slightly different time.
-    document.body.classList.add("no-transitions");
     uiSettingsBridge.set({ ...prev, isDarkMode: newDarkModeValue });
-
-    setTimeout(() => {
-      document.body.classList.remove("no-transitions");
-    }, 500);
   },
 });
 

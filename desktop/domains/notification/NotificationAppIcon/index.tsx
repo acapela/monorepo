@@ -69,7 +69,11 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
 
   return (
     <UIHolder>
-      <UIIcon className={className} src={iconProps.icon} $invert={iconProps.isInverted} />
+      <UIIcon
+        className={[className, notification.inner?.__typename].join(" ")}
+        src={iconProps.icon}
+        $invert={iconProps.isInverted}
+      />
 
       {displayUnreadNotification && <UIUnreadIndicator />}
     </UIHolder>
@@ -88,11 +92,10 @@ const UIHolder = styled.div`
 const UIIcon = styled.img<{ $invert?: boolean }>`
   ${iconStyles};
 
-  ${(props) =>
-    props.$invert &&
-    css`
-      filter: invert(1);
-    `}
+  &.notification_notion {
+    background-color: #fff;
+    border-radius: 4px;
+  }
 `;
 
 const UIUnknown = styled.div`

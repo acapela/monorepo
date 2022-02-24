@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -5,6 +6,7 @@ import styled from "styled-components";
 import { goToList } from "@aca/desktop/actions/lists";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
+import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -18,13 +20,15 @@ export const ListTabLabel = observer(function ListTabLabel({ isActive = false, l
     <UIHolder action={goToList} target={list} className={className}>
       <UILabel $isActive={isActive}>{list.name}</UILabel>
       <UICount>{list.getAllNotifications().length}</UICount>
-      <UIActiveIndicator $isVisible={isActive} />
+      <AnimatePresence>
+        {isActive && <UIActiveIndicator presenceStyles={{ opacity: [0, 1], y: [5, 0] }} />}
+      </AnimatePresence>
     </UIHolder>
   );
 });
 
 const UILabel = styled.div<{ $isActive: boolean }>`
-  ${(props) => (props.$isActive ? theme.font.bold : theme.font.medium)};
+  ${theme.font.medium};
 
   opacity: 0.8;
 
@@ -52,14 +56,12 @@ const UICount = styled.div`
   ${theme.font.opacity(0.5)};
 `;
 
-const UIActiveIndicator = styled.div<{ $isVisible: boolean }>`
+const UIActiveIndicator = styled(PresenceAnimator)`
   position: absolute;
   box-sizing: border-box;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 3px;
+  height: 2px;
   ${theme.colors.primary.asBg};
-  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
-  transition: 0.15s all;
 `;

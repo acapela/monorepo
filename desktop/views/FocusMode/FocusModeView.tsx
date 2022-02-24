@@ -73,7 +73,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 });
 
 const UITitle = styled.div`
-  ${theme.typo.secondaryTitle.semibold};
+  ${theme.typo.secondaryTitle.medium};
   ${theme.common.ellipsisText}
   min-width: 0;
   flex-grow: 1;
