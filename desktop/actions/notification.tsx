@@ -135,8 +135,7 @@ export const resolveNotification = defineAction({
       group =
         groupNotifications(getDb().notification.query({ isResolved: false }).all)
           .filter(getIsNotificationsGroup)
-          .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
-        null;
+          .find((group) => group.treatAsOne && group.notifications.some(({ id }) => notification.id === id)) ?? null;
     }
 
     notification?.resolve();
@@ -196,13 +195,11 @@ export const openFocusMode = defineAction({
       openedNotificationsGroupsStore.open(group.id);
       // When there's a single preview enabled, only one notification out of many is shown in focus
       // This check attempts to mark all of the notifications inside a single preview group as seen
-      if (group.isOnePreviewEnough) {
+      if (group.treatAsOne) {
         group.notifications.forEach((n) => n.markAsSeen());
       }
       const lastNotificationIndex = group.notifications.length - 1;
-      const notificationToShow = group.isOnePreviewEnough
-        ? group.notifications[lastNotificationIndex]
-        : group.notifications[0];
+      const notificationToShow = group.treatAsOne ? group.notifications[lastNotificationIndex] : group.notifications[0];
       desktopRouter.navigate("focus", { listId: list.id, notificationId: notificationToShow.id });
       return;
     }

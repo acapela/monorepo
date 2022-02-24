@@ -104,7 +104,7 @@ function getGroupSnoozeState(group: NotificationsGroup): SnoozeState {
     return {
       lifecycle: "snooze-ongoing",
       tooltip:
-        !group.isOnePreviewEnough && notificationSnoozeCount > 1
+        !group.treatAsOne && notificationSnoozeCount > 1
           ? `${notificationSnoozeCount} notifications snoozed`
           : getDefaultTooltip(ongoingSnoozeNotification),
       displayedSnoozedTime: hasAllNotificationsInGroupHaveSameSnoozeTime
@@ -119,7 +119,7 @@ function getGroupSnoozeState(group: NotificationsGroup): SnoozeState {
     return {
       lifecycle: "snooze-is-done-and-is-unread",
       tooltip:
-        !group.isOnePreviewEnough && unreadNotificationsAfterComingBackFromSnooze.length > 1
+        !group.treatAsOne && unreadNotificationsAfterComingBackFromSnooze.length > 1
           ? `${unreadNotificationsAfterComingBackFromSnooze.length} previously snoozed notifications`
           : getDefaultTooltip(unreadNotificationsAfterComingBackFromSnooze[0]),
     };

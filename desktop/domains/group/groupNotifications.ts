@@ -65,7 +65,7 @@ export function orderNotificationsByGroups(notifications: NotificationEntity[]) 
 
   groupedList.forEach((notificationOrGroup) => {
     if (getIsNotificationsGroup(notificationOrGroup)) {
-      if (notificationOrGroup.isOnePreviewEnough) {
+      if (notificationOrGroup.treatAsOne) {
         result.push(notificationOrGroup.notifications[0]);
       } else {
         result.push(...notificationOrGroup.notifications);

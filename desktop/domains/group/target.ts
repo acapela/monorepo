@@ -7,7 +7,7 @@ export interface NotificationGroupTarget {
   name: string;
   integration: SupportedIntegration | "unknown";
   integrationTitle: string;
-  isOnePreviewEnough?: boolean;
+  treatAsOne?: boolean;
 }
 
 const unknownTarget: NotificationGroupTarget = {
@@ -37,7 +37,7 @@ export function getNotificationGroupTarget(
       name: (isThread ? "Comment Thread in " : "") + targetNotification.file_name,
       integration: "figma",
       integrationTitle: "Figma file",
-      isOnePreviewEnough: isThread,
+      treatAsOne: isThread,
     };
   }
 
@@ -52,7 +52,7 @@ export function getNotificationGroupTarget(
       name: (hasReplies ? "Comment Thread in " : "") + targetNotification.page_title,
       integration: "notion",
       integrationTitle: "Notion page",
-      isOnePreviewEnough: hasReplies,
+      treatAsOne: hasReplies,
     };
   }
 
@@ -69,7 +69,7 @@ export function getNotificationGroupTarget(
       name: getNotificationTitle(notification),
       integration: "slack",
       integrationTitle: "Slack conversation",
-      isOnePreviewEnough: true,
+      treatAsOne: true,
     };
   }
 
@@ -79,7 +79,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
-      isOnePreviewEnough: true,
+      treatAsOne: true,
     };
   }
 

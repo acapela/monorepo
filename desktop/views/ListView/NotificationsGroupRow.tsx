@@ -81,7 +81,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
       return false;
     }
 
-    if (group.isOnePreviewEnough) {
+    if (group.treatAsOne) {
       // We treat "one preview enough" notification groups as a single notification
       // So in this case, we won't display the unread indicator
       return group.notifications.every((n) => !n.last_seen_at);
@@ -92,7 +92,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
   return (
     <>
       <ActionTrigger
-        {...(group.isOnePreviewEnough
+        {...(group.treatAsOne
           ? { action: openFocusMode, target: group }
           : { action: toggleNotificationsGroup, target: group })}
       >
@@ -119,7 +119,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             )}
           </UISendersLabel>
           <UITitle>
-            {!group.isOnePreviewEnough && (
+            {!group.treatAsOne && (
               <UIToggleIconAnimator
                 animate={{ rotateZ: isOpened ? `90deg` : `0deg` }}
                 initial={{ rotateZ: isOpened ? `90deg` : `0deg` }}
@@ -135,7 +135,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
           {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
         </UIHolder>
-        {!group.isOnePreviewEnough && isOpened && (
+        {!group.treatAsOne && isOpened && (
           <UINotifications>
             <NotificationsRows notifications={group.notifications} list={list} />
           </UINotifications>

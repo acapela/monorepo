@@ -87,7 +87,7 @@ export function defineNotificationsList({
       const group = groupedNotifications[index[0]];
       assert(getIsNotificationsGroup(group), "must be a notification group");
       const nextNotification = group.notifications[index[1] + direction];
-      if (!group.isOnePreviewEnough && nextNotification) {
+      if (!group.treatAsOne && nextNotification) {
         return nextNotification;
       }
       nextNotificationOrGroup = groupedNotifications[index[0] + direction];
@@ -100,7 +100,7 @@ export function defineNotificationsList({
     }
     if (getIsNotificationsGroup(nextNotificationOrGroup)) {
       const group = nextNotificationOrGroup;
-      return direction == -1 && !group.isOnePreviewEnough
+      return direction == -1 && !group.treatAsOne
         ? group.notifications[group.notifications.length - 1]
         : group.notifications[0];
     } else {

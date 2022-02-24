@@ -4,6 +4,7 @@ import { IObservableArray } from "mobx";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
 
+import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
@@ -65,6 +66,13 @@ export type EntityQuery<Data, Connections> = {
   ) => EntityQuery<Data, Connections>;
   sort(sort: EntityQuerySortFunction<Data, Connections>): EntityQuery<Data, Connections>;
 };
+
+export type EntityQueryByDefinition<ED extends EntityDefinition<any, any>> = ED extends EntityDefinition<
+  infer D,
+  infer C
+>
+  ? EntityQuery<D, C>
+  : never;
 
 /**
  * Query keeps track of all items passing given query filter and sorter.
