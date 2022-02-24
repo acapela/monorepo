@@ -6,6 +6,7 @@ import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
+import { uiStore } from "@aca/desktop/store/ui";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
@@ -106,6 +107,15 @@ export const restartOnboarding = defineAction({
   group: devActionsGroup,
   handler() {
     onboardingStore.onboardingStatus = "ongoing";
+  },
+});
+
+export const forceZenMode = defineAction({
+  icon: devIcon,
+  name: "Force toggle zen mode",
+  group: devActionsGroup,
+  handler() {
+    uiStore.isDisplayingZenImage = !uiStore.isDisplayingZenImage;
   },
 });
 

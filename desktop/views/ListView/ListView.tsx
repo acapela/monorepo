@@ -131,15 +131,13 @@ const UINotifications = styled.div`
   overflow-y: auto;
 
   padding-right: 15px;
-  /* Prevents the last notification in the list from hiding under the footer */
   padding-bottom: 48px;
 
-  /* Sums up to 24px when adding up the padding-bottom in ListTabLabel */
   margin-top: 20px;
+  padding-top: 10px;
 `;
 
 const UITabsBar = styled(HorizontalScroller)`
-  padding-top: 2px;
   margin-right: 16px;
 `;
 

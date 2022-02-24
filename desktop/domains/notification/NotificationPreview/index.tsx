@@ -128,7 +128,7 @@ const UIEscapeFlyer = styled(PresenceAnimator)`
 `;
 
 const UIEscapeLabel = styled.div`
-  ${theme.typo.content.semibold};
+  ${theme.typo.content.medium};
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
   ${theme.box.importantNotice};
   ${theme.radius.primaryItem};

@@ -158,7 +158,7 @@ const UIItems = styled.div`
 
 const UIDivider = styled.div<{}>`
   margin: 5px 0;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(128, 128, 128, 0.1);
   height: 1px;
   width: 100%;
 `;

@@ -38,7 +38,7 @@ export const DebugFocusView = observer(() => {
 });
 
 const UIHolder = styled.div`
-  ${theme.typo.label.semibold}
+  ${theme.typo.label.medium}
 `;
 
 const UITarget = styled.div`

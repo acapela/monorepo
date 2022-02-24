@@ -1,3 +1,5 @@
+import { deepMerge } from "@aca/shared/object";
+
 import { color } from "./utils/color";
 
 const white = color("hsl(0, 0%, 100%)", {
@@ -10,7 +12,7 @@ const black = color("hsl(0, 0%, 0%)", {
   active: color("hsl(0, 0%, 30%)"),
 });
 
-const darkGrey = color("hsl(213, 20.45%, 17.25%)");
+const darkGrey = color("hsl(213, 15%, 13%)");
 
 const primary = color("hsl(310, 100%, 67%)", {
   hover: color("hsl(310, 79%, 57%)"),
@@ -95,28 +97,27 @@ export const defaultColors = {
   },
 } as const;
 
-export const darkThemeColors: typeof defaultColors = {
-  ...defaultColors,
+const darkBgBase = color("hsl(0, 0%, 11%)");
+
+export const darkThemeColors = deepMerge(defaultColors, {
   text: white,
   layout: {
-    actionPanel: darkGrey.hover,
+    actionPanel: darkBgBase.hover,
     // Root background of the app
-    background: darkGrey,
+    background: darkBgBase,
     // Used eg. for app sidebar
-    backgroundAccent: darkGrey.hover,
+    backgroundAccent: darkBgBase.hover,
     divider,
   },
   panels: {
-    ...defaultColors.panels,
-    popover: white,
-    secondaryPopover: darkGrey,
+    popover: darkBgBase.hover,
+    secondaryPopover: darkBgBase,
     notification: primary,
-    modal: darkGrey,
-    selectedTab,
+    modal: darkBgBase,
+    selectedTab: darkBgBase.hover,
   },
   action: {
-    ...defaultColors.action,
-    transparent: darkGrey,
-    secondary: darkGrey.hover,
+    transparent: darkBgBase,
+    secondary: darkBgBase.hover,
   },
-};
+});
