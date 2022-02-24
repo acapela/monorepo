@@ -115,14 +115,21 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
        */
 
       const cleanup = memoize(() => {
-        window?.off("closed", cleanup);
-        window?.webContents.off("did-frame-finish-load", cleanup);
-        window?.webContents.off("did-frame-navigate", cleanup);
+        try {
+          //
+          maybeCleanup?.();
+          window?.off("closed", cleanup);
+          window?.webContents.off("did-frame-finish-load", cleanup);
+          window?.webContents.off("did-frame-navigate", cleanup);
 
-        window?.webContents.off("destroyed", cleanup);
-        window?.webContents.off("crashed", cleanup);
-
-        maybeCleanup?.();
+          window?.webContents.off("destroyed", cleanup);
+          window?.webContents.off("crashed", cleanup);
+        } catch (error) {
+          console.warn(
+            `Error while performing cleanup of bridge effect. It might be no-op if something related to window is requested to be cleaned up after window was closed.`,
+            error
+          );
+        }
       });
 
       window?.once("closed", cleanup);
