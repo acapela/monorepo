@@ -1,4 +1,5 @@
 import type { IpcMainInvokeEvent } from "electron";
+import { memoize } from "lodash";
 
 import { createLogger } from "@aca/shared/log";
 import { MaybePromise, resolveMaybePromise } from "@aca/shared/promises";
@@ -101,7 +102,37 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
     global.electronGlobal.ipcMain.handle(initKey, async (event, { cleanupId, input }: InnerInput) => {
       const maybeCleanup = await handleRequest(input, event);
 
-      cleanups.set(cleanupId, maybeCleanup);
+      const window = global.electronGlobal.getSourceWindowFromIPCEvent(event);
+
+      /**
+       * Important!
+       *
+       * Lifetime of 'app' is longer than single window or even 'webContents-state' (it can be reloaded).
+       *
+       * Thus it is possible that eg. React will not be able to call cleanup functions before it gets reloaded (in general JS assumes it is always safe to reload as you just dump entire state).
+       *
+       * In our case we need to detect that and make sure we clean up all hanging 'bridge-effects'
+       */
+
+      const cleanup = memoize(() => {
+        window?.off("closed", cleanup);
+        window?.webContents.off("did-frame-finish-load", cleanup);
+        window?.webContents.off("did-frame-navigate", cleanup);
+
+        window?.webContents.off("destroyed", cleanup);
+        window?.webContents.off("crashed", cleanup);
+
+        maybeCleanup?.();
+      });
+
+      window?.once("closed", cleanup);
+
+      window?.webContents.once("did-frame-navigate", cleanup);
+      window?.webContents.once("did-frame-finish-load", cleanup);
+      window?.webContents.once("destroyed", cleanup);
+      window?.webContents.once("crashed", cleanup);
+
+      cleanups.set(cleanupId, cleanup);
     });
   }
 
