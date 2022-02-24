@@ -15,6 +15,7 @@ import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { niceFormatDateTime, relativeShortFormatDate } from "@aca/shared/dates/format";
 import { theme } from "@aca/ui/theme";
 
 import { FocusModeFooter } from "./FocusModeFooter";
@@ -52,7 +53,12 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
       <UIHeader>
         <NotificationAppIcon notification={notification} />
-        <UITitle>{getNotificationTitle(notification)}</UITitle>
+        <UITitle>
+          {getNotificationTitle(notification)}{" "}
+          <UIDate data-tooltip={niceFormatDateTime(new Date(notification.created_at))}>
+            {relativeShortFormatDate(new Date(notification.created_at))}
+          </UIDate>
+        </UITitle>
         <ActionIconButton action={focusOnNotificationPreview} target={notification} showTitleInTooltip />
 
         <ActionIconButton action={openNotificationInApp} target={notification} showTitleInTooltip />
@@ -87,4 +93,8 @@ const UIHeader = styled.div`
 
 const UISubHeader = styled.div`
   margin-bottom: 16px;
+`;
+
+const UIDate = styled.span`
+  opacity: 0.6;
 `;
