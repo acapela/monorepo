@@ -79,7 +79,7 @@ export const getInboxLists = cachedComputed(() => {
       listEntity: listEntity,
       isCustom: true,
       getNotifications() {
-        return listEntity.notifications.query({ isResolved: false }).all;
+        return listEntity.inboxNotifications.query({ isResolved: false }).all;
       },
     })
   );
