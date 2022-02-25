@@ -69,7 +69,9 @@ We use ngrok to expose our backend to the internet. Get an invite into our premi
 
 Add the authtoken from the Ngrok dashboard into your `.env` as `NGROK_AUTH_TOKEN`, with a `NGROK_SUBDOMAIN` of your choosing. The domain needs to be unique, and only used on one machine at a time, otherwise the tunnel will crash on startup.
 
-## Slack integration
+## Integrations
+
+### Slack
 
 Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
@@ -80,7 +82,7 @@ Setting Slack up is optional in development, but if you want to work on it you h
 5. Fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_APP_TOKEN` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. Also add `SLACK_STATE_SECRET` which can be any random string.
 6. To start using Slack's actions, open the frontend, navigate to a team's settings page and click the button for linking the team to Slack.
 
-### Updating testing/staging/production Slack App manifest
+#### Updating testing/staging/production Slack App manifest
 
 1. Copy the manifest
    1. **For testing:** Run `yarn shared clone-slack-manifest --testing`
@@ -88,7 +90,7 @@ Setting Slack up is optional in development, but if you want to work on it you h
    1. **For production:** Just copy `shared/slack/manifest.json`
 2. Paste the manifest into the [testing](https://app.slack.com/app-settings/T01DBMUNM5H/A02RDDW5G3C/app-manifest), [staging](https://app.slack.com/app-settings/T01DBMUNM5H/A02CFBKDZMZ/app-manifest) or the [production](https://app.slack.com/app-settings/T01DBMUNM5H/A012VTBSTNV/app-manifest) app and save it.
 
-## Linear integration
+### Linear
 
 Similar to the slack integration, setting up Linear is optional in development.
 
@@ -98,6 +100,14 @@ Similar to the slack integration, setting up Linear is optional in development.
 4. Make sure to enable webhooks for `Issues` and `Issue comments`
 5. Set the webhook url to `https://<replace-this-with-your-cool-tunnel-name>.ngrok.io/api/backend/v1/linear/webhook`
 6. Fill out `LINEAR_CLIENT_ID`, `LINEAR_CLIENT_SECRET`, in your `.env`, based on your new app's info. Also add `LINEAR_OAUTH_SECRET` which can be any random string.
+
+### Atlassian
+
+1. Go to https://developer.atlassian.com/apps/ and create an OAuth app
+2. Within your newly created Atlassian app
+   1. Go to Authorization/Configure and set the Callback URL to http://localhost:3000/api/auth/callback/atlassian
+   2. Go to Settings and get values for your `.env` keys `ATLASSIAN_CLIENT_ID` and `ATLASSIAN_CLIENT_SECRET`
+3. ???Permissions???
 
 ## Commit Message Convention
 

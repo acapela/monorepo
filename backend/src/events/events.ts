@@ -17,6 +17,7 @@ import { handleTopicMemberChanges, handleTopicUpdates } from "@aca/backend/src/t
 import { handleUserUpdates } from "@aca/backend/src/users/events";
 import { logger } from "@aca/shared/logger";
 
+import { handleAccountUpdates } from "../atlassian";
 import { handleTaskDueDateChanges } from "../tasks/messageTaskDueDateHandler";
 import { hasuraEvents } from "./eventHandlers";
 import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
@@ -25,6 +26,7 @@ export const router = Router();
 
 logger.info("Initialize hasura event handlers");
 
+hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE"], handleAccountUpdates);
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
 hasuraEvents.addHandler("team_slack_installation_updates", ["DELETE"], handleTeamSlackInstallationUpdates);
 hasuraEvents.addHandler("team_member_slack_updates", ["INSERT"], handleUserSlackInstallation);

@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/node";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
+import AtlassianProvider from "next-auth/providers/atlassian";
 import GoogleProvider from "next-auth/providers/google";
 import SlackProvider from "next-auth/providers/slack";
 
@@ -140,6 +141,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
 
     providers: [
+      AtlassianProvider({
+        clientId: process.env.ATLASSIAN_CLIENT_ID!,
+        clientSecret: process.env.ATLASSIAN_CLIENT_SECRET!,
+        authorization: {
+          params: {
+            scope: [
+              "offline_access read:me",
+              "read:webhook:jira write:webhook:jira delete:webhook:jira read:field:jira read:project:jira read:jql:jira",
+              "read:issue-details:jira read:project-role:jira read:epic:jira-software read:issue-type:jira read:comment.property:jira read:group:jira",
+            ].join(" "),
+          },
+        },
+      }),
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
