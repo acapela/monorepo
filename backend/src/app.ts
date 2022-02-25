@@ -15,6 +15,7 @@ import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
+import { router as atlassianRoutes } from "./atlassian";
 import { router as attachmentsRoutes } from "./attachments/router";
 import { router as authenticationRoutes } from "./authentication";
 import { router as cronRoutes } from "./cron/cron";
@@ -84,6 +85,8 @@ function setupRoutes(app: Application): void {
     tracking,
     linearRoutes
   );
+
+  app.use("/api/v1/atlassian", atlassianRoutes);
 
   if (IS_DEV) {
     app.use("/api", devRouter);
