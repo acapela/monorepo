@@ -83,6 +83,7 @@ export const slackConversations: ActionHandler<void, SlackConversation[]> = {
     const { channels, error } = await slackClient.conversations.list({
       token: await assertFindSlackToken(userId),
       types: "private_channel,public_channel",
+      limit: 200,
     });
 
     if (error) {
