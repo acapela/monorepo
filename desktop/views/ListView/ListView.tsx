@@ -43,7 +43,10 @@ export const ListView = observer(({ listId }: Props) => {
     displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
 
     return () => {
-      displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+      const list = displayedList.listEntity;
+      if (list && !list.isRemoved()) {
+        list.update({ seen_at: new Date().toISOString() });
+      }
     };
   }, [displayedList]);
 
