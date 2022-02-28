@@ -1,24 +1,10 @@
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { assertDefined } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
-import { botScopes, userScopes } from "@aca/shared/slack";
+import { USER_SCOPES, botScopes, userScopes } from "@aca/shared/slack";
 
 import { slackReceiver } from "./app";
 import { InstallMetadata } from "./installMetadata";
-
-const NEW_ACAPELA_USER_SCOPES = [
-  "channels:history",
-  "groups:history",
-  "mpim:history",
-  "im:history",
-
-  "channels:read",
-  "groups:read",
-  "im:read",
-  "mpim:read",
-
-  "users:read",
-];
 
 const getRedirectURI = async () =>
   (IS_DEV ? (await getDevPublicTunnelURL(3000)) + "/api/backend" : process.env.BACKEND_API_ENDPOINT) +
@@ -29,7 +15,7 @@ const getRedirectURI = async () =>
  */
 export const getIndividualSlackInstallURL = async (metadata: { userId: string; redirectURL: string }) =>
   assertDefined(slackReceiver.installer, "no installer configured").generateInstallUrl({
-    userScopes: NEW_ACAPELA_USER_SCOPES,
+    userScopes: USER_SCOPES,
     scopes: [],
     redirectUri: await getRedirectURI(),
     metadata: JSON.stringify(metadata),

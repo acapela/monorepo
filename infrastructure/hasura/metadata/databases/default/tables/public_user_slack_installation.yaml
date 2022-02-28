@@ -7,6 +7,11 @@ computed_fields:
       name: get_user_slack_installation_slack_team_id
       schema: public
   name: slack_team_id
+- definition:
+    function:
+      name: user_slack_installation_user_scopes
+      schema: public
+  name: user_scopes
 select_permissions:
 - permission:
     columns:
@@ -16,6 +21,7 @@ select_permissions:
     - user_id
     computed_fields:
     - slack_team_id
+    - user_scopes
     filter:
       user_id:
         _eq: X-Hasura-User-Id
