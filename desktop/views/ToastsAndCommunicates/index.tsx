@@ -16,6 +16,7 @@ import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 
+import { SlackToasts } from "./SlackToasts";
 import { Toast } from "./Toast";
 
 export const ToastsAndCommunicatesView = observer(() => {
@@ -56,6 +57,7 @@ export const ToastsAndCommunicatesView = observer(() => {
   return (
     <BodyPortal>
       <UIHolder>
+        <SlackToasts />
         {isUpdateReadyToInstall && (
           <Toast
             key="update-ready"

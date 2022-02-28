@@ -16,7 +16,7 @@ import { IntegrationClient } from "./types";
 
 const getIsConnected = () => {
   const user = accountStore.user;
-  return Boolean(user && user.slackInstallation);
+  return Boolean(user && user.slackInstallation && user.slackInstallation.hasAllScopes);
 };
 
 const SLACK_URL_SCHEME = "slack://";
