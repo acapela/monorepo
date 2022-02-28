@@ -57,7 +57,7 @@
     "hasura:seeds": "hasura seed apply --database-name default --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
-    "hasura:meta:reload": "hasura metadata reload --project infrastructure/hasura --admin-secret dev",
+    "hasura:meta:reload": "hasura metadata reload --project infrastructure/hasura --admin-secret dev && hasura metadata inconsistency status --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
     "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta:reload",
