@@ -22,6 +22,7 @@ router.use(
     origin: [
       `https://acape.la`,
       `https://acapela.com`,
+      `https://www.acapela.com`,
       // Those are for testing purposes.
       `http://localhost`,
       `http://localhost:3000`,
