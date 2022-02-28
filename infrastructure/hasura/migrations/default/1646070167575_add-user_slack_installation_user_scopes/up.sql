@@ -1,3 +1,4 @@
+select 1;
 -- CREATE OR REPLACE FUNCTION public.user_slack_installation_user_scopes(installation_row user_slack_installation)
 --  RETURNS jsonb
 --  LANGUAGE sql
