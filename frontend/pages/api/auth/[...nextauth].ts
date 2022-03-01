@@ -149,7 +149,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             scope: [
               "offline_access read:me",
               "read:webhook:jira write:webhook:jira delete:webhook:jira read:field:jira read:project:jira read:jql:jira",
-              "read:issue-details:jira read:project-role:jira read:epic:jira-software read:issue-type:jira read:comment.property:jira read:group:jira",
+              "read:issue-details:jira read:project-role:jira read:epic:jira-software read:issue-type:jira read:comment.property:jira read:group:jira read:avatar:jira read:issue.watcher:jira",
             ].join(" "),
           },
         },
