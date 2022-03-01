@@ -13,11 +13,11 @@ const WEBHOOK_ROUTE = "/atlassian/webhooks";
 
 export const router = Router();
 
-router.post("/v1" + WEBHOOK_ROUTE + "/:accountId", (req, res) => {
+router.post("/v1" + WEBHOOK_ROUTE, (req, res) => {
   console.info("got a new thing on the hook");
   console.info(req.params);
   const payload = req.body as JiraWebhookPayload;
-  console.info(JSON.stringify(payload.issue, null, 2));
+  console.info(JSON.stringify({ ...payload, fields: null }, null, 2));
   res.json({ wat: true });
 });
 
@@ -96,14 +96,6 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     for (const { id: cloudId } of resources.filter(({ scopes }: any) =>
       scopes.some((scope: string) => scope.endsWith(":jira"))
     )) {
-      const { data: failedWebhooks } = await axios.get(
-        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook/failed`,
-        {
-          headers,
-        }
-      );
-      console.info({ failedWebhooks });
-
       const { data } = await axios.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, { headers });
 
       await axios.delete(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
@@ -111,26 +103,18 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
         data: { webhookIds: data.values.map((d: any) => d.id) },
       });
 
-      console.info("earl", (await getPublicBackendURL()) + WEBHOOK_ROUTE);
-      console.info({ accountId: account.provider_account_id });
       const res = await axios.post(
         `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`,
         {
           url: (await getPublicBackendURL()) + WEBHOOK_ROUTE,
-          // url: "https://eo86xhndp1v3gy6.m.pipedream.net",
           webhooks: [
             {
+              events: ["comment_created", "comment_updated", "comment_deleted"],
+              // This is a fake filter that allows us to get most things
+              jqlFilter: "issueKey != NULL-5",
+            },
+            {
               events: ["jira:issue_created", "jira:issue_updated"],
-              // This is a fake filter that allows us to get most things
-              jqlFilter: "issueKey != NULL-5",
-            },
-            {
-              events: ["comment_created", "comment_updated"],
-              // This is a fake filter that allows us to get most things
-              jqlFilter: "issueKey != NULL-5",
-            },
-            {
-              events: ["issue_property_set"],
               // This is a fake filter that allows us to get most things
               jqlFilter: "issueKey != NULL-5",
             },
@@ -141,14 +125,66 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
         }
       );
       console.info("jo", JSON.stringify(res.data, null, 2));
-
-      const created = await axios.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
-        headers,
-      });
-
-      console.info("created", JSON.stringify(created.data, null, 2));
     }
   } catch (e: any) {
     console.error("nuh-uh", e);
   }
 }
+
+// setTimeout(async () => {
+//   const account = await db.account.findFirst({
+//     where: {
+//       provider_account_id: "6114e675627b5600688c0b3e",
+//     },
+//   });
+//   if (!account) {
+//     return;
+//   }
+
+//   handleAccountUpdates({
+//     userId: account?.user_id,
+//     date: new Date(),
+//     item: account,
+//     itemBefore: null,
+//     tableName: "account",
+//     type: "create",
+//   });
+
+//   return;
+
+//   for (const account of await db.account.findMany({
+//     where: {
+//       provider_id: "atlassian",
+//     },
+//   })) {
+//     const headers = {
+//       Authorization: `Bearer ${account.access_token}`,
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     };
+
+//     const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
+//       headers,
+//     });
+//     for (const { id: cloudId } of resources.filter(({ scopes }: any) =>
+//       scopes.some((scope: string) => scope.endsWith(":jira"))
+//     )) {
+//       const { data: failedWebhooks } = await axios.get(
+//         `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook/failed`,
+//         {
+//           headers,
+//         }
+//       );
+//       console.info({ failedWebhooks });
+
+//       const { data } = await axios.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, { headers });
+
+//       console.log({ wehbooksData: data });
+
+//       await axios.delete(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
+//         headers,
+//         data: { webhookIds: data.values.map((d: any) => d.id) },
+//       });
+//     }
+//   }
+// }, 5000);
