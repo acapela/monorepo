@@ -14,6 +14,7 @@ export interface JiraWebhookPayload {
     key: string; //"AL-9",
     fields: Fields;
   };
+  comment?: Comment;
   issue_event_type_name: IssueEventTypeName;
   changelog: Changelog;
   webhookEvent: WebhookEvent;
@@ -22,6 +23,19 @@ export interface JiraWebhookPayload {
 
   // Who is this user???
   user: AtlassianUser;
+}
+
+interface Comment {
+  self: string; // "https://acapela-team.atlassian.net/rest/api/2/issue/10001/comment/10011",
+  id: string; // "10011",
+  author: AtlassianUser;
+  updateAuthor: AtlassianUser;
+
+  body: string; //"huh? naaa naa [~accountid:70121:cb8ddaa4-9bec-41fa-843f-34675d008b41] ",
+
+  created: string; //"2022-03-01T14:19:49.467+0000",
+  updated: string; //"2022-03-01T14:22:04.959+0000",
+  jsdPublic: boolean; // no idea what this means
 }
 
 interface Changelog {

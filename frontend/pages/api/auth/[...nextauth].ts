@@ -153,7 +153,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               "read:issue-details:jira read:project-role:jira read:epic:jira-software",
               "read:issue-type:jira read:group:jira",
               // Required to read a comment :facepalm:
-              "delete:comment.property:jira read:comment:jira read:user:jira read:comment.property:jira",
+              "read:comment:jira read:user:jira read:comment.property:jira read:role:jira read:status:jira read:issue.property:jira",
               "read:avatar:jira read:issue.watcher:jira",
             ].join(" "),
           },
