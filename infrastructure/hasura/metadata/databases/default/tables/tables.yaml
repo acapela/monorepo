@@ -1,4 +1,5 @@
 - "!include public_account.yaml"
+- "!include public_atlassian_refresh_token_expiry.yaml"
 - "!include public_attachment.yaml"
 - "!include public_decision_option.yaml"
 - "!include public_decision_vote.yaml"

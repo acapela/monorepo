@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
+import { addDays } from "date-fns";
 import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
-import { Account } from "@aca/db";
+import { Account, db } from "@aca/db";
 import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
 
 import { JiraWebhookPayload } from "./types";
 
@@ -65,6 +67,12 @@ async function getPublicBackendURL() {
   Registration restrictions -> For an OAuth 2.0 app, A maximum of 5 webhooks per app per user on a tenant.
 */
 
+/**
+ * Refresh tokens expire after 90 days according to the Atlassian docs:
+ * https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#use-a-refresh-token-to-get-another-access-token-and-refresh-token-pair
+ */
+const getRefreshTokenExpiresAt = () => addDays(new Date(), 90).toISOString();
+
 export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   const account = event.item;
 
@@ -72,17 +80,9 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     return;
   }
 
-  // try {
-  //   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-  //     grant_type: "refresh_token",
-  //     client_id: process.env.ATLASSIAN_CLIENT_ID,
-  //     client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-  //     refresh_token: account.refresh_token,
-  //   });
-  //   console.info(response.data);
-  // } catch (e) {
-  //   console.error("yaiks", e.response.data);
-  // }
+  await db.atlassian_refresh_token_expiry.create({
+    data: { account: { connect: { id: account.id } }, expires_at: getRefreshTokenExpiresAt() },
+  });
 
   const headers = {
     Authorization: `Bearer ${account.access_token}`,
@@ -152,3 +152,34 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     console.error("nuh-uh", e);
   }
 }
+
+/**
+ * Updates all atlassian refresh tokens which expire within the next 7 days
+ */
+export async function updateAtlassianRefreshToken() {
+  const in7Days = addDays(new Date(), 7);
+  const accounts = await db.account.findMany({
+    where: { atlassian_refresh_token_expiry: { expires_at: { lt: in7Days } } },
+  });
+  for (const account of accounts) {
+    try {
+      const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
+        grant_type: "refresh_token",
+        client_id: process.env.ATLASSIAN_CLIENT_ID,
+        client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
+        refresh_token: account.refresh_token,
+      });
+      await db.account.update({
+        where: { id: account.id },
+        data: {
+          refresh_token: response.data.refresh_token,
+          atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
+        },
+      });
+    } catch (error: any) {
+      logger.error(error.response, `Failed to refresh token for account ${account.id}`);
+    }
+  }
+}
+
+updateAtlassianRefreshToken();
