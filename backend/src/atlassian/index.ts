@@ -1,22 +1,29 @@
 import axios from "axios";
+import { addDays } from "date-fns";
 import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
-import { Account } from "@aca/db";
+import { Account, db } from "@aca/db";
+import { assert } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
 
-import { JiraWebhookPayload } from "./types";
+import { captureJiraWebhook } from "./capturing";
+import { JiraWebhookCreationResult, JiraWebhookPayload } from "./types";
 
 const WEBHOOK_ROUTE = "/atlassian/webhooks";
 
 export const router = Router();
 
-router.post("/v1" + WEBHOOK_ROUTE, (req, res) => {
+router.post("/v1" + WEBHOOK_ROUTE, async (req, res) => {
   console.info("got a new thing on the hook");
-  console.info(req.params);
+
   const payload = req.body as JiraWebhookPayload;
+
   console.info(JSON.stringify({ ...payload, fields: null }, null, 2));
+
+  await captureJiraWebhook(payload);
+
   res.json({ wat: true });
 });
 
@@ -64,18 +71,6 @@ async function getPublicBackendURL() {
   Registration restrictions -> For an OAuth 2.0 app, A maximum of 5 webhooks per app per user on a tenant.
 */
 
-// try {
-//   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-//     grant_type: "refresh_token",
-//     client_id: process.env.ATLASSIAN_CLIENT_ID,
-//     client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-//     refresh_token: account.refresh_token,
-//   });
-//   console.info(response.data);
-// } catch (e) {
-//   console.error("yaiks", e.response.data);
-// }
-
 const REQUIRED_JIRA_SCOPES = [
   "read:epic:jira-software",
   "delete:webhook:jira",
@@ -97,6 +92,8 @@ const REQUIRED_JIRA_SCOPES = [
   "read:webhook:jira",
   "write:webhook:jira",
 ];
+
+const WEBHOOK_DAYS_UNTIL_EXPIRY = 30;
 
 export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   const account = event.item;
@@ -140,7 +137,7 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
           url: (await getPublicBackendURL()) + WEBHOOK_ROUTE,
           webhooks: [
             {
-              events: ["comment_created", "comment_updated", "comment_deleted"],
+              events: ["comment_created", "comment_updated"],
               // This is a fake filter that allows us to get most things
               jqlFilter: "issueKey != NULL-5",
             },
@@ -155,6 +152,44 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
           headers,
         }
       );
+
+      let jiraAccount = await db.jira_account.findFirst({
+        where: {
+          jira_cloud_id: cloudId,
+          account_id: account.id,
+        },
+      });
+
+      if (!jiraAccount) {
+        jiraAccount = await db.jira_account.create({
+          data: {
+            jira_cloud_id: cloudId,
+            account_id: account.id,
+          },
+        });
+      }
+
+      assert(jiraAccount, "jira account not created correctly");
+
+      const { webhookRegistrationResult } = res.data as JiraWebhookCreationResult;
+
+      // Delete previously existing stored webhooks
+      await db.jira_webhook.deleteMany({
+        where: {
+          jira_account_id: jiraAccount.id,
+        },
+      });
+
+      await db.jira_webhook.createMany({
+        data: webhookRegistrationResult
+          .filter((r) => !!r.createdWebhookId)
+          .map((r) => ({
+            jira_account_id: jiraAccount?.id ?? "",
+            jira_webhook_id: r.createdWebhookId as number,
+            expire_at: addDays(new Date(), WEBHOOK_DAYS_UNTIL_EXPIRY - 1).toISOString(),
+          })),
+      });
+
       console.info("Webhooks created successfully", JSON.stringify(res.data, null, 4));
     }
   } catch (e) {

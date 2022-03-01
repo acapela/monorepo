@@ -1,5 +1,24 @@
 type IssueEventTypeName = "issue_assigned";
 
+export interface JiraWebhookCreationResult {
+  webhookRegistrationResult: Array<{
+    createdWebhookId?: number;
+    errors?: string[];
+  }>;
+}
+
+export interface GetWatchersResponse {
+  self: string; // "https://your-domain.atlassian.net/rest/api/3/issue/EX-1/watchers",
+  isWatching: boolean;
+  watchCount: number;
+  watchers: Array<{
+    self: string; // "https://your-domain.atlassian.net/rest/api/3/user?accountId=5b10a2844c20165700ede21g",
+    accountId: string; // "5b10a2844c20165700ede21g",
+    displayName: string; //"Mia Krystof",
+    active: boolean;
+  }>;
+}
+
 export type WebhookEvent =
   | "jira:issue_created"
   | "jira:issue_updated"

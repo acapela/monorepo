@@ -1,0 +1,7 @@
+table:
+  name: jira_account
+  schema: public
+object_relationships:
+- name: account
+  using:
+    foreign_key_constraint_on: account_id

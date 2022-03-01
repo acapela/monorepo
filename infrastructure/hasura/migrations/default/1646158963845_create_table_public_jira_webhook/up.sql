@@ -1,0 +1,1 @@
+CREATE TABLE "public"."jira_webhook" ("jira_webhook_id" numeric NOT NULL, "jira_account_id" uuid NOT NULL, "expire_at" timestamptz NOT NULL, PRIMARY KEY ("jira_webhook_id") , FOREIGN KEY ("jira_account_id") REFERENCES "public"."jira_account"("id") ON UPDATE cascade ON DELETE cascade);
