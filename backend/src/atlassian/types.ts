@@ -1,7 +1,6 @@
 type IssueEventTypeName = "issue_assigned";
 
 export type WebhookEvent =
-  | "jira:issue_updated"
   | "jira:issue_created"
   | "jira:issue_updated"
   | "comment_created"

@@ -1,0 +1,3 @@
+table:
+  name: notification_jira_issue_type
+  schema: public

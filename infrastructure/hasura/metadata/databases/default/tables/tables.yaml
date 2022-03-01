@@ -11,6 +11,8 @@
 - "!include public_message_type.yaml"
 - "!include public_notification.yaml"
 - "!include public_notification_figma_comment.yaml"
+- "!include public_notification_jira_issue.yaml"
+- "!include public_notification_jira_issue_type.yaml"
 - "!include public_notification_linear.yaml"
 - "!include public_notification_list.yaml"
 - "!include public_notification_notion.yaml"
