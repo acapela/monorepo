@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { Router } from "express";
 
@@ -65,6 +64,40 @@ async function getPublicBackendURL() {
   Registration restrictions -> For an OAuth 2.0 app, A maximum of 5 webhooks per app per user on a tenant.
 */
 
+// try {
+//   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
+//     grant_type: "refresh_token",
+//     client_id: process.env.ATLASSIAN_CLIENT_ID,
+//     client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
+//     refresh_token: account.refresh_token,
+//   });
+//   console.info(response.data);
+// } catch (e) {
+//   console.error("yaiks", e.response.data);
+// }
+
+const REQUIRED_JIRA_SCOPES = [
+  "read:epic:jira-software",
+  "delete:webhook:jira",
+  "read:avatar:jira",
+  "read:comment:jira",
+  "read:comment.property:jira",
+  "read:field:jira",
+  "read:group:jira",
+  "read:issue-details:jira",
+  "read:issue-type:jira",
+  "read:issue.property:jira",
+  "read:issue.watcher:jira",
+  "read:jql:jira",
+  "read:project-role:jira",
+  "read:project:jira",
+  "read:role:jira",
+  "read:status:jira",
+  "read:user:jira",
+  "read:webhook:jira",
+  "write:webhook:jira",
+];
+
 export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   const account = event.item;
 
@@ -72,39 +105,37 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     return;
   }
 
-  // try {
-  //   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-  //     grant_type: "refresh_token",
-  //     client_id: process.env.ATLASSIAN_CLIENT_ID,
-  //     client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-  //     refresh_token: account.refresh_token,
-  //   });
-  //   console.info(response.data);
-  // } catch (e) {
-  //   console.error("yaiks", e.response.data);
-  // }
-
   const headers = {
     Authorization: `Bearer ${account.access_token}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };
   try {
+    // This endpoint allows us to know to which "sites" does the user has granted us access to
     const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
       headers,
     });
-    for (const { id: cloudId } of resources.filter(({ scopes }: any) =>
-      scopes.some((scope: string) => scope.endsWith(":jira"))
-    )) {
-      const { data } = await axios.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, { headers });
 
-      await axios.delete(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
+    // We need to double check that we only target sites that provide the scopes that we need
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const availableResourcesWithRequiresScopes = resources.filter(({ scopes }: any) =>
+      scopes.every((scope: string) => REQUIRED_JIRA_SCOPES.includes(scope))
+    );
+
+    for (const { id: cloudId } of availableResourcesWithRequiresScopes) {
+      const webhookUrl = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`;
+
+      // In case there's a new installation, we delete the previous webhooks by the user
+      const { data: previouslyCreatedWebhooks } = await axios.get(webhookUrl, { headers });
+
+      await axios.delete(webhookUrl, {
         headers,
-        data: { webhookIds: data.values.map((d: any) => d.id) },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { webhookIds: previouslyCreatedWebhooks.values.map((d: any) => d.id) },
       });
 
       const res = await axios.post(
-        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`,
+        webhookUrl,
         {
           url: (await getPublicBackendURL()) + WEBHOOK_ROUTE,
           webhooks: [
@@ -124,67 +155,9 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
           headers,
         }
       );
-      console.info("jo", JSON.stringify(res.data, null, 2));
+      console.info("Webhooks created successfully", JSON.stringify(res.data, null, 4));
     }
-  } catch (e: any) {
-    console.error("nuh-uh", e);
+  } catch (e) {
+    console.error(e);
   }
 }
-
-// setTimeout(async () => {
-//   const account = await db.account.findFirst({
-//     where: {
-//       provider_account_id: "6114e675627b5600688c0b3e",
-//     },
-//   });
-//   if (!account) {
-//     return;
-//   }
-
-//   handleAccountUpdates({
-//     userId: account?.user_id,
-//     date: new Date(),
-//     item: account,
-//     itemBefore: null,
-//     tableName: "account",
-//     type: "create",
-//   });
-
-//   return;
-
-//   for (const account of await db.account.findMany({
-//     where: {
-//       provider_id: "atlassian",
-//     },
-//   })) {
-//     const headers = {
-//       Authorization: `Bearer ${account.access_token}`,
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     };
-
-//     const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
-//       headers,
-//     });
-//     for (const { id: cloudId } of resources.filter(({ scopes }: any) =>
-//       scopes.some((scope: string) => scope.endsWith(":jira"))
-//     )) {
-//       const { data: failedWebhooks } = await axios.get(
-//         `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook/failed`,
-//         {
-//           headers,
-//         }
-//       );
-//       console.info({ failedWebhooks });
-
-//       const { data } = await axios.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, { headers });
-
-//       console.log({ wehbooksData: data });
-
-//       await axios.delete(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
-//         headers,
-//         data: { webhookIds: data.values.map((d: any) => d.id) },
-//       });
-//     }
-//   }
-// }, 5000);
