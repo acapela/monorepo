@@ -43,6 +43,16 @@ export const loginToAcapelaWithSlack = defineAction({
   },
 });
 
+export const loginToAcapelaWithAtlassian = defineAction({
+  name: "Continue with Atlassian",
+  group: accountActionsGroup,
+  icon: <SlackLogo />,
+  canApply: () => !authTokenBridgeValue.get(),
+  async handler() {
+    await loginBridge("atlassian");
+  },
+});
+
 export const connectIntegration = defineAction({
   name: (ctx) => {
     const integration = ctx.assertTarget("integration");

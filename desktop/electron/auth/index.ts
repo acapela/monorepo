@@ -1,22 +1,29 @@
-import { session } from "electron";
+import { BrowserWindow, session } from "electron";
 
-import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
+import { clearServiceCookiesBridge, openBrowserWindow } from "@aca/desktop/bridge/auth";
 import { appState } from "@aca/desktop/electron/appState";
+import { authWindowDefaultOptions } from "@aca/desktop/electron/auth/utils";
 
 import { initializeLoginHandler } from "./acapela";
 import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGoogleAuthHandler } from "./google";
 import { initializeLinearAuthHandler } from "./linear";
 import { initializeNotionAuthHandler } from "./notion";
-import { initializeSlackAuthHandler } from "./slack";
 
 export function initializeAuthHandlers() {
   initializeLoginHandler();
   initializeNotionAuthHandler();
   initializeGoogleAuthHandler();
-  initializeSlackAuthHandler();
   initializeFigmaAuthHandler();
   initializeLinearAuthHandler();
+
+  openBrowserWindow.handle(async ({ url }) => {
+    const window = new BrowserWindow({ ...authWindowDefaultOptions });
+    await window.webContents.loadURL(url);
+    return () => {
+      window.destroy();
+    };
+  });
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
     if (appState.mainWindow) {

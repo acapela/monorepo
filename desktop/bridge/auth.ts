@@ -6,11 +6,13 @@ import { createBridgeValue } from "./base/persistance";
 
 export const clearServiceCookiesBridge = createInvokeBridge<{ url: string }>("disconnect-service");
 
+export const openBrowserWindow = createInvokeWithCleanupBridge<{ url: string }>("open-browser-window");
+
 export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token", {
   getDefault: () => null,
   isPersisted: true,
 });
-export const loginBridge = createInvokeBridge<"google" | "slack">("login");
+export const loginBridge = createInvokeBridge<"google" | "slack" | "atlassian">("login");
 
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {
   getDefault: () => null,
@@ -29,8 +31,6 @@ export const googleAuthTokenBridgeValue = createBridgeValue<boolean>("google-aut
   isPersisted: true,
 });
 export const loginGoogleBridge = createInvokeBridge("login-google");
-
-export const connectSlackBridge = createInvokeWithCleanupBridge<{ url: string }>("connect-slack");
 
 export const linearAuthTokenBridgeValue = createBridgeValue<boolean>("linear-auth-token", {
   getDefault: () => false,

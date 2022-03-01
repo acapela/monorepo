@@ -8,6 +8,7 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
+import { accountEntity } from "./account";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
@@ -37,6 +38,7 @@ devAssignWindowVariable("reloadClientDb", () => {
 
 export const appClientDbEntities = {
   user: userEntity,
+  account: accountEntity,
 
   team: teamEntity,
   teamMember: teamMemberEntity,

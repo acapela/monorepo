@@ -26,7 +26,7 @@ async function getAcapelaAuthToken() {
   return cookie.value;
 }
 
-export async function loginAcapela(provider: "slack" | "google") {
+export async function loginAcapela(provider: "slack" | "google" | "atlassian") {
   const currentToken = await getAcapelaAuthToken();
   if (currentToken) {
     authTokenBridgeValue.set(currentToken);

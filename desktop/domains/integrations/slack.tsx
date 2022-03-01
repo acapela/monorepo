@@ -5,7 +5,7 @@ import React from "react";
 import { trackEvent } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { clearServiceCookiesBridge, connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { clearServiceCookiesBridge, openBrowserWindow } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
@@ -68,7 +68,7 @@ export const slackIntegrationClient: IntegrationClient = {
 
     const url = await querySlackInstallationURL();
 
-    const closeSlackInstallWindow = await connectSlackBridge({ url });
+    const closeSlackInstallWindow = await openBrowserWindow({ url });
 
     return new Promise<void>((resolve) => {
       const stop = autorun(() => {

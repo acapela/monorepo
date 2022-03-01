@@ -6,6 +6,7 @@ import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { accountEntity } from "@aca/desktop/clientdb/account";
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
 import { userSlackInstallationEntity } from "./userSlackInstallation";
@@ -43,6 +44,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   }),
 }).addConnections((user, { getEntity }) => {
   return {
+    get accounts() {
+      return getEntity(accountEntity).all;
+    },
     get slackInstallation() {
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id }).first ?? null;
     },
