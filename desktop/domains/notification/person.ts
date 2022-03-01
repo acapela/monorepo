@@ -29,6 +29,9 @@ export const getNotificationPerson = cachedComputed(function getNotificationTitl
         innerNotification?.file_name
       }`;
     }
+    case "notification_jira_issue": {
+      return notification.from;
+    }
     default:
       return "Unhandled notification!!";
   }

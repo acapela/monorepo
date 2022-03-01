@@ -83,5 +83,15 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_jira_issue") {
+    return {
+      id: targetNotification.issue_id,
+      name: targetNotification.issue_title,
+      integration: "atlassian",
+      integrationTitle: "Jira issue",
+      isOnePreviewEnough: true,
+    };
+  }
+
   return unknownTarget;
 }

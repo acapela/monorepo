@@ -53,6 +53,9 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
           return `Created issue "${innerNotification.issue_title}"`;
       }
     }
+    case "notification_jira_issue": {
+      return innerNotification.issue_title;
+    }
     default:
       return "Unhandled notification!!";
   }

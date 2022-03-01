@@ -6,7 +6,7 @@ import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { NotificationJiraFragment } from "@aca/gql";
 
-const notificationJiraFragment = gql`
+const notificationJiraIssueFragment = gql`
   fragment NotificationJira on notification_jira_issue {
     id
     notification_id
@@ -18,12 +18,12 @@ const notificationJiraFragment = gql`
   }
 `;
 
-export const notificationJiraEntity = defineEntity<NotificationJiraFragment>({
+export const notificationJiraIssueEntity = defineEntity<NotificationJiraFragment>({
   name: "notification_jira",
   updatedAtField: "updated_at",
   keyField: "id",
-  keys: getFragmentKeys<NotificationJiraFragment>(notificationJiraFragment),
-  sync: createHasuraSyncSetupFromFragment<NotificationJiraFragment>(notificationJiraFragment),
+  keys: getFragmentKeys<NotificationJiraFragment>(notificationJiraIssueFragment),
+  sync: createHasuraSyncSetupFromFragment<NotificationJiraFragment>(notificationJiraIssueFragment),
 });
 
-export type NotificationJiraEntity = EntityByDefinition<typeof notificationJiraEntity>;
+export type NotificationJiraIssueEntity = EntityByDefinition<typeof notificationJiraIssueEntity>;

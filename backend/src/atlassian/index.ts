@@ -13,7 +13,7 @@ const WEBHOOK_ROUTE = "/atlassian/webhooks";
 
 export const router = Router();
 
-router.post("/v1" + WEBHOOK_ROUTE + "/:accountId", (req, res) => {
+router.post("/v1" + WEBHOOK_ROUTE, (req, res) => {
   console.info("got a new thing on the hook");
   console.info(req.params);
   const payload = req.body as JiraWebhookPayload;

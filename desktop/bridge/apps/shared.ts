@@ -6,15 +6,17 @@ const notionType = ["notification_notion"] as const;
 const figmaType = ["notification_figma_comment"] as const;
 const slackType = ["notification_slack_message"] as const;
 const linearType = ["notification_linear"] as const;
+const atlassianType = ["notification_jira_issue"] as const;
 
-const supportedNotificationTypes = [notionType, figmaType, slackType, linearType].flat();
+const supportedNotificationTypes = [notionType, figmaType, slackType, linearType, atlassianType].flat();
 type SupportedNotificationTypes = typeof supportedNotificationTypes[number];
 
-export const integrationNotificationMap: Record<SupportedIntegration, SupportedNotificationTypes[]> = {
-  notion: ["notification_notion"],
-  figma: ["notification_figma_comment"],
-  slack: ["notification_slack_message"],
-  linear: ["notification_linear"],
+const integrationNotificationMap: Record<SupportedIntegration, readonly SupportedNotificationTypes[]> = {
+  notion: notionType,
+  figma: figmaType,
+  slack: slackType,
+  linear: linearType,
+  atlassian: atlassianType,
 };
 
 const log = makeLogger("Integration-Mapper");

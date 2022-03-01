@@ -3,7 +3,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
@@ -11,6 +11,8 @@ import { theme } from "@aca/ui/theme";
 
 //@ts-ignore
 import figma from "./figma.svg";
+//@ts-ignore
+import jira from "./jira.svg";
 //@ts-ignore
 import linear from "./linear.svg";
 //@ts-ignore
@@ -25,23 +27,13 @@ interface Props {
   className?: string;
 }
 
-function getIconSource(notification: NotificationInner, isOnDarkBackground: boolean) {
-  if (notification.__typename === "notification_slack_message") {
-    return { icon: slack, isInverted: false };
-  }
-
-  if (notification.__typename === "notification_figma_comment") {
-    return { icon: figma, isInverted: false };
-  }
-
-  if (notification.__typename === "notification_notion") {
-    return { icon: notion, isInverted: isOnDarkBackground };
-  }
-
-  if (notification.__typename === "notification_linear") {
-    return { icon: linear, isInverted: false };
-  }
-}
+const notificationIcons: Record<Exclude<NotificationEntity["kind"], null>, { icon: string; isInvertable?: boolean }> = {
+  notification_slack_message: { icon: slack },
+  notification_figma_comment: { icon: figma },
+  notification_notion: { icon: notion, isInvertable: true },
+  notification_linear: { icon: linear },
+  notification_jira_issue: { icon: jira },
+};
 
 const log = makeLogger("Notification App Icon");
 
@@ -60,19 +52,14 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
     return unknownNode;
   }
 
-  const iconProps = getIconSource(targetNotification, isOnDarkBackground);
-
-  if (!iconProps) {
-    log.error(`icon not defined for notification ${targetNotification.__typename}`);
-    return unknownNode;
-  }
+  const { icon, isInvertable } = notificationIcons[targetNotification.__typename];
 
   return (
     <UIHolder>
       <UIIcon
         className={[className, notification.inner?.__typename].join(" ")}
-        src={iconProps.icon}
-        $invert={iconProps.isInverted}
+        src={icon}
+        $invert={Boolean(isOnDarkBackground && isInvertable)}
       />
 
       {displayUnreadNotification && <UIUnreadIndicator />}
