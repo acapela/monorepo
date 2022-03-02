@@ -18,6 +18,7 @@ type EntityMethods<Data, Connections> = {
   getKeyName(): string;
   getUpdatedAt(): Date;
   remove(source?: EntityChangeSource): void;
+  isRemoved(): boolean;
   waitForSync(): Promise<void>;
   definition: EntityDefinition<Data, Connections>;
   db: DatabaseLinker;
@@ -105,6 +106,9 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
     db: linker,
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
+    },
+    isRemoved() {
+      return !store.findById(entityMethods.getKey());
     },
     waitForSync() {
       return waitForEntityAllAwaitingPushOperations(entity);

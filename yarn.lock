@@ -360,6 +360,7 @@ __metadata:
     typescript: 4.5.5
     utility-types: ^3.10.0
     ws: ^8.4.2
+    zx: ^4.3.0
   languageName: unknown
   linkType: soft
 
