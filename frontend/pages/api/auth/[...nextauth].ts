@@ -148,7 +148,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           params: {
             scope: [
               "offline_access read:me",
+              // creating a webhook
               "read:webhook:jira write:webhook:jira delete:webhook:jira",
+
               "read:field:jira read:project:jira read:jql:jira",
               "read:issue-details:jira read:project-role:jira read:epic:jira-software",
               "read:issue-type:jira read:group:jira",
