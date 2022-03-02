@@ -9,7 +9,7 @@ import { assert } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
 
 import { captureJiraWebhook } from "./capturing";
-import { createWebhooks, deleteWebhooks, getWebhooks, jiraRequest } from "./rest";
+import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
 import { JiraWebhookPayload } from "./types";
 
 export const WEBHOOK_ROUTE = "/atlassian/webhooks";
@@ -103,10 +103,10 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     return;
   }
 
-  // if (account?.provider_id === "atlassian" && event.type === "delete") {
-  //   handleDeleteAtlassianAccount(account);
-  //   return;
-  // }
+  if (account?.provider_id === "atlassian" && event.type === "delete") {
+    handleDeleteAtlassianAccount(account);
+    return;
+  }
 }
 
 async function handleCreateAtlassianAccount(account: Account) {
@@ -152,82 +152,94 @@ async function handleCreateAtlassianAccount(account: Account) {
 
       // In cases of improper installation or deletion, there may be registered webhooks for this user's account.
       // When we see that this account already has webhooks, we'll try to overwrite them
-      // we delete the previous webhooks for ths user
+      // we delete the previous webhooks for this user
+      // !note: Webhooks created by one user cannot be deleted by another user
+
       const { data: previouslyCreatedWebhooks } = await getWebhooks()(headers, { jiraCloudId });
 
       if (previouslyCreatedWebhooks.values.length > 0) {
         const webhookIdsToDelete = previouslyCreatedWebhooks.values.map((d: { id: string }) => d.id);
-        await deleteWebhooks(webhookIdsToDelete)(headers, { jiraCloudId });
-      }
 
-      // Delete previously existing stored webhooks
-      await db.jira_webhook.deleteMany({
-        where: {
-          jira_account_id: jiraAccount.id,
-        },
-      });
+        await deleteWebhooks(webhookIdsToDelete)(headers, { jiraCloudId });
+
+        await db.jira_webhook.deleteMany({
+          where: {
+            jira_account_id: jiraAccount.id,
+          },
+        });
+      }
 
       const previouslyRegisteredWebhooksForJiraCloudId = await db.jira_webhook.findFirst({
         where: {
           jira_account: {
-            jira_cloud_id: jiraCloudId,
+            jira_cloud_id: jiraAccount.jira_cloud_id,
           },
         },
       });
 
       // In the case that some other user registered webhooks for the same jira cloud id, we do nothing
       // as registering them again would mean that we get double submissions from the same event
-      if (previouslyRegisteredWebhooksForJiraCloudId) {
-        return;
+      if (!previouslyRegisteredWebhooksForJiraCloudId) {
+        await registerAndStoreNewWebhooks(jiraAccount);
       }
-
-      // Only register webhooks when there's non found for that jiraCloudId
-      await registerAndStoreNewWebhooks(jiraAccount);
     }
   } catch (e) {
     console.error(e);
   }
 }
 
-// async function handleDeleteAtlassianAccount(account: Account) {
-//   console.info("Deleting atlassian account");
+async function handleDeleteAtlassianAccount(account: Account) {
+  console.info("Deleting atlassian account");
 
-//     await deletePreviousWebhooks(account);
+  const headers = await getHeaders(account);
 
-//     /// get a list of jira accounts that have no webhooks associated with it
+  // This endpoint allows us to know to which "sites" does the user has granted us access to
+  // since the jira_account entity for this account has been already deleted, we need
+  // to fetch the necessary "jira_cloud_id"s from jira once more
+  const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
+    headers,
+  });
 
-//   return;
-//     const areAccountsRemainingForJiraCloudId =
-//       (await db.jira_account.count({
-//         where: {
-//           jira_cloud_id: account.jira_cloud_id,
-//         },
-//       })) > 0;
+  // We need to double check that we only target sites that provide the scopes that we need
+  const availableResourcesWithRequiresScopes = resources.filter(({ scopes }: { scopes: string[] }) =>
+    scopes.every((scope: string) => REQUIRED_JIRA_SCOPES.includes(scope))
+  );
 
-//     console.log("areAccountsRemainingForJiraCloudId ", areAccountsRemainingForJiraCloudId);
+  for (const { id: jiraCloudId } of availableResourcesWithRequiresScopes) {
+    const { data: previouslyCreatedWebhooks } = await getWebhooks()(headers, { jiraCloudId });
 
-//     if (!areAccountsRemainingForJiraCloudId) {
-//       // No more webhooks are expected to be received for this cloud id, as there are no more account
-//       // that depend on webhooks coming in
-//       return;
-//     }
+    if (previouslyCreatedWebhooks.values.length > 0) {
+      const webhookIdsToDelete = previouslyCreatedWebhooks.values.map((d: { id: string }) => d.id);
+      await deleteWebhooks(webhookIdsToDelete)(headers, { jiraCloudId });
+    }
 
-//     const delegateJiraAccount = await db.jira_account.findFirst({
-//       where: {
-//         jira_cloud_id: jiraAccountToRemove.jira_cloud_id,
-//       },
-//       orderBy: {
-//         rest_req_last_used_at: "asc",
-//       },
-//     });
+    const areAccountsRemainingForJiraCloudId =
+      (await db.jira_account.count({
+        where: {
+          jira_cloud_id: jiraCloudId,
+        },
+      })) > 0;
 
-//     console.log(JSON.stringify(delegateJiraAccount, null, 2));
+    if (!areAccountsRemainingForJiraCloudId) {
+      // No more webhooks are expected to be received for this cloud id, as there are no more account
+      // that depend on webhooks coming in
+      return;
+    }
 
-//     assert(delegateJiraAccount, "delegate jira account not found");
+    const delegateJiraAccount = await db.jira_account.findFirst({
+      where: {
+        jira_cloud_id: jiraCloudId,
+      },
+      orderBy: {
+        rest_req_last_used_at: "asc",
+      },
+    });
 
-//     registerAndStoreNewWebhooks(delegateJiraAccount);
+    assert(delegateJiraAccount, "delegate jira account not found");
 
-// }
+    await registerAndStoreNewWebhooks(delegateJiraAccount);
+  }
+}
 
 async function registerAndStoreNewWebhooks(jiraAccount: JiraAccount) {
   const registerWebhookResponse = await jiraRequest(jiraAccount, createWebhooks());
@@ -260,32 +272,21 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccount) {
   console.info("Webhooks created successfully", JSON.stringify(registerWebhookResponse.data, null, 4));
 }
 
-// async function deletePreviousWebhooks(account: Account) {
-//   // In case there's a new installation, we delete the previous webhooks by the user
-//   const getWebhooksResponse = await jiraRequest(jiraAccount, getWebhooks());
+async function getAccessToken(account: Account): Promise<string> {
+  if (!isTokenExpired(account.access_token_expires)) {
+    return account.access_token ?? "";
+  }
 
-//   assert(getWebhooksResponse, "unable to get webhooks");
+  console.info(`Token from account ${account.id} needs refreshing`);
 
-//   const webhookIds = getWebhooksResponse.data.values.map((d) => d.id);
+  const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
+  return refreshTokenData.access_token;
+}
 
-//   return await jiraRequest(jiraAccount, deleteWebhooks(webhookIds));
-// }
-
-// async function getAccessToken(account: Account): Promise<string> {
-//   if (!isTokenExpired(account.access_token_expires)) {
-//     return account.access_token ?? "";
-//   }
-
-//   console.info(`Token from account ${account.id} needs refreshing`);
-
-//   const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
-//   return refreshTokenData.access_token
-// }
-
-// async function getHeaders(account: Account) {
-//   return {
-//     Authorization: `Bearer ${getAccessToken(account)}`,
-//     Accept: "application/json",
-//     "Content-Type": "application/json",
-//   };
-// }
+async function getHeaders(account: Account) {
+  return {
+    Authorization: `Bearer ${await getAccessToken(account)}`,
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+}

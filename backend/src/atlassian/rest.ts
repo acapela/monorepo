@@ -73,12 +73,14 @@ export function getIssueWatchers(issueKey: string): JiraRequest<GetWatchersRespo
   };
 }
 
-export function isTokenExpired(expires_at: Date | null) {
+export function isTokenExpired(expires_at: Date | string | null) {
   if (!expires_at) {
     return true;
   }
 
-  return new Date().getTime() > expires_at.getTime();
+  const expiry = typeof expires_at === "string" ? new Date(expires_at) : expires_at;
+
+  return Date.now() > expiry.getTime();
 }
 
 export async function getNewAccessToken(refresh_token: string): Promise<RefreshTokenData> {
