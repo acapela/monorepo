@@ -73,12 +73,23 @@ export function getIssueWatchers(issueKey: string): JiraRequest<GetWatchersRespo
   };
 }
 
-function isTokenExpired(expires_at: Date | null) {
+export function isTokenExpired(expires_at: Date | null) {
   if (!expires_at) {
     return true;
   }
 
   return new Date().getTime() > expires_at.getTime();
+}
+
+export async function getNewAccessToken(refresh_token: string): Promise<RefreshTokenData> {
+  const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
+    grant_type: "refresh_token",
+    client_id: process.env.ATLASSIAN_CLIENT_ID,
+    client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
+    refresh_token,
+  });
+
+  return response.data;
 }
 
 export async function refreshAccountIfTokenExpired(account: Account) {
@@ -88,16 +99,7 @@ export async function refreshAccountIfTokenExpired(account: Account) {
 
   console.info(`Token from account ${account.id} needs refreshing`);
 
-  const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-    grant_type: "refresh_token",
-    client_id: process.env.ATLASSIAN_CLIENT_ID,
-    client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-    refresh_token: account.refresh_token,
-  });
-
-  const refreshTokenData = response.data as RefreshTokenData;
-
-  console.info(refreshTokenData);
+  const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
 
   const updated = await db.account.update({
     where: {

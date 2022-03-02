@@ -26,7 +26,7 @@ export const router = Router();
 
 logger.info("Initialize hasura event handlers");
 
-hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE"], handleAccountUpdates);
+hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE", "DELETE"], handleAccountUpdates);
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
 hasuraEvents.addHandler("team_slack_installation_updates", ["DELETE"], handleTeamSlackInstallationUpdates);
 hasuraEvents.addHandler("team_member_slack_updates", ["INSERT"], handleUserSlackInstallation);

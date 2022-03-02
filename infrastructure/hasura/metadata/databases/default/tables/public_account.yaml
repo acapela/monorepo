@@ -7,6 +7,8 @@ object_relationships:
     foreign_key_constraint_on: user_id
 event_triggers:
 - definition:
+    delete:
+      columns: "*"
     enable_manual: false
     insert:
       columns: "*"
