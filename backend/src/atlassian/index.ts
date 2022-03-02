@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { addDays } from "date-fns";
+import { addDays, addSeconds } from "date-fns";
 import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
@@ -29,6 +29,25 @@ async function getPublicBackendURL() {
   }
 
   return process.env.BACKEND_API_ENDPOINT;
+}
+
+async function refreshTokens(account: Account) {
+  const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
+    grant_type: "refresh_token",
+    client_id: process.env.ATLASSIAN_CLIENT_ID,
+    client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
+    refresh_token: account.refresh_token,
+  });
+  const { refresh_token, access_token, expires_in } = response.data;
+  await db.account.update({
+    where: { id: account.id },
+    data: {
+      refresh_token,
+      access_token,
+      access_token_expires: addSeconds(new Date(), expires_in),
+      atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
+    },
+  });
 }
 
 /*
@@ -163,23 +182,9 @@ export async function updateAtlassianRefreshToken() {
   });
   for (const account of accounts) {
     try {
-      const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-        grant_type: "refresh_token",
-        client_id: process.env.ATLASSIAN_CLIENT_ID,
-        client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-        refresh_token: account.refresh_token,
-      });
-      await db.account.update({
-        where: { id: account.id },
-        data: {
-          refresh_token: response.data.refresh_token,
-          atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
-        },
-      });
+      await refreshTokens(account);
     } catch (error: any) {
       logger.error(error.response, `Failed to refresh token for account ${account.id}`);
     }
   }
 }
-
-updateAtlassianRefreshToken();
