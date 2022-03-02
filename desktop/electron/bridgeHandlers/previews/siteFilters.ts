@@ -8,11 +8,18 @@ const siteFilters: SiteFilter[] = [
   {
     on: (url) => isHostSlack(url),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
-    css: `.p-workspace-layout {
+    css: `.p-client {
+            grid-template-rows: auto min-content !important;
+            grid-template-areas: "p-client__workspace" "p-client__banners" !important;
+          }
+          .p-top_nav {
+            display: none !important;
+          }
+          .p-workspace-layout {
             grid-template-columns: 1fr fit-content(40%) !important;
             grid-template-areas: 'p-workspace__primary_view p-workspace__secondary_view' !important;  
           }
-          .p-workspace__sidebar {
+          .p-workspace__sidebar, .p-resizer {
             display: none !important;
           }
           .p-workspace__secondary_view {
