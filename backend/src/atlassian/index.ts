@@ -94,6 +94,11 @@ const REQUIRED_JIRA_SCOPES = [
 ];
 
 const WEBHOOK_DAYS_UNTIL_EXPIRY = 30;
+/**
+ * Refresh tokens expire after 90 days according to the Atlassian docs:
+ * https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#use-a-refresh-token-to-get-another-access-token-and-refresh-token-pair
+ */
+const getRefreshTokenExpiresAt = () => addDays(new Date(), 90).toISOString();
 
 export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   const account = event.item;
@@ -111,6 +116,10 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
 
 async function handleCreateAtlassianAccount(account: Account) {
   console.info("Creating atlassian account");
+
+  await db.atlassian_refresh_token_expiry.create({
+    data: { account: { connect: { id: account.id } }, expires_at: getRefreshTokenExpiresAt() },
+  });
 
   const headers = {
     Authorization: `Bearer ${account.access_token}`,
