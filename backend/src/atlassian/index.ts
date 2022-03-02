@@ -11,6 +11,7 @@ import { IS_DEV } from "@aca/shared/dev";
 import { captureJiraWebhook } from "./capturing";
 import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
 import { JiraWebhookPayload } from "./types";
+import { getRefreshTokenExpiresAt } from "./utils";
 
 export const WEBHOOK_ROUTE = "/atlassian/webhooks";
 
@@ -94,11 +95,6 @@ const REQUIRED_JIRA_SCOPES = [
 ];
 
 const WEBHOOK_DAYS_UNTIL_EXPIRY = 30;
-/**
- * Refresh tokens expire after 90 days according to the Atlassian docs:
- * https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#use-a-refresh-token-to-get-another-access-token-and-refresh-token-pair
- */
-const getRefreshTokenExpiresAt = () => addDays(new Date(), 90).toISOString();
 
 export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   const account = event.item;

@@ -4,6 +4,7 @@ import { addDays, addSeconds } from "date-fns";
 import { Account, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
+import { getNewAccessToken } from "./rest";
 import { handleAccountUpdates } from ".";
 
 export async function deleteAllJiraWebhooks() {
@@ -71,16 +72,16 @@ export async function __simulateNewAtlassianAccountCreation(provider_account_id:
   });
 }
 
-async function refreshTokens(account: Account) {
-  const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-    grant_type: "refresh_token",
-    client_id: process.env.ATLASSIAN_CLIENT_ID,
-    client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-    refresh_token: account.refresh_token,
-  });
-  const { refresh_token, access_token, expires_in } = response.data;
+/**
+ * Refresh tokens expire after 90 days according to the Atlassian docs:
+ * https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#use-a-refresh-token-to-get-another-access-token-and-refresh-token-pair
+ */
+export const getRefreshTokenExpiresAt = () => addDays(new Date(), 90).toISOString();
 
-  await db.account.update({
+export async function refreshTokens(account: Account) {
+  const { refresh_token, access_token, expires_in } = await getNewAccessToken(account.refresh_token ?? "");
+
+  return await db.account.update({
     where: { id: account.id },
     data: {
       refresh_token,

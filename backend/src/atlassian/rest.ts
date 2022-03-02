@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
-import { addSeconds } from "date-fns";
 
 import { Account, JiraAccount, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 
 import { GetWatchersResponse, JiraWebhookCreationResult } from "./types";
+import { refreshTokens } from "./utils";
 import { WEBHOOK_ROUTE, getPublicBackendURL } from ".";
 
 interface JiraRestMeta {
@@ -101,20 +101,7 @@ export async function refreshAccountIfTokenExpired(account: Account) {
 
   console.info(`Token from account ${account.id} needs refreshing`);
 
-  const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
-
-  const updated = await db.account.update({
-    where: {
-      id: account.id,
-    },
-    data: {
-      access_token: refreshTokenData.access_token,
-      access_token_expires: addSeconds(new Date(), refreshTokenData.expires_in),
-      refresh_token: refreshTokenData.refresh_token,
-    },
-  });
-
-  return updated;
+  return refreshTokens(account);
 }
 
 export async function jiraRequest<Data>(jiraAccount: JiraAccount, jiraRequest: JiraRequest<Data>) {
