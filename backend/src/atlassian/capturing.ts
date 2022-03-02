@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { addSeconds } from "date-fns";
 
 import { Account, JiraAccount, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
@@ -25,13 +26,15 @@ function isTokenExpired(expires_at: Date | null) {
     return true;
   }
 
-  return new Date().getTime() < expires_at.getTime();
+  return new Date().getTime() > expires_at.getTime();
 }
 
 async function refreshAccountIfTokenExpired(account: Account) {
   if (!isTokenExpired(account.access_token_expires)) {
     return account;
   }
+
+  console.info(`Token from account ${account.id} needs refreshing`);
 
   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
     grant_type: "refresh_token",
@@ -42,13 +45,15 @@ async function refreshAccountIfTokenExpired(account: Account) {
 
   const refreshTokenData = response.data as RefreshTokenData;
 
+  console.info(refreshTokenData);
+
   const updated = await db.account.update({
     where: {
       id: account.id,
     },
     data: {
       access_token: refreshTokenData.access_token,
-      access_token_expires: new Date(refreshTokenData.expires_in),
+      access_token_expires: addSeconds(new Date(), refreshTokenData.expires_in),
       refresh_token: refreshTokenData.refresh_token,
     },
   });
@@ -63,7 +68,12 @@ async function createJiraCommentNotification(payload: JiraWebhookPayload) {
 
   assert(access_token, "Accesss token not found for account_id" + account.id);
 
-  const watchers = await getWatchers(access_token, payload.issue.fields.watches.self);
+  const baseApiUrl = `https://api.atlassian.com/ex/jira/${jiraAccount.jira_cloud_id}`;
+
+  //e.g. https://acapela-team.atlassian.net
+  const baseSitePath = payload.issue.self.split("/rest")[0];
+
+  const watchers = await getWatchers(access_token, baseApiUrl, payload.issue.key);
 
   // This is our input for our round robin mechanism.
   // We're using the least used api endpoint using
@@ -79,11 +89,13 @@ async function createJiraCommentNotification(payload: JiraWebhookPayload) {
     },
   });
 
+  console.info("Watchers", watchers);
+
   const usersToNotify = await db.user.findMany({
     where: {
       account: {
-        every: {
-          AND: [{ provider_id: { equals: "atlassian" } }, { provider_account_id: { in: watchers } }],
+        some: {
+          AND: [{ provider_id: "atlassian" }, { provider_account_id: { in: watchers } }],
         },
       },
     },
@@ -91,35 +103,57 @@ async function createJiraCommentNotification(payload: JiraWebhookPayload) {
 
   console.info(usersToNotify);
 
-  // const notificationPromises = usersToNotify
-  // .map((u) =>
-  //   db.notification_linear.create({
-  //     data: {
-  //       notification: {
-  //         create: {
-  //           user_id: u.user_id,
-  //           url: payload.url || "",
-  //           from: actor.name,
-  //         },
-  //       },
-  //       creator_id: actor.id,
-  //       type: "Issue",
-  //       issue_id: issueData.id,
-  //       issue_title: issueData.title,
-  //       origin,
-  //     },
-  //   })
-  // );
+  const commentUrl = `${baseSitePath}/browse/${payload.issue.key}?focusedCommentId=${payload.comment?.id}`;
+
+  const notificationPromises = usersToNotify.map((u) =>
+    db.notification_jira_issue.create({
+      data: {
+        notification: {
+          create: {
+            user_id: u.id,
+            url: commentUrl,
+            from: payload.comment?.author.displayName ?? "",
+          },
+        },
+        issue_id: payload.issue.id,
+        issue_title: payload.issue.fields.summary,
+        notification_jira_issue_type: {
+          connect: {
+            value: "comment_created",
+          },
+        },
+      },
+    })
+  );
+
+  return await Promise.all(notificationPromises);
 }
 
-async function getWatchers(accessToken: string, url: string) {
+async function getWatchers(accessToken: string, baseApiUrl: string, issueKey: string) {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };
 
-  const response = await axios.get(url, { headers });
+  let response;
+  try {
+    console.info(`Getting watchers for ${issueKey}`);
+    response = await axios.get(`${baseApiUrl}/rest/api/3/issue/${issueKey}/watchers`, { headers });
+  } catch (e) {
+    const error = e as AxiosError;
+    if (error.response) {
+      console.error(`Failed getting watchers for ${issueKey}`);
+      console.error(error.response.data);
+      console.error(error.response.status);
+      console.error(error.response.headers);
+    } else if (error.request) {
+      console.error(`Failed getting watchers for ${issueKey} - no response received`, error.request);
+    } else {
+      console.error(`Failed getting watchers for ${issueKey} - unknown error`, error.message);
+    }
+    return [];
+  }
 
   const watchers = response.data as GetWatchersResponse;
 
@@ -146,7 +180,7 @@ async function getLeastRecentlyUsedAtlassianAccount(
 
   const account = await db.account.findFirst({
     where: {
-      id: jiraAccount.id,
+      id: jiraAccount.account_id,
     },
   });
 

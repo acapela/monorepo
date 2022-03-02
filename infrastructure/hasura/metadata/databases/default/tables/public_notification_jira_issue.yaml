@@ -5,6 +5,9 @@ object_relationships:
 - name: notification
   using:
     foreign_key_constraint_on: notification_id
+- name: notification_jira_issue_type
+  using:
+    foreign_key_constraint_on: type
 select_permissions:
 - permission:
     columns:

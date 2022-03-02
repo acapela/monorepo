@@ -102,6 +102,7 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
     return;
   }
 
+  console.info("Creating atlassian account");
   const headers = {
     Authorization: `Bearer ${account.access_token}`,
     Accept: "application/json",
