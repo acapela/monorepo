@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "@aca/backend/src/actions/actions";
+import { updateAtlassianRefreshToken } from "@aca/backend/src/atlassian";
 import { dailyMessageNotification } from "@aca/backend/src/cron/dailyMessageNotification";
 import { UnprocessableEntityError, isHttpError } from "@aca/backend/src/errors/errorTypes";
 import { logger } from "@aca/shared/logger";
@@ -17,6 +18,7 @@ const handlers: Record<string, Function> = {
   "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
   "daily-message-notification": dailyMessageNotification,
   "proactive-notifications": proactiveNotifications,
+  "update-atlassian-refresh-token": updateAtlassianRefreshToken,
 };
 
 interface CronPayload {
