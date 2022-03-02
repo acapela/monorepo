@@ -9,12 +9,12 @@ import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/No
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
+import { ListFilters } from "@aca/desktop/ui/Filters";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
 import { theme } from "@aca/ui/theme";
 
 import { ListEditTools } from "./EditTools";
-import { ListFilters } from "./Filters";
 import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
@@ -62,9 +62,14 @@ export const ListView = observer(({ listId }: Props) => {
         <UITabsBar>
           <ListsTabBar activeListId={listId} lists={listsToDisplay} />
         </UITabsBar>
-        {displayedList?.isCustom && (
+        {displayedList?.isCustom && displayedList.listEntity && (
           <UIListTools>
-            <ListFilters listId={listId} />
+            <ListFilters
+              value={displayedList.listEntity?.typedFilters}
+              onChange={(filters) => {
+                displayedList?.listEntity?.update({ filters });
+              }}
+            />
             <ListEditTools listId={listId} />
           </UIListTools>
         )}

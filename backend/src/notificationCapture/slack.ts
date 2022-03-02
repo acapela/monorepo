@@ -106,7 +106,7 @@ async function createNotificationFromMessage(
   if (
     !userToken ||
     (isAuthor && !isMentioned) ||
-    (!is_IM_or_MPIM && !(threadTs && (await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))))
+    (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId)))
   ) {
     return;
   }
@@ -121,6 +121,10 @@ async function createNotificationFromMessage(
   ]);
   assert(permalink, `could not get permalink for message ${messageTs} in channel ${channel}`);
   assert(authorUser, `could not get slack profile for id ${authorSlackUserId}`);
+
+  if (slackChannel && !slackChannel.is_member) {
+    return;
+  }
 
   await db.notification.create({
     data: {
