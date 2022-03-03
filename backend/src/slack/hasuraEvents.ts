@@ -50,7 +50,7 @@ export async function handleUserSlackInstallation(event: HasuraEvent<TeamMemberS
   assert(team.team_slack_installation, "team installation must exist since user installation succeeded");
   const botToken = extractInstallationDataBotToken(team.team_slack_installation.data);
   assert(botToken, "team installation must have bot token");
-  const onboardingMessage = NewUserOnboardingMessage(team.team_slack_installation.slack_team_id, teamMember.user_id);
+  const onboardingMessage = NewUserOnboardingMessage(team.team_slack_installation.slack_team_id);
   await slackClient.chat.postMessage({
     token: botToken,
     channel: slackUserId,
