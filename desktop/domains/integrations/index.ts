@@ -1,6 +1,6 @@
 import { unsafeAssertType } from "@aca/shared/assert";
 
-import { atlassianIntegrationClient } from "./atlassian";
+import { jiraIntegrationClient } from "./atlassian";
 import { figmaIntegrationClient } from "./figma";
 import { linearIntegrationClient } from "./linear";
 import { notionIntegrationClient } from "./notion";
@@ -8,7 +8,7 @@ import { slackIntegrationClient } from "./slack";
 import { IntegrationClient } from "./types";
 
 export const integrationClients = {
-  atlassian: atlassianIntegrationClient,
+  jira: jiraIntegrationClient,
   slack: slackIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,

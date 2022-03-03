@@ -20,7 +20,7 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
     case "notification_notion": {
       switch (innerNotification.type) {
         case "notification_notion_commented":
-          return `Comment in "${innerNotification?.page_title}"`;
+          return `Commented in "${innerNotification?.page_title}"`;
         case "notification_notion_user_invited":
           return `Invited you to "${innerNotification?.page_title}"`;
         case "notification_notion_user_mentioned":
@@ -52,6 +52,15 @@ export const getNotificationTitle = cachedComputed(function getNotificationTitle
         default:
           return `Created issue "${innerNotification.issue_title}"`;
       }
+    }
+    case "notification_jira_issue": {
+      if (innerNotification.type === "comment_created") {
+        return `Commented in "${innerNotification.issue_title}"`;
+      }
+      if (innerNotification.type === "user_mentioned") {
+        return `Mentioned you in "${innerNotification.issue_title}"`;
+      }
+      return "Unhandled Jira Notification";
     }
     default:
       return "Unhandled notification!!";

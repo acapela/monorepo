@@ -11,6 +11,7 @@ import { isClient } from "@aca/shared/document";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationJiraEntity } from "./notification/jira/issue";
 import { notificationLinearEntity } from "./notification/linear/issue";
 import { notificationNotionEntity } from "./notification/notion/baseNotification";
 import { notificationNotionCommentedEntity } from "./notification/notion/commented";
@@ -49,6 +50,7 @@ export const appClientDbEntities = {
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
+  notificationJira: notificationJiraEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
 };

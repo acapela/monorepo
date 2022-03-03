@@ -8,11 +8,11 @@ import { accountStore } from "@aca/desktop/store/account";
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
-export const atlassianIntegrationClient: IntegrationClient = {
+export const jiraIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_slack_message",
-  name: "Atlassian",
-  description: "Jira issues and Confluence discussions.",
+  name: "Atlassian Jira",
+  description: "Jira issue updates and comments",
   icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
 
   get isReady() {

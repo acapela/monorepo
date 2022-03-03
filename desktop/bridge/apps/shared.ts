@@ -6,8 +6,9 @@ const notionType = ["notification_notion"] as const;
 const figmaType = ["notification_figma_comment"] as const;
 const slackType = ["notification_slack_message"] as const;
 const linearType = ["notification_linear"] as const;
+const jiraType = ["notification_jira_issue"] as const;
 
-const supportedNotificationTypes = [notionType, figmaType, slackType, linearType].flat();
+const supportedNotificationTypes = [notionType, figmaType, slackType, linearType, jiraType].flat();
 type SupportedNotificationTypes = typeof supportedNotificationTypes[number];
 
 export const integrationNotificationMap: Record<SupportedIntegration, SupportedNotificationTypes[]> = {
@@ -15,6 +16,7 @@ export const integrationNotificationMap: Record<SupportedIntegration, SupportedN
   figma: ["notification_figma_comment"],
   slack: ["notification_slack_message"],
   linear: ["notification_linear"],
+  jira: ["notification_jira_issue"],
 };
 
 const log = makeLogger("Integration-Mapper");
@@ -34,5 +36,5 @@ export function getIntegration(notificationType: SupportedNotificationTypes): In
     }
   }
 
-  log.error(`integration for "${notificationType}"not properly mapped`);
+  log.error(`integration for "${notificationType}" not properly mapped`);
 }
