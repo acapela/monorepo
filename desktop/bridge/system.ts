@@ -29,7 +29,7 @@ export const applicationStateBridge = createBridgeValue("application-state", {
   }),
 });
 
-export const persistedApplicationStateBridge = createBridgeValue("persisted-application-state", {
+export const applicationFocusStateBridge = createBridgeValue("application-focus-state", {
   getDefault: () => ({
     // Note: as we have browser view, focus 'true' does not mean our React app has focus
     lastAppFocusDateTs: Date.now(),
