@@ -1,0 +1,25 @@
+table:
+  name: notification_jira_issue
+  schema: public
+object_relationships:
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
+- name: notification_jira_issue_type
+  using:
+    foreign_key_constraint_on: type
+select_permissions:
+- permission:
+    columns:
+    - id
+    - created_at
+    - updated_at
+    - notification_id
+    - issue_id
+    - issue_title
+    - type
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user

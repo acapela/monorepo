@@ -5,6 +5,7 @@ import { dailyMessageNotification } from "@aca/backend/src/cron/dailyMessageNoti
 import { UnprocessableEntityError, isHttpError } from "@aca/backend/src/errors/errorTypes";
 import { logger } from "@aca/shared/logger";
 
+import { updateAtlassianRefreshToken } from "../atlassian/utils";
 import { HttpStatus } from "../http";
 import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";
 import { delayedTopicRequestsDoneNotifications } from "./delayedTopicRequestsDoneNotifications";
@@ -17,6 +18,7 @@ const handlers: Record<string, Function> = {
   "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
   "daily-message-notification": dailyMessageNotification,
   "proactive-notifications": proactiveNotifications,
+  "update-atlassian-refresh-token": updateAtlassianRefreshToken,
 };
 
 interface CronPayload {

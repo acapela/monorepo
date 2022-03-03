@@ -1,4 +1,5 @@
 import {
+  Account,
   Attachment,
   DecisionVote,
   LinearIssue,
@@ -20,6 +21,7 @@ import {
 import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{
+  account_updates: Account;
   decision_vote_updates: DecisionVote;
   message_updates: Message;
   task_updates: Task;
