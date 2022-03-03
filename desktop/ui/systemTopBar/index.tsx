@@ -46,7 +46,6 @@ const UIBar = styled.div<{ $isFullwidth: boolean }>`
     `}
 
   -webkit-app-region: drag;
-  z-index: 10000;
 
   border-bottom: 1px solid ${theme.colors.layout.divider.value};
   display: flex;
@@ -68,6 +67,7 @@ const UITitle = styled.div`
   flex-grow: 2;
   display: flex;
   justify-content: center;
+  ${theme.common.ellipsisText}
 `;
 
 const UIUser = styled.div``;

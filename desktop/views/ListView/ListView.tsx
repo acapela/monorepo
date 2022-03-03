@@ -18,6 +18,7 @@ import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
 import { ListViewTopBar } from "./Topbar";
+import { ListViewZenOverlay } from "./ZenMode";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
@@ -55,7 +56,12 @@ export const ListView = observer(({ listId }: Props) => {
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
-      <ListViewTopBar list={displayedList ?? undefined} />
+      {isInCelebrationMode && (
+        <UINotificationZeroHolder>
+          <ListViewZenOverlay />
+        </UINotificationZeroHolder>
+      )}
+      <ListViewTopBar key={displayedList?.id} list={displayedList ?? undefined} />
       <UIHolder>
         {displayedList?.isCustom && (
           <UIListTools>
@@ -68,51 +74,47 @@ export const ListView = observer(({ listId }: Props) => {
           </UIListTools>
         )}
 
-        {isInCelebrationMode ? (
-          <UINotificationZeroHolder>
-            <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
-          </UINotificationZeroHolder>
-        ) : (
-          <UIListsScroller>
-            {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
+        <UIListsScroller>
+          {displayedList && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
+            <ZeroNotifications key={listId} />
+          )}
 
-            {displayedList && notificationGroups && notificationGroups.length > 0 && (
-              <>
-                {!hasSettledFocusedTarget &&
-                  displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
+          {displayedList && notificationGroups && notificationGroups.length > 0 && (
+            <>
+              {!hasSettledFocusedTarget &&
+                displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
+                  return (
+                    <PreloadNotificationPreview
+                      priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
+                      key={notificationToPreload.id}
+                      url={notificationToPreload.url}
+                    />
+                  );
+                })}
+              <UINotifications>
+                {notificationGroups?.map((notificationOrGroup) => {
+                  if (getIsNotificationsGroup(notificationOrGroup)) {
                     return (
-                      <PreloadNotificationPreview
-                        priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                        key={notificationToPreload.id}
-                        url={notificationToPreload.url}
-                      />
-                    );
-                  })}
-                <UINotifications>
-                  {notificationGroups?.map((notificationOrGroup) => {
-                    if (getIsNotificationsGroup(notificationOrGroup)) {
-                      return (
-                        <NotificationsGroupRow
-                          list={displayedList}
-                          key={notificationOrGroup.id}
-                          group={notificationOrGroup}
-                        />
-                      );
-                    }
-
-                    return (
-                      <NotificationRow
+                      <NotificationsGroupRow
                         list={displayedList}
                         key={notificationOrGroup.id}
-                        notification={notificationOrGroup}
+                        group={notificationOrGroup}
                       />
                     );
-                  })}
-                </UINotifications>
-              </>
-            )}
-          </UIListsScroller>
-        )}
+                  }
+
+                  return (
+                    <NotificationRow
+                      list={displayedList}
+                      key={notificationOrGroup.id}
+                      notification={notificationOrGroup}
+                    />
+                  );
+                })}
+              </UINotifications>
+            </>
+          )}
+        </UIListsScroller>
       </UIHolder>
     </TraySidebarLayout>
   );
@@ -123,6 +125,7 @@ const UIHolder = styled.div<{}>`
   flex-grow: 1;
   flex-direction: column;
   min-height: 0;
+  position: relative;
 `;
 
 const UINotifications = styled.div`
@@ -141,21 +144,11 @@ const UINotifications = styled.div`
 const UINotificationZeroHolder = styled.div`
   position: absolute;
   display: block;
-
-  left: 90px;
-  bottom: 200px;
-`;
-
-const UINotificationZeroPanel = styled.div`
-  height: 60px;
-  width: 300px;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  display: inline-flex;
-  ${theme.colors.layout.background.opacity(0.7).asBg};
-  backdrop-filter: blur(16px);
-  ${theme.radius.primaryItem}
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  overflow: hidden;
 `;
 
 const UIListTools = styled.div`

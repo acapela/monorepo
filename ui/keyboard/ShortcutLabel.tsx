@@ -33,10 +33,10 @@ const UIHolder = styled.div`
   user-select: none;
   gap: 2px;
   line-height: 1;
+  ${theme.typo.content.secondary};
 `;
 
 const UIKey = styled.div`
-  ${theme.typo.content.secondary};
   line-height: 1;
   text-align: center;
 `;

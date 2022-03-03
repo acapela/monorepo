@@ -63,7 +63,7 @@ export function initializeMainWindow() {
     minHeight: 680,
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
-    vibrancy: "sidebar",
+    vibrancy: "dark",
     trafficLightPosition: { x: 19, y: 18 },
 
     //

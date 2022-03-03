@@ -3,14 +3,10 @@
 
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
-//@ts-ignore
-import zenImage from "@aca/desktop/assets/zen/today.jpg";
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
-
-import { sidebarShowTransition } from "./TraySidebarLayout/Sidebar";
 
 interface Props {
   children: ReactNode;
@@ -22,8 +18,7 @@ export const AppLayout = observer(function AppLayout({ children, sidebar, footer
   const { isSidebarOpened } = uiStore;
 
   return (
-    <AppLayoutHolder className={uiStore.isDisplayingZenImage ? "zenImage" : ""}>
-      <SidebarOpenedGlobalStyles $isOpened={isSidebarOpened} />
+    <AppLayoutHolder>
       <UIMain>
         {sidebar && <UISidebar>{sidebar}</UISidebar>}
         <UIBody $isSidebarOpened={isSidebarOpened}>
@@ -34,12 +29,6 @@ export const AppLayout = observer(function AppLayout({ children, sidebar, footer
     </AppLayoutHolder>
   );
 });
-
-const SidebarOpenedGlobalStyles = createGlobalStyle<{ $isOpened: boolean }>`
-  #root {
-    ${sidebarShowTransition}
-  }
-`;
 
 const UISidebar = styled.div`
   display: flex;
@@ -57,13 +46,12 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
   display: flex;
   flex-direction: column;
   min-width: 0;
+  position: relative;
 
   ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
-const UIFooter = styled.div`
-  z-index: 2;
-`;
+const UIFooter = styled.div``;
 
 const AppLayoutHolder = styled.div<{}>`
   body.fullscreen & {
@@ -73,34 +61,4 @@ const AppLayoutHolder = styled.div<{}>`
   flex-direction: column;
   flex-grow: 1;
   min-height: 0;
-
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-
-  &.zenImage {
-    animation: fadeInFromNone 2s linear;
-
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-image: url(${zenImage as unknown as string});
-    box-shadow: inset 0 0 80px 80px ${theme.colors.layout.background.opacity(0.8).value};
-  }
-
-  @keyframes fadeInFromNone {
-    0% {
-      display: none;
-      opacity: 0;
-    }
-
-    1% {
-      display: block;
-      opacity: 0;
-    }
-
-    100% {
-      display: block;
-      opacity: 1;
-    }
-  }
 `;
