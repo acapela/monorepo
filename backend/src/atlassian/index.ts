@@ -14,11 +14,11 @@ import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isToken
 import { GetResourcesResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
 import { getRefreshTokenExpiresAt } from "./utils";
 
-export const WEBHOOK_ROUTE = "/atlassian/webhooks";
+export const WEBHOOK_PATH = "/v1/atlassian/webhooks";
 
 export const router = Router();
 
-router.post("/v1" + WEBHOOK_ROUTE, async (req, res) => {
+router.post(WEBHOOK_PATH, async (req, res) => {
   console.info("got a new thing on the hook");
 
   const payload = req.body as JiraWebhookPayload;
@@ -33,7 +33,7 @@ router.post("/v1" + WEBHOOK_ROUTE, async (req, res) => {
 
 export async function getPublicBackendURL() {
   if (IS_DEV) {
-    return `${await getDevPublicTunnelURL(3000)}/api/backend/v1`;
+    return `${await getDevPublicTunnelURL(3000)}/api/backend`;
   }
 
   return process.env.BACKEND_API_ENDPOINT;

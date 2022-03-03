@@ -1,11 +1,10 @@
-import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
-
 import { Account, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
+import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
 import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookCreationResult } from "./types";
 import { refreshTokens } from "./utils";
-import { WEBHOOK_ROUTE, getPublicBackendURL } from ".";
+import { WEBHOOK_PATH, getPublicBackendURL } from ".";
 
 interface JiraRestMeta {
   jiraCloudId: string;
@@ -37,7 +36,7 @@ export function createWebhooks(): JiraRequest<JiraWebhookCreationResult> {
     return await axios.post(
       `${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook`,
       {
-        url: (await getPublicBackendURL()) + WEBHOOK_ROUTE,
+        url: (await getPublicBackendURL()) + WEBHOOK_PATH,
         webhooks: [
           {
             events: ["comment_created", "comment_updated"],
