@@ -30,7 +30,7 @@ const UIPanel = styled.div`
   right: 20px;
   z-index: 9;
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
-  ${theme.box.popover};
+  ${theme.box.panel.primaryPopover.padding.radius};
   width: 180px;
   ${theme.radius.panel};
 `;

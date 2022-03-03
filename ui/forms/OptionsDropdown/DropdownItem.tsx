@@ -66,12 +66,11 @@ export const DropdownItem = styled<Props>(function DropdownItem({
 const background = theme.colors.panels.popover;
 
 const UIOption = styled.div<{ $isHighlighted: boolean }>`
-  ${theme.box.selectOption};
+  ${theme.box.items.selectItem.padding.size};
 
   display: flex;
   align-items: center;
   ${theme.common.clickable};
-
   ${background.interactive};
   ${theme.spacing.actions.asGap};
 

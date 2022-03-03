@@ -61,7 +61,7 @@ export const ServiceUsersFilterRow = <F extends FiltersData<unknown>>({
 );
 
 const UISelectedPreview = styled.div`
-  font-size: 24px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   flex-grow: 1;

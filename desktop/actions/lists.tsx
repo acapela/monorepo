@@ -10,11 +10,9 @@ import {
   IconArrowBottom,
   IconArrowCornerCwLt,
   IconArrowCornerCwRb,
-  IconArrowLeft,
-  IconArrowRight,
   IconArrowTop,
   IconEdit2,
-  IconFolderPlus,
+  IconPlus,
   IconSlidersHoriz,
   IconTrash,
 } from "@aca/ui/icons";
@@ -107,6 +105,7 @@ export const goToList = defineAction({
   },
   private: true,
   group: currentListActionsGroup,
+  icon: (ctx) => ctx.getTarget("list")?.icon,
   canApply: (context) => context.hasTarget("list"),
   handler(context) {
     desktopRouter.navigate("list", { listId: context.assertTarget("list").id });
@@ -153,7 +152,7 @@ export const goToNextList = defineAction({
   canApply: () => {
     return getIsRouteActive("list");
   },
-  icon: <IconArrowRight />,
+  icon: <IconArrowBottom />,
   supplementaryLabel: (context) => context.view(listPageView)?.nextList?.name,
   shortcut: ["Tab"],
   handler(context) {
@@ -168,7 +167,7 @@ export const goToNextList = defineAction({
 export const goToPreviousList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
   group: currentListActionsGroup,
-  icon: <IconArrowLeft />,
+  icon: <IconArrowTop />,
   canApply: () => {
     return getIsRouteActive("list");
   },
@@ -226,8 +225,8 @@ export const toggleNotificationsGroup = defineAction({
 });
 
 export const createNotificationList = defineAction({
-  icon: <IconFolderPlus />,
-  name: "Create new notifications list",
+  icon: <IconPlus />,
+  name: (ctx) => (ctx.isContextual ? "New list" : "New notifications list"),
   keywords: ["new list", "bucket", "add"],
   handler: () => ({
     searchPlaceholder: "New list name...",

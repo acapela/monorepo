@@ -25,6 +25,5 @@ export const NotificationsRows = observer(({ notifications, list }: Props) => {
 const UINotifications = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
   min-height: 0;
 `;

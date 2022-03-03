@@ -86,6 +86,7 @@ const UILabel = styled.div``;
 
 const CustomizePopoverPanel = styled(PopoverPanel)`
   width: 460px;
+  align-items: stretch;
 `;
 
 const ensureSpacesBetweenParts = css`

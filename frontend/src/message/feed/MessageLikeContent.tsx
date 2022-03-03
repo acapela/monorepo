@@ -66,7 +66,7 @@ const UIFlyingTools = styled(PresenceAnimator)<{}>`
   will-change: transform, opacity;
   ${theme.colors.layout.backgroundAccent.withBorder.asBgWithReadableText};
   ${theme.shadow.popover};
-  ${theme.box.buttonsGroup};
+  ${theme.box.panel.primaryPopover};
   ${theme.radius.panel};
 `;
 

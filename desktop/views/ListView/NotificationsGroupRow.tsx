@@ -153,10 +153,7 @@ const UISendersPerson = styled.span`
 const UISendersMore = styled.span``;
 
 const UIHolder = styled.div<{ $isFocused: boolean }>`
-  padding: 10px 8px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
+  ${theme.box.items.listRow.size.padding};
 
   ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
 

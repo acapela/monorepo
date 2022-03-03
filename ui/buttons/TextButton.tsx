@@ -71,7 +71,7 @@ export const UIButton = styled(motion.button)<{
   background: transparent;
   display: inline-flex;
   justify-content: center;
-  ${theme.box.label}
+  ${theme.box.control.regular.padding.radius.size}
   text-align: center;
   cursor: pointer;
 

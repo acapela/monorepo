@@ -190,6 +190,5 @@ App.getInitialProps = async (context: AppContext) => {
     version: process.env.SENTRY_RELEASE || "dev",
     buildDate: process.env.BUILD_DATE || "unknown",
     sentryDSN: process.env.SENTRY_DSN,
-    segmentAPIKey: process.env.SEGMENT_API_KEY,
   } as AppConfig;
 };

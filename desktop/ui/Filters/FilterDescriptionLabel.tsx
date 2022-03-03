@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -23,7 +24,7 @@ const PeopleDescription = ({ count }: { count: number }) =>
     </>
   );
 
-export function FilterDescriptionLabel({ filter }: Props) {
+export const FilterDescriptionLabel = observer(({ filter }: Props) => {
   if (getIsFilterOfType(filter, "notification_figma_comment")) {
     const peopleCount = getFilterValueAllowedValues(filter.author_id).length;
     const typeLabel = figmaNotificationOptions.find((option) => option.isActive(filter))?.label;
@@ -47,20 +48,18 @@ export function FilterDescriptionLabel({ filter }: Props) {
       <>
         {typeLabel && <UILabel>{typeLabel}</UILabel>}
         <PeopleDescription count={peopleCount} />
-        {conversationTypes.length > 0 && (
-          <>
-            in{" "}
-            <UILabel>
-              {conversationTypes
+        in{" "}
+        <UILabel>
+          {conversationTypes.length == 0
+            ? "all conversations"
+            : conversationTypes
                 .map((type) => <>{slackConversationTypeLabels[type]}</>)
                 .reduce((prev, cur, i, { length }) => (
                   <>
                     {prev} {i + 1 < length ? "," : "and"} {cur}
                   </>
                 ))}
-            </UILabel>
-          </>
-        )}
+        </UILabel>
         {hasThreadFilter && <>*</>}
       </>
     );
@@ -87,7 +86,7 @@ export function FilterDescriptionLabel({ filter }: Props) {
   }
 
   return null;
-}
+});
 
 const UILabel = styled.span`
   ${theme.font.secondary};

@@ -61,7 +61,7 @@ const UIHolder = styled(PopPresenceAnimator)<{ $currentUserId: string }>`
 
   ${theme.radius.panel};
   ${theme.shadow.popover};
-  ${theme.box.previewPopover};
+  ${theme.box.panel.primaryPopover};
 
   max-width: 450px;
 

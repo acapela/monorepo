@@ -53,7 +53,7 @@ const background = theme.colors.layout.backgroundAccent;
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
-  ${theme.box.label};
+  ${theme.box.panel.badge};
   ${theme.spacing.actions.asGap}
   ${theme.radius.secondaryItem}
   cursor: pointer;

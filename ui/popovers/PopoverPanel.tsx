@@ -19,12 +19,11 @@ export const PopoverPanel = styled<PopoverProps>((props) => {
 })``;
 
 export const UIDropdownPanelBody = styled(PopPresenceAnimator)<{}>`
-  ${theme.box.popoverMenu}
+  ${theme.box.panel.primaryPopover.padding.radius}
   display: flex;
   flex-direction: column;
   ${theme.colors.layout.background.withBorder.asBgWithReadableText};
   box-sizing: border-box;
   ${theme.shadow.popover};
-  ${theme.radius.panel};
   min-width: 240px;
 `;

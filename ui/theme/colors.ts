@@ -35,7 +35,7 @@ const blue = color("hsl(204, 100%, 50%)");
 
 const green = color("hsl(169,100%,37%)");
 
-const divider = color("#8883");
+const divider = color("#8882");
 
 const selectedTab = color("#f3f4f6");
 

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { createNotificationList } from "@aca/desktop/actions/lists";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
-import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
 
 import { ListTabLabel } from "./ListTabLabel";
 
@@ -18,7 +18,7 @@ export function ListsTabBar({ lists, activeListId }: Props) {
       {lists.map((list) => {
         return <ListTabLabel key={list.id} list={list} isActive={activeListId === list.id} />;
       })}
-      <ActionIconButton action={createNotificationList} showTitleInTooltip />
+      <ActionButton action={createNotificationList} />
     </UIHolder>
   );
 }
