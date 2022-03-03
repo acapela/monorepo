@@ -4,11 +4,11 @@ import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
-import { ServiceUsersFilterRow } from "@aca/desktop/views/ListView/Filters/ServiceUsersFilterRow";
 import { isNotNullish } from "@aca/shared/nullish";
 import { updateValue } from "@aca/shared/updateValue";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
+import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
 import { FilterSettingRow } from "./utils";
 

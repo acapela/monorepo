@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -10,7 +11,7 @@ interface Props {
   service: IntegrationClient;
 }
 
-export function IntegrationCard({ service }: Props) {
+export const IntegrationCard = observer(({ service }: Props) => {
   const { name, description, icon, additionalSettings } = service;
   return (
     <UIHolder>
@@ -36,11 +37,13 @@ export function IntegrationCard({ service }: Props) {
             />
           </UIConnectAction>
         </UIHead>
-        {additionalSettings && <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>}
+        {additionalSettings && service.getIsConnected() && (
+          <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>
+        )}
       </UIBody>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;
