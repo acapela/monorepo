@@ -9,7 +9,6 @@ import { parseAndTransformToTipTapJSON } from "@aca/backend/src/slack/md/parser"
 import { backendGetTopicUrl } from "@aca/backend/src/topics/url";
 import { db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "@aca/shared/editor/mentions";
 import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "@aca/shared/requests";
 import { Maybe } from "@aca/shared/types";
@@ -281,13 +280,6 @@ export async function createAndTrackRequestInSlack({
       conversationId,
       token,
       messageTs: messageTs ?? undefined,
-    });
-  }
-
-  if (owner) {
-    trackBackendUserEvent(owner.id, "Created Request", {
-      origin: origin,
-      topicName: topic.name,
     });
   }
 }

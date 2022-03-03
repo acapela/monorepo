@@ -1,6 +1,5 @@
 import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { identifyBackendUser, identifyBackendUserTeam } from "@aca/shared/backendAnalytics";
 
 import { HasuraEvent } from "../hasura";
 
@@ -23,16 +22,16 @@ export async function handleUserUpdates(event: HasuraEvent<User>) {
     });
 
     // for the time being, we only want to track the first team a user joins
-    if (!hadTeamBeforeUpdate) {
-      identifyBackendUser(userNow.id, {
-        id: userNow.id,
-        name: userNow.name,
-        email: userNow.email,
-        createdAt: userNow.created_at,
-        avatar: userNow.avatar_url,
-        isSlackInstalled: false,
-      });
-      identifyBackendUserTeam(userNow.id, team.id);
-    }
+    // if (!hadTeamBeforeUpdate) {
+    //   identifyBackendUser(userNow.id, {
+    //     id: userNow.id,
+    //     name: userNow.name,
+    //     email: userNow.email,
+    //     createdAt: userNow.created_at,
+    //     avatar: userNow.avatar_url,
+    //     isSlackInstalled: false,
+    //   });
+    //   identifyBackendUserTeam(userNow.id, team.id);
+    // }
   }
 }

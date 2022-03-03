@@ -1,4 +1,3 @@
-import { updatedDiff } from "deep-object-diff";
 import { get } from "lodash";
 
 import { updateHomeView } from "@aca/backend/src/slack/home-tab";
@@ -6,34 +5,12 @@ import { tryUpdateTaskSlackMessages } from "@aca/backend/src/slack/live-messages
 import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
 import { Topic, TopicMember, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { isEqualForPick } from "@aca/shared/object";
 
 import { HasuraEvent } from "../hasura";
 import { createClosureNotificationMessage } from "../notifications/bodyBuilders/topicClosed";
 import { sendNotificationPerPreference } from "../notifications/sendNotification";
 import { backendGetTopicUrl } from "./url";
-
-function trackTopicChanges(event: HasuraEvent<Topic>) {
-  if (!event.userId) return;
-  const topicId = event.item.id;
-  const changes = updatedDiff(event.itemBefore || {}, event.item || {}) as Topic;
-  let key: keyof Topic;
-  for (key in changes) {
-    const value = changes[key];
-    switch (key) {
-      case "closed_by_user_id":
-        trackBackendUserEvent(event.userId, value ? "Closed Request" : "Reopened Request", { topicId });
-        break;
-      case "archived_at":
-        trackBackendUserEvent(event.userId, value ? "Archived Request" : "Unarchived Request", { topicId });
-        break;
-      case "name":
-        trackBackendUserEvent(event.userId, "Renamed Request", { topicId });
-        break;
-    }
-  }
-}
 
 async function updateSlackHomeTab(item: Topic) {
   const slackInstallation = await db.team_slack_installation.findFirst({
@@ -62,13 +39,6 @@ async function updateSlackHomeTab(item: Topic) {
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (event.type === "create") {
-    // This is a test event that will duplicate all the other create topic events.
-    // If the sum of all other origins don't add up to "unknown", then this is a hint to the issue
-    // https://linear.app/acapela/issue/ACA-862/research-if-our-analitycs-is-blocked-validate-privacy-blockers
-    if (event.userId) {
-      trackBackendUserEvent(event.userId, "Created Request", { origin: "unknown", topicName: event.item.name });
-    }
-
     const user_id = event.item.owner_id;
     const topic_id = event.item.id;
     const hasTopicOwnerBeenAddedAsMember = await db.topic_member.findFirst({
@@ -91,7 +61,6 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
 
     await updateSlackHomeTab(event.item);
   } else if (event.type === "update") {
-    trackTopicChanges(event);
     await Promise.all([notifyTopicUpdates(event), updateTopicEvents(event)]);
   }
 }

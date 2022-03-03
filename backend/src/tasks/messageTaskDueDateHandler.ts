@@ -7,7 +7,6 @@ import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages
 import { backendGetTopicUrl } from "@aca/backend/src/topics/url";
 import { MessageTaskDueDate, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 
 import { HasuraEvent } from "../hasura";
@@ -59,11 +58,6 @@ export async function handleTaskDueDateChanges(event: HasuraEvent<MessageTaskDue
   }
 
   if (event.item.due_at !== event.itemBefore?.due_at) {
-    trackBackendUserEvent(event.userId, "Added Due Date", {
-      topicId: topic.id,
-      messageId,
-      origin: "web-app",
-    });
     await Promise.all([
       tryUpdateTopicSlackMessage(topic.id),
       tryUpdateTaskSlackMessages({

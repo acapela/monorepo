@@ -4,9 +4,8 @@ import { LiveTaskMessage, tryUpdateTaskSlackMessages } from "@aca/backend/src/sl
 import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
 import { Task, Topic, User, db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { isEqualForPick } from "@aca/shared/object";
-import { MENTION_TYPE_LABELS, MentionType, RequestType } from "@aca/shared/requests";
+import { MENTION_TYPE_LABELS, MentionType } from "@aca/shared/requests";
 
 import { backendGetTopicUrl } from "../topics/url";
 
@@ -93,12 +92,6 @@ async function onTaskCreation(task: Task) {
     });
   }
 
-  trackBackendUserEvent(fromUser.id, "Created Task", {
-    taskType: task.type as RequestType,
-    topicId: topic.id,
-    mentionedUserId: toUser.id,
-  });
-
   await sendTaskNotification(topic, task, toUser, fromUser);
 }
 
@@ -117,7 +110,7 @@ async function getTopicHasOnlySelfAssignedTasks(topic: Topic) {
   return notTopicOwnerTasksCount === 0;
 }
 
-async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: UpdateHasuraEvent<Task>) {
+async function onTaskUpdate({ item: task, itemBefore: taskBefore }: UpdateHasuraEvent<Task>) {
   const topic = await db.topic.findFirst({ where: { message: { some: { id: task.message_id } } } });
 
   assert(topic, `must have topic for message ${task.message_id}`);
@@ -128,18 +121,6 @@ async function onTaskUpdate({ item: task, itemBefore: taskBefore, userId }: Upda
       message: { task: { some: { id: task.id } } },
     });
   }
-
-  const isNewlyDone = task.done_at && task.done_at !== taskBefore.done_at;
-  if (userId && isNewlyDone) {
-    // userId is null when the update is not triggered through the frontend
-    const wasTaskCompleteBeforeToggle = taskBefore.done_at;
-    trackBackendUserEvent(userId, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
-      taskType: task.type as RequestType,
-      topicId: topic.id,
-      origin: "unknown",
-    });
-  }
-
   await tryUpdateTopicSlackMessage(topic.id);
 
   const amountOfOpenTasksLeft = await db.task.count({

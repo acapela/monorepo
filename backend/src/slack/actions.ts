@@ -6,8 +6,6 @@ import { Blocks, Modal } from "slack-block-builder";
 
 import { db } from "@aca/db";
 import { assertDefined } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
-import { RequestType } from "@aca/shared/requests";
 import { routes } from "@aca/shared/routes";
 
 import { slackClient } from "./app";
@@ -20,9 +18,6 @@ import { ViewRequestModal } from "./view-request-modal/ViewRequestModal";
 
 export function setupSlackActionHandlers(slackApp: App) {
   slackApp.action<BlockButtonAction>(SlackActionIds.CreateTopic, async ({ ack, context, body }) => {
-    const token = assertToken(context);
-
-    const user = await findUserBySlackId(token, body.user.id);
     await openCreateRequestModal(assertToken(context), body.trigger_id, {
       slackUserId: body.user.id,
       slackTeamId: assertDefined(body.team?.id, "must have slack team"),
@@ -30,10 +25,6 @@ export function setupSlackActionHandlers(slackApp: App) {
     });
 
     await ack();
-
-    if (user) {
-      trackBackendUserEvent(user.id, "Used Slack Home Tab New Request", { slackUserName: body.user.name });
-    }
   });
 
   slackApp.action<BlockButtonAction>(/open-external-url/, async ({ ack }) => {
@@ -198,9 +189,8 @@ export function setupSlackActionHandlers(slackApp: App) {
     await ack();
   });
 
-  slackApp.action<BlockButtonAction>(SlackActionIds.TrackEvent, async ({ ack, payload }) => {
+  slackApp.action<BlockButtonAction>(SlackActionIds.TrackEvent, async ({ ack }) => {
     await ack();
-    trackBackendUserEvent(...(JSON.parse(payload.value) as [never, never]));
   });
 
   slackApp.action<BlockButtonAction>(/toggle_task_done_at:.*/, async ({ ack, action, body, context }) => {
@@ -268,14 +258,6 @@ export function setupSlackActionHandlers(slackApp: App) {
     if (isFromViewRequestModal || slackOrigin == "slack-home-tab") {
       // Updating homeview as task may have moved to open
       await updateHomeView(assertDefined(context.botToken, "must have bot token"), body.user.id);
-    }
-
-    if (user) {
-      trackBackendUserEvent(user.id, wasTaskCompleteBeforeToggle ? "Marked Task As Not Done" : "Marked Task As Done", {
-        taskType: task.type as RequestType,
-        topicId: task.message.topic_id,
-        origin: slackOrigin,
-      });
     }
   });
 

@@ -1,5 +1,3 @@
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
-
 import { assertToken } from "../utils";
 import { createAndTrackRequestInSlack } from "./createRequestInSlack";
 import { requestSlackAuthorizedOrOpenAuthModalForMessageShortcut } from "./requestSlackAuthorized";
@@ -11,7 +9,7 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     context,
     client,
     body: {
-      user: { id: slackUserId, team_id: slackTeamId, name: slackUserName },
+      user: { id: slackUserId, team_id: slackTeamId },
       trigger_id: triggerId,
     },
     ack,
@@ -58,6 +56,4 @@ export async function handleMessageSelfRequestShortcut(request: MessageShortcutR
     triggerId,
     botToken: context.botToken,
   });
-
-  trackBackendUserEvent(authInfo.user.id, "Used Slack Self Request Message Action", { slackUserName });
 }
