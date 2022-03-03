@@ -8,6 +8,7 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
+import { accountEntity } from "./account";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
@@ -51,6 +52,7 @@ export const appClientDbEntities = {
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
   notificationJira: notificationJiraEntity,
+  account: accountEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
 };
