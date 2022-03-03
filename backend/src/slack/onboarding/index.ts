@@ -1,10 +1,8 @@
 import { Blocks, Elements, Message as SlackMessage } from "slack-block-builder";
 
-import { backendUserEventToJSON } from "@aca/shared/backendAnalytics";
-
 import { SlackActionIds } from "../utils";
 
-export function NewUserOnboardingMessage(slackTeamId: string, currentUserId: string) {
+export function NewUserOnboardingMessage(slackTeamId: string) {
   return SlackMessage()
     .blocks(
       Blocks.Section({ text: "Hi there 🤗" }),
@@ -42,7 +40,6 @@ export function NewUserOnboardingMessage(slackTeamId: string, currentUserId: str
         })
           .primary(true)
           .actionId(SlackActionIds.TrackEvent)
-          .value(backendUserEventToJSON(currentUserId, "Opened Home Tab From Slack Onboarding"))
       ),
       Blocks.Divider(),
       Blocks.Section({
@@ -54,7 +51,6 @@ export function NewUserOnboardingMessage(slackTeamId: string, currentUserId: str
         })
           .primary(true)
           .actionId(SlackActionIds.TrackEvent)
-          .value(backendUserEventToJSON(currentUserId, "Opened Gallery From Slack Onboarding"))
       ),
       Blocks.Divider(),
       Blocks.Section({
