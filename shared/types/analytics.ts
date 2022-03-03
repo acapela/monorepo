@@ -1,105 +1,89 @@
-import { Message_Type_Enum } from "@aca/gql";
+import { PickByValue } from "utility-types";
 
-import { RequestType } from "../requests";
-import { Maybe } from "../types";
+import { Maybe } from "@aca/shared/types";
 
-export type Origin =
-  | "slack-modal-slash-command"
-  | "slack-quick-slash-command"
-  | "slack-global-shortcut"
-  | "slack-live-message"
-  | "slack-quick-message-action"
-  | "slack-modal-message-action"
-  | "slack-home-tab"
-  | "slack-view-request-modal"
-  | "web-app"
-  | "landing-page"
-  | "unknown";
+export type PlanType = "trial" | "free" | "premium";
 
 /**
- * Map of tracking event types with their required payload.
- * Use past tense and first letter uppercased for the event type.
+ * Map of tracking event types with their required parameters.
+ * Use past tense and Title Case event names for new types.
+ * https://intercom.help/junedotso/en/articles/3720543-name-an-event
  */
 export type AnalyticsEventsMap = {
   // Account related events
 
-  // team created
-  "Account Created": { teamName: string };
-  // unused for now - would be in case a team gets deleted
-  "Account Deleted": { teamName: string };
-  "Signed Up": void;
-  "Signed In": void;
-  "Signed Out": void;
-  // invited a new team mate
-  "Invite Sent": { email: string; teamId: string; origin: "webapp" | "slack" };
-  "Deleted Invite": { email: string; teamId: string };
-  "Resent Team Invitation": { teamId: string; email: string };
-  // invitation accepted
-  "Account Added User": { teamId: string };
+  // team created - unused for now
+  "Account Created": { account_name: string };
+  // team deleted - unused for now
+  "Account Deleted": { account_name: string };
+  "Signed Up": {
+    type: "organic" | "invited";
+    email: string;
+    first_name: Maybe<string>;
+    last_name: Maybe<string>;
+    name: string; // Full name of a user
+  };
+  // unused for now?
+  "Logged In": void;
+  // unused for now?
+  "Logged Out": void;
+  // to be implemented on the settings page soon
+  "Invite Sent": { invitee_email: string };
+  // to be implemented later
+  "Account Added User": { role: "owner" | "admin" | "member" };
   // delete a team member from team management space
-  "Account Removed User": { teamId: string; userId: string };
-  // should be called simultanously with Account Created for now
-  "Trial Started": { teamName: string };
-  // can be ignored for now
-  "Trial Ended": { teamName: string };
+  "Account Removed User": void;
+  // to be implemented later
+  "Trial Started": { trial_start_date: Date; trial_end_date: Date; plan_name: PlanType };
+  // to be implemented later
+  "Trial Ended": { trial_start_date: Date; trial_end_date: Date; plan_name: PlanType };
+  // to be implemented later
+  "Plan Upgraded": { plan_start_date: Date; plan_name: PlanType };
+  // to be implemented later
+  "Plan Downgraded": { plan_end_date: Date; plan_name: PlanType };
 
-  // Topic related events
+  // Feature related events
 
-  "Created Request": {
-    origin: Origin;
-    topicName: string;
-  };
-  "Reopened Request": { topicId: string };
-  "Closed Request": { topicId: string };
-  // TODO: implement once we add delete functionality back
-  "Deleted Request": { topicId: string };
-  // we are not tracking automatic archives
-  "Archived Request": { topicId: string };
-  "Unarchived Request": { topicId: string };
-  "Renamed Request": { topicId: string };
+  "Notification Resolved": { notification_id: string };
+  "Notification Snoozed": { notification_id: string };
 
-  // Message related events
+  // Navigation related events
 
-  "Sent Message": { messageType: Message_Type_Enum; isReply: boolean; hasAttachments: boolean };
-  "Edited Message": { messageId: string };
-  "Deleted Message": { messageId: string };
-  "Reacted To Message": { messageId: string; reactionEmoji: string };
+  "App Opened": void;
+  "Settings Opened": void;
+  "Snoozed Notifications Opened": void;
+  "Resolved Notifications Opened": void;
+  "Notification Deeplink Opened": { service_name: string | undefined };
+  "Notification Group Toggled": void;
 
-  // Mention and task related events
-
-  "Created Task": { taskType: RequestType; topicId: string; mentionedUserId: string };
-  "Marked Task As Done": {
-    taskType: RequestType;
-    topicId: string;
-    origin: Origin;
-  };
-  "Marked Task As Not Done": {
-    taskType: RequestType;
-    topicId: string;
-    origin: Origin;
-  };
-
-  "Added Due Date": { topicId: string; messageId: string; origin: Origin };
-
-  "Opened App": { currentTeamId: string; loadingTime: number };
-
-  // Slack
-  "Added Team Slack Integration": { slackTeamId: string; teamId: string };
-  "Removed Team Slack Integration": { teamId: string };
-  "Added User Slack Integration": { slackTeamId: string; teamId: string };
-  "Used Slack Global Shortcut": { slackUserName: string };
-  "Used Slack Message Action": { slackUserName: string };
-  "Used Slack Self Request Message Action": { slackUserName: string };
-  "Used Slack Slash Command": { slackUserName: string; commandName: string };
-  "Used Slack Home Tab New Request": { slackUserName: string };
-  "Opened Webapp From Slack Home Tab": void;
-  "Opened Gallery From Slack Onboarding": void;
-  "Opened Home Tab From Slack Onboarding": void;
+  // Integration related events
+  "Linear Integration Added": void;
+  "Figma Integration Added": void;
+  "Slack Integration Added": void;
+  "Notion Integration Added": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
 
+type AnalyticsEventsWithoutData = PickByValue<AnalyticsEventsMap, void>;
+
 export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEventsMap[Name];
+
+export type AnalyticsEvent<Name extends AnalyticsEventName> = {
+  type: Name;
+} & { payload: AnalyticsEventPayload<Name> };
+
+export type AnyAnalyticsEvent = AnalyticsEvent<AnalyticsEventName>;
+
+export type AnalyticsEventInput = keyof AnalyticsEventsWithoutData | AnalyticsEvent<AnalyticsEventName>;
+
+export function resolveAnalyticsEventInput(input: AnalyticsEventInput): AnalyticsEvent<AnalyticsEventName> {
+  if (typeof input === "string") {
+    return { type: input } as AnalyticsEvent<AnalyticsEventName>;
+  }
+
+  return input;
+}
 
 export type AnalyticsGroupsMap = {
   Team: {
@@ -107,18 +91,23 @@ export type AnalyticsGroupsMap = {
     id: string;
     name: string;
     slug: string;
-    plan: "trial" | "free" | "premium";
-    createdAt: Date;
-    isSlackInstalled: boolean;
+    plan: PlanType;
+    created_at: Date;
   };
 };
 
 export type AnalyticsUserProfile = {
-  // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   id: string;
   name: string;
   email: string;
-  createdAt: Date;
-  avatar?: Maybe<string>; // url to a publicly hosted avatar
-  isSlackInstalled: boolean;
+  created_at: Date;
+  avatar?: Maybe<string>;
+  slack_installed_at?: Date;
+  notion_installed_at?: Date;
+  figma_installed_at?: Date;
+  linear_installed_at?: Date;
+  // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
+  // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
+  first_name?: Maybe<string>;
+  last_name?: Maybe<string>;
 };
