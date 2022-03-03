@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
 import { Account, db } from "@aca/db";
@@ -142,6 +143,7 @@ export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, 
     } else {
       logger.error(`Failed making jira api call - unknown error`, error.message);
     }
+    Sentry.captureException(e);
   }
 
   if (response) {
