@@ -12,6 +12,8 @@ import { theme } from "@aca/ui/theme";
 //@ts-ignore
 import figma from "./figma.svg";
 //@ts-ignore
+import jira from "./jira.svg";
+//@ts-ignore
 import linear from "./linear.svg";
 //@ts-ignore
 import notion from "./notion.svg";
@@ -40,6 +42,10 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
 
   if (notification.__typename === "notification_linear") {
     return { icon: linear, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_jira_issue") {
+    return { icon: jira, isInverted: false };
   }
 }
 
