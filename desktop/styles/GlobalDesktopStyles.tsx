@@ -7,15 +7,14 @@ export const GlobalDesktopStyles = createGlobalStyle`
     --pointer: default;
     -webkit-app-region: no-drag;
   }
-
-  body.main-window {
-    ${theme.colors.layout.background.asBgWithReadableText};
+  body, html {
+    margin: 0;
   }
 
   body, html, #root {
     min-height: 100vh;
     max-height: 100vh;
-    margin: 0;
+    
     ${theme.colors.text.asColor};
   }
 
@@ -27,6 +26,7 @@ export const GlobalDesktopStyles = createGlobalStyle`
 
   * {
     cursor: default;
+    user-select: none;
   }
 
   * {

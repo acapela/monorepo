@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
@@ -12,10 +14,12 @@ import { isNotNullish } from "@aca/shared/nullish";
 interface DefineListConfig {
   id: string;
   name: string;
+  icon?: ReactNode;
   isCustom?: boolean;
   filter?: (notification: NotificationEntity) => boolean;
   getNotifications?: () => NotificationEntity[];
   listEntity?: NotificationListEntity;
+  dontShowCount?: boolean;
 }
 
 // For non-grouped notifications the index is a single number
@@ -29,6 +33,8 @@ export function defineNotificationsList({
   filter,
   getNotifications,
   listEntity,
+  icon,
+  dontShowCount = false,
 }: DefineListConfig) {
   assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
@@ -164,6 +170,8 @@ export function defineNotificationsList({
     getPreviousNotification,
     getNotificationsToPreload,
     listEntity,
+    icon,
+    dontShowCount,
   };
 }
 

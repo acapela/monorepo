@@ -43,6 +43,6 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
 
 const UIHolder = styled(PresenceAnimator)<{}>`
   ${theme.colors.panels.popover.asBgWithReadableText};
-  ${theme.box.popover};
+  ${theme.box.panel.primaryPopover.padding.radius};
   ${theme.radius.panel};
 `;

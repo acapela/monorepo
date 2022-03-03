@@ -41,8 +41,7 @@ const UIClient = styled.div`
   ${theme.spacing.actions.asGap}
   ${theme.colors.layout.background.interactive}
   ${theme.transitions.hover()}
-  ${theme.box.item};
-  ${theme.radius.button}
+  ${theme.box.items.heroItem.padding.radius};
 
   align-items: center;
 `;

@@ -25,7 +25,6 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
-import { SystemBar } from "./SystemBar";
 
 const rootElement = document.getElementById("root");
 
@@ -50,7 +49,6 @@ function App() {
             <TooltipsRenderer />
             <ToastsRenderer />
             <ServiceWorkerConsolidation />
-            <SystemBar />
             <RootErrorBoundary>
               <ToastsAndCommunicatesView />
               <PeekView />

@@ -100,7 +100,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
 
   ${theme.typo.action.regular.readingLineHeight.medium};
   ${theme.transitions.hover()};
-  ${theme.box.selectOption};
+  ${theme.box.items.selectItem.padding.size.radius};
 
   ${theme.colors.panels.popover.interactive}
 

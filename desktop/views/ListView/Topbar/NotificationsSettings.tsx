@@ -1,16 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 
-import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
-import { getDb } from "@aca/desktop/clientdb";
-import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
+import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { TopBarButton } from "@aca/desktop/ui/systemTopBar/TopBarButton";
 import { styledObserver } from "@aca/shared/component";
 import { DAY, HOUR, MINUTE } from "@aca/shared/time";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
-import { theme } from "@aca/ui/theme";
+import { IconBell } from "@aca/ui/icons";
 
 interface Props {
-  listId: string;
+  list: NotificationListEntity;
   className?: string;
 }
 
@@ -28,9 +27,7 @@ const notificationIntervalOptions: NotificationsIntervalOption[] = [
   { label: `Once a day`, intervalMs: DAY },
 ];
 
-export const ListEditTools = styledObserver(({ listId, className }: Props) => {
-  const list = getDb().notificationList.assertFindById(listId);
-
+export const ListNotificationsSettings = styledObserver(({ list, className }: Props) => {
   const selectedInterval =
     notificationIntervalOptions.find(
       (intervalOption) => intervalOption.intervalMs === list.notifications_interval_ms
@@ -46,15 +43,11 @@ export const ListEditTools = styledObserver(({ listId, className }: Props) => {
         onChange={(intervalOption) => {
           list.update({ notifications_interval_ms: intervalOption.intervalMs });
         }}
-      />
-      <ActionIconButton action={renameNotificationList} target={list} showTitleInTooltip />
-      <ActionIconButton action={deleteNotificationList} target={list} showTitleInTooltip kind="primarySubtle" />
+      >
+        <TopBarButton icon={<IconBell />} indicateNotification={!!list.notifications_interval_ms} />
+      </SingleOptionDropdown>
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled.div`
-  display: flex;
-  align-items: center;
-  ${theme.spacing.actions.asGap}
-`;
+const UIHolder = styled.div``;

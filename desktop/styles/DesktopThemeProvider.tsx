@@ -1,14 +1,15 @@
 import { observer } from "mobx-react";
-import React, { PropsWithChildren, useLayoutEffect } from "react";
+import React, { PropsWithChildren } from "react";
 import { ThemeProvider } from "styled-components";
 
 import { uiStore } from "@aca/desktop/store/ui";
+import { useDependencyChangeLayoutEffect } from "@aca/shared/hooks/useChangeEffect";
 import { darkTheme, defaultTheme } from "@aca/ui/theme";
 
 export const DesktopThemeProvider = observer(function AppThemeProvider({ children }: PropsWithChildren<{}>) {
   const selectedTheme = uiStore.isInDarkMode || uiStore.isDisplayingZenImage ? darkTheme : defaultTheme;
 
-  useLayoutEffect(() => {
+  useDependencyChangeLayoutEffect(() => {
     document.body.classList.add("no-transitions");
 
     setTimeout(() => {

@@ -7,7 +7,6 @@ import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { actionResultChannel, runAction } from "@aca/desktop/domains/runAction";
 import { authStore } from "@aca/desktop/store/auth";
-import { uiStore } from "@aca/desktop/store/ui";
 import { getObjectKey } from "@aca/shared/object";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
@@ -55,7 +54,6 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
         commandMenuStore.session = null;
         return;
       }
-      uiStore.isSidebarOpened = false;
       commandMenuStore.session = createDefaultCommandMenuSession();
     })
   );

@@ -75,3 +75,7 @@ export function useIsPhone() {
 
   return isPhone;
 }
+
+export type ResponsiveValues<T> = {
+  [key in keyof T]: [T[key], T[key]];
+};

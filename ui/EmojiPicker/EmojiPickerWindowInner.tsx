@@ -357,7 +357,7 @@ const UISearch = styled.div``;
 const UISearchInput = styled.input`
   ${theme.colors.panels.popover.border.asBg};
   ${theme.typo.content.resetLineHeight};
-  ${theme.box.item};
+  ${theme.box.control.regular.padding.size};
   ${theme.radius.button};
   width: 100%;
   color: #fff;

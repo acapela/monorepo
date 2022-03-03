@@ -59,11 +59,7 @@ export const FieldWithLabel = styledForwardRef<HTMLDivElement, Props>(function F
 const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   position: relative;
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  padding-left: 16px;
-  padding-right: 16px;
-  gap: 4px;
+  ${theme.box.control.regular.padding.size.radius};
 
   width: 100%;
 
@@ -79,10 +75,8 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
           border: 1px solid ${theme.colors.layout.background.border};
         `}
   box-sizing: border-box;
-  ${theme.radius.secondaryItem};
 
   outline: none;
-  min-height: 16px;
 
   ${(props) => {
     const { cursorType } = props;

@@ -4,21 +4,20 @@ import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import { getInboxLists, getInboxListsById, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/all";
+import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
+import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
-import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
 import { theme } from "@aca/ui/theme";
 
-import { ListEditTools } from "./EditTools";
-import { ListsTabBar } from "./ListsTabBar";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
+import { ListViewTopBar } from "./Topbar";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
@@ -28,8 +27,6 @@ interface Props {
 export const ListView = observer(({ listId }: Props) => {
   const displayedList = getInboxListsById(listId);
   const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
-
-  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? getInboxLists() : outOfInboxLists;
 
   const allNotifications = displayedList?.getAllNotifications() ?? [];
 
@@ -58,19 +55,16 @@ export const ListView = observer(({ listId }: Props) => {
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
+      <ListViewTopBar list={displayedList ?? undefined} />
       <UIHolder>
-        <UITabsBar>
-          <ListsTabBar activeListId={listId} lists={listsToDisplay} />
-        </UITabsBar>
-        {displayedList?.isCustom && displayedList.listEntity && (
+        {displayedList?.isCustom && (
           <UIListTools>
             <ListFilters
-              value={displayedList.listEntity?.typedFilters}
+              value={displayedList.listEntity?.typedFilters ?? []}
               onChange={(filters) => {
                 displayedList?.listEntity?.update({ filters });
               }}
             />
-            <ListEditTools listId={listId} />
           </UIListTools>
         )}
 
@@ -132,21 +126,16 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UINotifications = styled.div`
+  ${appViewContainerStyles};
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
 
-  padding-right: 15px;
   padding-bottom: 48px;
 
-  margin-top: 20px;
   padding-top: 10px;
-`;
-
-const UITabsBar = styled(HorizontalScroller)`
-  margin-right: 16px;
 `;
 
 const UINotificationZeroHolder = styled.div`
@@ -170,6 +159,7 @@ const UINotificationZeroPanel = styled.div`
 `;
 
 const UIListTools = styled.div`
+  ${appViewContainerStyles};
   display: flex;
   min-width: 0;
   ${theme.spacing.actions.asGap}
@@ -180,10 +170,6 @@ const UIListTools = styled.div`
 
   ${ListFilters} {
     flex-grow: 1;
-  }
-
-  ${ListEditTools} {
-    padding-top: 4px;
   }
 `;
 

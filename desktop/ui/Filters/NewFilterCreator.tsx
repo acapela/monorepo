@@ -7,7 +7,6 @@ import { getUUID } from "@aca/shared/uuid";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconPlus } from "@aca/ui/icons";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
-import { theme } from "@aca/ui/theme";
 
 import { FilterIntegrationPicker } from "./FilterIntegrationPicker";
 
@@ -66,6 +65,4 @@ export function NewFilterCreator({ singleType, onCreateRequest }: Props) {
 
 const UIHolder = styled.div``;
 
-const CompactPopoverPanel = styled(PopoverPanel)`
-  ${theme.box.popover}
-`;
+const CompactPopoverPanel = styled(PopoverPanel)``;

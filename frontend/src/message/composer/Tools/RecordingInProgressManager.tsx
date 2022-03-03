@@ -69,7 +69,7 @@ const UIHolder = styled.div<{}>`
 
 const UIControls = styled(HStack)<{}>`
   user-select: none;
-  ${theme.box.popover};
+  ${theme.box.panel.primaryPopover};
 
   ${theme.colors.panels.secondaryPopover.asBgWithReadableText};
   ${theme.radius.panel};

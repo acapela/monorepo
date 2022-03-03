@@ -65,6 +65,6 @@ export const OwnTaskCompletionButton = observer(function OwnTaskCompletionButton
 
 const TaskColoredButton = styled.div<{ $taskType: MentionType }>`
   ${baseButtonStyles};
-  ${theme.box.compactButton};
+  ${theme.box.control.compact};
   ${(props) => getMentionColor(props.$taskType).interactive};
 `;
