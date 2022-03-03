@@ -195,7 +195,7 @@ async function handleCreateAtlassianAccount(account: Account) {
       const previouslyRegisteredWebhooksForJiraCloudId = await db.jira_webhook.findFirst({
         where: {
           jira_account: {
-            atlassian_site_id: atlassianSite.atlassian_cloud_id,
+            atlassian_site_id: atlassianSite.id,
           },
         },
       });
@@ -242,7 +242,9 @@ async function handleDeleteAtlassianAccount(account: Account) {
     const areAccountsRemainingForJiraCloudId =
       (await db.jira_account.count({
         where: {
-          atlassian_site_id: jiraCloudId,
+          atlassian_site: {
+            atlassian_cloud_id: jiraCloudId,
+          },
         },
       })) > 0;
 
@@ -254,7 +256,9 @@ async function handleDeleteAtlassianAccount(account: Account) {
 
     const delegateJiraAccount = await db.jira_account.findFirst({
       where: {
-        atlassian_site_id: jiraCloudId,
+        atlassian_site: {
+          atlassian_cloud_id: jiraCloudId,
+        },
       },
       orderBy: {
         rest_req_last_used_at: "asc",
@@ -299,7 +303,7 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetail
     });
   }
 
-  console.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.id}`);
+  console.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.atlassian_cloud_id}`);
 }
 
 async function getAccessToken(account: Account): Promise<string> {
