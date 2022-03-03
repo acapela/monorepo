@@ -10,6 +10,7 @@ import { IconBell } from "@aca/ui/icons";
 
 interface Props {
   list: NotificationListEntity;
+  className?: string;
 }
 
 interface NotificationsIntervalOption {

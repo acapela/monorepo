@@ -54,7 +54,7 @@ const UISingleTask = styled.div<{}>`
   align-items: center;
   ${theme.spacing.actions.asGap};
   cursor: default;
-  ${theme.box.selectOption};
+  ${theme.box.items.selectItem};
 `;
 
 const UITextInfo = styled.div<{}>`

@@ -108,7 +108,7 @@ const OpenTopicSubtitle = observer(function OpenTopicSubtitle({ topic }: { topic
 const UIFeedItem = styled.a<{ $isHighlighted?: boolean }>`
   display: flex;
   width: 100%;
-  ${theme.box.item};
+  ${theme.box.control.regular};
   ${theme.spacing.actions.asGap};
   ${theme.radius.primaryItem}
 
