@@ -1,4 +1,4 @@
-import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs } from "@slack/bolt";
+import { App, Context, Middleware, SlackViewAction, SlackViewMiddlewareArgs, ViewOutput } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 import { differenceInHours } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
@@ -11,6 +11,7 @@ import { getLabelForPriority } from "@aca/shared/priorities";
 import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "@aca/shared/requests";
 import { checkHasAllSlackBotScopes } from "@aca/shared/slack";
 import { Maybe } from "@aca/shared/types";
+import { Origin } from "@aca/shared/types/analytics";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
@@ -189,6 +190,26 @@ export async function buildDateTimePerUserTimezone(
 
 export const PriorityLabel = (priority: null | string) =>
   priority ? `🚩 ${Md.bold("Priority")} ${getLabelForPriority(priority)}` : undefined;
+
+type SlackViewOrigin = Extract<
+  Origin,
+  "slack-live-message" | "slack-home-tab" | "slack-view-request-modal" | "unknown"
+>;
+
+export function getViewOrigin(view?: ViewOutput): SlackViewOrigin {
+  if (!view) {
+    return "slack-live-message";
+  }
+
+  if (view.type === "home") {
+    return "slack-home-tab";
+  }
+  if (view.type === "modal" && view.callback_id === "view_request_modal") {
+    return "slack-view-request-modal";
+  }
+
+  return "unknown";
+}
 
 export const isRequestDueSoon = (dueDate: MessageTaskDueDate | null) =>
   Boolean(dueDate && differenceInHours(dueDate.due_at, new Date()) <= 24);

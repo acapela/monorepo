@@ -4,6 +4,20 @@ import { Maybe } from "@aca/shared/types";
 
 export type PlanType = "trial" | "free" | "premium";
 
+export type Origin =
+  | "slack-modal-slash-command"
+  | "slack-quick-slash-command"
+  | "slack-global-shortcut"
+  | "slack-live-message"
+  | "slack-quick-message-action"
+  | "slack-modal-message-action"
+  | "slack-home-tab"
+  | "slack-view-request-modal"
+  | "web-app"
+  | "landing-page"
+  | "desktop-app"
+  | "unknown";
+
 /**
  * Map of tracking event types with their required parameters.
  * Use past tense and Title Case event names for new types.
