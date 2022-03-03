@@ -13,7 +13,6 @@ import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionBut
 import { theme } from "@aca/ui/theme";
 
 import { AccountSettings } from "./Account";
-import { ExperimentalSettings } from "./Experimental";
 import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
 
@@ -38,10 +37,6 @@ export const settingsSections: SettingsSection[] = [
   {
     id: "notifications",
     label: "Notifications",
-  },
-  {
-    id: "experimental",
-    label: "Experimental",
   },
 ];
 
@@ -86,7 +81,6 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
           <UIActiveSection>
             {sectionId === "integrations" && <IntegrationsManager />}
             {sectionId === "general" && <GeneralSettings />}
-            {sectionId === "experimental" && <ExperimentalSettings />}
             {sectionId === "notifications" && <NotificationsSettings />}
             {sectionId === "account" && <AccountSettings />}
             <UIVersionInfo>
