@@ -3,14 +3,16 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { createNotificationList, goToList } from "@aca/desktop/actions/lists";
+import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
 import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar";
+import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
 
-export const SIDEBAR_WIDTH = 240;
+export const SIDEBAR_WIDTH = 270;
 
 export const sidebarShowTransition = css`
   transition: 0.3s all;
@@ -25,6 +27,11 @@ export const Sidebar = observer(({ isOpened }: Props) => {
 
   return (
     <UIHolder ref={sideBarRef} $isOpened={isOpened}>
+      <UIWindowDragger
+        onDoubleClick={() => {
+          toggleMaximizeRequest();
+        }}
+      />
       <UIItems>
         <UIItemGroup>
           <UISidebarItem
@@ -32,17 +39,25 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             target={allNotificationsList}
             isActive={getExactIsRouteActive("list", { listId: "allNotifications" })}
             badgeCount={allNotificationsList.getAllNotifications().length}
+            additionalShortcut={["Meta", "1"]}
           />
         </UIItemGroup>
 
         <UIItemGroup>
           {getInboxLists()
             .filter((list) => list.id !== allNotificationsList.id)
-            .map((list) => {
+            .map((list, index) => {
               const isActive = getExactIsRouteActive("list", { listId: list.id });
               const count = list.getAllNotifications().length;
               return (
-                <UISidebarItem key={list.id} action={goToList} target={list} isActive={isActive} badgeCount={count} />
+                <UISidebarItem
+                  key={list.id}
+                  action={goToList}
+                  target={list}
+                  isActive={isActive}
+                  badgeCount={count}
+                  additionalShortcut={["Meta", `${index + 2}` as ShortcutKey]}
+                />
               );
             })}
         </UIItemGroup>
@@ -73,10 +88,7 @@ const UIHolder = styled.div<{ $isOpened: boolean }>`
   ${theme.radius.panel};
   z-index: 3;
 
-  padding-top: ${SYSTEM_BAR_HEIGHT}px;
   ${sidebarShowTransition};
-
-  transform: translateX(${(props) => (props.$isOpened ? 0 : -SIDEBAR_WIDTH)}px);
 `;
 
 const UIItemGroup = styled.div<{}>`
@@ -94,3 +106,8 @@ const UIItems = styled.div`
 `;
 
 const UISidebarItem = styled(SidebarItem)``;
+
+const UIWindowDragger = styled.div`
+  height: ${SYSTEM_BAR_HEIGHT}px;
+  ${theme.common.dragWindow};
+`;

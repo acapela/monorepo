@@ -61,7 +61,7 @@ export const ListView = observer(({ listId }: Props) => {
           <ListViewZenOverlay />
         </UINotificationZeroHolder>
       )}
-      <ListViewTopBar list={displayedList ?? undefined} />
+      <ListViewTopBar key={displayedList?.id} list={displayedList ?? undefined} />
       <UIHolder>
         {displayedList?.isCustom && (
           <UIListTools>
@@ -147,7 +147,7 @@ const UINotificationZeroHolder = styled.div`
   inset: 0;
   display: flex;
   flex-direction: column;
-  z-index: 100000;
+  z-index: 2;
   overflow: hidden;
 `;
 

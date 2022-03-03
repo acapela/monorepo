@@ -30,11 +30,13 @@ export const ListViewTopBar = observer(({ list }: Props) => {
       }
       titleNode={<UITitle>{list?.name}</UITitle>}
       targetActionItems={
-        <>
-          {list?.listEntity && <ListNotificationsSettings list={list.listEntity} />}
-          <TopBarActionButton action={renameNotificationList} />
-          <TopBarActionButton action={deleteNotificationList} />
-        </>
+        list?.listEntity && (
+          <>
+            <ListNotificationsSettings list={list.listEntity} />
+            <TopBarActionButton action={renameNotificationList} />
+            <TopBarActionButton action={deleteNotificationList} />
+          </>
+        )
       }
     ></SystemTopBar>
   );

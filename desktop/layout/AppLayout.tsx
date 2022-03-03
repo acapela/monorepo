@@ -3,12 +3,10 @@
 
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
-
-import { sidebarShowTransition } from "./TraySidebarLayout/Sidebar";
 
 interface Props {
   children: ReactNode;
@@ -20,8 +18,7 @@ export const AppLayout = observer(function AppLayout({ children, sidebar, footer
   const { isSidebarOpened } = uiStore;
 
   return (
-    <AppLayoutHolder className={uiStore.isDisplayingZenImage ? "zenImage" : ""}>
-      <SidebarOpenedGlobalStyles $isOpened={isSidebarOpened} />
+    <AppLayoutHolder>
       <UIMain>
         {sidebar && <UISidebar>{sidebar}</UISidebar>}
         <UIBody $isSidebarOpened={isSidebarOpened}>
@@ -32,12 +29,6 @@ export const AppLayout = observer(function AppLayout({ children, sidebar, footer
     </AppLayoutHolder>
   );
 });
-
-const SidebarOpenedGlobalStyles = createGlobalStyle<{ $isOpened: boolean }>`
-  #root {
-    ${sidebarShowTransition}
-  }
-`;
 
 const UISidebar = styled.div`
   display: flex;
@@ -60,9 +51,7 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
   ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
-const UIFooter = styled.div`
-  z-index: 2;
-`;
+const UIFooter = styled.div``;
 
 const AppLayoutHolder = styled.div<{}>`
   body.fullscreen & {

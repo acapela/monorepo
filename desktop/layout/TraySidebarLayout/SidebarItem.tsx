@@ -4,8 +4,11 @@ import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { IconFolder } from "@aca/ui/icons";
+import { Shortcut } from "@aca/ui/keyboard/Shortcut";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -14,6 +17,7 @@ interface Props {
   className?: string;
   isActive?: boolean;
   badgeCount?: number;
+  additionalShortcut?: ShortcutDefinition;
 }
 
 export const SidebarItem = observer(function SidebarItem({
@@ -22,6 +26,7 @@ export const SidebarItem = observer(function SidebarItem({
   className,
   isActive = false,
   badgeCount,
+  additionalShortcut,
 }: Props) {
   const context = createActionContext(target, { isContextual: true });
   const { name, icon = <IconFolder /> } = resolveActionData(action, context);
@@ -29,15 +34,26 @@ export const SidebarItem = observer(function SidebarItem({
     <UIHolder action={action} target={target} className={className} $isActive={isActive}>
       <UILabelBody>
         {icon && <UIIcon>{icon}</UIIcon>}
-        {name}
+        <UIName>{name}</UIName>
       </UILabelBody>
+
       {!!badgeCount && <UICount>{badgeCount}</UICount>}
+      {additionalShortcut && (
+        <Shortcut
+          shortcut={additionalShortcut}
+          noLabel
+          callback={() => {
+            runAction(action, context);
+          }}
+        />
+      )}
     </UIHolder>
   );
 });
 
 const UILabelBody = styled.div`
   ${theme.typo.content.medium};
+  min-width: 0;
   flex-grow: 1;
 
   display: flex;
@@ -67,14 +83,14 @@ const UIHolder = styled(ActionTrigger)<{ $isActive: boolean }>`
   }
 
   ${(props) => props.$isActive && activeStyles};
-
-  ${UILabelBody} {
-    /* ${theme.typo.secondaryTitle}; */
-  }
 `;
 
 const UIIcon = styled.div`
   font-size: 1.2em;
+`;
+
+const UIName = styled.div`
+  ${theme.common.ellipsisText};
 `;
 
 const activeStyles = css`
