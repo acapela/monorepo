@@ -7,6 +7,7 @@ import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
 
 import { captureJiraWebhook } from "./capturing";
 import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
@@ -111,7 +112,7 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
 }
 
 async function handleCreateAtlassianAccount(account: Account) {
-  console.info("Creating atlassian account");
+  logger.info("Creating atlassian account");
 
   await db.atlassian_refresh_token_expiry.create({
     data: { account: { connect: { id: account.id } }, expires_at: getRefreshTokenExpiresAt() },
@@ -207,12 +208,12 @@ async function handleCreateAtlassianAccount(account: Account) {
       }
     }
   } catch (e) {
-    console.error(e);
+    logger.error(e);
   }
 }
 
 async function handleDeleteAtlassianAccount(account: Account) {
-  console.info("Deleting atlassian account");
+  logger.info("Deleting atlassian account");
 
   const headers = await getHeaders(account);
 
@@ -303,7 +304,7 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetail
     });
   }
 
-  console.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.atlassian_cloud_id}`);
+  logger.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.atlassian_cloud_id}`);
 }
 
 async function getAccessToken(account: Account): Promise<string> {
@@ -311,7 +312,7 @@ async function getAccessToken(account: Account): Promise<string> {
     return account.access_token ?? "";
   }
 
-  console.info(`Atlassian access token for acapela account ${account.id} needs refreshing`);
+  logger.info(`Atlassian access token for acapela account ${account.id} needs refreshing`);
 
   const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
   return refreshTokenData.access_token;

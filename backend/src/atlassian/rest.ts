@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
 import { Account, db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
 
 import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookCreationResult } from "./types";
 import { refreshTokens } from "./utils";
@@ -98,7 +99,7 @@ export async function refreshAccountIfTokenExpired(account: Account) {
     return account;
   }
 
-  console.info(`Token from account ${account.id} needs refreshing`);
+  logger.info(`Token from account ${account.id} needs refreshing`);
 
   return refreshTokens(account);
 }
@@ -122,14 +123,14 @@ export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, 
   } catch (e) {
     const error = e as AxiosError;
     if (error.response) {
-      console.error(`Failed making jira api call`);
-      console.error(error.response.data);
-      console.error(error.response.status);
-      console.error(error.response.headers);
+      logger.error(`Failed making jira api call`);
+      logger.error(error.response.data);
+      logger.error(error.response.status);
+      logger.error(error.response.headers);
     } else if (error.request) {
-      console.error(`Failed making jira api call - no response received`, error.request);
+      logger.error(`Failed making jira api call - no response received`, error.request);
     } else {
-      console.error(`Failed making jira api call - unknown error`, error.message);
+      logger.error(`Failed making jira api call - unknown error`, error.message);
     }
   }
 

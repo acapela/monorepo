@@ -1,5 +1,6 @@
 import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { logger } from "@aca/shared/logger";
 
 import { getIssueWatchers, jiraRequest } from "./rest";
 import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
@@ -50,8 +51,6 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
   const watchersThatAreNotMentioned = (await getWatchers(jiraAccount, payload.issue.key)).filter(
     (watcherAccountId) => !atlassianAccountsMentioned.includes(watcherAccountId) && isNotCommentAuthor(watcherAccountId)
   );
-
-  console.info("Atlassian account watchers", watchersThatAreNotMentioned);
 
   const watchersToNotify = (
     await db.user.findMany({
@@ -139,7 +138,7 @@ async function getLeastRecentlyUsedAtlassianAccount(atlassianCloudUrl: string): 
     },
   });
 
-  assert(jiraAccount, "jira account not found for atlassianCloudUrl " + atlassianCloudUrl);
+  assert(jiraAccount, "jira account not found for atlassianCloudUrl " + atlassianCloudUrl, logger.error.bind(logger));
 
   return jiraAccount;
 }
