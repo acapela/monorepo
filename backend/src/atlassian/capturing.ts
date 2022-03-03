@@ -28,21 +28,27 @@ function extractMentionedAccountIds(text: string) {
   Possible new notification_jira_issue_type: "user_mentioned","comment_created" 
 */
 async function handleNewJiraComment(payload: JiraWebhookPayload) {
+  assert(payload.comment, "A comment must be included for jira comment webhooks");
+
   //e.g. https://acapela-team.atlassian.net
   const baseSitePath = payload.issue.self.split("/rest")[0];
-  const commentUrl = `${baseSitePath}/browse/${payload.issue.key}?focusedCommentId=${payload.comment?.id}`;
+  const commentUrl = `${baseSitePath}/browse/${payload.issue.key}?focusedCommentId=${payload.comment.id}`;
+
+  const commentAuthorId = payload.comment.author.accountId;
+
+  const isNotCommentAuthor = (atlassianAccountId: string) => atlassianAccountId !== commentAuthorId;
 
   // We're attempting to do a round-robin of access_token usage based on "least recently used access token"
   // The point is that we would like to distribute api rate limit "cost" of making an api call between
   // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
   // where it could reach rate limits really fast
   const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
-  const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "");
+  const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "").filter(isNotCommentAuthor);
 
   // Mention notifications are more important than watcher notifications
   // We're excluding mentions from watcher to prevent double notifications
   const watchersThatAreNotMentioned = (await getWatchers(jiraAccount, payload.issue.key)).filter(
-    (watcherAccountId) => !atlassianAccountsMentioned.includes(watcherAccountId)
+    (watcherAccountId) => !atlassianAccountsMentioned.includes(watcherAccountId) && isNotCommentAuthor(watcherAccountId)
   );
 
   console.info("Atlassian account watchers", watchersThatAreNotMentioned);
