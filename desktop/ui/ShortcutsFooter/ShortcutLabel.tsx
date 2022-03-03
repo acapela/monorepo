@@ -37,15 +37,10 @@ export const FooterShortcutLabel = observer(function FooterShortcutLabel({ actio
 });
 
 const UIHolder = styled(ActionTrigger)<{ $isEnabled: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
   min-width: 0;
-  ${theme.box.hint};
-  ${theme.radius.button};
+  ${theme.box.control.compact.padding.size.radius};
   ${theme.transitions.hover("all")};
-
-  ${theme.colors.layout.backgroundAccent.interactive};
+  ${theme.colors.layout.background.interactive};
 
   ${(props) =>
     !props.$isEnabled &&
@@ -69,8 +64,7 @@ const UIName = styled.div`
 
 export const UIShortcut = styled(ShortcutDescriptor)`
   ${theme.colors.layout.backgroundAccent.asBg};
-  padding: 3px;
   ${theme.transitions.hover("all")};
-  ${theme.radius.badge};
+  ${theme.box.panel.shortcut.padding.radius};
   ${theme.typo.action.regular.medium};
 `;

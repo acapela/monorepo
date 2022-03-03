@@ -39,7 +39,7 @@ createWindowEvent(
  */
 export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
-  isSidebarOpened: false,
+  isSidebarOpened: true,
   isInDarkMode: false,
   isDisplayingZenImage: false,
   isShowingPeekView: false,
@@ -91,7 +91,6 @@ export const uiStore = makeAutoObservable({
  * After each route change, make sure sidebar is closed and the zen image is removed.
  */
 desktopRouter.subscribe(() => {
-  uiStore.isSidebarOpened = false;
   uiStore.focusedTarget = null;
   uiStore.focusedNotification = null;
 

@@ -27,8 +27,7 @@ export function Toast({ title, description, action }: Props) {
 
 export const UIToast = styled(PresenceAnimator)`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
-  ${theme.box.previewPopover}
-  ${theme.radius.primaryItem}
+  ${theme.box.panel.primaryPopover.padding.radius}
   ${theme.shadow.modal}
   display: flex;
   flex-direction: column;

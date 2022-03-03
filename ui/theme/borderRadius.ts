@@ -6,7 +6,7 @@ function buildBorderRadiusStyle(sizeInPx: number) {
   `;
 }
 
-const primaryItem = buildBorderRadiusStyle(10);
+const primaryItem = buildBorderRadiusStyle(6);
 const secondaryItem = buildBorderRadiusStyle(6);
 
 export const radius = {

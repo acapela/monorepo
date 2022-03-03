@@ -35,8 +35,8 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIBody = styled.div`
-  ${theme.typo.content};
-  ${theme.common.ellipsisText}
+  ${theme.typo.content.resetLineHeight};
+  ${theme.common.ellipsisText};
 `;
 
 const UIIcon = styled.div<{}>`

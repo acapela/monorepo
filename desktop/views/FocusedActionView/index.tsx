@@ -48,7 +48,7 @@ const UIWindow = styled(PopPresenceAnimator)<{}>`
   ${theme.colors.layout.background.asBg};
   ${theme.radius.panel};
   ${theme.shadow.modal};
-  ${theme.box.pageCart};
+  ${theme.box.panel.pageCart.padding.radius};
   display: flex;
   flex-direction: column;
   justify-content: center;

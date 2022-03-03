@@ -3,36 +3,45 @@
 
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 
 //@ts-ignore
 import zenImage from "@aca/desktop/assets/zen/today.jpg";
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
+import { sidebarShowTransition } from "./TraySidebarLayout/Sidebar";
+
 interface Props {
   children: ReactNode;
-  tray: ReactNode;
-  footer: ReactNode;
+  sidebar?: ReactNode;
+  footer?: ReactNode;
 }
 
-export const AppLayout = observer(function AppLayout({ children, tray, footer }: Props) {
+export const AppLayout = observer(function AppLayout({ children, sidebar, footer }: Props) {
   const { isSidebarOpened } = uiStore;
 
   return (
     <AppLayoutHolder className={uiStore.isDisplayingZenImage ? "zenImage" : ""}>
+      <SidebarOpenedGlobalStyles $isOpened={isSidebarOpened} />
       <UIMain>
-        <UITray>{tray}</UITray>
-        <UIBody $isSidebarOpened={isSidebarOpened}>{children}</UIBody>
+        {sidebar && <UISidebar>{sidebar}</UISidebar>}
+        <UIBody $isSidebarOpened={isSidebarOpened}>
+          {children}
+          <UIFooter>{footer}</UIFooter>
+        </UIBody>
       </UIMain>
-      <UIFooter>{footer}</UIFooter>
     </AppLayoutHolder>
   );
 });
 
-const UITray = styled.div`
-  width: 72px;
-  min-width: 72px;
+const SidebarOpenedGlobalStyles = createGlobalStyle<{ $isOpened: boolean }>`
+  #root {
+    ${sidebarShowTransition}
+  }
+`;
+
+const UISidebar = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -49,11 +58,7 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
   flex-direction: column;
   min-width: 0;
 
-  ${(props) =>
-    props.$isSidebarOpened &&
-    css`
-      opacity: 0.5;
-    `}
+  ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
 const UIFooter = styled.div`
@@ -61,8 +66,6 @@ const UIFooter = styled.div`
 `;
 
 const AppLayoutHolder = styled.div<{}>`
-  padding-top: 48px;
-
   body.fullscreen & {
     padding-top: 24px;
   }

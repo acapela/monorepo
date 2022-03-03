@@ -169,13 +169,10 @@ const UIBody = styled(PopPresenceAnimator)`
   overflow: hidden;
 `;
 const UIInput = styled.input`
-  ${theme.typo.pageTitle};
-  background: none;
-  color: inherit;
-  border: none;
-  outline: none;
+  ${theme.common.transparentInput}
   width: 100%;
-  padding: 8px 24px;
+  ${theme.box.items.primarySelectItem.size.padding};
+  ${theme.typo.pageTitle};
   margin-bottom: 16px;
 
   ::placeholder {

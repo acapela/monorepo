@@ -4,7 +4,7 @@ import React from "react";
 import { uiStore } from "@aca/desktop/store/ui";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
-import { IconClockCross, IconClockZzz } from "@aca/ui/icons";
+import { IconClock, IconClockCross } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -31,7 +31,7 @@ export const snoozeNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["delay", "time"],
   canApply: canApplySnooze,
-  icon: <IconClockZzz />,
+  icon: <IconClock />,
   shortcut: ["Mod", "W"],
   handler() {
     return {
@@ -124,7 +124,7 @@ function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): D
 function convertDateSuggestionToAction(suggestion: DateSuggestion) {
   return defineAction({
     name: (ctx) => (ctx.isContextual ? suggestion.text : `Snooze until "${suggestion.text}"`),
-    icon: <IconClockZzz />,
+    icon: <IconClock />,
     group: currentNotificationActionsGroup,
     supplementaryLabel: () => niceFormatDateTime(suggestion.date),
     handler(context) {

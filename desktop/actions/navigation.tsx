@@ -8,11 +8,12 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { settingsSections } from "@aca/desktop/views/SettingsView";
 import {
   IconArrowLeft,
-  IconClockZzz,
+  IconChevronLeft,
+  IconChevronRight,
+  IconClock,
   IconCross,
-  IconFolderCheck,
   IconHome,
-  IconMenu,
+  IconListUnordered4,
   IconMonitor,
   IconSlidersHoriz,
 } from "@aca/ui/icons";
@@ -49,7 +50,7 @@ export const openNavigationMenu = defineAction({
   group: navigationActionsGroup,
   keywords: ["sidebar"],
   shortcut: ["Meta", "/"],
-  icon: <IconMenu />,
+  icon: () => (uiStore.isSidebarOpened ? <IconChevronLeft /> : <IconChevronRight />),
   handler() {
     uiStore.isSidebarOpened = !uiStore.isSidebarOpened;
   },
@@ -59,7 +60,6 @@ export const closeNavigationMenu = defineAction({
   name: "Close navigation menu",
   group: navigationActionsGroup,
   keywords: ["sidebar"],
-  shortcut: "Esc",
   icon: <IconCross />,
   canApply: () => uiStore.isSidebarOpened,
   handler() {
@@ -98,7 +98,7 @@ export const goToSettingSectionsActions = settingsSections.map((section) => {
 export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
-  icon: <IconFolderCheck />,
+  icon: <IconListUnordered4 />,
   analyticsEvent: trackingEvent("Resolved Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
@@ -109,7 +109,7 @@ export const goToResolved = defineAction({
 export const goToSnoozed = defineAction({
   name: "Show snoozed notifications",
   group: navigationActionsGroup,
-  icon: <IconClockZzz />,
+  icon: <IconClock />,
   analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
@@ -121,7 +121,7 @@ export const exitSettings = defineAction({
   name: "Exit settings",
   group: navigationActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: () => getIsRouteActive("settings") && !uiStore.isSidebarOpened,
+  canApply: () => getIsRouteActive("settings"),
   shortcut: ["Esc"],
   handler() {
     desktopRouter.navigate("home");

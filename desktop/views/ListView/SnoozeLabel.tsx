@@ -7,7 +7,7 @@ import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { assert } from "@aca/shared/assert";
 import { styledObserver } from "@aca/shared/component";
 import { niceFormatDateTime, relativeFormatDateTime } from "@aca/shared/dates/format";
-import { IconClockZzz } from "@aca/ui/icons";
+import { IconClock } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 export function isNotificationSnoozeEnded({ snoozed_until, last_seen_at, isSnoozed }: NotificationEntity) {
@@ -149,7 +149,7 @@ export const SnoozeLabel = styledObserver(function SnoozeLabel({
 
   return (
     <UIHolder className={className} $lifecycle={snoozeState.lifecycle} data-tooltip={snoozeState.tooltip}>
-      <IconClockZzz />
+      <IconClock />
       {snoozeState.displayedSnoozedTime && <span>{snoozeState.displayedSnoozedTime}</span>}
     </UIHolder>
   );
@@ -159,7 +159,6 @@ const UIHolder = styled.div<{ $lifecycle: SnoozeLifecycle }>`
   display: inline-flex;
   gap: 8px;
   padding: 4px;
-  height: 100%;
   ${theme.radius.button};
 
   svg {

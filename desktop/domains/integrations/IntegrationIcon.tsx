@@ -15,5 +15,15 @@ const UIIcon = styled.div`
   width: 1em;
   border-radius: 0.25em;
   background-size: cover;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    z-index: 2;
+    border-radius: inherit;
+  }
 `;

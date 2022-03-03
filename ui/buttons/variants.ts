@@ -7,7 +7,7 @@ export const buttonKindMap = {
     ${theme.colors.action.primary.withBorder.interactive}
   `,
   primarySubtle: css`
-    ${theme.colors.action.primary.opacity(0.05).asBg};
+    ${theme.colors.action.primary.withBorder.opacity(0.05).asBg};
     &:hover {
       ${theme.colors.action.primary.opacity(0.1).asBg};
     }
@@ -17,7 +17,8 @@ export const buttonKindMap = {
     ${theme.colors.action.secondary.withBorder.interactive}
   `,
   transparent: css`
-    ${theme.colors.action.transparent.interactive}
+    ${theme.colors.action.transparent.interactive};
+    color: inherit;
   `,
   backgroundAccent: css`
     ${theme.colors.layout.backgroundAccent.interactive};
@@ -30,21 +31,8 @@ export function getButtonKindtyles(variant: ButtonKind) {
   return buttonKindMap[variant];
 }
 
-export const buttonSizeMap = {
-  regular: css`
-    ${theme.box.button};
-  `,
-  compact: css`
-    ${theme.box.compactButton};
-  `,
-  link: css`
-    ${theme.box.linkButton};
-    ${theme.font.medium};
-  `,
-};
-
-export type ButtonSize = keyof typeof buttonSizeMap;
+export type ButtonSize = keyof typeof theme.box.control;
 
 export function getButtonSizeStyles(variant: ButtonSize) {
-  return buttonSizeMap[variant];
+  return theme.box.control[variant].padding.radius.size;
 }

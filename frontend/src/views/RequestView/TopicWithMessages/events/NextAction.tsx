@@ -63,7 +63,7 @@ const NextActionOpenTaskUser = observer(({ tasks }: { tasks: TaskEntity[] }) => 
 });
 
 const TextAction = (props: Omit<React.ComponentProps<typeof TextButton>, "kind" | "inline">) => (
-  <Button {...props} kind="primarySubtle" size="link" />
+  <Button {...props} kind="primarySubtle" />
 );
 
 const NextActionOwner = observer(({ topic }: { topic: TopicEntity }) => {

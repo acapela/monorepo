@@ -29,12 +29,8 @@ export const ListTabLabel = observer(function ListTabLabel({ isActive = false, l
 
 const UILabel = styled.div<{ $isActive: boolean }>`
   ${theme.font.medium};
-
   opacity: 0.8;
-
-  &:hover {
-    opacity: 1;
-  }
+  transition: inherit;
 `;
 
 const UIHolder = styled(ActionTrigger)`
@@ -45,11 +41,17 @@ const UIHolder = styled(ActionTrigger)`
   box-sizing: border-box;
 
   /* this allows enough space for the active indicator to be shown */
-  padding-bottom: 4px;
 
   ${theme.typo.secondaryTitle}
   ${theme.common.clickable};
+  ${theme.transitions.hover()}
   white-space: nowrap;
+
+  &:hover {
+    ${UILabel} {
+      opacity: 1;
+    }
+  }
 `;
 
 const UICount = styled.div`
@@ -61,7 +63,8 @@ const UIActiveIndicator = styled(PresenceAnimator)`
   box-sizing: border-box;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 100%;
   height: 2px;
+  margin-top: 2px;
   ${theme.colors.primary.asBg};
 `;

@@ -140,11 +140,11 @@ const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
     `}
 
   width: 100%;
-  padding: 5px 0;
   min-width: 220px;
   ${theme.radius.panel};
   ${theme.colors.panels.popover.asBgWithReadableText};
   ${theme.shadow.popover};
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
@@ -165,7 +165,7 @@ const UIDivider = styled.div<{}>`
 
 const UISearch = styled.input`
   ${theme.common.transparentInput}
-  ${theme.box.selectOption};
+  ${theme.box.control.regular.padding.size.radius};
   padding-top: 15px;
   padding-bottom: 15px;
 `;

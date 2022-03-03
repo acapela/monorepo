@@ -77,7 +77,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIItem = styled.div<{ isActive: boolean }>`
-  ${theme.box.selectOption};
+  ${theme.box.items.selectItem.padding.radius.size};
   display: flex;
   align-items: center;
   cursor: pointer;
