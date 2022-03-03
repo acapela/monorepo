@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 
-import { jiraAuthTokenBridgeValue, loginJiraBridge } from "@aca/desktop/bridge/auth";
+import { loginJiraBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { authWindowDefaultOptions } from "./utils";
@@ -16,9 +16,7 @@ export async function loginJira() {
   return new Promise<void>((resolve) => {
     window.webContents.on("did-navigate-in-page", async () => {
       if (window.webContents.getURL().includes("/auth/success")) {
-        jiraAuthTokenBridgeValue.set(true);
         window.close();
-
         resolve();
       }
     });
