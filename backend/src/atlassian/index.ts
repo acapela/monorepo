@@ -3,10 +3,8 @@ import { addDays } from "date-fns";
 import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
-import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
 import { captureJiraWebhook } from "./capturing";
@@ -30,14 +28,6 @@ router.post(WEBHOOK_PATH, async (req, res) => {
   res.statusCode = 200;
   res.end();
 });
-
-export async function getPublicBackendURL() {
-  if (IS_DEV) {
-    return `${await getDevPublicTunnelURL(3000)}/api/backend`;
-  }
-
-  return process.env.BACKEND_API_ENDPOINT;
-}
 
 /*
   When oauth is complete we grab the jira cloudId

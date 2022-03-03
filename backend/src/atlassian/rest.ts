@@ -1,10 +1,13 @@
-import { Account, db } from "@aca/db";
-import { logger } from "@aca/shared/logger";
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
+import { Account, db } from "@aca/db";
+import { IS_DEV } from "@aca/shared/dev";
+import { logger } from "@aca/shared/logger";
+
+import { getDevPublicTunnelURL } from "../localtunnel";
+import { WEBHOOK_PATH } from "./index";
 import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookCreationResult } from "./types";
 import { refreshTokens } from "./utils";
-import { WEBHOOK_PATH, getPublicBackendURL } from ".";
 
 interface JiraRestMeta {
   jiraCloudId: string;
@@ -16,6 +19,14 @@ interface RefreshTokenData {
   refresh_token: string;
   expires_in: number;
   scope: string;
+}
+
+async function getPublicBackendURL() {
+  if (IS_DEV) {
+    return `${await getDevPublicTunnelURL(3000)}/api/backend`;
+  }
+
+  return process.env.BACKEND_API_ENDPOINT;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
