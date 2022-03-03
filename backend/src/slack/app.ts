@@ -6,7 +6,6 @@ import _, { noop } from "lodash";
 
 import { db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
-import { identifyBackendUser, identifyBackendUserTeam, trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
@@ -133,8 +132,6 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           create: { team_id: teamId, data, slack_team_id: slackTeamId },
           update: { data },
         });
-        trackBackendUserEvent(userId, "Added Team Slack Integration", { slackTeamId, teamId });
-        identifyBackendUserTeam(userId, teamId, { isSlackInstalled: true });
       }
       const teamMember = await db.team_member.findFirst({ where: { user_id: userId, team_id: teamId } });
       if (!teamMember) {
@@ -149,8 +146,6 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         },
         update: { installation_data: slackUser, slack_user_id: slackUser.id },
       });
-      trackBackendUserEvent(userId, "Added User Slack Integration", { slackTeamId, teamId });
-      identifyBackendUser(userId, { isSlackInstalled: true });
     },
 
     async fetchInstallation(query) {

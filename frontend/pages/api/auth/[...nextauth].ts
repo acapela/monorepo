@@ -9,7 +9,6 @@ import SlackProvider from "next-auth/providers/slack";
 
 import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { Maybe } from "@aca/shared/types";
@@ -73,19 +72,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
 
       async signIn({ account }) {
-        // fetch user to start tracking them in Mixpanel, can happen in the background
-        db.user
-          .findFirst({
-            where: {
-              account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
-            },
-          })
-          .then(async (user) => {
-            if (user) {
-              trackFirstBackendUserEvent(user, "Signed In");
-            }
-          })
-          .catch((error) => Sentry.captureException(error));
+        // db.user
+        //   .findFirst({
+        //     where: {
+        //       account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
+        //     },
+        //   })
+        //   .then(async (user) => {
+        //     if (user) {
+        //       trackFirstBackendUserEvent(user, "Signed In");
+        //     }
+        //   })
+        //   .catch((error) => Sentry.captureException(error));
 
         try {
           // If our current account has no refresh token, try to update it if we have it now.
@@ -121,9 +119,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
         });
       },
-      signOut({ token }) {
-        trackBackendUserEvent(token.id as string, "Signed Out");
-      },
+      // signOut({ token }) {
+      //   trackBackendUserEvent(token.id as string, "Signed Out");
+      // },
     },
 
     cookies: {
@@ -205,7 +203,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       getUserByEmail: async (email) => toMaybeAdapterUser(email ? await db.user.findFirst({ where: { email } }) : null),
 
       async linkAccount(account) {
-        const [, user] = await db.$transaction([
+        await db.$transaction([
           db.account.create({
             data: {
               user_id: account.userId,
@@ -226,10 +224,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
           }),
         ]);
-        trackFirstBackendUserEvent(user, "Signed Up");
-        if (user.current_team_id) {
-          trackBackendUserEvent(user.id, "Account Added User", { teamId: user.current_team_id });
-        }
+        // trackFirstBackendUserEvent(user, "Signed Up");
+        // if (user.current_team_id) {
+        //   trackBackendUserEvent(user.id, "Account Added User", { teamId: user.current_team_id });
+        // }
       },
 
       createSession() {

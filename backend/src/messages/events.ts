@@ -1,11 +1,10 @@
 import { tryUpdateTaskSlackMessages } from "@aca/backend/src/slack/live-messages/LiveTaskMessage";
 import { tryUpdateTopicSlackMessage } from "@aca/backend/src/slack/live-messages/LiveTopicMessage";
-import { Message, MessageReaction, db } from "@aca/db";
+import { Message, db } from "@aca/db";
 import { Message_Type_Enum } from "@aca/gql";
 import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
 import { RichEditorNode } from "@aca/richEditor/content/types";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { getMentionNodesFromContent } from "@aca/shared/editor/mentions";
 import { logger } from "@aca/shared/logger";
 import { isEqualForPick } from "@aca/shared/object";
@@ -52,46 +51,13 @@ async function maybeUpdateSlackMessage(message: Message) {
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
   const userId = event.userId || event.item?.user_id || event.itemBefore?.user_id;
   assert(userId, `cannot find user_id for message ${event.item.id}`);
-  if (event.type === "create") {
-    // this is required for fetching the attachments
-    const message = await db.message.findUnique({
-      where: { id: event.item.id },
-      include: { attachment: true },
+  if (!isEqualForPick(event.item, event.itemBefore as Message, ["content"])) {
+    await tryUpdateTaskSlackMessages({
+      taskSlackMessage: { task: { message_id: event.item.id } },
+      message: { id: event.item.id },
     });
-    assert(message, `message ${event.item.id} must exist`);
-    trackBackendUserEvent(userId, "Sent Message", {
-      messageType: event.item.type as Message_Type_Enum,
-      hasAttachments: message.attachment.length !== 0,
-      isReply: !!event.item.replied_to_message_id,
-    });
-  } else if (event.type === "delete") {
-    trackBackendUserEvent(userId, "Deleted Message", {
-      messageId: event.item?.id,
-    });
-    return;
-  } else if (event.type === "update") {
-    trackBackendUserEvent(userId, "Edited Message", {
-      messageId: event.item?.id,
-    });
-    if (!isEqualForPick(event.item, event.itemBefore, ["content"])) {
-      await tryUpdateTaskSlackMessages({
-        taskSlackMessage: { task: { message_id: event.item.id } },
-        message: { id: event.item.id },
-      });
-    }
   }
 
   const message = event.item;
   await Promise.all([prepareMessagePlainTextData(message), addTopicMembers(message), maybeUpdateSlackMessage(message)]);
-}
-
-export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
-  if (event.type === "create") {
-    const userId = event.userId || event.item.user_id;
-    assert(userId, `cannot find user_id for message reaction ${event.item.id}`);
-    trackBackendUserEvent(userId, "Reacted To Message", {
-      messageId: event.item.message_id,
-      reactionEmoji: event.item.emoji,
-    });
-  }
 }

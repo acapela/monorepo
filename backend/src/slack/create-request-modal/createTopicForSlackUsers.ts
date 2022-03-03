@@ -4,7 +4,6 @@ import { uniq } from "lodash";
 import { sendInviteNotification } from "@aca/backend/src/inviteUser";
 import { Account, User, db } from "@aca/db";
 import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { MentionType, REQUEST_TYPES, RequestType } from "@aca/shared/requests";
 import { slugify } from "@aca/shared/slugify";
 import { Maybe } from "@aca/shared/types";
@@ -56,10 +55,6 @@ async function createAndInviteMissingUsers(
   ]);
   if (team && invitingUser) {
     await Promise.all(usersWithSlackIds.map(({ user }) => sendInviteNotification(user, team, invitingUser, false)));
-  }
-
-  for (const invitedUser of usersWithSlackIds) {
-    trackBackendUserEvent(invitingUserId, "Invite Sent", { email: invitedUser.user.email, teamId, origin: "slack" });
   }
 
   return usersWithSlackIds.map(({ slackUserId, user }) => ({ slackUserId, userId: user.id }));

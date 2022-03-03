@@ -1,5 +1,4 @@
 import { Team, db } from "@aca/db";
-import { identifyBackendUserTeam, trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
@@ -17,22 +16,22 @@ export async function handleTeamUpdates(event: HasuraEvent<Team>) {
     throw new UnprocessableEntityError(`User id of action caller: ${userId} does not match room creator: ${ownerId}`);
   }
 
-  if (event.type === "create") {
-    trackBackendUserEvent(ownerId, "Account Created", { teamName: team.name });
-    trackBackendUserEvent(ownerId, "Trial Started", { teamName: team.name });
-    // owner also counts as a user
-    trackBackendUserEvent(ownerId, "Account Added User", {
-      teamId: team.id,
-    });
-    identifyBackendUserTeam(ownerId, team.id, {
-      id: team.id,
-      name: team.name,
-      slug: team.slug,
-      plan: "trial",
-      createdAt: team.created_at,
-      isSlackInstalled: false,
-    });
-  }
+  // if (event.type === "create") {
+  //   trackBackendUserEvent(ownerId, "Account Created", { teamName: team.name });
+  //   trackBackendUserEvent(ownerId, "Trial Started", { teamName: team.name });
+  //   // owner also counts as a user
+  //   trackBackendUserEvent(ownerId, "Account Added User", {
+  //     teamId: team.id,
+  //   });
+  //   identifyBackendUserTeam(ownerId, team.id, {
+  //     id: team.id,
+  //     name: team.name,
+  //     slug: team.slug,
+  //     plan: "trial",
+  //     createdAt: team.created_at,
+  //     isSlackInstalled: false,
+  //   });
+  // }
 
   const creatorIsAlreadyParticipant = await getHasTeamMember(teamId, userId);
   if (creatorIsAlreadyParticipant) {
