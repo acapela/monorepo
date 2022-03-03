@@ -5,7 +5,7 @@ import React from "react";
 import { trackEvent } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { clearServiceCookiesBridge, connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
@@ -13,11 +13,6 @@ import { assertDefined } from "@aca/shared/assert";
 import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
 import { IntegrationClient } from "./types";
-
-const getIsConnected = () => {
-  const user = accountStore.user;
-  return Boolean(user && user.slackInstallation && user.slackInstallation.hasAllScopes);
-};
 
 const SLACK_URL_SCHEME = "slack://";
 
@@ -32,12 +27,9 @@ export const slackIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getIsConnected: () => {
-    return getIsConnected();
-  },
-  getCanConnect() {
-    return !!accountStore.user;
-  },
+  getCanConnect: () => !!accountStore.user,
+  getConnections: () =>
+    accountStore.user?.slackInstallations.all.map((i) => ({ id: i.team_id!, title: i.team_name! })) ?? [],
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
     if (inner?.__typename !== "notification_slack_message") {
@@ -64,15 +56,16 @@ export const slackIntegrationClient: IntegrationClient = {
     };
   },
   async connect() {
-    if (getIsConnected()) return;
-
     const url = await querySlackInstallationURL();
+
+    const getInstallationsCount = () => accountStore.user?.slackInstallations.count ?? 0;
+    const initialInstallationsCount = getInstallationsCount();
 
     const closeSlackInstallWindow = await connectSlackBridge({ url });
 
     return new Promise<void>((resolve) => {
       const stop = autorun(() => {
-        if (getIsConnected()) {
+        if (initialInstallationsCount < getInstallationsCount()) {
           if (closeSlackInstallWindow) {
             closeSlackInstallWindow();
             trackEvent("Slack Integration Added");
@@ -83,11 +76,8 @@ export const slackIntegrationClient: IntegrationClient = {
       });
     });
   },
-  async disconnect() {
-    if (getIsConnected()) {
-      await clearServiceCookiesBridge({ url: "https://slack.com" });
-      accountStore.user?.slackInstallation?.remove();
-    }
+  async disconnect(id) {
+    accountStore.user?.slackInstallations.findById(id)?.remove();
   },
 };
 

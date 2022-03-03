@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { connectIntegration, disconnectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 export const IntegrationCard = observer(({ service }: Props) => {
   const { name, description, icon, additionalSettings } = service;
+  const isSingularConnection = service.getConnections().length == 1 && !service.getCanConnect?.();
   return (
     <UIHolder>
       <UILogo>{icon}</UILogo>
@@ -29,15 +31,26 @@ export const IntegrationCard = observer(({ service }: Props) => {
               notApplicableLabel="Connected"
               notApplicableMode={service.disconnect && "hide"}
             />
-            <ActionButton
-              action={disconnectIntegration}
-              target={service}
-              notApplicableMode="hide"
-              kind="primarySubtle"
-            />
+            {isSingularConnection && (
+              <ActionButton
+                action={disconnectIntegration}
+                target={service}
+                notApplicableMode="hide"
+                kind="primarySubtle"
+              />
+            )}
           </UIConnectAction>
         </UIHead>
-        {additionalSettings && service.getIsConnected() && (
+        {!isSingularConnection &&
+          service.getConnections().map(({ id, title }) => (
+            <HStack key={id} justifyContent="space-between" alignItems="center">
+              {title}
+              <UIConnectAction>
+                <ActionButton key={id} action={disconnectIntegration} target={service} kind="primarySubtle" />
+              </UIConnectAction>
+            </HStack>
+          ))}
+        {additionalSettings && service.getConnections().length > 0 && (
           <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>
         )}
       </UIBody>

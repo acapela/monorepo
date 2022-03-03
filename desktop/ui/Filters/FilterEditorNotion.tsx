@@ -4,6 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
+import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
@@ -31,7 +32,13 @@ export const FilterEditorNotion = observer(({ filter, onChange }: Props) => {
     .filter(isNotNullish);
   return (
     <UIHolder>
-      <ServiceUsersFilterRow<NotionFilter> users={notionUsers} filter={filter} field="author_id" onChange={onChange} />
+      <ServiceUsersFilterRow<NotionFilter>
+        integrationClient={notionIntegrationClient}
+        users={notionUsers}
+        filter={filter}
+        field="author_id"
+        onChange={onChange}
+      />
     </UIHolder>
   );
 });

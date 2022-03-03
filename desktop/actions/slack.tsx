@@ -19,7 +19,7 @@ export const connectSlack = defineAction({
   icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => {
-    return !integrationClients.slack.getIsConnected();
+    return integrationClients.slack.getConnections().length == 0;
   },
   handler() {
     return integrationClients.slack.connect();

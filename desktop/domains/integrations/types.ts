@@ -14,8 +14,8 @@ export interface IntegrationClient {
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
   isReady: IObservableValue<boolean> | IComputedValue<boolean>;
   getCanConnect?(): boolean;
-  getIsConnected(): boolean;
+  getConnections(): { id: string; title: string }[];
   connect(): Promise<void>;
-  disconnect?(): Promise<void>;
+  disconnect?(id: string): Promise<void>;
   additionalSettings?: ReactNode;
 }

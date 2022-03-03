@@ -41,7 +41,7 @@ export const notificationSlackMessageEntity = defineEntity<NotificationSlackMess
 }).addConnections((slackMessage, { getEntity }) => {
   return {
     get slackTeamId() {
-      return getEntity(userSlackInstallationEntity).all[0].slack_team_id;
+      return getEntity(userSlackInstallationEntity).all[0].team_id;
     },
   };
 });

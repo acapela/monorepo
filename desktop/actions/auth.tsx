@@ -46,8 +46,9 @@ export const loginToAcapelaWithSlack = defineAction({
 export const connectIntegration = defineAction({
   name: (ctx) => {
     const integration = ctx.assertTarget("integration");
-
-    return ctx.isContextual ? "Connect" : `Connect ${integration.name}`;
+    return (
+      "Connect " + (integration.getConnections().length == 0 ? "" : "more") + (ctx.isContextual ? "" : integration.name)
+    );
   },
   icon: <IconPlus />,
   group: accountActionsGroup,
@@ -56,7 +57,7 @@ export const connectIntegration = defineAction({
 
     if (!integration) return false;
 
-    return !integration.getIsConnected() && integration.getCanConnect?.() !== false;
+    return integration.getCanConnect?.() !== false;
   },
   async handler(ctx) {
     const integration = ctx.assertTarget("integration");
@@ -78,12 +79,12 @@ export const disconnectIntegration = defineAction({
 
     if (!integration) return false;
 
-    return integration.getIsConnected() && !!integration.disconnect;
+    return integration.getConnections().length > 0 && !!integration.disconnect;
   },
   async handler(ctx) {
     const integration = ctx.assertTarget("integration");
 
-    return integration.disconnect?.();
+    return integration.disconnect?.(integration.getConnections()[0].id);
   },
 });
 
