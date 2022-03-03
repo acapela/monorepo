@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import axios from "axios";
 import { addDays } from "date-fns";
 import { Router } from "express";
@@ -286,9 +287,9 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetail
 
   for (const wh of webhookRegistrationResult) {
     if (wh.errors) {
-      logger.error(
-        `Error creating webhook for account "${jiraAccount.account_id}"`,
-        JSON.stringify(wh.errors, null, 2)
+      Sentry.captureException(
+        `Error creating webhook for account "${jiraAccount.account_id}": ` +
+          JSON.stringify(webhookRegistrationResult, null, 2)
       );
       continue;
     }
