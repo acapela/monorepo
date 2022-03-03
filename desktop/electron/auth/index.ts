@@ -6,6 +6,7 @@ import { appState } from "@aca/desktop/electron/appState";
 import { initializeLoginHandler } from "./acapela";
 import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGoogleAuthHandler } from "./google";
+import { initializeJiraAuthHandler } from "./jira";
 import { initializeLinearAuthHandler } from "./linear";
 import { initializeNotionAuthHandler } from "./notion";
 import { initializeSlackAuthHandler } from "./slack";
@@ -17,6 +18,7 @@ export function initializeAuthHandlers() {
   initializeSlackAuthHandler();
   initializeFigmaAuthHandler();
   initializeLinearAuthHandler();
+  initializeJiraAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
     if (appState.mainWindow) {

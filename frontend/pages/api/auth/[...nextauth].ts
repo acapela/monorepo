@@ -72,6 +72,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return createJWT({ ...token, userId: user.id, teamId: user.current_team_id as string });
       },
 
+      async redirect({ url, baseUrl }) {
+        if (url.includes("/auth/atlassian")) {
+          return `${baseUrl}/auth/success`;
+        }
+        return url;
+      },
+
       async signIn({ account }) {
         // db.user
         //   .findFirst({
@@ -142,6 +149,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       AtlassianProvider({
         clientId: process.env.ATLASSIAN_CLIENT_ID!,
         clientSecret: process.env.ATLASSIAN_CLIENT_SECRET!,
+
         authorization: {
           params: {
             scope: [

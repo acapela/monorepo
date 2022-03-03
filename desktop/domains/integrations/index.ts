@@ -1,7 +1,7 @@
 import { unsafeAssertType } from "@aca/shared/assert";
 
-import { jiraIntegrationClient } from "./atlassian";
 import { figmaIntegrationClient } from "./figma";
+import { jiraIntegrationClient } from "./jira";
 import { linearIntegrationClient } from "./linear";
 import { notionIntegrationClient } from "./notion";
 import { slackIntegrationClient } from "./slack";
