@@ -10,7 +10,6 @@ import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
 import { createLogger } from "@aca/shared/log";
 import { autorunEffect } from "@aca/shared/mobx/utils";
-import { getTotal } from "@aca/shared/numbers";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
@@ -46,44 +45,53 @@ const bundleListNotifications = cachedComputed(
         if (listsWithCloseNotifications.length === 1) {
           const [list] = listsWithCloseNotifications;
 
-          const newNotifications = list.inboxNotificationsSinceLastSeen;
+          const newNotifications = list.notificationsToNotifyUserAbout.all;
 
           const getBody = () => {
-            const notifications = newNotifications.all;
+            if (!newNotifications.length) return;
 
-            if (!notifications.length) return;
-
-            if (notifications.length === 1) {
-              const [notification] = notifications;
+            if (newNotifications.length === 1) {
+              const [notification] = newNotifications;
 
               return `${getNotificationTitle(notification)} from ${notification.from}`;
             }
 
-            const latestNotification = maxBy(newNotifications.all, (n) => new Date(n.created_at));
+            const latestNotification = maxBy(newNotifications, (n) => new Date(n.created_at));
 
             return `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification?.created_at ?? date))}`;
           };
 
           return {
             date,
-            title: pluralize`${newNotifications.count} ${["notification"]} in list ${list.title}`,
+            title: pluralize`${newNotifications.length} ${["notification"]} in list ${list.title}`,
             body: getBody(),
+            onShown() {
+              const now = new Date().toISOString();
+              newNotifications.forEach((n) => {
+                n.update({ notified_user_at: now });
+              });
+            },
           };
         }
 
-        const totalNotifications = getTotal(
-          listsWithCloseNotifications,
-          (list) => list.inboxNotificationsSinceLastSeen.count
-        );
+        const allNotificationsFromLists = listsWithCloseNotifications
+          .map((list) => list.notificationsToNotifyUserAbout.all)
+          .flat();
 
         return {
           date,
           body: commaListsAnd`${listsWithCloseNotifications.map((l) => l.title)}`,
           title: oneLineInlineLists`
-          ${pluralize`${totalNotifications} ${["notification"]}`} 
+          ${pluralize`${allNotificationsFromLists.length} ${["notification"]}`} 
           in
           ${pluralize`${listsWithCloseNotifications.length} ${["list", "lists"]}`}
-        `,
+          `,
+          onShown() {
+            const now = new Date().toISOString();
+            allNotificationsFromLists.forEach((n) => {
+              n.update({ notified_user_at: now });
+            });
+          },
         };
       },
       MAX_DISTANCE_TO_BUNDLE
@@ -98,7 +106,7 @@ const doesListNeedNotification = cachedComputed(function doesListNeedNotificatio
     return false;
   }
 
-  if (!list.inboxNotificationsSinceLastSeen.hasItems) {
+  if (!list.notificationsToNotifyUserAbout.hasItems) {
     log(`list ${list.title} has no new notifications since last seen`);
     return false;
   }
