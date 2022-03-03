@@ -106,16 +106,20 @@ autorun(() => {
 });
 
 // Updates the uiStore dark mode settings depending on the stored value in the settings bridge
+const preferDarkMediaQuery = "(prefers-color-scheme: dark)";
+const isSystemDarkBox = observable.box(window.matchMedia(preferDarkMediaQuery).matches);
+window.matchMedia(preferDarkMediaQuery).addEventListener("change", (event) => {
+  isSystemDarkBox.set(event.matches);
+});
+
 autorun(() => {
   const { isReady: isPersistedSettingsReady, value: persistedSettings } = uiSettingsBridge.observables;
 
   if (isPersistedSettingsReady.get()) {
-    const isInDarkMode = persistedSettings.get().isDarkMode;
-
-    if (typeof isInDarkMode !== "undefined") {
-      runInAction(() => {
-        uiStore.isInDarkMode = isInDarkMode;
-      });
-    }
+    const { theme } = persistedSettings.get();
+    const isInDarkMode = theme == "dark" || (theme == "auto" && isSystemDarkBox.get());
+    runInAction(() => {
+      uiStore.isInDarkMode = isInDarkMode;
+    });
   }
 });

@@ -77,8 +77,8 @@
         "mpim:read",
 
         "users:read",
-
         "reactions:read",
+
         "chat:write",
         "im:write",
         "mpim:write",

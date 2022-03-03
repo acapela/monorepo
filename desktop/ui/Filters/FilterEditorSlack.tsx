@@ -22,10 +22,10 @@ interface Props {
 }
 
 export const slackConversationTypeLabels = {
-  im: "Direct Message",
-  mpim: "Group Message",
-  group: "Private Channel",
-  channel: "Channel",
+  im: "DMs",
+  mpim: "Groups",
+  group: "Private Channels",
+  channel: "Channels",
 };
 export const slackConversationTypes = typedKeys(slackConversationTypeLabels);
 

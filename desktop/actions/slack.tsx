@@ -1,15 +1,21 @@
 import React from "react";
 
+import { ActionContext } from "@aca/desktop/actions/action/context";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { accountStore } from "@aca/desktop/store/account";
 import { assertDefined } from "@aca/shared/assert";
 import { IconPlus, IconToggleOff, IconToggleOn } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
-import { accountActionsGroup, getContextualServiceName } from "./auth";
+import { accountActionsGroup } from "./auth";
 
 export const connectSlack = defineAction({
-  name: getContextualServiceName("Slack"),
+  name: (ctx: ActionContext) => {
+    const slackInstallation = accountStore.user?.slackInstallation;
+    const isReconnect = Boolean(slackInstallation && !slackInstallation.hasAllScopes);
+    const actionName = isReconnect ? "Reconnect" : "Connect";
+    return ctx.isContextual ? actionName : `${actionName} Slack`;
+  },
   icon: <IconPlus />,
   group: accountActionsGroup,
   canApply: () => {

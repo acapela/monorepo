@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -21,7 +22,7 @@ interface Props {
   saveLabel?: string;
 }
 
-export function FilterEditor({ filter, onChange, onRemove, onCloseRequest }: Props) {
+export const FilterEditor = observer(({ filter, onChange, onRemove, onCloseRequest }: Props) => {
   function renderCorrespondingEditor() {
     if (getIsFilterOfType(filter, "notification_figma_comment")) {
       return <FilterEditorFigma filter={filter} onChange={onChange} />;
@@ -75,7 +76,7 @@ export function FilterEditor({ filter, onChange, onRemove, onCloseRequest }: Pro
       </UIButtons>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;

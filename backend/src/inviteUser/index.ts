@@ -4,7 +4,6 @@ import { createSlackInviteNotification } from "@aca/backend/src/slack/md/utils";
 import { getSlackUserMentionOrLabel } from "@aca/backend/src/slack/utils";
 import { Account, Team, User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
 
@@ -61,7 +60,7 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       include: { user: { include: { account: true } } },
     });
 
-    const firstInvite = !teamMember;
+    // const firstInvite = !teamMember;
     if (!teamMember) {
       teamMember = await db.team_member.create({
         data: {
@@ -83,11 +82,11 @@ export const inviteUser: ActionHandler<{ input: { email: string; team_id: string
       });
     }
 
-    if (firstInvite) {
-      trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, email, origin: "webapp" });
-    } else {
-      trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, email });
-    }
+    // if (firstInvite) {
+    //   trackBackendUserEvent(invitingUserId, "Invite Sent", { teamId: team_id, email, origin: "webapp" });
+    // } else {
+    //   trackBackendUserEvent(invitingUserId, "Resent Team Invitation", { teamId: team_id, email });
+    // }
 
     await handleInviteNotifications(teamMember.user, team_id, invitingUserId);
 

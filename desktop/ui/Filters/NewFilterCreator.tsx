@@ -12,9 +12,10 @@ import { FilterIntegrationPicker } from "./FilterIntegrationPicker";
 
 interface Props {
   onCreateRequest: (filter: NotificationFilter) => void;
+  singleType?: NotificationFilter["__typename"];
 }
 
-export function NewFilterCreator({ onCreateRequest }: Props) {
+export function NewFilterCreator({ singleType, onCreateRequest }: Props) {
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -27,14 +28,18 @@ export function NewFilterCreator({ onCreateRequest }: Props) {
           kind="primarySubtle"
           icon={<IconPlus />}
           onClick={() => {
-            setIsCreatingNew(true);
+            if (singleType) {
+              onCreateRequest({ __typename: singleType, id: getUUID() });
+            } else {
+              setIsCreatingNew(true);
+            }
           }}
         >
           Add filter
         </Button>
       </UIHolder>
       <AnimatePresence>
-        {isCreatingNew === true && (
+        {isCreatingNew && (
           <CompactPopoverPanel
             enableScreenCover
             key={"pick-type"}

@@ -10,10 +10,10 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
+import { ListFilters } from "@aca/desktop/ui/Filters";
 import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { theme } from "@aca/ui/theme";
 
-import { ListFilters } from "./Filters";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
@@ -40,7 +40,10 @@ export const ListView = observer(({ listId }: Props) => {
     displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
 
     return () => {
-      displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+      const list = displayedList.listEntity;
+      if (list && !list.isRemoved()) {
+        list.update({ seen_at: new Date().toISOString() });
+      }
     };
   }, [displayedList]);
 
@@ -56,7 +59,12 @@ export const ListView = observer(({ listId }: Props) => {
       <UIHolder>
         {displayedList?.isCustom && (
           <UIListTools>
-            <ListFilters listId={listId} />
+            <ListFilters
+              value={displayedList.listEntity?.typedFilters ?? []}
+              onChange={(filters) => {
+                displayedList?.listEntity?.update({ filters });
+              }}
+            />
           </UIListTools>
         )}
 

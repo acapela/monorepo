@@ -2,9 +2,25 @@ import _ from "lodash";
 
 import manifest from "./manifest.json";
 
+// these are the old app's scopes, which will be removed soon
 export const { bot: botScopes, user: userScopes } = manifest.oauth_config.scopes;
 
-const isSubsetOf = (a: unknown[], b: unknown[]) => _.intersection(a, b).length === a.length;
+export const USER_SCOPES = [
+  "channels:history",
+  "groups:history",
+  "mpim:history",
+  "im:history",
+
+  "channels:read",
+  "groups:read",
+  "im:read",
+  "mpim:read",
+
+  "users:read",
+  "reactions:read",
+];
+
+export const isSubsetOf = (a: unknown[], b: unknown[]) => _.intersection(a, b).length === a.length;
 export const checkHasAllSlackUserScopes = (scopes: string[]) => isSubsetOf(userScopes, scopes);
 export const checkHasAllSlackBotScopes = (scopes: string[]) => isSubsetOf(botScopes, scopes);
 

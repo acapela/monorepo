@@ -6,7 +6,7 @@ import { theme } from "@aca/ui/theme";
 interface Props {
   title: string;
   description?: string;
-  children: ReactNode;
+  children?: ReactNode;
   fixedOptionWidth?: number;
 }
 
@@ -17,7 +17,7 @@ export function SettingRow({ title, description, children, fixedOptionWidth }: P
         <UITitle>{title}</UITitle>
         {description && <UIDescription>{description}</UIDescription>}
       </UIInfo>
-      <UIOption $fixedWidth={fixedOptionWidth}>{children}</UIOption>
+      {children && <UIOption $fixedWidth={fixedOptionWidth}>{children}</UIOption>}
     </UIHolder>
   );
 }
