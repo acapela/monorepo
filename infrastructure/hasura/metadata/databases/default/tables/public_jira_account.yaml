@@ -5,6 +5,9 @@ object_relationships:
 - name: account
   using:
     foreign_key_constraint_on: account_id
+- name: atlassian_site
+  using:
+    foreign_key_constraint_on: atlassian_site_id
 event_triggers:
 - definition:
     delete:

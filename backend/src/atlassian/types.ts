@@ -1,4 +1,11 @@
+import { Account, AtlassianSite, JiraAccount } from "@aca/db";
+
 type IssueEventTypeName = "issue_assigned";
+
+export type JiraAccountWithAllDetails = JiraAccount & {
+  account: Account;
+  atlassian_site: AtlassianSite;
+};
 
 export interface JiraWebhookCreationResult {
   webhookRegistrationResult: Array<{
@@ -6,6 +13,14 @@ export interface JiraWebhookCreationResult {
     errors?: string[];
   }>;
 }
+
+export type GetResourcesResponse = Array<{
+  id: string; // "1324a887-45db-1bf4-1e99-ef0ff456d421",
+  name: string; // "Site name",
+  url: string; // "https://your-domain.atlassian.net",
+  scopes: string[]; // ["read:issue-type:jira", "write:issue-type:jira","read:project:jira"],
+  avatarUrl: string; // "https:\/\/site-admin-avatar-cdn.prod.public.atl-paas.net\/avatars\/240\/flag.png"
+}>;
 
 export interface GetWatchersResponse {
   self: string; // "https://your-domain.atlassian.net/rest/api/3/issue/EX-1/watchers",

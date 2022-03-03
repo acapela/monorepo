@@ -1,0 +1,3 @@
+table:
+  name: atlassian_site
+  schema: public

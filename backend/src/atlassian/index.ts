@@ -4,13 +4,13 @@ import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
-import { Account, JiraAccount, db } from "@aca/db";
+import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
 
 import { captureJiraWebhook } from "./capturing";
 import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
-import { JiraWebhookPayload } from "./types";
+import { GetResourcesResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
 import { getRefreshTokenExpiresAt } from "./utils";
 
 export const WEBHOOK_ROUTE = "/atlassian/webhooks";
@@ -125,51 +125,69 @@ async function handleCreateAtlassianAccount(account: Account) {
 
   try {
     // This endpoint allows us to know to which "sites" does the user has granted us access to
-    const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
-      headers,
-    });
+    const { data: resources } = await axios.get<GetResourcesResponse>(
+      "https://api.atlassian.com/oauth/token/accessible-resources",
+      {
+        headers,
+      }
+    );
 
     // We need to double check that we only target sites that provide the scopes that we need
-    const availableResourcesWithRequiresScopes = resources.filter(({ scopes }: { scopes: string[] }) =>
+    const availableSitesWithRequiresScopes = resources.filter(({ scopes }: { scopes: string[] }) =>
       scopes.every((scope: string) => REQUIRED_JIRA_SCOPES.includes(scope))
     );
 
-    for (const { id: jiraCloudId } of availableResourcesWithRequiresScopes) {
-      // The jira account allows us to match the jiraCloudId with the user's account.id
-      // This is used for internal maintenance usages, and relating users with incoming webhooks
-      let jiraAccount = await db.jira_account.findFirst({
+    for (const atlassianSitePayload of availableSitesWithRequiresScopes) {
+      // The attlassian site is what identifies the jira domain we're in
+      // e.g. acapela-team.atlassian.net
+      const atlassianSite = await db.atlassian_site.upsert({
         where: {
-          jira_cloud_id: jiraCloudId,
-          account_id: account.id,
+          atlassian_cloud_id: atlassianSitePayload.id,
+        },
+        update: {},
+        create: {
+          atlassian_cloud_id: atlassianSitePayload.id,
+          name: atlassianSitePayload.name,
+          url: atlassianSitePayload.url,
         },
       });
 
-      if (!jiraAccount) {
-        jiraAccount = await db.jira_account.create({
-          data: {
-            jira_cloud_id: jiraCloudId,
+      // The jira account allows us to match the jiraCloudId with the user's account.id
+      // This is used for internal maintenance usages, and relating users with incoming webhooks
+      const jiraAccount = await db.jira_account.upsert({
+        where: {
+          account_id_atlassian_site_id: {
+            atlassian_site_id: atlassianSite.id,
             account_id: account.id,
           },
-        });
-      }
+        },
+        update: {},
+        create: {
+          account_id: account.id,
+          atlassian_site_id: atlassianSite.id,
+        },
+      });
 
-      assert(jiraAccount, "jira account not created correctly");
+      const jiraAccountWithAllDetails: JiraAccountWithAllDetails = {
+        ...jiraAccount,
+        account,
+        atlassian_site: atlassianSite,
+      };
 
-      // In cases of improper installation or deletion, there may be registered webhooks for this user's account.
+      // In cases of improper installation or account deletion, there may be registered webhooks for this user's
+      // atlassian account.
       // When we see that this account already has webhooks, we'll try to overwrite them
       // we delete the previous webhooks for this user
       // !note: Webhooks created by one user cannot be deleted by another user
-
-      const { data: previouslyCreatedWebhooks } = await getWebhooks()(headers, { jiraCloudId });
-
-      if (previouslyCreatedWebhooks.values.length > 0) {
+      const previouslyCreatedWebhooks = (await jiraRequest(jiraAccountWithAllDetails, getWebhooks()))?.data;
+      if (previouslyCreatedWebhooks && previouslyCreatedWebhooks.values.length > 0) {
         const webhookIdsToDelete = previouslyCreatedWebhooks.values.map((d: { id: string }) => d.id);
 
-        await deleteWebhooks(webhookIdsToDelete)(headers, { jiraCloudId });
+        await jiraRequest(jiraAccountWithAllDetails, deleteWebhooks(webhookIdsToDelete));
 
         await db.jira_webhook.deleteMany({
           where: {
-            jira_account_id: jiraAccount.id,
+            jira_account_id: jiraAccountWithAllDetails.id,
           },
         });
       }
@@ -177,7 +195,7 @@ async function handleCreateAtlassianAccount(account: Account) {
       const previouslyRegisteredWebhooksForJiraCloudId = await db.jira_webhook.findFirst({
         where: {
           jira_account: {
-            jira_cloud_id: jiraAccount.jira_cloud_id,
+            atlassian_site_id: atlassianSite.atlassian_cloud_id,
           },
         },
       });
@@ -185,7 +203,7 @@ async function handleCreateAtlassianAccount(account: Account) {
       // In the case that some other user registered webhooks for the same jira cloud id, we do nothing
       // as registering them again would mean that we get double submissions from the same event
       if (!previouslyRegisteredWebhooksForJiraCloudId) {
-        await registerAndStoreNewWebhooks(jiraAccount);
+        await registerAndStoreNewWebhooks(jiraAccountWithAllDetails);
       }
     }
   } catch (e) {
@@ -201,9 +219,12 @@ async function handleDeleteAtlassianAccount(account: Account) {
   // This endpoint allows us to know to which "sites" does the user has granted us access to
   // since the jira_account entity for this account has been already deleted, we need
   // to fetch the necessary "jira_cloud_id"s from jira once more
-  const { data: resources } = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
-    headers,
-  });
+  const { data: resources } = await axios.get<GetResourcesResponse>(
+    "https://api.atlassian.com/oauth/token/accessible-resources",
+    {
+      headers,
+    }
+  );
 
   // We need to double check that we only target sites that provide the scopes that we need
   const availableResourcesWithRequiresScopes = resources.filter(({ scopes }: { scopes: string[] }) =>
@@ -221,7 +242,7 @@ async function handleDeleteAtlassianAccount(account: Account) {
     const areAccountsRemainingForJiraCloudId =
       (await db.jira_account.count({
         where: {
-          jira_cloud_id: jiraCloudId,
+          atlassian_site_id: jiraCloudId,
         },
       })) > 0;
 
@@ -233,10 +254,14 @@ async function handleDeleteAtlassianAccount(account: Account) {
 
     const delegateJiraAccount = await db.jira_account.findFirst({
       where: {
-        jira_cloud_id: jiraCloudId,
+        atlassian_site_id: jiraCloudId,
       },
       orderBy: {
         rest_req_last_used_at: "asc",
+      },
+      include: {
+        account: true,
+        atlassian_site: true,
       },
     });
 
@@ -246,7 +271,7 @@ async function handleDeleteAtlassianAccount(account: Account) {
   }
 }
 
-async function registerAndStoreNewWebhooks(jiraAccount: JiraAccount) {
+async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetails) {
   const registerWebhookResponse = await jiraRequest(jiraAccount, createWebhooks());
 
   assert(registerWebhookResponse, "unable to register webhook");
@@ -274,7 +299,7 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccount) {
     });
   }
 
-  console.info("Webhooks created successfully", JSON.stringify(registerWebhookResponse.data, null, 4));
+  console.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.id}`);
 }
 
 async function getAccessToken(account: Account): Promise<string> {
@@ -282,7 +307,7 @@ async function getAccessToken(account: Account): Promise<string> {
     return account.access_token ?? "";
   }
 
-  console.info(`Token from account ${account.id} needs refreshing`);
+  console.info(`Atlassian access token for acapela account ${account.id} needs refreshing`);
 
   const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
   return refreshTokenData.access_token;

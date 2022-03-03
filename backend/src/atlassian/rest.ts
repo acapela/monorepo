@@ -1,9 +1,8 @@
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
-import { Account, JiraAccount, db } from "@aca/db";
-import { assert } from "@aca/shared/assert";
+import { Account, db } from "@aca/db";
 
-import { GetWatchersResponse, JiraWebhookCreationResult } from "./types";
+import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookCreationResult } from "./types";
 import { refreshTokens } from "./utils";
 import { WEBHOOK_ROUTE, getPublicBackendURL } from ".";
 
@@ -104,16 +103,8 @@ export async function refreshAccountIfTokenExpired(account: Account) {
   return refreshTokens(account);
 }
 
-export async function jiraRequest<Data>(jiraAccount: JiraAccount, jiraRequest: JiraRequest<Data>) {
-  const account = await db.account.findFirst({
-    where: {
-      id: jiraAccount.account_id,
-    },
-  });
-
-  assert(account, "account not found for jira account " + jiraAccount.id);
-
-  const { access_token } = await refreshAccountIfTokenExpired(account);
+export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, jiraRequest: JiraRequest<Data>) {
+  const { access_token } = await refreshAccountIfTokenExpired(jiraAccount.account);
 
   const headers = {
     Authorization: `Bearer ${access_token}`,
@@ -125,8 +116,8 @@ export async function jiraRequest<Data>(jiraAccount: JiraAccount, jiraRequest: J
 
   try {
     response = await jiraRequest(headers, {
-      jiraCloudId: jiraAccount.jira_cloud_id,
-      jiraAccountId: account.provider_account_id,
+      jiraCloudId: jiraAccount.atlassian_site.atlassian_cloud_id,
+      jiraAccountId: jiraAccount.account.provider_account_id,
     });
   } catch (e) {
     const error = e as AxiosError;
@@ -147,9 +138,9 @@ export async function jiraRequest<Data>(jiraAccount: JiraAccount, jiraRequest: J
     // We're using the least used api endpoint using
     await db.jira_account.update({
       where: {
-        account_id_jira_cloud_id: {
-          account_id: jiraAccount.account_id,
-          jira_cloud_id: jiraAccount.jira_cloud_id,
+        account_id_atlassian_site_id: {
+          account_id: jiraAccount.account.id,
+          atlassian_site_id: jiraAccount.atlassian_site.id,
         },
       },
       data: {

@@ -1,8 +1,8 @@
-import { JiraAccount, db } from "@aca/db";
+import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 
 import { getIssueWatchers, jiraRequest } from "./rest";
-import { GetWatchersResponse, JiraWebhookPayload } from "./types";
+import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
 
 const EXTRACT_MENTIONED_ACCOUNT_REGEX = /\[~accountid:([a-zA-Z0-9\-:]+)\]/gim;
 
@@ -36,7 +36,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
   // The point is that we would like to distribute api rate limit "cost" of making an api call between
   // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
   // where it could reach rate limits really fast
-  const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(payload.matchedWebhookIds[0]);
+  const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
   const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "");
 
   // Mention notifications are more important than watcher notifications
@@ -105,7 +105,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
   return await Promise.all(notificationsSend);
 }
 
-async function getWatchers(jiraAccount: JiraAccount, issueKey: string) {
+async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: string) {
   const response = await jiraRequest(jiraAccount, getIssueWatchers(issueKey));
 
   if (!response) {
@@ -117,21 +117,23 @@ async function getWatchers(jiraAccount: JiraAccount, issueKey: string) {
   return watchers.watchers.map((w) => w.accountId);
 }
 
-async function getLeastRecentlyUsedAtlassianAccount(webhookId: number): Promise<JiraAccount> {
+async function getLeastRecentlyUsedAtlassianAccount(atlassianCloudUrl: string): Promise<JiraAccountWithAllDetails> {
   const jiraAccount = await db.jira_account.findFirst({
     where: {
-      jira_webhook: {
-        some: {
-          jira_webhook_id: webhookId,
-        },
+      atlassian_site: {
+        url: atlassianCloudUrl,
       },
     },
     orderBy: {
       rest_req_last_used_at: "asc",
     },
+    include: {
+      account: true,
+      atlassian_site: true,
+    },
   });
 
-  assert(jiraAccount, "jira account not found for webhook " + webhookId);
+  assert(jiraAccount, "jira account not found for atlassianCloudUrl " + atlassianCloudUrl);
 
   return jiraAccount;
 }
