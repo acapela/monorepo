@@ -65,7 +65,8 @@ const UIRightButtons = styled(UIButtons)`
 
 const UITitle = styled.div`
   flex-grow: 2;
-  text-align: center;
+  display: flex;
+  justify-content: center;
   ${theme.common.ellipsisText}
 `;
 
