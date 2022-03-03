@@ -285,6 +285,14 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetail
   // });
 
   for (const wh of webhookRegistrationResult) {
+    if (wh.errors) {
+      logger.error(
+        `Error creating webhook for account "${jiraAccount.account_id}"`,
+        JSON.stringify(wh.errors, null, 2)
+      );
+      continue;
+    }
+
     await db.jira_webhook.create({
       data: {
         jira_account_id: jiraAccount.id,
