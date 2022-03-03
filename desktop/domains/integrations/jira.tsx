@@ -2,11 +2,17 @@ import { computed } from "mobx";
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { clearServiceCookiesBridge, jiraAuthTokenBridgeValue, loginJiraBridge } from "@aca/desktop/bridge/auth";
+import { loginJiraBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
+
+function getAtlassianAccounts() {
+  return (accountStore.user?.accounts ?? []).filter((account) => account.provider_id == "atlassian");
+}
+
+const getIsConnected = () => getAtlassianAccounts().length > 0;
 
 export const jiraIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -18,9 +24,7 @@ export const jiraIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getIsConnected: () => {
-    return jiraAuthTokenBridgeValue.get();
-  },
+  getIsConnected,
   getCanConnect() {
     return !!accountStore.user;
   },
@@ -28,6 +32,8 @@ export const jiraIntegrationClient: IntegrationClient = {
     loginJiraBridge();
   },
   async disconnect() {
-    await clearServiceCookiesBridge({ url: "https://atlassian.com" });
+    for (const account of getAtlassianAccounts()) {
+      account.remove();
+    }
   },
 };

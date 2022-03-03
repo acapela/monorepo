@@ -10,6 +10,7 @@ import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
+import { accountEntity } from "./account";
 import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 const userFragment = gql`
@@ -52,6 +53,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   return {
     get slackInstallation() {
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id }).first ?? null;
+    },
+    get accounts() {
+      return getEntity(accountEntity).all;
     },
     get isNew() {
       return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
