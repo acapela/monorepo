@@ -37,6 +37,10 @@ function showNotification(scheduledNotification: ScheduledNotification) {
     }
   );
 
+  if (didShow) {
+    scheduledNotification.onShown?.();
+  }
+
   return didShow ?? false;
 }
 

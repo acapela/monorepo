@@ -34,6 +34,7 @@ const notificationFragment = gql`
     created_at
     last_seen_at
     snoozed_until
+    notified_user_at
   }
 `;
 
@@ -64,6 +65,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     snoozed_until: null,
     text_preview: null,
     last_seen_at: null,
+    notified_user_at: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
@@ -80,8 +82,17 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "snoozed_until",
         "text_preview",
         "last_seen_at",
+        "notified_user_at",
       ],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview", "last_seen_at"],
+      updateColumns: [
+        "updated_at",
+        "url",
+        "resolved_at",
+        "snoozed_until",
+        "text_preview",
+        "last_seen_at",
+        "notified_user_at",
+      ],
       upsertConstraint: "notification_pkey",
     }
   ),
