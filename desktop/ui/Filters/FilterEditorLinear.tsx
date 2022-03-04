@@ -2,6 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
 
+import { linearIntegrationClient } from "@aca/desktop/domains/integrations/linear";
 import { LinearUsersQuery } from "@aca/gql";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
@@ -36,7 +37,13 @@ export function FilterEditorLinear({ filter, onChange }: Props) {
 
   return (
     <UIHolder>
-      <ServiceUsersFilterRow<LinearFilter> users={linearUsers} filter={filter} field="creator_id" onChange={onChange} />
+      <ServiceUsersFilterRow<LinearFilter>
+        integrationClient={linearIntegrationClient}
+        users={linearUsers}
+        filter={filter}
+        field="creator_id"
+        onChange={onChange}
+      />
     </UIHolder>
   );
 }

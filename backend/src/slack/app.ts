@@ -2,7 +2,7 @@ import { ServerResponse } from "http";
 
 import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
-import _, { noop } from "lodash";
+import { noop } from "lodash";
 
 import { db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
@@ -14,7 +14,6 @@ import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@ac
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
 import { getUserSlackInstallationFilter } from "./userSlackInstallation";
-import { createTeamMemberUserFromSlack } from "./utils";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
@@ -98,54 +97,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 
   installationStore: {
     async storeInstallation(installation) {
-      const metadata = parseMetadata(installation);
-      const { teamId } = metadata;
-      let { userId } = metadata;
-
-      // For the new desktop Acapela we want to capture slack notifications for individual users, thus skipping the team
-      if (!teamId) {
-        assert(userId, "must have a userId when no teamId is given");
-        await storeUserSlackInstallation(userId, installation);
-        return;
-      }
-
-      // Below is the flow for the old Acapela which splits up installation data between team and a team_member
-      const slackTeamId = assertDefined(installation.team, "installation must have team").id;
-      const otherTeamWithSameSlack = await db.team.findFirst({
-        where: { NOT: { id: teamId }, team_slack_installation: { slack_team_id: slackTeamId } },
-      });
-      if (otherTeamWithSameSlack) {
-        throw new Error(SLACK_WORKSPACE_ALREADY_USED_ERROR);
-      }
-
-      const slackUser = installation.user;
-      if (!userId) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        userId = (await createTeamMemberUserFromSlack(slackUser.token!, slackUser.id, teamId)).user.id;
-      }
-
-      if (installation.bot) {
-        const teamData = _.omit(installation, "user", "metadata");
-        const data = teamData as never;
-        await db.team_slack_installation.upsert({
-          where: { team_id: teamId },
-          create: { team_id: teamId, data, slack_team_id: slackTeamId },
-          update: { data },
-        });
-      }
-      const teamMember = await db.team_member.findFirst({ where: { user_id: userId, team_id: teamId } });
-      if (!teamMember) {
-        return;
-      }
-      await db.team_member_slack.upsert({
-        where: { team_member_id: teamMember.id },
-        create: {
-          team_member_id: teamMember.id,
-          installation_data: slackUser,
-          slack_user_id: slackUser.id,
-        },
-        update: { installation_data: slackUser, slack_user_id: slackUser.id },
-      });
+      const { userId } = parseMetadata(installation);
+      assert(userId, "must have a userId when no teamId is given");
+      await storeUserSlackInstallation(userId, installation);
     },
 
     async fetchInstallation(query) {

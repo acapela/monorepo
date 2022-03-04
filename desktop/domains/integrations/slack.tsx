@@ -5,21 +5,20 @@ import React from "react";
 import { trackEvent } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { clearServiceCookiesBridge, connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
-import { IntegrationClient } from "./types";
-
-const getIsConnected = () => {
-  const user = accountStore.user;
-  return Boolean(user && user.slackInstallation && user.slackInstallation.hasAllScopes);
-};
+import { IntegrationClient, Workspace } from "./types";
 
 const SLACK_URL_SCHEME = "slack://";
+
+const getWorkspaces = (): Workspace[] =>
+  accountStore.user?.slackInstallations.all.map((i) => ({ kind: "workspace", id: i.team_id!, name: i.team_name! })) ??
+  [];
 
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -32,11 +31,14 @@ export const slackIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getIsConnected: () => {
-    return getIsConnected();
-  },
-  getCanConnect() {
-    return !!accountStore.user;
+  getCanConnect: () => !!accountStore.user,
+  getWorkspaces,
+  getWorkspaceForNotification({ inner }) {
+    return (
+      getWorkspaces().find(
+        (workspace) => inner?.__typename == "notification_slack_message" && inner.slackTeamId == workspace.id
+      ) ?? null
+    );
   },
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
@@ -63,16 +65,17 @@ export const slackIntegrationClient: IntegrationClient = {
       fallback: notification.url,
     };
   },
-  async connect() {
-    if (getIsConnected()) return;
+  async connect(teamId) {
+    const url = await querySlackInstallationURL(teamId);
 
-    const url = await querySlackInstallationURL();
+    const getInstallationsCount = () => accountStore.user?.slackInstallations.count ?? 0;
+    const initialInstallationsCount = getInstallationsCount();
 
     const closeSlackInstallWindow = await connectSlackBridge({ url });
 
     return new Promise<void>((resolve) => {
       const stop = autorun(() => {
-        if (getIsConnected()) {
+        if (initialInstallationsCount < getInstallationsCount()) {
           if (closeSlackInstallWindow) {
             closeSlackInstallWindow();
             trackEvent("Slack Integration Added");
@@ -83,15 +86,12 @@ export const slackIntegrationClient: IntegrationClient = {
       });
     });
   },
-  async disconnect() {
-    if (getIsConnected()) {
-      await clearServiceCookiesBridge({ url: "https://slack.com" });
-      accountStore.user?.slackInstallation?.remove();
-    }
+  async disconnect(teamId) {
+    accountStore.user?.slackInstallations.query({ team_id: teamId }).first?.remove();
   },
 };
 
-async function querySlackInstallationURL() {
+async function querySlackInstallationURL(teamId?: string) {
   const {
     data: { slackInstallation },
   } = await apolloClient.query<GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables>(
@@ -103,7 +103,7 @@ async function querySlackInstallationURL() {
           }
         }
       `,
-      variables: { input: { redirectURL: "" } },
+      variables: { input: { teamId, redirectURL: "" } },
     }
   );
   return assertDefined(slackInstallation?.url, "missing slack installation url");

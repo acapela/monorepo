@@ -135,6 +135,7 @@ async function createNotificationFromMessage(
       text_preview: await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds),
       notification_slack_message: {
         create: {
+          user_slack_installation_id: userSlackInstallation.id,
           slack_user_id: message.user,
           slack_conversation_id: message.channel,
           slack_thread_ts: threadTs,

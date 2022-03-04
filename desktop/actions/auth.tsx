@@ -7,7 +7,7 @@ import {
   loginGoogleBridge,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconCross, IconLogOut, IconPlus } from "@aca/ui/icons";
+import { IconLogOut, IconPlus } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
@@ -46,8 +46,9 @@ export const loginToAcapelaWithSlack = defineAction({
 export const connectIntegration = defineAction({
   name: (ctx) => {
     const integration = ctx.assertTarget("integration");
-
-    return ctx.isContextual ? "Connect" : `Connect ${integration.name}`;
+    return (
+      "Connect " + (integration.getWorkspaces().length == 0 ? "" : "more") + (ctx.isContextual ? "" : integration.name)
+    );
   },
   icon: <IconPlus />,
   group: accountActionsGroup,
@@ -56,34 +57,12 @@ export const connectIntegration = defineAction({
 
     if (!integration) return false;
 
-    return !integration.getIsConnected() && integration.getCanConnect?.() !== false;
+    return integration.getCanConnect?.() !== false;
   },
   async handler(ctx) {
     const integration = ctx.assertTarget("integration");
 
     return integration.connect();
-  },
-});
-
-export const disconnectIntegration = defineAction({
-  name: (ctx) => {
-    const integration = ctx.assertTarget("integration");
-
-    return ctx.isContextual ? "Disconnect" : `Disconnect ${integration.name}`;
-  },
-  icon: <IconCross />,
-  group: accountActionsGroup,
-  canApply: (ctx) => {
-    const integration = ctx.getTarget("integration");
-
-    if (!integration) return false;
-
-    return integration.getIsConnected() && !!integration.disconnect;
-  },
-  async handler(ctx) {
-    const integration = ctx.assertTarget("integration");
-
-    return integration.disconnect?.();
   },
 });
 

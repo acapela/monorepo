@@ -9,8 +9,8 @@ export const getIndividualSlackInstallationURLHandler: ActionHandler<
 > = {
   actionName: "get_slack_installation_url",
 
-  async handle(userId, { input: { redirectURL } }) {
+  async handle(userId, { input: { teamId, redirectURL } }) {
     assert(userId, "must have userId");
-    return { url: await getIndividualSlackInstallURL({ userId, redirectURL }) };
+    return { url: await getIndividualSlackInstallURL({ userId, teamId, redirectURL }) };
   },
 };

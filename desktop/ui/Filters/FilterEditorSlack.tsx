@@ -1,9 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useSlackUsers } from "@aca/desktop/domains/slack/useSlackUsers";
-import { SlackConversationsQuery } from "@aca/gql";
+import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
+import { SlackConversationsQuery, SlackUsersQuery } from "@aca/gql";
 import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 import { typedKeys } from "@aca/shared/object";
@@ -13,7 +14,7 @@ import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
-import { FilterSettingRow } from "./utils";
+import { FilterSettingRow, getWorkspaceLabel } from "./utils";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
 interface Props {
@@ -68,11 +69,30 @@ export const slackThreadedOptions: NotificationFilterOption<SlackFilter>[] = [
   },
 ];
 
-export const useSlackConversations = () => {
+function useSlackUsers() {
+  const { data } = useQuery<SlackUsersQuery>(
+    gql`
+      query SlackUsers {
+        slack_users {
+          workspace_id
+          id
+          display_name
+          real_name
+          avatar_url
+        }
+      }
+    `
+  );
+
+  return data?.slack_users ?? [];
+}
+
+function useSlackConversations() {
   const { data } = useQuery<SlackConversationsQuery>(
     gql`
       query SlackConversations {
         slack_conversations {
+          workspace_id
           id
           name
           is_private
@@ -81,9 +101,9 @@ export const useSlackConversations = () => {
     `
   );
   return data?.slack_conversations ?? [];
-};
+}
 
-export function FilterEditorSlack({ filter, onChange }: Props) {
+export const FilterEditorSlack = observer(({ filter, onChange }: Props) => {
   const slackUsers = useSlackUsers();
   const slackConversations = useSlackConversations();
 
@@ -116,7 +136,11 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
           placeholder="All"
           items={slackConversations}
           keyGetter={(channel) => channel.id}
-          labelGetter={(channel) => (channel.is_private ? "🔒" : "#") + channel.name}
+          labelGetter={(channel) =>
+            (channel.is_private ? "🔒" : "#") +
+            channel.name +
+            getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
+          }
           selectedItems={slackConversations.filter((channel) =>
             getIsValueMatchingFilter(filter.slack_conversation_id, channel.id)
           )}
@@ -145,6 +169,7 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
         />
       </FilterSettingRow>
       <ServiceUsersFilterRow<SlackFilter>
+        integrationClient={slackIntegrationClient}
         users={slackUsers}
         filter={filter}
         field="slack_user_id"
@@ -163,7 +188,7 @@ export function FilterEditorSlack({ filter, onChange }: Props) {
       </FilterSettingRow>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div`
   display: flex;

@@ -4,6 +4,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
+import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
 import { isNotNullish } from "@aca/shared/nullish";
 import { updateValue } from "@aca/shared/updateValue";
 import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
@@ -48,7 +49,13 @@ export const FilterEditorFigma = observer(({ filter, onChange }: Props) => {
     .filter(isNotNullish);
   return (
     <UIHolder>
-      <ServiceUsersFilterRow<FigmaFilter> users={figmaUsers} filter={filter} field="author_id" onChange={onChange} />
+      <ServiceUsersFilterRow<FigmaFilter>
+        integrationClient={figmaIntegrationClient}
+        users={figmaUsers}
+        filter={filter}
+        field="author_id"
+        onChange={onChange}
+      />
       <FilterSettingRow title="Notification type">
         <SingleOptionDropdown<NotificationFilterOption<FigmaFilter>>
           items={figmaNotificationOptions}

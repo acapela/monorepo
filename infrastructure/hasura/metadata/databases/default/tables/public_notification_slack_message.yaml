@@ -19,6 +19,7 @@ select_permissions:
     - slack_thread_ts
     - slack_user_id
     - updated_at
+    - user_slack_installation_id
     filter:
       notification:
         user_id:

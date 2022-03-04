@@ -55,6 +55,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
+  const title = getNotificationTitle(notification);
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -78,7 +79,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
-        <UINotificationRowTitle>{getNotificationTitle(notification)}&nbsp;</UINotificationRowTitle>
+        {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
         {!isFocused && (

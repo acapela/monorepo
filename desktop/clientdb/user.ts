@@ -57,6 +57,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     get accounts() {
       return getEntity(accountEntity).all;
     },
+    get slackInstallations() {
+      return getEntity(userSlackInstallationEntity).query({ user_id: user.id });
+    },
     get isNew() {
       return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
     },
