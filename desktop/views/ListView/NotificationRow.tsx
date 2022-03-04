@@ -77,7 +77,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
-        <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
+        <UINotificationRowTitle>{getNotificationTitle(notification)}&nbsp;</UINotificationRowTitle>
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
         {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
