@@ -101,13 +101,21 @@ Similar to the slack integration, setting up Linear is optional in development.
 5. Set the webhook url to `https://<replace-this-with-your-cool-tunnel-name>.ngrok.io/api/backend/v1/linear/webhook`
 6. Fill out `LINEAR_CLIENT_ID`, `LINEAR_CLIENT_SECRET`, in your `.env`, based on your new app's info. Also add `LINEAR_OAUTH_SECRET` which can be any random string.
 
-### Atlassian
+### Atlassian Jira
 
 1. Go to https://developer.atlassian.com/apps/ and create an OAuth app
 2. Within your newly created Atlassian app
    1. Go to Authorization/Configure and set the Callback URL to http://localhost:3000/api/auth/callback/atlassian
    2. Go to Settings and get values for your `.env` keys `ATLASSIAN_CLIENT_ID` and `ATLASSIAN_CLIENT_SECRET`
-3. ???Permissions???
+3. There's a grueling step in which you need to add a whole lot of permissions. This has to be done manually.
+   The best source of truth is `frontend/pages/api/auth/[...nextauth].ts`. Here the `AtlassianProvider` has defined many
+   scopes, and most of these need to be added as permissions to the app.
+
+   Here's the breakdown of these scopes:
+
+   - `offline_access` not needed in the app. This is used to `get a refresh token in your initial authorization flow`
+   - `read:me` can be found in `Permissions` -> `User identity API`
+   - `*:jira` can be found in `Permissions` -> `Jira API`
 
 ## Commit Message Convention
 
