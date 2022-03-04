@@ -14,7 +14,7 @@ export const onboardingStore = makeAutoObservable({
   },
 
   get hasLinkedApps() {
-    return clients.some((ic) => ic.getConnections().length > 0);
+    return clients.some((ic) => ic.getWorkspaces().length > 0);
   },
 
   onboardingStatus: "unknown" as "unknown" | "ongoing" | "complete",

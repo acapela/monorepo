@@ -14,7 +14,7 @@ interface Props {
 
 export const IntegrationCard = observer(({ service }: Props) => {
   const { name, description, icon, additionalSettings } = service;
-  const isSingularConnection = service.getConnections().length == 1 && !service.getCanConnect?.();
+  const isSingularConnection = service.getWorkspaces().length == 1 && !service.getCanConnect?.();
   return (
     <UIHolder>
       <UILogo>{icon}</UILogo>
@@ -42,15 +42,15 @@ export const IntegrationCard = observer(({ service }: Props) => {
           </UIConnectAction>
         </UIHead>
         {!isSingularConnection &&
-          service.getConnections().map(({ id, title }) => (
+          service.getWorkspaces().map(({ id, name }) => (
             <HStack key={id} justifyContent="space-between" alignItems="center">
-              {title}
+              {name}
               <UIConnectAction>
                 <ActionButton key={id} action={disconnectIntegration} target={service} kind="primarySubtle" />
               </UIConnectAction>
             </HStack>
           ))}
-        {additionalSettings && service.getConnections().length > 0 && (
+        {additionalSettings && service.getWorkspaces().length > 0 && (
           <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>
         )}
       </UIBody>

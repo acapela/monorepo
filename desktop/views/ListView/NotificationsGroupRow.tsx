@@ -25,7 +25,7 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
-import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { UIDate, UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -130,7 +130,10 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
-            <UITitleText>{group.name}</UITitleText>
+            {group.name && <UITitleText>{group.name}</UITitleText>}
+            <UINotificationPreviewText>
+              {group.notifications.find((n) => !!n.text_preview)?.text_preview}
+            </UINotificationPreviewText>
           </UITitle>
           {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
           <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>

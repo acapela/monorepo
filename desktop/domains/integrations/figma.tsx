@@ -16,7 +16,7 @@ export const figmaIntegrationClient: IntegrationClient = {
   description: "Get important updates and comments",
   isReady: figmaAuthTokenBridgeValue.observables.isReady,
   getCanConnect: () => !figmaAuthTokenBridgeValue.get(),
-  getConnections: () => (figmaAuthTokenBridgeValue.get() ? [{ id: "figma", title: "Figma" }] : []),
+  getWorkspaces: () => (figmaAuthTokenBridgeValue.get() ? [{ id: "figma", name: "Figma" }] : []),
   disconnect: async () => {
     figmaAuthTokenBridgeValue.reset();
     await clearServiceCookiesBridge({ url: figmaURL });

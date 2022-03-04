@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 import { OpenAppUrl } from "@aca/desktop/bridge/apps";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 
+type Workspace = { id: string; name: string };
+
 export interface IntegrationClient {
   kind: "integration";
   // TODO: might be incorrect if one integration supports multiple types
@@ -14,7 +16,8 @@ export interface IntegrationClient {
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
   isReady: IObservableValue<boolean> | IComputedValue<boolean>;
   getCanConnect?(): boolean;
-  getConnections(): { id: string; title: string }[];
+  getWorkspaces(): Workspace[];
+  getWorkspaceForNotification?(notification: NotificationEntity): Workspace | null;
   connect(): Promise<void>;
   disconnect?(id: string): Promise<void>;
   additionalSettings?: ReactNode;
