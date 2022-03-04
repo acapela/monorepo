@@ -59,6 +59,7 @@ input InviteUserInput {
 
 input GetSlackInstallationURLInput {
   redirectURL: String!
+  teamId: String
 }
 
 type UpgradeUserResponse {

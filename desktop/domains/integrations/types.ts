@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { OpenAppUrl } from "@aca/desktop/bridge/apps";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 
-type Workspace = { id: string; name: string };
+export type Workspace = { kind: "workspace"; id: string; name: string };
 
 export interface IntegrationClient {
   kind: "integration";
@@ -18,7 +18,7 @@ export interface IntegrationClient {
   getCanConnect?(): boolean;
   getWorkspaces(): Workspace[];
   getWorkspaceForNotification?(notification: NotificationEntity): Workspace | null;
-  connect(): Promise<void>;
+  connect(workspaceId?: string): Promise<void>;
   disconnect?(id: string): Promise<void>;
   additionalSettings?: ReactNode;
 }

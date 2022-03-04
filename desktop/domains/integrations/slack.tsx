@@ -12,12 +12,13 @@ import { assertDefined } from "@aca/shared/assert";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
-import { IntegrationClient } from "./types";
+import { IntegrationClient, Workspace } from "./types";
 
 const SLACK_URL_SCHEME = "slack://";
 
-const getWorkspaces = () =>
-  accountStore.user?.slackInstallations.all.map((i) => ({ id: i.team_id!, name: i.team_name! })) ?? [];
+const getWorkspaces = (): Workspace[] =>
+  accountStore.user?.slackInstallations.all.map((i) => ({ kind: "workspace", id: i.team_id!, name: i.team_name! })) ??
+  [];
 
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -33,12 +34,11 @@ export const slackIntegrationClient: IntegrationClient = {
   getCanConnect: () => !!accountStore.user,
   getWorkspaces,
   getWorkspaceForNotification({ inner }) {
-    for (const workspace of getWorkspaces()) {
-      if (inner?.__typename == "notification_slack_message" && inner.slackTeamId == workspace.id) {
-        return workspace;
-      }
-    }
-    return null;
+    return (
+      getWorkspaces().find(
+        (workspace) => inner?.__typename == "notification_slack_message" && inner.slackTeamId == workspace.id
+      ) ?? null
+    );
   },
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
@@ -65,8 +65,8 @@ export const slackIntegrationClient: IntegrationClient = {
       fallback: notification.url,
     };
   },
-  async connect() {
-    const url = await querySlackInstallationURL();
+  async connect(teamId) {
+    const url = await querySlackInstallationURL(teamId);
 
     const getInstallationsCount = () => accountStore.user?.slackInstallations.count ?? 0;
     const initialInstallationsCount = getInstallationsCount();
@@ -86,12 +86,12 @@ export const slackIntegrationClient: IntegrationClient = {
       });
     });
   },
-  async disconnect(id) {
-    accountStore.user?.slackInstallations.findById(id)?.remove();
+  async disconnect(teamId) {
+    accountStore.user?.slackInstallations.query({ team_id: teamId }).first?.remove();
   },
 };
 
-async function querySlackInstallationURL() {
+async function querySlackInstallationURL(teamId?: string) {
   const {
     data: { slackInstallation },
   } = await apolloClient.query<GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables>(
@@ -103,7 +103,7 @@ async function querySlackInstallationURL() {
           }
         }
       `,
-      variables: { input: { redirectURL: "" } },
+      variables: { input: { teamId, redirectURL: "" } },
     }
   );
   return assertDefined(slackInstallation?.url, "missing slack installation url");

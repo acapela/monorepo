@@ -2,9 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { connectIntegration, disconnectIntegration } from "@aca/desktop/actions/auth";
+import { connectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { Button, ButtonProps } from "@aca/ui/buttons/Button";
+import { IconCross } from "@aca/ui/icons";
 import { HStack } from "@aca/ui/Stack";
 import { theme } from "@aca/ui/theme";
 
@@ -12,9 +14,17 @@ interface Props {
   service: IntegrationClient;
 }
 
+const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
+  <Button kind="primarySubtle" icon={<IconCross />} onClick={onClick}>
+    Disconnect
+  </Button>
+);
+
 export const IntegrationCard = observer(({ service }: Props) => {
   const { name, description, icon, additionalSettings } = service;
-  const isSingularConnection = service.getWorkspaces().length == 1 && !service.getCanConnect?.();
+  const workspaces = service.getWorkspaces();
+  const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
+
   return (
     <UIHolder>
       <UILogo>{icon}</UILogo>
@@ -31,26 +41,19 @@ export const IntegrationCard = observer(({ service }: Props) => {
               notApplicableLabel="Connected"
               notApplicableMode={service.disconnect && "hide"}
             />
-            {isSingularConnection && (
-              <ActionButton
-                action={disconnectIntegration}
-                target={service}
-                notApplicableMode="hide"
-                kind="primarySubtle"
-              />
-            )}
+            {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
           </UIConnectAction>
         </UIHead>
         {!isSingularConnection &&
-          service.getWorkspaces().map(({ id, name }) => (
+          workspaces.map(({ id, name }) => (
             <HStack key={id} justifyContent="space-between" alignItems="center">
               {name}
               <UIConnectAction>
-                <ActionButton key={id} action={disconnectIntegration} target={service} kind="primarySubtle" />
+                <DisconnectButton onClick={() => service.disconnect?.(id)} />
               </UIConnectAction>
             </HStack>
           ))}
-        {additionalSettings && service.getWorkspaces().length > 0 && (
+        {additionalSettings && workspaces.length > 0 && (
           <UIAdditionalSettings>{additionalSettings}</UIAdditionalSettings>
         )}
       </UIBody>

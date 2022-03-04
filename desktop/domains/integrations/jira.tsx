@@ -22,7 +22,7 @@ export const jiraIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getWorkspaces: () => (jiraAuthTokenBridgeValue.get() ? [{ id: "jira", name: "Jira" }] : []),
+  getWorkspaces: () => (jiraAuthTokenBridgeValue.get() ? [{ kind: "workspace", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
     return !!accountStore.user;
   },

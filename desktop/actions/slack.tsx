@@ -18,11 +18,9 @@ export const connectSlack = defineAction({
   },
   icon: <IconPlus />,
   group: accountActionsGroup,
-  canApply: () => {
-    return integrationClients.slack.getWorkspaces().length == 0;
-  },
-  handler() {
-    return integrationClients.slack.connect();
+  canApply: (ctx) => integrationClients.slack.getWorkspaces().length == 0 || ctx.hasTarget("workspace"),
+  handler(ctx) {
+    return integrationClients.slack.connect(ctx.getTarget("workspace")?.id ?? undefined);
   },
 });
 
