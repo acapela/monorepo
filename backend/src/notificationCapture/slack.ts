@@ -106,7 +106,8 @@ async function createNotificationFromMessage(
   if (
     !userToken ||
     (isAuthor && !isMentioned) ||
-    (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId)))
+    (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
+    (!is_IM_or_MPIM && !isMentioned)
   ) {
     return;
   }
