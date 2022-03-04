@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // @ts-ignore
-import jira from "@aca/desktop/domains/notification/NotificationAppIcon/jira.svg";
-
-// @ts-ignore
 import figma from "./figma.png";
+// @ts-ignore
+import jira from "./jira.svg";
 // @ts-ignore
 import linear from "./linear.png";
 // @ts-ignore
