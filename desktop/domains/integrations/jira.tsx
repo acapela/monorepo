@@ -2,7 +2,7 @@ import { computed } from "mobx";
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { jiraAuthTokenBridgeValue, loginJiraBridge } from "@aca/desktop/bridge/auth";
+import { loginJiraBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationIcon } from "./IntegrationIcon";
@@ -22,9 +22,9 @@ export const jiraIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getWorkspaces: () => (jiraAuthTokenBridgeValue.get() ? [{ kind: "workspace", id: "jira", name: "Jira" }] : []),
+  getWorkspaces: () => (getAtlassianAccounts().length > 0 ? [{ kind: "workspace", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
-    return !!accountStore.user;
+    return !!accountStore.user && getAtlassianAccounts().length == 0;
   },
   async connect() {
     loginJiraBridge();
