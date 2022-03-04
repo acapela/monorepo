@@ -47,6 +47,8 @@ export type AnalyticsEventsMap = {
   "Account Added User": { role: "owner" | "admin" | "member" };
   // delete a team member from team management space
   "Account Removed User": void;
+  // Adds at least one integration and presses continue
+  "Onboarding Completed": void;
   // to be implemented later
   "Trial Started": { trial_start_date: Date; trial_end_date: Date; plan_name: PlanType };
   // to be implemented later
@@ -64,6 +66,7 @@ export type AnalyticsEventsMap = {
   // Navigation related events
 
   "App Opened": void;
+  "App Restarted": void;
   "Settings Opened": void;
   "Snoozed Notifications Opened": void;
   "Resolved Notifications Opened": void;
@@ -75,6 +78,7 @@ export type AnalyticsEventsMap = {
   "Figma Integration Added": void;
   "Slack Integration Added": void;
   "Notion Integration Added": void;
+  "Jira Integration Added": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
@@ -120,6 +124,7 @@ export type AnalyticsUserProfile = {
   notion_installed_at?: Date;
   figma_installed_at?: Date;
   linear_installed_at?: Date;
+  jira_installed_at?: Date;
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
   first_name?: Maybe<string>;
