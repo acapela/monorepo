@@ -25,6 +25,7 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationsRows } from "./NotificationsRows";
+import { RowQuickActions } from "./RowQuickActions";
 import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
@@ -132,8 +133,13 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             </UICountIndicator>
             <UITitleText>{group.name}</UITitleText>
           </UITitle>
-          {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
-          <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
+          {!isFocused && (
+            <>
+              {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
+              <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
+            </>
+          )}
+          {isFocused && <RowQuickActions target={group} />}
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
