@@ -13,6 +13,7 @@ const completeOnboarding = defineAction({
   name: "Continue",
   icon: <IconArrowRight />,
   private: true,
+  analyticsEvent: "Onboarding Completed",
   canApply: () => !!onboardingStore.hasLinkedApps,
   handler() {
     onboardingStore.onboardingStatus = "complete";

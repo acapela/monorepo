@@ -7,13 +7,17 @@ import {
   loginGoogleBridge,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconCross, IconLogOut, IconPlus } from "@aca/ui/icons";
+import { IconCross, IconLogOut, IconPlus, IconRefreshCw } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
+
+// import { BrowserWindow, session } from "electron";
+// import { authWindowDefaultOptions } from "../electron/auth/utils";
+// import { FRONTEND_URL } from "../lib/env";
 
 export const accountActionsGroup = defineGroup({
   name: "Account",
@@ -98,12 +102,26 @@ export const connectGoogle = defineAction({
   },
 });
 
-export const restartAndClearElectronData = defineAction({
+export const logOut = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
   group: accountActionsGroup,
-  analyticsEvent: "Logged Out",
-  keywords: ["reload"],
+  keywords: ["logout", "signout"],
+  async handler() {
+    // TODO: none of these options work
+    // session.defaultSession.cookies.remove(FRONTEND_URL, "next-auth.session-token")
+    // const window = new BrowserWindow({ ...authWindowDefaultOptions });
+    // window.webContents.loadURL(FRONTEND_URL + `/logout`);
+    // logout();
+  },
+});
+
+export const restartAndClearElectronData = defineAction({
+  name: "Restart app",
+  icon: <IconRefreshCw />,
+  group: accountActionsGroup,
+  analyticsEvent: "App Restarted",
+  keywords: ["reload", "restart"],
   async handler() {
     clearAllDataRequest();
   },

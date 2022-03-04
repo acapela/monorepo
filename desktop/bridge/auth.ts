@@ -56,6 +56,7 @@ const allServices = [
   notionSelectedSpaceValue,
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
+  jiraAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {
