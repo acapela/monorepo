@@ -19,9 +19,6 @@ export const SystemBarUserMenu = observer(function SystemBarUserMenu() {
   );
 });
 
-export const SYSTEM_BAR_HEIGHT = 52;
-export const TRAFFIC_LIGHTS_NEEDED_SPACE = 90;
-
 const UIHolder = styled.div`
   ${Avatar} {
     font-size: 24px;
