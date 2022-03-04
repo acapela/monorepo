@@ -1,5 +1,4 @@
-import React from "react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { PopPresenceAnimator } from "@aca/ui/animations";
@@ -46,7 +45,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
-  ${theme.colors.layout.background.asBg};
+  ${theme.colors.layout.background.withBorder.asBg};
   ${theme.shadow.modal};
   ${theme.box.panel.pageCart.padding.radius};
   display: flex;

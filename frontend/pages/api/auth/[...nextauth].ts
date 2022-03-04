@@ -10,6 +10,7 @@ import SlackProvider from "next-auth/providers/slack";
 
 import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { Maybe } from "@aca/shared/types";
@@ -80,18 +81,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
 
       async signIn({ account }) {
-        // db.user
-        //   .findFirst({
-        //     where: {
-        //       account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
-        //     },
-        //   })
-        //   .then(async (user) => {
-        //     if (user) {
-        //       trackFirstBackendUserEvent(user, "Signed In");
-        //     }
-        //   })
-        //   .catch((error) => Sentry.captureException(error));
+        db.user
+          .findFirst({
+            where: {
+              account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
+            },
+          })
+          .then(async (user) => {
+            if (user) {
+              trackFirstBackendUserEvent(user, "Logged In");
+            }
+          })
+          .catch((error) => Sentry.captureException(error));
 
         try {
           // If our current account has no refresh token, try to update it if we have it now.
@@ -127,9 +128,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
         });
       },
-      // signOut({ token }) {
-      //   trackBackendUserEvent(token.id as string, "Signed Out");
-      // },
+      signOut({ token }) {
+        trackBackendUserEvent(token.id as string, "Logged Out");
+      },
     },
 
     cookies: {
@@ -205,7 +206,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         assert(name && email, "must get name and email from auth adapter");
 
         const user = await db.user.create({ data: { name, email, avatar_url: image } });
-
+        trackFirstBackendUserEvent(user, "Signed Up");
         return toAdapterUser(user);
       },
 
@@ -253,10 +254,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
           }),
         ]);
-        // trackFirstBackendUserEvent(user, "Signed Up");
-        // if (user.current_team_id) {
-        //   trackBackendUserEvent(user.id, "Account Added User", { teamId: user.current_team_id });
-        // }
       },
 
       createSession() {

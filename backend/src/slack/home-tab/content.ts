@@ -3,7 +3,6 @@ import { orderBy, partition, sumBy } from "lodash";
 import { Blocks, Elements, HomeTab, Md } from "slack-block-builder";
 
 import { db } from "@aca/db";
-import { backendUserEventToJSON } from "@aca/shared/backendAnalytics";
 import { isNotFalsy } from "@aca/shared/nullish";
 import { routes } from "@aca/shared/routes";
 import { pluralize } from "@aca/shared/text/pluralize";
@@ -249,10 +248,7 @@ export async function buildSummaryBlocksForUser(
     Padding,
     Blocks.Actions().elements(
       Elements.Button({ text: "+ New Request", actionId: SlackActionIds.CreateTopic }).primary(true),
-      Elements.Button({ text: "Open web app" })
-        .url(process.env.FRONTEND_URL)
-        .actionId(SlackActionIds.TrackEvent)
-        .value(backendUserEventToJSON(currentUserId, "Opened Webapp From Slack Home Tab"))
+      Elements.Button({ text: "Open web app" }).url(process.env.FRONTEND_URL).actionId(SlackActionIds.TrackEvent)
     ),
   ].filter(isNotFalsy);
 }

@@ -11,7 +11,7 @@ function getAnalyticsProfileFromDbUser(user: User | UserFragment): Partial<Analy
     id: user.id,
     email: user.email,
     name: user.name,
-    createdAt: new Date(user.created_at), // will convert string into Date type if necessary
+    created_at: new Date(user.created_at), // will convert string into Date type if necessary
     avatar: user.avatar_url,
   };
 }

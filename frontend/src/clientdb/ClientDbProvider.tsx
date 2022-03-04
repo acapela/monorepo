@@ -6,7 +6,6 @@ import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrent
 import { useCurrentTeamContext } from "@aca/frontend/team/CurrentTeam";
 import { AppRecoveryButtons } from "@aca/frontend/utils/AppRecoveryButtons";
 import { ErrorView } from "@aca/frontend/views/ErrorView";
-import { useReportPageReady } from "@aca/shared/analytics/useReportPageReady";
 import { assert } from "@aca/shared/assert";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 import { useAsyncEffect } from "@aca/shared/hooks/useAsyncEffect";
@@ -76,8 +75,6 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     },
     [userId, teamManager.isLoading, teamManager.teamId, apolloClient]
   );
-
-  useReportPageReady(teamManager.teamId ?? undefined, !error && canRender);
 
   devAssignWindowVariable("db", db);
 

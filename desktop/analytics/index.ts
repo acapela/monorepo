@@ -13,15 +13,15 @@ import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
 import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
-
-import { watchForUserAuthorized } from "./auth";
 import {
   AnalyticsEvent,
   AnalyticsEventName,
   AnalyticsEventPayload,
   AnalyticsGroupsMap,
   AnalyticsUserProfile,
-} from "./types";
+} from "@aca/shared/types/analytics";
+
+import { applicationFocusStateBridge } from "../bridge/system";
 
 const log = createLogger("Analytics");
 
@@ -89,7 +89,12 @@ export function trackingEvent<N extends AnalyticsEventName>(
 
 function initializeAnalytics() {
   const cleanup = createCleanupObject();
-  cleanup.next = trackAuthorization();
+  cleanup.next = autorun(() => {
+    const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
+    if (lastAppFocusDateTs > lastAppBlurredDateTs) {
+      trackEvent("App Opened");
+    }
+  });
   // Keep identity updated all the time
   cleanup.next = autorun(() => {
     const profile = getUserAnalyticsProfile();
@@ -146,19 +151,3 @@ function initializeAnalytics() {
 onDocumentReady(() => {
   initializeAnalytics();
 });
-
-function trackAuthorization() {
-  return watchForUserAuthorized((user) => {
-    if (user.isNew) {
-      trackEvent("Signed Up", {
-        email: user.email,
-        name: user.name,
-        type: "invited",
-        first_name: null,
-        last_name: null,
-      });
-    } else {
-      trackEvent("Logged In");
-    }
-  });
-}

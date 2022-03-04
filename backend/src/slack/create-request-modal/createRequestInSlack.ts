@@ -12,7 +12,6 @@ import { assert, assertDefined } from "@aca/shared/assert";
 import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "@aca/shared/editor/mentions";
 import { MENTION_OBSERVER, MentionType, REQUEST_NOTIFICATION_LABELS, RequestType } from "@aca/shared/requests";
 import { Maybe } from "@aca/shared/types";
-import { Origin } from "@aca/shared/types/analytics";
 import { EditorMentionData } from "@aca/shared/types/editor";
 
 import { isWebAPIErrorType } from "../errors";
@@ -121,7 +120,7 @@ interface CreateRequestInSlackInput {
   requestType: MentionType;
   requestForSlackUserIds: string[];
   observersSlackUserIds?: Maybe<string[]>;
-  origin?: Origin;
+  origin?: string;
   token: string;
   originalChannelId?: Maybe<string>;
   conversationId?: Maybe<string>;

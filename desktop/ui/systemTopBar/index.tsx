@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { theme } from "@aca/ui/theme";
 
+import { SYSTEM_BAR_HEIGHT, TRAFFIC_LIGHTS_NEEDED_SPACE } from "./ui";
 import { SystemBarUserMenu } from "./UserMenu";
 
 interface Props {
@@ -30,9 +31,6 @@ export function SystemTopBar({ navigationItems, targetActionItems, titleNode, is
     </UIBar>
   );
 }
-
-export const SYSTEM_BAR_HEIGHT = 52;
-export const TRAFFIC_LIGHTS_NEEDED_SPACE = 90;
 
 const UIBar = styled.div<{ $isFullwidth: boolean }>`
   height: ${SYSTEM_BAR_HEIGHT}px;

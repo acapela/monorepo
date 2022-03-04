@@ -11,7 +11,7 @@ import { getLabelForPriority } from "@aca/shared/priorities";
 import { REQUEST_ACTION, REQUEST_DECISION, REQUEST_READ, REQUEST_RESPONSE, RequestType } from "@aca/shared/requests";
 import { checkHasAllSlackBotScopes } from "@aca/shared/slack";
 import { Maybe } from "@aca/shared/types";
-import { AnalyticsEventsMap, Origin } from "@aca/shared/types/analytics";
+import { Origin } from "@aca/shared/types/analytics";
 
 import { SlackInstallation, slackClient } from "./app";
 import { isWebAPIErrorType } from "./errors";
@@ -89,8 +89,6 @@ export const SlackActionIds = {
   PostSelfRequestInChannel: "post-self-request-in-channel",
 } as const;
 
-export type CreateRequestOrigin = AnalyticsEventsMap["Created Request"]["origin"];
-
 export type ChannelInfo = {
   members: string[];
   isPrivate: boolean;
@@ -100,7 +98,7 @@ export type ViewMetadata = {
   open_create_request_modal: {
     slackUserId: string;
     slackTeamId: string;
-    origin: CreateRequestOrigin;
+    origin: string;
     channelId?: string;
     messageTs?: string;
     messageText?: string;
@@ -112,7 +110,7 @@ export type ViewMetadata = {
     channelId?: string;
     channelInfo?: ChannelInfo;
     messageTs?: string;
-    origin: CreateRequestOrigin;
+    origin: string;
     fromMessageBelongingToSlackUserId?: string;
     slackUserIdsFromMessage?: string[];
   };

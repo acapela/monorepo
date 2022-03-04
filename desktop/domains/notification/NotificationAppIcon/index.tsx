@@ -3,22 +3,14 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
+import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
-//@ts-ignore
-import figma from "./figma.svg";
-//@ts-ignore
-import jira from "./jira.svg";
-//@ts-ignore
-import linear from "./linear.svg";
-//@ts-ignore
-import notion from "./notion.svg";
-//@ts-ignore
-import slack from "./slack.svg";
+const { figma, jira, linear, notion, slack } = integrationLogos;
 
 interface Props {
   notification: NotificationEntity;
