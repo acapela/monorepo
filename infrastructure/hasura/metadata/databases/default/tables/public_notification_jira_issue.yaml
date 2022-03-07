@@ -11,13 +11,15 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
-    - id
     - created_at
-    - updated_at
-    - notification_id
+    - from
+    - id
     - issue_id
     - issue_title
+    - notification_id
+    - to
     - type
+    - updated_at
     filter:
       notification:
         user_id:
