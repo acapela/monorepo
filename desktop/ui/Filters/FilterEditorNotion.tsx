@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
 import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
+import { UserFilterDisclaimer } from "@aca/desktop/ui/Filters/utils";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
@@ -39,6 +40,7 @@ export const FilterEditorNotion = observer(({ filter, onChange }: Props) => {
         field="author_id"
         onChange={onChange}
       />
+      <UserFilterDisclaimer />
     </UIHolder>
   );
 });
