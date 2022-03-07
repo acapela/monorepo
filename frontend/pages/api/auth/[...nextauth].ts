@@ -36,6 +36,8 @@ const toMaybeAdapterUser = (user: Maybe<User>): AdapterUser | null => (user ? to
 
 const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
+const ACCOUNTS_WITHOUT_USER_UPDATES = ["atlassian"];
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   return NextAuth(req, res, {
     secret: process.env.AUTH_SECRET,
@@ -122,7 +124,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
 
     events: {
-      async signIn({ user, profile }) {
+      async signIn({ user, profile, account }) {
+        /*
+          Prevents avatar from being updated
+          Some providers are linked with nextAuth without exclusively needed for singing in
+          This prevents overriding user profile data from most trustworth sources, e.g. google
+        */
+        if (ACCOUNTS_WITHOUT_USER_UPDATES.includes(account.provider)) {
+          return;
+        }
+
         await db.user.update({
           where: { id: user.id },
           data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
