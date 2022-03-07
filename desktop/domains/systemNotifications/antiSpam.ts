@@ -1,14 +1,15 @@
 import { isSameHour, isSameMinute } from "date-fns";
 
 import { removeElementFromArray } from "@aca/shared/array";
-import { createLogger } from "@aca/shared/log";
+
+import { makeLogger } from "../dev/makeLogger";
 
 interface AntiSpamConfig {
   perMinute: number;
   perHour: number;
 }
 
-const log = createLogger("Anti spam");
+const log = makeLogger("Anti spam");
 
 export function createAntiSpamGuard({ perMinute, perHour }: AntiSpamConfig) {
   const callDates: Date[] = [];

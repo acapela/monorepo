@@ -2,10 +2,10 @@ import { differenceInMilliseconds, isPast } from "date-fns";
 
 import { waitForDoNotDisturbToFinish } from "@aca/desktop/bridge/system";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
-import { createLogger } from "@aca/shared/log";
 import { createResolvablePromise } from "@aca/shared/promises";
 import { createTimeout } from "@aca/shared/time";
 
+import { makeLogger } from "../dev/makeLogger";
 import { createAntiSpamGuard } from "./antiSpam";
 import { ScheduledNotification } from "./types";
 
@@ -20,7 +20,7 @@ function createDateTimeout(callback: () => void, date: Date) {
   return createTimeout(callback, duration);
 }
 
-const log = createLogger("System notifications");
+const log = makeLogger("System notifications");
 
 function showNotification(scheduledNotification: ScheduledNotification) {
   const { title, body, date, onClick } = scheduledNotification;

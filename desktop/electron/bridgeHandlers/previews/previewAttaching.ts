@@ -1,12 +1,11 @@
 import { BrowserView, BrowserWindow } from "electron";
 
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
-import { assert } from "@aca/shared/assert";
-import { createLogger } from "@aca/shared/log";
 
 import { expectedPreviewPosition } from "./preloadingWindow";
 
-const log = createLogger("BrowserView");
+const log = makeLogger("BrowserView");
 
 /**
  * Will attach preview to given window at given initial position.
@@ -97,9 +96,9 @@ function getIsViewAttachedToWindow(view: BrowserView, window: BrowserWindow) {
 }
 
 function assertViewIsNotAttachedToWindow(view: BrowserView, window: BrowserWindow) {
-  assert(!getIsViewAttachedToWindow(view, window), "Requested view is already attached to the window");
+  log.assert(!getIsViewAttachedToWindow(view, window), "Requested view is already attached to the window");
 }
 
 function assertViewIsAttachedToWindow(view: BrowserView, window: BrowserWindow) {
-  assert(getIsViewAttachedToWindow(view, window), "Requested view is already attached to the window");
+  log.assert(getIsViewAttachedToWindow(view, window), "Requested view is already attached to the window");
 }

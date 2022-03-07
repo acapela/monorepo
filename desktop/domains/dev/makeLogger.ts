@@ -1,8 +1,7 @@
 import { isError } from "lodash";
 
-import { Severity, logStorage } from "@aca/desktop/bridge/logger";
+import { LogEntry, Severity, logStorage } from "@aca/desktop/bridge/logger";
 import { getUUID } from "@aca/shared/uuid";
-import { createFunctionWithProps } from "@aca/ui/theme/utils/createFunctionWithProps";
 
 /*
  This function adds additional parameters to an input string or error
@@ -26,102 +25,114 @@ In the cases were no error was provided on first input,
 we'll just do a simple string concatenation.
 
 */
-function joinInputs<T extends string | Error>(textOrError: T, args: unknown[]): T {
-  if (args.length === 0) {
-    return textOrError;
+
+function formatLogItem(input: unknown) {
+  if (isError(input)) {
+    return `${input.name}: ${input.message} ${input.stack ?? ""}`;
   }
 
-  const argsAsText = args
-    .map((arg) => {
-      if (typeof arg === "object") {
-        return JSON.stringify(arg, null, 2);
-      }
-      if (typeof arg === "string" || typeof arg === "number") {
-        return arg;
-      }
-
-      return undefined;
-    })
-    .filter((arg) => !!arg) as string[];
-
-  let compiled: string | Error;
-
-  if (isError(textOrError)) {
-    compiled = new Error(
-      `${textOrError.name}: ${textOrError.message} ${textOrError.stack ?? ""} ${argsAsText.join("\n")}`
-    );
-    compiled.name = textOrError.name;
-  } else {
-    compiled = `${textOrError} ${argsAsText.join("\n")}`;
+  if (typeof input === "object") {
+    return JSON.stringify(input, null, 2);
   }
-  return compiled as T;
+  if (typeof input === "string" || typeof input === "number") {
+    return input;
+  }
+
+  return `${input}`;
 }
 
-export function makeLogger(prefix: string) {
+type ErrorReporter = (body: unknown[]) => void;
+
+let errorReporter: ErrorReporter | null = null;
+
+export function registerLoggerErrorReporter(reporter: ErrorReporter) {
+  errorReporter = reporter;
+}
+
+export function makeLogger(prefix: string, isEnabled = true) {
   const now = () => new Date().toISOString();
 
-  function add<T extends string | Error>({ severity, textOrError }: { severity: Severity; textOrError: T }): T {
-    const text: string = isError(textOrError)
-      ? `${textOrError.name} - ${textOrError.message}: ${textOrError.stack}`
-      : textOrError;
+  function performLog(severity: Severity, body: unknown[]) {
+    const preparedBody = body.map(formatLogItem);
 
     const timestamp = now();
-    const logEntry = {
+    const logEntry: LogEntry = {
       id: getUUID(),
       prefix,
       severity,
       timestamp,
-      text,
+      text: preparedBody.join("\n"),
     };
+
     logStorage.send(logEntry);
 
-    const result = `[${prefix}][${severity}][${timestamp}]: ${text}`;
+    if (severity === "Error") {
+      errorReporter?.(body);
+    }
 
-    return (isError(textOrError) ? new Error(result) : result) as T;
+    const [firstItem, ...restItems] = preparedBody;
+
+    return [`[${prefix}][${severity}][${timestamp}]: ${firstItem}`, ...restItems];
   }
 
   const levels = {
-    error<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
-      const result = add({
-        severity: "Error",
-        textOrError: joinInputs(textOrError, args),
-      });
+    error(...args: unknown[]) {
+      if (!isEnabled) return;
+      const result = performLog("Error", args);
 
-      console.error(result);
-
-      return result;
+      console.error(...result);
     },
-    warn<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
-      const result = add({
-        severity: "Warning",
-        textOrError: joinInputs(textOrError, args),
-      });
+    warn(...args: unknown[]) {
+      if (!isEnabled) return;
 
-      console.warn(result);
+      const result = performLog("Warning", args);
 
-      return result;
+      console.warn(...result);
     },
-    info<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
-      const result = add({
-        severity: "Info",
-        textOrError: joinInputs(textOrError, args),
-      });
+    info(...args: unknown[]) {
+      if (!isEnabled) return;
 
-      console.info(result);
+      const result = performLog("Info", args);
 
-      return result;
+      console.info(...result);
     },
-    debug<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
-      const result = add({
-        severity: "Debug",
-        textOrError: joinInputs(textOrError, args),
-      });
+    debug(...args: unknown[]) {
+      if (!isEnabled) return;
 
-      // console.debug(result);
+      const result = performLog("Debug", args);
 
-      return result as T;
+      console.info(...result);
+    },
+    assert(value: unknown, message: string) {
+      if (!isEnabled) return;
+
+      if (value) return;
+
+      const result = performLog("Error", [`[Assert]: ${message}`]);
+
+      console.error(...result);
     },
   };
 
   return createFunctionWithProps(levels.info, levels);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFunction = (...args: any[]) => any;
+
+export type FunctionWithProps<F extends AnyFunction, Props> = F & Props;
+
+export function createFunctionWithProps<F extends AnyFunction, Props>(
+  func: F,
+  props: Props
+): FunctionWithProps<F, Props> {
+  const functionClone: F = ((...args: Parameters<F>): ReturnType<F> => {
+    return func(...args);
+  }) as F;
+
+  const descriptorsMap = Object.getOwnPropertyDescriptors(props);
+
+  Object.defineProperties(functionClone, descriptorsMap);
+
+  return functionClone as FunctionWithProps<F, Props>;
 }

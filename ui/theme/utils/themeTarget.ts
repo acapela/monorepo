@@ -1,7 +1,7 @@
 import { StylesPart } from "styled-components";
 import { isPrimitive } from "utility-types";
 
-import { FunctionWithProps, createFunctionWithProps } from "./createFunctionWithProps";
+import { FunctionWithProps, createFunctionWithProps } from "@aca/shared/functions";
 
 export type ThemeTarget<P> = FunctionWithProps<() => StylesPart, P>;
 

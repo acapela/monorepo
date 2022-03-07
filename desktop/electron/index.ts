@@ -2,12 +2,13 @@ import "@aca/desktop/lib/env"; // import for side effects
 
 import "./globals";
 
+import * as Sentry from "@sentry/electron";
 import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
 import { runInAction } from "mobx";
 
 import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { makeLogger, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
 import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
@@ -19,7 +20,17 @@ import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
 import { initializeSingleInstanceLock } from "./singleInstance";
 
-//
+registerLoggerErrorReporter((body) => {
+  try {
+    if (body.length === 1) {
+      Sentry.captureException(body[0]);
+      return;
+    }
+    Sentry.captureException(JSON.stringify(body));
+  } catch (error) {
+    // We're doomed!
+  }
+});
 
 // Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
 protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);

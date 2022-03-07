@@ -12,7 +12,6 @@ import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
-import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
 import {
   AnalyticsEvent,
@@ -23,8 +22,11 @@ import {
 } from "@aca/shared/types/analytics";
 
 import { applicationFocusStateBridge } from "../bridge/system";
+import { makeLogger } from "../domains/dev/makeLogger";
 
-const log = createLogger("Analytics");
+const log = makeLogger("Analytics");
+
+log.info("FOOOO");
 
 export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   const user = accountStore.user;

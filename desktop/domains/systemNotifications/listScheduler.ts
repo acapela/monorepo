@@ -8,11 +8,11 @@ import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
-import { createLogger } from "@aca/shared/log";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
+import { makeLogger } from "../dev/makeLogger";
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";
@@ -20,7 +20,7 @@ import { ScheduledNotification } from "./types";
 
 const MAX_DISTANCE_TO_BUNDLE = MINUTE * 15;
 
-const log = createLogger("List notifications scheduler", false);
+const log = makeLogger("List notifications scheduler", false);
 
 function getNextListNotificationWindow(list: NotificationListEntity): Date | null {
   // Notification disabled
