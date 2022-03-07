@@ -81,7 +81,6 @@ export const connectGoogle = defineAction({
 export const logOut = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
-  analyticsEvent: "Logged Out",
   group: accountActionsGroup,
   keywords: ["logout", "signout"],
   async handler() {

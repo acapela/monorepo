@@ -1,4 +1,4 @@
-import { app, session, shell } from "electron";
+import { BrowserWindow, app, session, shell } from "electron";
 
 import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
@@ -18,6 +18,7 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
+import { getAcapelaAuthToken } from "../auth/acapela";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
@@ -43,13 +44,33 @@ export function initializeSystemHandlers() {
   });
 
   logoutBridge.handle(async () => {
-    const acapelaCookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
+    if (!(await getAcapelaAuthToken())) {
+      authTokenBridgeValue.set(null);
 
-    acapelaCookies.forEach((cookie) => {
-      session.defaultSession.cookies.remove(FRONTEND_URL, cookie.name);
-    });
+      return;
+    }
 
-    authTokenBridgeValue.set(null);
+    const logoutWindow = new BrowserWindow({ opacity: 0, width: 10, height: 10 });
+
+    logoutWindow.setIgnoreMouseEvents(true);
+
+    async function handleMaybeLoggedOut() {
+      const acapelaAuthToken = await getAcapelaAuthToken();
+
+      const stillHasAuthToken = !!acapelaAuthToken;
+
+      if (stillHasAuthToken) return;
+
+      session.defaultSession.cookies.off("changed", handleMaybeLoggedOut);
+
+      authTokenBridgeValue.set(null);
+
+      logoutWindow.close();
+    }
+
+    session.defaultSession.cookies.on("changed", handleMaybeLoggedOut);
+
+    await logoutWindow.webContents.loadURL(`${FRONTEND_URL}/logout`);
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {
