@@ -114,7 +114,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
 }
 
 async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
-  const userThatUpdatedIssue = payload.issue;
+  const userThatUpdatedIssue = payload.user;
 
   //e.g. https://acapela-team.atlassian.net
   const baseSitePath = payload.issue.self.split("/rest")[0];
@@ -128,12 +128,17 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
   for (const changeLogItem of payload.changelog.items) {
     // Creates `user_mentioned` notifications for users that were mentioned in the description
     if (changeLogItem.fieldId === "description") {
-      const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "").filter(
-        (atlassianAccountId) => atlassianAccountId !== userThatUpdatedIssue.id
+      const mentionsBeforeUpdate = extractMentionedAccountIds(changeLogItem.fromString ?? "");
+      const mentionsAfterUpdate = extractMentionedAccountIds(changeLogItem.toString ?? "");
+
+      // Mentions that are not added in between issue updates should not create a new notification
+      const newAccountsMentioned = mentionsAfterUpdate.filter(
+        (mentionedAccountId) =>
+          !mentionsBeforeUpdate.includes(mentionedAccountId) && mentionedAccountId !== userThatUpdatedIssue.accountId
       );
 
-      if (atlassianAccountsMentioned.length === 0) {
-        return;
+      if (newAccountsMentioned.length === 0) {
+        continue;
       }
 
       const mentionedUsersToNotify = (
@@ -141,7 +146,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
           where: {
             account: {
               some: {
-                AND: [{ provider_id: "atlassian" }, { provider_account_id: { in: atlassianAccountsMentioned } }],
+                AND: [{ provider_id: "atlassian" }, { provider_account_id: { in: newAccountsMentioned } }],
               },
             },
           },
@@ -178,7 +183,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
     // Creates `user_assigned` notifications for users that were assigned to an issue
     if (changeLogItem.fieldId === "assignee") {
       const assignedAccountId = changeLogItem.to;
-      if (!assignedAccountId || assignedAccountId === userThatUpdatedIssue.id) {
+      if (!assignedAccountId || assignedAccountId === userThatUpdatedIssue.accountId) {
         continue;
       }
 
@@ -229,7 +234,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
       // Mention notifications are more important than watcher notifications
       // We're excluding mentions from watcher to prevent double notifications
       const watchersExceptUserThatUpdatedIssue = (await getWatchers(jiraAccount, payload.issue.key)).filter(
-        (watcherAccountId) => watcherAccountId !== userThatUpdatedIssue.id
+        (watcherAccountId) => watcherAccountId !== userThatUpdatedIssue.accountId
       );
 
       const watchersToNotify = (
