@@ -14,6 +14,9 @@ export async function captureJiraWebhook(payload: JiraWebhookPayload) {
   if (payload.webhookEvent === "jira:issue_updated") {
     await handleJiraIssueUpdate(payload);
   }
+  if (payload.webhookEvent === "jira:issue_created") {
+    await handleJiraIssueCreated(payload);
+  }
 }
 
 function extractMentionedAccountIds(text: string) {
@@ -94,7 +97,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
             create: {
               user_id: user.id,
               url: commentUrl,
-              from: payload.comment?.author.displayName ?? "",
+              from: payload.user.displayName ?? "",
               // TODO: make another api call to get the display names of all the mentioned users
               text_preview: payload.comment?.body.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
             },
@@ -113,8 +116,11 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
   return await Promise.all(notificationsSend);
 }
 
+/*
+  Possible new notification_jira_issue_type: "user_mentioned", "user_assigned", "issue_status_updated"
+*/
 async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
-  const userThatUpdatedIssue = payload.user;
+  const accountThatUpdatedIssue = payload.user;
 
   //e.g. https://acapela-team.atlassian.net
   const baseSitePath = payload.issue.self.split("/rest")[0];
@@ -134,7 +140,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
       // Mentions that are not added in between issue updates should not create a new notification
       const newAccountsMentioned = mentionsAfterUpdate.filter(
         (mentionedAccountId) =>
-          !mentionsBeforeUpdate.includes(mentionedAccountId) && mentionedAccountId !== userThatUpdatedIssue.accountId
+          !mentionsBeforeUpdate.includes(mentionedAccountId) && mentionedAccountId !== accountThatUpdatedIssue.accountId
       );
 
       if (newAccountsMentioned.length === 0) {
@@ -183,7 +189,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
     // Creates `user_assigned` notifications for users that were assigned to an issue
     if (changeLogItem.fieldId === "assignee") {
       const assignedAccountId = changeLogItem.to;
-      if (!assignedAccountId || assignedAccountId === userThatUpdatedIssue.accountId) {
+      if (!assignedAccountId || assignedAccountId === accountThatUpdatedIssue.accountId) {
         continue;
       }
 
@@ -234,7 +240,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
       // Mention notifications are more important than watcher notifications
       // We're excluding mentions from watcher to prevent double notifications
       const watchersExceptUserThatUpdatedIssue = (await getWatchers(jiraAccount, payload.issue.key)).filter(
-        (watcherAccountId) => watcherAccountId !== userThatUpdatedIssue.accountId
+        (watcherAccountId) => watcherAccountId !== accountThatUpdatedIssue.accountId
       );
 
       const watchersToNotify = (
@@ -278,6 +284,98 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
 
       notifiedUsers.push(...watchersToNotify.map(({ id }) => id));
     }
+  }
+}
+
+async function handleJiraIssueCreated(payload: JiraWebhookPayload) {
+  const accountThatCreatedIssue = payload.user;
+
+  //e.g. https://acapela-team.atlassian.net
+  const baseSitePath = payload.issue.self.split("/rest")[0];
+  const issueUrl = `${baseSitePath}/browse/${payload.issue.key}`;
+
+  // There can be multiple updates in one same webhook.
+  // We want to notify individual users only about one update found in the webhook
+  // This array keeps a record of people that were already notified
+  const notifiedUsers: string[] = [];
+
+  const assignedAccount = payload.issue.fields.assignee;
+
+  // Notifies user that had this ticket assigned
+  if (assignedAccount && assignedAccount.accountId !== accountThatCreatedIssue.accountId) {
+    const userToNotify = await db.user.findFirst({
+      where: {
+        account: {
+          some: {
+            AND: [{ provider_id: "atlassian" }, { provider_account_id: { equals: assignedAccount.accountId } }],
+          },
+        },
+      },
+    });
+
+    if (userToNotify) {
+      await db.notification_jira_issue.create({
+        data: {
+          notification: {
+            create: {
+              user_id: userToNotify.id,
+              url: issueUrl,
+              from: accountThatCreatedIssue.displayName ?? "",
+            },
+          },
+          issue_id: payload.issue.id,
+          issue_title: payload.issue.fields.summary,
+          notification_jira_issue_type: {
+            connect: {
+              value: "issue_assigned",
+            },
+          },
+        },
+      });
+      notifiedUsers.push(userToNotify.id);
+    }
+  }
+
+  const atlassianAccountsMentioned = extractMentionedAccountIds(payload.issue.fields.description).filter(
+    (mention) => mention !== accountThatCreatedIssue.accountId && mention !== assignedAccount?.accountId
+  );
+
+  // Notify users that were mentioned in the description
+  if (atlassianAccountsMentioned.length > 0) {
+    const mentionedUsersToNotify = await db.user.findMany({
+      where: {
+        account: {
+          some: {
+            AND: [{ provider_id: "atlassian" }, { provider_account_id: { in: atlassianAccountsMentioned } }],
+          },
+        },
+      },
+    });
+
+    const notificationsSend = mentionedUsersToNotify.map((user) =>
+      db.notification_jira_issue.create({
+        data: {
+          notification: {
+            create: {
+              user_id: user.id,
+              url: issueUrl,
+              from: accountThatCreatedIssue.displayName ?? "",
+              // TODO: make another api call to get the display names of all the mentioned users
+              text_preview: payload.issue.fields.description.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
+            },
+          },
+          issue_id: payload.issue.id,
+          issue_title: payload.issue.fields.summary,
+          notification_jira_issue_type: {
+            connect: {
+              value: "user_mentioned",
+            },
+          },
+        },
+      })
+    );
+
+    return await Promise.all(notificationsSend);
   }
 }
 
