@@ -2,6 +2,7 @@ import { isError } from "lodash";
 
 import { Severity, logStorage } from "@aca/desktop/bridge/logger";
 import { getUUID } from "@aca/shared/uuid";
+import { createFunctionWithProps } from "@aca/ui/theme/utils/createFunctionWithProps";
 
 /*
  This function adds additional parameters to an input string or error
@@ -79,7 +80,7 @@ export function makeLogger(prefix: string) {
     return (isError(textOrError) ? new Error(result) : result) as T;
   }
 
-  return {
+  const levels = {
     error<T extends string | Error>(textOrError: T, ...args: unknown[]): T {
       const result = add({
         severity: "Error",
@@ -121,4 +122,6 @@ export function makeLogger(prefix: string) {
       return result as T;
     },
   };
+
+  return createFunctionWithProps(levels.info, levels);
 }
