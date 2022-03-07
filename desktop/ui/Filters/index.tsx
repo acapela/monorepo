@@ -11,15 +11,13 @@ import { filtersEditStore } from "./store";
 interface Props {
   value: NotificationFilter[];
   onChange: (filters: NotificationFilter[]) => void;
-  singleType?: NotificationFilter["__typename"];
   className?: string;
 }
 
-export const ListFilters = styledObserver(({ value, onChange, singleType, className }: Props) => (
+export const ListFilters = styledObserver(({ value, onChange, className }: Props) => (
   <UIHolder className={className}>
     <UIFilters>
       <NewFilterCreator
-        singleType={singleType}
         onCreateRequest={(filter) => {
           onChange([...value, filter]);
           filtersEditStore.editedFilter = filter;

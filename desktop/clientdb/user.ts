@@ -7,7 +7,6 @@ import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
-import { NotificationFilter } from "@aca/desktop/clientdb/list";
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
 import { accountEntity } from "./account";
@@ -20,7 +19,7 @@ const userFragment = gql`
     email
     avatar_url
     is_slack_auto_resolve_enabled
-    import_filters
+    slack_included_channels
     updated_at
     created_at
   }
@@ -40,14 +39,14 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     __typename: "user",
     has_slack_installation: null,
     avatar_url: null,
-    import_filters: [],
+    slack_included_channels: [],
     ...getGenericDefaultData(),
   }),
   customObservableAnnotations: {
-    import_filters: observable.ref,
+    slack_included_channels: observable.ref,
   },
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {
-    updateColumns: ["is_slack_auto_resolve_enabled", "import_filters"],
+    updateColumns: ["is_slack_auto_resolve_enabled", "slack_included_channels"],
   }),
 }).addConnections((user, { getEntity }) => {
   return {
@@ -62,9 +61,6 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     },
     get isNew() {
       return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
-    },
-    get importFilters() {
-      return user.import_filters as NotificationFilter[];
     },
   };
 });
