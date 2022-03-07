@@ -79,7 +79,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
-      isOnePreviewEnough: true,
+      isOnePreviewEnough: false,
     };
   }
 
@@ -89,7 +89,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "jira",
       integrationTitle: "Jira issue",
-      isOnePreviewEnough: true,
+      isOnePreviewEnough: false,
     };
   }
 

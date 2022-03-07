@@ -41,12 +41,12 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       }
       switch (inner.origin) {
         case "assign":
-          return `The issue "${inner.issue_title}" was assigned to you`;
+          return `Assigned you to "${inner.issue_title}"`;
         case "cancel":
         case "state:cancel":
-          return `The issue "${inner.issue_title}" was canceled`;
+          return `Cancelled issue "${inner.issue_title}"`;
         case "state:complete":
-          return `The issue "${inner.issue_title}" was completed`;
+          return `Completed issue "${inner.issue_title}"`;
         default:
           return `Created issue "${inner.issue_title}"`;
       }
@@ -57,6 +57,12 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       }
       if (inner.type === "user_mentioned") {
         return `Mentioned you in "${inner.issue_title}"`;
+      }
+      if (inner.type === "issue_status_updated") {
+        return `Updated "${inner.issue_title}" to "${inner.to}"`;
+      }
+      if (inner.type === "issue_assigned") {
+        return `Assigned you to "${inner.issue_title}"`;
       }
       return "Unhandled Jira Notification";
     }
