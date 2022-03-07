@@ -6,7 +6,7 @@ import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { syncGoogleAuthState } from "./google";
 import { authWindowDefaultOptions } from "./utils";
 
-async function getAcapelaAuthToken() {
+export async function getAcapelaAuthToken() {
   const [cookie] = await session.defaultSession.cookies.get({ name: "next-auth.session-token" });
   if (!cookie) return null;
 
