@@ -72,6 +72,14 @@ const createTextPreviewFromSlackMessage = async (
     })
   );
 
+async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
+  const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user);
+  await db.slack_thread_involed_user.createMany({
+    data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
+    skipDuplicates: true,
+  });
+}
+
 // A user is involved in a thread if they have posted in it or were mentioned in it
 async function checkIsInvolvedInThread(
   token: string,
@@ -79,6 +87,9 @@ async function checkIsInvolvedInThread(
   ts: string,
   slackUserId: string
 ): Promise<boolean> {
+  if (await db.slack_thread_involed_user.findFirst({ where: { user_id: slackUserId, thread_ts: ts } })) {
+    return true;
+  }
   const { messages } = await slackClient.conversations.replies({ token, channel, ts });
   return (messages ?? []).some(
     (message) =>
@@ -178,6 +189,12 @@ export function setupSlackCapture(app: SlackApp) {
       } catch (error) {
         logger.error(error, "Error resolving slack notifications");
       }
+    }
+
+    try {
+      await recordInvolvedThreadUsers(message);
+    } catch (error) {
+      logger.error(error, "Error recording involved thread users");
     }
 
     const userSlackInstallations = await findUserSlackInstallations(eventContextId);
