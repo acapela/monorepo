@@ -11,7 +11,7 @@ import { SingleOptionDropdown } from "@aca/ui/forms/OptionsDropdown/single";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
-import { FilterSettingRow } from "./utils";
+import { FilterSettingRow, UserFilterDisclaimer } from "./utils";
 
 type FigmaFilter = NotificationFilterKind<"notification_figma_comment">;
 interface Props {
@@ -56,6 +56,7 @@ export const FilterEditorFigma = observer(({ filter, onChange }: Props) => {
         field="author_id"
         onChange={onChange}
       />
+      <UserFilterDisclaimer />
       <FilterSettingRow title="Notification type">
         <SingleOptionDropdown<NotificationFilterOption<FigmaFilter>>
           items={figmaNotificationOptions}
