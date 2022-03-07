@@ -119,7 +119,10 @@ export function initializeSystemHandlers() {
   });
 
   setBadgeCountRequest.handle(async (count) => {
-    app.setBadgeCount(count);
+    // While the type definitions disagree, it is possible to use a string.
+    // Apparently Slack also uses this to set an indeterminate badge:
+    // https://github.com/electron/electron/issues/6533#issue-166218687
+    app.setBadgeCount(count as number);
   });
 
   autorunEffect(() => {
