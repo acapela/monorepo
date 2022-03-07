@@ -5,9 +5,10 @@ import {
   googleAuthTokenBridgeValue,
   loginBridge,
   loginGoogleBridge,
+  logoutBridge,
 } from "@aca/desktop/bridge/auth";
 import { clearAllDataRequest } from "@aca/desktop/bridge/system";
-import { IconLogOut, IconPlus } from "@aca/ui/icons";
+import { IconLogOut, IconPlus, IconRefreshCw } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
@@ -77,12 +78,22 @@ export const connectGoogle = defineAction({
   },
 });
 
-export const restartAndClearElectronData = defineAction({
+export const logOut = defineAction({
   name: "Log out",
   icon: <IconLogOut />,
   group: accountActionsGroup,
-  analyticsEvent: "Logged Out",
-  keywords: ["reload"],
+  keywords: ["logout", "signout"],
+  async handler() {
+    logoutBridge();
+  },
+});
+
+export const restartAndClearElectronData = defineAction({
+  name: "Restart app & Remove all data",
+  icon: <IconRefreshCw />,
+  group: accountActionsGroup,
+  analyticsEvent: "App Restarted",
+  keywords: ["reload", "restart"],
   async handler() {
     clearAllDataRequest();
   },

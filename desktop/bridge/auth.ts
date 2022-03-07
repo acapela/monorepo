@@ -12,6 +12,8 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
 });
 export const loginBridge = createInvokeBridge<"google" | "slack">("login");
 
+export const logoutBridge = createInvokeBridge("logout");
+
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {
   getDefault: () => null,
   isPersisted: true,
@@ -56,12 +58,9 @@ const allServices = [
   notionSelectedSpaceValue,
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
+  jiraAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {
   allServices.forEach((s) => s.reset());
-}
-
-export async function logout() {
-  authTokenBridgeValue.set(null);
 }
