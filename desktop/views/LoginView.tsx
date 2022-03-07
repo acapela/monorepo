@@ -2,14 +2,15 @@ import React from "react";
 
 import { loginToAcapelaWithGoogle, loginToAcapelaWithSlack } from "@aca/desktop/actions/auth";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
+
+import { FocusedActionView } from "./FocusedActionView";
 
 export function LoginView() {
   return (
-    <FocusedActionLayout title="Sign into Acapela">
-      <ActionButton action={loginToAcapelaWithGoogle} />
+    <FocusedActionView title="Sign into Acapela">
+      <ActionButton action={loginToAcapelaWithGoogle} isWide />
       &nbsp;
-      <ActionButton action={loginToAcapelaWithSlack} />
-    </FocusedActionLayout>
+      <ActionButton action={loginToAcapelaWithSlack} isWide />
+    </FocusedActionView>
   );
 }

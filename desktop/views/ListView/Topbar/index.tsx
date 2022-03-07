@@ -2,12 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import {
-  deleteNotificationList,
-  goToNextList,
-  goToPreviousList,
-  renameNotificationList,
-} from "@aca/desktop/actions/lists";
+import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
@@ -24,8 +19,8 @@ export const ListViewTopBar = observer(({ list }: Props) => {
     <SystemTopBar
       navigationItems={
         <>
-          <TopBarActionButton action={goToPreviousList} />
-          <TopBarActionButton action={goToNextList} />
+          {/* <TopBarActionButton action={goToPreviousList} />
+          <TopBarActionButton action={goToNextList} /> */}
         </>
       }
       titleNode={<UITitle>{list?.name}</UITitle>}

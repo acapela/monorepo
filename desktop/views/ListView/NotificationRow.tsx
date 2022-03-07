@@ -21,6 +21,7 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
+import { RowQuickActions } from "./RowQuickActions";
 import { UIDate, UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
@@ -54,6 +55,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
     })
   );
 
+  const title = getNotificationTitle(notification);
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -77,12 +79,17 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
         <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
-        <UINotificationRowTitle>{getNotificationTitle(notification)}</UINotificationRowTitle>
+        {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
-        {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
+        {!isFocused && (
+          <>
+            {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
 
-        <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
+            <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
+          </>
+        )}
+        {isFocused && <RowQuickActions target={notification} />}
       </UIHolder>
     </ActionTrigger>
   );

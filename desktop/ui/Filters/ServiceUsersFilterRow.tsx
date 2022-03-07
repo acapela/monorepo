@@ -1,22 +1,25 @@
 import React from "react";
 import styled from "styled-components";
 
+import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ServiceUser } from "@aca/gql";
 import { FilterValue, FiltersData, getIsValueMatchingFilter } from "@aca/shared/filters";
 import { updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { Avatar, OverlayingAvatars } from "@aca/ui/users/Avatar";
 
-import { FilterSettingRow } from "./utils";
+import { FilterSettingRow, getWorkspaceLabel } from "./utils";
 
-type FilterUser = Omit<ServiceUser, "__typename">;
+type FilterUser = Omit<ServiceUser, "__typename" | "workspace_id"> & { workspace_id?: string };
 
 export const ServiceUsersFilterRow = <F extends FiltersData<unknown>>({
+  integrationClient,
   users,
   filter,
   field,
   onChange,
 }: {
+  integrationClient: IntegrationClient;
   users: FilterUser[];
   filter: F;
   field: keyof F;
@@ -26,7 +29,9 @@ export const ServiceUsersFilterRow = <F extends FiltersData<unknown>>({
     <MultipleOptionsDropdown<FilterUser>
       items={users}
       keyGetter={(user) => user.id}
-      labelGetter={(user) => user.real_name ?? user.display_name}
+      labelGetter={(user) =>
+        (user.real_name ?? user.display_name) + getWorkspaceLabel(integrationClient, user.workspace_id)
+      }
       iconGetter={(user) => <Avatar src={user.avatar_url} name={user.real_name ?? user.display_name} />}
       selectedItems={users.filter((user) => {
         return getIsValueMatchingFilter(filter[field] as unknown as FilterValue<string>, user.id);

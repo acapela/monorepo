@@ -19,7 +19,8 @@ export const notionIntegrationClient: IntegrationClient = {
   name: "Notion",
   description: "Comments, mentions and page invitations.",
   isReady: notionAuthTokenBridgeValue.observables.isReady,
-  getIsConnected: () => !!notionAuthTokenBridgeValue.get(),
+  getCanConnect: () => !notionAuthTokenBridgeValue.get(),
+  getWorkspaces: () => (notionAuthTokenBridgeValue.get() ? [{ kind: "workspace", id: "notion", name: "Notion" }] : []),
   convertToLocalAppUrl: async ({ url }) => {
     return {
       protocol: "notion",

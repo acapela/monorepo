@@ -1,5 +1,6 @@
 import { app, session, shell } from "electron";
 
+import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
   applicationStateBridge,
   clearAllDataRequest,
@@ -14,6 +15,7 @@ import {
 } from "@aca/desktop/bridge/system";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
+import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { clearPersistance } from "./persistance";
@@ -38,6 +40,16 @@ export function initializeSystemHandlers() {
 
   waitForDoNotDisturbToFinish.handle(async () => {
     await waitForDoNotDisturbToEnd();
+  });
+
+  logoutBridge.handle(async () => {
+    const acapelaCookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
+
+    acapelaCookies.forEach((cookie) => {
+      session.defaultSession.cookies.remove(FRONTEND_URL, cookie.name);
+    });
+
+    authTokenBridgeValue.set(null);
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {

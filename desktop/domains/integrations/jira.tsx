@@ -12,8 +12,6 @@ function getAtlassianAccounts() {
   return (accountStore.user?.accounts ?? []).filter((account) => account.provider_id == "atlassian");
 }
 
-const getIsConnected = () => getAtlassianAccounts().length > 0;
-
 export const jiraIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_jira_issue",
@@ -24,9 +22,9 @@ export const jiraIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getIsConnected,
+  getWorkspaces: () => (getAtlassianAccounts().length > 0 ? [{ kind: "workspace", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
-    return !!accountStore.user;
+    return !!accountStore.user && getAtlassianAccounts().length == 0;
   },
   async connect() {
     loginJiraBridge();

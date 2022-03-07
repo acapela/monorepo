@@ -4,6 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { typedKeys } from "@aca/shared/object";
@@ -64,7 +65,16 @@ export const linearList = defineNotificationsList({
   },
 });
 
-const integrationLists = { slack: slackList, notion: notionList, figma: figmaList, linear: linearList };
+export const jiraList = defineNotificationsList({
+  id: "jira",
+  name: "Jira",
+  icon: jiraIntegrationClient.icon,
+  filter: (notification) => {
+    return notification.kind === "notification_jira_issue" && getShouldNotificationBeInInboxList(notification);
+  },
+});
+
+const integrationLists = { slack: slackList, notion: notionList, figma: figmaList, linear: linearList, jira: jiraList };
 
 export const resolvedList = defineNotificationsList({
   id: "resolved",
@@ -83,7 +93,7 @@ export const snoozedList = defineNotificationsList({
 
 export const getInboxLists = cachedComputed(() => {
   const availableIntegrationLists = typedKeys(integrationLists)
-    .filter((key) => integrationClients[key].getIsConnected())
+    .filter((key) => integrationClients[key].getWorkspaces().length)
     .map((key) => integrationLists[key]);
 
   const customLists = getDb().notificationList.all.map((listEntity) =>

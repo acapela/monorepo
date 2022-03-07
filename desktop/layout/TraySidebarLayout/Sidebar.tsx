@@ -6,7 +6,7 @@ import { createNotificationList, goToList } from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
-import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar";
+import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { theme } from "@aca/ui/theme";
 

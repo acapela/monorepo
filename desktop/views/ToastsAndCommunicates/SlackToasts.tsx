@@ -7,13 +7,20 @@ import { accountStore } from "@aca/desktop/store/account";
 import { Toast } from "./Toast";
 
 export const SlackToasts = observer(() => {
-  const slackInstallation = accountStore.user?.slackInstallation;
-  const hasSomeButNotAllScopes = Boolean(slackInstallation && !slackInstallation?.hasAllScopes);
-  return hasSomeButNotAllScopes ? (
-    <Toast
-      title="Missing Slack permissions"
-      description="A permission update is needed to make the Slack integration work smoothly"
-      action={connectSlack}
-    />
-  ) : null;
+  const slackInstallations = accountStore.user?.slackInstallations.all;
+  return (
+    <>
+      {slackInstallations
+        ?.filter((install) => Boolean(install && !install?.hasAllScopes))
+        .map((install) => (
+          <Toast
+            key={install.id}
+            title={`Missing Slack permissions for ${install.team_name}`}
+            description="A permission update is needed to make the Slack integration work smoothly"
+            action={connectSlack}
+            target={install}
+          />
+        ))}
+    </>
+  );
 });

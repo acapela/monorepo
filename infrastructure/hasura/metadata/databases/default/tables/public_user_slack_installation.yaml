@@ -9,6 +9,16 @@ computed_fields:
   name: slack_team_id
 - definition:
     function:
+      name: user_slack_installation_team_id
+      schema: public
+  name: team_id
+- definition:
+    function:
+      name: user_slack_installation_team_name
+      schema: public
+  name: team_name
+- definition:
+    function:
       name: user_slack_installation_user_scopes
       schema: public
   name: user_scopes
@@ -21,6 +31,8 @@ select_permissions:
     - user_id
     computed_fields:
     - slack_team_id
+    - team_id
+    - team_name
     - user_scopes
     filter:
       user_id:
