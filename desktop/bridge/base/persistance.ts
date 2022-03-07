@@ -30,6 +30,7 @@ interface BridgeValueConfig<T> {
 
 export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
   type ValueData = ValueWithUpdateDate<T>;
+
   const localChannel = createChannel<ValueData>();
 
   const observableValueData = observable.box<ValueData>(
@@ -70,7 +71,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     localChannel.publish(data as ValueData);
   });
 
-  function set(value: T) {
+  async function set(value: T) {
     if (isEqual(get(), value)) {
       return;
     }
@@ -84,7 +85,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     bridgeValueChangeChannel.send({ key: valueKey, data: valueData });
 
     if (isPersisted) {
-      requestPersistValue({ key: valueKey, data: value });
+      await requestPersistValue({ key: valueKey, data: value });
     }
   }
 
@@ -119,7 +120,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     return set(getDefault());
   }
 
-  return {
+  const valueManager = {
     get isReady() {
       return isReady.get();
     },
@@ -138,6 +139,8 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
       },
     },
   };
+
+  return valueManager;
 }
 
 //

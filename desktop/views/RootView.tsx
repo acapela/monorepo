@@ -15,6 +15,7 @@ import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
+
   useEffect(() => {
     attachActionsShortcutsHandler(allActions);
   }, []);

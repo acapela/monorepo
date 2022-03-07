@@ -13,6 +13,7 @@ import {
   toggleMaximizeRequest,
   waitForDoNotDisturbToFinish,
 } from "@aca/desktop/bridge/system";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
@@ -22,17 +23,20 @@ import { getAcapelaAuthToken } from "../auth/acapela";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
+const log = makeLogger("System");
+
+async function restartApp() {
+  app.relaunch();
+  app.exit();
+}
+
 export function initializeSystemHandlers() {
-  restartAppRequest.handle(async () => {
-    app.relaunch();
-    app.exit();
-  });
+  restartAppRequest.handle(restartApp);
 
   clearAllDataRequest.handle(async () => {
     await clearPersistance();
     await session.defaultSession.clearStorageData();
-    app.relaunch();
-    app.exit();
+    await restartApp();
   });
 
   showMainWindowRequest.handle(async () => {
@@ -44,33 +48,65 @@ export function initializeSystemHandlers() {
   });
 
   logoutBridge.handle(async () => {
-    if (!(await getAcapelaAuthToken())) {
-      authTokenBridgeValue.set(null);
+    log("Logging out");
 
-      return;
+    async function waitForLogout() {
+      if (!(await getAcapelaAuthToken())) {
+        log.info("initial");
+
+        return;
+      }
+
+      return new Promise<void>((resolve) => {
+        async function handleCookiesChange() {
+          if (await getAcapelaAuthToken()) {
+            log.info("still has");
+            return;
+          }
+
+          log.info("cookie change dont have");
+
+          session.defaultSession.cookies.off("changed", handleCookiesChange);
+
+          resolve();
+        }
+
+        session.defaultSession.cookies.on("changed", handleCookiesChange);
+      });
     }
 
-    const logoutWindow = new BrowserWindow({ opacity: 0, width: 10, height: 10 });
+    async function clearLocalAcapelaData() {
+      const cookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
 
-    logoutWindow.setIgnoreMouseEvents(true);
+      log.info(JSON.stringify(cookies));
 
-    async function handleMaybeLoggedOut() {
-      const acapelaAuthToken = await getAcapelaAuthToken();
+      const cookiesRemovals = cookies.map((cookie) => {
+        return session.defaultSession.cookies.remove(FRONTEND_URL, cookie.name);
+      });
 
-      const stillHasAuthToken = !!acapelaAuthToken;
+      await Promise.all(cookiesRemovals);
 
-      if (stillHasAuthToken) return;
-
-      session.defaultSession.cookies.off("changed", handleMaybeLoggedOut);
-
-      authTokenBridgeValue.set(null);
-
-      logoutWindow.close();
+      // Allow electron to persist before we restart the app
+      await authTokenBridgeValue.set(null);
     }
 
-    session.defaultSession.cookies.on("changed", handleMaybeLoggedOut);
+    try {
+      const logoutView = new BrowserWindow({ opacity: 0 });
 
-    await logoutWindow.webContents.loadURL(`${FRONTEND_URL}/logout`);
+      logoutView.setIgnoreMouseEvents(true);
+
+      await logoutView.webContents.loadURL(`${FRONTEND_URL}/logout`);
+
+      await waitForLogout();
+
+      logoutView.close();
+
+      await clearLocalAcapelaData();
+
+      restartApp();
+    } catch (error) {
+      log.error(error as Error, "failed to log out");
+    }
   });
 
   toggleMaximizeRequest.handle(async (_, event) => {
