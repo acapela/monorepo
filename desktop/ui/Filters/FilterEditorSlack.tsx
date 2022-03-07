@@ -103,9 +103,41 @@ function useSlackConversations() {
   return data?.slack_conversations ?? [];
 }
 
+export const SlackConversationsDropdown = observer(
+  ({
+    checkSelected,
+    onChange,
+
+    className,
+    placeholder,
+  }: {
+    checkSelected: (id: string) => boolean;
+    onChange: (conversations: SlackConversationsQuery["slack_conversations"]) => void;
+
+    className?: string;
+    placeholder?: string;
+  }) => {
+    const slackConversations = useSlackConversations();
+    return (
+      <MultipleOptionsDropdown<typeof slackConversations[number]>
+        className={className}
+        placeholder={placeholder ?? "All"}
+        items={slackConversations}
+        keyGetter={(channel) => channel.id}
+        labelGetter={(channel) =>
+          (channel.is_private ? "🔒" : "#") +
+          channel.name +
+          getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
+        }
+        selectedItems={slackConversations.filter(({ id }) => checkSelected(id))}
+        onChange={onChange}
+      />
+    );
+  }
+);
+
 export const FilterEditorSlack = observer(({ filter, onChange }: Props) => {
   const slackUsers = useSlackUsers();
-  const slackConversations = useSlackConversations();
 
   return (
     <UIHolder>
@@ -132,18 +164,8 @@ export const FilterEditorSlack = observer(({ filter, onChange }: Props) => {
         />
       </FilterSettingRow>
       <FilterSettingRow title="Conversations">
-        <MultipleOptionsDropdown<typeof slackConversations[number]>
-          placeholder="All"
-          items={slackConversations}
-          keyGetter={(channel) => channel.id}
-          labelGetter={(channel) =>
-            (channel.is_private ? "🔒" : "#") +
-            channel.name +
-            getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
-          }
-          selectedItems={slackConversations.filter((channel) =>
-            getIsValueMatchingFilter(filter.slack_conversation_id, channel.id)
-          )}
+        <SlackConversationsDropdown
+          checkSelected={(id) => getIsValueMatchingFilter(filter.slack_conversation_id, id)}
           onChange={(channels) => {
             onChange(
               updateValue(filter, (filter) => {

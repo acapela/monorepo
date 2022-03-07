@@ -12,10 +12,9 @@ import { FilterIntegrationPicker } from "./FilterIntegrationPicker";
 
 interface Props {
   onCreateRequest: (filter: NotificationFilter) => void;
-  singleType?: NotificationFilter["__typename"];
 }
 
-export function NewFilterCreator({ singleType, onCreateRequest }: Props) {
+export function NewFilterCreator({ onCreateRequest }: Props) {
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -28,11 +27,7 @@ export function NewFilterCreator({ singleType, onCreateRequest }: Props) {
           kind="primarySubtle"
           icon={<IconPlus />}
           onClick={() => {
-            if (singleType) {
-              onCreateRequest({ __typename: singleType, id: getUUID() });
-            } else {
-              setIsCreatingNew(true);
-            }
+            setIsCreatingNew(true);
           }}
         >
           Add filter

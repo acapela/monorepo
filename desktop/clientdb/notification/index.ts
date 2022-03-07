@@ -9,9 +9,7 @@ import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { trackEvent } from "@aca/desktop/analytics";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
-import { getIsNotificationPassingFilters } from "@aca/desktop/clientdb/list";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { accountStore } from "@aca/desktop/store/account";
 import {
   DesktopNotificationFragment,
   Notification_Bool_Exp,
@@ -182,16 +180,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     },
   })
   .addAccessValidation((notification) => {
-    if (notification.inner) {
-      const user = accountStore.assertUser;
-      return (
-        notification.kind !== "notification_slack_message" ||
-        getIsNotificationPassingFilters(notification, user.importFilters)
-      );
-    } else {
+    if (!notification.inner) {
       log.error(`No inner for entity ${notification.id}`);
       return false;
     }
+    return true;
   });
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;

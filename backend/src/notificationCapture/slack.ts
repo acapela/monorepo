@@ -6,7 +6,7 @@ import { SingleASTNode } from "simple-markdown";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import { parseAndTransformToTipTapJSON, parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
 import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlackInstallation";
-import { UserSlackInstallation, db } from "@aca/db";
+import { User, UserSlackInstallation, db } from "@aca/db";
 import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
@@ -51,6 +51,7 @@ async function findUserSlackInstallations(eventContextId: string) {
         .filter((auth) => auth.team_id && auth.user_id)
         .map((auth) => getUserSlackInstallationFilter({ teamId: auth.team_id, userId: auth.user_id })),
     },
+    include: { user: true },
   });
 }
 
@@ -102,7 +103,7 @@ async function checkIsInvolvedInThread(
  * conversation is a Slack channel we only create a notification if it was a mention or within a thread.
  */
 async function createNotificationFromMessage(
-  userSlackInstallation: UserSlackInstallation,
+  userSlackInstallation: UserSlackInstallation & { user: User },
   message: GenericMessageEvent
 ) {
   const slackInstallData = userSlackInstallation.data as unknown as SlackInstallation;
@@ -114,11 +115,13 @@ async function createNotificationFromMessage(
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
+  const includedSlackChannels = userSlackInstallation.user.slack_included_channels;
+  const isChannelIncluded = Array.isArray(includedSlackChannels) && includedSlackChannels.includes(message.channel);
   if (
     !userToken ||
     (isAuthor && !isMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
-    (!is_IM_or_MPIM && !isMentioned)
+    (!is_IM_or_MPIM && !isMentioned && !isChannelIncluded)
   ) {
     return;
   }

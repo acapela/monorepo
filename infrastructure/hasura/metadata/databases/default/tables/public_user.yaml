@@ -51,6 +51,7 @@ select_permissions:
     - is_bot
     - is_slack_auto_resolve_enabled
     - name
+    - slack_included_channels
     - updated_at
     computed_fields:
     - has_account
@@ -80,6 +81,7 @@ update_permissions:
     - import_filters
     - is_slack_auto_resolve_enabled
     - name
+    - slack_included_channels
     filter:
       id:
         _eq: X-Hasura-User-Id
