@@ -5,7 +5,7 @@ import * as SlackBolt from "@slack/bolt";
 import { noop } from "lodash";
 
 import { db } from "@aca/db";
-import { assert, assertDefined } from "@aca/shared/assert";
+import { assertDefined } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
@@ -98,7 +98,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   installationStore: {
     async storeInstallation(installation) {
       const { userId } = parseMetadata(installation);
-      assert(userId, "must have a userId when no teamId is given");
+      if (!userId) {
+        return;
+      }
       await storeUserSlackInstallation(userId, installation);
     },
 

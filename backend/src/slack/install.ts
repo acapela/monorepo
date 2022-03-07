@@ -15,7 +15,7 @@ const getRedirectURI = async () =>
  * Called for the new Acapela where slack installations are not tied to teams anymore. It also needs a lot fewer scopes.
  */
 export const getIndividualSlackInstallURL = async (metadata: {
-  userId: string;
+  userId?: string;
   teamId?: Maybe<string>;
   redirectURL: string;
 }) =>
