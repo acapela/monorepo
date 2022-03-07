@@ -7,7 +7,7 @@ import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/utils/openL
 import { evaluateFunctionInWebContents, listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";
 import { assert } from "@aca/shared/assert";
 import { createChannel } from "@aca/shared/channel";
-import { createResolvablePromise } from "@aca/shared/promises";
+import { createResolvablePromise, getAsyncWithRepeat } from "@aca/shared/promises";
 
 import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
 import { PreviewAttachManager, attachBrowserViewToWindow } from "./previewAttaching";
@@ -86,29 +86,14 @@ export function createPreviewManager(url: string) {
   const loadingPromise = createResolvablePromise();
 
   const preload = async function preload() {
-    assertNotDestroyed("Preloading destroyed");
     if (browserView.webContents.isLoading()) return;
 
-    try {
-      await loadURLWithFilters(browserView, url);
-    } catch (error) {
-      //
-    }
-
-    if (isDestroyed) return;
+    await getAsyncWithRepeat(() => loadURLWithFilters(browserView, url), 3);
 
     loadingPromise.resolve();
   };
 
-  let isDestroyed = false;
-  function assertNotDestroyed(message = "Expected not destroyed") {
-    assert(!isDestroyed, message);
-  }
   function destroy() {
-    assertNotDestroyed("Already destroyed");
-    isDestroyed = true;
-
-    //
     browserView.webContents.stop();
     if (currentWindowAttachment) {
       detach();
@@ -119,8 +104,6 @@ export function createPreviewManager(url: string) {
 
   function attachToWindow(window: BrowserWindow, initialPosition: PreviewPosition) {
     preloadingWindow.removeBrowserView(browserView);
-    assertNotDestroyed("Already destroyed");
-    assert(!currentWindowAttachment, "Attached");
     currentWindowAttachment = attachBrowserViewToWindow(browserView, window, initialPosition);
     return () => {
       detach();
@@ -128,9 +111,7 @@ export function createPreviewManager(url: string) {
   }
 
   function detach() {
-    assert(currentWindowAttachment, "Not attached");
-
-    currentWindowAttachment.detach();
+    currentWindowAttachment?.detach();
 
     currentWindowAttachment = null;
   }

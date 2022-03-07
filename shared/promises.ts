@@ -1,3 +1,5 @@
+import { assert } from "./assert";
+
 export type MaybePromise<T> = Promise<T> | T;
 
 export async function resolveMaybePromise<T>(maybePromise: MaybePromise<T>): Promise<T> {
@@ -71,4 +73,24 @@ export function createSharedPromise<T>(getter: () => Promise<T>) {
   }
 
   return get;
+}
+
+export async function getAsyncWithRepeat<T>(getter: () => Promise<T>, maxRepeats = 3) {
+  let attemptIndex = 1;
+
+  assert(maxRepeats >= 1, "Max repeats has to be bigger or equal 1");
+
+  while (attemptIndex <= maxRepeats) {
+    try {
+      return await getter();
+    } catch (error) {
+      if (attemptIndex >= maxRepeats) {
+        throw error;
+      }
+
+      attemptIndex++;
+    }
+  }
+
+  throw new Error("Unable to get with repeat");
 }
