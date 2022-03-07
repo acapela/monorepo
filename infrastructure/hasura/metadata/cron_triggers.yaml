@@ -54,12 +54,12 @@
   headers:
   - name: Authorization
     value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-- name: update-atlassian-refresh-token
+- name: refresh-expiring-atlassian-properties
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * 1 * *'
+  schedule: 0 3 * * *
   include_in_metadata: true
   payload:
-    handler: update-atlassian-refresh-token
+    handler: refresh-expiring-atlassian-properties
   headers:
   - name: Authorization
     value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER

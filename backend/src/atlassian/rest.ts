@@ -78,6 +78,15 @@ export function deleteWebhooks(webhookIds: string[]): JiraRequest<void> {
   };
 }
 
+export function refreshWebhooks(webhookIds: number[]): JiraRequest<void> {
+  return async function refreshWebhooksRest(headers, meta) {
+    return await axios.put(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook/refresh`, {
+      headers,
+      data: { webhookIds },
+    });
+  };
+}
+
 export function getIssueWatchers(issueKey: string): JiraRequest<GetWatchersResponse> {
   return async function getWatchersRest(headers, meta) {
     return await axios.get(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/issue/${issueKey}/watchers`, { headers });

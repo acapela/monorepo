@@ -1,10 +1,11 @@
+import * as Sentry from "@sentry/node";
 import axios from "axios";
 import { addDays, addSeconds } from "date-fns";
 
 import { Account, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-import { getNewAccessToken } from "./rest";
+import { getNewAccessToken, jiraRequest, refreshWebhooks } from "./rest";
 import { handleAccountUpdates } from ".";
 
 export async function deleteAllJiraWebhooks() {
@@ -92,19 +93,54 @@ export async function refreshTokens(account: Account) {
   });
 }
 
+export async function refreshExpiringAtlassianProperties() {
+  await updateAtlassianRefreshToken();
+  await refreshAtlassianWebhooks();
+}
+
 /**
- * Updates all atlassian refresh tokens which expire within the next 7 days
+ * Updates all atlassian refresh tokens which expire within the next 2 days
  */
-export async function updateAtlassianRefreshToken() {
-  const in7Days = addDays(new Date(), 7);
+async function updateAtlassianRefreshToken() {
+  const in2Days = addDays(new Date(), 2);
   const accounts = await db.account.findMany({
-    where: { atlassian_refresh_token_expiry: { expires_at: { lt: in7Days } } },
+    where: { atlassian_refresh_token_expiry: { expires_at: { lt: in2Days } } },
   });
   for (const account of accounts) {
     try {
       await refreshTokens(account);
     } catch (error) {
       logger.error(error, `Failed to refresh token for account ${account.id}`);
+      Sentry.captureException(error);
     }
+  }
+}
+
+/**
+ * Updates all atlassian webhooks tokens which expire within the next 2 days
+ */
+async function refreshAtlassianWebhooks() {
+  const in2Days = addDays(new Date(), 2);
+
+  const webhookAccounts = await db.jira_account.findMany({
+    where: {
+      jira_webhook: {
+        some: {
+          expire_at: {
+            lt: in2Days,
+          },
+        },
+      },
+    },
+    include: {
+      account: true,
+      atlassian_site: true,
+      jira_webhook: true,
+    },
+  });
+
+  for (const { jira_webhook, ...jiraAccountWithAllDetails } of webhookAccounts) {
+    const soonToExpireWebhookIds = jira_webhook.map((wa) => wa.jira_webhook_id);
+    await jiraRequest(jiraAccountWithAllDetails, refreshWebhooks(soonToExpireWebhookIds));
   }
 }
