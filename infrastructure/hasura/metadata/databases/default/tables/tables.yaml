@@ -27,6 +27,7 @@
 - "!include public_priority.yaml"
 - "!include public_slack_conversation_type.yaml"
 - "!include public_slack_notification_queue.yaml"
+- "!include public_slack_thread_involed_user.yaml"
 - "!include public_sync_request.yaml"
 - "!include public_task.yaml"
 - "!include public_task_slack_message.yaml"
