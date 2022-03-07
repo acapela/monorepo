@@ -55,7 +55,7 @@ export interface JiraWebhookPayload {
   matchedWebhookIds: number[];
   timestamp: number; // 1646076066182
 
-  // Who is this user???
+  // User that created the event
   user: AtlassianUser;
 }
 

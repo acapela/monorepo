@@ -11,6 +11,9 @@ export async function captureJiraWebhook(payload: JiraWebhookPayload) {
   if (payload.webhookEvent === "comment_created") {
     await handleNewJiraComment(payload);
   }
+  if (payload.webhookEvent === "jira:issue_updated") {
+    await handleJiraIssueUpdate(payload);
+  }
 }
 
 function extractMentionedAccountIds(text: string) {
@@ -108,6 +111,169 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
     );
 
   return await Promise.all(notificationsSend);
+}
+
+async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
+  const userThatUpdatedIssue = payload.issue;
+
+  //e.g. https://acapela-team.atlassian.net
+  const baseSitePath = payload.issue.self.split("/rest")[0];
+  const issueUrl = `${baseSitePath}/browse/${payload.issue.key}`;
+
+  // There can be multiple updates in one same webhook.
+  // We want to notify individual users only about one update found in the webhook
+  // This array keeps a record of people that were already notified
+  const notifiedUsers: string[] = [];
+
+  for (const changeLogItem of payload.changelog.items) {
+    // Creates `user_mentioned` notifications for users that were mentioned in the description
+    if (changeLogItem.fieldId === "description") {
+      const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "").filter(
+        (atlassianAccountId) => atlassianAccountId !== userThatUpdatedIssue.id
+      );
+
+      if (atlassianAccountsMentioned.length === 0) {
+        return;
+      }
+
+      const mentionedUsersToNotify = (
+        await db.user.findMany({
+          where: {
+            account: {
+              some: {
+                AND: [{ provider_id: "atlassian" }, { provider_account_id: { in: atlassianAccountsMentioned } }],
+              },
+            },
+          },
+        })
+      ).filter((user) => !notifiedUsers.includes(user.id));
+
+      mentionedUsersToNotify.forEach(
+        async (user) =>
+          await db.notification_jira_issue.create({
+            data: {
+              notification: {
+                create: {
+                  user_id: user.id,
+                  url: issueUrl,
+                  from: payload.user.displayName ?? "",
+                  // TODO: make another api call to get the display names of all the mentioned users
+                  text_preview: payload.issue.fields.description.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
+                },
+              },
+              issue_id: payload.issue.id,
+              issue_title: payload.issue.fields.summary,
+              notification_jira_issue_type: {
+                connect: {
+                  value: "user_mentioned",
+                },
+              },
+            },
+          })
+      );
+
+      notifiedUsers.push(...mentionedUsersToNotify.map(({ id }) => id));
+    }
+
+    // Creates `user_assigned` notifications for users that were assigned to an issue
+    if (changeLogItem.fieldId === "assignee") {
+      const assignedAccountId = changeLogItem.to;
+      if (!assignedAccountId || assignedAccountId === userThatUpdatedIssue.id) {
+        continue;
+      }
+
+      const assigneeToNotify = await db.user.findFirst({
+        where: {
+          account: {
+            some: {
+              AND: [{ provider_id: "atlassian" }, { provider_account_id: { equals: assignedAccountId } }],
+            },
+          },
+        },
+      });
+
+      if (!assigneeToNotify || notifiedUsers.includes(assigneeToNotify.id)) {
+        continue;
+      }
+
+      await db.notification_jira_issue.create({
+        data: {
+          notification: {
+            create: {
+              user_id: assigneeToNotify.id,
+              url: issueUrl,
+              from: payload.user.displayName ?? "",
+            },
+          },
+          issue_id: payload.issue.id,
+          issue_title: payload.issue.fields.summary,
+          notification_jira_issue_type: {
+            connect: {
+              value: "issue_assigned",
+            },
+          },
+        },
+      });
+
+      notifiedUsers.push(assigneeToNotify.id);
+    }
+
+    // Notifies all issue watchers when the status of the issue was updated
+    if (payload.changelog.items.some(({ fieldId }) => fieldId === "status")) {
+      // We're attempting to do a round-robin of access_token usage based on "least recently used access token"
+      // The point is that we would like to distribute api rate limit "cost" of making an api call between
+      // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
+      // where it could reach rate limits really fast
+      const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
+
+      // Mention notifications are more important than watcher notifications
+      // We're excluding mentions from watcher to prevent double notifications
+      const watchersExceptUserThatUpdatedIssue = (await getWatchers(jiraAccount, payload.issue.key)).filter(
+        (watcherAccountId) => watcherAccountId !== userThatUpdatedIssue.id
+      );
+
+      const watchersToNotify = (
+        await db.user.findMany({
+          where: {
+            account: {
+              some: {
+                AND: [
+                  { provider_id: "atlassian" },
+                  { provider_account_id: { in: watchersExceptUserThatUpdatedIssue } },
+                ],
+              },
+            },
+          },
+        })
+      ).filter((u) => !notifiedUsers.includes(u.id));
+
+      watchersToNotify.map(
+        async (user) =>
+          await db.notification_jira_issue.create({
+            data: {
+              notification: {
+                create: {
+                  user_id: user.id,
+                  url: issueUrl,
+                  from: payload.user.displayName ?? "",
+                },
+              },
+              from: changeLogItem.fromString,
+              to: changeLogItem.toString,
+              issue_id: payload.issue.id,
+              issue_title: payload.issue.fields.summary,
+              notification_jira_issue_type: {
+                connect: {
+                  value: "issue_status_updated",
+                },
+              },
+            },
+          })
+      );
+
+      notifiedUsers.push(...watchersToNotify.map(({ id }) => id));
+    }
+  }
 }
 
 async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: string) {
