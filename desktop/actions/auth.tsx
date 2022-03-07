@@ -16,6 +16,10 @@ import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
 
+// import { BrowserWindow, session } from "electron";
+// import { authWindowDefaultOptions } from "../electron/auth/utils";
+// import { FRONTEND_URL } from "../lib/env";
+
 export const accountActionsGroup = defineGroup({
   name: "Account",
 });
