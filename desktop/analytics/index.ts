@@ -18,7 +18,6 @@ import {
   AnalyticsEvent,
   AnalyticsEventName,
   AnalyticsEventPayload,
-  AnalyticsGroupsMap,
   AnalyticsUserProfile,
 } from "@aca/shared/types/analytics";
 
@@ -43,22 +42,6 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
     linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
     jira_installed_at: (!!jiraAuthTokenBridgeValue.get() && jiraAuthTokenBridgeValue.lastUpdateDate) || undefined,
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
-  };
-}
-
-function getUserTeamGroupTraits(): AnalyticsGroupsMap["Team"] | null {
-  const team = accountStore.team;
-
-  if (!team) {
-    return null;
-  }
-
-  return {
-    created_at: new Date(team.created_at),
-    id: team.id,
-    name: team.name,
-    plan: "free",
-    slug: team.slug,
   };
 }
 
@@ -109,19 +92,6 @@ function initializeAnalytics() {
 
     // ?
     analytics.identify(profile.id, profile);
-  });
-
-  // Keep team updated all the time
-  cleanup.next = autorun(() => {
-    const team = getUserTeamGroupTraits();
-
-    if (!team) {
-      return;
-    }
-
-    log("updating team", { team });
-
-    analytics.group(team.id, team);
   });
 
   /**
