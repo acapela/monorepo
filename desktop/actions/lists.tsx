@@ -85,6 +85,7 @@ export const deleteNotificationList = defineAction({
   supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
 
   keywords: ["remove", "trash"],
+  analyticsEvent: "Custom List Deleted",
   canApply: canApplyCustomListAction,
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
@@ -233,6 +234,7 @@ export const createNotificationList = defineAction({
     getActions: () => [
       defineAction({
         name: (ctx) => `Create list "${ctx.searchKeyword}"`,
+        analyticsEvent: "Custom List Created",
         handler(ctx) {
           const title = ctx.searchKeyword.trim();
           if (!title) {
