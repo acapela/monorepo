@@ -16,6 +16,8 @@ import { notificationJiraEntity } from "./notification/jira/issue";
 import { notificationLinearEntity } from "./notification/linear/issue";
 import { notificationNotionEntity } from "./notification/notion/baseNotification";
 import { notificationNotionCommentedEntity } from "./notification/notion/commented";
+import { notionSpaceEntity } from "./notification/notion/notionSpace";
+import { notionSpaceUserEntity } from "./notification/notion/notionSpaceUser";
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
@@ -41,6 +43,9 @@ export const appClientDbEntities = {
 
   team: teamEntity,
   teamMember: teamMemberEntity,
+
+  notionSpace: notionSpaceEntity,
+  notionSpaceUser: notionSpaceUserEntity,
 
   notification: notificationEntity,
   notificationList: notificationListEntity,

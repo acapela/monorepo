@@ -5,6 +5,7 @@ import fetch from "node-fetch";
 import {
   NotionNotificationType,
   NotionWorkerSync,
+  notionAvailableSpacesValue,
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
@@ -13,6 +14,7 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
+import { wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import type {
@@ -86,9 +88,16 @@ export function startNotionSync(): ServiceSyncController {
     try {
       isSyncing = true;
       log.info(`Capturing started`);
-      const notificationLog = await fetchNotionNotificationLog(sessionData);
 
-      notionSyncPayload.send(extractNotifications(notificationLog));
+      await updateAvailableSpaces(sessionData);
+
+      const syncEnabledSpaces = notionSelectedSpaceValue.get();
+
+      for (const spaceToSync of syncEnabledSpaces.selected) {
+        const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+        notionSyncPayload.send(extractNotifications(notificationLog));
+        await wait(10000);
+      }
 
       timeOfLastSync = new Date();
 
@@ -129,13 +138,7 @@ export function startNotionSync(): ServiceSyncController {
   };
 }
 
-async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
-  const spaceId = await fetchCurrentSpace(sessionData);
-
-  if (!spaceId) {
-    throw log.error(new Error("Unable to fetch spaceId"));
-  }
-
+async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
     method: "POST",
     headers: {
@@ -160,7 +163,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
   return result;
 }
 
-async function fetchCurrentSpace(sessionData: NotionSessionData) {
+async function updateAvailableSpaces(sessionData: NotionSessionData) {
   const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
@@ -217,16 +220,15 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
     throw log.error(new Error(`Unable to find any spaces in account`));
   }
 
-  const savedSpaces = notionSelectedSpaceValue.get();
+  const savedSpaces = notionAvailableSpacesValue.get();
 
-  const selected = savedSpaces?.selected?.length > 0 ? savedSpaces.selected : [allSpaces[0].id];
+  const hasNewSpaces = !allSpaces.every((synchedSpace) =>
+    savedSpaces.spaces.some((savedSpace) => savedSpace.id === synchedSpace.id)
+  );
 
-  notionSelectedSpaceValue.set({
-    selected,
-    allSpaces,
-  });
-
-  return selected[0];
+  if (hasNewSpaces) {
+    notionAvailableSpacesValue.set({ spaces: allSpaces });
+  }
 }
 
 function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
@@ -275,7 +277,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
         notion_original_notification_id: id,
         page_id: pageId,
         page_title: pageBlock.properties.title[0][0],
-        space_id: notification.space_id,
+        synced_spaced_id: notification.space_id,
         author_id: authorId,
       },
       discussion_id: notificationProperties.discussion_id,

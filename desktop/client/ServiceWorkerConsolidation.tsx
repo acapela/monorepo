@@ -1,12 +1,14 @@
+import { subDays } from "date-fns";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
-import { notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
+import { notionAvailableSpacesValue, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { authStore } from "@aca/desktop/store/auth";
+import { assert } from "@aca/shared/assert";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
 const log = makeLogger("Worker-Consolidation");
@@ -14,6 +16,7 @@ const log = makeLogger("Worker-Consolidation");
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
   const db = getNullableDb();
   const user = authStore.userTokenData;
+  const notionSpaces = notionAvailableSpacesValue.use();
 
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 
@@ -23,6 +26,35 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
       workerSyncStart(true).then(setReadyToSync);
     }
   }, [db, user, isReadyToSync]);
+
+  useEffect(() => {
+    if (!isReadyToSync || !db) {
+      return;
+    }
+
+    notionSpaces.spaces.forEach(async (notionSpace) => {
+      let storedNotionSpace = db.notionSpace.findByUniqueIndex("space_id", notionSpace.id);
+
+      if (!storedNotionSpace) {
+        storedNotionSpace = db.notionSpace.create({
+          name: notionSpace.name,
+          space_id: notionSpace.id,
+        });
+      }
+
+      const notionSpaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", storedNotionSpace.id);
+
+      if (!notionSpaceUser) {
+        db.notionSpaceUser.create({
+          notion_space_id: storedNotionSpace.id,
+          first_synced_at: new Date().toISOString(),
+          // Everything is synced by default!
+          // We're actually leaning towards too much notification and ability to reduce noise
+          is_sync_enabled: true,
+        });
+      }
+    });
+  }, [notionSpaces]);
 
   useEffect(() => {
     if (!isReadyToSync) {
@@ -46,12 +78,27 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         );
 
         if (existingNotification) {
-          // TODO: Delete update ~3weeks after 1.Feb.2022
-          // First version of notifications don't have space_id
-          // This covers those cases.
-          if (!existingNotification.space_id) {
-            existingNotification.update({ space_id: notionNotification.space_id });
-          }
+          continue;
+        }
+
+        const space = db.notionSpace.findByUniqueIndex("space_id", notionNotification.synced_spaced_id);
+        const spaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", space?.id);
+
+        assert(spaceUser, "space user should have existed when consolidating notifications", log.error.bind(log));
+
+        /*
+          Aha! This looks a bit weird?!
+          Well it has to do with the way we manage Notion.
+          We use "Notion's Notification Archive" as an indication that a notification is resolved in our side
+          
+          When a user first syncs with Acapela, we want the initial sync to consist of a few "Demo" notifications.
+          So we placed this indicator here as a way to get notifications that happened 3 days before
+          first sync. Otherwise we'll endlessly keep on pulling old notifications as they come up.
+        */
+        const threeDaysBeforeFirstSync = subDays(new Date(spaceUser.first_synced_at), 3);
+        const isNotificationEligibleForSync =
+          new Date(notification.created_at).getTime() > threeDaysBeforeFirstSync.getTime();
+        if (!isNotificationEligibleForSync) {
           continue;
         }
 
@@ -60,6 +107,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         const createdNotionNotification = db.notificationNotion.create({
           ...notionNotification,
           notification_id: createdNotification.id,
+          notion_space_id: spaceUser.notion_space_id,
         });
 
         if (type === "notification_notion_commented") {

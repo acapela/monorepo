@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
+import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { NotionSpaceFragment, Notion_Space_Bool_Exp, Notion_Space_Insert_Input } from "@aca/gql";
 
@@ -30,9 +31,9 @@ export const notionSpaceEntity = defineEntity<NotionSpaceFragment>({
   uniqueIndexes: ["space_id"],
   keyField: "id",
   keys: getFragmentKeys<NotionSpaceFragment>(notionSpace),
-  getDefaultValues: () => ({
+  getDefaultValues: ({ getContextValue }) => ({
     __typename: "notion_space",
-    created_by: null,
+    created_by: getContextValue(userIdContext),
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<NotionSpaceFragment, NotionSpaceConstraints>(notionSpace, {

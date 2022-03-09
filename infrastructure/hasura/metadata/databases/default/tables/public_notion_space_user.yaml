@@ -16,6 +16,7 @@ insert_permissions:
         _eq: X-Hasura-User-Id
     columns:
     - created_at
+    - first_synced_at
     - id
     - is_sync_enabled
     - notion_space_id
