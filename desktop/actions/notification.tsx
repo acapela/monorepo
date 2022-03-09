@@ -161,12 +161,7 @@ export const unresolveNotification = defineAction({
       ctx.getTarget("notification")?.isResolved || !!ctx.getTarget("group")?.notifications.some((n) => n.isResolved)
     );
   }),
-  analyticsEvent: (ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    const notification_id = notification.id;
-    return trackingEvent("Notification Unresolved", { notification_id });
-  },
+  analyticsEvent: "Notification Unresolved",
   handler(context) {
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
