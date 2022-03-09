@@ -1,0 +1,30 @@
+table:
+  name: notion_space
+  schema: public
+object_relationships:
+- name: user
+  using:
+    foreign_key_constraint_on: created_by
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      user:
+        id:
+          _eq: X-Hasura-User-Id
+    columns:
+    - created_by
+    - id
+    - name
+    - space_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - id
+    - name
+    - space_id
+    - updated_at
+    filter: {}
+  role: user
