@@ -1,4 +1,5 @@
 
+
 CREATE TABLE "public"."notification_space" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "space_id" text NOT NULL, "name" text NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "updated_at" timestamptz NOT NULL DEFAULT now(), PRIMARY KEY ("id") );
 CREATE OR REPLACE FUNCTION "public"."set_current_timestamp_updated_at"()
 RETURNS TRIGGER AS $$
@@ -42,3 +43,6 @@ alter table "public"."notification_notion"
   foreign key ("notion_space_id")
   references "public"."notion_space"
   ("id") on update set null on delete set null;
+
+alter table "public"."notion_space_user" add column "is_sync_enabled" boolean
+ not null default 'false';

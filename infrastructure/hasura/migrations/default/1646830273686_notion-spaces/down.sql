@@ -1,4 +1,10 @@
 
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."notion_space_user" add column "is_sync_enabled" boolean
+--  not null default 'false';
+
+
 alter table "public"."notification_notion" drop constraint "notification_notion_notion_space_id_fkey";
 
 -- Could not auto-generate a down migration.

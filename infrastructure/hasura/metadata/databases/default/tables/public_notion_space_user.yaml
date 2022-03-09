@@ -15,6 +15,8 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
+    - id
+    - is_sync_enabled
     - notion_space_id
     - user_id
   role: user
@@ -23,8 +25,18 @@ select_permissions:
     columns:
     - first_synced_at
     - id
+    - is_sync_enabled
     - notion_space_id
     - user_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - is_sync_enabled
     filter:
       user_id:
         _eq: X-Hasura-User-Id
