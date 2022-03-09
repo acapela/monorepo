@@ -1,13 +1,18 @@
 import { upperFirst } from "lodash";
 
-import { isMac } from "@aca/frontend/src/utils/platformDetection";
-
 import { ShortcutKey } from "./codes";
 import { ShortcutDefinition, resolveShortcutsDefinition } from "./shortcutBase";
 
 type KeyboardPlatform = "mac" | "windows";
 
 type KeyNiceVersion = string | Partial<Record<KeyboardPlatform, string>>;
+
+function isMac() {
+  // Server side let's guess
+  if (typeof navigator === "undefined") return true;
+
+  return /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+}
 
 /**
  * Map describing 'UI' version of shortcut keys for proper platform.

@@ -4,10 +4,13 @@ import { WebClient } from "@slack/web-api";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
-import { parseAndTransformToTipTapJSON, parseSlackMarkdown } from "@aca/backend/src/slack/md/parser";
+import {
+  convertMessageContentToPlainText,
+  parseAndTransformToTipTapJSON,
+  parseSlackMarkdown,
+} from "@aca/backend/src/slack/md/parser";
 import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlackInstallation";
 import { User, UserSlackInstallation, db } from "@aca/db";
-import { convertMessageContentToPlainText } from "@aca/richEditor/content/plainText";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
@@ -59,19 +62,17 @@ const createTextPreviewFromSlackMessage = async (
   userToken: string,
   slackMessageText: string,
   mentionedSlackUserIds: string[]
-) =>
-  convertMessageContentToPlainText(
-    parseAndTransformToTipTapJSON(slackMessageText, {
-      mentionedNamesBySlackId: Object.fromEntries(
-        await Promise.all(
-          mentionedSlackUserIds.map(async (slackUserId) => [
-            slackUserId,
-            (await slackClient.users.info({ token: userToken, user: slackUserId })).user?.real_name ?? "Unknown",
-          ])
-        )
-      ),
-    })
+) => {
+  const mentionedNamesBySlackId = Object.fromEntries(
+    await Promise.all(
+      mentionedSlackUserIds.map(async (slackUserId) => [
+        slackUserId,
+        (await slackClient.users.info({ token: userToken, user: slackUserId })).user?.real_name ?? "Unknown",
+      ])
+    )
   );
+  return convertMessageContentToPlainText(parseAndTransformToTipTapJSON(slackMessageText, { mentionedNamesBySlackId }));
+};
 
 async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
   const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user);
@@ -115,8 +116,8 @@ async function createNotificationFromMessage(
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
-  const includedSlackChannels = userSlackInstallation.user.slack_included_channels;
-  const isChannelIncluded = Array.isArray(includedSlackChannels) && includedSlackChannels.includes(message.channel);
+  const includedChannels = userSlackInstallation.user.slack_included_channels;
+  const isChannelIncluded = Array.isArray(includedChannels) && includedChannels.includes(message.channel);
   if (
     !userToken ||
     (isAuthor && !isMentioned) ||

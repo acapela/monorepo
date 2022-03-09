@@ -1,12 +1,18 @@
 import { ParsedUrlQuery } from "querystring";
 
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-import { useCurrentUserTokenData } from "@aca/frontend/authentication/useCurrentUser";
 import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
 import { PageMeta } from "@aca/frontend/utils/PageMeta";
 import { LoginOptionsView } from "@aca/frontend/views/LoginOptionsView";
+import { UserTokenPayload } from "@aca/shared/jwt";
+
+export function useCurrentUserTokenData(): UserTokenPayload | null {
+  const { data } = useSession();
+  return data as ReturnType<typeof useCurrentUserTokenData>;
+}
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
@@ -14,7 +20,7 @@ export default function LoginPage(): JSX.Element {
   return (
     <>
       <PageMeta title="Login" />
-      <FocusedActionLayout title="Log in to start using Acapela">
+      <FocusedActionLayout title="Log in to start downloading Acapela">
         {!isAuthenticated && <LoginOptionsView />}
         {isRedirecting && <div>Redirecting...</div>}
       </FocusedActionLayout>

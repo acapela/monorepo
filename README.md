@@ -45,7 +45,7 @@ or run the commands separately, here are the most important ones and what they m
 | Command              | Description                                                                |
 | -------------------- | -------------------------------------------------------------------------- |
 | `yarn docker:up`     | Starts a Docker container with PostgreSQL and Hasura running               |
-| `yarn hasura:update` | Runs migrations, seeds and metadata updates on Hasura                      |
+| `yarn hasura:update` | Runs migrations and metadata updates on Hasura                             |
 | `yarn generate`      | Updates Prisma & GraphQL schemas (needs to be re-run on db schema changes) |
 | `yarn backend:dev`   | Starts the Backend server                                                  |
 | `yarn frontend:dev`  | Starts the Next.JS server                                                  |

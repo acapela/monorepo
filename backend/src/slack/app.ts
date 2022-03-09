@@ -105,31 +105,17 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     },
 
     async fetchInstallation(query) {
-      // Just like in storeInstallation we first try the new Acapela persistence
       let userSlackInstallation = await db.user_slack_installation.findFirst({
         where: getUserSlackInstallationFilter(query),
       });
-      // If there is no installation for the user, we try to find a team member's installation
+      // We fall back to finding an installation for the same team, which we need to do for
+      // message events, where Bolt tries to find the installation for the sending user, who
+      // might not be on Acapela
       userSlackInstallation ??= await db.user_slack_installation.findFirst({
         where: getUserSlackInstallationFilter({ teamId: query.teamId }),
       });
       if (userSlackInstallation) {
         return userSlackInstallation.data as unknown as SlackInstallation;
-      }
-
-      // This is the old-Acapela team-based installation retrieval
-      const [teamSlackInstallation, teamMemberSlackInstallation] = await Promise.all([
-        db.team_slack_installation.findFirst({
-          where: { slack_team_id: query.teamId },
-        }),
-        db.team_member_slack.findFirst({
-          where: { slack_user_id: query.userId },
-        }),
-      ]);
-      if (teamSlackInstallation) {
-        const teamData = teamSlackInstallation.data as unknown as SlackInstallation;
-        const memberData = teamMemberSlackInstallation?.installation_data;
-        return { ...teamData, user: memberData ?? {} } as SlackInstallation;
       }
 
       throw new Error(`Could not find a Slack installation for query ${JSON.stringify(query)}`);
@@ -144,7 +130,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       },
       failure(error, options, req, res) {
         if (!options) {
-          res.writeHead(HttpStatus.FOUND, { Location: process.env.FRONTEND_URL + routes.settings }).end();
+          res.writeHead(HttpStatus.FOUND, { Location: process.env.FRONTEND_URL + routes.home }).end();
           return;
         }
         const { redirectURL } = parseMetadata({ metadata: options.metadata });

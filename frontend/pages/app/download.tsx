@@ -6,7 +6,7 @@ import { openInNewTab } from "@aca/frontend/utils/openInNewTab";
 import { PageMeta } from "@aca/frontend/utils/PageMeta";
 import { Button } from "@aca/ui/buttons/Button";
 
-export default function LoginPage(): JSX.Element {
+export default function DownloadPage(): JSX.Element {
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
   useEffect(() => {

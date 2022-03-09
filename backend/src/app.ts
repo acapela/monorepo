@@ -16,18 +16,14 @@ import { logger } from "@aca/shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
 import { router as atlassianRoutes } from "./atlassian";
-import { router as attachmentsRoutes } from "./attachments/router";
 import { router as authenticationRoutes } from "./authentication";
 import { router as cronRoutes } from "./cron/cron";
-import { router as devRouter } from "./dev/router";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
-import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
 import { router as linearRoutes } from "./linear/router";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
-import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 const NANOSECONDS_IN_MILLISECOND = 1e6;
@@ -78,8 +74,6 @@ function setupRoutes(app: Application): void {
     authenticationRoutes,
     eventRoutes,
     actionRoutes,
-    recoverLoginRoutes,
-    transcriptionRoutes,
     cronRoutes,
     waitlistRoutes,
     tracking,
@@ -87,11 +81,6 @@ function setupRoutes(app: Application): void {
     atlassianRoutes
   );
 
-  if (IS_DEV) {
-    app.use("/api", devRouter);
-  }
-
-  app.use(attachmentsRoutes);
   app.use(sentryTunnel);
 }
 

@@ -1,23 +1,15 @@
 import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "@aca/backend/src/actions/actions";
-import { dailyMessageNotification } from "@aca/backend/src/cron/dailyMessageNotification";
 import { UnprocessableEntityError, isHttpError } from "@aca/backend/src/errors/errorTypes";
 import { logger } from "@aca/shared/logger";
 
 import { refreshExpiringAtlassianProperties } from "../atlassian/utils";
 import { HttpStatus } from "../http";
-import { autoArchiveOrCloseTopics } from "./autoArchiveOrCloseTopics";
-import { delayedTopicRequestsDoneNotifications } from "./delayedTopicRequestsDoneNotifications";
-import { proactiveNotifications } from "./proactiveNotifications";
 
 export const router = Router();
 
 const handlers: Record<string, Function> = {
-  "auto-archive-or-close-topics": autoArchiveOrCloseTopics,
-  "delayed-topic-requests-done-notification": delayedTopicRequestsDoneNotifications,
-  "daily-message-notification": dailyMessageNotification,
-  "proactive-notifications": proactiveNotifications,
   "refresh-expiring-atlassian-properties": refreshExpiringAtlassianProperties,
 };
 

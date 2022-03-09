@@ -17,10 +17,10 @@ export default function ErrorPage() {
       <Button
         kind="primary"
         onClick={() => {
-          router.push(routes.home);
+          router.push(routes.appDownload);
         }}
       >
-        Go back to homepage
+        Go to the download page
       </Button>
     </ErrorView>
   );
