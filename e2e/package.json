@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.18.1"
+    "@playwright/test": "^1.19.2"
   },
   "scripts": {
     "test": "APP=e2e playwright test --workers 1",
@@ -11,6 +11,6 @@
     "dev": "ts-node --transpile-only ./cli/dev.ts"
   },
   "dependencies": {
-    "playwright": "^1.18.1"
+    "playwright": "^1.19.2"
   }
 }
