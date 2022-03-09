@@ -16,7 +16,7 @@ export const linearIntegrationClient: IntegrationClient = {
   description: "New issues, task assignments and comments.",
   isReady: linearAuthTokenBridgeValue.observables.isReady,
   getCanConnect: () => !linearAuthTokenBridgeValue.get(),
-  getWorkspaces: () => (linearAuthTokenBridgeValue.get() ? [{ kind: "workspace", id: "linear", name: "Linear" }] : []),
+  getAccounts: () => (linearAuthTokenBridgeValue.get() ? [{ kind: "account", id: "linear", name: "Linear" }] : []),
   convertToLocalAppUrl: async ({ url }) => {
     return {
       protocol: "linear",

@@ -21,8 +21,8 @@ export const FILTER_EDITOR_OPTION_WIDTH = 220;
 export const FilterSettingRow = injectProps(SettingRow, { fixedOptionWidth: FILTER_EDITOR_OPTION_WIDTH });
 
 export function getWorkspaceLabel(integrationClient: IntegrationClient, id?: string) {
-  const connections = integrationClient.getWorkspaces();
-  const label = id && connections.length > 1 && connections.find((c) => c.id == id)?.name;
+  const accounts = integrationClient.getAccounts();
+  const label = id && accounts.length > 1 && accounts.find((c) => c.id == id)?.name;
   return label ? ` (${label})` : "";
 }
 

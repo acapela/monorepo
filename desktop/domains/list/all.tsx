@@ -93,7 +93,7 @@ export const snoozedList = defineNotificationsList({
 
 export const getInboxLists = cachedComputed(() => {
   const availableIntegrationLists = typedKeys(integrationLists)
-    .filter((key) => integrationClients[key].getWorkspaces().length)
+    .filter((key) => integrationClients[key].getAccounts().length)
     .map((key) => integrationLists[key]);
 
   const customLists = getDb().notificationList.all.map((listEntity) =>
