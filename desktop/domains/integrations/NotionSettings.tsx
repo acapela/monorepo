@@ -1,3 +1,4 @@
+import { throttle } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
 import { useEffect } from "react";
@@ -9,6 +10,13 @@ import { getDb } from "@aca/desktop/clientdb";
 import { NotionSpaceEntity } from "@aca/desktop/clientdb/notification/notion/notionSpace";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
+
+const TEN_SECONDS = 10 * 1000;
+
+const throttledForceNotionSync = throttle(() => forceWorkerSyncRun(["notion"]), TEN_SECONDS, {
+  trailing: true,
+  leading: false,
+});
 
 export const NotionSettings = observer(function NotionSpaceSelector() {
   const db = getDb();
@@ -37,8 +45,8 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
     userSpace.update({
       is_sync_enabled: true,
     });
-    // TODO: throttle for a few seconds before running it
-    forceWorkerSyncRun(["notion"]);
+    // Throttled, as people may be clicking around and moving things around
+    throttledForceNotionSync();
   }
 
   function unselectSpace(space: NotionSpaceEntity) {
