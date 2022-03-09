@@ -2,11 +2,10 @@ import Sentry from "@sentry/node";
 import Analytics from "analytics-node";
 
 import { User } from "@aca/db";
-import { UserFragment } from "@aca/gql";
 
-import { AnalyticsEventsMap, AnalyticsGroupsMap, AnalyticsUserProfile } from "./types/analytics";
+import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
 
-function getAnalyticsProfileFromDbUser(user: User | UserFragment): Partial<AnalyticsUserProfile> {
+function getAnalyticsProfileFromDbUser(user: User): Partial<AnalyticsUserProfile> {
   return {
     id: user.id,
     email: user.email,
@@ -24,7 +23,7 @@ function getAnalyticsSDK() {
   return new Analytics(process.env.SEGMENT_API_KEY);
 }
 
-function createAnalyticsSessionForUser(user: User | UserFragment) {
+function createAnalyticsSessionForUser(user: User) {
   const analytics = getAnalyticsSDK();
 
   if (analytics) {
@@ -55,7 +54,7 @@ export function identifyBackendUser(userId: string, traits: Partial<AnalyticsUse
 }
 
 export function trackFirstBackendUserEvent<N extends keyof AnalyticsEventsMap>(
-  user: User | UserFragment,
+  user: User,
   eventName: N,
   payload?: AnalyticsEventsMap[N]
 ) {
@@ -85,18 +84,3 @@ export const backendUserEventToJSON = <N extends keyof AnalyticsEventsMap>(
   eventName: N,
   payload?: AnalyticsEventsMap[N]
 ) => JSON.stringify([userId, eventName, payload]);
-
-export function identifyBackendUserTeam<N extends keyof AnalyticsGroupsMap>(
-  userId: string,
-  groupId: string,
-  groupProperties?: Partial<AnalyticsGroupsMap[N]>
-) {
-  const analytics = getAnalyticsSDK();
-  if (analytics) {
-    try {
-      analytics.group({ userId, groupId, traits: groupProperties });
-    } catch (error) {
-      Sentry.captureException(error);
-    }
-  }
-}

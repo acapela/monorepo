@@ -1,9 +1,11 @@
-import { SidebarLayout } from "@aca/frontend/layouts/SidebarLayout";
-import { assignPageLayout } from "@aca/frontend/utils/pageLayout";
-import { InboxView } from "@aca/frontend/views/InboxView";
+import router from "next/router";
+import { useEffect } from "react";
 
-export default function InboxPage() {
-  return <InboxView />;
+import { routes } from "@aca/shared/routes";
+
+export default function Home() {
+  useEffect(() => {
+    router.push(routes.appDownload);
+  });
+  return <></>;
 }
-
-assignPageLayout(InboxPage, SidebarLayout);

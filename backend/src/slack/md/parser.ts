@@ -1,11 +1,13 @@
 import { compact, isArray, isString } from "lodash";
 import markdown from "simple-markdown";
 
-import { MENTION_TYPE_KEY } from "@aca/shared/editor/mentions";
 import emojis from "@aca/shared/emoji/slugs.json";
 import { swapPlainObjectKeysWithValues } from "@aca/shared/object";
-import { EditorMentionData } from "@aca/shared/types/editor";
 
+interface EditorMentionData {
+  userId: string;
+  type: string;
+}
 const emojiNameToEmoji: Record<string, string> = swapPlainObjectKeysWithValues(emojis);
 
 // The rules have been imported from
@@ -334,7 +336,7 @@ function transformNode(node: markdown.SingleASTNode, context: TransformContext =
     case "slackUser":
       if (context.mentionedUsersBySlackId && context.mentionedUsersBySlackId[node.id]) {
         return {
-          type: MENTION_TYPE_KEY,
+          type: "mention",
           attrs: {
             data: context.mentionedUsersBySlackId[node.id],
           },
@@ -407,4 +409,44 @@ export function transformToTipTapJSON(ast: markdown.SingleASTNode[], context: Tr
 
 export function parseAndTransformToTipTapJSON(text: string, context: TransformContext = {}) {
   return transformToTipTapJSON(parseSlackMarkdown(text), context);
+}
+
+/**
+ * Types of nodes that should indicate new lines in plain text.
+ */
+const newLineNodeTypes = ["paragraph", "bulletList", "listItem", "code", "codeBlock", "blockQuote", "hardBreak"];
+
+function normalizePlainTextOutput(plainText: string) {
+  return plainText.replace(/\n{2,}/, `\n`).trim();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function recursiveConvertMessageContentToPlainText(content: any): string[] {
+  const plainTextParts: string[] = [];
+  if (newLineNodeTypes.includes(content.type)) {
+    plainTextParts.push("\n");
+  }
+
+  if (content.text) {
+    plainTextParts.push(content.text);
+  }
+
+  if (content.type == "emoji") {
+    plainTextParts.push(content.attrs?.data?.emoji ?? "");
+  }
+
+  if (content.content) {
+    plainTextParts.push(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...content.content.flatMap((childNode: any) => recursiveConvertMessageContentToPlainText(childNode))
+    );
+  }
+
+  return plainTextParts;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function convertMessageContentToPlainText(content: any): string {
+  const plainText = recursiveConvertMessageContentToPlainText(content).join("");
+  return normalizePlainTextOutput(plainText);
 }

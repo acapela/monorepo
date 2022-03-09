@@ -16,8 +16,8 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: yarn run lint
 
-  frontend:
-    name: Frontend
+  typecheck:
+    name: Typecheck
     runs-on: ubuntu-latest
     concurrency:
       group: frontend-${{ github.ref }}
@@ -33,14 +33,13 @@ jobs:
           sleep 5
           yarn hasura:update
           yarn generate
-      - run: yarn run frontend:test
       - run: yarn typecheck
 
-  backend:
-    name: Backend
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     concurrency:
-      group: backend-${{ github.ref }}
+      group: tests-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
@@ -133,7 +132,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [lint, frontend, backend]
+    needs: [lint, typecheck, tests]
     steps:
       - uses: actions/checkout@v2
       - name: semantic-release

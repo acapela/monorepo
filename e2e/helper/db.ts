@@ -1,6 +1,6 @@
 import "@aca/config/dotenv";
 
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 import { createJWT, signJWT } from "@aca/shared/jwt";
 
@@ -23,12 +23,11 @@ const createJWTForUser = (userId: string): string => signJWT(createJWT({ sub: us
 
 export type TestUser = user & { jwt: string };
 
-async function createUser(name: string, email: string, currentTeam: string | null): Promise<TestUser> {
+async function createUser(name: string, email: string): Promise<TestUser> {
   const dbUser = await db.user.create({
     data: {
       name,
       email: email,
-      current_team_id: currentTeam,
       account: {
         create: {
           provider_id: PREFIX,
@@ -47,25 +46,12 @@ async function createUser(name: string, email: string, currentTeam: string | nul
 export async function setupDatabase(key: string) {
   const fullPrefix = PREFIX + key;
 
-  const user1 = await createUser("u1", fullPrefix + "user-1@acape.la", null);
-  const team = await db.team.create({
-    data: { owner_id: user1.id, name: fullPrefix + "what a team", slug: fullPrefix + "team-with-a-slug" },
-  });
-
-  const user2 = await createUser("u2", fullPrefix + "user-2@acape.la", team.id);
-
-  await db.team_member.createMany({
-    data: [
-      { team_id: team.id, user_id: user1.id },
-      { team_id: team.id, user_id: user2.id },
-    ],
-  });
+  const user1 = await createUser("u1", fullPrefix + "user-1@acape.la");
+  const user2 = await createUser("u2", fullPrefix + "user-2@acape.la");
 
   return {
     data: { prefix: fullPrefix, user1, user2 },
     async cleanup() {
-      const userIds = Prisma.join([user1.id, user2.id]);
-      await db.$executeRaw`DELETE FROM team WHERE owner_id IN (${userIds})`;
       await db.$executeRaw`DELETE FROM "user" WHERE email ILIKE ${fullPrefix + "%"}`;
     },
   };

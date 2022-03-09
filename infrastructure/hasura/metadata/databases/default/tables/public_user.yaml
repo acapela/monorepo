@@ -6,15 +6,6 @@ object_relationships:
   using:
     foreign_key_constraint_on: current_team_id
 array_relationships:
-- name: messages
-  using:
-    manual_configuration:
-      column_mapping:
-        id: user_id
-      insertion_order: null
-      remote_table:
-        name: message
-        schema: public
 - name: owned_teams
   using:
     foreign_key_constraint_on:
@@ -63,12 +54,6 @@ select_permissions:
             memberships:
               user_id:
                 _eq: X-Hasura-User-Id
-      - messages:
-          topic:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
       - id:
           _eq: X-Hasura-User-Id
   role: user

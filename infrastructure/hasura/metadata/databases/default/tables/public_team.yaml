@@ -5,15 +5,6 @@ object_relationships:
 - name: owner
   using:
     foreign_key_constraint_on: owner_id
-- name: slack_installation
-  using:
-    manual_configuration:
-      column_mapping:
-        id: team_id
-      insertion_order: null
-      remote_table:
-        name: team_slack_installation
-        schema: public
 array_relationships:
 - name: memberships
   using:
@@ -21,15 +12,6 @@ array_relationships:
       column: team_id
       table:
         name: team_member
-        schema: public
-- name: topics
-  using:
-    manual_configuration:
-      column_mapping:
-        id: team_id
-      insertion_order: null
-      remote_table:
-        name: topic
         schema: public
 insert_permissions:
 - permission:

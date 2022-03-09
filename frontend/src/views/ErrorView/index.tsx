@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 
 import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { AppRecoveryButtons } from "@aca/frontend/utils/AppRecoveryButtons";
 
 interface Props {
   title?: ReactNode;
@@ -15,7 +14,7 @@ export function ErrorView({ title = "Something went wrong", description, extraCo
   return (
     <FocusedActionLayout hideLogo title={title} description={description}>
       {extraContent}
-      <UIActions>{children ?? <AppRecoveryButtons />}</UIActions>
+      <UIActions>{children}</UIActions>
     </FocusedActionLayout>
   );
 }

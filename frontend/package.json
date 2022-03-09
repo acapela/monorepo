@@ -30,7 +30,6 @@
     "@aca/config": "0.1.0",
     "@aca/db": "0.1.0",
     "@aca/gql": "0.1.0",
-    "@aca/richEditor": "0.1.0",
     "@aca/shared": "0.1.0",
     "@aca/ui": "0.1.0",
     "@apollo/client": "^3.5.8",

@@ -11,13 +11,9 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
 
-import { ApolloClientProvider as ApolloProvider } from "@aca/frontend/apollo/client";
-import { AppStateStoreProvider } from "@aca/frontend/appState/AppStateStore";
 import { RequiredSessionProvider } from "@aca/frontend/auth/RequiredSessionProvider";
 import { getUserFromRequest } from "@aca/frontend/authentication/request";
-import { ClientDbProvider } from "@aca/frontend/clientdb";
 import { sentryFallbackErrorRenderer } from "@aca/frontend/errors/sentryFallbackErrorRenderer";
-import { CurrentTeamProvider } from "@aca/frontend/team/CurrentTeam";
 import { renderWithPageLayout } from "@aca/frontend/utils/pageLayout";
 import { useConst } from "@aca/shared/hooks/useConst";
 import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
@@ -103,19 +99,8 @@ export default function App({
       <Sentry.ErrorBoundary fallback={sentryFallbackErrorRenderer}>
         <RequiredSessionProvider session={appConfig.session}>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-            <ApolloProvider websocketEndpoint={appConfig.hasuraWebsocketEndpoint}>
-              <BuiltInStyles />
-              <CurrentTeamProvider>
-                <ClientDbProvider>
-                  <AppStateStoreProvider>
-                    <PromiseUIRenderer />
-                    <TooltipsRenderer />
-                    <ToastsRenderer />
-                    {renderWithPageLayout(Component, { appConfig, ...pageProps })}
-                  </AppStateStoreProvider>
-                </ClientDbProvider>
-              </CurrentTeamProvider>
-            </ApolloProvider>
+            <BuiltInStyles />
+            {renderWithPageLayout(Component, { appConfig, ...pageProps })}
           </MotionConfig>
         </RequiredSessionProvider>
       </Sentry.ErrorBoundary>

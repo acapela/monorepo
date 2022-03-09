@@ -15,23 +15,10 @@ function cloneManifestIntoClipboard({ name, domain }: { name: string; domain: st
     JSON.stringify(
       merge(manifest, {
         display_information: { name },
-        features: {
-          bot_user: { display_name: name },
-          slash_commands: [
-            {
-              command: "/" + name.toLowerCase(),
-              url: replaceDomain(manifest.features.slash_commands[0].url),
-            },
-          ],
-        },
         oauth_config: {
           redirect_urls: manifest.oauth_config.redirect_urls.map((url) => replaceDomain(url)),
         },
         settings: {
-          interactivity: {
-            request_url: replaceDomain(manifest.settings.interactivity.request_url),
-            message_menu_options_url: replaceDomain(manifest.settings.interactivity.message_menu_options_url),
-          },
           event_subscriptions: { request_url: replaceDomain(manifest.settings.event_subscriptions.request_url) },
         },
       } as typeof manifest),
