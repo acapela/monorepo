@@ -1,7 +1,7 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getIsIntegrationClient } from "@aca/desktop/domains/integrations";
-import { Workspace } from "@aca/desktop/domains/integrations/types";
+import { IntegrationAccount } from "@aca/desktop/domains/integrations/types";
 import { getIsNotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { createPredicates } from "./predicates";
@@ -22,7 +22,7 @@ export const targetPredicates = {
   list: getIsNotificationsList,
   group: getIsNotificationsGroup,
   integration: getIsIntegrationClient,
-  workspace: (input: unknown): input is Workspace => (input as Workspace)?.kind == "workspace",
+  account: (input: unknown): input is IntegrationAccount => (input as IntegrationAccount)?.kind == "account",
 };
 
 export function createActionTargetPredicates(targets: () => unknown[]) {

@@ -48,7 +48,7 @@ export const connectIntegration = defineAction({
   name: (ctx) => {
     const integration = ctx.assertTarget("integration");
     return (
-      "Connect " + (integration.getWorkspaces().length == 0 ? "" : "more") + (ctx.isContextual ? "" : integration.name)
+      "Connect " + (integration.getAccounts().length == 0 ? "" : "more") + (ctx.isContextual ? "" : integration.name)
     );
   },
   icon: <IconPlus />,

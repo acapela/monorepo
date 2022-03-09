@@ -71,11 +71,10 @@ function getTitle(inner: NotificationEntity["inner"]): string {
   }
 }
 
-export const getNotificationTitle = cachedComputed((notification: NotificationEntity): string => {
-  const client = Object.values(integrationClients).find(
-    (client) => client.notificationTypename == notification.inner?.__typename
-  );
-  const connection = (client?.getWorkspaces().length ?? 0) > 1 && client?.getWorkspaceForNotification?.(notification);
-  const title = getTitle(notification.inner);
-  return title + (connection ? (title ? " in " : "") + connection.name : "");
+export const getNotificationTitle = cachedComputed(({ inner }: NotificationEntity): string => {
+  const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
+  const hasMultipleAccounts = (client?.getAccounts().length ?? 0) > 1;
+  const workspaceName = hasMultipleAccounts && inner && "workspaceName" in inner && inner.workspaceName;
+  const title = getTitle(inner);
+  return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
 });

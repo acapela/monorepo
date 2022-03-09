@@ -22,7 +22,7 @@ const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
 
 export const IntegrationCard = observer(({ service }: Props) => {
   const { name, description, icon, additionalSettings } = service;
-  const workspaces = service.getWorkspaces();
+  const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
 
   return (
