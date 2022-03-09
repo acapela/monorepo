@@ -9,6 +9,8 @@ import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotionSpaceEntity } from "@aca/desktop/clientdb/notification/notion/notionSpace";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
+import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { Button } from "@aca/ui/buttons/Button";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 
 const TEN_SECONDS = 10 * 1000;
@@ -35,8 +37,25 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
     }
   }, [notionAuthBridge]);
 
+  // This is done in weird edge cases where we can't get all spaces
+  // This usually shouldn't happen, but it's a preventative measure if there's some errors
+  const [isLoadingSpaces, { set: setLoadingSpaces, unset: unsetLoadingSpaces }] = useBoolean(false);
   if (!allAvailableSpaces.length) {
-    return <></>;
+    return (
+      <SettingRow title="Active spaces" description="Spaces you wish to import notifications from.">
+        <Button
+          kind="primary"
+          isLoading={isLoadingSpaces}
+          onClick={() => {
+            forceWorkerSyncRun(["notion"]);
+            setLoadingSpaces();
+            setTimeout(unsetLoadingSpaces, TEN_SECONDS);
+          }}
+        >
+          Load Notion Spaces
+        </Button>
+      </SettingRow>
+    );
   }
 
   function selectSpace(space: NotionSpaceEntity) {
