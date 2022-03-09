@@ -164,7 +164,7 @@ export const unresolveNotification = defineAction({
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
-    const notification_id = notification?.id ?? undefined;
+    const notification_id = notification.id;
     return trackingEvent("Notification Unresolved", { notification_id });
   },
   handler(context) {
