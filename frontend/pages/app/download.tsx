@@ -6,18 +6,19 @@ import { openInNewTab } from "@aca/frontend/utils/openInNewTab";
 import { PageMeta } from "@aca/frontend/utils/PageMeta";
 import { Button } from "@aca/ui/buttons/Button";
 
+type GitHubAsset = {
+  browser_download_url: string;
+  name: string;
+};
 export default function DownloadPage(): JSX.Element {
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get(`/api/app-download-url`).then((response) => {
-      const fetchedURL = response.data.downloadURL;
-
-      /**
-       * We cannot 'start downloading' here as it is async and it is not trusted event.
-       */
-
-      setDownloadURL(fetchedURL);
+    axios.get(`https://api.github.com/repos/weareacapela/releases/releases/latest`).then((response) => {
+      const assets = response.data.assets as GitHubAsset[];
+      const dmgAsset = assets.find((a) => a.name.endsWith("-universal.dmg"));
+      if (!dmgAsset) return;
+      setDownloadURL(dmgAsset.browser_download_url);
     });
   });
 

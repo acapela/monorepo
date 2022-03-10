@@ -24,10 +24,8 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 export interface AppConfig {
   session: Session | null;
-  hasuraWebsocketEndpoint: string | null;
   stage: string | undefined;
   version: string | undefined;
-  buildDate: string | undefined;
   sentryDSN: string | undefined;
 }
 
@@ -52,10 +50,8 @@ export default function App({
   Component,
   pageProps,
   session,
-  hasuraWebsocketEndpoint,
   stage,
   version,
-  buildDate,
   sentryDSN,
 }: AppProps & AppConfig): JSX.Element {
   // We need to remember this from first render, as getInitialProps is not run on client side navigation
@@ -63,10 +59,8 @@ export default function App({
     () =>
       ({
         session,
-        hasuraWebsocketEndpoint,
         stage,
         version,
-        buildDate,
         sentryDSN,
       } as AppConfig)
   );
@@ -170,10 +164,8 @@ App.getInitialProps = async (context: AppContext) => {
   // this is how we populate environment configurations to the frontend
   return {
     session,
-    hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
     stage: process.env.STAGE,
     version: process.env.SENTRY_RELEASE || "dev",
-    buildDate: process.env.BUILD_DATE || "unknown",
     sentryDSN: process.env.SENTRY_DSN,
   } as AppConfig;
 };
