@@ -11,7 +11,7 @@ handle_path /api/backend/* {
 }
 
 handle_path /api/auth/* {
-  rewrite * /api/auth/{path}
+	rewrite * /api/auth/{path}
 	reverse_proxy {$BACKEND_HOST}
 }
 
