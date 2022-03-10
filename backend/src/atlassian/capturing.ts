@@ -92,6 +92,15 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
     notification_jira_issue_type_value: "user_mentioned",
   }));
 
+  let from: string;
+
+  try {
+    from = payload.comment.author.displayName;
+  } catch (e) {
+    logger.error("Unable to get author display name", JSON.stringify(payload, null, 2));
+    from = "Unknown";
+  }
+
   const notificationsSend = mentionedUsersToNotify
     .concat(watchersToNotify)
     .map(({ user, notification_jira_issue_type_value }) =>
@@ -101,7 +110,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
             create: {
               user_id: user.id,
               url: commentUrl,
-              from: payload.user.displayName ?? "",
+              from,
               // TODO: make another api call to get the display names of all the mentioned users
               text_preview: payload.comment?.body.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
             },
