@@ -20,6 +20,7 @@ import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import type {
   ActivityPayload,
   BlockPayload,
+  CollectionViewPageBlockValue,
   GetNotificationLogResult,
   GetPublicSpaceDataResult,
   GetSpacesResult,
@@ -248,17 +249,16 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const { url, type, text_preview } = notificationProperties;
 
-    const pageId = notification.navigable_block_id;
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
 
     const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
 
-    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value as PageBlockValue | undefined;
+    const page_title = getPageTitle(notification, recordMap);
 
-    if (pageBlock?.type !== "page") {
-      log.error(`Block is not page type, instead its`, recordMap.block[pageId] ?? "");
+    if (!page_title) {
+      log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
       continue;
     }
 
@@ -275,8 +275,8 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
       type,
       notionNotification: {
         notion_original_notification_id: id,
-        page_id: pageId,
-        page_title: pageBlock.properties.title[0][0],
+        page_id: notification.navigable_block_id,
+        page_title,
         synced_spaced_id: notification.space_id,
         author_id: authorId,
       },
@@ -285,6 +285,36 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
   }
 
   return result;
+}
+
+function getPageTitle(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+): string | undefined {
+  const blockId = notification.navigable_block_id;
+  const typeOfBlock = recordMap.block[blockId]?.value.type;
+
+  if (typeOfBlock === "page") {
+    const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
+    return block.properties.title[0][0];
+  }
+
+  if (typeOfBlock === "collection_view_page") {
+    const block = (recordMap.block[blockId] as BlockPayload<"collection_view_page">)
+      .value as CollectionViewPageBlockValue;
+    const collection = recordMap.collection && recordMap.collection[block.collection_id].value;
+    if (!collection) {
+      log.error(
+        `Collection not found for notification_id ${notification.id} block.collection_id: ${block.collection_id}`,
+        recordMap
+      );
+      return;
+    }
+
+    return collection.name[0][0];
+  }
+
+  return;
 }
 
 function getNotificationProperties(
@@ -314,6 +344,16 @@ function getNotificationProperties(
 
   if (notification.type === "commented") {
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
+
+    // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
+    if (!activity) {
+      log.error(
+        `Comment Activity for notification id ${notification.id} not found in recordMap: `,
+        JSON.stringify(recordMap, null, 2)
+      );
+      return;
+    }
+
     const discussion = recordMap.discussion[activity.discussion_id].value;
 
     const parentDiscussionBlock = discussion.parent_id;
