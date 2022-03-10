@@ -1,6 +1,7 @@
 import "@aca/desktop/analytics";
 
 import { ApolloProvider } from "@apollo/client";
+import * as Sentry from "@sentry/electron/renderer";
 import { MotionConfig } from "framer-motion";
 import React, { useEffect } from "react";
 import { render } from "react-dom";
@@ -25,6 +26,16 @@ import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
+
+const appEnv = window.electronBridge.env;
+
+if (!appEnv.isDev) {
+  Sentry.init({
+    dsn: appEnv.sentryDsn,
+    release: appEnv.version,
+    debug: true,
+  });
+}
 
 const rootElement = document.getElementById("root");
 
@@ -63,7 +74,7 @@ function App() {
   );
 }
 
-if (window.electronBridge.env.windowName === "Logger") {
+if (appEnv.windowName === "Logger") {
   render(
     <>
       <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>

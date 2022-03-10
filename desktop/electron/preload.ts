@@ -1,6 +1,6 @@
 import "@aca/desktop/lib/env"; // import for side effects
 
-import * as Sentry from "@sentry/electron/dist/renderer";
+import * as Sentry from "@sentry/electron/renderer";
 import { IpcRendererEvent, clipboard, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
