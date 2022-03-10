@@ -53,7 +53,7 @@ const requiredEnvVarNamesBackend = [
   "FRONTEND_URL",
 ] as const;
 
-const requiredEnvVarNamesFrontend = ["HASURA_HOST", "HASURA_WEBSOCKET_ENDPOINT"] as const;
+const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
 
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",
