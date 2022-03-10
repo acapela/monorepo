@@ -25,8 +25,6 @@ import { makeLogger } from "../domains/dev/makeLogger";
 
 const log = makeLogger("Analytics");
 
-log.info("FOOOO");
-
 export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   const user = accountStore.user;
 
