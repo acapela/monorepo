@@ -49,7 +49,7 @@ function setupMiddleware(app: Application): void {
   app.use(function middleware(req: Request, res: ServerResponse, next: () => void): void {
     const startTime = process.hrtime();
     res.once("finish", () => {
-      const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
+      const requestStatusDescription = `[${req.method}] ${req.url} (status: ${res.statusCode})`;
       if (IS_DEV) {
         logger.info(`Request finished - ${requestStatusDescription}`);
       } else {
