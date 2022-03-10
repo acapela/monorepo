@@ -19,7 +19,11 @@ export async function captureJiraWebhook(payload: JiraWebhookPayload) {
   }
 }
 
-function extractMentionedAccountIds(text: string) {
+function extractMentionedAccountIds(text: string | null) {
+  if (!text) {
+    return [];
+  }
+
   const result = [];
 
   for (const match of text.matchAll(EXTRACT_MENTIONED_ACCOUNT_REGEX)) {
