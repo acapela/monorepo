@@ -2,8 +2,9 @@ import { BrowserWindow } from "electron";
 import { autorun, makeAutoObservable, observable, runInAction } from "mobx";
 
 import { applicationFocusStateBridge, applicationStateBridge } from "@aca/desktop/bridge/system";
-import { createLogger } from "@aca/shared/log";
 import { autorunEffect } from "@aca/shared/mobx/utils";
+
+import { makeLogger } from "../domains/dev/makeLogger";
 
 export const appState = makeAutoObservable(
   {
@@ -17,7 +18,7 @@ export const appState = makeAutoObservable(
   }
 );
 
-const log = createLogger("App state");
+const log = makeLogger("App state");
 
 autorunEffect(() => {
   const { mainWindow } = appState;
