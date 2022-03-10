@@ -40,8 +40,6 @@ const requiredEnvVarNamesBackend = [
   "HASURA_API_ADMIN_ROLE",
   "HASURA_ACTION_SECRET",
   "GOOGLE_STORAGE_BUCKET",
-  "SONIX_API_KEY",
-  "SONIX_CALLBACK_SECRET",
   "LINEAR_CLIENT_ID",
   "LINEAR_CLIENT_SECRET",
   "LINEAR_OAUTH_SECRET",
@@ -53,7 +51,6 @@ const requiredEnvVarNamesBackend = [
   "SLACK_CLIENT_ID",
   "SLACK_CLIENT_SECRET",
   "FRONTEND_URL",
-  "BACKEND_AUTH_TOKEN",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "HASURA_WEBSOCKET_ENDPOINT"] as const;
