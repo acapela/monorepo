@@ -46,6 +46,7 @@
     "immer": "^9.0.12",
     "mobx-react": "^7.2.1",
     "next": "^12.0.10",
+    "next-auth": "npm:next-auth-danger-link@4.1.2-714d80",
     "react-popper": "^2.2.5",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
