@@ -71,5 +71,8 @@
       "provider": "github",
       "releaseType": "release"
     }
+  },
+  "dependencies": {
+    "@sentry/react": "^6.18.2"
   }
 }
