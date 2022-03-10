@@ -13,15 +13,18 @@ insert_permissions:
         id:
           _eq: X-Hasura-User-Id
     columns:
+    - created_at
     - created_by
     - id
     - name
     - space_id
+    - updated_at
   role: user
 select_permissions:
 - permission:
     columns:
     - created_at
+    - created_by
     - id
     - name
     - space_id
