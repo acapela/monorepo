@@ -1,6 +1,5 @@
 import React from "react";
 
-import { ActionContext } from "@aca/desktop/actions/action/context";
 import { trackingEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
@@ -35,16 +34,6 @@ async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Prom
   } else {
     return { fallback };
   }
-}
-
-function isNotificationResolved(ctx: ActionContext) {
-  const notification = ctx.getTarget("notification");
-  if (notification) {
-    return notification.isResolved;
-  }
-
-  const group = ctx.getTarget("group");
-  return Boolean(group && group.notifications.every((notification) => notification.isResolved));
 }
 
 export const openNotificationInApp = defineAction({
@@ -108,9 +97,6 @@ export const resolveNotification = defineAction({
   icon: <IconCheck />,
   group: currentNotificationActionsGroup,
   name: (ctx) => {
-    if (isNotificationResolved(ctx)) {
-      return ctx.isContextual ? "Next" : "Move to next notification";
-    }
     if (ctx.hasTarget("group")) {
       return ctx.isContextual ? "Resolve all" : "Resolve all notifications in group";
     }
