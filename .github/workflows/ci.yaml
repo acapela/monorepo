@@ -152,18 +152,17 @@ jobs:
           docker-compose -f ./docker-compose.ci.yaml down -v
           rm .env
         if: steps.semrel.outputs.version != ''
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: meetnomoreapp
-          service_account_key: ${{ secrets.GCLOUD_AUTH }}
-        if: steps.semrel.outputs.version != ''
       - uses: google-github-actions/auth@v0.4.0
         with:
           credentials_json: ${{ secrets.GCLOUD_AUTH }}
         if: steps.semrel.outputs.version != ''
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: meetnomoreapp
+        if: steps.semrel.outputs.version != ''
       - name: Set up kubectl
-        uses: google-github-actions/get-gke-credentials@main
+        uses: google-github-actions/get-gke-credentials@v0
         with:
           cluster_name: cluster-1
           location: europe-west1
