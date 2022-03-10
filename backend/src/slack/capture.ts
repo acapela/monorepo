@@ -89,14 +89,7 @@ async function checkIsInvolvedInThread(
   ts: string,
   slackUserId: string
 ): Promise<boolean> {
-  if (await db.slack_thread_involed_user.findFirst({ where: { user_id: slackUserId, thread_ts: ts } })) {
-    return true;
-  }
-  const { messages } = await slackClient.conversations.replies({ token, channel, ts });
-  return (messages ?? []).some(
-    (message) =>
-      message.user === slackUserId || extractMentionedSlackUserIdsFromMd(message.text).some((id) => id == slackUserId)
-  );
+  return Boolean(await db.slack_thread_involed_user.findFirst({ where: { user_id: slackUserId, thread_ts: ts } }));
 }
 
 /**
