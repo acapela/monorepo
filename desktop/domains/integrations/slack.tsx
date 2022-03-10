@@ -12,13 +12,9 @@ import { assertDefined } from "@aca/shared/assert";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
-import { IntegrationClient, Workspace } from "./types";
+import { IntegrationClient } from "./types";
 
 const SLACK_URL_SCHEME = "slack://";
-
-const getWorkspaces = (): Workspace[] =>
-  accountStore.user?.slackInstallations.all.map((i) => ({ kind: "workspace", id: i.team_id!, name: i.team_name! })) ??
-  [];
 
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -32,14 +28,9 @@ export const slackIntegrationClient: IntegrationClient = {
     return computed(() => accountStore.user !== null);
   },
   getCanConnect: () => !!accountStore.user,
-  getWorkspaces,
-  getWorkspaceForNotification({ inner }) {
-    return (
-      getWorkspaces().find(
-        (workspace) => inner?.__typename == "notification_slack_message" && inner.slackTeamId == workspace.id
-      ) ?? null
-    );
-  },
+  getAccounts: () =>
+    accountStore.user?.slackInstallations.all.map((i) => ({ kind: "account", id: i.team_id!, name: i.team_name! })) ??
+    [],
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
     if (inner?.__typename !== "notification_slack_message") {

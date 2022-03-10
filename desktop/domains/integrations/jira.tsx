@@ -22,7 +22,7 @@ export const jiraIntegrationClient: IntegrationClient = {
   get isReady() {
     return computed(() => accountStore.user !== null);
   },
-  getWorkspaces: () => (getAtlassianAccounts().length > 0 ? [{ kind: "workspace", id: "jira", name: "Jira" }] : []),
+  getAccounts: () => (getAtlassianAccounts().length > 0 ? [{ kind: "account", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
     return !!accountStore.user && getAtlassianAccounts().length == 0;
   },

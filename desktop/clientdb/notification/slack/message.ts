@@ -31,10 +31,19 @@ export const notificationSlackMessageEntity = defineEntity<NotificationSlackMess
   keys: getFragmentKeys<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
 }).addConnections((slackMessage, { getEntity }) => {
+  const getSlackInstallation = () => {
+    const slackInstallationId = slackMessage.user_slack_installation_id;
+    return slackInstallationId ? getEntity(userSlackInstallationEntity).findById(slackInstallationId) : null;
+  };
   return {
+    get slackInstallation() {
+      return getSlackInstallation();
+    },
     get slackTeamId() {
-      const slackInstallationId = slackMessage.user_slack_installation_id;
-      return slackInstallationId && getEntity(userSlackInstallationEntity).findById(slackInstallationId)?.team_id;
+      return getSlackInstallation()?.team_id;
+    },
+    get workspaceName() {
+      return getSlackInstallation()?.team_name;
     },
   };
 });

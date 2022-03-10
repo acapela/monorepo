@@ -9,6 +9,7 @@ import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
+import { forceWorkerSyncRun } from "../bridge/apps";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 import { listPageView } from "./views/list";
@@ -130,5 +131,14 @@ export const simulateListWasNotSeen = defineAction({
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     list.listEntity?.update({ seen_at: subDays(new Date(), 180).toISOString() });
+  },
+});
+
+export const forceNotionSync = defineAction({
+  icon: devIcon,
+  name: "Force notion sync",
+  group: devActionsGroup,
+  handler() {
+    forceWorkerSyncRun(["notion"]);
   },
 });

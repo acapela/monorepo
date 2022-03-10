@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { OpenAppUrl } from "@aca/desktop/bridge/apps";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 
-export type Workspace = { kind: "workspace"; id: string; name: string };
+export type IntegrationAccount = { kind: "account"; id: string; name: string };
 
 export interface IntegrationClient {
   kind: "integration";
@@ -15,10 +15,11 @@ export interface IntegrationClient {
   icon: ReactNode;
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
   isReady: IObservableValue<boolean> | IComputedValue<boolean>;
+  // Returns false if an account is already connected and this integration only supports a single account
   getCanConnect?(): boolean;
-  getWorkspaces(): Workspace[];
-  getWorkspaceForNotification?(notification: NotificationEntity): Workspace | null;
-  connect(workspaceId?: string): Promise<void>;
-  disconnect?(id: string): Promise<void>;
+  getAccounts(): IntegrationAccount[];
+  getWorkspaces?(): string[];
+  connect(accountId?: string): Promise<void>;
+  disconnect?(accountId: string): Promise<void>;
   additionalSettings?: ReactNode;
 }
