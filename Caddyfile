@@ -10,6 +10,11 @@ handle_path /api/backend/* {
 	reverse_proxy {$BACKEND_HOST}
 }
 
+handle_path /api/auth/* {
+  rewrite * /api/auth/{path}
+	reverse_proxy {$BACKEND_HOST}
+}
+
 handle_path /api/backend/healthz {
 	rewrite * /healthz
 	reverse_proxy {$BACKEND_HOST}

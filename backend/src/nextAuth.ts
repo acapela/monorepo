@@ -1,7 +1,5 @@
-import "@aca/config/dotenv";
-
 import * as Sentry from "@sentry/node";
-import { NextApiRequest, NextApiResponse } from "next";
+import { Application, Request, Response } from "express";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import AtlassianProvider from "next-auth/providers/atlassian";
@@ -38,8 +36,12 @@ const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
 const ACCOUNTS_WITHOUT_USER_UPDATES = ["atlassian"];
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  return NextAuth(req, res, {
+const nextAuthMountPath = "/api/auth";
+
+function nextAuthMiddleware(req: Request, res: Response) {
+  req.query.nextauth = req.path.slice(1).split("/");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return NextAuth(req as any, res as any, {
     secret: process.env.AUTH_SECRET,
     jwt: {
       secret: process.env.AUTH_JWT_TOKEN_SECRET,
@@ -275,4 +277,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       getSessionAndUser: () => null,
     },
   });
-};
+}
+
+export default function (app: Application) {
+  app.use(nextAuthMountPath, (req, res) => {
+    nextAuthMiddleware(req, res);
+  });
+}

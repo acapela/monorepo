@@ -7,7 +7,7 @@ import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
 import axios from "axios";
 import cookieParser from "cookie-parser";
-import express, { Application, Request, json } from "express";
+import express, { Application, Request, json, urlencoded } from "express";
 import securityMiddleware from "helmet";
 
 import { db } from "@aca/db";
@@ -21,6 +21,7 @@ import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as linearRoutes } from "./linear/router";
+import nextAuth from "./nextAuth";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
@@ -66,6 +67,7 @@ function setupMiddleware(app: Application): void {
   });
   app.use(cookieParser());
   app.use(json());
+  app.use(urlencoded({ extended: true })); // needed for next-auth
 }
 
 function setupRoutes(app: Application): void {
@@ -80,6 +82,8 @@ function setupRoutes(app: Application): void {
     linearRoutes,
     atlassianRoutes
   );
+
+  nextAuth(app);
 
   app.use(sentryTunnel);
 }
