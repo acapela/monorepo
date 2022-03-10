@@ -1,6 +1,7 @@
+import "@sentry/electron/preload";
+
 import "@aca/desktop/lib/env"; // import for side effects
 
-import * as Sentry from "@sentry/electron/renderer";
 import { IpcRendererEvent, clipboard, contextBridge, ipcRenderer } from "electron";
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
@@ -8,13 +9,6 @@ import { AppEnvData } from "@aca/desktop/envData";
 
 const appEnvJSON = process.argv.pop();
 const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
-
-if (!appEnv.isDev) {
-  Sentry.init({
-    dsn: appEnv.sentryDsn,
-    release: appEnv.version,
-  });
-}
 
 /**
  * This is what is published from electron api to browser.

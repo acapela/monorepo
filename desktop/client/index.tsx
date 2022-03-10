@@ -3,6 +3,7 @@ import "@aca/desktop/analytics";
 import { ApolloProvider } from "@apollo/client";
 import * as Sentry from "@sentry/electron/renderer";
 import { MotionConfig } from "framer-motion";
+import { autorun } from "mobx";
 import React, { useEffect } from "react";
 import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
@@ -11,6 +12,7 @@ import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
 import { initializeListNotificationsScheduling } from "@aca/desktop/domains/systemNotifications/listScheduler";
+import { accountStore } from "@aca/desktop/store/account";
 import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
@@ -34,6 +36,13 @@ if (!appEnv.isDev) {
     dsn: appEnv.sentryDsn,
     release: appEnv.version,
     debug: true,
+  });
+
+  autorun(() => {
+    const { user } = accountStore;
+    if (user) {
+      Sentry.setUser({ id: user.id, email: user.email, name: user.name });
+    }
   });
 }
 
