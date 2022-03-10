@@ -212,6 +212,9 @@ export function setupSlackCapture(app: SlackApp) {
   });
 
   app.event("reaction_added", async ({ event }) => {
+    if (!event.user) {
+      return;
+    }
     const user = await findUserForSlackInstallation(event.user);
     if (user?.is_slack_auto_resolve_enabled && event.item.type === "message") {
       const { channel, ts } = event.item;
