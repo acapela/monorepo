@@ -14,6 +14,7 @@ import {
 } from "@aca/gql";
 
 import { notificationNotionCommentedEntity } from "./commented";
+import { notionSpaceEntity } from "./notionSpace";
 import { notificationNotionUserInvitedEntity } from "./userInvited";
 import { notificationNotionUserMentionedEntity } from "./userMentioned";
 
@@ -96,6 +97,12 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
       },
       get notification() {
         return getEntity(notificationEntity).findById(notificationNotion.notification_id);
+      },
+      get workspaceName() {
+        if (!notificationNotion.notion_space_id) {
+          return;
+        }
+        return getEntity(notionSpaceEntity).assertFindById(notificationNotion.notion_space_id).name;
       },
     };
 
