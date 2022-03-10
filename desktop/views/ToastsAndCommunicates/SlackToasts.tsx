@@ -11,14 +11,14 @@ export const SlackToasts = observer(() => {
   return (
     <>
       {slackInstallations
-        ?.filter((install) => Boolean(install && !install?.hasAllScopes))
+        ?.filter((install) => Boolean(install && !install.hasAllScopes))
         .map((install) => (
           <Toast
             key={install.id}
             title={`Missing Slack permissions for ${install.team_name}`}
             description="A permission update is needed to make the Slack integration work smoothly"
             action={connectSlack}
-            target={install}
+            target={{ id: install.team_id, name: install.team_name, kind: "account" }}
           />
         ))}
     </>

@@ -100,10 +100,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   installationStore: {
     async storeInstallation(installation) {
       const { userId } = parseMetadata(installation);
-      if (!userId) {
-        return;
+      if (userId) {
+        await storeUserSlackInstallation(userId, installation);
       }
-      await storeUserSlackInstallation(userId, installation);
     },
 
     async fetchInstallation(query) {

@@ -59,14 +59,15 @@ export const slackIntegrationClient: IntegrationClient = {
   async connect(teamId) {
     const url = await querySlackInstallationURL(teamId);
 
-    const getInstallationsCount = () => accountStore.user?.slackInstallations.count ?? 0;
-    const initialInstallationsCount = getInstallationsCount();
+    const getFullInstallationsCount = () =>
+      accountStore.user?.slackInstallations.query({ hasAllScopes: true }).count ?? 0;
+    const initialInstallationsCount = getFullInstallationsCount();
 
     const closeSlackInstallWindow = await connectSlackBridge({ url });
 
     return new Promise<void>((resolve) => {
       const stop = autorun(() => {
-        if (initialInstallationsCount < getInstallationsCount()) {
+        if (initialInstallationsCount < getFullInstallationsCount()) {
           if (closeSlackInstallWindow) {
             closeSlackInstallWindow();
             trackEvent("Slack Integration Added");
