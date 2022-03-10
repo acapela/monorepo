@@ -112,7 +112,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
               url: commentUrl,
               from,
               // TODO: make another api call to get the display names of all the mentioned users
-              text_preview: payload.comment?.body.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
+              text_preview: payload.comment?.body?.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
             },
           },
           issue_id: payload.issue.id,
@@ -182,7 +182,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
                   url: issueUrl,
                   from: payload.user.displayName ?? "",
                   // TODO: make another api call to get the display names of all the mentioned users
-                  text_preview: payload.issue.fields.description.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
+                  text_preview: payload.issue.fields.description?.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
                 },
               },
               issue_id: payload.issue.id,
@@ -374,7 +374,7 @@ async function handleJiraIssueCreated(payload: JiraWebhookPayload) {
               url: issueUrl,
               from: accountThatCreatedIssue.displayName ?? "",
               // TODO: make another api call to get the display names of all the mentioned users
-              text_preview: payload.issue.fields.description.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
+              text_preview: payload.issue.fields.description?.replaceAll(EXTRACT_MENTIONED_ACCOUNT_REGEX, "@..."),
             },
           },
           issue_id: payload.issue.id,

@@ -65,7 +65,7 @@ interface Comment {
   author: AtlassianUser;
   updateAuthor: AtlassianUser;
 
-  body: string; //"huh? naaa naa [~accountid:70121:cb8ddaa4-9bec-41fa-843f-34675d008b41] ",
+  body: string | null; //"huh? naaa naa [~accountid:70121:cb8ddaa4-9bec-41fa-843f-34675d008b41] ",
 
   created: string; //"2022-03-01T14:19:49.467+0000",
   updated: string; //"2022-03-01T14:22:04.959+0000",
@@ -108,7 +108,7 @@ interface Fields {
   summary: string; //"this is the issue title";
   creator: AtlassianUser;
   reporter: AtlassianUser;
-  description: string; //"Jira Issue Description";
+  description: string | null; //"Jira Issue Description";
   assignee: AtlassianUser | null;
 
   statuscategorychangedate: string; //"2022-02-28T17:33:34.959+0000";
