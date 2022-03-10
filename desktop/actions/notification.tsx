@@ -108,21 +108,7 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  canApply: isNotFocusingPreviewAnd((ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    if (notification) {
-      return !notification.isResolved;
-    }
-
-    const group = ctx.getTarget("group");
-
-    if (group) {
-      return group.notifications.some((notification) => !notification.isResolved);
-    }
-
-    return false;
-  }),
+  canApply: isNotFocusingPreviewAnd(() => true),
   handler(context) {
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
