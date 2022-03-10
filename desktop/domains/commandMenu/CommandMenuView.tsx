@@ -1,9 +1,11 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
+import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import {
   getIsLastArrayElement,
   getLastElementFromArray,
@@ -29,6 +31,7 @@ interface Props {
 
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
   const { actionContext } = session;
@@ -106,10 +109,17 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     }
   });
 
+  useClickAway(
+    bodyRef,
+    action(() => {
+      commandMenuStore.session = null;
+    })
+  );
+
   return (
     <BodyPortal>
       <UICover>
-        <UIBody>
+        <UIBody ref={bodyRef}>
           <UIHead>
             <CommandMenuTargetLabel session={session} />
           </UIHead>
