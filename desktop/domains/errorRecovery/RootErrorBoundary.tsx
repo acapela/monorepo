@@ -12,5 +12,7 @@ const ErrorRecoveryView = () => (
 );
 
 export const RootErrorBoundary = ({ children }: { children: React.ReactNode }) => (
-  <Sentry.ErrorBoundary fallback={ErrorRecoveryView}>{children}</Sentry.ErrorBoundary>
+  <Sentry.ErrorBoundary fallback={ErrorRecoveryView} beforeCapture={(scope) => scope.setTag("severity", "crash")}>
+    {children}
+  </Sentry.ErrorBoundary>
 );
