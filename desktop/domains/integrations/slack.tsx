@@ -10,11 +10,14 @@ import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 
+import { makeLogger } from "../dev/makeLogger";
 import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
 import { IntegrationClient } from "./types";
 
 const SLACK_URL_SCHEME = "slack://";
+
+const log = makeLogger("SlackIntegrationClient");
 
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -34,14 +37,14 @@ export const slackIntegrationClient: IntegrationClient = {
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
     if (inner?.__typename !== "notification_slack_message") {
-      console.error("Something went wrong getting inner slack notification");
+      log.error("Something went wrong getting inner slack notification. Instead got: ", JSON.stringify(inner, null, 2));
       return {
         fallback: notification.url,
       };
     }
 
     if (!inner.slackTeamId) {
-      console.error("No slack team id");
+      log.warn("No slack team id");
       return {
         fallback: notification.url,
       };
