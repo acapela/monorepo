@@ -11,11 +11,12 @@ VERSION=$1
 
 echo "[caddy]: running frontend build"
 yarn frontend:build
+cp Caddyfile ./frontend
 
 echo "[caddy] building image..."
 CADDY_IMAGE_NAME="eu.gcr.io/meetnomoreapp/caddy"
 CADDY_IMAGE_NAME_VERSION="$CADDY_IMAGE_NAME:$VERSION"
-docker build -t "$CADDY_IMAGE_NAME_VERSION" -f ./caddy.dockerfile .
+docker build -t "$CADDY_IMAGE_NAME_VERSION" -f ./caddy.dockerfile ./frontend
 docker tag "$CADDY_IMAGE_NAME_VERSION" "$CADDY_IMAGE_NAME"
 
 echo "[monorepo] building image..."
