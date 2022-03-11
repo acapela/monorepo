@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "parcel serve -p 3030",
-    "build": "rm -rf dist/ && parcel build",
-    "start": "berglas exec -- next start -p 3030"
+    "dev": "rm -rf dist/ && parcel watch -p 3030",
+    "build": "rm -rf dist/ && parcel build --no-source-maps",
+    "start": "serve -p 3030 -s ./dist/"
   },
   "source": "src/index.html",
   "peerDependencies": {
@@ -40,6 +40,7 @@
     "next-auth": "npm:next-auth-danger-link@4.1.2-714d80",
     "react-chicane": "^0.7.0",
     "react-popper": "^2.2.5",
+    "serve": "^13.0.2",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
     "validator": "^13.7.0"

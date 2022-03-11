@@ -12,7 +12,7 @@ export default function LoginPage(): JSX.Element {
 
   useEffect(() => {
     getSession().then((s) => setUser(s));
-  });
+  }, []);
 
   const { search } = Router.getLocation();
   // Runs `singIn` in client side

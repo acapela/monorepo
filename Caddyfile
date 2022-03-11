@@ -35,16 +35,18 @@ handle_path /healthz {
 }
 
 @return-to-app {
-  header_regexp login Cookie next-auth.session-token=(\S+)
-  path /app/return-to-app
+	path /app/return-to-app
+	header_regexp login Cookie next-auth.session-token=(\S+)
 }
-redir @return-to-app "acapela://authorize/{re.login.1}"
+handle @return-to-app {
+	redir "acapela://authorize/{re.login.1}"
+}
 
-# this regexp matches /[teamSlug]/topic/[topicSlug]/[topicId]
-@legacyTopic path_regexp topic ^\/(?P<teamSlug>.*)\/topic\/(?P<topicSlug>.*)\/(?P<topicId>.*)$
-redir @legacyTopic /{re.topic.teamSlug}/{re.topic.topicSlug}/{re.topic.topicId}
-
-reverse_proxy {$FRONTEND_HOST}
+handle {
+	root * /var/www/frontend
+	file_server
+	try_files {path} /index.html
+}
 
 log {
 	level ERROR
