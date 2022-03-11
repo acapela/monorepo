@@ -68,7 +68,7 @@
     "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
-    "*.{md,yaml,yml,graphql,json}": "prettier --write",
+    "*.{md,yaml,yml,graphql,json,html}": "prettier --write",
     "*.{js,jsx,ts,tsx}": [
       "eslint --max-warnings=0 --fix",
       "prettier --write"
