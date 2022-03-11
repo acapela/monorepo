@@ -5,9 +5,9 @@
   },
   "display_information": {
     "name": "Acapela",
-    "description": "Capture and prioritise requests",
     "background_color": "#000000",
-    "long_description": "Acapela is a lightweight task manager that works with tools like Slack and Notion. It captures and prioritises requests for your team so they can focus on the things that matter."
+    "description": "All your work notifications in one inbox",
+    "long_description": "Acapela lets you take control of your notifications. Capture, filter and action them all from one place. Unblock your team twice as fast."
   },
   "oauth_config": {
     "redirect_urls": ["https://app.acape.la/api/backend/slack/oauth_redirect", "https://app.acape.la"],
