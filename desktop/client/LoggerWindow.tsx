@@ -10,14 +10,12 @@ import { theme } from "@aca/ui/theme";
 
 export const LoggerWindow = observer(function LoggerWindow() {
   const [allLogs, { push: addLog, set: setLogEntryList }] = useList<LogEntry>([]);
-  // const [filteredLogs, { push: addFilterLog, filter: filterLogs }] = useList<LogEntry>([]);
   const [filteredPrefixes, { set: setFilteredPrefixes }] = useList<string>([]);
 
   useEffectOnce(() => {
     getAllLogsBridge().then((logs) => setLogEntryList(logs));
     logStorage.subscribe((entry) => {
       addLog(entry);
-      // addFilterLog(entry);
     });
   });
 
