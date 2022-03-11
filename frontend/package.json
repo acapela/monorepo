@@ -60,9 +60,6 @@
     "identity-obj-proxy": "^3.0.0",
     "msw": "^0.36.8",
     "parcel": "^2.3.2",
-    "postcss": "^8.4.6",
-    "postcss-focus-visible": "^6.0.3",
-    "postcss-preset-env": "^7.3.0",
     "typescript": "*",
     "whatwg-fetch": "^3.6.2"
   }
