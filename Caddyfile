@@ -34,6 +34,12 @@ handle_path /healthz {
 	reverse_proxy {$FRONTEND_HOST}
 }
 
+@return-to-app {
+  header_regexp login Cookie next-auth.session-token=(\S+)
+  path /app/return-to-app
+}
+redir @return-to-app "acapela://authorize/{re.login.1}"
+
 # this regexp matches /[teamSlug]/topic/[topicSlug]/[topicId]
 @legacyTopic path_regexp topic ^\/(?P<teamSlug>.*)\/topic\/(?P<topicSlug>.*)\/(?P<topicId>.*)$
 redir @legacyTopic /{re.topic.teamSlug}/{re.topic.topicSlug}/{re.topic.topicId}
