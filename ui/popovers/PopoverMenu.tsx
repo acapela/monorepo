@@ -1,5 +1,4 @@
 import { runInAction } from "mobx";
-import Link from "next/link";
 import React, { ReactNode, RefObject, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
@@ -79,9 +78,9 @@ export const PopoverMenu = styled<Props>(
 
             if ("href" in option) {
               return (
-                <Link key={option.key ?? option.label} href={option.href} passHref>
+                <a key={option.key ?? option.label} href={option.href}>
                   <a>{labelNode}</a>
-                </Link>
+                </a>
               );
             }
 

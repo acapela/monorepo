@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
-
-import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { Router } from "@aca/frontend/src/router";
+import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 
 import { isKnownError } from "./knownErrors";
@@ -11,11 +10,11 @@ interface Props {
 }
 
 export function SmartErrorView({ error, resetError }: Props) {
-  const { pathname } = useRouter();
+  const { path } = Router.getLocation();
 
   useDependencyChangeEffect(() => {
     resetError();
-  }, [pathname]);
+  }, [path]);
 
   if (isKnownError(error)) {
     return (
