@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
+import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
@@ -16,7 +17,7 @@ interface DefineListConfig {
   name: string;
   icon?: ReactNode;
   isCustom?: boolean;
-  filter?: (notification: NotificationEntity) => boolean;
+  filter?: EntityFilterInputByDefinition<typeof notificationEntity>;
   getNotifications?: () => NotificationEntity[];
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;

@@ -1,4 +1,4 @@
-import { action, autorun, makeAutoObservable, observable, runInAction } from "mobx";
+import { action, autorun, computed, makeAutoObservable, observable, runInAction } from "mobx";
 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
@@ -48,13 +48,13 @@ export const uiStore = makeAutoObservable({
     return uiStore.focusedTarget as T | null;
   },
   useFocus<T>(item: T, keyGetter?: (item: T | null) => string | undefined) {
-    function getIsFocused() {
+    const isFocusedComputed = computed(function getIsFocused() {
       if (!keyGetter) return item === uiStore.focusedTarget;
 
       return keyGetter(item) === keyGetter(uiStore.focusedTarget as T | null);
-    }
+    });
 
-    const isFocused = getIsFocused();
+    const isFocused = isFocusedComputed.get();
 
     return isFocused;
   },
