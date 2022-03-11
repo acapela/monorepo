@@ -39,7 +39,6 @@ services:
     restart: always
     environment:
       BACKEND_HOST: http://host.docker.internal:1337
-      FRONTEND_HOST: http://host.docker.internal:3030
       HASURA_HOST: http://host.docker.internal:8080
     ports:
       - "3000:3000"
