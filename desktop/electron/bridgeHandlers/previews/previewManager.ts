@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow } from "electron";
+import { BrowserView, BrowserWindow, Cookie, session } from "electron";
 import { isEqual } from "lodash";
 
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
@@ -80,6 +80,13 @@ export function createPreviewManager(url: string) {
     onBlurRequest.publish();
   });
 
+  const handleCookieChange = (event: unknown, cookie: Cookie) => {
+    if (cookie.domain == "app.slack.com" && cookie.name == "d") {
+      browserView.webContents.reload();
+    }
+  };
+  session.defaultSession.cookies.on("changed", handleCookieChange);
+
   listenToWebContentsFocus(browserView.webContents, (isFocused) => {
     browserView.webContents.setAudioMuted(!isFocused);
     onFocusChange.publish(isFocused);
@@ -110,7 +117,8 @@ export function createPreviewManager(url: string) {
     assertNotDestroyed("Already destroyed");
     isDestroyed = true;
 
-    //
+    session.defaultSession.cookies.off("changed", handleCookieChange);
+
     browserView.webContents.stop();
     if (currentWindowAttachment) {
       detach();
