@@ -45,6 +45,7 @@ services:
       - "3000:3000"
     volumes:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/frontend/dist:/var/www/frontend
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
 
 volumes:
