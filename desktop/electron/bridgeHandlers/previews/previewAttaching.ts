@@ -1,9 +1,9 @@
-import { BrowserView, BrowserWindow } from "electron";
-
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
+import { BrowserView, BrowserWindow } from "electron";
 
-import { expectedPreviewPosition } from "./preloadingWindow";
+import { expectedPreviewPosition } from "./position";
+import { getPreloadingWindow } from "./preloadingWindow";
 
 const log = makeLogger("BrowserView");
 
@@ -54,7 +54,7 @@ export function attachBrowserViewToWindow(
 
     targetWindow.off("resize", updateViewPositionAndSize);
     targetWindow.removeBrowserView(view);
-    // getPreloadingWindow().addBrowserView(view);
+    getPreloadingWindow().addBrowserView(view);
 
     return true;
   }

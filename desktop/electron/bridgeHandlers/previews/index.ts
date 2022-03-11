@@ -5,11 +5,10 @@ import {
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
 
-import { addPreviewWarmupRequest, getAlivePreviewManager, setPreloadingPriority } from "./previewQueue";
+import { getPreviewManager } from "./previewQueue";
 
 const log = makeLogger("BrowserView");
 
@@ -18,20 +17,12 @@ const log = makeLogger("BrowserView");
  */
 export function initPreviewHandler() {
   requestPreviewPreload.handle(async ({ url, priority }) => {
-    setPreloadingPriority(url, priority);
-    const { stopRequesting } = addPreviewWarmupRequest(url);
+    const { cancel } = getPreviewManager(url);
 
-    return stopRequesting;
+    return cancel;
   });
 
   requestAttachPreview.handle(async ({ url, position }, event) => {
-    /**
-     * When attaching - always demand top-priority for preloading
-     *
-     * This avoids situation when eg. in focus mode 'previous' item has bigger loading priority
-     * than current one.
-     */
-    setPreloadingPriority(url, PreviewLoadingPriority.current);
     assert(event, "Show browser view can only be called from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
@@ -39,18 +30,19 @@ export function initPreviewHandler() {
 
     log.debug("will attach view", { url, position });
 
-    const { stopRequesting, manager } = addPreviewWarmupRequest(url);
+    const { cancel, item: manager } = getPreviewManager(url);
 
     const detachFromWindow = manager.attachToWindow(targetWindow, position);
 
     return () => {
-      stopRequesting();
+      // !important - detach should be called first (before cancel). Cancel might destroy browser view
       detachFromWindow();
+      cancel();
     };
   });
 
   updatePreviewPosition.handle(async ({ position, url }) => {
-    const aliveManager = getAlivePreviewManager(url);
+    const aliveManager = getPreviewManager.getExistingOnly(url);
 
     if (!aliveManager) return;
 
@@ -64,7 +56,7 @@ export function initPreviewHandler() {
   });
 
   requestPreviewFocus.handle(async ({ url }) => {
-    const aliveManager = getAlivePreviewManager(url);
+    const aliveManager = getPreviewManager.getExistingOnly(url);
 
     if (!aliveManager) return;
 

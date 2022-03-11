@@ -1,180 +1,94 @@
-import { sortBy, throttle } from "lodash";
-
 import { removeElementFromArray } from "@aca/shared/array";
-import { assert, unsafeAssert } from "@aca/shared/assert";
-import { createChannel } from "@aca/shared/channel";
-import { createTimeout } from "@aca/shared/time";
-import { Cleanup } from "@aca/shared/types";
 
-interface WarmupQueueConfig<T> {
-  maxItems: number;
-  initialize: (item: T) => void;
-  cleanup: (item: T) => void;
-  /**
-   * If every requestors stop requesting some warmup - how long to wait before actually cleaning up
-   * the item.
-   */
-  timeout: number;
-  /**
-   * Items are not initialized instantly. They wait a brief moment to see if more were added together
-   * with them. If so, it will order them by priority and call init's in this order.
-   */
-  getPriority?: (item: T) => number;
-}
-
-interface WarmupRequestSession<T> {
-  item: T;
+interface MemoizeWithCleanupConfig<Args extends any[], I> {
+  keyGetter: (...args: Args) => string;
+  cleanup: (item: I) => void;
 }
 
 /**
- * Goal of warmup queue to allow requesting given items to be 'warm' (aka preloaded).
- *
- * - it has max count of 'warmed' items
- * - each item is initialized / cleaned up on being added or pushed away from list
- * - each time item is requested it is added to start
- *   - if it was already present - it is moved to start
- * - each item can be requested several times. As long as some requester does not 'give up' - it
- * will not be removed (unless pushed away by other, newer items)
+ * We need to keep it as object instead of just 'key' string so we have session reference that is not primitive
  */
-export function warmupQueue<T>({ maxItems, initialize, cleanup, getPriority, timeout }: WarmupQueueConfig<T>) {
-  type Session = WarmupRequestSession<T>;
-  const queueList = queueWithMaxSize<T>(maxItems);
-  const requestSessions: Session[] = [];
-
-  function isItemByAnySessionRequested(item: T) {
-    return requestSessions.some((session) => session.item === item);
-  }
-
-  const pendingInitializationItems = new Set<T>();
-
-  const flushInitialize = throttle(
-    () => {
-      const itemsToFlus = Array.from(pendingInitializationItems);
-      pendingInitializationItems.clear();
-
-      const itemsSortedByPriority = sortBy(itemsToFlus, (item) => {
-        return getPriority?.(item) ?? Number.MAX_SAFE_INTEGER;
-      });
-
-      itemsSortedByPriority.forEach((item) => {
-        initialize(item);
-      });
-    },
-    20,
-    { leading: false, trailing: true }
-  );
-
-  queueList.onAdded.subscribe((item) => {
-    pendingInitializationItems.add(item);
-    flushInitialize();
-    initialize(item);
-  });
-
-  queueList.onRemoved.subscribe((item) => {
-    pendingInitializationItems.delete(item);
-    cleanup(item);
-  });
-
-  const cleanupsMap = new Map<T, () => void>();
-
-  function cancelCleanup(item: T) {
-    const cancelExisting = cleanupsMap.get(item);
-
-    if (cancelExisting) {
-      cancelExisting();
-      cleanupsMap.delete(item);
-    }
-  }
-
-  function scheduleMaybeCleanup(item: T) {
-    cancelCleanup(item);
-
-    const cancelNew = createTimeout(() => {
-      if (isItemByAnySessionRequested(item)) return;
-
-      queueList.remove(item);
-    }, timeout);
-    //
-    cleanupsMap.set(item, cancelNew);
-  }
-
-  function cancelSession(session: Session) {
-    assert(requestSessions.includes(session), "Already cancelled or never present");
-
-    removeElementFromArray(requestSessions, session);
-
-    scheduleMaybeCleanup(session.item);
-  }
-
-  function request(item: T): Cleanup {
-    cancelCleanup(item);
-    const session: Session = { item };
-    requestSessions.push(session);
-    queueList.add(item);
-
-    return () => {
-      cancelSession(session);
-    };
-  }
-
-  return { request };
+interface MemoizeSession {
+  key: string;
 }
 
-function queueWithMaxSize<T>(maxSize: number) {
-  const onAdded = createChannel<T>();
-  const onRemoved = createChannel<T>();
+export function memoizeWithCleanup<Args extends any[], I>(
+  getter: (...args: Args) => I,
+  { cleanup, keyGetter }: MemoizeWithCleanupConfig<Args, I>
+) {
+  const aliveSessions: MemoizeSession[] = [];
+  const aliveItemsMap = new Map<string, I>();
 
-  const items: T[] = [];
+  function cancelSession(session: MemoizeSession) {
+    const { key } = session;
 
-  function add(item: T) {
-    if (items.includes(item)) {
-      arrayMoveItemToStart(items, item);
+    if (!aliveSessions.includes(session)) {
+      console.warn(`Trying to cleanup session that is not existing or already removed`);
       return;
     }
 
-    items.unshift(item);
+    removeElementFromArray(aliveSessions, session);
 
-    onAdded.publish(item);
+    const isOtherSessionForThisKeyAlive = aliveSessions.some((aliveSession) => aliveSession.key === key);
 
-    if (items.length > maxSize) {
-      const removedItem = items.pop();
-      unsafeAssert(removedItem);
-      onRemoved.publish(removedItem);
+    if (isOtherSessionForThisKeyAlive) return;
+
+    const aliveItemToClean = aliveItemsMap.get(key);
+
+    if (aliveItemToClean === undefined) {
+      console.error(`Corrupted state. Alive item should be present but is not for key ${key}`);
+      return;
     }
+
+    cleanup(aliveItemToClean);
+    aliveItemsMap.delete(key);
   }
 
-  function remove(item: T) {
-    const didRemove = removeElementFromArray(items, item);
+  function getOrReuseItem(args: Args) {
+    const key = keyGetter(...args);
 
-    if (didRemove) {
-      //
-      onRemoved.publish(item);
+    const existingItem = aliveItemsMap.get(key);
+
+    if (existingItem !== undefined) {
+      return existingItem;
     }
+
+    const newItem = getter(...args);
+    aliveItemsMap.set(key, newItem);
+
+    return newItem;
   }
 
-  return {
-    add,
-    remove,
-    onAdded,
-    onRemoved,
-  };
-}
+  function request(...args: Args) {
+    const key = keyGetter(...args);
 
-function arrayMoveByIndex<T>(arr: T[], old_index: number, new_index: number) {
-  if (new_index >= arr.length) {
-    let k = new_index - arr.length + 1;
-    while (k--) {
-      arr.push(undefined as unknown as T);
+    const session: MemoizeSession = {
+      key,
+    };
+
+    aliveSessions.push(session);
+
+    const item = getOrReuseItem(args);
+
+    function cancel() {
+      cancelSession(session);
     }
+
+    return { item, cancel };
   }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-  return arr; // for testing
-}
 
-function arrayMoveItemToStart<T>(arr: T[], item: T) {
-  const itemIndex = arr.indexOf(item);
+  /**
+   * Will get existing warm-memoized item if it exists.
+   *
+   * Note: will not 'request' given item being created, thus will also not return 'stop requesting' callback.
+   */
+  function getExistingOnly(...args: Args) {
+    const key = keyGetter(...args);
 
-  if (itemIndex === -1) return false;
+    return aliveItemsMap.get(key) ?? null;
+  }
 
-  arrayMoveByIndex(arr, itemIndex, 0);
+  request.getExistingOnly = getExistingOnly;
+
+  return request;
 }

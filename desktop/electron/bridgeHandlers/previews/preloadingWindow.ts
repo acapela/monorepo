@@ -1,12 +1,11 @@
-import { BrowserView, BrowserWindow } from "electron";
-import { isEqual, memoize } from "lodash";
-import { autorun, observable } from "mobx";
-
-import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { Point } from "@aca/shared/point";
+import { BrowserView, BrowserWindow } from "electron";
+import { memoize } from "lodash";
+import { autorun } from "mobx";
 
+import { expectedPreviewPosition } from "./position";
 import { updateBrowserViewSize } from "./previewAttaching";
 
 /**
@@ -56,7 +55,7 @@ function mirrorWindowSize(sourceWindow: BrowserWindow, targetWindow: BrowserWind
 export const getPreloadingWindow = memoize(() => {
   const mainWindowSize = getWindowSize(appState.mainWindow ?? undefined);
 
-  const window = new BrowserWindow({
+  const preloadingWindow = new BrowserWindow({
     opacity: 0,
     transparent: false,
     alwaysOnTop: true,
@@ -68,7 +67,7 @@ export const getPreloadingWindow = memoize(() => {
   });
 
   // We don't want this window to interfere with user actions in any way
-  window.setIgnoreMouseEvents(true);
+  preloadingWindow.setIgnoreMouseEvents(true);
 
   // Always mirror main window size
   autorunEffect(() => {
@@ -76,7 +75,7 @@ export const getPreloadingWindow = memoize(() => {
 
     if (!mainWindow) return;
 
-    return mirrorWindowSize(mainWindow, window);
+    return mirrorWindowSize(mainWindow, preloadingWindow);
   });
 
   // On any resize of window (caused by mirroring main window - update all views instantly)
@@ -84,31 +83,20 @@ export const getPreloadingWindow = memoize(() => {
   autorun(() => {
     // We're running in mobx effect, as we're reading from expectedPreviewPosition which might change
     // If that happens, we also want to update views size to be exactly the same as main window might require
-    updateAllViews();
+    preparePositionForAllViews();
   });
-  function updateAllViews() {
+
+  function preparePositionForAllViews() {
     const expectedPosition = expectedPreviewPosition.get();
 
-    window.getBrowserViews().forEach((view) => {
-      updateBrowserViewSize(view, window, expectedPosition);
+    preloadingWindow.getBrowserViews().forEach((view) => {
+      updateBrowserViewSize(view, preloadingWindow, expectedPosition);
     });
   }
 
-  window.on("resize", () => updateAllViews());
+  preloadingWindow.on("resize", () => preparePositionForAllViews());
 
-  return window;
-});
-
-/**
- * Before first view is requested (aka Focus mode opened) we need to 'estimate' position of view
- * We know how our UI look, so this value should match.
- *
- * Note: If we change UI - we need to update this item, to avoid flicker of first 'focus mode open'
- */
-export const DEFAULT_EXPECTED_PREVIEW_POSITION: PreviewPosition = { top: 138, left: 72, bottom: 38, right: 0 };
-
-export const expectedPreviewPosition = observable.box<PreviewPosition>(DEFAULT_EXPECTED_PREVIEW_POSITION, {
-  equals: isEqual,
+  return preloadingWindow;
 });
 
 export function attachViewToPreloadingWindow(view: BrowserView) {
