@@ -24,11 +24,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: frontend-default
+          livenessProbe:
+            httpGet:
+              port: 3000
+              path: /
+            periodSeconds: 5
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               port: 3000
               path: /
-            initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 3
             timeoutSeconds: 5
+          startupProbe:
+            httpGet:
+              port: 3000
+              path: /
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 15

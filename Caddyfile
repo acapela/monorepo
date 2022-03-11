@@ -29,11 +29,6 @@ handle /sentry-tunnel {
 	reverse_proxy {$BACKEND_HOST}
 }
 
-handle_path /healthz {
-	rewrite * /api/healthz
-	reverse_proxy {$FRONTEND_HOST}
-}
-
 @return-to-app {
 	path /app/return-to-app
 	header_regexp login Cookie next-auth.session-token=(\S+)
