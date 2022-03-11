@@ -15,9 +15,14 @@ import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
 export function findUserForSlackInstallation(slackUserId: string) {
-  return db.user.findFirst({
-    where: { user_slack_installation: { some: { data: { path: ["user", "id"], equals: slackUserId } } } },
-  });
+  try {
+    return db.user.findFirst({
+      where: { user_slack_installation: { some: { data: { path: ["user", "id"], equals: slackUserId } } } },
+    });
+  } catch (error) {
+    logger.warn(error, `Error while querying for slack user ${slackUserId}`);
+    return null;
+  }
 }
 
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
