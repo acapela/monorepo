@@ -1,9 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { openInNewTab } from "@aca/frontend/utils/openInNewTab";
-import { PageMeta } from "@aca/frontend/utils/PageMeta";
+import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
+import { openInNewTab } from "@aca/frontend/src/utils/openInNewTab";
 import { Button } from "@aca/ui/buttons/Button";
 
 type GitHubAsset = {
@@ -30,7 +29,6 @@ export default function DownloadPage(): JSX.Element {
 
   return (
     <>
-      <PageMeta title="Download Acapela" />
       <FocusedActionLayout title={`Download Acapela`} description={`Acapela helps you manage all your notifications`}>
         <Button kind="primary" onClick={handleDownload} isDisabled={downloadURL === null}>
           Download (MacOS)

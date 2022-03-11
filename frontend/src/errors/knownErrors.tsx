@@ -1,6 +1,6 @@
+import { signOut } from "next-auth/react";
 import { ReactNode } from "react";
 
-import { logout } from "@aca/frontend/auth/logout";
 import { Button } from "@aca/ui/buttons/Button";
 
 interface CommonErrorAdditionalInfo {
@@ -22,7 +22,7 @@ export const knownErrors = {
         <Button
           kind="primary"
           onClick={() => {
-            logout();
+            signOut({ callbackUrl: "/" });
           }}
         >
           Login

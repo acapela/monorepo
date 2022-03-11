@@ -1,5 +1,7 @@
-import { GoogleLoginButton } from "@aca/frontend/authentication/GoogleLoginButton";
-import { SlackLoginButton } from "@aca/frontend/authentication/SlackLoginButton";
+import React from "react";
+
+import { GoogleLoginButton } from "@aca/frontend/src/authentication/GoogleLoginButton";
+import { SlackLoginButton } from "@aca/frontend/src/authentication/SlackLoginButton";
 import { Maybe } from "@aca/shared/types";
 
 type LoginOptionsViewProps = {

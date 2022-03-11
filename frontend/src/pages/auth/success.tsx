@@ -1,10 +1,10 @@
-import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
-import { PageMeta } from "@aca/frontend/utils/PageMeta";
+import React from "react";
+
+import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
 
 export default function () {
   return (
     <>
-      <PageMeta title="Authentication Complete Acapela" />
       <FocusedActionLayout
         title={`Authentication Complete Acapela`}
         description="We have successfully linked the app with Acapela."

@@ -1,9 +1,9 @@
 import { noop } from "lodash";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { ErrorView } from "@aca/frontend/views/ErrorView";
+import { Router } from "@aca/frontend/src/router";
+import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { Button } from "@aca/ui/buttons/Button";
 import { TextInput } from "@aca/ui/forms/TextInput";
 import { addToast } from "@aca/ui/toasts/data";
@@ -64,8 +64,8 @@ const errors: { [error: string]: React.ComponentProps<typeof ErrorView> } = {
 };
 
 export default function ErrorPage() {
-  const { query } = useRouter();
-  const errCode = `${query.error}`;
+  const { search } = Router.getLocation();
+  const errCode = `${search.error}`;
   const error = errors[errCode];
 
   return error ? (

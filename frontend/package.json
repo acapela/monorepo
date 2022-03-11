@@ -3,19 +3,11 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "next dev -p 3030",
-    "dev:inspect": "NODE_OPTIONS='--inspect' next dev -p 3030",
-    "next:build": "next build",
-    "next:start": "dotenv -e ../.env -- next start -p 3030",
-    "next:build:analyze": "ANALYZE=true next build",
-    "server:start": "dotenv -e ../.env -- next start -p 3030",
-    "server:start:inspect": "NODE_OPTIONS='--inspect' next start -p 3030",
-    "start": "berglas exec -- next start -p 3030",
-    "start:ci": "./start-ci.sh",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "dev:find-dead-code": "next-unused"
+    "dev": "parcel serve -p 3030",
+    "build": "rm -rf dist/ && parcel build",
+    "start": "berglas exec -- next start -p 3030"
   },
+  "source": "src/index.html",
   "peerDependencies": {
     "axios": "*",
     "date-fns": "*",
@@ -45,15 +37,14 @@
     "http-proxy": "^1.18.1",
     "immer": "^9.0.12",
     "mobx-react": "^7.2.1",
-    "next": "^12.0.10",
     "next-auth": "npm:next-auth-danger-link@4.1.2-714d80",
+    "react-chicane": "^0.7.0",
     "react-popper": "^2.2.5",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.0.10",
     "@sentry/webpack-plugin": "^1.18.4",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
@@ -62,32 +53,16 @@
     "@types/validator": "^13.7.1",
     "autoprefixer": "^10.4.2",
     "babel-jest": "^27.4.6",
-    "babel-plugin-styled-components": "^2.0.2",
+    "babel-plugin-styled-components": "^2.0.6",
     "dotenv-cli": "^4.1.1",
     "eslint-plugin-react-hooks": "^4.3.0",
     "identity-obj-proxy": "^3.0.0",
     "msw": "^0.36.8",
-    "next-compose-plugins": "^2.2.1",
-    "next-transpile-modules": "^9.0.0",
-    "next-unused": "^0.0.6",
+    "parcel": "^2.3.2",
     "postcss": "^8.4.6",
     "postcss-focus-visible": "^6.0.3",
     "postcss-preset-env": "^7.3.0",
     "typescript": "*",
     "whatwg-fetch": "^3.6.2"
-  },
-  "next-unused": {
-    "debug": true,
-    "alias": {
-      "@aca/frontend": "src"
-    },
-    "include": [
-      "pages",
-      "src"
-    ],
-    "exclude": [],
-    "entrypoints": [
-      "pages"
-    ]
   }
 }
