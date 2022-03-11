@@ -1,3 +1,5 @@
+import React from "react";
+
 import { wait } from "@aca/shared/time";
 
 export default function ObscureErrorTestPage() {

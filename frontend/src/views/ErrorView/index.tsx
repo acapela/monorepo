@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { FocusedActionLayout } from "@aca/frontend/layouts/FocusedActionLayout/FocusedActionLayout";
+import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
 
 interface Props {
   title?: ReactNode;
