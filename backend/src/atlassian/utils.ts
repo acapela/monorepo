@@ -27,15 +27,6 @@ export async function deleteAllJiraWebhooks() {
     for (const { id: cloudId } of resources.filter(({ scopes }: any) =>
       scopes.some((scope: string) => scope.endsWith(":jira"))
     )) {
-      const { data: failedWebhooks } = await axios.get(
-        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook/failed`,
-        {
-          headers,
-        }
-      );
-
-      console.info({ failedWebhooks });
-
       const { data: previouslyCreatedWebhooks } = await axios.get(
         `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`,
         { headers }

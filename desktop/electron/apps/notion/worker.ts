@@ -243,7 +243,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const notificationProperties = getNotificationProperties(notification, recordMap);
     if (!notificationProperties) {
-      log.error(`Unable to handle notification ${id} of type ${notification.type}`);
+      log.error(`Unable to handle notification ${id} of type ${notification.type}`, JSON.stringify(recordMap, null, 2));
       continue;
     }
 
@@ -313,8 +313,6 @@ function getPageTitle(
 
     return collection.name[0][0];
   }
-
-  return;
 }
 
 function getNotificationProperties(

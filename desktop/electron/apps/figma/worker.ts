@@ -7,7 +7,6 @@ import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figm
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
-import { assert } from "@aca/shared/assert";
 
 import {
   FigmaCommentMessageMeta,
@@ -91,10 +90,10 @@ export async function getFigmaSessionData(): Promise<FigmaSessionData> {
     .map((cookie) => cookie.name + "=" + cookie.value)
     .join("; ");
 
-  assert(release_git_tag, "Cant find figma release tag", log.error);
-  assert(figmaUserId, "Cant find figma user is", log.error);
-  assert(trackingSessionId, "cant find tracking session id", log.error);
-  assert(cookie, "cant find figma cookie", log.error);
+  log.assert(release_git_tag, "Cant find figma release tag");
+  log.assert(figmaUserId, "Cant find figma user is");
+  log.assert(trackingSessionId, "cant find tracking session id");
+  log.assert(cookie, "cant find figma cookie");
 
   return {
     release_git_tag,
@@ -108,7 +107,7 @@ const isLessThan2WeeksOld = (isoString: string) => differenceInWeeks(new Date(),
 const isLessThan2DaysOld = (isoString: string) => differenceInDays(new Date(), new Date(isoString)) < 2;
 
 async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
-  console.info(`[Figma] Getting initial notifications`);
+  log.info(`Getting initial notifications`);
 
   // WARNING!
   // Figma notifications are all marked as read whenever this api call is made
