@@ -7,7 +7,7 @@
     "name": "Acapela",
     "background_color": "#000000",
     "description": "All your work notifications in one inbox",
-    "long_description": "Acapela lets you take control of your notifications. Capture, filter and action them all from one place. Unblock your team twice as fast."
+    "long_description": "Acapela lets you take control of your notifications. Capture, filter and action them all from one place. Unblock your team twice as fast with slick keyboard shortcuts in a high-performance desktop app."
   },
   "oauth_config": {
     "redirect_urls": ["https://app.acape.la/api/backend/slack/oauth_redirect", "https://app.acape.la"],
