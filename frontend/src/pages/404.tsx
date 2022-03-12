@@ -1,7 +1,6 @@
-import router from "next/router";
+import React from "react";
 
-import { ErrorView } from "@aca/frontend/views/ErrorView";
-import { routes } from "@aca/shared/routes";
+import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { Button } from "@aca/ui/buttons/Button";
 
 export default function ErrorPage() {
@@ -17,7 +16,7 @@ export default function ErrorPage() {
       <Button
         kind="primary"
         onClick={() => {
-          router.push(routes.appDownload);
+          window.location.href = "/app/download";
         }}
       >
         Go to the download page

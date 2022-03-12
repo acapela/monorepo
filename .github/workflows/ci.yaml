@@ -135,13 +135,6 @@ jobs:
         if: steps.semrel.outputs.version != ''
       - uses: ./.github/actions/node-and-yarn
         if: steps.semrel.outputs.version != ''
-      - uses: actions/cache@v2
-        with:
-          path: frontend/.next
-          key: ${{ runner.os }}-next-${{ github.sha }}
-        if: steps.semrel.outputs.version != ''
-      - run: yarn
-        if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |
           cp .env.sample .env

@@ -1,13 +1,17 @@
+import { uniq } from "lodash";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useMemo } from "react";
 import { useEffectOnce, useList } from "react-use";
 import styled from "styled-components";
 
 import { LogEntry, getAllLogsBridge, logStorage } from "@aca/desktop/bridge/logger";
+import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { theme } from "@aca/ui/theme";
 
 export const LoggerWindow = observer(function LoggerWindow() {
   const [allLogs, { push: addLog, set: setLogEntryList }] = useList<LogEntry>([]);
+  const [filteredPrefixes, { set: setFilteredPrefixes }] = useList<string>([]);
+
   useEffectOnce(() => {
     getAllLogsBridge().then((logs) => setLogEntryList(logs));
     logStorage.subscribe((entry) => {
@@ -15,16 +19,47 @@ export const LoggerWindow = observer(function LoggerWindow() {
     });
   });
 
+  const prefixes = useMemo(() => uniq(allLogs.map((l) => l.prefix)), [allLogs]);
+  const filteredLogs = useMemo(
+    () => allLogs.filter((log) => filteredPrefixes.length === 0 || filteredPrefixes.includes(log.prefix)),
+    [filteredPrefixes, allLogs]
+  );
+
+  function handleFilterChange(selectedPrefixes: string[]) {
+    setFilteredPrefixes(selectedPrefixes);
+  }
+
   return (
-    <UILogEntryList>
-      {allLogs.map((log) => (
-        <UILogEntry key={log.id}>
-          [{log.prefix}][{log.severity}][{log.timestamp}]: {log.text}
-        </UILogEntry>
-      ))}
-    </UILogEntryList>
+    <UIHolder>
+      <UIFilters>
+        <MultipleOptionsDropdown
+          items={prefixes}
+          keyGetter={(prefix) => prefix}
+          labelGetter={(prefix) => prefix}
+          selectedItems={filteredPrefixes}
+          onChange={handleFilterChange}
+        />
+      </UIFilters>
+      <UILogEntryList>
+        {filteredLogs.map((log) => (
+          <UILogEntry key={log.id}>
+            [{log.prefix}][{log.severity}][{log.timestamp}]: {log.text}
+          </UILogEntry>
+        ))}
+      </UILogEntryList>
+    </UIHolder>
   );
 });
+
+const UIHolder = styled.div`
+  width: 100%;
+`;
+
+const UIFilters = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
 
 const UILogEntryList = styled.div`
   width: 100%;
@@ -32,11 +67,16 @@ const UILogEntryList = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+
+  div:nth-child(even) {
+    ${theme.colors.inverted.asBgWithReadableText}
+  }
 `;
 
 const UILogEntry = styled.div`
   width: 100%;
   padding: 4px;
-  ${theme.colors.layout.actionPanel.asBgWithReadableText};
+  white-space: pre-wrap;
+
   ${theme.typo.item.secondaryTitle}
 `;

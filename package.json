@@ -27,7 +27,7 @@
     "code": "code acapela.code-workspace",
     "unstable:scope": "func() { ( npm \"$2\" --prefix \"$1\" --save --package-lock-only --no-package-lock \"$3\" ; ) && npm i;}; func",
     "frontend:dev": "yarn frontend dev",
-    "frontend:build": "yarn frontend next:build",
+    "frontend:build": "yarn frontend build",
     "backend:dev": "yarn backend dev",
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",
@@ -68,7 +68,7 @@
     "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
-    "*.{md,yaml,yml,graphql,json}": "prettier --write",
+    "*.{md,yaml,yml,graphql,json,html}": "prettier --write",
     "*.{js,jsx,ts,tsx}": [
       "eslint --max-warnings=0 --fix",
       "prettier --write"

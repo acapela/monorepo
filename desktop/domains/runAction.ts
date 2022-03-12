@@ -5,7 +5,11 @@ import { ActionContext, createActionContext } from "@aca/desktop/actions/action/
 import { trackEvent } from "@aca/desktop/analytics";
 import { createChannel } from "@aca/shared/channel";
 
+import { makeLogger } from "./dev/makeLogger";
+
 export const actionResultChannel = createChannel<ActionResult>();
+
+const log = makeLogger("RunAction");
 
 export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
   const { analyticsEvent } = resolveActionData(action, context);
@@ -34,8 +38,8 @@ export async function runAction(action: ActionData, context: ActionContext = cre
      * It might be very handy as actions are running outside of 'react' and errors can be caused by react
      * eg. 'toggle sidebar' > sidebar renders > sidebar component throws > as a result the very action handler throws as render happens in sync way after the action
      */
-    console.error(`Error occured when running action. Logging action, context and error below`, action, context);
-    console.error(error);
+    log.error(`Error occured when running action. Logging action, context and error below`, action, context);
+    log.error(error);
 
     return false;
   }

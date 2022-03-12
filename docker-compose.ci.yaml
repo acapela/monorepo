@@ -37,11 +37,11 @@ services:
     restart: always
     environment:
       BACKEND_HOST: http://172.17.0.1:1337
-      FRONTEND_HOST: http://172.17.0.1:3030
       HASURA_HOST: http://172.17.0.1:8080
     ports:
       - "3000:3000"
     volumes:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/frontend/dist:/var/www/frontend
 volumes:
   db_data:

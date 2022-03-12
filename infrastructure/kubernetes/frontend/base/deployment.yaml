@@ -24,43 +24,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: frontend-default
-          env:
-            - name: FRONTEND_HOST
-              value: "localhost:3030"
+          livenessProbe:
+            httpGet:
+              port: 3000
+              path: /
+            periodSeconds: 5
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               port: 3000
-              path: /healthz
-            initialDelaySeconds: 15
+              path: /
             periodSeconds: 5
             successThreshold: 3
             timeoutSeconds: 5
-        - name: frontend
-          image: eu.gcr.io/meetnomoreapp/monorepo:3.187.0
-          command: ["yarn", "run", "start:frontend"]
-          envFrom:
-            - configMapRef:
-                name: frontend-default
-          env:
-            - name: PORT
-              value: "3030"
-          livenessProbe:
-            httpGet:
-              port: 3030
-              path: /
-            periodSeconds: 5
-            timeoutSeconds: 15
-          readinessProbe:
-            httpGet:
-              port: 3030
-              path: /
-            periodSeconds: 5
-            successThreshold: 3
-            timeoutSeconds: 15
           startupProbe:
             httpGet:
-              port: 3030
+              port: 3000
               path: /
-            periodSeconds: 15
-            timeoutSeconds: 45
-            failureThreshold: 10
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 15

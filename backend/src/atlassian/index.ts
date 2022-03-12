@@ -18,11 +18,7 @@ export const WEBHOOK_PATH = "/v1/atlassian/webhooks";
 export const router = Router();
 
 router.post(WEBHOOK_PATH, async (req, res) => {
-  console.info("got a new thing on the hook");
-
   const payload = req.body as JiraWebhookPayload;
-
-  console.info(payload.webhookEvent);
 
   await captureJiraWebhook(payload);
 
@@ -31,37 +27,7 @@ router.post(WEBHOOK_PATH, async (req, res) => {
 });
 
 /*
-  When oauth is complete we grab the jira cloudId
-  We have a many-to-many relationship table with userId <-> jira_cloud_id
-  We add the user to that table
-
-  We create a webhook. 
-  We relate the webhook id's with jira's cloud id, 
-  the account that created the webhook,
-  and put a 29 day expiration date. 
-  (webhooks need to be refreshed every 30 days https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-webhooks/#api-rest-api-3-webhook-refresh-put)
-
-  if webhook already created for that cloud_id, 
-  then we do nothing.
-
-
-  Tokens
-  - Access Tokens last for 1 hour
-  - Refresh Token expire after : 90 days of user inactivity or absolutely in 1 year
-
-  API Call and Token Maintenance
-
-  We have a cron job daily that will refresh tokens that are 90 days old. 
-  We can use the accounts `updated_at` field as a date indicator. // Best to add a new field to `account` table
-  This won't be so useful for access_token (as they expire after an hour). But instead to avoid the hard expiration
-  of refresh tokens.
-
-  When doing any api call e.g. we would like to get the watchers of an issue. 
-  We'll first see if the access_token for that user has expired. If it's expired, we'll refresh the access token and
-  we'll resume the api call after that.
-
-  Note:
-  Registration restrictions -> For an OAuth 2.0 app, A maximum of 5 webhooks per app per user on a tenant.
+  Look for atlassian README.md for more info
 */
 
 const REQUIRED_JIRA_SCOPES = [

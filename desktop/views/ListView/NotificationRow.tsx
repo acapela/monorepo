@@ -14,15 +14,14 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
-import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
-import { mobxTicks } from "@aca/shared/mobx/time";
 import { theme } from "@aca/ui/theme";
 
+import { NotificationDate } from "./NotificationDate";
 import { RowQuickActions } from "./RowQuickActions";
-import { UIDate, UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -32,11 +31,10 @@ interface Props {
 
 export const NotificationRow = styledObserver(({ notification, list }: Props) => {
   const isFocused = uiStore.useFocus(notification);
+
   const elementRef = useRef<HTMLDivElement>(null);
 
   const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 150, offDelay: 0 });
-
-  mobxTicks.minute.reportObserved();
 
   useEffect(() => {
     if (!isFocused) return;
@@ -86,7 +84,7 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
           <>
             {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
 
-            <UIDate>{relativeShortFormatDate(new Date(notification.created_at))}</UIDate>
+            <NotificationDate notification={notification} />
           </>
         )}
         {isFocused && <RowQuickActions target={notification} />}

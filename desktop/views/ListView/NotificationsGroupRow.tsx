@@ -15,18 +15,17 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
-import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
-import { mobxTicks } from "@aca/shared/mobx/time";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
+import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";
 import { RowQuickActions } from "./RowQuickActions";
-import { UIDate, UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
+import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -38,8 +37,6 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
   const elementRef = useRef<HTMLDivElement>(null);
 
   const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
-
-  mobxTicks.minute.reportObserved();
 
   const isFocused = uiStore.useFocus(group, (group) => group?.id);
 
@@ -139,7 +136,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
           {!isFocused && (
             <>
               {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
-              <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
+              <NotificationDate notification={firstNotification} />
             </>
           )}
           {isFocused && <RowQuickActions target={group} />}
