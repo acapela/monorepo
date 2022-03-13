@@ -24,6 +24,7 @@ jobs:
         with:
           name: dist-staging
           path: desktop/dist-staging
+          retention-days: 1
 
   publish:
     name: Publish
