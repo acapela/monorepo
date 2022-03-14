@@ -85,27 +85,21 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     return getIsNotificationPassingFilters(notification, connections.typedFilters);
   });
 
-  const passingNotifications = cachedComputed(
-    () => {
-      if (connections.typedFilters.length === 0) {
-        return getEntity(notificationEntity).query({
-          // TODO: did it for type-safety. We should probably have .emptyQuery
-          // I used simpleQuery for speed (instead of () => false) query
-          id: "NO_EXISTING",
-        });
-      }
+  const passingNotifications = cachedComputed(() => {
+    if (connections.typedFilters.length === 0) {
+      return getEntity(notificationEntity).query({
+        // TODO: did it for type-safety. We should probably have .emptyQuery
+        // I used simpleQuery for speed (instead of () => false) query
+        id: "NO_EXISTING",
+      });
+    }
 
-      return getEntity(notificationEntity).query(cachedGetIsNotificationPassingFilters);
-    },
-    { debugId: "passingNotifications" }
-  );
+    return getEntity(notificationEntity).query(cachedGetIsNotificationPassingFilters);
+  });
 
-  const inboxNotifications = cachedComputed(
-    () => {
-      return passingNotifications().query({ isResolved: false, isSnoozed: false });
-    },
-    { debugId: "inboxNotifications" }
-  );
+  const inboxNotifications = cachedComputed(() => {
+    return passingNotifications().query({ isResolved: false, isSnoozed: false });
+  });
 
   const inboxNotificationsSinceLastSeen = cachedComputed(() => {
     return inboxNotifications().query((notification) => {
