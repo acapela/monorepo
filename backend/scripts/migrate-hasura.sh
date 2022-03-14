@@ -15,7 +15,7 @@ set -euo pipefail
 set -x
 
 cd ../infrastructure/hasura
-yarn hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
-yarn hasura migrate apply --all-databases --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
-yarn hasura metadata reload --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura migrate apply --all-databases --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura metadata reload --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 cd -
