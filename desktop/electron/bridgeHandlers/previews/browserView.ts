@@ -8,9 +8,11 @@ import { SECOND } from "@aca/shared/time";
 
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
 import { loadURLWithFilters } from "./siteFilters";
+import { listenForViewKeyboardBlurRequest } from "./utils/keyboardBlur";
 import { memoizeWithCleanup } from "./utils/memoizeWithCleanup";
 import { autoMuteBlurredBrowserView } from "./utils/muteBlurred";
 import { publishBrowserViewEvents } from "./utils/publishBrowserViewEvents";
+import { getBrowserViewParentWindow } from "./utils/view";
 
 const log = makeLogger("Preview Manager");
 
@@ -27,6 +29,9 @@ function createPreviewBrowserView(url: string) {
   cleanups.next = makeLinksOpenInDefaultBrowser(browserView.webContents);
   cleanups.next = publishBrowserViewEvents(url, browserView);
   cleanups.next = autoMuteBlurredBrowserView(browserView);
+  cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
+    getBrowserViewParentWindow(browserView)?.webContents.focus();
+  });
 
   browserView.webContents.once("destroyed", cleanups.clean);
 
