@@ -1,7 +1,7 @@
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
+import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/all";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
@@ -68,7 +68,7 @@ export const listPageView = createActionView((context) => {
 });
 
 function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
-  const groupedList = groupNotifications(list.getAllNotifications());
+  const groupedList = list.getAllGroupedNotifications();
 
   const result: NotificationOrGroup[] = [];
 

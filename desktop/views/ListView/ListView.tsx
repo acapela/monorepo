@@ -3,17 +3,14 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ListFilters } from "@aca/desktop/ui/Filters";
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 import { theme } from "@aca/ui/theme";
 
+import { ListViewFirstItemsPreloader } from "./ListViewFirstItemsPreloader";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
@@ -26,33 +23,30 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const displayedList = getInboxListsById(listId);
-  const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
+  const list = getInboxListsById(listId);
 
-  const allNotifications = displayedList?.getAllNotifications() ?? [];
-
-  const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
+  const notificationGroups = list?.getAllGroupedNotifications() ?? [];
 
   const isInCelebrationMode = uiStore.isDisplayingZenImage;
 
   useEffect(() => {
-    if (!displayedList) return;
+    if (!list) return;
 
-    displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+    list.listEntity?.update({ seen_at: new Date().toISOString() });
 
     return () => {
-      const list = displayedList.listEntity;
-      if (list && !list.isRemoved()) {
-        list.update({ seen_at: new Date().toISOString() });
+      const listEntity = list.listEntity;
+      if (listEntity && !listEntity.isRemoved()) {
+        listEntity.update({ seen_at: new Date().toISOString() });
       }
     };
-  }, [displayedList]);
+  }, [list]);
 
   useEffect(() => {
-    if (isInCelebrationMode && allNotifications.length > 0) {
+    if (isInCelebrationMode && notificationGroups.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
-  }, [isInCelebrationMode, allNotifications.length]);
+  }, [isInCelebrationMode, notificationGroups.length]);
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
@@ -61,54 +55,38 @@ export const ListView = observer(({ listId }: Props) => {
           <ListViewZenOverlay />
         </UINotificationZeroHolder>
       )}
-      <ListViewTopBar key={displayedList?.id} list={displayedList ?? undefined} />
+      <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
-        {displayedList?.isCustom && (
+        {list?.isCustom && (
           <UIListTools>
             <ListFilters
-              value={displayedList.listEntity?.typedFilters ?? []}
+              value={list.listEntity?.typedFilters ?? []}
               onChange={(filters) => {
-                displayedList?.listEntity?.update({ filters });
+                list?.listEntity?.update({ filters });
               }}
             />
           </UIListTools>
         )}
 
         <UIListsScroller>
-          {displayedList && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
+          {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
             <ZeroNotifications key={listId} />
           )}
 
-          {displayedList && notificationGroups && notificationGroups.length > 0 && (
+          {list && notificationGroups && notificationGroups.length > 0 && (
             <>
-              {!hasSettledFocusedTarget &&
-                displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
-                  return (
-                    <PreloadNotificationPreview
-                      priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                      key={notificationToPreload.id}
-                      url={notificationToPreload.url}
-                    />
-                  );
-                })}
+              <ListViewFirstItemsPreloader list={list} />
+
               <UINotifications>
                 {notificationGroups?.map((notificationOrGroup) => {
                   if (getIsNotificationsGroup(notificationOrGroup)) {
                     return (
-                      <NotificationsGroupRow
-                        list={displayedList}
-                        key={notificationOrGroup.id}
-                        group={notificationOrGroup}
-                      />
+                      <NotificationsGroupRow list={list} key={notificationOrGroup.id} group={notificationOrGroup} />
                     );
                   }
 
                   return (
-                    <NotificationRow
-                      list={displayedList}
-                      key={notificationOrGroup.id}
-                      notification={notificationOrGroup}
-                    />
+                    <NotificationRow list={list} key={notificationOrGroup.id} notification={notificationOrGroup} />
                   );
                 })}
               </UINotifications>

@@ -57,24 +57,3 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
 
   return onlyGroupWithMultipleItems;
 }
-
-export function orderNotificationsByGroups(notifications: NotificationEntity[]) {
-  const groupedList = groupNotifications(notifications);
-
-  const result: NotificationEntity[] = [];
-
-  groupedList.forEach((notificationOrGroup) => {
-    if (getIsNotificationsGroup(notificationOrGroup)) {
-      if (notificationOrGroup.isOnePreviewEnough) {
-        result.push(notificationOrGroup.notifications[0]);
-      } else {
-        result.push(...notificationOrGroup.notifications);
-      }
-      return;
-    }
-
-    result.push(notificationOrGroup);
-  });
-
-  return result;
-}

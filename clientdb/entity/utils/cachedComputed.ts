@@ -1,8 +1,6 @@
-import { IComputedValueOptions } from "mobx";
-
 import { createDeepMap } from "@aca/shared/deepMap";
 
-import { cachedComputedWithoutArgs } from "./cachedComputedWithoutArgs";
+import { CachedComputedOptions, cachedComputedWithoutArgs } from "./cachedComputedWithoutArgs";
 
 export type LazyComputed<T> = {
   get(): T;
@@ -13,7 +11,7 @@ export type LazyComputed<T> = {
  * Creates 'lazy computed', but with possibility of using multiple arguments
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function cachedComputed<A extends any[], T>(getter: (...args: A) => T, options: IComputedValueOptions<T> = {}) {
+export function cachedComputed<A extends any[], T>(getter: (...args: A) => T, options: CachedComputedOptions<T> = {}) {
   // TODO: cleanup map entries after lazy is disposed
   const map = createDeepMap<LazyComputed<T>>();
   function getComputed(...args: A) {

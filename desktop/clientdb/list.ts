@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { isEqual } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
@@ -80,22 +81,31 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     upsertConstraint: "notification_filter_pkey",
   }),
 }).addConnections((list, { getEntity }) => {
-  const passingNotifications = cachedComputed(() => {
-    if (connections.typedFilters.length === 0)
-      return getEntity(notificationEntity).query({
-        // TODO: did it for type-safety. We should probably have .emptyQuery
-        // I used simpleQuery for speed (instead of () => false) query
-        id: "NO_EXISTING",
-      });
-
-    return getEntity(notificationEntity).query((notification) => {
-      return getIsNotificationPassingFilters(notification, connections.typedFilters);
-    });
+  const cachedGetIsNotificationPassingFilters = cachedComputed((notification: NotificationEntity) => {
+    return getIsNotificationPassingFilters(notification, connections.typedFilters);
   });
 
-  const inboxNotifications = cachedComputed(() => {
-    return passingNotifications().query({ isResolved: false, isSnoozed: false });
-  });
+  const passingNotifications = cachedComputed(
+    () => {
+      if (connections.typedFilters.length === 0) {
+        return getEntity(notificationEntity).query({
+          // TODO: did it for type-safety. We should probably have .emptyQuery
+          // I used simpleQuery for speed (instead of () => false) query
+          id: "NO_EXISTING",
+        });
+      }
+
+      return getEntity(notificationEntity).query(cachedGetIsNotificationPassingFilters);
+    },
+    { debugId: "passingNotifications" }
+  );
+
+  const inboxNotifications = cachedComputed(
+    () => {
+      return passingNotifications().query({ isResolved: false, isSnoozed: false });
+    },
+    { debugId: "inboxNotifications" }
+  );
 
   const inboxNotificationsSinceLastSeen = cachedComputed(() => {
     return inboxNotifications().query((notification) => {
@@ -103,9 +113,16 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     });
   });
 
+  const getFilters = cachedComputed(
+    (): NotificationFilter[] => {
+      return Array.isArray(list.filters) ? list.filters : [];
+    },
+    { equals: isEqual }
+  );
+
   const connections = {
     get typedFilters(): NotificationFilter[] {
-      return Array.isArray(list.filters) ? list.filters : [];
+      return getFilters();
     },
     get notifications() {
       return passingNotifications();
