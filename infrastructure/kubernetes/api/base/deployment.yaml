@@ -25,7 +25,7 @@ spec:
       containers:
         - name: backend
           image: eu.gcr.io/meetnomoreapp/monorepo:3.187.0
-          command: ["yarn", "run", "start:backend"]
+          command: ["./scripts/start.sh"]
           ports:
             - containerPort: 8080
           envFrom:
