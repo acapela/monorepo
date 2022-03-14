@@ -23,6 +23,8 @@ echo "[monorepo]: running backend build"
 yarn backend:build
 yarn backend upload:sourcemaps
 cp -r node_modules/.prisma backend/
+cp -r node_modules/.prisma backend/
+cp -r infrastructure/hasura backend/
 
 echo "[monorepo] building image..."
 MONOREPO_IMAGE_NAME="eu.gcr.io/meetnomoreapp/monorepo"

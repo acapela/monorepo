@@ -22,6 +22,7 @@ EXPOSE 1337
 
 COPY ./dist ./dist
 COPY ./scripts ./scripts
-COPY ./.prisma /usr/local/lib/node_modules
+COPY ./.prisma /usr/local/lib/node_modules/.prisma
+COPY ./hasura ./hasura
 
 CMD ["./scripts/start.sh"]
