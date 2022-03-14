@@ -1,7 +1,9 @@
+import { memoize } from "lodash";
 import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
+import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
@@ -72,21 +74,25 @@ export const snoozedList = defineNotificationsList({
   filter: { isSnoozed: true },
 });
 
+const createNotificationsListFromListEntity = memoize((listEntity: NotificationListEntity) => {
+  return defineNotificationsList({
+    id: listEntity.id,
+    name: listEntity.title,
+    listEntity: listEntity,
+    isCustom: true,
+    getNotifications() {
+      return listEntity.inboxNotifications.all;
+    },
+  });
+});
+
 export const getInboxLists = cachedComputed(() => {
   const availableIntegrationLists = typedKeys(integrationLists)
     .filter((key) => integrationClients[key].getAccounts().length)
     .map((key) => integrationLists[key]);
 
   const customLists = getDb().notificationList.all.map((listEntity) =>
-    defineNotificationsList({
-      id: listEntity.id,
-      name: listEntity.title,
-      listEntity: listEntity,
-      isCustom: true,
-      getNotifications() {
-        return listEntity.inboxNotifications.query({ isResolved: false }).all;
-      },
-    })
+    createNotificationsListFromListEntity(listEntity)
   );
 
   return [allNotificationsList, ...customLists, ...availableIntegrationLists];

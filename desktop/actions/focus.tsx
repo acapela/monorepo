@@ -11,7 +11,7 @@ import { currentNotificationActionsGroup } from "./groups";
 import { focusPageView } from "./views/focus";
 
 export function isNotFocusingPreviewAnd(fn: ActionContextCallback<boolean>) {
-  return (ctx: ActionContext) => !uiStore.getIsAnyPreviewFocused() && fn(ctx);
+  return (ctx: ActionContext) => !uiStore.isAnyPreviewFocused && fn(ctx);
 }
 
 export const exitFocusMode = defineAction({

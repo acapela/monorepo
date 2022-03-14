@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { toggleFocusModeStats } from "@aca/desktop/actions/settings";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { useConst } from "@aca/shared/hooks/useConst";
 import { useGrowingArray } from "@aca/shared/hooks/useGrowingArray";
@@ -48,7 +47,7 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
    */
   const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications());
 
-  const groups = groupNotifications(allNotificationsWhenFocusStarted);
+  const groups = list.getAllGroupedNotifications();
 
   const currentGroup =
     groups.filter(getIsNotificationsGroup).find((group) => group.notifications.includes(currentNotification)) ?? null;

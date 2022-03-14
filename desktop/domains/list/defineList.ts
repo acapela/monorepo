@@ -39,7 +39,7 @@ export function defineNotificationsList({
 }: DefineListConfig) {
   assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
-  const getAllNotifications = cachedComputed(() => {
+  const getRawNotificationsList = cachedComputed(() => {
     const db = getDb();
 
     if (filter) {
@@ -54,7 +54,7 @@ export function defineNotificationsList({
   });
 
   const getAllGroupedNotifications = cachedComputed(() => {
-    return groupNotifications(getAllNotifications());
+    return groupNotifications(getRawNotificationsList());
   });
 
   const getFlattenedNotifications = cachedComputed(() =>
@@ -165,6 +165,7 @@ export function defineNotificationsList({
     name,
     isCustom,
     getNotificationGroup,
+    getAllGroupedNotifications,
     getAllNotifications: getFlattenedNotifications,
     getNotificationIndex,
     getNextNotification,
