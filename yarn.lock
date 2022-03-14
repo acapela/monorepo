@@ -19,8 +19,8 @@ __metadata:
     "@aca/config": 0.1.0
     "@godaddy/terminus": ^4.10.2
     "@google-cloud/storage": ^5.18.1
-    "@install-binary/berglas": ^0.6.2
     "@linear/sdk": ^1.22.0
+    "@sentry/cli": ^1.73.2
     "@sentry/node": ^6.17.3
     "@slack/bolt": ^3.9.0
     "@slack/web-api": ^6.6.0
@@ -5236,6 +5236,23 @@ __metadata:
   bin:
     sentry-cli: bin/sentry-cli
   checksum: 20720877d9a3c485e54aa868fb11fd89fd34e81a9c79ca500ede36142b6e5c4bc342ca0e7ce68ddf118241857a30228edba319aed7c0b1d12cdf7766296146b5
+  languageName: node
+  linkType: hard
+
+"@sentry/cli@npm:^1.73.2":
+  version: 1.73.2
+  resolution: "@sentry/cli@npm:1.73.2"
+  dependencies:
+    https-proxy-agent: ^5.0.0
+    mkdirp: ^0.5.5
+    node-fetch: ^2.6.7
+    npmlog: ^4.1.2
+    progress: ^2.0.3
+    proxy-from-env: ^1.1.0
+    which: ^2.0.2
+  bin:
+    sentry-cli: bin/sentry-cli
+  checksum: b4dcd1391dcfb3aa400bd16788a5fc9266b7c1f237eabdc419d032f290d02983b1fe3932b40f7f30b23baffe7cbf310f897f42b51948fffd087f6e4df48a63d6
   languageName: node
   linkType: hard
 
