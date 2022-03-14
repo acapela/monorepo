@@ -7,7 +7,7 @@ if [ -z "${1:-}" ]; then
   exit 1
 fi
 
-VERSION=$1
+export VERSION=$1
 
 echo "[caddy]: running frontend build"
 yarn frontend:build
@@ -21,6 +21,7 @@ docker tag "$CADDY_IMAGE_NAME_VERSION" "$CADDY_IMAGE_NAME"
 
 echo "[monorepo]: running backend build"
 yarn backend:build
+yarn backend upload:sourcemaps
 cp -r node_modules/.prisma backend/
 
 echo "[monorepo] building image..."

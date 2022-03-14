@@ -9,7 +9,8 @@
     "dev:inspect": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
     "start": "./scripts/start.sh",
-    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --external:@prisma/client"
+    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --sourcemap --external:@prisma/client",
+    "upload:sourcemaps": "sentry-cli releases files ${VERSION} upload-sourcemaps ./dist --url-prefix /app/dist"
   },
   "peerDependencies": {
     "axios": "*",
@@ -22,6 +23,7 @@
     "@godaddy/terminus": "^4.10.2",
     "@google-cloud/storage": "^5.18.1",
     "@linear/sdk": "^1.22.0",
+    "@sentry/cli": "^1.73.2",
     "@sentry/node": "^6.17.3",
     "@slack/bolt": "^3.9.0",
     "@slack/web-api": "^6.6.0",
