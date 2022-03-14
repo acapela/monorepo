@@ -1,13 +1,13 @@
 import { BrowserView, BrowserWindow } from "electron";
 
-import { previewEventsBridge } from "@aca/desktop/bridge/preview";
+import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { SECOND } from "@aca/shared/time";
 
+import { loadPreviewIfNeeded } from "./load";
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
-import { loadURLWithFilters } from "./siteFilters";
 import { listenForViewKeyboardBlurRequest } from "./utils/keyboardBlur";
 import { memoizeWithCleanup } from "./utils/memoizeWithCleanup";
 import { autoMuteBlurredBrowserView } from "./utils/muteBlurred";
@@ -35,23 +35,7 @@ function createPreviewBrowserView(url: string) {
 
   browserView.webContents.once("destroyed", cleanups.clean);
 
-  const load = async function preload() {
-    try {
-      await loadURLWithFilters(browserView, url);
-    } catch (error) {
-      if (browserView.webContents.isDestroyed()) {
-        return;
-      }
-
-      previewEventsBridge.send({ type: "load-error", url });
-
-      log.error(error, `Failed to load preview`);
-
-      throw error;
-    }
-  };
-
-  load();
+  loadPreviewIfNeeded(browserView, url);
 
   return browserView;
 }
@@ -77,7 +61,11 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
   },
   {
     keyGetter: (url) => url,
-    cleanup(view) {
+    cleanup(view, url) {
+      preloadingNotificationsBridgeChannel.update((stateMap) => {
+        delete stateMap[url];
+      });
+
       destroyBrowserView(view);
     },
     destroyTimeout: SECOND * 0.5,
