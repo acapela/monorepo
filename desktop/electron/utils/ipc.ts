@@ -4,13 +4,21 @@ import { BrowserWindow, IpcMainInvokeEvent } from "electron";
  * Will return window that did send given message
  */
 export function getSourceWindowFromIPCEvent(event: IpcMainInvokeEvent) {
-  const windowId = event?.frameId;
+  if (!event) return null;
 
-  if (!windowId) return null;
+  let senderWindow = BrowserWindow.fromId(event.frameId);
 
-  const senderWindow = BrowserWindow.fromId(windowId);
+  if (senderWindow) {
+    return senderWindow;
+  }
 
-  if (!senderWindow) return null;
+  senderWindow = BrowserWindow.getAllWindows().find((window) => window.webContents === event.sender) ?? null;
 
-  return senderWindow;
+  if (senderWindow) {
+    return senderWindow;
+  }
+
+  console.warn(`Failed to get window from ipc event`);
+
+  return null;
 }

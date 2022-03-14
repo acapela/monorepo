@@ -28,7 +28,8 @@ type PreviewEventData =
     }
   | {
       type: "blur";
-    };
+    }
+  | { type: "load-error" };
 
 type PreviewEvent = PreviewEventBase & PreviewEventData;
 

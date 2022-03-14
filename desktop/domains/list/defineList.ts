@@ -10,7 +10,6 @@ import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/gr
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
 import { None } from "@aca/shared/none";
-import { isNotNullish } from "@aca/shared/nullish";
 
 interface DefineListConfig {
   id: string;
@@ -124,19 +123,30 @@ export function defineNotificationsList({
   );
 
   const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
-  const getNotificationsToPreload = cachedComputed((openedNotification?: NotificationEntity) => {
+  const getNotificationsToPreload = cachedComputed((focusedNotification?: NotificationEntity) => {
+    const notificationsToPreload = focusedNotification ? [focusedNotification] : [];
+
     const [firstNotificationOrGroup] = getAllGroupedNotifications();
+
     if (!firstNotificationOrGroup) {
-      return [];
+      return notificationsToPreload;
     }
+
     const firstNotification = getIsNotificationsGroup(firstNotificationOrGroup)
       ? firstNotificationOrGroup.notifications[0]
       : firstNotificationOrGroup;
     // We limit the amount of notifications to preload to the previous one and the next 3
-    const notificationsToPreload = openedNotification
-      ? [getPreviousNotification(openedNotification)].filter(isNotNullish)
-      : [];
-    let currentNotification = openedNotification ?? firstNotification;
+
+    if (focusedNotification) {
+      const previous = getPreviousNotification(focusedNotification);
+
+      if (previous) {
+        notificationsToPreload.push(previous);
+      }
+    }
+
+    let currentNotification = focusedNotification ?? firstNotification;
+
     for (let i = 0; i < NOTIFICATIONS_TO_PRELOAD_COUNT - notificationsToPreload.length; i++) {
       const nextNotification = getNextNotification(currentNotification);
       if (!nextNotification) {
@@ -145,6 +155,7 @@ export function defineNotificationsList({
       notificationsToPreload.push(nextNotification);
       currentNotification = nextNotification;
     }
+
     return notificationsToPreload;
   });
 

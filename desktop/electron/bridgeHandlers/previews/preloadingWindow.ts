@@ -1,12 +1,13 @@
+import { BrowserView, BrowserWindow, app } from "electron";
+import { memoize } from "lodash";
+
+import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { Point } from "@aca/shared/point";
-import { BrowserView, BrowserWindow } from "electron";
-import { memoize } from "lodash";
-import { autorun } from "mobx";
 
-import { expectedPreviewPosition } from "./position";
-import { updateBrowserViewSize } from "./previewAttaching";
+import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
+import { mirrorWindowSize } from "./utils/mirrorWindowSize";
 
 /**
  * In order to make preloading 'effective' (aka show-up), a few things have to happen:
@@ -32,26 +33,6 @@ function getWindowSize(window?: BrowserWindow): Point | null {
   return { x, y };
 }
 
-function syncWindowsSizeOnce(sourceWindow: BrowserWindow, targetWindow: BrowserWindow) {
-  const [width, height] = sourceWindow.getSize();
-
-  targetWindow.setSize(width, height, false);
-}
-
-function mirrorWindowSize(sourceWindow: BrowserWindow, targetWindow: BrowserWindow) {
-  function sync() {
-    syncWindowsSizeOnce(sourceWindow, targetWindow);
-  }
-
-  sync();
-
-  sourceWindow.on("resized", sync);
-
-  return () => {
-    sourceWindow.off("resized", sync);
-  };
-}
-
 export const getPreloadingWindow = memoize(() => {
   const mainWindowSize = getWindowSize(appState.mainWindow ?? undefined);
 
@@ -64,6 +45,9 @@ export const getPreloadingWindow = memoize(() => {
     height: mainWindowSize?.y ?? 900,
     x: 1,
     y: 1,
+
+    closable: false,
+    kiosk: false,
   });
 
   // We don't want this window to interfere with user actions in any way
@@ -78,30 +62,25 @@ export const getPreloadingWindow = memoize(() => {
     return mirrorWindowSize(mainWindow, preloadingWindow);
   });
 
-  // On any resize of window (caused by mirroring main window - update all views instantly)
-
-  autorun(() => {
-    // We're running in mobx effect, as we're reading from expectedPreviewPosition which might change
-    // If that happens, we also want to update views size to be exactly the same as main window might require
-    preparePositionForAllViews();
-  });
-
-  function preparePositionForAllViews() {
-    const expectedPosition = expectedPreviewPosition.get();
-
-    preloadingWindow.getBrowserViews().forEach((view) => {
-      updateBrowserViewSize(view, preloadingWindow, expectedPosition);
-    });
-  }
-
-  preloadingWindow.on("resize", () => preparePositionForAllViews());
+  handleWindowViewsPositioning(preloadingWindow);
 
   return preloadingWindow;
 });
 
-export function attachViewToPreloadingWindow(view: BrowserView) {
+export function attachViewToPreloadingWindow(
+  view: BrowserView,
+  position: PreviewPosition = DEFAULT_EXPECTED_PREVIEW_POSITION
+) {
   const preloadingWindow = getPreloadingWindow();
 
   preloadingWindow.addBrowserView(view);
-  updateBrowserViewSize(view, preloadingWindow, expectedPreviewPosition.get());
+
+  setViewPosition(view, position);
 }
+
+/**
+ * Lets initialize preloading window as soon as possible (so we dont wait for React to request it)
+ */
+app.whenReady().then(() => {
+  getPreloadingWindow();
+});

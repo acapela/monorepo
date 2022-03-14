@@ -1,8 +1,10 @@
 import { removeElementFromArray } from "@aca/shared/array";
+import { createTimeout } from "@aca/shared/time";
 
-interface MemoizeWithCleanupConfig<Args extends any[], I> {
+interface MemoizeWithCleanupConfig<Args extends unknown[], I> {
   keyGetter: (...args: Args) => string;
   cleanup: (item: I) => void;
+  destroyTimeout: number;
 }
 
 /**
@@ -12,12 +14,48 @@ interface MemoizeSession {
   key: string;
 }
 
-export function memoizeWithCleanup<Args extends any[], I>(
+/**
+ * Similar to regular 'memoize', except memoized item is 'long-lived' and is kept alive as long
+ * as all 'requesters' will not release their requests
+ */
+export function memoizeWithCleanup<Args extends unknown[], I>(
   getter: (...args: Args) => I,
-  { cleanup, keyGetter }: MemoizeWithCleanupConfig<Args, I>
+  { cleanup, keyGetter, destroyTimeout }: MemoizeWithCleanupConfig<Args, I>
 ) {
   const aliveSessions: MemoizeSession[] = [];
   const aliveItemsMap = new Map<string, I>();
+  const pendingCleanups = new Map<string, () => void>();
+
+  function destroyItemByKey(key: string) {
+    const aliveItemToClean = aliveItemsMap.get(key);
+
+    if (aliveItemToClean === undefined) {
+      console.error(`Corrupted state. Alive item should be present but is not for key ${key}`);
+      return;
+    }
+
+    cleanup(aliveItemToClean);
+    aliveItemsMap.delete(key);
+  }
+
+  function cancelPendingDestroy(key: string) {
+    pendingCleanups.get(key)?.();
+
+    pendingCleanups.delete(key);
+  }
+
+  function scheduleDestroyItemByKey(key: string) {
+    cancelPendingDestroy(key);
+
+    const cancel = createTimeout(() => {
+      destroyItemByKey(key);
+      pendingCleanups.delete(key);
+    }, destroyTimeout);
+
+    pendingCleanups.set(key, cancel);
+
+    return cancel;
+  }
 
   function cancelSession(session: MemoizeSession) {
     const { key } = session;
@@ -33,19 +71,13 @@ export function memoizeWithCleanup<Args extends any[], I>(
 
     if (isOtherSessionForThisKeyAlive) return;
 
-    const aliveItemToClean = aliveItemsMap.get(key);
-
-    if (aliveItemToClean === undefined) {
-      console.error(`Corrupted state. Alive item should be present but is not for key ${key}`);
-      return;
-    }
-
-    cleanup(aliveItemToClean);
-    aliveItemsMap.delete(key);
+    scheduleDestroyItemByKey(key);
   }
 
   function getOrReuseItem(args: Args) {
     const key = keyGetter(...args);
+
+    cancelPendingDestroy(key);
 
     const existingItem = aliveItemsMap.get(key);
 

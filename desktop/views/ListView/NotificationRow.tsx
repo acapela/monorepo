@@ -6,11 +6,9 @@ import { openFocusMode } from "@aca/desktop/actions/notification";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
-import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
@@ -26,10 +24,9 @@ import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   notification: NotificationEntity;
-  list: NotificationsList;
 }
 
-export const NotificationRow = styledObserver(({ notification, list }: Props) => {
+export const NotificationRow = styledObserver(({ notification }: Props) => {
   const isFocused = uiStore.useFocus(notification);
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -54,21 +51,11 @@ export const NotificationRow = styledObserver(({ notification, list }: Props) =>
   );
 
   const title = getNotificationTitle(notification);
+
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
-      {isFocusedForAWhile &&
-        list.getNotificationsToPreload(notification).map((notificationToPreload) => {
-          return (
-            <PreloadNotificationPreview
-              priority={
-                notificationToPreload === notification ? PreviewLoadingPriority.next : PreviewLoadingPriority.following
-              }
-              key={notificationToPreload.id}
-              url={notificationToPreload.url}
-            />
-          );
-        })}
+      {isFocusedForAWhile && <PreloadNotificationPreview url={notification.url} />}
       <UIHolder
         ref={elementRef}
         $isFocused={isFocused}

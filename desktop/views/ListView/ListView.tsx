@@ -80,14 +80,10 @@ export const ListView = observer(({ listId }: Props) => {
               <UINotifications>
                 {notificationGroups?.map((notificationOrGroup) => {
                   if (getIsNotificationsGroup(notificationOrGroup)) {
-                    return (
-                      <NotificationsGroupRow list={list} key={notificationOrGroup.id} group={notificationOrGroup} />
-                    );
+                    return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
                   }
 
-                  return (
-                    <NotificationRow list={list} key={notificationOrGroup.id} notification={notificationOrGroup} />
-                  );
+                  return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
                 })}
               </UINotifications>
             </>
