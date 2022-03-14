@@ -1,13 +1,13 @@
-import { BrowserView, BrowserWindow } from "electron";
-import { isEqual, memoize } from "lodash";
-import { autorun, observable } from "mobx";
+import { BrowserView, BrowserWindow, app } from "electron";
+import { memoize } from "lodash";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { Point } from "@aca/shared/point";
 
-import { updateBrowserViewSize } from "./previewAttaching";
+import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
+import { mirrorWindowSize } from "./utils/mirrorWindowSize";
 
 /**
  * In order to make preloading 'effective' (aka show-up), a few things have to happen:
@@ -33,30 +33,10 @@ function getWindowSize(window?: BrowserWindow): Point | null {
   return { x, y };
 }
 
-function syncWindowsSizeOnce(sourceWindow: BrowserWindow, targetWindow: BrowserWindow) {
-  const [width, height] = sourceWindow.getSize();
-
-  targetWindow.setSize(width, height, false);
-}
-
-function mirrorWindowSize(sourceWindow: BrowserWindow, targetWindow: BrowserWindow) {
-  function sync() {
-    syncWindowsSizeOnce(sourceWindow, targetWindow);
-  }
-
-  sync();
-
-  sourceWindow.on("resized", sync);
-
-  return () => {
-    sourceWindow.off("resized", sync);
-  };
-}
-
 export const getPreloadingWindow = memoize(() => {
   const mainWindowSize = getWindowSize(appState.mainWindow ?? undefined);
 
-  const window = new BrowserWindow({
+  const preloadingWindow = new BrowserWindow({
     opacity: 0,
     transparent: false,
     alwaysOnTop: true,
@@ -65,10 +45,13 @@ export const getPreloadingWindow = memoize(() => {
     height: mainWindowSize?.y ?? 900,
     x: 1,
     y: 1,
+
+    closable: false,
+    kiosk: false,
   });
 
   // We don't want this window to interfere with user actions in any way
-  window.setIgnoreMouseEvents(true);
+  preloadingWindow.setIgnoreMouseEvents(true);
 
   // Always mirror main window size
   autorunEffect(() => {
@@ -76,44 +59,28 @@ export const getPreloadingWindow = memoize(() => {
 
     if (!mainWindow) return;
 
-    return mirrorWindowSize(mainWindow, window);
+    return mirrorWindowSize(mainWindow, preloadingWindow);
   });
 
-  // On any resize of window (caused by mirroring main window - update all views instantly)
+  handleWindowViewsPositioning(preloadingWindow);
 
-  autorun(() => {
-    // We're running in mobx effect, as we're reading from expectedPreviewPosition which might change
-    // If that happens, we also want to update views size to be exactly the same as main window might require
-    updateAllViews();
-  });
-  function updateAllViews() {
-    const expectedPosition = expectedPreviewPosition.get();
-
-    window.getBrowserViews().forEach((view) => {
-      updateBrowserViewSize(view, window, expectedPosition);
-    });
-  }
-
-  window.on("resize", () => updateAllViews());
-
-  return window;
+  return preloadingWindow;
 });
 
-/**
- * Before first view is requested (aka Focus mode opened) we need to 'estimate' position of view
- * We know how our UI look, so this value should match.
- *
- * Note: If we change UI - we need to update this item, to avoid flicker of first 'focus mode open'
- */
-export const DEFAULT_EXPECTED_PREVIEW_POSITION: PreviewPosition = { top: 138, left: 72, bottom: 38, right: 0 };
-
-export const expectedPreviewPosition = observable.box<PreviewPosition>(DEFAULT_EXPECTED_PREVIEW_POSITION, {
-  equals: isEqual,
-});
-
-export function attachViewToPreloadingWindow(view: BrowserView) {
+export function attachViewToPreloadingWindow(
+  view: BrowserView,
+  position: PreviewPosition = DEFAULT_EXPECTED_PREVIEW_POSITION
+) {
   const preloadingWindow = getPreloadingWindow();
 
   preloadingWindow.addBrowserView(view);
-  updateBrowserViewSize(view, preloadingWindow, expectedPreviewPosition.get());
+
+  setViewPosition(view, position);
 }
+
+/**
+ * Lets initialize preloading window as soon as possible (so we dont wait for React to request it)
+ */
+app.whenReady().then(() => {
+  getPreloadingWindow();
+});

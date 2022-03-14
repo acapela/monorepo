@@ -63,7 +63,7 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
 
   useDependencyChangeEffect(() => {
     if (!position) return;
-    updatePreviewPosition({ position, url });
+    return updatePreviewPosition({ position, url });
   }, [position]);
 
   useLayoutEffect(() => {

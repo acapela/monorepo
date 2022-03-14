@@ -8,7 +8,6 @@ import { toggleNotificationsGroup } from "@aca/desktop/actions/lists";
 import { openFocusMode } from "@aca/desktop/actions/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
@@ -30,10 +29,9 @@ import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
-  list: NotificationsList;
 }
 
-export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => {
+export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
   const elementRef = useRef<HTMLDivElement>(null);
 
   const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
@@ -143,7 +141,7 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
-            <NotificationsRows notifications={group.notifications} list={list} />
+            <NotificationsRows notifications={group.notifications} />
           </UINotifications>
         )}
       </ActionTrigger>

@@ -90,6 +90,9 @@ export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callb
 
   return async function cleanup() {
     await resultPromise;
+
+    if (web.isDestroyed()) return;
+
     await web.executeJavaScript(
       [
         // Perform cleanup
@@ -167,8 +170,10 @@ export function listenToWebContentsFocus(web: WebContents, callback: (isFocused:
     };
   });
 
-  return () => {
+  const stop = () => {
     cancelConsoleListening();
     stopListeningForEvents();
   };
+
+  return stop;
 }

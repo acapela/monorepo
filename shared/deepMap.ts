@@ -61,6 +61,12 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
     return currentTarget;
   }
 
+  function has(path: unknown[]) {
+    const targetMap = getFinalTargetMap(path);
+
+    return targetMap.has(targetSymbol);
+  }
+
   function get(path: unknown[], factory: () => V) {
     const targetMap = getFinalTargetMap(path);
 
@@ -75,5 +81,5 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
     return newResult;
   }
 
-  return { get };
+  return { get, has };
 }
