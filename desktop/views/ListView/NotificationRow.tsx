@@ -59,7 +59,9 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
       <UIHolder
         ref={elementRef}
         $isFocused={isFocused}
-        $isPreloading={devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]}
+        $preloadingState={
+          devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]
+        }
       >
         <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
         <UISendersLabel>{notification.from}</UISendersLabel>
@@ -80,18 +82,25 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div<{ $isFocused: boolean; $isPreloading?: "loading" | "ready" | false }>`
+const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
   ${theme.box.items.listRow.size.padding}
   min-width: 0;
 
   ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
 
   ${(props) => {
-    const status = props.$isPreloading;
+    const status = props.$preloadingState;
 
     if (!status) return null;
+
+    function getColor() {
+      if (status === "loading") return "orange";
+      if (status === "error") return "red";
+      return "green";
+    }
+
     return css`
-      outline: 1px solid ${status === "loading" ? "orange" : "green"};
+      outline: 1px solid ${getColor()};
       outline-offset: -1px;
     `;
   }}

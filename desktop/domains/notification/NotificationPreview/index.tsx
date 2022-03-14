@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import {
   previewEventsBridge,
   requestAttachPreview,
@@ -15,7 +16,9 @@ import { PreviewLoadingPriority, PreviewPosition, getPreviewPositionFromElement 
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
+import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { Button } from "@aca/ui/buttons/Button";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
@@ -38,8 +41,17 @@ export function PreloadNotificationPreview({
 export const NotificationPreview = observer(function NotificationPreview({ url, onFocus, onBlur }: BrowserViewProps) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useAutorun(() => {
+    if (preloadingNotificationsBridgeChannel.get()[url] === "error") {
+      setHasError(true);
+    } else {
+      setHasError(false);
+    }
+  });
 
   useResizeCallback(rootRef, (entry) => {
     setPosition(getPreviewPositionFromElement(entry.target as HTMLElement));
@@ -69,6 +81,8 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
   useLayoutEffect(() => {
     if (devSettingsStore.hidePreviews) return;
     if (!position || !!commandMenuStore.session) return;
+    if (hasError) return;
+
     return requestAttachPreview({ url, position });
   }, [
     !!commandMenuStore.session,
@@ -76,6 +90,7 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,
     devSettingsStore.hidePreviews,
+    hasError,
   ]);
 
   return (
@@ -88,6 +103,20 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
             </UIEscapeFlyer>
           )}
         </AnimatePresence>
+        {hasError && (
+          <UIErrorHolder>
+            <UIErrorLabel>
+              Failed to load <UIErrorUrlLabel>{url}</UIErrorUrlLabel>
+            </UIErrorLabel>
+            <Button
+              onClick={() => {
+                setHasError(false);
+              }}
+            >
+              Try again
+            </Button>
+          </UIErrorHolder>
+        )}
       </UIHolder>
       <BodyPortal>
         <UIFocusCover $isVisible={isFocused} />
@@ -99,8 +128,11 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
 const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
-  ${theme.colors.layout.backgroundAccent.asBg};
+  ${theme.colors.layout.background.asBg};
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const UIFocusCover = styled.div<{ $isVisible: boolean }>`
@@ -132,4 +164,35 @@ const UIEscapeLabel = styled.div`
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
   ${theme.box.panel.hint.padding.radius};
   ${theme.radius.primaryItem};
+`;
+
+const UIErrorHolder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 320px;
+  text-align: center;
+`;
+
+const UIErrorLabel = styled.div`
+  ${theme.typo.content.medium};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  max-width: 320px;
+`;
+
+const UIErrorUrlLabel = styled.div`
+  opacity: 0.6;
+  ${theme.typo.label};
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
 `;

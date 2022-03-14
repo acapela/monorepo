@@ -13,6 +13,6 @@ export const notificationResolvedChannel = createChannelBridge<NotificationResol
 
 export const preloadingNotificationsBridgeChannel = createBridgeValue("preloadingNotifications", {
   getDefault() {
-    return {} as Record<string, "loading" | "ready">;
+    return {} as Record<string, "loading" | "ready" | "error">;
   },
 });
