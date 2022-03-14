@@ -31,6 +31,7 @@
     "backend:dev": "yarn backend dev",
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",
+    "backend:build": "yarn backend build",
     "docker:up:detach": "yarn docker:up -d",
     "docker:up:force": "yarn docker:up --force-recreate",
     "docker:up": "docker-compose --env-file .env up",
@@ -117,7 +118,8 @@
   },
   "dependencies": {
     "@aca/tooling": "0.1.0",
-    "@install-binary/hasura": "^2.3.0",
+    "@install-binary/berglas": "0.6.2",
+    "@install-binary/hasura": "2.3.0",
     "@tiptap/extension-placeholder": "^2.0.0-beta.31",
     "@vvo/tzdb": "^6.44.0",
     "axios": "^0.24.0",

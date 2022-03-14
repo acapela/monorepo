@@ -136,3 +136,4 @@ desktop/dist-final/
 desktop/dist-staging/
 desktop/dist-production/
 frontend/Caddyfile
+backend/.prisma/
