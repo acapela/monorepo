@@ -1,6 +1,5 @@
-import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
@@ -9,7 +8,6 @@ import { NotificationPreview, PreloadNotificationPreview } from "@aca/desktop/do
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
-import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 
 import { FocusModeFooter } from "./FocusModeFooter";
@@ -24,12 +22,6 @@ interface Props {
 export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
   const notification = db.notification.assertFindById(notificationId);
-
-  useEffect(() => {
-    runInAction(() => {
-      uiStore.focusedNotification = notification;
-    });
-  }, [notification]);
 
   const list = getInboxListsById(listId);
 

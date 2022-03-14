@@ -1,6 +1,7 @@
 import { IComputedValueOptions, Reaction, createAtom } from "mobx";
 
 import { IS_DEV } from "@aca/shared/dev";
+import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 
 import { createBiddableTimeout } from "./biddableTimeout";
@@ -24,6 +25,10 @@ export const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
  */
 let isDisposalCascadeRunning = false;
 
+export interface CachedComputedOptions<T> extends IComputedValueOptions<T> {
+  debugId?: string;
+}
+
 const namesMap = new Map<string, number>();
 /**
  * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
@@ -33,8 +38,12 @@ const namesMap = new Map<string, number>();
  *
  * It provided 'dispose' method, but will also dispose itself automatically if not used for longer than KEEP_ALIVE_TIME_AFTER_UNOBSERVED
  */
-export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputedValueOptions<T> = {}): LazyComputed<T> {
-  const { name = "LazyComputed", equals } = options;
+export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedComputedOptions<T> = {}): LazyComputed<T> {
+  const { name = "LazyComputed", equals, debugId } = options;
+
+  const log = debugId ? createLogger(`Cached Computed - ${debugId}`, !!debugId) : undefined;
+
+  log?.(`Creating`);
 
   // This is dev for debugging what sort of computed values are created
   namesMap.set(name, mapGetOrCreate(namesMap, name, () => 0) + 1);
@@ -78,7 +87,7 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
 
     currentReaction = new Reaction(name, () => {
       // Dependencies it is tracking got outdated.
-
+      log?.("needs recomputing");
       // Set flag so on next value request we'll do full re-compute
       needsRecomputing = true;
       // Make observers re-run
@@ -89,6 +98,7 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
   }
 
   function dispose() {
+    log?.("disposing");
     try {
       // If other computed values become unobserved as result of this one being disposed - let them know so they instantly dispose in cascade
       isDisposalCascadeRunning = true;
@@ -111,12 +121,14 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
   const recomputeValueIfNeeded = () => {
     // No dependencies did change since we last computed.
     if (!needsRecomputing) {
+      log?.("no recompute");
       return;
     }
 
     let newValue: T;
     // We need to re-compute
     getOrCreateReaction().track(() => {
+      log?.("computing");
       // Assign new value so it can be reused. Also we're tracking getting it so reaction knows if dependencies got outdated
       newValue = getter();
     });
@@ -146,6 +158,11 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: IComputed
 
       // ! This value is used, but outside of mobx observers world. Dont initiate reactions to avoid memory leak - simply return value without cache.
       if (!isObserved) {
+        // We already have value - no need to re-compute it even tho it is not observed context
+        if (!needsRecomputing) {
+          return latestValue;
+        }
+
         return getter();
       }
 

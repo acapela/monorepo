@@ -1,5 +1,6 @@
 import React from "react";
 
+import { Router } from "@aca/frontend/src/router";
 import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { Button } from "@aca/ui/buttons/Button";
 
@@ -16,7 +17,7 @@ export default function ErrorPage() {
       <Button
         kind="primary"
         onClick={() => {
-          window.location.href = "/app/download";
+          Router.navigate("appDownload");
         }}
       >
         Go to the download page

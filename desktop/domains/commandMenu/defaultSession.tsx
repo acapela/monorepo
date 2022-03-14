@@ -24,6 +24,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
   const { searchKeyword } = context;
   const notifications = notificationsFuzzySearch(searchKeyword);
 
+  // TODO(performance) is this performant?
   const notificationActions = groupNotifications(notifications)
     .slice(0, 10)
     .map((notificationOrGroup) => {
