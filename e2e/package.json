@@ -6,7 +6,7 @@
     "@playwright/test": "^1.18.1"
   },
   "scripts": {
-    "test": "ELECTRON_IS_DEV=0 DISPLAY=':99.0' xvfb-maybe playwright test --workers 1",
+    "test": "xvfb-maybe playwright test --workers 1",
     "test:debug": "PWDEBUG=1 APP=e2e playwright test",
     "dev": "ts-node --transpile-only ./cli/dev.ts"
   },
