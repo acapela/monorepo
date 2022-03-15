@@ -1,11 +1,11 @@
 import React from "react";
 
+import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import {
   focusNextNotificationInList,
   focusPreviousNotificationInList,
   goToNextList,
   goToPreviousList,
-  toggleNotificationsGroup,
 } from "@aca/desktop/actions/lists";
 import { openFocusMode, openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";

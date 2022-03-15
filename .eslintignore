@@ -3,4 +3,6 @@ frontend/.next
 gql/generated.ts
 frontend/dist
 desktop/dist/*
+desktop/dist-staging/*
+desktop/dist-production/*
 desktop/lib/env/generated.js

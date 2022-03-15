@@ -1,9 +1,11 @@
 import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { composeActionsFromImports, listsActions } from "@aca/desktop/actions/all";
 import { goToList } from "@aca/desktop/actions/lists";
+import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
@@ -16,8 +18,12 @@ interface Props {
 }
 
 export const ListTabLabel = observer(function ListTabLabel({ isActive = false, list, className }: Props) {
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useActionsContextMenu(elementRef, composeActionsFromImports(listsActions), list);
+
   return (
-    <UIHolder action={goToList} target={list} className={className}>
+    <UIHolder ref={elementRef} action={goToList} target={list} className={className}>
       <UILabel $isActive={isActive}>{list.name}</UILabel>
       <UICount>{list.getAllNotifications().length}</UICount>
       <AnimatePresence>

@@ -53,6 +53,9 @@ export function resolveActionData(action: ActionData, context: ActionContext) {
     keywords: resolveActionDataThunk(action.keywords, context),
     group: resolveActionDataThunk(action.group, context),
     supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
+    get isApplicable() {
+      return action.canApply(context);
+    },
     get analyticsEvent() {
       const eventInput = resolveActionDataThunk(action.analyticsEvent, context);
       if (!eventInput) return;

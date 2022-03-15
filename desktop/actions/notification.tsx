@@ -47,7 +47,7 @@ export const openNotificationInApp = defineAction({
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
+  canApply: (ctx) => ctx.hasTarget("notification"),
   async handler(context) {
     const notification = context.assertTarget("notification");
 

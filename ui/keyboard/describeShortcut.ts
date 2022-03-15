@@ -3,11 +3,13 @@ import { upperFirst } from "lodash";
 import { ShortcutKey } from "./codes";
 import { ShortcutDefinition, resolveShortcutsDefinition } from "./shortcutBase";
 
+isMac;
+
 type KeyboardPlatform = "mac" | "windows";
 
 type KeyNiceVersion = string | Partial<Record<KeyboardPlatform, string>>;
 
-function isMac() {
+export function isMac() {
   // Server side let's guess
   if (typeof navigator === "undefined") return true;
 
@@ -23,7 +25,7 @@ const shortcutKeyNiceVersionMap: Partial<Record<ShortcutKey, KeyNiceVersion>> = 
   Mod: { mac: "⌘", windows: "CTRL" },
   Alt: { mac: "⌥", windows: "ALT" },
   Meta: { mac: "⌘", windows: "CTRL" },
-  Enter: "↩︎",
+  Enter: "⏎",
   Shift: "⇧",
   Control: "CTRL",
   Backspace: "⌫",

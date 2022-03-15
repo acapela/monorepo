@@ -12,6 +12,17 @@ import * as settingsActions from "./settings";
 import * as slackActions from "./slack";
 import * as snoozeActions from "./snooze";
 
+export * as appActions from "./app";
+export * as authActions from "./auth";
+export * as devActions from "./dev";
+export * as focusActions from "./focus";
+export * as listsActions from "./lists";
+export * as navigationActions from "./navigation";
+export * as notificationActions from "./notification";
+export * as settingsActions from "./settings";
+export * as slackActions from "./slack";
+export * as snoozeActions from "./snooze";
+
 /**
  * Convert all '* as' imports into list of actions
  */
@@ -56,6 +67,6 @@ function pickActions(actions: AnyStarImport): ActionData[] {
 /**
  * Convert multiple '* as' imports to list of actions
  */
-function composeActionsFromImports(...actionsImports: AnyStarImport[]): ActionData[] {
+export function composeActionsFromImports(...actionsImports: AnyStarImport[]): ActionData[] {
   return actionsImports.map(pickActions).flat();
 }

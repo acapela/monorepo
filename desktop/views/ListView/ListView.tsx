@@ -2,8 +2,10 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
+import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -50,6 +52,9 @@ export const ListView = observer(({ listId }: Props) => {
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
+      <ActionSystemMenuItem action={renameNotificationList} path={["List"]} target={list} />
+      <ActionSystemMenuItem action={deleteNotificationList} path={["List"]} target={list} />
+
       {isInCelebrationMode && (
         <UINotificationZeroHolder>
           <ListViewZenOverlay />

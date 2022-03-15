@@ -8,6 +8,7 @@ import { SECOND } from "@aca/shared/time";
 
 import { loadPreviewIfNeeded } from "./load";
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
+import { createDefaultContextMenu } from "./utils/contextMenu";
 import { listenForViewKeyboardBlurRequest } from "./utils/keyboardBlur";
 import { memoizeWithCleanup } from "./utils/memoizeWithCleanup";
 import { autoMuteBlurredBrowserView } from "./utils/muteBlurred";
@@ -32,6 +33,7 @@ function createPreviewBrowserView(url: string) {
   cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
     getBrowserViewParentWindow(browserView)?.webContents.focus();
   });
+  cleanups.next = createDefaultContextMenu(url, browserView);
 
   browserView.webContents.once("destroyed", cleanups.clean);
 

@@ -1,7 +1,7 @@
 import path from "path";
 
 import * as Sentry from "@sentry/electron";
-import { BrowserWindow, Menu, MenuItemConstructorOptions, app } from "electron";
+import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action, runInAction } from "mobx";
 
@@ -43,6 +43,7 @@ export const acapelaAppPathUrl = IS_DEV
 
 export function initializeMainWindow() {
   const env: AppEnvData = {
+    appName: app.name,
     sentryDsn,
     isDev: IS_DEV,
     version: app.getVersion(),
@@ -68,8 +69,6 @@ export function initializeMainWindow() {
 
     //
   });
-
-  addCustomMenu();
 
   mainWindow.focus();
   // mainWindow.webContents.openDevTools();
@@ -104,47 +103,4 @@ export function initializeMainWindow() {
   makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
   return mainWindow;
-}
-
-function addCustomMenu() {
-  const template: MenuItemConstructorOptions[] = [
-    {
-      label: app.name,
-      submenu: [
-        { role: "about" },
-        { type: "separator" },
-        { role: "hide" },
-        { role: "hideOthers" },
-        { role: "unhide" },
-        { type: "separator" },
-        { role: "quit" },
-      ],
-    },
-
-    {
-      label: "Edit",
-      submenu: [
-        { role: "cut" },
-        { role: "copy" },
-        { role: "paste" },
-
-        { role: "pasteAndMatchStyle" },
-        { role: "delete" },
-        { role: "selectAll" },
-        { type: "separator" },
-        {
-          label: "Speech",
-          submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
-        },
-      ],
-    },
-
-    {
-      label: "Debug",
-      submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
-    },
-  ];
-
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
 }

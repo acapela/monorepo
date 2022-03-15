@@ -1,13 +1,20 @@
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { createNotificationList, goToList } from "@aca/desktop/actions/lists";
+import {
+  createNotificationList,
+  deleteNotificationList,
+  goToList,
+  renameNotificationList,
+} from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
+import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
 import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
@@ -34,6 +41,13 @@ export const Sidebar = observer(({ isOpened }: Props) => {
       />
       <UIItems>
         <UIItemGroup>
+          <ActionSystemMenuItem
+            action={goToList}
+            path={["View", "List"]}
+            target={allNotificationsList}
+            customShortcut={["Meta", "1"]}
+            group="lists-dropdown"
+          />
           <UISidebarItem
             action={goToList}
             target={allNotificationsList}
@@ -49,15 +63,26 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             .map((list, index) => {
               const isActive = getExactIsRouteActive("list", { listId: list.id });
               const count = list.getAllNotifications().length;
+              const additionalShortcut: ShortcutDefinition = ["Meta", `${index + 2}` as ShortcutKey];
               return (
-                <UISidebarItem
-                  key={list.id}
-                  action={goToList}
-                  target={list}
-                  isActive={isActive}
-                  badgeCount={count}
-                  additionalShortcut={["Meta", `${index + 2}` as ShortcutKey]}
-                />
+                <Fragment key={list.id}>
+                  <ActionSystemMenuItem
+                    action={goToList}
+                    path={["View", "List"]}
+                    target={list}
+                    customShortcut={additionalShortcut}
+                    group="lists-dropdown"
+                  />
+
+                  <UISidebarItem
+                    action={goToList}
+                    target={list}
+                    isActive={isActive}
+                    badgeCount={count}
+                    additionalShortcut={additionalShortcut}
+                    contextMenuActions={list.isCustom ? [renameNotificationList, deleteNotificationList] : []}
+                  />
+                </Fragment>
               );
             })}
         </UIItemGroup>

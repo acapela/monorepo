@@ -1,21 +1,10 @@
 import React from "react";
 
-import { trackingEvent } from "@aca/desktop/analytics";
 import { getDb } from "@aca/desktop/clientdb";
-import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
-import {
-  IconArrowBottom,
-  IconArrowCornerCwLt,
-  IconArrowCornerCwRb,
-  IconArrowTop,
-  IconEdit2,
-  IconPlus,
-  IconSlidersHoriz,
-  IconTrash,
-} from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowTop, IconEdit2, IconPlus, IconSlidersHoriz, IconTrash } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -32,14 +21,14 @@ export const currentListActionsGroup = defineGroup({
   },
 });
 
-const canApplyCustomListAction = (ctx: ActionContext) => Boolean(ctx.view(listPageView)?.list.isCustom);
+const canApplyCustomListAction = (ctx: ActionContext) => !!ctx.getTarget("list")?.isCustom;
 
 export const renameNotificationList = defineAction({
   icon: <IconEdit2 />,
   name: "Rename list",
   keywords: ["change", "name", "title"],
   group: currentListActionsGroup,
-  supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
+  supplementaryLabel: (ctx) => ctx.getTarget("list")?.name,
 
   canApply: canApplyCustomListAction,
   handler: () => ({
@@ -47,10 +36,9 @@ export const renameNotificationList = defineAction({
     getActions: () => [
       defineAction({
         name: (ctx) =>
-          `Rename list "${ctx.view(listPageView)?.list.name}"` +
-          (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+          `Rename list "${ctx.assertTarget("list").name}"` + (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
         handler(ctx) {
-          const { list } = ctx.assertView(listPageView);
+          const list = ctx.assertTarget("list");
           const title = ctx.searchKeyword.trim();
           if (!title) {
             return;
@@ -179,48 +167,6 @@ export const goToPreviousList = defineAction({
 
     if (prevList) {
       desktopRouter.navigate("list", { listId: prevList.id });
-    }
-  },
-});
-
-function getGroupInfo(context: ActionContext) {
-  const group = context.view(listPageView)?.focusedGroup;
-
-  if (!group) return null;
-
-  const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
-
-  return { group, isOpened };
-}
-
-export const toggleNotificationsGroup = defineAction({
-  icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
-  analyticsEvent: trackingEvent("Notification Group Toggled"),
-  group: currentListActionsGroup,
-  name: (context) => {
-    const isOpened = getGroupInfo(context)?.isOpened;
-
-    if (isOpened === undefined) return "Toggle";
-
-    if (context.isContextual) return isOpened ? "Collapse" : "Expand";
-
-    return isOpened ? "Hide notifications in group" : "Show notifications in group";
-  },
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  shortcut: "Space",
-  keywords: ["toggle", "group", "all"],
-  canApply: (context) => {
-    const focusedGroup = context.view(listPageView)?.focusedGroup;
-    return Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
-  },
-  handler(context) {
-    const group = context.view(listPageView)?.focusedGroup;
-
-    if (!group) return;
-    const isOpenedNow = openedNotificationsGroupsStore.toggleOpen(group.id);
-
-    if (!isOpenedNow) {
-      uiStore.focusedTarget = group;
     }
   },
 });

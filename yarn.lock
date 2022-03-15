@@ -106,6 +106,7 @@ __metadata:
     dotenv: ^15.0.0
     electron: 16.0.8
     electron-builder: ^22.14.13
+    electron-context-menu: ^3.1.2
     electron-download: ^4.1.1
     electron-is-dev: ^2.0.0
     electron-json-storage: ^4.5.0
@@ -10913,6 +10914,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-context-menu@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "electron-context-menu@npm:3.1.2"
+  dependencies:
+    cli-truncate: ^2.1.0
+    electron-dl: ^3.2.1
+    electron-is-dev: ^2.0.0
+  checksum: a91fb36e976988a93d5bb547e087b1ea44a8c0171ff83f3f612c043ac5c8e32d681d23ac96b66f6feef966f639db09a9503871b2076acd4944ce76c6dfc07f7c
+  languageName: node
+  linkType: hard
+
+"electron-dl@npm:^3.2.1":
+  version: 3.3.0
+  resolution: "electron-dl@npm:3.3.0"
+  dependencies:
+    ext-name: ^5.0.0
+    pupa: ^2.0.1
+    unused-filename: ^2.1.0
+  checksum: 77116c503b4a1aa5bf30be1c8a2e2bbb24585c469edb6fe3da1b10e590b14bc8a0a73f530c4bff5f53a8d18319152509b12fcb623c7ca2cd1fdbe17f99741018
+  languageName: node
+  linkType: hard
+
 "electron-download@npm:^4.1.1":
   version: 4.1.1
   resolution: "electron-download@npm:4.1.1"
@@ -12001,6 +12024,25 @@ __metadata:
     utils-merge: 1.0.1
     vary: ~1.1.2
   checksum: 1535d56d20e65a1a39b5f056c025dd635290a744478ac69cc47633aeb4b2ce51458f8eb4080cfb7ba47c853ba5cfd794d404cff822a25127f1556b726ec3914a
+  languageName: node
+  linkType: hard
+
+"ext-list@npm:^2.0.0":
+  version: 2.2.2
+  resolution: "ext-list@npm:2.2.2"
+  dependencies:
+    mime-db: ^1.28.0
+  checksum: 9b2426bea312e674eeced62c5f18407ab9a8653bbdfbde36492331c7973dab7fbf9e11d6c38605786168b42da333910314988097ca06eee61f1b9b57efae3f18
+  languageName: node
+  linkType: hard
+
+"ext-name@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "ext-name@npm:5.0.0"
+  dependencies:
+    ext-list: ^2.0.0
+    sort-keys-length: ^1.0.0
+  checksum: f598269bd5de4295540ea7d6f8f6a01d82a7508f148b7700a05628ef6121648d26e6e5e942049e953b3051863df6b54bd8fe951e7877f185e34ace5d44370b33
   languageName: node
   linkType: hard
 
@@ -14937,6 +14979,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"is-plain-obj@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "is-plain-obj@npm:1.1.0"
+  checksum: 0ee04807797aad50859652a7467481816cbb57e5cc97d813a7dcd8915da8195dc68c436010bf39d195226cde6a2d352f4b815f16f26b7bf486a5754290629931
+  languageName: node
+  linkType: hard
+
 "is-plain-obj@npm:^3.0.0":
   version: 3.0.0
   resolution: "is-plain-obj@npm:3.0.0"
@@ -17175,6 +17224,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"mime-db@npm:^1.28.0":
+  version: 1.52.0
+  resolution: "mime-db@npm:1.52.0"
+  checksum: 0d99a03585f8b39d68182803b12ac601d9c01abfa28ec56204fa330bc9f3d1c5e14beb049bafadb3dbdf646dfb94b87e24d4ec7b31b7279ef906a8ea9b6a513f
+  languageName: node
+  linkType: hard
+
 "mime-db@npm:~1.33.0":
   version: 1.33.0
   resolution: "mime-db@npm:1.33.0"
@@ -17446,6 +17502,13 @@ fsevents@^1.2.7:
   version: 6.3.13
   resolution: "mobx@npm:6.3.13"
   checksum: 2ab413a323d127081cfc749771aea5f6f6fc3c0f573dc147144356694c2f804df1a0b19cc0cac0e37d236d47d0c767571fa7a6b448dd1f9cb7e05dcad90506bc
+  languageName: node
+  linkType: hard
+
+"modify-filename@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "modify-filename@npm:1.1.0"
+  checksum: a1d104cf99ade063c05c79e4db47ef6263a116386568d7661ae4a00a390da72d5944070a64dba09867231a8eb6cbab57498ada99cb4b5ae0fded10831995079b
   languageName: node
   linkType: hard
 
@@ -19957,7 +20020,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"pupa@npm:^2.1.1":
+"pupa@npm:^2.0.1, pupa@npm:^2.1.1":
   version: 2.1.1
   resolution: "pupa@npm:2.1.1"
   dependencies:
@@ -21634,6 +21697,24 @@ fsevents@^1.2.7:
   dependencies:
     atomic-sleep: ^1.0.0
   checksum: 4f5022de97483bb6f889415e342f9a451dbdebbe732df454f7d6e417cc80e813c19e2d646ad5ae20a92510a34c311fb9fbc440864bb234b78b3a2100467d851b
+  languageName: node
+  linkType: hard
+
+"sort-keys-length@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "sort-keys-length@npm:1.0.1"
+  dependencies:
+    sort-keys: ^1.0.0
+  checksum: f9acac5fb31580a9e3d43b419dc86a1b75e85b79036a084d95dd4d1062b621c9589906588ac31e370a0dd381be46d8dbe900efa306d087ca9c912d7a59b5a590
+  languageName: node
+  linkType: hard
+
+"sort-keys@npm:^1.0.0":
+  version: 1.1.2
+  resolution: "sort-keys@npm:1.1.2"
+  dependencies:
+    is-plain-obj: ^1.0.0
+  checksum: 5963fd191a2a185a5ec86f06e47721e8e04713eda43bb04ae60d2a8afb21241553dd5bc9d863ed2bd7c3d541b609b0c8d0e58836b1a3eb6764c09c094bcc8b00
   languageName: node
   linkType: hard
 
@@ -23413,6 +23494,16 @@ fsevents@^1.2.7:
   version: 4.0.0
   resolution: "untildify@npm:4.0.0"
   checksum: 39ced9c418a74f73f0a56e1ba4634b4d959422dff61f4c72a8e39f60b99380c1b45ed776fbaa0a4101b157e4310d873ad7d114e8534ca02609b4916bb4187fb9
+  languageName: node
+  linkType: hard
+
+"unused-filename@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "unused-filename@npm:2.1.0"
+  dependencies:
+    modify-filename: ^1.1.0
+    path-exists: ^4.0.0
+  checksum: 66fb62b5043a6a87dc30960778ba3d836fb45fef9b7e29a842fce12f25ffc5936e350dc281b79a73ff5498c515504538e72b529993759178156398fcdb8491a5
   languageName: node
   linkType: hard
 

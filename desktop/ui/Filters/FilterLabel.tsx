@@ -5,6 +5,7 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
+import { useContextMenu } from "@aca/desktop/domains/contextMenu/useContextMenu";
 import { useElementHasOverflow } from "@aca/shared/hooks/useElementHasOverflow";
 import { Button } from "@aca/ui/buttons/Button";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
@@ -28,6 +29,15 @@ export const FilterLabel = observer(function FilterLabel({ filter, onChange, onR
   const labelNameRef = useRef<HTMLDivElement>(null);
 
   const shouldShowFullTooltip = useElementHasOverflow(labelNameRef);
+
+  useContextMenu(labelRef, [
+    {
+      label: "Remove",
+      onSelected() {
+        onRemoveRequest(filter);
+      },
+    },
+  ]);
 
   return (
     <>

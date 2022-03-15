@@ -26,6 +26,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { SystemMenuManager } from "../domains/systemMenu/SystemMenuManager";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
@@ -74,6 +75,7 @@ function App() {
             <RootErrorBoundary>
               <ToastsAndCommunicatesView />
               <PeekView />
+              <SystemMenuManager />
               <CommandMenuManager />
               <RootView />
               <DebugView />

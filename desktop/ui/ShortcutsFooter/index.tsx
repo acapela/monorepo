@@ -1,11 +1,13 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { showCommandMenu } from "@aca/desktop/actions/app";
+import { toggleShowShortcutsBar } from "@aca/desktop/actions/settings";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
+import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { theme } from "@aca/ui/theme";
 
 import { FooterShortcutLabel } from "./ShortcutLabel";
@@ -16,6 +18,10 @@ interface Props {
 }
 
 export const ShortcutsFooter = observer(function ShortcutsFooter({ actions, target }: Props) {
+  const holderRef = useRef<HTMLDivElement>(null);
+
+  useActionsContextMenu(holderRef, [toggleShowShortcutsBar]);
+
   if (!applicationWideSettingsBridge.get().showShortcutsBar) {
     return null;
   }
@@ -25,8 +31,9 @@ export const ShortcutsFooter = observer(function ShortcutsFooter({ actions, targ
   const applicableActions = actions.filter((action) => {
     return action.canApply(context);
   });
+
   return (
-    <UIHolder>
+    <UIHolder ref={holderRef}>
       {applicableActions.map((action) => {
         return <FooterShortcutLabel action={action} context={context} key={action.id} />;
       })}

@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
 
 interface Props {
   list: NotificationsList;
