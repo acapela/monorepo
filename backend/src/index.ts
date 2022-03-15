@@ -29,7 +29,9 @@ async function start(): Promise<void> {
     })
   );
 
-  if (IS_DEV) {
+  if (!IS_DEV) return;
+
+  try {
     const tunnelURL = await getDevPublicTunnelURL(3000);
     logger.info(
       {
@@ -37,6 +39,10 @@ async function start(): Promise<void> {
       },
       "Public dev tunnel set up"
     );
+  } catch (e) {
+    // ngrok could not be started, force shutdown
+    logger.error(e, "could not start ngrok tunnel");
+    process.exit(1);
   }
 }
 
