@@ -102,7 +102,7 @@ query Issue($id: String!) {
   ];
 }
 
-export type NotificationOrigin = "assign" | "cancel";
+export type NotificationOrigin = "assign" | "state:cancel" | "state:complete";
 
 export function findMatchingActor(
   origin: NotificationOrigin,
@@ -116,7 +116,8 @@ export function findMatchingActor(
     // the issue was just created, and we have no history yet
     if (!h) return creator;
   }
-  if (origin === "cancel") h = issueHistory.find((h) => h.toState?.type === "canceled");
+  if (origin === "state:cancel") h = issueHistory.find((h) => h.toState?.type === "canceled");
+  if (origin === "state:complete") h = issueHistory.find((h) => h.toState?.type === "completed");
   return (
     h?.actor || {
       id: null,
@@ -125,7 +126,11 @@ export function findMatchingActor(
   );
 }
 
-export async function fetchSubscribers(linearClient: LinearClient, issueId: string): Promise<string[]> {
+export type Subscriber = {
+  id: string;
+  displayName: string;
+};
+export async function fetchSubscribers(linearClient: LinearClient, issueId: string): Promise<Subscriber[]> {
   const subscribersRes = await linearClient.client.rawRequest(
     `
 query Issue($id: String!) {
@@ -133,6 +138,7 @@ query Issue($id: String!) {
     subscribers {
       nodes {
         id
+        displayName
       }
     }
   }
@@ -142,7 +148,7 @@ query Issue($id: String!) {
   if (subscribersRes.status != 200) {
     throw new Error(`linear api request error: ${subscribersRes.status}`);
   }
-  return map(get(subscribersRes.data, "issue.subscribers.nodes", []), "id");
+  return get(subscribersRes.data, "issue.subscribers.nodes", []);
 }
 
 export type Viewer = {

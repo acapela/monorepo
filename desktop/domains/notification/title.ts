@@ -1,51 +1,81 @@
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { integrationClients } from "@aca/desktop/domains/integrations";
 
-export const getNotificationTitle = cachedComputed(function getNotificationTitle(
-  notification: NotificationEntity
-): string {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const innerNotification = notification.inner;
-
-  if (!innerNotification) {
+function getTitle(inner: NotificationEntity["inner"]): string {
+  if (!inner) {
     return `Unknown notification`;
   }
 
-  const type = innerNotification.__typename;
+  const type = inner.__typename;
 
   switch (type) {
     case "notification_slack_message": {
-      return `${innerNotification?.conversation_name}${innerNotification.slack_thread_ts ? " in Thread" : ""}`;
+      const name = inner.conversation_type == "channel" ? inner?.conversation_name : "";
+      const threadLabel = inner.slack_thread_ts ? `Thread${name ? " in " : ""}` : "";
+      return threadLabel + name;
     }
     case "notification_notion": {
-      switch (innerNotification.type) {
+      switch (inner.type) {
         case "notification_notion_commented":
-          return `Comment in "${innerNotification?.page_title}"`;
+          return `Commented in "${inner?.page_title}"`;
         case "notification_notion_user_invited":
-          return `Invited you to "${innerNotification?.page_title}"`;
+          return `Invited you to "${inner?.page_title}"`;
         case "notification_notion_user_mentioned":
-          return `Mentioned you in "${innerNotification?.page_title}"`;
+          return `Mentioned you in "${inner?.page_title}"`;
         default:
           return "New Notion notification";
       }
     }
     case "notification_figma_comment": {
-      return `${innerNotification.is_mention ? "Mentioned you" : "Comment"} in "${innerNotification?.file_name}"`;
+      return `${inner.is_mention ? "Mentioned you" : "Comment"} in "${inner?.file_name}"`;
     }
     case "notification_linear": {
-      if (innerNotification.type === "Comment") {
-        return `Commented in "${innerNotification.issue_title}"`;
+      if (inner.type === "Comment") {
+        switch (inner.origin) {
+          case "mention":
+            return `Mentioned you in "${inner.issue_title}"`;
+          default:
+            return `Commented in "${inner.issue_title}"`;
+        }
       }
-      switch (innerNotification.origin) {
+      switch (inner.origin) {
         case "assign":
-          return `The issue "${innerNotification.issue_title}" was assigned to you`;
+          return `Assigned you to "${inner.issue_title}"`;
         case "cancel":
-          return `The issue "${innerNotification.issue_title}" was canceled`;
+        case "state:cancel":
+          return `Cancelled issue "${inner.issue_title}"`;
+        case "state:complete":
+          return `Completed issue "${inner.issue_title}"`;
         default:
-          return `Created issue "${innerNotification.issue_title}"`;
+          return `Created issue "${inner.issue_title}"`;
       }
+    }
+    case "notification_jira_issue": {
+      if (inner.type === "comment_created") {
+        return `Commented in "${inner.issue_title}"`;
+      }
+      if (inner.type === "user_mentioned") {
+        return `Mentioned you in "${inner.issue_title}"`;
+      }
+      if (inner.type === "issue_status_updated") {
+        return `Updated "${inner.issue_title}" to "${inner.to}"`;
+      }
+      if (inner.type === "issue_assigned") {
+        return `Assigned you to "${inner.issue_title}"`;
+      }
+      return "Unhandled Jira Notification";
     }
     default:
       return "Unhandled notification!!";
   }
+}
+
+export const getNotificationTitle = cachedComputed((notification: NotificationEntity): string => {
+  const { inner } = notification;
+  const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
+  const hasMultipleWorkspaces = (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
+  const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
+  const title = getTitle(inner);
+  return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
 });

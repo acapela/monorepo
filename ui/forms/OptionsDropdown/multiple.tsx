@@ -11,7 +11,7 @@ import { theme } from "@aca/ui/theme";
 
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
-import { SelectedOptionPreview } from "./SelectedOptionPreview";
+import { CommaSelectedOptionsPreview, SelectedOptionPreview } from "./SelectedOptionPreview";
 
 interface Props<I> {
   name?: string;
@@ -32,6 +32,8 @@ interface Props<I> {
   closeAfterItemPicked?: boolean;
   icon?: ReactNode;
   isDisabled?: boolean;
+  className?: string;
+  children?: ReactNode;
 }
 
 export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown<I>({
@@ -50,6 +52,8 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
   icon,
   isDisabled,
   placeholder,
+  className,
+  children,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isOpen, { unset: close, set: open }] = useBoolean(false);
@@ -84,32 +88,37 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
 
   return (
     <>
-      <FieldWithLabel
-        isDisabled={isDisabled}
-        label={name}
-        onClick={open}
-        pushLabel={hasSelection}
-        icon={icon}
-        indicateDropdown
-        cursorType="action"
-        ref={openerRef}
-      >
-        <UIHolder>
-          <UIMenuOpener>
-            <UISelectedItemsPreview>
-              {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
-              {!selectedItemsPreviewRenderer &&
-                selectedItems.map((selectedItem) => {
-                  const key = keyGetter(selectedItem);
-                  const label = labelGetter(selectedItem);
-                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
-                })}
+      {!!children && (
+        <UICustomTrigger ref={openerRef} onClick={open}>
+          {children}
+        </UICustomTrigger>
+      )}
+      {!children && (
+        <FieldWithLabel
+          isDisabled={isDisabled}
+          label={name}
+          onClick={open}
+          pushLabel={hasSelection}
+          icon={icon}
+          indicateDropdown
+          cursorType="action"
+          ref={openerRef}
+          className={className}
+        >
+          <UIHolder>
+            <UIMenuOpener>
+              <UISelectedItemsPreview>
+                {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
+                {!selectedItemsPreviewRenderer && selectedItems.length > 0 && (
+                  <CommaSelectedOptionsPreview children={selectedItems.map(labelGetter).join(", ")} />
+                )}
 
-              {!selectedItems.length && <SelectedOptionPreview label={placeholder ?? "Select..."} />}
-            </UISelectedItemsPreview>
-          </UIMenuOpener>
-        </UIHolder>
-      </FieldWithLabel>
+                {!selectedItems.length && <SelectedOptionPreview label={placeholder ?? "Select..."} />}
+              </UISelectedItemsPreview>
+            </UIMenuOpener>
+          </UIHolder>
+        </FieldWithLabel>
+      )}
       <AnimatePresence>
         {isOpen && (
           <Popover anchorRef={openerRef} placement="bottom-start" onCloseRequest={close} enableScreenCover>
@@ -154,7 +163,6 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIMenuOpener = styled.div<{}>`
-  min-height: 42px;
   display: flex;
 `;
 
@@ -168,5 +176,6 @@ const UISelectedItemsPreview = styled.div<{}>`
   justify-content: flex-start;
   grid-gap: 8px;
   flex-direction: column;
-  padding: 8px 0;
 `;
+
+const UICustomTrigger = styled.div``;

@@ -15,6 +15,8 @@
     ".next/**/*": true,
     "**/.next/**/*": true,
     "**/dist/**/*": true,
+    "**/dist-production/**/*": true,
+    "**/dist-staging/**/*": true,
     // DB client is auto generated, huge file that could pollute search easily
     "db/client/**/*": true,
     ".yarn/**/*": true
@@ -53,6 +55,7 @@
   ],
   "cSpell.words": [
     "acapela",
+    "Atlassian",
     "autoLinks",
     "buildinfo",
     "clientdb",

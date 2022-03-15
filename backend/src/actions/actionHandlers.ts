@@ -1,14 +1,9 @@
-import { getUploadUrl } from "@aca/backend/src/attachments/attachments";
-import { inviteUser } from "@aca/backend/src/inviteUser";
 import { linearUsers } from "@aca/backend/src/linear/hasuraActions";
-import { getIndividualSlackInstallationURLHandler } from "@aca/backend/src/notificationCapture/hasuraActions";
 import {
-  getTeamSlackInstallationURLHandler,
-  slackUser,
+  getIndividualSlackInstallationURLHandler,
+  slackConversations,
   slackUsers,
-  uninstallSlack,
 } from "@aca/backend/src/slack/hasuraActions";
-import { joinTopicHandler } from "@aca/backend/src/topics/actions";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;
@@ -18,13 +13,7 @@ export interface ActionHandler<DataT, ResponseT> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handlers: ActionHandler<any, any>[] = [
   getIndividualSlackInstallationURLHandler,
-
-  getTeamSlackInstallationURLHandler,
-  getUploadUrl,
-  inviteUser,
-  joinTopicHandler,
   linearUsers,
-  slackUser,
   slackUsers,
-  uninstallSlack,
+  slackConversations,
 ];

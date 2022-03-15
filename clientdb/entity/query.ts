@@ -4,6 +4,7 @@ import { IObservableArray } from "mobx";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
 
+import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { IndexQueryInput } from "./queryIndex";
 import { EntityStore } from "./store";
@@ -36,6 +37,10 @@ export type EntityQueryConfig<Data, Connections> = {
   sort?: EntityQuerySortInput<Data, Connections>;
   name?: string;
 };
+
+export type EntityFilterInputByDefinition<Def> = Def extends EntityDefinition<infer D, infer C>
+  ? EntityFilterInput<D, C>
+  : never;
 
 export function resolveSortInput<Data, Connections>(
   sort?: EntityQuerySortInput<Data, Connections>

@@ -7,7 +7,7 @@ import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
 import axios from "axios";
 import cookieParser from "cookie-parser";
-import express, { Application, Request, json } from "express";
+import express, { Application, Request, json, urlencoded } from "express";
 import securityMiddleware from "helmet";
 
 import { db } from "@aca/db";
@@ -15,18 +15,16 @@ import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
-import { router as attachmentsRoutes } from "./attachments/router";
+import { router as atlassianRoutes } from "./atlassian";
 import { router as authenticationRoutes } from "./authentication";
 import { router as cronRoutes } from "./cron/cron";
-import { router as devRouter } from "./dev/router";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
-import { router as recoverLoginRoutes } from "./inviteUser/recoverLogin";
 import { router as linearRoutes } from "./linear/router";
+import nextAuth from "./nextAuth";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
 import { router as tracking } from "./tracking/tracking";
-import { router as transcriptionRoutes } from "./transcriptions/router";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 const NANOSECONDS_IN_MILLISECOND = 1e6;
@@ -51,7 +49,7 @@ function setupMiddleware(app: Application): void {
   app.use(function middleware(req: Request, res: ServerResponse, next: () => void): void {
     const startTime = process.hrtime();
     res.once("finish", () => {
-      const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
+      const requestStatusDescription = `[${req.method}] ${req.url} (status: ${res.statusCode})`;
       if (IS_DEV) {
         logger.info(`Request finished - ${requestStatusDescription}`);
       } else {
@@ -69,6 +67,7 @@ function setupMiddleware(app: Application): void {
   });
   app.use(cookieParser());
   app.use(json());
+  app.use(urlencoded({ extended: true })); // needed for next-auth
 }
 
 function setupRoutes(app: Application): void {
@@ -77,19 +76,15 @@ function setupRoutes(app: Application): void {
     authenticationRoutes,
     eventRoutes,
     actionRoutes,
-    recoverLoginRoutes,
-    transcriptionRoutes,
     cronRoutes,
     waitlistRoutes,
     tracking,
-    linearRoutes
+    linearRoutes,
+    atlassianRoutes
   );
 
-  if (IS_DEV) {
-    app.use("/api", devRouter);
-  }
+  nextAuth(app);
 
-  app.use(attachmentsRoutes);
   app.use(sentryTunnel);
 }
 

@@ -2,6 +2,7 @@ import { autorun } from "mobx";
 
 import {
   figmaAuthTokenBridgeValue,
+  jiraAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
@@ -11,19 +12,18 @@ import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
-import { createLogger } from "@aca/shared/log";
 import { VoidableArgument } from "@aca/shared/types";
-
-import { watchForUserAuthorized } from "./auth";
 import {
   AnalyticsEvent,
   AnalyticsEventName,
   AnalyticsEventPayload,
-  AnalyticsGroupsMap,
   AnalyticsUserProfile,
-} from "./types";
+} from "@aca/shared/types/analytics";
 
-const log = createLogger("Analytics");
+import { applicationFocusStateBridge } from "../bridge/system";
+import { makeLogger } from "../domains/dev/makeLogger";
+
+const log = makeLogger("Analytics");
 
 export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   const user = accountStore.user;
@@ -40,23 +40,8 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
     notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,
     linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
+    jira_installed_at: (!!jiraAuthTokenBridgeValue.get() && jiraAuthTokenBridgeValue.lastUpdateDate) || undefined,
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
-  };
-}
-
-function getUserTeamGroupTraits(): AnalyticsGroupsMap["Team"] | null {
-  const team = accountStore.team;
-
-  if (!team) {
-    return null;
-  }
-
-  return {
-    created_at: new Date(team.created_at),
-    id: team.id,
-    name: team.name,
-    plan: "free",
-    slug: team.slug,
   };
 }
 
@@ -89,7 +74,12 @@ export function trackingEvent<N extends AnalyticsEventName>(
 
 function initializeAnalytics() {
   const cleanup = createCleanupObject();
-  cleanup.next = trackAuthorization();
+  cleanup.next = autorun(() => {
+    const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
+    if (lastAppFocusDateTs > lastAppBlurredDateTs) {
+      trackEvent("App Opened");
+    }
+  });
   // Keep identity updated all the time
   cleanup.next = autorun(() => {
     const profile = getUserAnalyticsProfile();
@@ -102,19 +92,6 @@ function initializeAnalytics() {
 
     // ?
     analytics.identify(profile.id, profile);
-  });
-
-  // Keep team updated all the time
-  cleanup.next = autorun(() => {
-    const team = getUserTeamGroupTraits();
-
-    if (!team) {
-      return;
-    }
-
-    log("updating team", { team });
-
-    analytics.group(team.id, team);
   });
 
   /**
@@ -146,19 +123,3 @@ function initializeAnalytics() {
 onDocumentReady(() => {
   initializeAnalytics();
 });
-
-function trackAuthorization() {
-  return watchForUserAuthorized((user) => {
-    if (user.isNew) {
-      trackEvent("Signed Up", {
-        email: user.email,
-        name: user.name,
-        type: "invited",
-        first_name: null,
-        last_name: null,
-      });
-    } else {
-      trackEvent("Logged In");
-    }
-  });
-}

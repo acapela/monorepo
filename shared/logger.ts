@@ -1,5 +1,6 @@
 import "@aca/config/dotenv";
 
+import * as Sentry from "@sentry/node";
 import pino from "pino";
 
 import { assertDefined } from "@aca/shared/assert";
@@ -53,3 +54,12 @@ export const logger = pino({
       }
     : undefined, // aka stdout/err,
 });
+
+const pinoLogError = logger.error;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+logger.error = (obj: any, ...args: any[]) => {
+  if (obj instanceof Error) {
+    Sentry.captureException(obj);
+  }
+  pinoLogError.apply(logger, [obj, ...args]);
+};

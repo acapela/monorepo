@@ -1,8 +1,6 @@
-import router from "next/router";
+import { signOut } from "next-auth/react";
 import { ReactNode } from "react";
 
-import { logout } from "@aca/frontend/auth/logout";
-import { routes } from "@aca/shared/routes";
 import { Button } from "@aca/ui/buttons/Button";
 
 interface CommonErrorAdditionalInfo {
@@ -17,21 +15,6 @@ class KnownError extends Error {
 }
 
 export const knownErrors = {
-  removedFromCurrentTeam: new KnownError(`You have been removed from current team`, {
-    description: "Please select other team or create a new one",
-    renderActions() {
-      return (
-        <Button
-          kind="primary"
-          onClick={() => {
-            router.push(routes.teamSelect);
-          }}
-        >
-          Change team
-        </Button>
-      );
-    },
-  }),
   sessionInvalid: new KnownError(`You have been logged out`, {
     description: "Please log in again",
     renderActions() {
@@ -39,7 +22,7 @@ export const knownErrors = {
         <Button
           kind="primary"
           onClick={() => {
-            logout();
+            signOut({ callbackUrl: "/" });
           }}
         >
           Login

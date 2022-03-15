@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { runAction } from "@aca/desktop/domains/runAction";
-import { styledObserver, styledObserverForwardRef } from "@aca/shared/component";
+import { styledObserverForwardRef } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
 interface Props {

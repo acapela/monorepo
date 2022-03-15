@@ -1,48 +1,28 @@
-# we use this build only for the bext build and sentry source maps upload
-FROM node:16-buster as builder
-
-WORKDIR /app
-
-ARG BUILD_ID
-ENV BUILD_ID=${BUILD_ID:-dev-build}
-
-ARG BUILD_DATE
-ENV BUILD_DATE=${BUILD_DATE:-unknown}
-
-ARG SENTRY_RELEASE
-ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
-
-ARG SENTRY_AUTH_TOKEN
-ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
-
-COPY ./ ./
-
-RUN yarn frontend:build
-RUN /bin/bash -c 'shopt -s globstar; rm frontend/.next/**/*.map'
-
-
-# main image
 FROM node:16-buster
 
 WORKDIR /app
 
-ARG BUILD_ID
-ENV BUILD_ID=${BUILD_ID:-dev-build}
-
-ARG BUILD_DATE
-ENV BUILD_DATE=${BUILD_DATE:-unknown}
-
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
 
-COPY --from=builder /app /app
+ARG HASURA_VERSION
+RUN npm install -g @install-binary/hasura@${HASURA_VERSION}
 
+ARG BERGLAS_VERSION
+RUN npm install -g @install-binary/berglas@${BERGLAS_VERSION}
+
+ARG PRISMA_VERSION
+RUN npm install -g @prisma/client@${PRISMA_VERSION}
+
+ENV NODE_PATH=/usr/local/lib/node_modules
+ENV APP=backend
 ENV BACKEND_PORT=1337
+ENV NODE_ENV=production
 EXPOSE 1337
 
-# frontend port
-ENV PORT=3030
-EXPOSE 3030
+COPY ./dist ./dist
+COPY ./scripts ./scripts
+COPY ./.prisma /usr/local/lib/node_modules/.prisma
+COPY ./hasura ./hasura
 
-ENV NODE_ENV=production
-CMD ["yarn", "run", "start:backend"]
+CMD ["./scripts/start.sh"]

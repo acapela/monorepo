@@ -9,6 +9,7 @@ import { searchListActionsGroup, searchNotificationsGroup } from "@aca/desktop/a
 import { goToList } from "@aca/desktop/actions/lists";
 import { openFocusMode } from "@aca/desktop/actions/notification";
 import { getSnoozeOptionsForSearch } from "@aca/desktop/actions/snooze";
+import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
@@ -17,13 +18,13 @@ import { runActionWithTarget } from "@aca/desktop/domains/runAction";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder } from "@aca/ui/icons";
 
-import { groupNotifications } from "../group/groupNotifications";
 import { CommandMenuSession, createCommandMenuSession } from "./session";
 
 const getSearchActions = cachedComputed(function getSearchActions(context: ActionContext) {
   const { searchKeyword } = context;
   const notifications = notificationsFuzzySearch(searchKeyword);
 
+  // TODO(performance) is this performant?
   const notificationActions = groupNotifications(notifications)
     .slice(0, 10)
     .map((notificationOrGroup) => {

@@ -4,16 +4,7 @@ import { getDb } from "@aca/desktop/clientdb";
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
-import {
-  IconArrowBottom,
-  IconArrowLeft,
-  IconArrowRight,
-  IconArrowTop,
-  IconEdit2,
-  IconFolderPlus,
-  IconSlidersHoriz,
-  IconTrash,
-} from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowTop, IconEdit2, IconPlus, IconSlidersHoriz, IconTrash } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -40,7 +31,7 @@ export const renameNotificationList = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("list")?.name,
 
   canApply: canApplyCustomListAction,
-  handler: (ctx) => ({
+  handler: () => ({
     searchPlaceholder: "List name...",
     getActions: () => [
       defineAction({
@@ -82,6 +73,7 @@ export const deleteNotificationList = defineAction({
   supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
 
   keywords: ["remove", "trash"],
+  analyticsEvent: "Custom List Deleted",
   canApply: canApplyCustomListAction,
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
@@ -102,6 +94,7 @@ export const goToList = defineAction({
   },
   private: true,
   group: currentListActionsGroup,
+  icon: (ctx) => ctx.getTarget("list")?.icon,
   canApply: (context) => context.hasTarget("list"),
   handler(context) {
     desktopRouter.navigate("list", { listId: context.assertTarget("list").id });
@@ -148,7 +141,7 @@ export const goToNextList = defineAction({
   canApply: () => {
     return getIsRouteActive("list");
   },
-  icon: <IconArrowRight />,
+  icon: <IconArrowBottom />,
   supplementaryLabel: (context) => context.view(listPageView)?.nextList?.name,
   shortcut: ["Tab"],
   handler(context) {
@@ -163,7 +156,7 @@ export const goToNextList = defineAction({
 export const goToPreviousList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous list" : "Go to previous list"),
   group: currentListActionsGroup,
-  icon: <IconArrowLeft />,
+  icon: <IconArrowTop />,
   canApply: () => {
     return getIsRouteActive("list");
   },
@@ -179,20 +172,25 @@ export const goToPreviousList = defineAction({
 });
 
 export const createNotificationList = defineAction({
-  icon: <IconFolderPlus />,
-  name: "Create new notifications list",
+  icon: <IconPlus />,
+  name: (ctx) => (ctx.isContextual ? "New list" : "New notifications list"),
   keywords: ["new list", "bucket", "add"],
   handler: () => ({
     searchPlaceholder: "New list name...",
     getActions: () => [
       defineAction({
         name: (ctx) => `Create list "${ctx.searchKeyword}"`,
+        analyticsEvent: "Custom List Created",
         handler(ctx) {
           const title = ctx.searchKeyword.trim();
           if (!title) {
             return false;
           }
-          const notificationFilter = getDb().notificationList.create({ title, filters: [] });
+          const notificationFilter = getDb().notificationList.create({
+            title,
+            filters: [],
+            seen_at: new Date().toISOString(),
+          });
           desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
         },
       }),

@@ -1,4 +1,4 @@
-import { pick } from "lodash";
+import { isEqual, pick } from "lodash";
 import { action, computed, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
 import { waitForEntityAllAwaitingPushOperations } from "@aca/clientdb";
@@ -18,6 +18,7 @@ type EntityMethods<Data, Connections> = {
   getKeyName(): string;
   getUpdatedAt(): Date;
   remove(source?: EntityChangeSource): void;
+  isRemoved(): boolean;
   waitForSync(): Promise<void>;
   definition: EntityDefinition<Data, Connections>;
   db: DatabaseLinker;
@@ -106,6 +107,9 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
     },
+    isRemoved() {
+      return !store.findById(entityMethods.getKey());
+    },
     waitForSync() {
       return waitForEntityAllAwaitingPushOperations(entity);
     },
@@ -138,7 +142,7 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
 
         const existingValue = entity[keyToUpdate];
 
-        return value !== existingValue;
+        return !isEqual(value, existingValue);
       });
 
       // No changes will be made, return early

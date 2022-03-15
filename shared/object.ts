@@ -1,4 +1,5 @@
-import { pick } from "lodash";
+import { isPlainObject, mergeWith, pick } from "lodash";
+import { DeepPartial } from "utility-types";
 
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 
@@ -105,3 +106,13 @@ type FromEntries<T> = T extends [infer Key, any][]
     { [key in string]: any };
 
 export type FromEntriesWithReadOnly<T> = FromEntries<DeepWriteable<T>>;
+
+export function deepMerge<T>(source: T, overwrites: DeepPartial<T>) {
+  return mergeWith(overwrites, source, (value: unknown, srcValue: unknown) => {
+    if (isPlainObject(srcValue) || isPlainObject(value)) {
+      return;
+    }
+
+    return value;
+  }) as T;
+}

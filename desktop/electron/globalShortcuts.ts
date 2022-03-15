@@ -1,15 +1,15 @@
 import { app, globalShortcut } from "electron";
 
-import { createLogger } from "@aca/shared/log";
+import { globalShortcutPressed, registerGlobalShortcutRequest } from "@aca/desktop/bridge/globalShortcuts";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
-import { globalShortcutPressed, registerGlobalShortcutRequest } from "../bridge/globalShortcuts";
+import { makeLogger } from "../domains/dev/makeLogger";
 
 const aliases: Record<string, string> = {
   meta: "CommandOrControl",
 };
 
-const log = createLogger("Global shortcut");
+const log = makeLogger("Global shortcut");
 
 function convertShortcutKeysToElectronShortcut(keys: ShortcutKeys) {
   return keys

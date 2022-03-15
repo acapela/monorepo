@@ -63,7 +63,7 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
 
   useDependencyChangeEffect(() => {
     if (!position) return;
-    updatePreviewPosition({ position, url });
+    return updatePreviewPosition({ position, url });
   }, [position]);
 
   useLayoutEffect(() => {
@@ -128,8 +128,8 @@ const UIEscapeFlyer = styled(PresenceAnimator)`
 `;
 
 const UIEscapeLabel = styled.div`
-  ${theme.typo.content.semibold};
+  ${theme.typo.content.medium};
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
-  ${theme.box.importantNotice};
+  ${theme.box.panel.hint.padding.radius};
   ${theme.radius.primaryItem};
 `;

@@ -20,8 +20,6 @@ const teamMemberFragment = gql`
     id
     team_id
     user_id
-    notify_email
-    notify_slack
     updated_at
     has_joined
     timezone
@@ -50,17 +48,8 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<TeamMemberFragment, TeamMemberConstraints>(teamMemberFragment, {
-    insertColumns: [
-      "id",
-      "team_id",
-      "user_id",
-      "notify_email",
-      "notify_slack",
-      "timezone",
-      "work_start_hour_in_utc",
-      "work_end_hour_in_utc",
-    ],
-    updateColumns: ["notify_email", "notify_slack", "timezone", "work_start_hour_in_utc", "work_end_hour_in_utc"],
+    insertColumns: ["id", "team_id", "user_id", "timezone", "work_start_hour_in_utc", "work_end_hour_in_utc"],
+    updateColumns: ["timezone", "work_start_hour_in_utc", "work_end_hour_in_utc"],
     upsertConstraint: "team_member_id_key",
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),

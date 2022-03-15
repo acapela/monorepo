@@ -79,7 +79,17 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
-      isOnePreviewEnough: true,
+      isOnePreviewEnough: false,
+    };
+  }
+
+  if (targetNotification.__typename === "notification_jira_issue") {
+    return {
+      id: targetNotification.issue_id,
+      name: targetNotification.issue_title,
+      integration: "jira",
+      integrationTitle: "Jira issue",
+      isOnePreviewEnough: false,
     };
   }
 

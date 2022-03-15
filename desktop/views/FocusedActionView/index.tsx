@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { Logo } from "@aca/desktop/ui/Logo";
+import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { phone } from "@aca/ui/responsive";
 import { theme } from "@aca/ui/theme";
@@ -17,6 +18,7 @@ export function FocusedActionView({ children, title, description, hideLogo }: Pr
   const hasTypo = !!title || !!description;
   return (
     <UIHolder>
+      <UIWindowDragger />
       <UIWindow>
         <UIHead>
           {!hideLogo && <UILogo />}
@@ -45,10 +47,10 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
-  ${theme.colors.layout.background.asBg};
+  ${theme.colors.layout.background.withBorder.asBg};
   ${theme.radius.panel};
   ${theme.shadow.modal};
-  ${theme.box.pageCart};
+  ${theme.box.panel.pageCart.padding.radius};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -90,4 +92,14 @@ const UIDescription = styled.div`
 
 const UILogo = styled(Logo)<{}>`
   font-size: 40px;
+`;
+
+const UIWindowDragger = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: ${SYSTEM_BAR_HEIGHT}px;
+  ${theme.common.dragWindow};
+  z-index: 2;
 `;

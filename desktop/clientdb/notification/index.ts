@@ -1,7 +1,7 @@
 import { isPast } from "date-fns";
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
@@ -32,6 +32,7 @@ const notificationFragment = gql`
     created_at
     last_seen_at
     snoozed_until
+    notified_user_at
   }
 `;
 
@@ -62,6 +63,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     snoozed_until: null,
     text_preview: null,
     last_seen_at: null,
+    notified_user_at: null,
     ...getGenericDefaultData(),
   }),
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
@@ -78,28 +80,47 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "snoozed_until",
         "text_preview",
         "last_seen_at",
+        "notified_user_at",
       ],
-      updateColumns: ["updated_at", "url", "resolved_at", "snoozed_until", "text_preview", "last_seen_at"],
+      updateColumns: [
+        "updated_at",
+        "url",
+        "resolved_at",
+        "snoozed_until",
+        "text_preview",
+        "last_seen_at",
+        "notified_user_at",
+      ],
       upsertConstraint: "notification_pkey",
     }
   ),
 })
   .addConnections((notification, { getEntity, updateSelf }) => {
+    const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
+      return (
+        innerEntities
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .find(Boolean) as any
+      );
+    });
+
     const connections = {
       get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
-        return (
-          innerEntities
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .find(Boolean) as any
-        );
+        return getInner();
       },
       get kind() {
-        return connections.inner?.__typename ?? null;
+        return getInner()?.__typename ?? null;
       },
       get isResolved() {
         return !!notification.resolved_at;
+      },
+      get isUnread() {
+        if (notification.resolved_at) {
+          return false;
+        }
+        return !notification.last_seen_at;
       },
       resolve() {
         if (notification.resolved_at) return;
@@ -165,9 +186,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   .addAccessValidation((notification) => {
     if (!notification.inner) {
       log.error(`No inner for entity ${notification.id}`);
+      return false;
     }
-
-    return !!notification.inner;
+    return true;
   });
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;

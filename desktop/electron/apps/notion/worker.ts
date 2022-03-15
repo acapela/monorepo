@@ -5,6 +5,7 @@ import fetch from "node-fetch";
 import {
   NotionNotificationType,
   NotionWorkerSync,
+  notionAvailableSpacesValue,
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
@@ -13,11 +14,13 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
+import { wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import type {
   ActivityPayload,
   BlockPayload,
+  CollectionViewPageBlockValue,
   GetNotificationLogResult,
   GetPublicSpaceDataResult,
   GetSpacesResult,
@@ -86,9 +89,16 @@ export function startNotionSync(): ServiceSyncController {
     try {
       isSyncing = true;
       log.info(`Capturing started`);
-      const notificationLog = await fetchNotionNotificationLog(sessionData);
 
-      notionSyncPayload.send(extractNotifications(notificationLog));
+      await updateAvailableSpaces(sessionData);
+
+      const syncEnabledSpaces = notionSelectedSpaceValue.get();
+
+      for (const spaceToSync of syncEnabledSpaces.selected) {
+        const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+        notionSyncPayload.send(extractNotifications(notificationLog));
+        await wait(10000);
+      }
 
       timeOfLastSync = new Date();
 
@@ -129,13 +139,7 @@ export function startNotionSync(): ServiceSyncController {
   };
 }
 
-async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
-  const spaceId = await fetchCurrentSpace(sessionData);
-
-  if (!spaceId) {
-    throw log.error(new Error("Unable to fetch spaceId"));
-  }
-
+async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
   const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
     method: "POST",
     headers: {
@@ -160,7 +164,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData) {
   return result;
 }
 
-async function fetchCurrentSpace(sessionData: NotionSessionData) {
+async function updateAvailableSpaces(sessionData: NotionSessionData) {
   const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
@@ -217,16 +221,15 @@ async function fetchCurrentSpace(sessionData: NotionSessionData) {
     throw log.error(new Error(`Unable to find any spaces in account`));
   }
 
-  const savedSpaces = notionSelectedSpaceValue.get();
+  const savedSpaces = notionAvailableSpacesValue.get();
 
-  const selected = savedSpaces?.selected?.length > 0 ? savedSpaces.selected : [allSpaces[0].id];
+  const hasNewSpaces = !allSpaces.every((synchedSpace) =>
+    savedSpaces.spaces.some((savedSpace) => savedSpace.id === synchedSpace.id)
+  );
 
-  notionSelectedSpaceValue.set({
-    selected,
-    allSpaces,
-  });
-
-  return selected[0];
+  if (hasNewSpaces) {
+    notionAvailableSpacesValue.set({ spaces: allSpaces });
+  }
 }
 
 function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
@@ -240,23 +243,22 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const notificationProperties = getNotificationProperties(notification, recordMap);
     if (!notificationProperties) {
-      log.error(`Unable to handle notification ${id} of type ${notification.type}`);
+      log.error(`Unable to handle notification ${id} of type ${notification.type}`, JSON.stringify(recordMap, null, 2));
       continue;
     }
 
     const { url, type, text_preview } = notificationProperties;
 
-    const pageId = notification.navigable_block_id;
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
 
     const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
 
-    const pageBlock = (recordMap.block[pageId] as BlockPayload<"page">).value as PageBlockValue | undefined;
+    const page_title = getPageTitle(notification, recordMap);
 
-    if (pageBlock?.type !== "page") {
-      log.error(`Block is not page type, instead its`, recordMap.block[pageId] ?? "");
+    if (!page_title) {
+      log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
       continue;
     }
 
@@ -273,9 +275,9 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
       type,
       notionNotification: {
         notion_original_notification_id: id,
-        page_id: pageId,
-        page_title: pageBlock.properties.title[0][0],
-        space_id: notification.space_id,
+        page_id: notification.navigable_block_id,
+        page_title,
+        synced_spaced_id: notification.space_id,
         author_id: authorId,
       },
       discussion_id: notificationProperties.discussion_id,
@@ -283,6 +285,34 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
   }
 
   return result;
+}
+
+function getPageTitle(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+): string | undefined {
+  const blockId = notification.navigable_block_id;
+  const typeOfBlock = recordMap.block[blockId]?.value.type;
+
+  if (typeOfBlock === "page") {
+    const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
+    return block.properties.title[0][0];
+  }
+
+  if (typeOfBlock === "collection_view_page") {
+    const block = (recordMap.block[blockId] as BlockPayload<"collection_view_page">)
+      .value as CollectionViewPageBlockValue;
+    const collection = recordMap.collection && recordMap.collection[block.collection_id].value;
+    if (!collection) {
+      log.error(
+        `Collection not found for notification_id ${notification.id} block.collection_id: ${block.collection_id}`,
+        recordMap
+      );
+      return;
+    }
+
+    return collection.name[0][0];
+  }
 }
 
 function getNotificationProperties(
@@ -312,6 +342,16 @@ function getNotificationProperties(
 
   if (notification.type === "commented") {
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
+
+    // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
+    if (!activity) {
+      log.error(
+        `Comment Activity for notification id ${notification.id} not found in recordMap: `,
+        JSON.stringify(recordMap, null, 2)
+      );
+      return;
+    }
+
     const discussion = recordMap.discussion[activity.discussion_id].value;
 
     const parentDiscussionBlock = discussion.parent_id;

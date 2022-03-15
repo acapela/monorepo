@@ -5,15 +5,14 @@ import { cachedComputed } from "@aca/clientdb";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
-import { createLogger } from "@aca/shared/log";
 import { autorunEffect } from "@aca/shared/mobx/utils";
-import { getTotal } from "@aca/shared/numbers";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
-import { getNotificationTitle } from "../notification/title";
+import { makeLogger } from "../dev/makeLogger";
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";
@@ -21,7 +20,7 @@ import { ScheduledNotification } from "./types";
 
 const MAX_DISTANCE_TO_BUNDLE = MINUTE * 15;
 
-const log = createLogger("List notifications scheduler", false);
+const log = makeLogger("List notifications scheduler", false);
 
 function getNextListNotificationWindow(list: NotificationListEntity): Date | null {
   // Notification disabled
@@ -46,44 +45,53 @@ const bundleListNotifications = cachedComputed(
         if (listsWithCloseNotifications.length === 1) {
           const [list] = listsWithCloseNotifications;
 
-          const newNotifications = list.inboxNotificationsSinceLastSeen;
+          const newNotifications = list.notificationsToNotifyUserAbout.all;
 
           const getBody = () => {
-            const notifications = newNotifications.all;
+            if (!newNotifications.length) return;
 
-            if (!notifications.length) return;
-
-            if (notifications.length === 1) {
-              const [notification] = notifications;
+            if (newNotifications.length === 1) {
+              const [notification] = newNotifications;
 
               return `${getNotificationTitle(notification)} from ${notification.from}`;
             }
 
-            const latestNotification = maxBy(newNotifications.all, (n) => new Date(n.created_at));
+            const latestNotification = maxBy(newNotifications, (n) => new Date(n.created_at));
 
             return `Last from ${niceFormatTimeAndDateIfNeeded(new Date(latestNotification?.created_at ?? date))}`;
           };
 
           return {
             date,
-            title: pluralize`${newNotifications.count} ${["notification"]} in list ${list.title}`,
+            title: pluralize`${newNotifications.length} ${["notification"]} in list ${list.title}`,
             body: getBody(),
+            onShown() {
+              const now = new Date().toISOString();
+              newNotifications.forEach((n) => {
+                n.update({ notified_user_at: now });
+              });
+            },
           };
         }
 
-        const totalNotifications = getTotal(
-          listsWithCloseNotifications,
-          (list) => list.inboxNotificationsSinceLastSeen.count
-        );
+        const allNotificationsFromLists = listsWithCloseNotifications
+          .map((list) => list.notificationsToNotifyUserAbout.all)
+          .flat();
 
         return {
           date,
           body: commaListsAnd`${listsWithCloseNotifications.map((l) => l.title)}`,
           title: oneLineInlineLists`
-          ${pluralize`${totalNotifications} ${["notification"]}`} 
+          ${pluralize`${allNotificationsFromLists.length} ${["notification"]}`} 
           in
           ${pluralize`${listsWithCloseNotifications.length} ${["list", "lists"]}`}
-        `,
+          `,
+          onShown() {
+            const now = new Date().toISOString();
+            allNotificationsFromLists.forEach((n) => {
+              n.update({ notified_user_at: now });
+            });
+          },
         };
       },
       MAX_DISTANCE_TO_BUNDLE
@@ -98,7 +106,7 @@ const doesListNeedNotification = cachedComputed(function doesListNeedNotificatio
     return false;
   }
 
-  if (!list.inboxNotificationsSinceLastSeen.hasItems) {
+  if (!list.notificationsToNotifyUserAbout.hasItems) {
     log(`list ${list.title} has no new notifications since last seen`);
     return false;
   }

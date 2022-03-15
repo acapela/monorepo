@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
-import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/desktop/analytics/types";
 import { MaybePromise } from "@aca/shared/promises";
 import { MaybeCleanup } from "@aca/shared/types";
+import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/shared/types/analytics";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 

@@ -131,7 +131,7 @@ export function color(input: string, config: Thunk<ColorPredefinedVariants> = {}
   return self;
 }
 
-const HOVER_COLOR_CHANGE = 5;
+const HOVER_COLOR_CHANGE = 4;
 
 export function getColorLightnessVariant(color: string, ratio = 1): string {
   if (isColorDark(color)) {

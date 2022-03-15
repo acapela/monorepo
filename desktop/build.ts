@@ -28,6 +28,9 @@ async function startBuildForEnv(env: BuildEnvironment) {
 
 async function start() {
   console.info(`Building desktop app...`);
+  const lastArg = process.argv.pop();
+  if (lastArg === "staging") return startBuildForEnv("staging");
+  if (lastArg === "production") return startBuildForEnv("production");
   await startBuildForEnv("staging");
   await startBuildForEnv("production");
 }

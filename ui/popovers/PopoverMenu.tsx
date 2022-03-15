@@ -1,14 +1,19 @@
 import { runInAction } from "mobx";
-import Link from "next/link";
 import React, { ReactNode, RefObject, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 
-import { openInNewTab } from "@aca/frontend/src/utils/openInNewTab";
 import { theme } from "@aca/ui/theme";
 
 import { UIDropdownPanelBody } from "./DropdownPanelBody";
 import { Popover, PopoverPlacement } from "./Popover";
+
+function openInNewTab(href: string) {
+  Object.assign(document.createElement("a"), {
+    target: "_blank",
+    href: href,
+  }).click();
+}
 
 interface Props {
   className?: string;
@@ -73,9 +78,9 @@ export const PopoverMenu = styled<Props>(
 
             if ("href" in option) {
               return (
-                <Link key={option.key ?? option.label} href={option.href} passHref>
+                <a key={option.key ?? option.label} href={option.href}>
                   <a>{labelNode}</a>
-                </Link>
+                </a>
               );
             }
 
@@ -100,7 +105,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
 
   ${theme.typo.action.regular.readingLineHeight.medium};
   ${theme.transitions.hover()};
-  ${theme.box.selectOption};
+  ${theme.box.items.selectItem.padding.size.radius};
 
   ${theme.colors.panels.popover.interactive}
 

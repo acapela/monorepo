@@ -55,5 +55,6 @@ export const ListEditTools = styledObserver(({ listId, className }: Props) => {
 
 const UIHolder = styled.div`
   display: flex;
+  align-items: center;
   ${theme.spacing.actions.asGap}
 `;

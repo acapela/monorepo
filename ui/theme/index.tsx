@@ -13,6 +13,7 @@ import { transitions } from "./transitions";
 import { typo } from "./typo";
 import { buildStyledTheme } from "./utils/buildStyledTheme";
 import { font } from "./utils/font";
+import { gradient } from "./utils/gradient";
 import { zIndexValues } from "./zIndex";
 
 export const defaultTheme = {
@@ -32,6 +33,15 @@ export const defaultTheme = {
 
 export const darkTheme: typeof defaultTheme = {
   ...defaultTheme,
+  gradients: {
+    actionPageBg: gradient({
+      steps: [
+        { color: "#111", progress: 0 },
+        { color: "#222", progress: 1 },
+      ],
+      direction: 135,
+    }),
+  },
   colors: darkThemeColors,
 };
 

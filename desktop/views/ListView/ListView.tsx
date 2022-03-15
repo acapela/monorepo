@@ -3,23 +3,19 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
-import { getInboxLists, getInboxListsById, isInboxList, outOfInboxLists } from "@aca/desktop/domains/list/all";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
+import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
-import { useDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
-import { HorizontalScroller } from "@aca/ui/HorizontalScroller";
-import { HStack } from "@aca/ui/Stack";
+import { ListFilters } from "@aca/desktop/ui/Filters";
 import { theme } from "@aca/ui/theme";
 
-import { ListEditTools } from "./EditTools";
-import { ListFilters } from "./Filters";
-import { ListsTabBar } from "./ListsTabBar";
+import { ListViewFirstItemsPreloader } from "./ListViewFirstItemsPreloader";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
+import { ListViewTopBar } from "./Topbar";
+import { ListViewZenOverlay } from "./ZenMode";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
@@ -27,144 +23,110 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const displayedList = getInboxListsById(listId);
-  const hasSettledFocusedTarget = useDebouncedValue(!!uiStore.focusedTarget, 100);
+  const list = getInboxListsById(listId);
 
-  const listsToDisplay = isInboxList(displayedList?.id ?? "") ? getInboxLists() : outOfInboxLists;
-
-  const allNotifications = displayedList?.getAllNotifications() ?? [];
-
-  const notificationGroups = allNotifications ? groupNotifications(allNotifications) : null;
+  const notificationGroups = list?.getAllGroupedNotifications() ?? [];
 
   const isInCelebrationMode = uiStore.isDisplayingZenImage;
 
   useEffect(() => {
-    if (!displayedList) return;
+    if (!list) return;
 
-    displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+    list.listEntity?.update({ seen_at: new Date().toISOString() });
 
     return () => {
-      displayedList.listEntity?.update({ seen_at: new Date().toISOString() });
+      const listEntity = list.listEntity;
+      if (listEntity && !listEntity.isRemoved()) {
+        listEntity.update({ seen_at: new Date().toISOString() });
+      }
     };
-  }, [displayedList]);
+  }, [list]);
 
   useEffect(() => {
-    if (isInCelebrationMode && allNotifications.length > 0) {
+    if (isInCelebrationMode && notificationGroups.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
-  }, [isInCelebrationMode, allNotifications.length]);
+  }, [isInCelebrationMode, notificationGroups.length]);
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
+      {isInCelebrationMode && (
+        <UINotificationZeroHolder>
+          <ListViewZenOverlay />
+        </UINotificationZeroHolder>
+      )}
+      <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
-        <UITabsBar>
-          <ListsTabBar activeListId={listId} lists={listsToDisplay} />
-        </UITabsBar>
-        {displayedList?.isCustom && (
+        {list?.isCustom && (
           <UIListTools>
-            <ListFilters listId={listId} />
-            <ListEditTools listId={listId} />
+            <ListFilters
+              value={list.listEntity?.typedFilters ?? []}
+              onChange={(filters) => {
+                list?.listEntity?.update({ filters });
+              }}
+            />
           </UIListTools>
         )}
 
-        {isInCelebrationMode ? (
-          <UINotificationZeroHolder>
-            <UINotificationZeroPanel>You've reached notification zero.</UINotificationZeroPanel>
-          </UINotificationZeroHolder>
-        ) : (
-          <HStack style={{ height: "100%" }}>
-            {displayedList && (notificationGroups?.length ?? 0) === 0 && <ZeroNotifications key={listId} />}
+        <UIListsScroller>
+          {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
+            <ZeroNotifications key={listId} />
+          )}
 
-            {displayedList && notificationGroups && notificationGroups.length > 0 && (
-              <>
-                {!hasSettledFocusedTarget &&
-                  displayedList.getNotificationsToPreload().map((notificationToPreload, index) => {
-                    return (
-                      <PreloadNotificationPreview
-                        priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                        key={notificationToPreload.id}
-                        url={notificationToPreload.url}
-                      />
-                    );
-                  })}
-                <UINotifications>
-                  {notificationGroups?.map((notificationOrGroup) => {
-                    if (getIsNotificationsGroup(notificationOrGroup)) {
-                      return (
-                        <NotificationsGroupRow
-                          list={displayedList}
-                          key={notificationOrGroup.id}
-                          group={notificationOrGroup}
-                        />
-                      );
-                    }
+          {list && notificationGroups && notificationGroups.length > 0 && (
+            <>
+              <ListViewFirstItemsPreloader list={list} />
 
-                    return (
-                      <NotificationRow
-                        list={displayedList}
-                        key={notificationOrGroup.id}
-                        notification={notificationOrGroup}
-                      />
-                    );
-                  })}
-                </UINotifications>
-              </>
-            )}
-          </HStack>
-        )}
+              <UINotifications>
+                {notificationGroups?.map((notificationOrGroup) => {
+                  if (getIsNotificationsGroup(notificationOrGroup)) {
+                    return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
+                  }
+
+                  return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
+                })}
+              </UINotifications>
+            </>
+          )}
+        </UIListsScroller>
       </UIHolder>
     </TraySidebarLayout>
   );
 });
 
 const UIHolder = styled.div<{}>`
-  height: 100%;
-  width: 100%;
-  overflow-y: hidden;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
 `;
 
 const UINotifications = styled.div`
+  ${appViewContainerStyles};
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 4px;
   min-height: 0;
   overflow-y: auto;
 
-  padding-right: 15px;
-  /* Prevents the last notification in the list from hiding under the footer */
   padding-bottom: 48px;
 
-  /* Sums up to 24px when adding up the padding-bottom in ListTabLabel */
-  margin-top: 20px;
-`;
-
-const UITabsBar = styled(HorizontalScroller)`
-  padding-top: 2px;
-  margin-right: 16px;
+  padding-top: 10px;
 `;
 
 const UINotificationZeroHolder = styled.div`
   position: absolute;
   display: block;
-
-  left: 90px;
-  bottom: 200px;
-`;
-
-const UINotificationZeroPanel = styled.div`
-  height: 60px;
-  width: 300px;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  display: inline-flex;
-  ${theme.colors.layout.background.opacity(0.7).asBg};
-  backdrop-filter: blur(16px);
-  ${theme.radius.primaryItem}
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  overflow: hidden;
 `;
 
 const UIListTools = styled.div`
+  ${appViewContainerStyles};
   display: flex;
   min-width: 0;
   ${theme.spacing.actions.asGap}
@@ -176,8 +138,11 @@ const UIListTools = styled.div`
   ${ListFilters} {
     flex-grow: 1;
   }
+`;
 
-  ${ListEditTools} {
-    padding-top: 4px;
-  }
+const UIListsScroller = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 `;

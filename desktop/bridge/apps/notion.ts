@@ -5,8 +5,8 @@ import { Notification, Notification_Notion } from "@aca/gql";
 export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
 export type NotificationNotionPartial = Omit<
   Notification_Notion,
-  "id" | "notification" | "notification_id" | "__typename"
->;
+  "id" | "notification" | "notification_id" | "__typename" | "notion_space_id" | "space_id"
+> & { synced_spaced_id: string };
 
 export type NotionNotificationType =
   | "notification_notion_user_mentioned"
@@ -22,22 +22,17 @@ export type NotionWorkerSync = {
 
 export const notionSyncPayload = createChannelBridge<NotionWorkerSync>("notion-worker-sync");
 
-interface NotionSpaces {
-  selected: string[]; //id
-  allSpaces: NotionSpace[];
-}
-
 export interface NotionSpace {
   id: string;
   name: string;
 }
 
-const DEFAULT_SELECTED_SPACE_VALUE = {
-  selected: [],
-  allSpaces: [],
-};
+export const notionSelectedSpaceValue = createBridgeValue<{ selected: string[] }>("notion-selected-spaces", {
+  getDefault: () => ({ selected: [] }),
+  isPersisted: true,
+});
 
-export const notionSelectedSpaceValue = createBridgeValue<NotionSpaces>("notion-spaces", {
-  getDefault: () => DEFAULT_SELECTED_SPACE_VALUE,
+export const notionAvailableSpacesValue = createBridgeValue<{ spaces: NotionSpace[] }>("notion-available-spaces", {
+  getDefault: () => ({ spaces: [] }),
   isPersisted: true,
 });

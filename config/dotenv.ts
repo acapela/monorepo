@@ -24,22 +24,14 @@ function getDotEnvPath() {
  *
  * We make it const so it can be used to provide autocompletion for type-safe process.env.[name]
  */
-const requiredEnvVarNames = [
-  "STAGE",
+const requiredEnvVarNames = ["STAGE", "LOGGING_LEVEL"] as const;
+
+const requiredEnvVarNamesBackend = [
   "DB_HOST",
   "DB_PORT",
   "DB_USER",
   "DB_NAME",
   "DB_PASSWORD",
-  "LOGGING_LEVEL",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "BACKEND_AUTH_TOKEN",
-  "SLACK_CLIENT_ID",
-  "SLACK_CLIENT_SECRET",
-] as const;
-
-const requiredEnvVarNamesBackend = [
   "HASURA_ENDPOINT",
   "HASURA_ADMIN_SECRET",
   "HASURA_EVENT_SECRET",
@@ -48,22 +40,20 @@ const requiredEnvVarNamesBackend = [
   "HASURA_API_ADMIN_ROLE",
   "HASURA_ACTION_SECRET",
   "GOOGLE_STORAGE_BUCKET",
-  "SONIX_API_KEY",
-  "SONIX_CALLBACK_SECRET",
-  "FRONTEND_URL",
   "LINEAR_CLIENT_ID",
   "LINEAR_CLIENT_SECRET",
   "LINEAR_OAUTH_SECRET",
-] as const;
-
-const requiredEnvVarNamesFrontend = [
-  "HASURA_HOST",
   "AUTH_SECRET",
   "AUTH_JWT_TOKEN_SECRET",
   "NEXTAUTH_URL",
-  "HASURA_WEBSOCKET_ENDPOINT",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "SLACK_CLIENT_ID",
+  "SLACK_CLIENT_SECRET",
   "FRONTEND_URL",
 ] as const;
+
+const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
 
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",

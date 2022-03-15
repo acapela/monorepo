@@ -8,12 +8,16 @@ import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@a
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
+import { accountEntity } from "./account";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationJiraEntity } from "./notification/jira/issue";
 import { notificationLinearEntity } from "./notification/linear/issue";
 import { notificationNotionEntity } from "./notification/notion/baseNotification";
 import { notificationNotionCommentedEntity } from "./notification/notion/commented";
+import { notionSpaceEntity } from "./notification/notion/notionSpace";
+import { notionSpaceUserEntity } from "./notification/notion/notionSpaceUser";
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
@@ -40,6 +44,9 @@ export const appClientDbEntities = {
   team: teamEntity,
   teamMember: teamMemberEntity,
 
+  notionSpace: notionSpaceEntity,
+  notionSpaceUser: notionSpaceUserEntity,
+
   notification: notificationEntity,
   notificationList: notificationListEntity,
   notificationNotion: notificationNotionEntity,
@@ -49,6 +56,8 @@ export const appClientDbEntities = {
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
+  notificationJira: notificationJiraEntity,
+  account: accountEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
 };

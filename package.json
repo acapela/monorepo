@@ -15,7 +15,6 @@
       "shared",
       "db",
       "tooling",
-      "richEditor",
       "gql",
       "e2e",
       "clientdb",
@@ -28,12 +27,11 @@
     "code": "code acapela.code-workspace",
     "unstable:scope": "func() { ( npm \"$2\" --prefix \"$1\" --save --package-lock-only --no-package-lock \"$3\" ; ) && npm i;}; func",
     "frontend:dev": "yarn frontend dev",
-    "frontend:test": "yarn frontend test",
-    "frontend:test:watch": "yarn frontend test:watch",
-    "frontend:build": "yarn frontend next:build",
+    "frontend:build": "yarn frontend build",
     "backend:dev": "yarn backend dev",
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",
+    "backend:build": "yarn backend build",
     "docker:up:detach": "yarn docker:up -d",
     "docker:up:force": "yarn docker:up --force-recreate",
     "docker:up": "docker-compose --env-file .env up",
@@ -47,23 +45,21 @@
     "ui": "yarn workspace @aca/ui",
     "db": "yarn workspace @aca/db",
     "clientdb": "yarn workspace @aca/clientdb",
-    "richEditor": "yarn workspace @aca/richEditor",
     "shared": "yarn workspace @aca/shared",
     "e2e": "yarn workspace @aca/e2e",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --all-databases --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:mark-as-applied": "hasura migrate apply --version \"$1\" --skip-execution --project infrastructure/hasura --admin-secret dev",
-    "hasura:seeds": "hasura seed apply --database-name default --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
-    "hasura:meta:reload": "hasura metadata reload --project infrastructure/hasura --admin-secret dev",
+    "hasura:meta:reload": "zx scripts/hasura-meta-reload.mjs",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
-    "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta:reload",
+    "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:meta:reload",
     "tooling:gql-types": "tooling gql frontend --watch",
     "lint": "eslint --max-warnings=0 . && prettier --check .",
-    "test": "yarn frontend:test && yarn backend:test",
+    "test": "yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
     "postinstall": "husky install",
     "start:backend": "yarn backend start",
@@ -73,7 +69,7 @@
     "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
-    "*.{md,yaml,yml,graphql,json}": "prettier --write",
+    "*.{md,yaml,yml,graphql,json,html}": "prettier --write",
     "*.{js,jsx,ts,tsx}": [
       "eslint --max-warnings=0 --fix",
       "prettier --write"
@@ -122,7 +118,8 @@
   },
   "dependencies": {
     "@aca/tooling": "0.1.0",
-    "@install-binary/hasura": "2.1.1",
+    "@install-binary/berglas": "0.6.2",
+    "@install-binary/hasura": "2.3.0",
     "@tiptap/extension-placeholder": "^2.0.0-beta.31",
     "@vvo/tzdb": "^6.44.0",
     "axios": "^0.24.0",
@@ -143,7 +140,8 @@
     "type-fest": "^2.11.1",
     "typescript": "4.5.5",
     "utility-types": "^3.10.0",
-    "ws": "^8.4.2"
+    "ws": "^8.4.2",
+    "zx": "^4.3.0"
   },
   "resolutions": {
     "node-fetch": "2.6.7",
@@ -187,7 +185,7 @@
     }
   },
   "importSort": {
-    ".js, .jsx, .ts, .tsx": {
+    ".js, .jsx, .ts, .tsx, .mjs": {
       "style": "module-and-prefix",
       "parser": "typescript"
     }

@@ -1,4 +1,4 @@
-import { DependencyList, EffectCallback, useEffect, useRef } from "react";
+import { DependencyList, EffectCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 /**
  * Works the same way as normal useEffect, except it ignores the first call of the effect.
@@ -8,6 +8,18 @@ import { DependencyList, EffectCallback, useEffect, useRef } from "react";
 export function useDependencyChangeEffect(callback: EffectCallback, deps: DependencyList) {
   const isFirstEffectRef = useRef(true);
   useEffect(() => {
+    if (isFirstEffectRef.current) {
+      isFirstEffectRef.current = false;
+      return;
+    }
+
+    return callback();
+  }, deps);
+}
+
+export function useDependencyChangeLayoutEffect(callback: EffectCallback, deps: DependencyList) {
+  const isFirstEffectRef = useRef(true);
+  useLayoutEffect(() => {
     if (isFirstEffectRef.current) {
       isFirstEffectRef.current = false;
       return;

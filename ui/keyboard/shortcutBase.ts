@@ -120,6 +120,8 @@ export const initializeDocumentShortcuts = memoize((document: Document) => {
 
           // Handled returned true - prevent propagation of event and other shortcut handlers to be called.
           if (callbackResult === true) {
+            // Don't allow handlers, even registered for the same element to receive them. Treat this event totally finished
+            event.stopImmediatePropagation();
             event.stopPropagation();
             event.preventDefault();
             finallyHandledEvents.add(event);

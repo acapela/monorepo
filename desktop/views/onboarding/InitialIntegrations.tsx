@@ -13,6 +13,7 @@ const completeOnboarding = defineAction({
   name: "Continue",
   icon: <IconArrowRight />,
   private: true,
+  analyticsEvent: "Onboarding Completed",
   canApply: () => !!onboardingStore.hasLinkedApps,
   handler() {
     onboardingStore.onboardingStatus = "complete";
@@ -22,23 +23,29 @@ const completeOnboarding = defineAction({
 export const InitialIntegrationsView = observer(function InitialIntegrationsView() {
   return (
     <UIHolder>
-      <UIHead>
-        <UIHeader>Setup Integrations</UIHeader>
-        <UIDescription>
-          To help you stay on top of things, and make the most of the tools you already use.
-        </UIDescription>
-      </UIHead>
+      <UIBody>
+        <UIHead>
+          <UIHeader>Setup Integrations</UIHeader>
+          <UIDescription>
+            To help you stay on top of things, and make the most of the tools you already use.
+          </UIDescription>
+        </UIHead>
 
-      <IntegrationsManager />
-      <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
+        <IntegrationsManager />
+        <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
+      </UIBody>
     </UIHolder>
   );
 });
 
 const UIHolder = styled.div<{}>`
-  padding: 80px;
-  ${theme.layout.settingsPageMaxWidth};
+  ${theme.colors.layout.background.asBgWithReadableText};
+  flex-grow: 1;
+`;
 
+const UIBody = styled.div`
+  ${theme.layout.settingsPageMaxWidth};
+  padding: 80px;
   gap: 32px;
 
   display: flex;

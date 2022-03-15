@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 
-import { ListViewTray } from "./Tray";
+import { ListViewSidebar } from "./Tray";
 
 interface Props {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface Props {
 export function TraySidebarLayout({ children, footer }: Props) {
   return (
     <>
-      <AppLayout tray={<ListViewTray />} footer={footer}>
+      <AppLayout sidebar={<ListViewSidebar />} footer={footer}>
         {children}
       </AppLayout>
     </>

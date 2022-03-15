@@ -14,7 +14,10 @@ function getSizeChange(previous: ResizeObserverEntry, current: ResizeObserverEnt
  * It is useful for use cases like making sure tooltips has proper position, even if it's content
  * resizes for reasons undetectable for react.
  */
-export function useResizeCallback(ref: RefObject<HTMLElement>, callback: (entry: ResizeObserverEntry) => void) {
+export function useResizeCallback(
+  ref: RefObject<HTMLElement>,
+  callback: (entry: ResizeObserverEntry, element: HTMLElement) => void
+) {
   const previousEntryRef = useRef<ResizeObserverEntry | null>(null);
   useIsomorphicLayoutEffect(() => {
     const element = ref.current;
@@ -24,7 +27,7 @@ export function useResizeCallback(ref: RefObject<HTMLElement>, callback: (entry:
     const resizeObserver = new ResizeObserver(([entry]) => {
       if (previousEntryRef.current === null) {
         previousEntryRef.current = entry;
-        callback(entry);
+        callback(entry, element);
         return;
       }
 
@@ -34,7 +37,7 @@ export function useResizeCallback(ref: RefObject<HTMLElement>, callback: (entry:
 
       if (sizeChange < 1) return;
 
-      callback(entry);
+      callback(entry, element);
     });
 
     resizeObserver.observe(element);

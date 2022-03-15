@@ -106,7 +106,7 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
     width: ${(props) => props.dimensions.innerCircleDiameter}px;
     height: ${(props) => props.dimensions.innerCircleDiameter}px;
 
-    ${theme.colors.layout.background.asBg};
+    background-color: #fff;
     border-radius: ${(props) => props.dimensions.innerCircleDiameter}px;
     transition: 0.2s;
   }

@@ -140,11 +140,11 @@ const UIMenu = styled(PopPresenceAnimator)<{ $maxHeight?: number }>`
     `}
 
   width: 100%;
-  padding: 5px 0;
   min-width: 220px;
   ${theme.radius.panel};
   ${theme.colors.panels.popover.asBgWithReadableText};
   ${theme.shadow.popover};
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
@@ -158,14 +158,14 @@ const UIItems = styled.div`
 
 const UIDivider = styled.div<{}>`
   margin: 5px 0;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(128, 128, 128, 0.1);
   height: 1px;
   width: 100%;
 `;
 
 const UISearch = styled.input`
   ${theme.common.transparentInput}
-  ${theme.box.selectOption};
+  ${theme.box.control.regular.padding.size.radius};
   padding-top: 15px;
   padding-bottom: 15px;
 `;

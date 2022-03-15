@@ -5,66 +5,13 @@
   },
   "display_information": {
     "name": "Acapela",
-    "description": "Capture and prioritise requests",
     "background_color": "#000000",
-    "long_description": "Acapela is a lightweight task manager that works with tools like Slack and Notion. It captures and prioritises requests for your team so they can focus on the things that matter."
-  },
-  "features": {
-    "app_home": {
-      "home_tab_enabled": true,
-      "messages_tab_enabled": true,
-      "messages_tab_read_only_enabled": true
-    },
-    "bot_user": {
-      "display_name": "Acapela",
-      "always_online": true
-    },
-    "shortcuts": [
-      {
-        "name": "Create a request",
-        "type": "global",
-        "callback_id": "global_acapela",
-        "description": "Creates a new request"
-      },
-      {
-        "name": "Create a personal task",
-        "type": "message",
-        "callback_id": "quick_message_acapela",
-        "description": "Creates a new task for yourself from this message"
-      },
-      {
-        "name": "Create group request...",
-        "type": "message",
-        "callback_id": "message_acapela",
-        "description": "Create a new group request from this message"
-      }
-    ],
-    "slash_commands": [
-      {
-        "command": "/acapela",
-        "url": "https://app.acape.la/api/backend/slack/commands",
-        "description": "Create a new request",
-        "usage_hint": "[message] @people",
-        "should_escape": true
-      }
-    ]
+    "description": "All your work notifications in one inbox",
+    "long_description": "Acapela lets you take control of your notifications. Capture, filter and action them all from one place. Unblock your team twice as fast with slick keyboard shortcuts in a high-performance desktop app."
   },
   "oauth_config": {
     "redirect_urls": ["https://app.acape.la/api/backend/slack/oauth_redirect", "https://app.acape.la"],
     "scopes": {
-      "bot": [
-        "channels:join",
-        "channels:read",
-        "commands",
-        "im:write",
-        "users.profile:read",
-        "users:read",
-        "users:read.email",
-        "chat:write",
-        "im:read",
-        "mpim:read",
-        "groups:read"
-      ],
       "user": [
         "channels:history",
         "groups:history",
@@ -77,29 +24,17 @@
         "mpim:read",
 
         "users:read",
-
-        "reactions:read",
-        "chat:write",
-        "im:write",
-        "mpim:write",
-        "users.profile:read",
-        "users:read.email"
+        "reactions:read"
       ]
     }
   },
   "settings": {
-    "interactivity": {
-      "is_enabled": true,
-      "request_url": "https://app.acape.la/api/backend/slack/events",
-      "message_menu_options_url": "https://app.acape.la/api/backend/slack/options"
-    },
     "org_deploy_enabled": false,
     "socket_mode_enabled": false,
     "token_rotation_enabled": false,
     "event_subscriptions": {
       "request_url": "https://app.acape.la/api/backend/slack/events",
-      "user_events": ["message.channels", "message.groups", "message.im", "message.mpim", "reaction_added"],
-      "bot_events": ["app_uninstalled", "app_home_opened"]
+      "user_events": ["message.channels", "message.groups", "message.im", "message.mpim", "reaction_added"]
     }
   }
 }

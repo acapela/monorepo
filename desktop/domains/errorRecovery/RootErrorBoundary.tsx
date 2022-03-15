@@ -1,28 +1,18 @@
-import React, { Component, ReactNode } from "react";
+import * as Sentry from "@sentry/react";
+import React from "react";
 
 import { FocusedActionView } from "@aca/desktop/views/FocusedActionView";
 
 import { ErrorRecoveryButtons } from "./ErrorRecoveryButtons";
 
-interface State {
-  error: unknown;
-}
+const ErrorRecoveryView = () => (
+  <FocusedActionView title="App exception detected" description="Our engineering team has been notified">
+    <ErrorRecoveryButtons />
+  </FocusedActionView>
+);
 
-export class RootErrorBoundary extends Component<{}, State> {
-  state: State = { error: null };
-  componentDidCatch(error: Error) {
-    this.setState({ error });
-  }
-
-  render(): ReactNode {
-    if (!this.state.error) {
-      return <>{this.props.children}</>;
-    }
-
-    return (
-      <FocusedActionView title="App exception detected" description="Our engineering team has been notified">
-        <ErrorRecoveryButtons />
-      </FocusedActionView>
-    );
-  }
-}
+export const RootErrorBoundary = ({ children }: { children: React.ReactNode }) => (
+  <Sentry.ErrorBoundary fallback={ErrorRecoveryView} beforeCapture={(scope) => scope.setTag("severity", "crash")}>
+    {children}
+  </Sentry.ErrorBoundary>
+);

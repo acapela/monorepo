@@ -9,7 +9,6 @@
       "@aca/ui/*": ["./ui/*"],
       "@aca/gql/*": ["./gql/*"],
       "@aca/db/*": ["./db/*"],
-      "@aca/richEditor/*": ["./richEditor/*"],
       "@aca/config/*": ["./config/*"]
     }
   }

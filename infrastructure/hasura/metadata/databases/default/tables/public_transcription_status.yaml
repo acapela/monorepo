@@ -1,4 +1,0 @@
-table:
-  name: transcription_status
-  schema: public
-is_enum: true

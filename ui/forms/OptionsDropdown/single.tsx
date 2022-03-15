@@ -21,6 +21,7 @@ interface Props<I> {
   placeholder?: string;
   icon?: ReactNode;
   isDisabled?: boolean;
+  children?: ReactNode;
 }
 
 export function SingleOptionDropdown<I>({
@@ -35,6 +36,7 @@ export function SingleOptionDropdown<I>({
   onChange,
   icon,
   isDisabled,
+  children,
 }: Props<I>) {
   return (
     <MultipleOptionsDropdown<I>
@@ -59,7 +61,9 @@ export function SingleOptionDropdown<I>({
 
         return <SelectedOptionPreview label={labelGetter(item)} icon={iconGetter?.(item)} />;
       }}
-    />
+    >
+      {children}
+    </MultipleOptionsDropdown>
   );
 }
 

@@ -1,18 +1,18 @@
 import React from "react";
 
 import { trackingEvent } from "@aca/desktop/analytics";
+import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
+import { getIntegration } from "@aca/desktop/bridge/apps/shared";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { getDb } from "@aca/desktop/clientdb";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
-import { IconCheck, IconCheckboxSquare, IconExternalLink, IconLink1, IconTarget } from "@aca/ui/icons";
+import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
 
-import { OpenAppUrl, openAppUrl } from "../bridge/apps";
-import { getIntegration } from "../bridge/apps/shared";
-import { NotificationEntity } from "../clientdb/notification";
 import { defineAction } from "./action";
 import { isNotFocusingPreviewAnd } from "./focus";
 import { currentNotificationActionsGroup } from "./groups";
@@ -71,6 +71,28 @@ export const copyNotificationLink = defineAction({
   },
 });
 
+export const markNotificationUnread = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
+  keywords: ["snooze", "remind"],
+  canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
+  handler(context) {
+    context.getTarget("notification")?.update({ last_seen_at: null });
+  },
+});
+
+export const markNotificationRead = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark read" : "Mark notification as read"),
+  keywords: ["seen", "done"],
+  canApply: (ctx) => !ctx.getTarget("notification")?.last_seen_at,
+  handler(context) {
+    context.getTarget("notification")?.update({ last_seen_at: new Date().toISOString() });
+  },
+});
+
 export const resolveNotification = defineAction({
   icon: <IconCheck />,
   group: currentNotificationActionsGroup,
@@ -86,21 +108,7 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["Mod", "D"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  canApply: isNotFocusingPreviewAnd((ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    if (notification) {
-      return !notification.isResolved;
-    }
-
-    const group = ctx.getTarget("group");
-
-    if (group) {
-      return group.notifications.some((notification) => !notification.isResolved);
-    }
-
-    return false;
-  }),
+  canApply: isNotFocusingPreviewAnd(() => true),
   handler(context) {
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
@@ -135,8 +143,11 @@ export const unresolveNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: isNotFocusingPreviewAnd((ctx) => {
-    return ctx.hasTarget("notification") || ctx.hasTarget("group");
+    return (
+      ctx.getTarget("notification")?.isResolved || !!ctx.getTarget("group")?.notifications.some((n) => n.isResolved)
+    );
   }),
+  analyticsEvent: "Notification Unresolved",
   handler(context) {
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");

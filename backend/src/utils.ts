@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
 
+import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
+import { IS_DEV } from "@aca/shared/dev";
 import { verifyJWT } from "@aca/shared/jwt";
 
 import { extractAndAssertBearerToken } from "./authentication";
@@ -60,4 +62,12 @@ export function getUserIdFromRequest(req: Request): string {
     throw new BadRequestError("user id missing");
   }
   return userId;
+}
+
+export async function getPublicBackendURL() {
+  if (IS_DEV) {
+    return `${await getDevPublicTunnelURL(3000)}/api/backend`;
+  }
+
+  return process.env.BACKEND_API_ENDPOINT;
 }

@@ -1,9 +1,10 @@
 import { BrowserWindow } from "electron";
 import { autorun, makeAutoObservable, observable, runInAction } from "mobx";
 
-import { applicationStateBridge, persistedApplicationStateBridge } from "@aca/desktop/bridge/system";
-import { createLogger } from "@aca/shared/log";
+import { applicationFocusStateBridge, applicationStateBridge } from "@aca/desktop/bridge/system";
 import { autorunEffect } from "@aca/shared/mobx/utils";
+
+import { makeLogger } from "../domains/dev/makeLogger";
 
 export const appState = makeAutoObservable(
   {
@@ -17,7 +18,7 @@ export const appState = makeAutoObservable(
   }
 );
 
-const log = createLogger("App state");
+const log = makeLogger("App state");
 
 autorunEffect(() => {
   const { mainWindow } = appState;
@@ -27,14 +28,14 @@ autorunEffect(() => {
 
   applicationStateBridge.update({ isFocused: mainWindow.isFocused() });
   appState.isMainWindowFocused = mainWindow.isFocused();
-  persistedApplicationStateBridge.update({ lastAppFocusDateTs: Date.now() });
+  applicationFocusStateBridge.update({ lastAppFocusDateTs: Date.now() });
 
   const handleFocus = () => {
     log("Main window focused");
     applicationStateBridge.update({ isFocused: true });
     appState.isMainWindowFocused = true;
 
-    persistedApplicationStateBridge.update({ lastAppFocusDateTs: Date.now() });
+    applicationFocusStateBridge.update({ lastAppFocusDateTs: Date.now() });
   };
 
   const handleBlur = () => {
@@ -42,7 +43,7 @@ autorunEffect(() => {
 
     applicationStateBridge.update({ isFocused: false });
 
-    persistedApplicationStateBridge.update({ lastAppBlurredDateTs: Date.now() });
+    applicationFocusStateBridge.update({ lastAppBlurredDateTs: Date.now() });
 
     appState.isMainWindowFocused = false;
   };

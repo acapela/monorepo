@@ -10,9 +10,10 @@ interface Props {
   title: string;
   description: string;
   action?: ActionData;
+  target?: unknown;
 }
 
-export function Toast({ title, description, action }: Props) {
+export function Toast({ title, description, action, target }: Props) {
   return (
     <UIToast presenceStyles={{ opacity: [0, 1], y: [10, 0] }}>
       <UIHead>
@@ -20,15 +21,14 @@ export function Toast({ title, description, action }: Props) {
         <UIDescription>{description}</UIDescription>
       </UIHead>
 
-      {action && <ActionButton kind="primary" action={action} />}
+      {action && <ActionButton kind="primary" action={action} target={target} />}
     </UIToast>
   );
 }
 
 export const UIToast = styled(PresenceAnimator)`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
-  ${theme.box.previewPopover}
-  ${theme.radius.primaryItem}
+  ${theme.box.panel.primaryPopover.padding.radius}
   ${theme.shadow.modal}
   display: flex;
   flex-direction: column;

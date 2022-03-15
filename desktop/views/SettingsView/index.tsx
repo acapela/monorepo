@@ -2,13 +2,18 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
+import { exitSettings } from "@aca/desktop/actions/navigation";
+import { AppLayout } from "@aca/desktop/layout/AppLayout";
+import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { desktopRouter } from "@aca/desktop/routes";
 import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
+import { UINavItem } from "@aca/desktop/ui/nav/NavItem";
+import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
+import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { theme } from "@aca/ui/theme";
 
 import { AccountSettings } from "./Account";
-import { ExperimentalSettings } from "./Experimental";
+import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
 
 interface SettingsSection {
@@ -22,16 +27,16 @@ export const settingsSections: SettingsSection[] = [
     label: "Integrations",
   },
   {
+    id: "general",
+    label: "General",
+  },
+  {
     id: "account",
     label: "Account",
   },
   {
     id: "notifications",
     label: "Notifications",
-  },
-  {
-    id: "experimental",
-    label: "Experimental",
   },
 ];
 
@@ -44,7 +49,16 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
     desktopRouter.navigate("settings", { section: sectionId });
   }
   return (
-    <TraySidebarLayout>
+    <AppLayout>
+      <SystemTopBar
+        isFullWidth
+        navigationItems={
+          <>
+            <TopBarActionButton action={exitSettings} />
+          </>
+        }
+        titleNode="Settings"
+      />
       <UIHolder>
         <UIHeader>Settings</UIHeader>
 
@@ -66,7 +80,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
           </UINav>
           <UIActiveSection>
             {sectionId === "integrations" && <IntegrationsManager />}
-            {sectionId === "experimental" && <ExperimentalSettings />}
+            {sectionId === "general" && <GeneralSettings />}
             {sectionId === "notifications" && <NotificationsSettings />}
             {sectionId === "account" && <AccountSettings />}
             <UIVersionInfo>
@@ -76,13 +90,13 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
           </UIActiveSection>
         </UIBody>
       </UIHolder>
-    </TraySidebarLayout>
+    </AppLayout>
   );
 });
 
 const UIHolder = styled.div<{}>`
-  padding: 0 20px;
-
+  ${appViewContainerStyles};
+  padding-top: 24px;
   display: flex;
   flex-direction: column;
   ${theme.layout.settingsPageMaxWidth}
@@ -94,7 +108,7 @@ const UIHolder = styled.div<{}>`
 const UINav = styled.nav`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   max-width: 240px;
   flex-grow: 1;
   width: 100%;
@@ -116,22 +130,14 @@ const UIActiveSection = styled.div`
 `;
 
 const UIHeader = styled.div<{}>`
-  ${theme.typo.pageTitle.semibold};
+  ${theme.typo.pageTitle.medium};
   display: flex;
   align-items: center;
-  ${theme.spacing.actions.asGap}
+  ${theme.spacing.actions.asGap};
+  margin-top: 3px;
 `;
 
 const UIVersionInfo = styled.div`
   ${theme.typo.label.secondary.center};
   margin-top: 24px;
-`;
-
-const UINavItem = styled.div<{ $isActive: boolean }>`
-  ${theme.colors.layout.background.interactive};
-  ${theme.transitions.hover("background-color")}
-  ${theme.box.item}
-  ${theme.radius.button}
-
-  ${(props) => props.$isActive && theme.font.semibold}
 `;

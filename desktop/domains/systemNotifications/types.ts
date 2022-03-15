@@ -3,4 +3,5 @@ export interface ScheduledNotification {
   title: string;
   body?: string;
   onClick?: (notification: Notification) => void;
+  onShown?: () => void;
 }

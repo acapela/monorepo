@@ -1,9 +1,11 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
+import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import {
   getIsLastArrayElement,
   getLastElementFromArray,
@@ -29,6 +31,7 @@ interface Props {
 
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
   const { actionContext } = session;
@@ -102,13 +105,21 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   useShortcut("Enter", () => {
     if (activeAction) {
       onActionSelected(activeAction);
+      return true;
     }
   });
+
+  useClickAway(
+    bodyRef,
+    action(() => {
+      commandMenuStore.session = null;
+    })
+  );
 
   return (
     <BodyPortal>
       <UICover>
-        <UIBody>
+        <UIBody ref={bodyRef}>
           <UIHead>
             <CommandMenuTargetLabel session={session} />
           </UIHead>
@@ -152,7 +163,8 @@ const UICover = styled(FadePresenceAnimator)`
   justify-content: center;
   padding: 20px;
   padding-top: 20vh;
-  ${theme.colors.layout.background.opacity(0.5).asBg}
+  ${theme.colors.layout.background.opacity(0.7).asBg};
+  ${theme.shadow.popover};
 `;
 const UIBody = styled(PopPresenceAnimator)`
   ${theme.colors.layout.actionPanel.asBg};
@@ -167,13 +179,10 @@ const UIBody = styled(PopPresenceAnimator)`
   overflow: hidden;
 `;
 const UIInput = styled.input`
-  ${theme.typo.pageTitle};
-  background: none;
-  color: inherit;
-  border: none;
-  outline: none;
+  ${theme.common.transparentInput}
   width: 100%;
-  padding: 8px 24px;
+  ${theme.box.items.primarySelectItem.size.padding};
+  ${theme.typo.pageTitle};
   margin-bottom: 16px;
 
   ::placeholder {

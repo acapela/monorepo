@@ -1,8 +1,7 @@
 import { autorun, makeAutoObservable } from "mobx";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
-
-import { integrationClients } from "../domains/integrations";
+import { integrationClients } from "@aca/desktop/domains/integrations";
 
 /**
  * Store responsible for keeping information about current onboarding.
@@ -15,7 +14,7 @@ export const onboardingStore = makeAutoObservable({
   },
 
   get hasLinkedApps() {
-    return clients.some((ic) => ic.getIsConnected());
+    return clients.some((ic) => ic.getAccounts().length > 0);
   },
 
   onboardingStatus: "unknown" as "unknown" | "ongoing" | "complete",

@@ -60,7 +60,7 @@ const UIIcon = styled.div`
 `;
 
 const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
-  padding: 16px 24px;
+  ${theme.box.items.primarySelectItem.size.padding};
   ${theme.typo.content.medium};
   display: flex;
   ${theme.spacing.actions.asGap};
@@ -86,11 +86,12 @@ const UIName = styled.div`
 
 const UIShortcut = styled(ShortcutDescriptor)`
   gap: 4px;
-  ${theme.typo.label.semibold};
+  ${theme.typo.label.medium};
   .key {
     line-height: 1;
     ${theme.colors.layout.actionPanel.active.asBg};
-    ${theme.box.hint};
+    ${theme.box.panel.shortcut.size.padding.radius};
+    text-align: center;
     ${theme.radius.badge};
     min-width: 2.5ch;
   }

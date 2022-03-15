@@ -1,6 +1,6 @@
+import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
-import { PublicErrorData } from "../domains/errors/types";
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
@@ -12,7 +12,7 @@ export const toggleFullscreenRequest = createInvokeBridge("toggle-fullscreen");
 export const toggleDevtoolsRequest = createInvokeBridge<boolean>("toggle-devtools");
 export const appUpdateAndRestartRequest = createInvokeBridge("update-and-restart");
 export const checkForUpdatesRequest = createInvokeBridge("check-for-updates");
-export const setBadgeCountRequest = createInvokeBridge<number>("set-badge-count");
+export const setBadgeCountRequest = createInvokeBridge<number | string>("set-badge-count");
 export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 export const showMainWindowRequest = createInvokeBridge("show-main-window");
 export const waitForDoNotDisturbToFinish = createInvokeBridge("wait-for-do-not-disturb-to-finish");
@@ -29,7 +29,7 @@ export const applicationStateBridge = createBridgeValue("application-state", {
   }),
 });
 
-export const persistedApplicationStateBridge = createBridgeValue("persisted-application-state", {
+export const applicationFocusStateBridge = createBridgeValue("application-focus-state", {
   getDefault: () => ({
     // Note: as we have browser view, focus 'true' does not mean our React app has focus
     lastAppFocusDateTs: Date.now(),
@@ -45,5 +45,6 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
     enableDesktopNotifications: true,
     showNotificationsCountBadge: true,
     notificationsCountBadgeListIds: [] as string[],
+    showShortcutsBar: true,
   }),
 });

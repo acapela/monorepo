@@ -4,10 +4,8 @@ import { defineEntity } from "@aca/clientdb";
 import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
-import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { userSlackInstallationEntity } from "@aca/desktop/clientdb/userSlackInstallation";
 import { NotificationSlackMessageFragment } from "@aca/gql";
-
-import { userSlackInstallationEntity } from "../../userSlackInstallation";
 
 const notificationSlackMessageFragment = gql`
   fragment NotificationSlackMessage on notification_slack_message {
@@ -22,6 +20,7 @@ const notificationSlackMessageFragment = gql`
     slack_thread_ts
     conversation_name
     conversation_type
+    user_slack_installation_id
   }
 `;
 
@@ -30,19 +29,21 @@ export const notificationSlackMessageEntity = defineEntity<NotificationSlackMess
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
-  getDefaultValues: () => ({
-    __typename: "notification_slack_message",
-    slack_message_ts: null,
-    slack_thread_ts: null,
-    slack_user_id: null,
-    conversation_type: null,
-    ...getGenericDefaultData(),
-  }),
   sync: createHasuraSyncSetupFromFragment<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
 }).addConnections((slackMessage, { getEntity }) => {
+  const getSlackInstallation = () => {
+    const slackInstallationId = slackMessage.user_slack_installation_id;
+    return slackInstallationId ? getEntity(userSlackInstallationEntity).findById(slackInstallationId) : null;
+  };
   return {
+    get slackInstallation() {
+      return getSlackInstallation();
+    },
     get slackTeamId() {
-      return getEntity(userSlackInstallationEntity).all[0].slack_team_id;
+      return getSlackInstallation()?.team_id;
+    },
+    get workspaceName() {
+      return getSlackInstallation()?.team_name;
     },
   };
 });

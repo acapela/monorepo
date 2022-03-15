@@ -66,6 +66,7 @@ export interface GetNotificationLogResult {
     activity: Record<string, ActivityPayload<ActivityType>>;
     discussion: Record<string, DiscussionPayload>;
     notion_user: Record<string, NotionUserPayload>;
+    collection?: Record<string, CollectionPayload>;
   };
 }
 
@@ -91,14 +92,14 @@ export interface NotificationPayload {
     channel: string;
   };
 }
-type BlockType = "page" | unknown;
+type BlockType = "page" | "collection_view_page" | unknown;
 
 export type BlockPayload<T extends BlockType> = {
   role: string;
   value: BlockValue<T>;
 };
 
-interface BlockValueCommon<T extends BlockType = "page"> {
+interface BlockValueCommon<T extends BlockType> {
   id: string;
   version: number;
   type: T;
@@ -125,7 +126,44 @@ export interface PageBlockValue extends BlockValueCommon<"page"> {
   };
 }
 
-export type BlockValue<T extends BlockType> = T extends "page" ? PageBlockValue : BlockValueCommon<unknown>;
+export interface CollectionViewPageBlockValue extends BlockValueCommon<"collection_view_page"> {
+  alive: boolean;
+  collection_id: string;
+  created_by_id: string;
+  created_by_table: string;
+  created_time: number;
+
+  format: {
+    collection_pointer: {
+      id: string;
+      spaceId: string;
+      table: "collection";
+    };
+  };
+
+  view_ids: string[];
+}
+
+export type BlockValue<T extends BlockType> = T extends "page"
+  ? PageBlockValue
+  : T extends "collection_view_page"
+  ? CollectionViewPageBlockValue
+  : BlockValueCommon<unknown>;
+
+export interface CollectionPayload {
+  role: string;
+  value: {
+    id: string;
+    version: number;
+    name: Array<string[]>; //[["Maybe a Collection"]],
+    schema: unknown;
+    parent_id: string;
+    parent_table: string; //"block",
+    alive: boolean;
+    migrated: boolean;
+    space_id: string;
+  };
+}
 
 export interface ActivityPayload<T extends ActivityType> {
   role: string;

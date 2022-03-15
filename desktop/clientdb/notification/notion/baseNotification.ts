@@ -14,6 +14,7 @@ import {
 } from "@aca/gql";
 
 import { notificationNotionCommentedEntity } from "./commented";
+import { notionSpaceEntity } from "./notionSpace";
 import { notificationNotionUserInvitedEntity } from "./userInvited";
 import { notificationNotionUserMentionedEntity } from "./userMentioned";
 
@@ -27,6 +28,7 @@ const notificationNotion = gql`
     page_id
     page_title
     space_id
+    notion_space_id
     author_id
   }
 `;
@@ -52,6 +54,9 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   keys: getFragmentKeys<NotificationNotionFragment>(notificationNotion),
   getDefaultValues: () => ({
     __typename: "notification_notion",
+    // this shouldn't be null
+    // but it's a side-effect of adding to an existing entity
+    notion_space_id: null,
     space_id: null,
     author_id: null,
     ...getGenericDefaultData(),
@@ -69,6 +74,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
         "updated_at",
         "page_title",
         "author_id",
+        "notion_space_id",
       ],
       updateColumns: ["updated_at", "page_title", "space_id"],
       upsertConstraint: "notification_notion_pkey",
@@ -91,6 +97,12 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
       },
       get notification() {
         return getEntity(notificationEntity).findById(notificationNotion.notification_id);
+      },
+      get workspaceName() {
+        if (!notificationNotion.notion_space_id) {
+          return;
+        }
+        return getEntity(notionSpaceEntity).assertFindById(notificationNotion.notion_space_id).name;
       },
     };
 

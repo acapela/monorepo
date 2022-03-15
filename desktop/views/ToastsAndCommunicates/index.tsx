@@ -16,7 +16,21 @@ import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 
+import { SlackToasts } from "./SlackToasts";
 import { Toast } from "./Toast";
+
+// Open notifications are neither resolved nor snoozed
+function getOpenNotifications() {
+  const listIdsToShowBadge = applicationWideSettingsBridge.get().notificationsCountBadgeListIds;
+
+  if (!listIdsToShowBadge?.length) {
+    return getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).all;
+  }
+
+  const lists = getNullableDb()?.notificationList.query({ id: listIdsToShowBadge }).all ?? [];
+
+  return uniq(lists.map((l) => l.inboxNotifications.all).flat());
+}
 
 export const ToastsAndCommunicatesView = observer(() => {
   const { isUpdateReadyToInstall, updateDownloadingPercent } = applicationStateBridge.get();
@@ -33,29 +47,23 @@ export const ToastsAndCommunicatesView = observer(() => {
       setBadgeCountRequest(0);
       return;
     }
-    const listIdsToShowBadge = applicationWideSettingsBridge.get().notificationsCountBadgeListIds;
 
-    function getCount() {
-      if (!listIdsToShowBadge?.length) {
-        return getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).count;
-      }
+    const openNotifications = getOpenNotifications();
 
-      const lists = getNullableDb()?.notificationList.query({ id: listIdsToShowBadge }).all ?? [];
+    if (openNotifications === undefined) return;
 
-      const uniqueNotifications = uniq(lists.map((l) => l.inboxNotifications.all).flat());
-      return uniqueNotifications.length;
+    const unreadCount = openNotifications.filter((n) => n.isUnread).length;
+    if (unreadCount > 0) {
+      setBadgeCountRequest(unreadCount);
+    } else {
+      setBadgeCountRequest(openNotifications.length > 0 ? "•" : 0);
     }
-
-    const unresolvedNotifications = getCount();
-
-    if (unresolvedNotifications === undefined) return;
-
-    setBadgeCountRequest(unresolvedNotifications);
   });
 
   return (
     <BodyPortal>
       <UIHolder>
+        <SlackToasts />
         {isUpdateReadyToInstall && (
           <Toast
             key="update-ready"

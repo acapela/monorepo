@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { isEqual } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
@@ -80,17 +81,20 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     upsertConstraint: "notification_filter_pkey",
   }),
 }).addConnections((list, { getEntity }) => {
+  const cachedGetIsNotificationPassingFilters = cachedComputed((notification: NotificationEntity) => {
+    return getIsNotificationPassingFilters(notification, connections.typedFilters);
+  });
+
   const passingNotifications = cachedComputed(() => {
-    if (connections.typedFilters.length === 0)
+    if (connections.typedFilters.length === 0) {
       return getEntity(notificationEntity).query({
         // TODO: did it for type-safety. We should probably have .emptyQuery
         // I used simpleQuery for speed (instead of () => false) query
         id: "NO_EXISTING",
       });
+    }
 
-    return getEntity(notificationEntity).query((notification) => {
-      return getIsNotificationPassingFilters(notification, connections.typedFilters);
-    });
+    return getEntity(notificationEntity).query(cachedGetIsNotificationPassingFilters);
   });
 
   const inboxNotifications = cachedComputed(() => {
@@ -103,9 +107,16 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     });
   });
 
+  const getFilters = cachedComputed(
+    (): NotificationFilter[] => {
+      return Array.isArray(list.filters) ? list.filters : [];
+    },
+    { equals: isEqual }
+  );
+
   const connections = {
     get typedFilters(): NotificationFilter[] {
-      return Array.isArray(list.filters) ? list.filters : [];
+      return getFilters();
     },
     get notifications() {
       return passingNotifications();
@@ -115,6 +126,11 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     },
     get inboxNotificationsSinceLastSeen() {
       return inboxNotificationsSinceLastSeen();
+    },
+    // Notifications that we never notified user about
+    // TODO: Name is weird
+    get notificationsToNotifyUserAbout() {
+      return inboxNotificationsSinceLastSeen().query({ notified_user_at: null });
     },
   };
 

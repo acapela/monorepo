@@ -1,41 +1,39 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
+import { action } from "mobx";
 import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
-import { composeActionsFromImports, notificationActions } from "@aca/desktop/actions/all";
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
-import { relativeShortFormatDate } from "@aca/shared/dates/format";
 import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
-import { mobxTicks } from "@aca/shared/mobx/time";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
+import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";
-import { UIDate, UINotificationGroupTitle, UISendersLabel } from "./shared";
+import { RowQuickActions } from "./RowQuickActions";
+import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
-  list: NotificationsList;
 }
 
-export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => {
+export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
   const elementRef = useRef<HTMLDivElement>(null);
 
   const isOpened = openedNotificationsGroupsStore.getIsOpened(group.id);
@@ -53,8 +51,6 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
     group
   );
 
-  mobxTicks.minute.reportObserved();
-
   const isFocused = uiStore.useFocus(group, (group) => group?.id);
 
   const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 200, offDelay: 0 });
@@ -63,23 +59,23 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
     if (!isFocused) return;
     makeElementVisible(elementRef.current);
 
-    return () => {
+    return action(() => {
       if (uiStore.focusedTarget === group) {
         uiStore.focusedTarget = null;
       }
-    };
+    });
   }, [isFocused, group]);
 
   useUserFocusedOnElement(
     elementRef,
-    () => {
+    action(() => {
       uiStore.focusedTarget = group;
-    },
-    () => {
+    }),
+    action(() => {
       if (isFocused) {
         uiStore.focusedTarget = null;
       }
-    }
+    })
   );
 
   const [firstNotification] = group.notifications;
@@ -145,14 +141,22 @@ export const NotificationsGroupRow = styledObserver(({ group, list }: Props) => 
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
-            <UITitleText>{group.name}</UITitleText>
+            {group.name && <UITitleText>{group.name}</UITitleText>}
+            <UINotificationPreviewText>
+              {group.notifications.find((n) => !!n.text_preview)?.text_preview}
+            </UINotificationPreviewText>
           </UITitle>
-          <SnoozeLabel notificationOrGroup={group} />
-          <UIDate>{relativeShortFormatDate(new Date(firstNotification.created_at))}</UIDate>
+          {!isFocused && (
+            <>
+              {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
+              <NotificationDate notification={firstNotification} />
+            </>
+          )}
+          {isFocused && <RowQuickActions target={group} />}
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
-            <NotificationsRows notifications={group.notifications} list={list} />
+            <NotificationsRows notifications={group.notifications} />
           </UINotifications>
         )}
       </ActionTrigger>
@@ -168,10 +172,7 @@ const UISendersPerson = styled.span`
 const UISendersMore = styled.span``;
 
 const UIHolder = styled.div<{ $isFocused: boolean }>`
-  padding: 8px 8px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
+  ${theme.box.items.listRow.size.padding};
 
   ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
 
@@ -193,8 +194,6 @@ const UITitleText = styled.div`
 const UINotifications = styled.div`
   margin-left: 18px;
   padding-left: 20px;
-  margin-top: 8px;
-  margin-bottom: 8px;
   border-left: 2px solid ${theme.colors.layout.divider};
 `;
 

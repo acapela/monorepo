@@ -18,6 +18,7 @@ insert_permissions:
     - id
     - notification_id
     - notion_original_notification_id
+    - notion_space_id
     - page_id
     - page_title
     - space_id
@@ -31,6 +32,7 @@ select_permissions:
     - id
     - notification_id
     - notion_original_notification_id
+    - notion_space_id
     - page_id
     - page_title
     - space_id

@@ -1,21 +1,25 @@
+import { ReactNode } from "react";
+
 import { cachedComputed } from "@aca/clientdb";
+import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
 import { None } from "@aca/shared/none";
-import { isNotNullish } from "@aca/shared/nullish";
 
 interface DefineListConfig {
   id: string;
   name: string;
+  icon?: ReactNode;
   isCustom?: boolean;
-  filter?: (notification: NotificationEntity) => boolean;
+  filter?: EntityFilterInputByDefinition<typeof notificationEntity>;
   getNotifications?: () => NotificationEntity[];
   listEntity?: NotificationListEntity;
+  dontShowCount?: boolean;
 }
 
 // For non-grouped notifications the index is a single number
@@ -29,10 +33,12 @@ export function defineNotificationsList({
   filter,
   getNotifications,
   listEntity,
+  icon,
+  dontShowCount = false,
 }: DefineListConfig) {
   assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
-  const getAllNotifications = cachedComputed(() => {
+  const getRawNotificationsList = cachedComputed(() => {
     const db = getDb();
 
     if (filter) {
@@ -47,7 +53,7 @@ export function defineNotificationsList({
   });
 
   const getAllGroupedNotifications = cachedComputed(() => {
-    return groupNotifications(getAllNotifications());
+    return groupNotifications(getRawNotificationsList());
   });
 
   const getFlattenedNotifications = cachedComputed(() =>
@@ -117,19 +123,30 @@ export function defineNotificationsList({
   );
 
   const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
-  const getNotificationsToPreload = cachedComputed((openedNotification?: NotificationEntity) => {
+  const getNotificationsToPreload = cachedComputed((focusedNotification?: NotificationEntity) => {
+    const notificationsToPreload = focusedNotification ? [focusedNotification] : [];
+
     const [firstNotificationOrGroup] = getAllGroupedNotifications();
+
     if (!firstNotificationOrGroup) {
-      return [];
+      return notificationsToPreload;
     }
+
     const firstNotification = getIsNotificationsGroup(firstNotificationOrGroup)
       ? firstNotificationOrGroup.notifications[0]
       : firstNotificationOrGroup;
     // We limit the amount of notifications to preload to the previous one and the next 3
-    const notificationsToPreload = openedNotification
-      ? [getPreviousNotification(openedNotification)].filter(isNotNullish)
-      : [];
-    let currentNotification = openedNotification ?? firstNotification;
+
+    if (focusedNotification) {
+      const previous = getPreviousNotification(focusedNotification);
+
+      if (previous) {
+        notificationsToPreload.push(previous);
+      }
+    }
+
+    let currentNotification = focusedNotification ?? firstNotification;
+
     for (let i = 0; i < NOTIFICATIONS_TO_PRELOAD_COUNT - notificationsToPreload.length; i++) {
       const nextNotification = getNextNotification(currentNotification);
       if (!nextNotification) {
@@ -138,6 +155,7 @@ export function defineNotificationsList({
       notificationsToPreload.push(nextNotification);
       currentNotification = nextNotification;
     }
+
     return notificationsToPreload;
   });
 
@@ -158,12 +176,15 @@ export function defineNotificationsList({
     name,
     isCustom,
     getNotificationGroup,
+    getAllGroupedNotifications,
     getAllNotifications: getFlattenedNotifications,
     getNotificationIndex,
     getNextNotification,
     getPreviousNotification,
     getNotificationsToPreload,
     listEntity,
+    icon,
+    dontShowCount,
   };
 }
 

@@ -16,6 +16,8 @@
     "dev": "ts-node dev.ts",
     "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac default --universal -p never",
+    "build:staging": "rm -rf dist && yarn build:bundle staging && cp -r dist-staging dist && yarn build:electron",
+    "build:production": "rm -rf dist && yarn build:bundle production && cp -r dist-production dist && yarn build:electron",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
     "upload-bundle": "./scripts/upload-bundle.sh"
   },
@@ -25,7 +27,7 @@
     "@parcel/config-default": "^2.2.1",
     "@parcel/core": "^2.2.1",
     "@sentry/cli": "^1.72.1",
-    "@sentry/electron": "^2.5.4",
+    "@sentry/electron": "^3.0.4",
     "@types/electron-json-storage": "^4.5.0",
     "@types/node-cleanup": "^2.1.2",
     "@types/segment-analytics": "^0.0.34",
@@ -71,6 +73,6 @@
     }
   },
   "dependencies": {
-    "electron-notification-state": "^1.0.4"
+    "@sentry/react": "^6.18.2"
   }
 }

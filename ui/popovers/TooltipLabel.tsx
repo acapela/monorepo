@@ -39,7 +39,7 @@ const TooltipFlyer = styled(Popover)`
 const UITooltip = styled(PresenceAnimator)<{}>`
   ${theme.typo.functional.tooltip};
   ${theme.colors.panels.tooltip.asBgWithReadableText};
-  ${theme.box.item};
+  ${theme.box.panel.tooltip.padding.radius};
   ${theme.radius.secondaryItem};
   ${theme.spacing.actions.asGap}
   pointer-events: none;

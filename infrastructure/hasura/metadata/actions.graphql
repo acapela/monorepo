@@ -23,6 +23,10 @@ type Query {
 }
 
 type Query {
+  slack_conversations: [SlackConversation!]!
+}
+
+type Query {
   slack_user(team_id: uuid!): SlackUserOutput
 }
 
@@ -55,6 +59,7 @@ input InviteUserInput {
 
 input GetSlackInstallationURLInput {
   redirectURL: String!
+  teamId: String
 }
 
 type UpgradeUserResponse {
@@ -115,7 +120,15 @@ type SlackUser {
 
 type ServiceUser {
   id: String!
+  workspace_id: String!
   display_name: String!
   real_name: String
   avatar_url: String
+}
+
+type SlackConversation {
+  workspace_id: String!
+  id: String!
+  name: String!
+  is_private: Boolean!
 }

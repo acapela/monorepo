@@ -3,20 +3,14 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
+import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
-import { makeLogger } from "../../dev/makeLogger";
-//@ts-ignore
-import figma from "./figma.svg";
-//@ts-ignore
-import linear from "./linear.svg";
-//@ts-ignore
-import notion from "./notion.svg";
-//@ts-ignore
-import slack from "./slack.svg";
+const { figma, jira, linear, notion, slack } = integrationLogos;
 
 interface Props {
   notification: NotificationEntity;
@@ -40,6 +34,10 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
 
   if (notification.__typename === "notification_linear") {
     return { icon: linear, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_jira_issue") {
+    return { icon: jira, isInverted: false };
   }
 }
 
@@ -69,7 +67,11 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
 
   return (
     <UIHolder>
-      <UIIcon className={className} src={iconProps.icon} $invert={iconProps.isInverted} />
+      <UIIcon
+        className={[className, notification.inner?.__typename].join(" ")}
+        src={iconProps.icon}
+        $invert={iconProps.isInverted}
+      />
 
       {displayUnreadNotification && <UIUnreadIndicator />}
     </UIHolder>
@@ -88,11 +90,10 @@ const UIHolder = styled.div`
 const UIIcon = styled.img<{ $invert?: boolean }>`
   ${iconStyles};
 
-  ${(props) =>
-    props.$invert &&
-    css`
-      filter: invert(1);
-    `}
+  &.notification_notion {
+    background-color: #fff;
+    border-radius: 4px;
+  }
 `;
 
 const UIUnknown = styled.div`

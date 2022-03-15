@@ -63,6 +63,10 @@ export function initializeMainWindow() {
     minHeight: 680,
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
+    vibrancy: "dark",
+    trafficLightPosition: { x: 19, y: 18 },
+
+    //
   });
 
   addCustomMenu();
