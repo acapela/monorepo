@@ -19,7 +19,7 @@ interface Props {
 
 export function SystemMenuItem({ path, label, shortcut, isChecked, isDisabled, onClicked, group }: Props) {
   const groupFromContext = useSystemMenuGroup();
-  const onClickedRef = useMethod(onClicked);
+  const onClickedRef = useMethod(onClicked ?? (() => void 0));
 
   const finalGroup = groupFromContext ?? group ?? undefined;
 
