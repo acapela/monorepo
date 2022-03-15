@@ -54,15 +54,15 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
-      - name: Install package
-        run: |
-          sudo apt-get update && sudo apt-get -yfq install xvfb
-          export DISPLAY=':99.0'
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
       - uses: ./.github/actions/node-and-yarn
       - run: yarn desktop build:test
       #      - uses: lhotari/action-upterm@v1
-      - run: yarn e2e test electron
+      - name: E2E tests
+        env:
+          DISPLAY: ":99.0"
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          yarn e2e test electron
 
   #      - name: Setup dotenv
   #        env:
