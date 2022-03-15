@@ -1,3 +1,7 @@
+import { observer } from "mobx-react";
+import React, { useRef } from "react";
+import styled from "styled-components";
+
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { showCommandMenu } from "@aca/desktop/actions/app";
@@ -5,9 +9,6 @@ import { toggleShowShortcutsBar } from "@aca/desktop/actions/settings";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { theme } from "@aca/ui/theme";
-import { observer } from "mobx-react";
-import React, { useRef } from "react";
-import styled from "styled-components";
 
 import { FooterShortcutLabel } from "./ShortcutLabel";
 

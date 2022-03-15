@@ -1,3 +1,7 @@
+import { observer } from "mobx-react";
+import React, { useRef } from "react";
+import styled, { css } from "styled-components";
+
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
@@ -7,9 +11,6 @@ import { IconFolder } from "@aca/ui/icons";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
-import { observer } from "mobx-react";
-import React, { useRef } from "react";
-import styled, { css } from "styled-components";
 
 interface Props {
   action: ActionData;

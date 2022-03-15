@@ -1,5 +1,6 @@
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { BrowserView, BrowserWindow } from "electron";
+
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 const log = makeLogger("BrowserView");
 

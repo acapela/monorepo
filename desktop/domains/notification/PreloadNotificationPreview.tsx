@@ -1,6 +1,7 @@
+import React, { useEffect } from "react";
+
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
-import React, { useEffect } from "react";
 
 type Props = { url: string; priority?: PreviewLoadingPriority };
 

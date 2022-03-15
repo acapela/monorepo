@@ -1,5 +1,13 @@
 import "@aca/desktop/analytics";
 
+import { ApolloProvider } from "@apollo/client";
+import * as Sentry from "@sentry/electron/renderer";
+import { MotionConfig } from "framer-motion";
+import { autorun } from "mobx";
+import React, { useEffect } from "react";
+import { render } from "react-dom";
+import { createGlobalStyle } from "styled-components";
+
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
@@ -17,13 +25,6 @@ import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
-import { ApolloProvider } from "@apollo/client";
-import * as Sentry from "@sentry/electron/renderer";
-import { MotionConfig } from "framer-motion";
-import { autorun } from "mobx";
-import React, { useEffect } from "react";
-import { render } from "react-dom";
-import { createGlobalStyle } from "styled-components";
 
 import { SystemMenuManager } from "../domains/systemMenu/SystemMenuManager";
 import { LoggerWindow } from "./LoggerWindow";
