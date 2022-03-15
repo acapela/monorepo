@@ -14,6 +14,7 @@ import { initializeServiceSync } from "./apps";
 import { appState } from "./appState";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
+import { initializeDarkModeHandling } from "./darkMode";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
@@ -61,6 +62,8 @@ function initializeApp() {
   initializeGlobalShortcuts();
 
   initializeDefaultSession();
+
+  initializeDarkModeHandling();
 
   setupAutoUpdater();
 }

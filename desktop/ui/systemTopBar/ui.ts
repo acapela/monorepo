@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { theme } from "@aca/ui/theme";
 
@@ -10,4 +10,8 @@ export const TopBarDivider = styled.div`
   align-self: stretch;
   width: 1px;
   margin: 4px 8px;
+`;
+
+export const systemBarPlaceholder = css`
+  height: ${SYSTEM_BAR_HEIGHT}px;
 `;
