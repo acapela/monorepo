@@ -1,15 +1,15 @@
-import { observer } from "mobx-react";
-import React from "react";
-import styled, { css } from "styled-components";
-
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
+import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { IconFolder } from "@aca/ui/icons";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
+import { observer } from "mobx-react";
+import React, { useRef } from "react";
+import styled, { css } from "styled-components";
 
 interface Props {
   action: ActionData;
@@ -18,6 +18,7 @@ interface Props {
   isActive?: boolean;
   badgeCount?: number;
   additionalShortcut?: ShortcutDefinition;
+  contextMenuActions?: ActionData[];
 }
 
 export const SidebarItem = observer(function SidebarItem({
@@ -27,11 +28,16 @@ export const SidebarItem = observer(function SidebarItem({
   isActive = false,
   badgeCount,
   additionalShortcut,
+  contextMenuActions = [],
 }: Props) {
   const context = createActionContext(target, { isContextual: true });
   const { name, icon = <IconFolder /> } = resolveActionData(action, context);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useActionsContextMenu(elementRef, contextMenuActions, target);
+
   return (
-    <UIHolder action={action} target={target} className={className} $isActive={isActive}>
+    <UIHolder ref={elementRef} action={action} target={target} className={className} $isActive={isActive}>
       <UILabelBody>
         {icon && <UIIcon>{icon}</UIIcon>}
         <UIName>{name}</UIName>

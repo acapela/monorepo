@@ -1,7 +1,3 @@
-import { action } from "mobx";
-import React, { useEffect, useRef } from "react";
-import styled, { css } from "styled-components";
-
 import {
   openFocusMode,
   openNotificationInApp,
@@ -14,7 +10,7 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
@@ -23,6 +19,9 @@ import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
+import { action } from "mobx";
+import React, { useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
 
 import { NotificationDate } from "./NotificationDate";
 import { RowQuickActions } from "./RowQuickActions";

@@ -5,6 +5,7 @@ import { initializeContextMenuHandlers } from "./contextMenu";
 import { initializePersistance } from "./persistance";
 import { initPreviewHandler } from "./previews";
 import { initializeSystemHandlers } from "./system";
+import { initializeSystemMenuHandlers } from "./systemMenu";
 
 export function initializeBridgeHandlers() {
   initializePersistance();
@@ -13,4 +14,5 @@ export function initializeBridgeHandlers() {
   initializeAuthHandlers();
   initializeCleanupsHandler();
   initializeContextMenuHandlers();
+  initializeSystemMenuHandlers();
 }

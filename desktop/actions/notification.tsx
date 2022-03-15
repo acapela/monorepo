@@ -1,5 +1,3 @@
-import React from "react";
-
 import { trackingEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
@@ -12,6 +10,7 @@ import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/opene
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
+import React from "react";
 
 import { defineAction } from "./action";
 import { isNotFocusingPreviewAnd } from "./focus";
@@ -47,7 +46,7 @@ export const openNotificationInApp = defineAction({
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
+  canApply: (ctx) => ctx.hasTarget("notification"),
   async handler(context) {
     const notification = context.assertTarget("notification");
 

@@ -1,14 +1,12 @@
-import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
-
+import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
+import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import {
   previewEventsBridge,
   requestAttachPreview,
   requestPreviewPreload,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewLoadingPriority, PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
@@ -19,23 +17,21 @@ import { BodyPortal } from "@aca/ui/BodyPortal";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
+import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
-type PreloadBrowserViewProps = { url: string; priority?: PreviewLoadingPriority };
+import { runAction, runActionWithTarget } from "../../runAction";
 
-type BrowserViewProps = { url: string; onFocus?: () => void; onBlur?: () => void };
+type Props = {
+  notification: NotificationEntity;
+  onFocus?: () => void;
+  onBlur?: () => void;
+};
 
-export function PreloadNotificationPreview({
-  url,
-  priority = PreviewLoadingPriority.following,
-}: PreloadBrowserViewProps) {
-  useEffect(() => {
-    return requestPreviewPreload({ url, priority });
-  }, [url, priority]);
-
-  return <></>;
-}
-
-export const NotificationPreview = observer(function NotificationPreview({ url, onFocus, onBlur }: BrowserViewProps) {
+export const NotificationPreview = observer(function NotificationPreview({ notification, onFocus, onBlur }: Props) {
+  const url = notification.url;
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -46,6 +42,7 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
   });
 
   useEffect(() => {
+    const url = notification.url;
     return previewEventsBridge.subscribe((event) => {
       if (event.url !== url) return;
 
@@ -58,8 +55,20 @@ export const NotificationPreview = observer(function NotificationPreview({ url, 
         onBlur?.();
         setIsFocused(false);
       }
+
+      if (event.type === "snooze-request") {
+        runActionWithTarget(snoozeNotification, notification);
+      }
+
+      if (event.type === "resolve-request") {
+        runActionWithTarget(resolveNotification, notification);
+      }
+
+      if (event.type === "open-in-app-request") {
+        runActionWithTarget(openNotificationInApp, notification);
+      }
     });
-  }, [url, onFocus, onBlur]);
+  }, [notification, onFocus, onBlur]);
 
   useDependencyChangeEffect(() => {
     if (!position) return;

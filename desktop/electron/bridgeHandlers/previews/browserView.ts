@@ -1,13 +1,13 @@
-import { BrowserView, BrowserWindow } from "electron";
-
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { SECOND } from "@aca/shared/time";
+import { BrowserView, BrowserWindow } from "electron";
 
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
 import { loadURLWithFilters } from "./siteFilters";
+import { createDefaultContextMenu } from "./utils/contextMenu";
 import { listenForViewKeyboardBlurRequest } from "./utils/keyboardBlur";
 import { memoizeWithCleanup } from "./utils/memoizeWithCleanup";
 import { autoMuteBlurredBrowserView } from "./utils/muteBlurred";
@@ -32,6 +32,7 @@ function createPreviewBrowserView(url: string) {
   cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
     getBrowserViewParentWindow(browserView)?.webContents.focus();
   });
+  cleanups.next = createDefaultContextMenu(url, browserView);
 
   browserView.webContents.once("destroyed", cleanups.clean);
 

@@ -1,14 +1,18 @@
-import { observer } from "mobx-react";
-import React, { useRef } from "react";
-import styled, { css } from "styled-components";
-
-import { createNotificationList, goToList } from "@aca/desktop/actions/lists";
+import {
+  createNotificationList,
+  deleteNotificationList,
+  goToList,
+  renameNotificationList,
+} from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
 import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { theme } from "@aca/ui/theme";
+import { observer } from "mobx-react";
+import React, { useRef } from "react";
+import styled, { css } from "styled-components";
 
 import { SidebarItem } from "./SidebarItem";
 
@@ -57,6 +61,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
                   isActive={isActive}
                   badgeCount={count}
                   additionalShortcut={["Meta", `${index + 2}` as ShortcutKey]}
+                  contextMenuActions={list.isCustom ? [renameNotificationList, deleteNotificationList] : []}
                 />
               );
             })}

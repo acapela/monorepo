@@ -1,6 +1,5 @@
-import { BrowserView, BrowserWindow } from "electron";
-
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { BrowserView, BrowserWindow } from "electron";
 
 import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
 import { assertViewIsNotAttachedToWindow } from "./utils/view";

@@ -1,21 +1,20 @@
-import { useMemo } from "react";
-
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
+import { useMemo } from "react";
 
 import { runAction } from "../runAction";
 import { RefOrElement } from "./refOrElement";
 import { ContextMenuItem } from "./types";
 import { useContextMenu } from "./useContextMenu";
 
-export function useActionsContextMenu(refOrElement: RefOrElement, actions: ActionData[], target: unknown) {
+export function useActionsContextMenu(refOrElement: RefOrElement, actions: ActionData[], target?: unknown) {
   const context = createActionContext(target);
 
   const equalActions = useEqualRef(actions);
 
   const menuItems = useMemo(() => {
-    return equalActions.map((action, index): ContextMenuItem => {
+    return equalActions.map((action): ContextMenuItem => {
       const { id, name, shortcut, canApply } = resolveActionData(action, context);
 
       return {
@@ -23,7 +22,6 @@ export function useActionsContextMenu(refOrElement: RefOrElement, actions: Actio
         label: name,
         enabled: canApply(context),
         shortcut: shortcut,
-        // type: index === 1 ? "separator" : undefined,
       };
     });
   }, [context, equalActions]);

@@ -1,14 +1,14 @@
-import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
-
 import { getDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
-import { NotificationPreview, PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { NotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
+import { observer } from "mobx-react";
+import React from "react";
+import styled from "styled-components";
 
 import { FocusModeFooter } from "./FocusModeFooter";
 import { FocusStats } from "./FocusStats";
@@ -43,7 +43,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
           <UIStats>{list && <FocusStats list={list} currentNotification={notification} />}</UIStats>
         )}
       </UIHeader>
-      <NotificationPreview url={notification.url} />
+      <NotificationPreview notification={notification} />
     </AppLayout>
   );
 });

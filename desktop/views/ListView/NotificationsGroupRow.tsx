@@ -1,9 +1,3 @@
-import { motion } from "framer-motion";
-import { uniq } from "lodash";
-import { action } from "mobx";
-import React, { useEffect, useMemo, useRef } from "react";
-import styled from "styled-components";
-
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
@@ -11,7 +5,7 @@ import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActio
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
+import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
@@ -22,6 +16,11 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
+import { motion } from "framer-motion";
+import { uniq } from "lodash";
+import { action } from "mobx";
+import React, { useEffect, useMemo, useRef } from "react";
+import styled from "styled-components";
 
 import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";

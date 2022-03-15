@@ -29,7 +29,10 @@ type PreviewEventData =
   | {
       type: "blur";
     }
-  | { type: "load-error" };
+  | { type: "load-error" }
+  | { type: "snooze-request" }
+  | { type: "resolve-request" }
+  | { type: "open-in-app-request" };
 
 type PreviewEvent = PreviewEventBase & PreviewEventData;
 

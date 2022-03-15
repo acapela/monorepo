@@ -11,12 +11,12 @@ type Callback<Args extends unknown[], Result> = (...args: Args) => Result;
  *
  * If you want to call it during the render - you probably don't need to memoize the function or using `useCallback` might be more suitable
  */
-export function useMethod<Args extends unknown[], Result>(callback: Callback<Args, Result>) {
-  const lastRenderCallbackRef = useRef<Callback<Args, Result>>(callback);
+export function useMethod<Args extends unknown[], Result>(callback?: Callback<Args, Result>) {
+  const lastRenderCallbackRef = useRef<Callback<Args, Result> | undefined>(callback);
 
   const methodLikeCallback = useCallback((...args: Args) => {
     // perform call on version of the callback from last committed render
-    return lastRenderCallbackRef.current(...args);
+    return lastRenderCallbackRef.current?.(...args);
   }, []);
 
   /**

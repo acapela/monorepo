@@ -1,11 +1,10 @@
 import path from "path";
 
+import { AppEnvData } from "@aca/desktop/envData";
 import * as Sentry from "@sentry/electron";
 import { BrowserWindow, Menu, MenuItemConstructorOptions, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action, runInAction } from "mobx";
-
-import { AppEnvData } from "@aca/desktop/envData";
 
 import { appState } from "./appState";
 import { initializeChildWindowHandlers } from "./childWindows";
