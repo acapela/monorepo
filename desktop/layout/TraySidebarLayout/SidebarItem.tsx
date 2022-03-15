@@ -101,7 +101,7 @@ const UIName = styled.div`
 `;
 
 const activeStyles = css`
-  background-color: #fff1;
+  background-color: #8882;
 
   ${UICount} {
     /* background-color: transparent; */

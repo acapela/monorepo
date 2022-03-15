@@ -12,7 +12,7 @@ import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
-import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
+import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
@@ -109,7 +109,6 @@ const UIHolder = styled.div<{ $isOpened: boolean }>`
   width: ${SIDEBAR_WIDTH}px;
   flex-grow: 1;
   ${theme.shadow.popover};
-  color: #fff;
   ${theme.radius.panel};
   z-index: 3;
 
@@ -133,6 +132,6 @@ const UIItems = styled.div`
 const UISidebarItem = styled(SidebarItem)``;
 
 const UIWindowDragger = styled.div`
-  height: ${SYSTEM_BAR_HEIGHT}px;
+  ${systemBarPlaceholder};
   ${theme.common.dragWindow};
 `;

@@ -35,12 +35,14 @@ export function SystemTopBar({ navigationItems, targetActionItems, titleNode, is
 const UIBar = styled.div<{ $isFullwidth: boolean }>`
   height: ${SYSTEM_BAR_HEIGHT}px;
   min-height: ${SYSTEM_BAR_HEIGHT}px;
-  padding: 0 24px;
+  padding: 0 16px;
 
   ${(props) =>
     props.$isFullwidth &&
     css`
-      padding-left: ${TRAFFIC_LIGHTS_NEEDED_SPACE}px;
+      body:not(.fullscreen) & {
+        padding-left: ${TRAFFIC_LIGHTS_NEEDED_SPACE}px;
+      }
     `}
 
   -webkit-app-region: drag;

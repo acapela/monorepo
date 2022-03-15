@@ -54,9 +54,6 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
 const UIFooter = styled.div``;
 
 const AppLayoutHolder = styled.div<{}>`
-  body.fullscreen & {
-    padding-top: 24px;
-  }
   display: flex;
   flex-direction: column;
   flex-grow: 1;
