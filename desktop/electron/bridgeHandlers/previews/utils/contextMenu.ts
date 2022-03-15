@@ -1,6 +1,7 @@
-import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { BrowserView } from "electron";
 import createContextMenu from "electron-context-menu";
+
+import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 
 import { getBrowserViewParentWindow } from "./view";
 
@@ -22,6 +23,7 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
             previewEventsBridge.send({ url, type: "snooze-request" });
           },
         },
+        { type: "separator" },
         {
           label: "Open in default app",
           click: () => {

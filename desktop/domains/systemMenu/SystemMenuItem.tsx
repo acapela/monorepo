@@ -1,8 +1,11 @@
+import { useEffect } from "react";
+
 import { addSystemMenuItem, systemMenuItemClicked } from "@aca/desktop/bridge/systemMenu";
 import { useMethod } from "@aca/shared/hooks/useMethod";
 import { getUUID } from "@aca/shared/uuid";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
-import { useEffect } from "react";
+
+import { useSystemMenuGroup } from "./SystemMenuGroup";
 
 interface Props {
   path: string[];
@@ -11,14 +14,18 @@ interface Props {
   isChecked?: boolean;
   isDisabled?: boolean;
   onClicked?: () => void;
+  group?: string;
 }
 
-export function SystemMenuItem({ path, label, shortcut, isChecked, onClicked }: Props) {
+export function SystemMenuItem({ path, label, shortcut, isChecked, isDisabled, onClicked, group }: Props) {
+  const groupFromContext = useSystemMenuGroup();
   const onClickedRef = useMethod(onClicked);
+
+  const finalGroup = groupFromContext ?? group ?? undefined;
 
   useEffect(() => {
     const id = getUUID();
-    const removeItem = addSystemMenuItem({ id, label, path, shortcut, isChecked });
+    const removeItem = addSystemMenuItem({ id, label, path, shortcut, isChecked, isDisabled, group: finalGroup });
 
     const stopListeningForClick = systemMenuItemClicked.subscribe((clickedItem) => {
       if (clickedItem.id !== id) return;
@@ -30,7 +37,7 @@ export function SystemMenuItem({ path, label, shortcut, isChecked, onClicked }: 
       stopListeningForClick();
       removeItem?.();
     };
-  }, [path, label, shortcut, isChecked]);
+  }, [path, label, shortcut, isChecked, isDisabled, finalGroup]);
 
   return null;
 }

@@ -1,18 +1,17 @@
-import { isElement } from "lodash";
-import { RefObject, useEffect } from "react";
+import { omit } from "lodash";
+import { useEffect } from "react";
 
 import { showContextMenuRequest } from "@aca/desktop/bridge/menu";
-import { unsafeAssertType } from "@aca/shared/assert";
 import { createElementEvent } from "@aca/shared/domEvents";
 
 import { RefOrElement, resolveRefOrElement } from "./refOrElement";
 import { ContextMenuItem } from "./types";
 
-export function useContextMenu(
-  refOrElement: RefOrElement,
-  items: ContextMenuItem[],
-  onSelected?: (item: ContextMenuItem) => void
-) {
+export type ContextMenuItemWithCallback = ContextMenuItem & {
+  onSelected?: () => void;
+};
+
+export function useContextMenu(refOrElement: RefOrElement, items: ContextMenuItemWithCallback[]) {
   useEffect(() => {
     const element = resolveRefOrElement(refOrElement);
 
@@ -21,12 +20,13 @@ export function useContextMenu(
     return createElementEvent(element, "contextmenu", async (event) => {
       event.stopPropagation();
 
-      const selectedItem = await showContextMenuRequest(items);
+      const rawItems = items.map((item) => omit(item, "onSelected"));
 
-      console.log({ selectedItem });
+      const selectedItem = await showContextMenuRequest(rawItems);
 
       if (selectedItem) {
-        onSelected?.(selectedItem);
+        const originalItem = items.find((item) => item.id === selectedItem.id);
+        originalItem?.onSelected?.();
       }
     });
   }, [refOrElement, items]);

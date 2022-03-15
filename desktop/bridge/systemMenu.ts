@@ -10,6 +10,7 @@ export interface SystemMenuItemData {
   shortcut?: ShortcutDefinition;
   isDisabled?: boolean;
   isChecked?: boolean;
+  group?: string;
 }
 
 export const addSystemMenuItem = createInvokeWithCleanupBridge<SystemMenuItemData>("add-system-menu-item");

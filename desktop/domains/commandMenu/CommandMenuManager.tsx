@@ -10,6 +10,7 @@ import { authStore } from "@aca/desktop/store/auth";
 import { getObjectKey } from "@aca/shared/object";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
+import { SystemMenuItem } from "../systemMenu/SystemMenuItem";
 import { CommandMenuView } from "./CommandMenuView";
 import { createDefaultCommandMenuSession } from "./defaultSession";
 import { createCommandMenuSession } from "./session";
@@ -47,16 +48,16 @@ actionResultChannel.subscribe(
 export const CommandMenuManager = observer(function CommandMenuManager() {
   const isLoggedIn = !!authStore.userTokenData;
   const currentSession = commandMenuStore.session;
-  useShortcut(
-    ["Mod", "K"],
-    action(() => {
-      if (commandMenuStore.session) {
-        commandMenuStore.session = null;
-        return;
-      }
-      commandMenuStore.session = createDefaultCommandMenuSession();
-    })
-  );
+
+  const openCommandMenu = action(() => {
+    if (commandMenuStore.session) {
+      commandMenuStore.session = null;
+      return;
+    }
+    commandMenuStore.session = createDefaultCommandMenuSession();
+  });
+
+  useShortcut(["Mod", "K"], openCommandMenu);
 
   useShortcut(
     "Esc",
@@ -77,6 +78,12 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
 
   return (
     <AnimatePresence>
+      <SystemMenuItem
+        label="Open command menu..."
+        shortcut={["Mod", "K"]}
+        path={["View"]}
+        onClicked={openCommandMenu}
+      />
       {!!currentSession && (
         <CommandMenuView
           key={getObjectKey(currentSession)}

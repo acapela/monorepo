@@ -1,26 +1,62 @@
-import { Menu, MenuItem, MenuItemConstructorOptions } from "electron";
+import { Menu, MenuItemConstructorOptions } from "electron";
 
 import { showContextMenuRequest } from "@aca/desktop/bridge/menu";
 import { ContextMenuItem } from "@aca/desktop/domains/contextMenu/types";
 import { assert } from "@aca/shared/assert";
+import { groupBy } from "@aca/shared/groupBy";
 import { createResolvablePromise } from "@aca/shared/promises";
-import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
-import { ShortcutDefinition, resolveShortcutsDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 import { getSourceWindowFromIPCEvent } from "../utils/ipc";
+import { convertShortcutKeysToElectronShortcut } from "./utils/shortcuts";
 
-const aliases: Record<string, string> = {
-  meta: "CommandOrControl",
-  mod: "CommandOrControl",
-};
+function convertContextMenuItemDataToElectron(item: ContextMenuItem, onClicked: () => void) {
+  const { shortcut, group, ...electronItem } = item;
+  // ! We dont want group to be directly passed to electron
+  group;
+  function getAccelerator() {
+    if (!shortcut) return;
 
-function convertShortcutKeysToElectronShortcut(shortcut: ShortcutDefinition) {
-  console.log({ shortcut });
-  return resolveShortcutsDefinition(shortcut)
-    .map((key) => {
-      return aliases[key.toLowerCase()] ?? key;
-    })
-    .join("+");
+    return convertShortcutKeysToElectronShortcut(shortcut);
+  }
+
+  return {
+    ...electronItem,
+    accelerator: getAccelerator(),
+    click() {
+      onClicked();
+    },
+  };
+}
+
+function prepareContextMenuElectronData(
+  items: ContextMenuItem[],
+  onItemPicked: (item: ContextMenuItem) => void
+): MenuItemConstructorOptions[] {
+  const groups = groupBy(
+    items,
+    (item) => item.group,
+    (group) => group ?? "no-group"
+  );
+
+  const finalItems: MenuItemConstructorOptions[] = [];
+
+  groups.forEach(({ items }, index) => {
+    const isLast = index === groups.length - 1;
+
+    const electronItems = items.map((item) => {
+      return convertContextMenuItemDataToElectron(item, () => {
+        onItemPicked(item);
+      });
+    });
+
+    finalItems.push(...electronItems);
+
+    if (!isLast) {
+      finalItems.push({ type: "separator" });
+    }
+  });
+
+  return finalItems;
 }
 
 export function initializeContextMenuHandlers() {
@@ -30,23 +66,8 @@ export function initializeContextMenuHandlers() {
 
     const { resolve, promise } = createResolvablePromise<ContextMenuItem | null>();
 
-    const electronItems = items.map((item): MenuItemConstructorOptions => {
-      const { shortcut, ...electronItem } = item;
-
-      function getAccelerator() {
-        if (!shortcut) return;
-
-        return convertShortcutKeysToElectronShortcut(shortcut);
-      }
-
-      return {
-        ...electronItem,
-        accelerator: getAccelerator(),
-        click() {
-          console.log("RESOLVED", item);
-          resolve(item);
-        },
-      };
+    const electronItems = prepareContextMenuElectronData(items, (item) => {
+      resolve(item);
     });
 
     if (!window) return null;

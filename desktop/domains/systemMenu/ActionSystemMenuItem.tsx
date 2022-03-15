@@ -1,24 +1,40 @@
-import { ActionData, resolveActionDataWithTarget } from "@aca/desktop/actions/action";
 import { observer } from "mobx-react";
 import React from "react";
+
+import { ActionData, resolveActionDataWithTarget } from "@aca/desktop/actions/action";
+import { resolveGroupDataWithTarget } from "@aca/desktop/actions/action/group";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 import { runActionWithTarget } from "../runAction";
 import { SystemMenuItem } from "./SystemMenuItem";
 
 interface Props {
   path: string[];
+  group?: string;
   action: ActionData;
   isChecked?: boolean;
   target?: unknown;
+  customShortcut?: ShortcutDefinition;
 }
 
-export const ActionSystemMenuItem = observer(function ActionSystemMenuItem({ path, action, target, isChecked }: Props) {
-  const { isApplicable, name, shortcut } = resolveActionDataWithTarget(action, target);
+export const ActionSystemMenuItem = observer(function ActionSystemMenuItem({
+  path,
+  action,
+  target,
+  group,
+  isChecked,
+  customShortcut,
+}: Props) {
+  const { isApplicable, name, shortcut, group: actionDataGroup } = resolveActionDataWithTarget(action, target);
+
+  const groupNameFromAction = actionDataGroup ? resolveGroupDataWithTarget(actionDataGroup, target).name : undefined;
+  const groupLabel = group ?? groupNameFromAction;
 
   return (
     <SystemMenuItem
       label={name}
-      shortcut={shortcut}
+      shortcut={customShortcut ?? shortcut}
+      group={groupLabel}
       path={path}
       isChecked={isChecked}
       isDisabled={!isApplicable}

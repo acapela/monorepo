@@ -1,3 +1,7 @@
+import { action } from "mobx";
+import React, { useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
+
 import {
   openFocusMode,
   openNotificationInApp,
@@ -19,9 +23,6 @@ import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
-import { action } from "mobx";
-import React, { useEffect, useRef } from "react";
-import styled, { css } from "styled-components";
 
 import { NotificationDate } from "./NotificationDate";
 import { RowQuickActions } from "./RowQuickActions";
@@ -40,12 +41,8 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
   useActionsContextMenu(
     elementRef,
     [
-      openFocusMode,
-      openNotificationInApp,
-      resolveNotification,
-      snoozeNotification,
-      unresolveNotification,
-      unsnoozeNotification,
+      [openFocusMode, openNotificationInApp],
+      [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
     ],
     notification
   );

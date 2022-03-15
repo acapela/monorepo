@@ -18,6 +18,7 @@ export function InitializeLogger() {
     return allLogs;
   });
   const loggerWindowEnv: AppEnvData = {
+    appName: app.name,
     sentryDsn,
     isDev: IS_DEV,
     version: app.getVersion(),

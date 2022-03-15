@@ -1,9 +1,10 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-import { ShortcutDefinition, ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
+import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
 interface ContextMenuItemExtra {
   shortcut?: ShortcutDefinition;
+  group?: string;
 }
 
 export type ContextMenuItem = Pick<

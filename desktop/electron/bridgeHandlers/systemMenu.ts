@@ -1,75 +1,213 @@
+import { Menu, MenuItemConstructorOptions, app } from "electron";
+import { throttle } from "lodash";
+
 import { SystemMenuItemData, addSystemMenuItem, systemMenuItemClicked } from "@aca/desktop/bridge/systemMenu";
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { removeElementFromArray } from "@aca/shared/array";
-import { Menu, MenuItem, app } from "electron";
+import { groupBy } from "@aca/shared/groupBy";
 
-const log = makeLogger("System Menu");
+import { convertShortcutKeysToElectronShortcut } from "./utils/shortcuts";
 
-function getOrCreateMenuItemParent(menu: Menu, path: string[]) {
+function getDefaultSystemMenuTemplate() {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: app.name,
+      submenu: [
+        { role: "about" },
+        { type: "separator" },
+        { role: "hide" },
+        { role: "hideOthers" },
+        { role: "unhide" },
+        { type: "separator" },
+        { role: "quit" },
+      ],
+    },
+
+    {
+      label: "Edit",
+      submenu: [
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+
+        { role: "pasteAndMatchStyle" },
+        { role: "delete" },
+        { role: "selectAll" },
+        { type: "separator" },
+        {
+          label: "Speech",
+          submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+        },
+      ],
+    },
+
+    {
+      label: "Debug",
+      submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
+    },
+  ];
+
+  return template;
+}
+
+function convertMenuItemDataToConstructorData(item: SystemMenuItemData): MenuItemConstructorOptions {
+  const { id, label, isChecked, isDisabled, shortcut, group } = item;
+
+  const accelerator = shortcut ? convertShortcutKeysToElectronShortcut(shortcut) : undefined;
+
+  const menuItem: MenuItemConstructorOptions = {
+    id,
+    label,
+    type: typeof isChecked === "boolean" ? "checkbox" : undefined,
+    checked: isChecked,
+    enabled: !isDisabled,
+    accelerator,
+    registerAccelerator: false,
+    click() {
+      systemMenuItemClicked.send(item);
+    },
+  };
+
+  if (group) {
+    itemGroupLabel.set(menuItem, group);
+  }
+
+  return menuItem;
+}
+
+function injectDelimitersForItemsGroups(menu: MenuItemConstructorOptions[]): MenuItemConstructorOptions[] {
+  const menuWithChildrenGroupped = menu.map((item) => {
+    const subMenu = item.submenu as MenuItemConstructorOptions[];
+
+    if (!subMenu) return item;
+
+    const subMenuItem: MenuItemConstructorOptions = {
+      ...item,
+      submenu: injectDelimitersForItemsGroups(subMenu),
+    };
+
+    const group = itemGroupLabel.get(item);
+
+    if (group) {
+      itemGroupLabel.set(subMenuItem, group);
+    }
+
+    return subMenuItem;
+  });
+
+  const directGroups = groupBy(
+    menuWithChildrenGroupped,
+    (item) => itemGroupLabel.get(item),
+    (group) => group ?? "no-group"
+  );
+
+  if (directGroups.length === 1) {
+    return menuWithChildrenGroupped;
+  }
+
+  const finalResults: MenuItemConstructorOptions[] = [];
+
+  directGroups.forEach(({ items }, index) => {
+    const isLast = index === directGroups.length - 1;
+    finalResults.push(...items);
+
+    if (!isLast) {
+      finalResults.push({ type: "separator" });
+    }
+  });
+
+  return finalResults;
+}
+
+const itemGroupLabel = new WeakMap<MenuItemConstructorOptions, string>();
+
+function buildNewSystemMenu(items: SystemMenuItemData[]) {
+  const menu = getDefaultSystemMenuTemplate();
+
+  for (const item of items) {
+    const { path, group } = item;
+
+    const parent = getOrCreateMenuItemParent(menu, path, group);
+
+    const subMenu = parent.submenu as MenuItemConstructorOptions[];
+
+    const menuItem = convertMenuItemDataToConstructorData(item);
+
+    subMenu.push(menuItem);
+  }
+
+  return injectDelimitersForItemsGroups(menu);
+}
+
+function getOrCreateMenuItemParent(root: MenuItemConstructorOptions[], path: string[], group?: string) {
   // if (!menu) return;
 
   const [rootLabel, ...subLabels] = path;
 
-  let rootItem = menu.items.find((item) => item.label === rootLabel);
+  let rootItem = root.find((item) => item.label === rootLabel);
 
   if (!rootItem) {
-    rootItem = new MenuItem({ label: rootLabel, submenu: [] });
-    menu.items.push(rootItem);
+    const newItem: MenuItemConstructorOptions = {
+      label: rootLabel,
+      submenu: [],
+    };
+
+    if (group) {
+      itemGroupLabel.set(newItem, group);
+    }
+
+    root.push(newItem);
+
+    rootItem = newItem;
   }
 
-  let targetItem = rootItem;
+  let target = rootItem;
 
-  for (const nextPathLabel of subLabels) {
-    const existingItem = targetItem.submenu!.items.find((item) => item.label === nextPathLabel);
+  for (const subLabel of subLabels) {
+    const subMenu = target.submenu as MenuItemConstructorOptions[];
 
-    if (existingItem) {
-      targetItem = existingItem;
+    const existing = subMenu.find((item) => item.label === subLabel);
+
+    if (existing) {
+      target = existing;
     } else {
-      const newItem = new MenuItem({ label: nextPathLabel, submenu: [] });
+      const newItem: MenuItemConstructorOptions = { label: subLabel, submenu: [] };
 
-      targetItem = newItem;
+      if (group) {
+        itemGroupLabel.set(newItem, group);
+      }
+
+      subMenu.push(newItem);
+
+      target = newItem;
     }
   }
 
-  return [menu, targetItem] as const;
+  return target;
 }
 
 const registeredItems: SystemMenuItemData[] = [];
 
 function updateMenu() {
-  const newMenu = Menu.buildFromTemplate([]);
-
-  for (const nextItem of registeredItems) {
-    const [menu, itemParent] = getOrCreateMenuItemParent(newMenu, nextItem.path);
-    const { id, label, path, isChecked, shortcut } = nextItem;
-
-    const menuItem = new MenuItem({
-      id,
-      label,
-      checked: isChecked,
-      click: () => {
-        systemMenuItemClicked.send(nextItem);
-      },
-    });
-
-    itemParent.submenu!.append(menuItem);
-  }
-
-  console.log(newMenu);
+  const template = buildNewSystemMenu(registeredItems);
+  const newMenu = Menu.buildFromTemplate(template);
 
   Menu.setApplicationMenu(newMenu);
 }
 
+const throttledUpdateMenu = throttle(updateMenu, 100, { leading: false, trailing: true });
+
 export function initializeSystemMenuHandlers() {
-  addSystemMenuItem.handle((itemData) => {
+  updateMenu();
+
+  addSystemMenuItem.handle(async (itemData) => {
     registeredItems.push(itemData);
 
-    updateMenu();
+    throttledUpdateMenu();
 
     return () => {
       removeElementFromArray(registeredItems, itemData);
 
-      updateMenu();
+      throttledUpdateMenu();
     };
   });
 }

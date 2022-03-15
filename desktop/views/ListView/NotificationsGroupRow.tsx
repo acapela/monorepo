@@ -1,3 +1,9 @@
+import { motion } from "framer-motion";
+import { uniq } from "lodash";
+import { action } from "mobx";
+import React, { useEffect, useMemo, useRef } from "react";
+import styled from "styled-components";
+
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
@@ -16,11 +22,6 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
-import { motion } from "framer-motion";
-import { uniq } from "lodash";
-import { action } from "mobx";
-import React, { useEffect, useMemo, useRef } from "react";
-import styled from "styled-components";
 
 import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";
@@ -40,12 +41,8 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
   useActionsContextMenu(
     elementRef,
     [
-      toggleNotificationsGroup,
-      openFocusMode,
-      snoozeNotification,
-      resolveNotification,
-      unresolveNotification,
-      unsnoozeNotification,
+      [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
+      [toggleNotificationsGroup, openFocusMode],
     ],
     group
   );

@@ -116,7 +116,6 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
 
       const cleanup = memoize(() => {
         try {
-          //
           maybeCleanup?.();
           window?.off("closed", cleanup);
           window?.webContents.off("did-frame-finish-load", cleanup);
@@ -135,7 +134,9 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
       window?.once("closed", cleanup);
 
       window?.webContents.once("did-frame-navigate", cleanup);
-      window?.webContents.once("did-frame-finish-load", cleanup);
+      window?.webContents.once("did-frame-finish-load", () => {
+        window?.webContents.once("did-frame-finish-load", cleanup);
+      });
       window?.webContents.once("destroyed", cleanup);
       window?.webContents.once("crashed", cleanup);
 
