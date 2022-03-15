@@ -57,6 +57,8 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: yarn desktop build:test
       #      - uses: lhotari/action-upterm@v1
+      - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+      - run: npx playwright install chromium
       - run: yarn e2e test electron
 
   #      - name: Setup dotenv
