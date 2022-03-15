@@ -1,15 +1,15 @@
+import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import styled from "styled-components";
+
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";
-import {
-  previewEventsBridge,
-  requestAttachPreview,
-  requestPreviewPreload,
-  updatePreviewPosition,
-} from "@aca/desktop/bridge/preview";
+import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
-import { PreviewLoadingPriority, PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
+import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -17,12 +17,8 @@ import { BodyPortal } from "@aca/ui/BodyPortal";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
-import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
 
-import { runAction, runActionWithTarget } from "../../runAction";
+import { runActionWithTarget } from "../../runAction";
 
 type Props = {
   notification: NotificationEntity;
