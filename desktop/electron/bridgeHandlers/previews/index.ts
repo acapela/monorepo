@@ -10,6 +10,7 @@ import { assert } from "@aca/shared/assert";
 
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
+import { loadPreviewIfNeeded } from "./load";
 import { setViewPosition } from "./position";
 
 const log = makeLogger("BrowserView");
@@ -19,7 +20,9 @@ const log = makeLogger("BrowserView");
  */
 export function initPreviewHandler() {
   requestPreviewPreload.handle(async ({ url }) => {
-    const { cancel } = requestPreviewBrowserView(url);
+    const { cancel, item: browserView } = requestPreviewBrowserView(url);
+
+    loadPreviewIfNeeded(browserView, url);
 
     return cancel;
   });
@@ -37,6 +40,8 @@ export function initPreviewHandler() {
     const detach = attachPreview(browserView, targetWindow);
 
     setViewPosition(browserView, position);
+
+    loadPreviewIfNeeded(browserView, url);
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw

@@ -3,7 +3,7 @@ import { createTimeout } from "@aca/shared/time";
 
 interface MemoizeWithCleanupConfig<Args extends unknown[], I> {
   keyGetter: (...args: Args) => string;
-  cleanup: (item: I) => void;
+  cleanup: (item: I, key: string) => void;
   destroyTimeout: number;
 }
 
@@ -34,7 +34,7 @@ export function memoizeWithCleanup<Args extends unknown[], I>(
       return;
     }
 
-    cleanup(aliveItemToClean);
+    cleanup(aliveItemToClean, key);
     aliveItemsMap.delete(key);
   }
 
