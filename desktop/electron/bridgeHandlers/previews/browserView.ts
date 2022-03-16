@@ -1,10 +1,11 @@
-import { BrowserView, BrowserWindow } from "electron";
+import { BrowserView, BrowserWindow, WebContents } from "electron";
 
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { SECOND } from "@aca/shared/time";
+import { MaybeCleanup } from "@aca/shared/types";
 
 import { loadPreviewIfNeeded } from "./load";
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
@@ -16,24 +17,44 @@ import { getBrowserViewParentWindow } from "./utils/view";
 
 const log = makeLogger("Preview Manager");
 
+export function reinitializeOnNavigation(web: WebContents, callback: (web: WebContents) => MaybeCleanup) {
+  let currentCleanup = callback(web);
+
+  web.on("did-navigate", () => {
+    currentCleanup?.();
+    currentCleanup = callback(web);
+  });
+
+  const clean = () => {
+    currentCleanup?.();
+  };
+
+  return clean;
+}
+
 function createPreviewBrowserView(url: string) {
   log(`Creating preview manager ${url}`);
   const browserView = new BrowserView({
     webPreferences: { preload: undefined },
   });
 
-  const cleanups = createCleanupObject();
-
   attachViewToPreloadingWindow(browserView);
 
-  cleanups.next = makeLinksOpenInDefaultBrowser(browserView.webContents);
-  cleanups.next = publishBrowserViewEvents(url, browserView);
-  cleanups.next = autoMuteBlurredBrowserView(browserView);
-  cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
-    getBrowserViewParentWindow(browserView)?.webContents.focus();
+  const cleanup = reinitializeOnNavigation(browserView.webContents, () => {
+    const cleanups = createCleanupObject();
+    cleanups.next = makeLinksOpenInDefaultBrowser(browserView.webContents);
+    cleanups.next = publishBrowserViewEvents(url, browserView);
+    cleanups.next = autoMuteBlurredBrowserView(browserView);
+    cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
+      getBrowserViewParentWindow(browserView)?.webContents.focus();
+    });
+
+    return () => {
+      cleanups.clean();
+    };
   });
 
-  browserView.webContents.once("destroyed", cleanups.clean);
+  browserView.webContents.once("destroyed", cleanup);
 
   loadPreviewIfNeeded(browserView, url);
 

@@ -69,6 +69,11 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
     (currentURL, filter) => filter.rewriteURL?.(new URL(currentURL)) ?? currentURL,
     url
   );
+
+  const insertApplicableCss = async () =>
+    browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
   await browserView.webContents.loadURL(filteredURL);
-  await browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
+  await insertApplicableCss();
+
+  browserView.webContents.on("did-navigate", insertApplicableCss);
 }
