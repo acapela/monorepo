@@ -49,12 +49,12 @@ function createPreviewBrowserView(url: string) {
     cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
       getBrowserViewParentWindow(browserView)?.webContents.focus();
     });
+    cleanups.next = createDefaultContextMenu(url, browserView);
 
     return () => {
       cleanups.clean();
     };
   });
-  cleanups.next = createDefaultContextMenu(url, browserView);
 
   browserView.webContents.once("destroyed", cleanup);
 
