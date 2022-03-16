@@ -157,7 +157,7 @@ async function createNotificationFromMessage(
           is_mention: isMentioned,
           conversation_type: message.channel_type,
           conversation_name: slackChannel
-            ? (slackChannel.is_private ? "🔒" : "#") + slackChannel.name_normalized
+            ? (slackChannel.is_private ? "🔒 " : "#") + slackChannel.name_normalized
             : message.channel_type == "im"
             ? "Direct Message"
             : "Group Chat",

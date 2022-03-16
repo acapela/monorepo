@@ -243,7 +243,10 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const notificationProperties = getNotificationProperties(notification, recordMap);
     if (!notificationProperties) {
-      log.error(`Unable to handle notification ${id} of type ${notification.type}`, JSON.stringify(recordMap, null, 2));
+      if (!isKnownAndUnsupported(notification, recordMap)) {
+        log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
+      }
+
       continue;
     }
 
@@ -379,4 +382,18 @@ function getNotificationProperties(
       url,
     };
   }
+}
+
+function isKnownAndUnsupported(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+): boolean {
+  if (notification.type === "user-invited") {
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">).value;
+    if (activity.parent_table === "space") {
+      return true;
+    }
+  }
+
+  return false;
 }
