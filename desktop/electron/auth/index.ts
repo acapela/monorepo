@@ -23,8 +23,9 @@ export function initializeAuthHandlers() {
   clearServiceCookiesBridge.handle(async ({ url }) => {
     if (appState.mainWindow) {
       const cookieStore = session.defaultSession.cookies;
-      const notionCookies = await cookieStore.get({ url });
-      const cookieRemovalPromises = notionCookies.map((cookie) => cookieStore.remove(url, cookie.name));
+      const serviceCookies = await cookieStore.get({ url });
+      const cookieRemovalPromises = serviceCookies.map((cookie) => cookieStore.remove(url, cookie.name));
+      session.defaultSession.clearStorageData({ origin: url, storages: ["localstorage"] });
       await Promise.all([...cookieRemovalPromises, session.defaultSession.clearStorageData({ origin: url })]);
     }
   });

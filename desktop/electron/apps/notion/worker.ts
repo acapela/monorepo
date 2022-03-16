@@ -154,7 +154,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
     }),
   });
 
-  if (!response.ok) {
+  if (response.status >= 400 && response.status < 500) {
     clearNotionSessionData();
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
@@ -174,7 +174,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
     body: JSON.stringify({}),
   });
 
-  if (!getSpacesResponse.ok) {
+  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
     throw log.error(new Error(`getSpaces`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
@@ -208,7 +208,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
     }),
   });
 
-  if (!getPublicSpaceDataResponse.ok) {
+  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
     throw log.error(new Error(`getPublicSpaceData`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
