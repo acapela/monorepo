@@ -46,7 +46,8 @@ export const getPreloadingWindow = memoize(() => {
     x: 1,
     y: 1,
 
-    closable: false,
+    // if set to false, it prevents acapela from closing
+    // closable: false,
     kiosk: false,
   });
 
