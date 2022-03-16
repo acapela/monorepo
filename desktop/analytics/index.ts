@@ -77,7 +77,7 @@ function initializeAnalytics() {
   cleanup.next = autorun(() => {
     const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
     if (lastAppFocusDateTs > lastAppBlurredDateTs) {
-      trackEvent("App Opened");
+      trackEvent("App Opened", { app_version: window.electronBridge.env.version });
     }
   });
   // Keep identity updated all the time
