@@ -128,9 +128,11 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
     // Finally perform read operation.
     const value = entity[key];
 
+    // TODO: Figure out why this is not working when referring to parent entities
+    // Look at figma/comment.ts (connection to `notification`)
     if (didReadFromOtherEntities) {
-      throw new Error(
-        `Forbidden '.query({${key}})' ussage on entity "${entity.definition.config.name}". Fields that read from other entities or use queries are not allowed in simple query. Either check "${key}" implementation to avoid such operations or convert ".query({${key}: value})" to ".query((item) => item.${key} === value)"`
+      console.warn(
+        `Forbidden '.query({${key}})' usage on entity "${entity.definition.config.name}". Fields that read from other entities or use queries are not allowed in simple query. Either check "${key}" implementation to avoid such operations or convert ".query({${key}: value})" to ".query((item) => item.${key} === value)"`
       );
     }
     stopSpy();
