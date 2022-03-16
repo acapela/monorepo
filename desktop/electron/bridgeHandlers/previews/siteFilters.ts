@@ -63,6 +63,9 @@ function stylesToString(styles: StylesPart) {
   return `${styles}`;
 }
 
+const userAgent =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
+
 export async function loadURLWithFilters(browserView: BrowserView, url: string) {
   const applicableSiteFilters = siteFilters.filter((filter) => filter.on(new URL(url)));
   const filteredURL = applicableSiteFilters.reduce(
@@ -72,7 +75,7 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
 
   const insertApplicableCss = async () =>
     browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
-  await browserView.webContents.loadURL(filteredURL);
+  await browserView.webContents.loadURL(filteredURL, { userAgent });
   await insertApplicableCss();
 
   browserView.webContents.on("did-navigate", insertApplicableCss);
