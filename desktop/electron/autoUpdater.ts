@@ -47,10 +47,20 @@ export function setupAutoUpdater() {
   });
 
   appUpdateAndRestartRequest.handle(async () => {
-    await autoUpdater.quitAndInstall();
+    try {
+      await autoUpdater.quitAndInstall();
+    } catch (error) {
+      log.error(error);
+      throw error;
+    }
   });
 
   checkForUpdatesRequest.handle(async () => {
-    await checkForUpdates();
+    try {
+      await checkForUpdates();
+    } catch (error) {
+      log.error(error);
+      throw error;
+    }
   });
 }
