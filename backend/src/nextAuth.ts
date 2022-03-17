@@ -154,7 +154,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
           sameSite: "none",
           path: "/",
           // If this is true in dev, Safari will block this cookie in localhost making it impossible to log in.
-          secure: !IS_DEV,
+          secure: true,
         },
       },
     },
