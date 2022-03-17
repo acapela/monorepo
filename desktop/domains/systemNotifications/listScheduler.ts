@@ -8,7 +8,7 @@ import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
-import { autorunEffect } from "@aca/shared/mobx/utils";
+import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
@@ -143,7 +143,7 @@ function tryToScheduleNextNotifications() {
 }
 
 export function initializeListNotificationsScheduling() {
-  return autorunEffect(() => {
+  return debouncedAutorunEffect(() => {
     if (!applicationWideSettingsBridge.get().enableDesktopNotifications) {
       return;
     }
@@ -151,5 +151,5 @@ export function initializeListNotificationsScheduling() {
     if (!getNullableDb()) return;
 
     return tryToScheduleNextNotifications();
-  });
+  }, 1000);
 }
