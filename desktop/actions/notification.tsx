@@ -112,8 +112,8 @@ export const resolveNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: isNotFocusingPreviewAnd((ctx) => {
     return (
-      (ctx.hasTarget("group") && ctx.getTarget("group").notifications.some((n) => !n.isResolved)) ||
-      (ctx.hasTarget("notification") && !ctx.getTarget("notification").isResolved)
+      (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
+      (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
     );
   }),
   handler(context) {
