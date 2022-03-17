@@ -31,7 +31,9 @@ async function fetchCurrentTeamId(userId: string) {
     `,
   });
 
-  if (result.error) return null;
+  if (result.error) {
+    throw result.error;
+  }
 
   return result.data.user?.current_team?.id ?? null;
 }
@@ -90,11 +92,14 @@ export function watchUserTeamId(userId: string, onTeamId: (teamId: string | null
   let stopSubscription: () => void;
 
   async function run() {
-    const initialTeamId = await fetchCurrentTeamId(userId);
+    try {
+      const initialTeamId = await fetchCurrentTeamId(userId);
+      onTeamId(initialTeamId);
+    } catch (error) {
+      console.error(`Failed to get initial team`, error);
+    }
 
     if (isCancelled) return;
-
-    onTeamId(initialTeamId);
 
     stopSubscription = subscribeToCurrentTeamId(userId, (teamId) => {
       if (isCancelled) return;

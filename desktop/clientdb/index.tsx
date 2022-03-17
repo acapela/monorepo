@@ -1,3 +1,5 @@
+import { computed } from "mobx";
+
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { authStore } from "@aca/desktop/store/auth";
@@ -8,16 +10,18 @@ import { wait } from "@aca/shared/time";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
 const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid, setSelf }) => {
-  const { userTokenData: user, teamId } = authStore;
+  if (!authStore.isReady) return { value: null };
+
+  const userId = computed(() => authStore.userTokenData?.id).get();
+  const teamId = computed(() => authStore.teamId).get();
 
   // Let's avoid re-creating clientdb in case data is rapidly changing
   await wait(50);
 
   assertStillValid();
 
-  if (!user) return { value: null };
-
-  const userId = user.id;
+  if (!userId) return { value: null };
+  if (teamId === false) return { value: null };
 
   const newDb = await createNewClientDb({
     userId,

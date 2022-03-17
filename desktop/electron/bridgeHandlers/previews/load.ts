@@ -4,9 +4,19 @@ import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notifi
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
+import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { loadURLWithFilters } from "./siteFilters";
 
 const log = makeLogger("Preview Manager");
+
+async function ensureBrowserViewHasBackground(view: BrowserView) {
+  await evaluateFunctionInWebContents(view.webContents, () => {
+    const color = getComputedStyle(document.body).backgroundColor;
+    if (color === "rgba(0, 0, 0, 0)") {
+      document.body.style.backgroundColor = "#fff";
+    }
+  });
+}
 
 export async function loadPreviewIfNeeded(browserView: BrowserView, url: string) {
   const currentLoadState = preloadingNotificationsBridgeChannel.get()[url];
@@ -16,6 +26,7 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
   try {
     preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
     await loadURLWithFilters(browserView, url);
+    await ensureBrowserViewHasBackground(browserView);
     preloadingNotificationsBridgeChannel.update({ [url]: "ready" });
   } catch (error) {
     if (browserView.webContents.isDestroyed()) {
