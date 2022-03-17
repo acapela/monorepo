@@ -29,7 +29,8 @@
   },
   "scripts": {
     "start": "ts-node ./cli-tooling.ts",
-    "scenario": "ts-node --transpile-only ./scenario/cli.ts"
+    "scenario": "ts-node --transpile-only ./scenario/cli.ts",
+    "debug-production": "ts-node --transpile-only ./debug-production/cli.ts"
   },
   "bin": {
     "run-scenario": "./bin/scenario",
