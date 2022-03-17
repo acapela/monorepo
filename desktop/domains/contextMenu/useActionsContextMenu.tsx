@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { resolveGroupData } from "@aca/desktop/actions/action/group";
@@ -62,9 +60,7 @@ export function useActionsContextMenu(
 
   const equalActions = useEqualRef(actions);
 
-  const menuItems = useMemo(() => {
+  useContextMenu(refOrElement, () => {
     return prepareContextMenuItemsFromActions(equalActions, context);
-  }, [context, equalActions]);
-
-  useContextMenu(refOrElement, menuItems);
+  });
 }
