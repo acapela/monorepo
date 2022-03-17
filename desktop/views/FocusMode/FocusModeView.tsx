@@ -1,7 +1,3 @@
-import { observer } from "mobx-react";
-import React from "react";
-import styled from "styled-components";
-
 import { exitFocusMode } from "@aca/desktop/actions/focus";
 import {
   copyNotificationLink,
@@ -17,9 +13,13 @@ import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/Pr
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
+import { OverlayWindow } from "@aca/desktop/domains/window/OverlayWindow";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
+import { observer } from "mobx-react";
+import React from "react";
+import styled from "styled-components";
 
 import { FocusModeFooter } from "./FocusModeFooter";
 import { FocusStats } from "./FocusStats";
@@ -38,6 +38,10 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
   return (
     <AppLayout footer={<FocusModeFooter />}>
+      <OverlayWindow>
+        <div style={{ width: "100px", height: "100px", background: "red" }}></div>
+        <OverlayTest className="clickable-area">Foololo</OverlayTest>
+      </OverlayWindow>
       <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={snoozeNotification} path={["Notification"]} target={notification} />
@@ -74,4 +78,12 @@ const UIHeader = styled.div`
 
 const UIStats = styled.div`
   margin: 16px 0;
+`;
+
+const OverlayTest = styled.button`
+  &:hover {
+    background-color: red;
+  }
+
+  pointer-events: all;
 `;

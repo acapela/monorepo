@@ -1,10 +1,9 @@
-import { BrowserView, BrowserWindow, app } from "electron";
-import { memoize } from "lodash";
-
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { appState } from "@aca/desktop/electron/appState";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { Point } from "@aca/shared/point";
+import { BrowserView, BrowserWindow, app } from "electron";
+import { memoize } from "lodash";
 
 import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
 import { mirrorWindowSize } from "./utils/mirrorWindowSize";
@@ -45,8 +44,10 @@ export const getPreloadingWindow = memoize(() => {
     height: mainWindowSize?.y ?? 900,
     x: 1,
     y: 1,
-
+    skipTaskbar: true,
     closable: false,
+    // Is needed to hide this window in list when right-clicking app icon in dock
+    title: "",
     kiosk: false,
   });
 

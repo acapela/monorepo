@@ -1,16 +1,16 @@
-import { observer } from "mobx-react";
-import React, { useEffect } from "react";
-import styled from "styled-components";
-
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
+import { OverlayWindow } from "@aca/desktop/domains/window/OverlayWindow";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { theme } from "@aca/ui/theme";
+import { observer } from "mobx-react";
+import React, { useEffect } from "react";
+import styled from "styled-components";
 
 import { ListViewFirstItemsPreloader } from "./ListViewFirstItemsPreloader";
 import { ListViewFooter } from "./ListViewFooter";
@@ -60,6 +60,10 @@ export const ListView = observer(({ listId }: Props) => {
           <ListViewZenOverlay />
         </UINotificationZeroHolder>
       )}
+      <OverlayWindow>
+        <div style={{ width: "100px", height: "100px", background: "red" }}></div>
+        <OverlayTest className="clickable-area">Foololo</OverlayTest>
+      </OverlayWindow>
       <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
         {list?.isCustom && (
@@ -150,4 +154,12 @@ const UIListsScroller = styled.div`
   flex-direction: column;
   flex-grow: 1;
   min-height: 0;
+`;
+
+const OverlayTest = styled.button`
+  &:hover {
+    background-color: red;
+  }
+
+  pointer-events: all;
 `;

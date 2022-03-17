@@ -1,15 +1,14 @@
 import path from "path";
 
+import { AppEnvData } from "@aca/desktop/envData";
 import * as Sentry from "@sentry/electron";
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
 import { action, runInAction } from "mobx";
 
-import { AppEnvData } from "@aca/desktop/envData";
-
 import { appState } from "./appState";
-import { initializeChildWindowHandlers } from "./childWindows";
 import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
+import { initializeChildWindowHandlers } from "./windows";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
 // Note - do not use relative paths without __dirname
