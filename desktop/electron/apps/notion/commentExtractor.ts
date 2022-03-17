@@ -1,3 +1,5 @@
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+
 import {
   BlockDataItem,
   BlockPayload,
@@ -9,6 +11,8 @@ import {
   NotionUserDataIndicator,
   UserMentionedActivityValue,
 } from "./types";
+
+const log = makeLogger("Notion-Worker");
 
 export function extractNotionComment(
   activity: CommentedActivityValue,
@@ -84,12 +88,26 @@ function extractTextFromBlockDataItem(
 
   if (notionDSLData[0] === NotionUserDataIndicator) {
     const mentionedUserId = notionDSLData[1];
-    return `@${recordMap.notion_user[mentionedUserId].value.name}`;
+    const name = recordMap.notion_user[mentionedUserId]?.value?.name;
+
+    if (!name) {
+      log.error("unable to extract mentioned user from item", item, recordMap);
+      return "@...";
+    }
+
+    return `@${name}`;
   }
 
   if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
-    return `📄${(recordMap.block[pageId] as BlockPayload<"page">).value.properties.title[0][0]}`;
+
+    const title = (recordMap.block[pageId] as BlockPayload<"page">)?.value?.properties?.title?.[0]?.[0];
+
+    if (!title) {
+      log.error("unable to extract page title from item", item, recordMap);
+    }
+
+    return `📄${title}`;
   }
 
   if (notionDSLData[0] === NotionDateDataIndicator) {
