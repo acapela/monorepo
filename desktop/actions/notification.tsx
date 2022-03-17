@@ -40,7 +40,7 @@ export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["O"],
+  shortcut: ["Meta", "O"],
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
