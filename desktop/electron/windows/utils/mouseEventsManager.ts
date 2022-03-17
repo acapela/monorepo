@@ -16,6 +16,8 @@ export function manageMouseEventsInOverlayWindow(browserWindow: BrowserWindow, s
       return;
     }
 
+    sourceWindow.webContents.focus();
+
     browserWindow.setIgnoreMouseEvents(true, { forward: true });
 
     return createInterval(() => {
@@ -43,89 +45,41 @@ export function manageMouseEventsInOverlayWindow(browserWindow: BrowserWindow, s
 
   const stop = runEffectInWebContents<boolean>(
     browserWindow.webContents,
-    (send) => {
-      const CLICKABLE_AREA_CLASSNAME = "clickable-area";
+    (sendShouldHandleMouse) => {
+      const ignoredElements = [document, document.body, window, document.documentElement];
 
-      window.addEventListener("mousemove", (event) => {
-        console.log("move");
+      let lastShouldHandle: boolean | null = null;
+
+      function handleShouldHandleMouseChange(shouldHandle: boolean) {
+        if (shouldHandle === lastShouldHandle) return;
+        lastShouldHandle = shouldHandle;
+        sendShouldHandleMouse(shouldHandle);
+      }
+
+      function handleMouseEvent(event: MouseEvent) {
         const target = event.target as HTMLElement;
 
-        if (target.matches?.(".clickable-area")) {
-          send(true);
-          return;
+        if (ignoredElements.includes(target)) {
+          handleShouldHandleMouseChange(false);
         } else {
-          send(false);
-          return;
+          handleShouldHandleMouseChange(true);
         }
+      }
 
-        send(false);
-        // alert("OK");
-        console.log(event);
-      });
+      function requestMouseHandling() {
+        handleShouldHandleMouseChange(true);
+      }
+
+      window.addEventListener("focus", requestMouseHandling);
+
+      window.addEventListener("mousemove", handleMouseEvent);
+      window.addEventListener("mouseenter", handleMouseEvent);
+      window.addEventListener("mouseleave", handleMouseEvent);
     },
     (willHandle) => {
       shouldHandleClicks.set(willHandle);
     }
   );
-
-  // const stop = runEffectInWebContents<boolean>(
-  //   browserWindow.webContents,
-  //   (send) => {
-  //     const CLICKABLE_AREA_CLASSNAME = "clickable-area";
-
-  //     function handleMouseEnter(event: MouseEvent) {
-  //       const target = event.target as HTMLElement;
-
-  //       console.log("enter", { target });
-
-  //       if (!target.matches) return;
-
-  //       if (!target.matches(`.${CLICKABLE_AREA_CLASSNAME}, .${CLICKABLE_AREA_CLASSNAME} *`)) {
-  //         return;
-  //       }
-
-  //       console.log("Wiilll do true");
-
-  //       send(true);
-  //     }
-
-  //     function handleMouseLeave(event: MouseEvent) {
-  //       const target = event.target as HTMLElement;
-
-  //       console.log("leave", { target });
-
-  //       if (!target.matches) return;
-
-  //       if (!target.matches(`.${CLICKABLE_AREA_CLASSNAME}`)) {
-  //         return;
-  //       }
-
-  //       // There is still clickable parent
-  //       if (target.matches(`.${CLICKABLE_AREA_CLASSNAME} .${CLICKABLE_AREA_CLASSNAME}`)) {
-  //         return;
-  //       }
-
-  //       console.log("Wiilll do false");
-
-  //       send(false);
-  //     }
-
-  //     const body = document.body;
-
-  //     document.addEventListener("mouseenter", handleMouseEnter, { capture: true });
-  //     document.addEventListener("mousemove", handleMouseEnter, { capture: true });
-  //     document.addEventListener("mouseleave", handleMouseLeave, { capture: true });
-
-  //     return () => {
-  //       document.removeEventListener("mouseenter", handleMouseEnter, { capture: true });
-  //       document.removeEventListener("mousemove", handleMouseEnter, { capture: true });
-  //       document.removeEventListener("mouseleave", handleMouseLeave, { capture: true });
-  //     };
-  //   },
-  //   (shouldHandleClicks) => {
-  //     handleShouldHandleChange(shouldHandleClicks);
-  //   }
-  // );
 
   return stop;
 }

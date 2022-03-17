@@ -1,4 +1,5 @@
 import { removePrefix } from "@aca/shared/text/substring";
+import { MaybeCleanup } from "@aca/shared/types";
 import { getUUID } from "@aca/shared/uuid";
 import { WebContents } from "electron";
 import { memoize } from "lodash";
@@ -59,7 +60,7 @@ type Cleanup = () => void;
 
 export function runEffectInWebContents<D>(
   web: WebContents,
-  callback: (send: (data: D) => void) => Cleanup,
+  callback: (send: (data: D) => void) => MaybeCleanup,
   onData: (data: D) => void
 ) {
   const bridgeId = `${uniqueWindowNameCounter++}`;

@@ -1,12 +1,12 @@
-import React, { ReactNode, RefObject } from "react";
-import styled from "styled-components";
-
+import { OverlayWindow } from "@aca/desktop/domains/window/OverlayWindow";
 import { POP_PRESENCE_STYLES } from "@aca/ui/animations";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 import { zIndexValues } from "@aca/ui/theme/zIndex";
+import React, { ReactNode, RefObject } from "react";
+import styled from "styled-components";
 
 import { Popover, PopoverPlacement } from "./Popover";
 
@@ -21,12 +21,14 @@ export interface TooltipLabelProps {
 export const TooltipLabel = styled<TooltipLabelProps>(
   ({ anchorRef, label, isDisabled, shortcut, placement = "top" }) => {
     return (
-      <TooltipFlyer anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
-        <UITooltip presenceStyles={POP_PRESENCE_STYLES}>
-          {label}
-          {shortcut && <Shortcut shortcut={shortcut} />}
-        </UITooltip>
-      </TooltipFlyer>
+      <OverlayWindow>
+        <TooltipFlyer anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
+          <UITooltip presenceStyles={POP_PRESENCE_STYLES}>
+            {label}
+            {shortcut && <Shortcut shortcut={shortcut} />}
+          </UITooltip>
+        </TooltipFlyer>
+      </OverlayWindow>
     );
   }
 )``;

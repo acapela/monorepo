@@ -1,9 +1,11 @@
 import { BrowserWindow } from "electron";
 
 import { handleCreatingNewWindow } from "./newWindowHandler";
-import { overlayWindowHandler } from "./overlay";
+import { handleOverlayWindowFocusing, overlayWindowHandler } from "./overlay";
 
 export function initializeChildWindowHandlers(parentWindow: BrowserWindow) {
+  handleOverlayWindowFocusing();
+
   parentWindow.webContents.setWindowOpenHandler(({ url, features }) => {
     if (url !== "about:blank") {
       return { action: "deny" };

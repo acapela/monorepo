@@ -77,6 +77,8 @@ export function handleCreatingNewWindow(
       return;
     }
 
+    newWindow.setTitle("");
+
     initializer?.(newWindow);
 
     parentWindow.webContents.off("did-create-window", handleNewWindow);

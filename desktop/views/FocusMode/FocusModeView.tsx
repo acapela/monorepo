@@ -38,10 +38,6 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
 
   return (
     <AppLayout footer={<FocusModeFooter />}>
-      <OverlayWindow>
-        <div style={{ width: "100px", height: "100px", background: "red" }}></div>
-        <OverlayTest className="clickable-area">Foololo</OverlayTest>
-      </OverlayWindow>
       <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={snoozeNotification} path={["Notification"]} target={notification} />

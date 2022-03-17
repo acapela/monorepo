@@ -1,10 +1,5 @@
-import { action } from "mobx";
-import { observer } from "mobx-react";
-import React, { useEffect, useRef, useState } from "react";
-import { useClickAway } from "react-use";
-import styled from "styled-components";
-
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
+import { focusOverlayWindowRequest } from "@aca/desktop/bridge/windows";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import {
   getIsLastArrayElement,
@@ -18,7 +13,13 @@ import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { theme } from "@aca/ui/theme";
+import { action } from "mobx";
+import { observer } from "mobx-react";
+import React, { useEffect, useRef, useState } from "react";
+import { useClickAway } from "react-use";
+import styled from "styled-components";
 
+import { OverlayWindow } from "../window/OverlayWindow";
 import { CommandMenuActionsGroup } from "./CommandMenuActionsGroup";
 import { groupActions } from "./groups";
 import { CommandMenuSession } from "./session";
@@ -55,6 +56,10 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   );
 
   const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow, actionContext);
+
+  useEffect(() => {
+    focusOverlayWindowRequest();
+  }, []);
 
   useEffect(() => {
     if (!activeAction) return;
@@ -109,48 +114,53 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     }
   });
 
-  useClickAway(
-    bodyRef,
-    action(() => {
-      commandMenuStore.session = null;
-    })
-  );
+  function handleClose() {
+    commandMenuStore.session = null;
+    return true;
+  }
+
+  useShortcut("Esc", handleClose);
+
+  useClickAway(bodyRef, handleClose);
 
   return (
-    <BodyPortal>
-      <UICover>
-        <UIBody ref={bodyRef}>
-          <UIHead>
-            <CommandMenuTargetLabel session={session} />
-          </UIHead>
+    <UICover onClick={handleClose}>
+      <UIBody
+        ref={bodyRef}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        <UIHead>
+          <CommandMenuTargetLabel session={session} />
+        </UIHead>
 
-          <UIInput
-            placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
-            autoFocus
-            onChange={action((event) => {
-              actionContext.searchKeyword = event.target.value;
-            })}
-            spellCheck={false}
-            value={actionContext.searchKeyword}
-          />
-          <UIActions ref={actionsScrollerRef}>
-            {groupsToShow.map(({ groupItem, items: actions }) => {
-              return (
-                <CommandMenuActionsGroup
-                  key={groupItem?.id ?? "no-group"}
-                  group={groupItem}
-                  actions={actions}
-                  session={session}
-                  activeAction={activeAction ?? undefined}
-                  onSelectRequest={setActiveAction}
-                  onApplyRequest={onActionSelected}
-                />
-              );
-            })}
-          </UIActions>
-        </UIBody>
-      </UICover>
-    </BodyPortal>
+        <UIInput
+          placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
+          autoFocus
+          onChange={action((event) => {
+            actionContext.searchKeyword = event.target.value;
+          })}
+          spellCheck={false}
+          value={actionContext.searchKeyword}
+        />
+        <UIActions ref={actionsScrollerRef}>
+          {groupsToShow.map(({ groupItem, items: actions }) => {
+            return (
+              <CommandMenuActionsGroup
+                key={groupItem?.id ?? "no-group"}
+                group={groupItem}
+                actions={actions}
+                session={session}
+                activeAction={activeAction ?? undefined}
+                onSelectRequest={setActiveAction}
+                onApplyRequest={onActionSelected}
+              />
+            );
+          })}
+        </UIActions>
+      </UIBody>
+    </UICover>
   );
 });
 
@@ -163,13 +173,17 @@ const UICover = styled(FadePresenceAnimator)`
   justify-content: center;
   padding: 20px;
   padding-top: 20vh;
+  height: 100vh;
   ${theme.colors.layout.background.opacity(0.7).asBg};
   ${theme.shadow.popover};
+  pointer-events: all;
 `;
+
 const UIBody = styled(PopPresenceAnimator)`
   ${theme.colors.layout.actionPanel.asBg};
   max-width: 560px;
   max-height: 60vh;
+  pointer-events: all;
   width: 100%;
   padding-top: 16px;
   ${theme.radius.panel};

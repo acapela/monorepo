@@ -30,7 +30,7 @@ export const FilterLabel = observer(function FilterLabel({ filter, onChange, onR
 
   const shouldShowFullTooltip = useElementHasOverflow(labelNameRef);
 
-  useContextMenu(labelRef, [
+  useContextMenu(labelRef, () => [
     {
       label: "Remove",
       onSelected() {

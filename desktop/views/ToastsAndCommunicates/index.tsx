@@ -1,8 +1,3 @@
-import { uniq } from "lodash";
-import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-
 import { defineAction } from "@aca/desktop/actions/action";
 import { installUpdate } from "@aca/desktop/actions/app";
 import {
@@ -13,8 +8,13 @@ import {
 } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { PublicErrorData } from "@aca/desktop/domains/errors/types";
+import { OverlayWindow } from "@aca/desktop/domains/window/OverlayWindow";
 import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { uniq } from "lodash";
+import { observer } from "mobx-react";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import { SlackToasts } from "./SlackToasts";
 import { Toast } from "./Toast";
@@ -61,9 +61,15 @@ export const ToastsAndCommunicatesView = observer(() => {
   });
 
   return (
-    <BodyPortal>
+    <OverlayWindow>
       <UIHolder>
         <SlackToasts />
+        <Toast
+          key="update-ready"
+          title="Update available"
+          description="New version of Acapela is available."
+          // action={installUpdate}
+        />
         {isUpdateReadyToInstall && (
           <Toast
             key="update-ready"
@@ -95,7 +101,7 @@ export const ToastsAndCommunicatesView = observer(() => {
           );
         })}
       </UIHolder>
-    </BodyPortal>
+    </OverlayWindow>
   );
 });
 

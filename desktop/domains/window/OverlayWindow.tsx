@@ -1,6 +1,7 @@
 import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { WindowContext } from "@aca/shared/context/window";
 import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
+import { globalStyles } from "@aca/ui/styles/global";
 import { memoize } from "lodash";
 import React, { ReactNode, forwardRef, useEffect, useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -25,7 +26,6 @@ const defaultHtml = `
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
 </head>
 <body>
   
@@ -74,7 +74,7 @@ export const OverlayWindow = forwardRef<Window, Props>(function OverlayWindow({ 
         <WindowContext value={targetWindow}>
           <WindowStyles />
           {/* We need to re-initialize all the root-styles */}
-          {/* <GlobalDesktopStyles /> */}
+          <GlobalDesktopStyles />
           {children}
         </WindowContext>
       </>
@@ -84,6 +84,7 @@ export const OverlayWindow = forwardRef<Window, Props>(function OverlayWindow({ 
 });
 
 const WindowStyles = createGlobalStyle`
+  ${globalStyles};
   /* This is important in case we want electron to render transparent window */
   body {background: transparent}
 

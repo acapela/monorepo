@@ -45,9 +45,11 @@ export const getPreloadingWindow = memoize(() => {
     x: 1,
     y: 1,
     skipTaskbar: true,
-    closable: false,
     // Is needed to hide this window in list when right-clicking app icon in dock
     title: "",
+
+    // if set to false, it prevents acapela from closing
+    // closable: false,
     kiosk: false,
   });
 

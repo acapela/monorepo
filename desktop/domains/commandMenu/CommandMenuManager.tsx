@@ -1,16 +1,16 @@
-import { AnimatePresence } from "framer-motion";
-import { action } from "mobx";
-import { observer } from "mobx-react";
-import React from "react";
-
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { actionResultChannel, runAction } from "@aca/desktop/domains/runAction";
 import { authStore } from "@aca/desktop/store/auth";
 import { getObjectKey } from "@aca/shared/object";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { AnimatePresence } from "framer-motion";
+import { action } from "mobx";
+import { observer } from "mobx-react";
+import React from "react";
 
 import { SystemMenuItem } from "../systemMenu/SystemMenuItem";
+import { OverlayWindow } from "../window/OverlayWindow";
 import { CommandMenuView } from "./CommandMenuView";
 import { createDefaultCommandMenuSession } from "./defaultSession";
 import { createCommandMenuSession } from "./session";
@@ -59,15 +59,6 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
 
   useShortcut(["Mod", "K"], openCommandMenu);
 
-  useShortcut(
-    "Esc",
-    () => {
-      commandMenuStore.session = null;
-      return true;
-    },
-    { isEnabled: !!currentSession }
-  );
-
   const handleActionSelected = action(async function handleActionSelected(action: ActionData) {
     if (!currentSession) return;
 
@@ -77,20 +68,24 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
   if (!isLoggedIn) return null;
 
   return (
-    <AnimatePresence>
+    <>
       <SystemMenuItem
         label="Open command menu..."
         shortcut={["Mod", "K"]}
         path={["View"]}
         onClicked={openCommandMenu}
       />
-      {!!currentSession && (
-        <CommandMenuView
-          key={getObjectKey(currentSession)}
-          session={currentSession}
-          onActionSelected={handleActionSelected}
-        />
-      )}
-    </AnimatePresence>
+      <OverlayWindow>
+        <AnimatePresence>
+          {!!currentSession && (
+            <CommandMenuView
+              key={getObjectKey(currentSession)}
+              session={currentSession}
+              onActionSelected={handleActionSelected}
+            />
+          )}
+        </AnimatePresence>
+      </OverlayWindow>
+    </>
   );
 });

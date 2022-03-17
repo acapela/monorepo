@@ -68,7 +68,7 @@ export type AnalyticsEventsMap = {
 
   // Navigation related events
 
-  "App Opened": void;
+  "App Opened": { app_version: string | undefined };
   "App Restarted": void;
   "Settings Opened": void;
   "Snoozed Notifications Opened": void;

@@ -60,10 +60,6 @@ export const ListView = observer(({ listId }: Props) => {
           <ListViewZenOverlay />
         </UINotificationZeroHolder>
       )}
-      <OverlayWindow>
-        <div style={{ width: "100px", height: "100px", background: "red" }}></div>
-        <OverlayTest className="clickable-area">Foololo</OverlayTest>
-      </OverlayWindow>
       <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
         {list?.isCustom && (
@@ -159,6 +155,9 @@ const UIListsScroller = styled.div`
 const OverlayTest = styled.button`
   &:hover {
     background-color: red;
+  }
+  &:active {
+    background-color: blue;
   }
 
   pointer-events: all;

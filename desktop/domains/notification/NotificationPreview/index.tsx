@@ -1,14 +1,8 @@
-import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
-
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
@@ -20,6 +14,10 @@ import { Button } from "@aca/ui/buttons/Button";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
+import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { runActionWithTarget } from "../../runAction";
 
@@ -85,12 +83,10 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 
   useLayoutEffect(() => {
     if (devSettingsStore.hidePreviews) return;
-    if (!position || !!commandMenuStore.session) return;
     if (hasError) return;
 
     return requestAttachPreview({ url, position });
   }, [
-    !!commandMenuStore.session,
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,

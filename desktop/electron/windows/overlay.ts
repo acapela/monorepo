@@ -1,6 +1,8 @@
+import { focusOverlayWindowRequest } from "@aca/desktop/bridge/windows";
+import { createChangeCallback } from "@aca/shared/changeCallback";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { autorunEffect } from "@aca/shared/mobx/utils";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, app } from "electron";
 
 import { appState } from "../appState";
 import { NewWindowHandler } from "./newWindowHandler";
@@ -16,6 +18,8 @@ import { manageMouseEventsInOverlayWindow } from "./utils/mouseEventsManager";
  * I tried to find a way to 'remember previously focused app' and restore it, but was not able to.
  */
 
+let registeredOverlayWindow: BrowserWindow;
+
 export const overlayWindowHandler: NewWindowHandler = {
   overrides: {
     // title: "",
@@ -26,19 +30,25 @@ export const overlayWindowHandler: NewWindowHandler = {
       // backgroundThrottling: false,
     },
     // transparent: true,
-
+    title: "",
+    //
+    hasShadow: false,
     focusable: true,
     alwaysOnTop: true,
     transparent: true,
-    // acceptFirstMouse: false,
+    acceptFirstMouse: true,
 
-    frame: false,
+    // frame: false,
+    titleBarStyle: "hiddenInset",
 
-    // resizable: false,
+    width: 900,
+    height: 680,
 
-    // maximizable: false,
+    fullscreenable: true,
+    trafficLightPosition: { x: 19, y: 18 },
   },
   initializer(overlayWindow) {
+    registeredOverlayWindow = overlayWindow;
     console.log("Overlay initialize");
     return autorunEffect(() => {
       const { mainWindow } = appState;
@@ -59,7 +69,7 @@ export const overlayWindowHandler: NewWindowHandler = {
       // overlayWindow.setAlwaysOnTop(true, "floating");
       const cleanup = createCleanupObject();
 
-      overlayWindow.webContents.openDevTools({ mode: "detach" });
+      // overlayWindow.webContents.openDevTools({ mode: "detach" });
 
       cleanup.next = mirrorWindowBounds(mainWindow, overlayWindow);
       cleanup.next = manageMouseEventsInOverlayWindow(overlayWindow, mainWindow);
@@ -71,11 +81,21 @@ export const overlayWindowHandler: NewWindowHandler = {
 };
 
 function showWindowOnlyWhenParentFocused(parent: BrowserWindow, target: BrowserWindow) {
+  const updateParentFocus = createChangeCallback((parentHasFocus: boolean) => {
+    target.setAlwaysOnTop(parentHasFocus);
+    if (parentHasFocus) {
+      target.setTrafficLightPosition({ x: 5019, y: 18 });
+    } else {
+      target.setTrafficLightPosition({ x: 19, y: 18 });
+    }
+  });
+
+  //
   function update() {
     if (parent.isFocused()) {
-      target.showInactive();
+      updateParentFocus(true);
     } else {
-      target.hide();
+      updateParentFocus(false);
     }
   }
 
@@ -86,4 +106,10 @@ function showWindowOnlyWhenParentFocused(parent: BrowserWindow, target: BrowserW
     parent.off("focus", update);
     parent.off("blur", update);
   };
+}
+
+export function handleOverlayWindowFocusing() {
+  focusOverlayWindowRequest.handle(async () => {
+    registeredOverlayWindow?.focus();
+  });
 }

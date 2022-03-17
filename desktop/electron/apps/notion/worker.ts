@@ -94,7 +94,9 @@ export function startNotionSync(): ServiceSyncController {
 
       const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
+      log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
       for (const spaceToSync of syncEnabledSpaces.selected) {
+        log.debug(`Capturing started for space: ${spaceToSync}`);
         const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
         notionSyncPayload.send(extractNotifications(notificationLog));
         await wait(10000);
@@ -154,7 +156,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
     }),
   });
 
-  if (!response.ok) {
+  if (response.status >= 400 && response.status < 500) {
     clearNotionSessionData();
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
@@ -174,7 +176,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
     body: JSON.stringify({}),
   });
 
-  if (!getSpacesResponse.ok) {
+  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
     throw log.error(new Error(`getSpaces`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
@@ -208,9 +210,9 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
     }),
   });
 
-  if (!getPublicSpaceDataResponse.ok) {
+  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
-    throw log.error(new Error(`getPublicSpaceData`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+    throw new Error(`getPublicSpaceData ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
   const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
@@ -218,7 +220,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
   const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
   if (allSpaces.length === 0) {
-    throw log.error(new Error(`Unable to find any spaces in account`));
+    throw new Error(`Unable to find any spaces in account`);
   }
 
   const savedSpaces = notionAvailableSpacesValue.get();
@@ -243,7 +245,10 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const notificationProperties = getNotificationProperties(notification, recordMap);
     if (!notificationProperties) {
-      log.error(`Unable to handle notification ${id} of type ${notification.type}`, JSON.stringify(recordMap, null, 2));
+      if (!isKnownAndUnsupported(notification, recordMap)) {
+        log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
+      }
+
       continue;
     }
 
@@ -379,4 +384,18 @@ function getNotificationProperties(
       url,
     };
   }
+}
+
+function isKnownAndUnsupported(
+  notification: NotificationPayload["value"],
+  recordMap: GetNotificationLogResult["recordMap"]
+): boolean {
+  if (notification.type === "user-invited") {
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">).value;
+    if (activity.parent_table === "space") {
+      return true;
+    }
+  }
+
+  return false;
 }

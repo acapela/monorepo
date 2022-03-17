@@ -4,7 +4,11 @@ import React, { useEffect } from "react";
 
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
-import { notionAvailableSpacesValue, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
+import {
+  notionAvailableSpacesValue,
+  notionSelectedSpaceValue,
+  notionSyncPayload,
+} from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { authStore } from "@aca/desktop/store/auth";
@@ -20,10 +24,33 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 
+  function syncNotionSpacesFromClientDbToBridge() {
+    assert(db, "db must be defined", log.error.bind(log));
+
+    const selectedUserSpaces = db.notionSpaceUser.query({ is_sync_enabled: true }).all;
+    const selectedSpaces = selectedUserSpaces.map((spaceUser) => spaceUser.notionSpace);
+    const allAvailableSpaces = db.notionSpaceUser.all.map((spaceUser) => spaceUser.notionSpace);
+
+    const selected = selectedSpaces.map((sp) => sp.space_id);
+    const spaces = allAvailableSpaces.map(({ space_id, name }) => ({ id: space_id, name }));
+
+    if (selected.length > 0) {
+      log.debug(`Syncing ${selected.length} selected spaces to bridge`);
+      notionSelectedSpaceValue.set({ selected });
+    }
+
+    if (spaces.length > 0) {
+      log.debug(`Syncing ${spaces.length} available spaces to bridge`);
+      notionAvailableSpacesValue.set({ spaces });
+    }
+  }
+
   useEffect(() => {
     if (db && user && !isReadyToSync) {
       log.info("Worker Sync Enabled");
       workerSyncStart(true).then(setReadyToSync);
+
+      syncNotionSpacesFromClientDbToBridge();
     }
   }, [db, user, isReadyToSync]);
 
@@ -70,7 +97,11 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         return;
       }
 
-      log.debug(`Syncing ${data.length} Notion notifications`);
+      log.debug(
+        `Syncing ${data.length} Notion notifications ${
+          data.length > 0 ? `from space ${data[0]?.notionNotification.synced_spaced_id}` : ""
+        }`
+      );
       for (const { notification, notionNotification, type, discussion_id } of data) {
         const existingNotification = db.notificationNotion.findByUniqueIndex(
           "notion_original_notification_id",
@@ -78,13 +109,33 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         );
 
         if (existingNotification) {
-          continue;
+          log.debug(
+            `Notion notification with original id ${notionNotification.notion_original_notification_id} is synced`
+          );
+
+          // SANITY CHECK
+          // The next is done to check if there's a some bugs in the consolidation process
+          // It should be temporary until all of the bugs are found
+          const particularNotionNotification = existingNotification.inner;
+          if (!particularNotionNotification) {
+            log.error(
+              `[Notion] Existing notification not found for notificationNotion id: ${existingNotification.id}. Attempting to fix`
+            );
+            const notification = db.notification.assertFindById(existingNotification.notification_id);
+            notification.remove();
+            existingNotification.remove();
+          } else {
+            continue;
+          }
         }
 
         const space = db.notionSpace.findByUniqueIndex("space_id", notionNotification.synced_spaced_id);
         const spaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", space?.id);
 
-        assert(spaceUser, "space user should have existed when consolidating notifications", log.error.bind(log));
+        if (!spaceUser) {
+          log.error("[Notion] space user should have existed when consolidating notifications");
+          continue;
+        }
 
         /*
           Aha! This looks a bit weird?!
@@ -98,7 +149,11 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         const threeDaysBeforeFirstSync = subDays(new Date(spaceUser.first_synced_at), 3);
         const isNotificationEligibleForSync =
           new Date(notification.created_at).getTime() > threeDaysBeforeFirstSync.getTime();
+
         if (!isNotificationEligibleForSync) {
+          log.debug(
+            `[Notion] notification not eligible to sync. Date of first sync: ${spaceUser.first_synced_at}. Notification date: ${notification.created_at}`
+          );
           continue;
         }
 
@@ -125,14 +180,15 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
     figmaSyncPayload.subscribe((data) => {
       if (!db || !user) {
-        log.debug("[figmaSyncPayload] still waiting for client session");
+        log.debug("[Figma] still waiting for client session");
         return;
       }
 
-      log.debug(`Syncing ${data.length} Figma notifications`);
+      log.debug(`[Figma] Syncing ${data.length} notifications`);
       for (const { notification, commentNotification } of data) {
         // TODO: Refactor once we have other figma notification types
         if (!commentNotification) {
+          log.error("[Figma] Should not happen");
           continue;
         }
 
