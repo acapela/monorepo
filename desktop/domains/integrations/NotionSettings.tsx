@@ -31,9 +31,12 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
 
   useEffect(() => {
     // Covers corner case of losing notion session without resetting spaces
-    if (!notionAuthBridge) {
-      notionSelectedSpaceValue.reset();
-      notionAvailableSpacesValue.reset();
+    if (notionAuthBridge) {
+      const selected = selectedSpaces.map((sp) => sp.space_id);
+      const spaces = allAvailableSpaces.map(({ space_id, name }) => ({ id: space_id, name }));
+
+      notionSelectedSpaceValue.set({ selected });
+      notionAvailableSpacesValue.set({ spaces });
     }
   }, [notionAuthBridge]);
 

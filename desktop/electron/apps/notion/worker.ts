@@ -212,7 +212,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
-    throw log.error(new Error(`getPublicSpaceData`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+    throw new Error(`getPublicSpaceData ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
   const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
@@ -220,7 +220,7 @@ async function updateAvailableSpaces(sessionData: NotionSessionData) {
   const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
   if (allSpaces.length === 0) {
-    throw log.error(new Error(`Unable to find any spaces in account`));
+    throw new Error(`Unable to find any spaces in account`);
   }
 
   const savedSpaces = notionAvailableSpacesValue.get();
