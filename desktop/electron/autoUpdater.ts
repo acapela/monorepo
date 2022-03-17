@@ -23,8 +23,11 @@ export function setupAutoUpdater() {
   };
 
   const nextCheckForUpdate = async () => {
-    await checkForUpdates();
-    setTimeout(nextCheckForUpdate, 10 * 60 * 1000); // check for updates every 10 minutes
+    try {
+      await checkForUpdates();
+    } finally {
+      setTimeout(nextCheckForUpdate, 10 * 60 * 1000); // check for updates every 10 minutes
+    }
   };
 
   nextCheckForUpdate();

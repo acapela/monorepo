@@ -10,6 +10,7 @@ import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ListFilters } from "@aca/desktop/ui/Filters";
+import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
 
 import { ListViewFirstItemsPreloader } from "./ListViewFirstItemsPreloader";
@@ -82,14 +83,16 @@ export const ListView = observer(({ listId }: Props) => {
             <>
               <ListViewFirstItemsPreloader list={list} />
 
-              <UINotifications>
-                {notificationGroups?.map((notificationOrGroup) => {
-                  if (getIsNotificationsGroup(notificationOrGroup)) {
-                    return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
-                  }
+              <UINotifications key={list.id}>
+                <LazyChildrenRender initialCount={50} addBatchSize={50} batchInterval={100}>
+                  {notificationGroups?.map((notificationOrGroup) => {
+                    if (getIsNotificationsGroup(notificationOrGroup)) {
+                      return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
+                    }
 
-                  return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
-                })}
+                    return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
+                  })}
+                </LazyChildrenRender>
               </UINotifications>
             </>
           )}
