@@ -173,7 +173,9 @@ export function defineNotificationsList({
   return {
     kind: "notificationsList" as const,
     id,
-    name,
+    get name() {
+      return listEntity?.title ?? name;
+    },
     isCustom,
     getNotificationGroup,
     getAllGroupedNotifications,
