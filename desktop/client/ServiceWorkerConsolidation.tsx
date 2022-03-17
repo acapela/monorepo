@@ -4,10 +4,15 @@ import React, { useEffect } from "react";
 
 import { workerSyncStart } from "@aca/desktop/bridge/apps";
 import { figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
-import { notionAvailableSpacesValue, notionSyncPayload } from "@aca/desktop/bridge/apps/notion";
+import {
+  notionAvailableSpacesValue,
+  notionSelectedSpaceValue,
+  notionSyncPayload,
+} from "@aca/desktop/bridge/apps/notion";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { authStore } from "@aca/desktop/store/auth";
+import { assert } from "@aca/shared/assert";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
 const log = makeLogger("Worker-Consolidation");
@@ -19,10 +24,33 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
 
   const [isReadyToSync, { set: setReadyToSync }] = useBoolean(false);
 
+  function syncNotionSpacesFromClientDbToBridge() {
+    assert(db, "db must be defined", log.error.bind(log));
+
+    const selectedUserSpaces = db.notionSpaceUser.query({ is_sync_enabled: true }).all;
+    const selectedSpaces = selectedUserSpaces.map((spaceUser) => spaceUser.notionSpace);
+    const allAvailableSpaces = db.notionSpaceUser.all.map((spaceUser) => spaceUser.notionSpace);
+
+    const selected = selectedSpaces.map((sp) => sp.space_id);
+    const spaces = allAvailableSpaces.map(({ space_id, name }) => ({ id: space_id, name }));
+
+    if (selected.length > 0) {
+      log.debug(`Syncing ${selected.length} selected spaces to bridge`);
+      notionSelectedSpaceValue.set({ selected });
+    }
+
+    if (spaces.length > 0) {
+      log.debug(`Syncing ${spaces.length} available spaces to bridge`);
+      notionAvailableSpacesValue.set({ spaces });
+    }
+  }
+
   useEffect(() => {
     if (db && user && !isReadyToSync) {
       log.info("Worker Sync Enabled");
       workerSyncStart(true).then(setReadyToSync);
+
+      syncNotionSpacesFromClientDbToBridge();
     }
   }, [db, user, isReadyToSync]);
 
