@@ -94,7 +94,9 @@ export function startNotionSync(): ServiceSyncController {
 
       const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
+      log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
       for (const spaceToSync of syncEnabledSpaces.selected) {
+        log.debug(`Capturing started for space: ${spaceToSync}`);
         const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
         notionSyncPayload.send(extractNotifications(notificationLog));
         await wait(10000);

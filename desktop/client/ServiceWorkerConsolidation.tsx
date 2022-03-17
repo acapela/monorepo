@@ -69,7 +69,11 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         return;
       }
 
-      log.debug(`Syncing ${data.length} Notion notifications`);
+      log.debug(
+        `Syncing ${data.length} Notion notifications ${
+          data.length > 0 ? `from space ${data[0]?.notionNotification.synced_spaced_id}` : ""
+        }`
+      );
       for (const { notification, notionNotification, type, discussion_id } of data) {
         const existingNotification = db.notificationNotion.findByUniqueIndex(
           "notion_original_notification_id",
