@@ -90,7 +90,7 @@ export function startNotionSync(): ServiceSyncController {
       isSyncing = true;
       log.info(`Capturing started`);
 
-      await updateAvailableSpaces(sessionData);
+      await updateAvailableSpaces();
 
       const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
@@ -166,7 +166,9 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
   return result;
 }
 
-async function updateAvailableSpaces(sessionData: NotionSessionData) {
+export async function updateAvailableSpaces() {
+  const sessionData = await getNotionSessionData();
+
   const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
