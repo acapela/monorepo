@@ -2,7 +2,6 @@ import { BrowserWindow, app, session, shell } from "electron";
 
 import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
-  applicationStateBridge,
   clearAllDataRequest,
   openLinkRequest,
   restartAppRequest,
@@ -14,12 +13,11 @@ import {
   waitForDoNotDisturbToFinish,
 } from "@aca/desktop/bridge/system";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
-import { autorunEffect } from "@aca/shared/mobx/utils";
+import { wait } from "@aca/shared/time";
 
-import { getAcapelaAuthToken } from "../auth/acapela";
+import { getMainWindow } from "../mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
@@ -36,11 +34,12 @@ export function initializeSystemHandlers() {
   clearAllDataRequest.handle(async () => {
     await clearPersistance();
     await session.defaultSession.clearStorageData();
+    await session.defaultSession.clearCache();
     await restartApp();
   });
 
   showMainWindowRequest.handle(async () => {
-    appState.mainWindow?.show();
+    getMainWindow().show();
   });
 
   waitForDoNotDisturbToFinish.handle(async () => {
@@ -49,31 +48,6 @@ export function initializeSystemHandlers() {
 
   logoutBridge.handle(async () => {
     log("Logging out");
-
-    async function waitForLogout() {
-      if (!(await getAcapelaAuthToken())) {
-        log.info("initial");
-
-        return;
-      }
-
-      return new Promise<void>((resolve) => {
-        async function handleCookiesChange() {
-          if (await getAcapelaAuthToken()) {
-            log.info("still has");
-            return;
-          }
-
-          log.info("cookie change dont have");
-
-          session.defaultSession.cookies.off("changed", handleCookiesChange);
-
-          resolve();
-        }
-
-        session.defaultSession.cookies.on("changed", handleCookiesChange);
-      });
-    }
 
     async function clearLocalAcapelaData() {
       const cookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
@@ -97,7 +71,8 @@ export function initializeSystemHandlers() {
 
       await logoutView.webContents.loadURL(`${FRONTEND_URL}/logout`);
 
-      await waitForLogout();
+      // let's give the frontend some time to call the next-auth logout api
+      await wait(1500);
 
       logoutView.close();
 
@@ -159,24 +134,5 @@ export function initializeSystemHandlers() {
     // Apparently Slack also uses this to set an indeterminate badge:
     // https://github.com/electron/electron/issues/6533#issue-166218687
     app.setBadgeCount(count as number);
-  });
-
-  autorunEffect(() => {
-    const { mainWindow } = appState;
-
-    if (!mainWindow) return;
-
-    applicationStateBridge.update({ isFullscreen: mainWindow.isFullScreen() });
-
-    const handleEnterFullscreen = () => applicationStateBridge.update({ isFullscreen: true });
-    const handleLeaveFullscreen = () => applicationStateBridge.update({ isFullscreen: false });
-
-    mainWindow.on("enter-full-screen", handleEnterFullscreen);
-    mainWindow.on("leave-full-screen", handleLeaveFullscreen);
-
-    return () => {
-      mainWindow.off("enter-full-screen", handleEnterFullscreen);
-      mainWindow.off("leave-full-screen", handleLeaveFullscreen);
-    };
   });
 }

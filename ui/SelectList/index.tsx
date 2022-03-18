@@ -26,19 +26,23 @@ export const SelectList = observer(function SelectList<T>({
 
   const activeKey = activeItem ? keyGetter(activeItem) : null;
 
-  useShortcut("Enter", () => {
-    if (!activeItem) return;
+  useShortcut(
+    "Enter",
+    () => {
+      if (!activeItem) return;
 
-    onItemSelected(activeItem);
+      onItemSelected(activeItem);
 
-    // If item is selected, mark event as handled preventing other shortcut handlers from reaching it.
-    return true;
-  });
+      // If item is selected, mark event as handled preventing other shortcut handlers from reaching it.
+      return true;
+    },
+    { allowFocusedInput: true }
+  );
 
   // Prevents bubbling up of arrow key to parent container, used to prevent cursor in tip-tap editor from moving
   // when ItemDropdown created from tip-tap node.
-  useShortcut("ArrowUp", () => true);
-  useShortcut("ArrowDown", () => true);
+  useShortcut("ArrowUp", () => true, { allowFocusedInput: true });
+  useShortcut("ArrowDown", () => true, { allowFocusedInput: true });
 
   return (
     <UIHolder role="listbox">

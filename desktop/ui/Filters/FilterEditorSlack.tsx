@@ -1,10 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { apolloClient } from "@aca/desktop/apolloClient";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
-import { SlackConversationsQuery, SlackUsersQuery } from "@aca/gql";
+import { SlackConversationsQuery, SlackConversationsQueryVariables, SlackUsersQuery } from "@aca/gql";
 import { getIsValueMatchingFilter } from "@aca/shared/filters";
 import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
 import { typedKeys } from "@aca/shared/object";
@@ -87,9 +88,9 @@ function useSlackUsers() {
   return data?.slack_users ?? [];
 }
 
-function useSlackConversations() {
-  const { data } = useQuery<SlackConversationsQuery>(
-    gql`
+async function querySlackConversations() {
+  const { data } = await apolloClient.query<SlackConversationsQuery, SlackConversationsQueryVariables>({
+    query: gql`
       query SlackConversations {
         slack_conversations {
           workspace_id
@@ -98,8 +99,8 @@ function useSlackConversations() {
           is_private
         }
       }
-    `
-  );
+    `,
+  });
   return data?.slack_conversations ?? [];
 }
 
@@ -117,7 +118,16 @@ export const SlackConversationsDropdown = observer(
     className?: string;
     placeholder?: string;
   }) => {
-    const slackConversations = useSlackConversations();
+    const [slackConversations, setSlackConversations] = useState<SlackConversationsQuery["slack_conversations"]>([]);
+
+    useEffect(() => {
+      querySlackConversations().then(setSlackConversations);
+    }, []);
+
+    async function handleDropdownOpen() {
+      setSlackConversations(await querySlackConversations());
+    }
+
     return (
       <MultipleOptionsDropdown<typeof slackConversations[number]>
         className={className}
@@ -130,6 +140,7 @@ export const SlackConversationsDropdown = observer(
           getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
         }
         selectedItems={slackConversations.filter(({ id }) => checkSelected(id))}
+        onOpen={handleDropdownOpen}
         onChange={onChange}
       />
     );

@@ -40,14 +40,14 @@ export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["Mod", "O"],
+  shortcut: ["O"],
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: (ctx) => ctx.hasTarget("notification"),
+  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   async handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -61,7 +61,7 @@ export const copyNotificationLink = defineAction({
   icon: <IconLink1 />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
-  shortcut: ["Mod", "Shift", "C"],
+  shortcut: ["C"],
   keywords: ["url", "share"],
   canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   handler(context) {
@@ -75,6 +75,7 @@ export const markNotificationUnread = defineAction({
   icon: <IconGlasses />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
+  shortcut: ["Shift", "U"],
   keywords: ["snooze", "remind"],
   canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
@@ -86,6 +87,7 @@ export const markNotificationRead = defineAction({
   icon: <IconGlasses />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Mark read" : "Mark notification as read"),
+  shortcut: ["U"],
   keywords: ["seen", "done"],
   canApply: (ctx) => !ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
@@ -106,9 +108,14 @@ export const resolveNotification = defineAction({
   // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
   // Thus it seems easier to track directly in notif.resolve() handler
   keywords: ["done", "next", "mark", "complete"],
-  shortcut: ["Mod", "D"],
+  shortcut: ["E"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  canApply: isNotFocusingPreviewAnd(() => true),
+  canApply: isNotFocusingPreviewAnd((ctx) => {
+    return (
+      (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
+      (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
+    );
+  }),
   handler(context) {
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
@@ -139,7 +146,7 @@ export const unresolveNotification = defineAction({
   icon: <IconCheckboxSquare />,
   group: currentNotificationActionsGroup,
   name: "Undo resolve",
-  shortcut: ["Mod", "Shift", "D"],
+  shortcut: ["Shift", "E"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: isNotFocusingPreviewAnd((ctx) => {

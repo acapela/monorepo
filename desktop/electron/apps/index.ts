@@ -1,7 +1,6 @@
 import { forceWorkerSyncRun, workerSyncStart } from "@aca/desktop/bridge/apps";
-import { appState } from "@aca/desktop/electron/appState";
-import { autorunEffect } from "@aca/shared/mobx/utils";
 
+import { getMainWindow } from "../mainWindow";
 import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
 import { initializeNotionPush } from "./notion/push";
@@ -66,20 +65,15 @@ export function initializeServiceSync() {
     onWindowsBlurHandlers.forEach((handler) => handler.action());
   }
 
-  autorunEffect(() => {
-    // Each time main window is changed - attach proper listeners
-    const { mainWindow } = appState;
+  const mainWindow = getMainWindow();
 
-    if (!mainWindow) return;
+  mainWindow.on("blur", handleWindowBlur);
+  mainWindow.on("focus", handleWindowFocus);
 
-    mainWindow.on("blur", handleWindowBlur);
-    mainWindow.on("focus", handleWindowFocus);
-
-    return () => {
-      mainWindow.off("blur", handleWindowBlur);
-      mainWindow.off("focus", handleWindowFocus);
-    };
-  });
+  return () => {
+    mainWindow.off("blur", handleWindowBlur);
+    mainWindow.off("focus", handleWindowFocus);
+  };
 }
 
 // This assumes that the db / user threads are ready

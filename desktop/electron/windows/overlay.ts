@@ -1,10 +1,11 @@
+import { BrowserWindow } from "electron";
+
 import { focusOverlayWindowRequest } from "@aca/desktop/bridge/windows";
 import { createChangeCallback } from "@aca/shared/changeCallback";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { autorunEffect } from "@aca/shared/mobx/utils";
-import { BrowserWindow, app } from "electron";
 
-import { appState } from "../appState";
+import { getMainWindow } from "../mainWindow";
 import { NewWindowHandler } from "./newWindowHandler";
 import { mirrorWindowBounds } from "./utils/follow";
 import { manageMouseEventsInOverlayWindow } from "./utils/mouseEventsManager";
@@ -49,10 +50,8 @@ export const overlayWindowHandler: NewWindowHandler = {
   },
   initializer(overlayWindow) {
     registeredOverlayWindow = overlayWindow;
-    console.log("Overlay initialize");
     return autorunEffect(() => {
-      const { mainWindow } = appState;
-
+      const mainWindow = getMainWindow();
       if (!mainWindow) return;
 
       /**

@@ -90,7 +90,7 @@ export function startNotionSync(): ServiceSyncController {
       isSyncing = true;
       log.info(`Capturing started`);
 
-      await updateAvailableSpaces(sessionData);
+      await updateAvailableSpaces();
 
       const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
@@ -166,7 +166,9 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
   return result;
 }
 
-async function updateAvailableSpaces(sessionData: NotionSessionData) {
+export async function updateAvailableSpaces() {
+  const sessionData = await getNotionSessionData();
+
   const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
     method: "POST",
     headers: {
@@ -268,14 +270,20 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     }
 
     const updated_at = created_at;
-    const authorId = activity.edits[0].authors[0].id;
+
+    const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
+
+    if (authorId === "Notion") {
+      log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+    }
+
     result.push({
       notification: {
         url,
         text_preview,
         created_at,
         updated_at,
-        from: recordMap.notion_user[authorId]?.value?.name ?? "Notion",
+        from: recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion",
       },
       type,
       notionNotification: {
@@ -297,7 +305,7 @@ function getPageTitle(
   recordMap: GetNotificationLogResult["recordMap"]
 ): string | undefined {
   const blockId = notification.navigable_block_id;
-  const typeOfBlock = recordMap.block[blockId]?.value.type;
+  const typeOfBlock = recordMap?.block[blockId]?.value.type;
 
   if (typeOfBlock === "page") {
     const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
@@ -395,6 +403,10 @@ function isKnownAndUnsupported(
     if (activity.parent_table === "space") {
       return true;
     }
+  }
+
+  if (notification.type === "reminder") {
+    return true;
   }
 
   return false;

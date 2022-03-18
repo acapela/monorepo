@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
@@ -22,37 +23,43 @@ export const RootView = observer(function RootView() {
 
   const user = authStore.userTokenData;
 
-  if (!authStore.isReady) {
-    return (
-      <LoadingScreen
-        longLoadingFallback={{
-          timeout: 5000,
-          fallbackNode: <ErrorRecoveryButtons />,
-          hint: "Seems it is taking too long...",
-        }}
-      />
-    );
+  function renderApp() {
+    if (!authStore.isReady) {
+      return (
+        <LoadingScreen
+          key="no-auth-store"
+          longLoadingFallback={{
+            timeout: 5000,
+            fallbackNode: <ErrorRecoveryButtons />,
+            hint: "Seems it is taking too long...",
+          }}
+        />
+      );
+    }
+
+    if (!user) {
+      return <LoginView />;
+    }
+
+    if (!db) {
+      return (
+        <LoadingScreen
+          key="db-initializing"
+          longLoadingFallback={{
+            timeout: 5000,
+            fallbackNode: <ErrorRecoveryButtons />,
+            hint: "Seems it is taking too long...",
+          }}
+        />
+      );
+    }
+
+    if (onboardingStore.onboardingStatus === "ongoing") {
+      return <InitialIntegrationsView />;
+    }
+
+    return <Router />;
   }
 
-  if (!user) {
-    return <LoginView />;
-  }
-
-  if (!db) {
-    return (
-      <LoadingScreen
-        longLoadingFallback={{
-          timeout: 5000,
-          fallbackNode: <ErrorRecoveryButtons />,
-          hint: "Seems it is taking too long...",
-        }}
-      />
-    );
-  }
-
-  if (onboardingStore.onboardingStatus === "ongoing") {
-    return <InitialIntegrationsView />;
-  }
-
-  return <Router />;
+  return <AnimatePresence>{renderApp()}</AnimatePresence>;
 });

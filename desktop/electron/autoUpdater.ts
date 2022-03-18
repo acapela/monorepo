@@ -5,6 +5,8 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { allowWindowClosing } from "./utils/hideWindowOnClose";
+
 const log = makeLogger("AutoUpdater");
 
 const checkForUpdates = createSharedPromise(async () => {
@@ -23,8 +25,11 @@ export function setupAutoUpdater() {
   };
 
   const nextCheckForUpdate = async () => {
-    await checkForUpdates();
-    setTimeout(nextCheckForUpdate, 10 * 60 * 1000); // check for updates every 10 minutes
+    try {
+      await checkForUpdates();
+    } finally {
+      setTimeout(nextCheckForUpdate, 10 * 60 * 1000); // check for updates every 10 minutes
+    }
   };
 
   nextCheckForUpdate();
@@ -47,10 +52,21 @@ export function setupAutoUpdater() {
   });
 
   appUpdateAndRestartRequest.handle(async () => {
-    await autoUpdater.quitAndInstall();
+    allowWindowClosing();
+    try {
+      await autoUpdater.quitAndInstall();
+    } catch (error) {
+      log.error(error);
+      throw error;
+    }
   });
 
   checkForUpdatesRequest.handle(async () => {
-    await checkForUpdates();
+    try {
+      await checkForUpdates();
+    } catch (error) {
+      log.error(error);
+      throw error;
+    }
   });
 }

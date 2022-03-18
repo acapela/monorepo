@@ -32,7 +32,7 @@ export const snoozeNotification = defineAction({
   keywords: ["delay", "time"],
   canApply: canApplySnooze,
   icon: <IconClock />,
-  shortcut: ["Mod", "W"],
+  shortcut: ["H"],
   handler() {
     return {
       searchPlaceholder: "In 3 days...",

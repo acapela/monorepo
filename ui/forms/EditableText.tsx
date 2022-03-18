@@ -107,7 +107,7 @@ export const EditableText = styled(function EditableText({
     handleSubmit();
   });
 
-  useShortcut("Enter", handleSubmit, { isEnabled: isInEditMode });
+  useShortcut("Enter", handleSubmit, { isEnabled: isInEditMode, allowFocusedInput: true });
   useShortcut(
     "Esc",
     () => {
@@ -115,7 +115,7 @@ export const EditableText = styled(function EditableText({
       ref.current.innerText = value;
       onExitEditModeChangeRequest?.();
     },
-    { isEnabled: isInEditMode }
+    { isEnabled: isInEditMode, allowFocusedInput: true }
   );
 
   return <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode} />;
