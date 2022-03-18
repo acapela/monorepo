@@ -3,12 +3,15 @@ import path from "path";
 import * as Sentry from "@sentry/electron";
 import { BrowserWindow, app } from "electron";
 import IS_DEV from "electron-is-dev";
-import { action, runInAction } from "mobx";
+import { memoize } from "lodash";
+import { autorun } from "mobx";
 
 import { AppEnvData } from "@aca/desktop/envData";
 
-import { appState } from "./appState";
+import { applicationFocusStateBridge, applicationStateBridge } from "../bridge/system";
 import { initializeChildWindowHandlers } from "./childWindows";
+import { createBrowserWindowMobxBinding } from "./utils/browserWindowMobxBinding";
+import { handleHideWindowOnClose } from "./utils/hideWindowOnClose";
 import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
 
 // Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
@@ -41,7 +44,7 @@ export const acapelaAppPathUrl = IS_DEV
   : // In production - load static, bundled file
     `file://${INDEX_HTML_FILE}`;
 
-export function initializeMainWindow() {
+function initializeMainWindow() {
   const env: AppEnvData = {
     appName: app.name,
     sentryDsn,
@@ -77,17 +80,6 @@ export function initializeMainWindow() {
     mainWindow.focus();
   });
 
-  runInAction(() => {
-    appState.mainWindow = mainWindow;
-  });
-
-  mainWindow.on(
-    "closed",
-    action(() => {
-      appState.mainWindow = null;
-    })
-  );
-
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.getBrowserViews().forEach((view) => {
       mainWindow.removeBrowserView(view);
@@ -98,9 +90,39 @@ export function initializeMainWindow() {
     loadAppInWindow(mainWindow);
   });
 
+  handleHideWindowOnClose(mainWindow);
+
   initializeChildWindowHandlers(mainWindow);
 
   makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
   return mainWindow;
 }
+
+export const getMainWindow = memoize(initializeMainWindow);
+
+export const getMainWindowState = memoize(() => {
+  return createBrowserWindowMobxBinding(getMainWindow());
+});
+
+app.whenReady().then(() => {
+  const mainWindowState = getMainWindowState();
+
+  autorun(() => {
+    const { isFocused } = mainWindowState;
+
+    applicationStateBridge.update({ isFocused });
+
+    if (isFocused) {
+      applicationFocusStateBridge.update({ lastAppFocusDateTs: Date.now() });
+    } else {
+      applicationFocusStateBridge.update({ lastAppBlurredDateTs: Date.now() });
+    }
+  });
+
+  autorun(() => {
+    const { isFullscreen } = mainWindowState;
+
+    applicationStateBridge.update({ isFullscreen });
+  });
+});

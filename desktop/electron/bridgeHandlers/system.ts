@@ -2,7 +2,6 @@ import { BrowserWindow, app, session, shell } from "electron";
 
 import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
-  applicationStateBridge,
   clearAllDataRequest,
   openLinkRequest,
   restartAppRequest,
@@ -14,12 +13,11 @@ import {
   waitForDoNotDisturbToFinish,
 } from "@aca/desktop/bridge/system";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { appState } from "@aca/desktop/electron/appState";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
-import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { getAcapelaAuthToken } from "../auth/acapela";
+import { getMainWindow } from "../mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
@@ -40,7 +38,7 @@ export function initializeSystemHandlers() {
   });
 
   showMainWindowRequest.handle(async () => {
-    appState.mainWindow?.show();
+    getMainWindow().show();
   });
 
   waitForDoNotDisturbToFinish.handle(async () => {
@@ -159,24 +157,5 @@ export function initializeSystemHandlers() {
     // Apparently Slack also uses this to set an indeterminate badge:
     // https://github.com/electron/electron/issues/6533#issue-166218687
     app.setBadgeCount(count as number);
-  });
-
-  autorunEffect(() => {
-    const { mainWindow } = appState;
-
-    if (!mainWindow) return;
-
-    applicationStateBridge.update({ isFullscreen: mainWindow.isFullScreen() });
-
-    const handleEnterFullscreen = () => applicationStateBridge.update({ isFullscreen: true });
-    const handleLeaveFullscreen = () => applicationStateBridge.update({ isFullscreen: false });
-
-    mainWindow.on("enter-full-screen", handleEnterFullscreen);
-    mainWindow.on("leave-full-screen", handleLeaveFullscreen);
-
-    return () => {
-      mainWindow.off("enter-full-screen", handleEnterFullscreen);
-      mainWindow.off("leave-full-screen", handleLeaveFullscreen);
-    };
   });
 }
