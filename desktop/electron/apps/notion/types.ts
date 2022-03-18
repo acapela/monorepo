@@ -70,7 +70,7 @@ export interface GetNotificationLogResult {
   };
 }
 
-type NotificationPayloadType = "user-mentioned" | "commented" | "user-invited";
+type NotificationPayloadType = "user-mentioned" | "commented" | "user-invited" | "reminder";
 
 export interface NotificationPayload {
   role: string;
