@@ -38,7 +38,7 @@ export const findNotification = defineAction({
 
     return {
       initialSearchValue: searchKeyword,
-      searchPlaceholder: "Search keyword...",
+      searchPlaceholder: "Find notifications and lists...",
       getActions(context) {
         return getSearchActions(context);
       },
