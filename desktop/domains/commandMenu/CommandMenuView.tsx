@@ -71,43 +71,55 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     }
   }, [actionContext.searchKeyword]);
 
-  useShortcut("ArrowDown", () => {
-    if (!activeAction) {
-      setActiveAction(flatGroupsActions[0] ?? null);
+  useShortcut(
+    "ArrowDown",
+    () => {
+      if (!activeAction) {
+        setActiveAction(flatGroupsActions[0] ?? null);
+        return true;
+      }
+
+      if (getIsLastArrayElement(flatGroupsActions, activeAction)) return true;
+
+      const nextAction = getNextItemInArray(flatGroupsActions, activeAction);
+
+      if (!nextAction) return true;
+
+      setActiveAction(nextAction);
+    },
+    { allowFocusedInput: true }
+  );
+
+  useShortcut(
+    "ArrowUp",
+    () => {
+      if (!activeAction) {
+        setActiveAction(getLastElementFromArray(flatGroupsActions));
+        return true;
+      }
+
+      if (flatGroupsActions.indexOf(activeAction) === 0) return true;
+
+      const prevAction = getPreviousItemInArray(flatGroupsActions, activeAction);
+
+      if (!prevAction) return true;
+
+      setActiveAction(prevAction);
       return true;
-    }
+    },
+    { allowFocusedInput: true }
+  );
 
-    if (getIsLastArrayElement(flatGroupsActions, activeAction)) return true;
-
-    const nextAction = getNextItemInArray(flatGroupsActions, activeAction);
-
-    if (!nextAction) return true;
-
-    setActiveAction(nextAction);
-  });
-
-  useShortcut("ArrowUp", () => {
-    if (!activeAction) {
-      setActiveAction(getLastElementFromArray(flatGroupsActions));
-      return true;
-    }
-
-    if (flatGroupsActions.indexOf(activeAction) === 0) return true;
-
-    const prevAction = getPreviousItemInArray(flatGroupsActions, activeAction);
-
-    if (!prevAction) return true;
-
-    setActiveAction(prevAction);
-    return true;
-  });
-
-  useShortcut("Enter", () => {
-    if (activeAction) {
-      onActionSelected(activeAction);
-      return true;
-    }
-  });
+  useShortcut(
+    "Enter",
+    () => {
+      if (activeAction) {
+        onActionSelected(activeAction);
+        return true;
+      }
+    },
+    { allowFocusedInput: true }
+  );
 
   useClickAway(
     bodyRef,
