@@ -84,7 +84,7 @@ export const deleteNotificationList = defineAction({
     const { list } = ctx.assertView(listPageView);
     const didConfirm = await showConfirmDialogRequest({
       message: "Remove list?",
-      detail: `Are you sure to remove list "${list.name}"`,
+      detail: `Are you sure to remove list "${list.name}"?`,
       confirmLabel: "Remove",
     });
 
