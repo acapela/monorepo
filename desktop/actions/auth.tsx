@@ -12,6 +12,7 @@ import { IconLogOut, IconPlus, IconRefreshCw } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 
+import { showConfirmDialogRequest } from "../bridge/dialogs";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -84,6 +85,10 @@ export const logOut = defineAction({
   group: accountActionsGroup,
   keywords: ["logout", "signout"],
   async handler() {
+    if (!(await showConfirmDialogRequest({ message: "Are you sure to log out?", confirmLabel: "Log out" }))) {
+      return;
+    }
+
     logoutBridge();
   },
 });
