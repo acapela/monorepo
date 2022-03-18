@@ -32,6 +32,7 @@ interface Props {
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
   const { actionContext } = session;
@@ -45,6 +46,8 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     return true;
   });
 
+  const actionsToAlwaysShow = applicableActions.filter((action) => action.alwaysShowInSearch);
+
   const actionsToShow = fuzzySearch(
     applicableActions,
     (action) => {
@@ -53,6 +56,12 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     },
     actionContext.searchKeyword
   );
+
+  actionsToAlwaysShow.forEach((action) => {
+    if (!actionsToShow.includes(action)) {
+      actionsToShow.push(action);
+    }
+  });
 
   const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow, actionContext);
 
@@ -137,6 +146,7 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
           </UIHead>
 
           <UIInput
+            ref={inputRef}
             placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
             autoFocus
             onChange={action((event) => {
@@ -144,6 +154,9 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
             })}
             spellCheck={false}
             value={actionContext.searchKeyword}
+            onFocus={(event) => {
+              event.target.select();
+            }}
           />
           <UIActions ref={actionsScrollerRef}>
             {groupsToShow.map(({ groupItem, items: actions }) => {

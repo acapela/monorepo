@@ -11,6 +11,7 @@ import { ActionGroupData } from "./group";
 
 type ChildActionsResult = {
   isContextual?: boolean;
+  initialSearchValue?: string;
   searchPlaceholder?: string;
   getActions: (context: ActionContext) => ActionData[];
 };
@@ -27,6 +28,7 @@ export interface ActionCreateInput {
   analyticsEvent?: ActionDataThunk<AnalyticsEventInput>;
   private?: boolean;
   group?: ActionDataThunk<ActionGroupData>;
+  alwaysShowInSearch?: boolean;
   keywords?: ActionDataThunk<string[]>;
   shortcut?: ShortcutDefinition;
   onMightBeSelected?: ActionContextCallback<MaybeCleanup>;
