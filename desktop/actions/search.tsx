@@ -29,6 +29,7 @@ export function getContextualServiceName(name: string) {
 export const findNotification = defineAction({
   name: "Find notifications and lists...",
   keywords: ["search"],
+  shortcut: ["Meta", "F"],
   group: accountActionsGroup,
   alwaysShowInSearch: true,
   icon: <IconSearch />,
