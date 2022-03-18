@@ -1,3 +1,5 @@
+import { dialog } from "electron";
+import isDev from "electron-is-dev";
 import * as electronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 
@@ -5,6 +7,7 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { getMainWindow } from "./mainWindow";
 import { allowWindowClosing } from "./utils/hideWindowOnClose";
 
 const log = makeLogger("AutoUpdater");
@@ -34,10 +37,6 @@ export function setupAutoUpdater() {
 
   nextCheckForUpdate();
 
-  autoUpdater.on("error", (error) => {
-    log.error(error);
-  });
-
   autoUpdater.on("update-downloaded", () => {
     applicationStateBridge.update({ isUpdateReadyToInstall: true, updateDownloadingPercent: null });
   });
@@ -47,8 +46,12 @@ export function setupAutoUpdater() {
     applicationStateBridge.update({ updateDownloadingPercent: percent, isUpdateReadyToInstall: false });
   });
 
-  autoUpdater.on("error", (message) => {
-    log.error("There was a problem updating the application", message);
+  autoUpdater.on("error", (error) => {
+    if (!isDev) {
+      dialog.showErrorBox("There was a problem updating the application", `${error}`);
+    }
+
+    log.error("There was a problem updating the application", error);
   });
 
   appUpdateAndRestartRequest.handle(async () => {
@@ -63,8 +66,13 @@ export function setupAutoUpdater() {
 
   checkForUpdatesRequest.handle(async () => {
     try {
-      await checkForUpdates();
+      const checkResult = await checkForUpdates();
+
+      if (!checkResult.downloadPromise) {
+        dialog.showMessageBox(getMainWindow(), { message: "App is up to date" });
+      }
     } catch (error) {
+      dialog.showErrorBox("Failed to check for update", `${error}`);
       log.error(error);
       throw error;
     }

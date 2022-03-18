@@ -6,6 +6,7 @@ import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowTop, IconEdit2, IconPlus, IconSlidersHoriz, IconTrash } from "@aca/ui/icons";
 
+import { showConfirmDialogRequest } from "../bridge/dialogs";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -75,8 +76,16 @@ export const deleteNotificationList = defineAction({
   keywords: ["remove", "trash"],
   analyticsEvent: "Custom List Deleted",
   canApply: canApplyCustomListAction,
-  handler(ctx) {
+  async handler(ctx) {
     const { list } = ctx.assertView(listPageView);
+    const didConfirm = await showConfirmDialogRequest({
+      message: "Remove list?",
+      detail: `Are you sure to remove list "${list.name}"`,
+      confirmLabel: "Remove",
+    });
+
+    if (!didConfirm) return;
+
     desktopRouter.navigate("list", { listId: allNotificationsList.id });
     getDb().notificationList.removeById(list.id);
   },
