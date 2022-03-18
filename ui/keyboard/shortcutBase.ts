@@ -18,6 +18,7 @@ export interface ShortcutOptions {
    * the same keyboard shortcut.
    */
   ignoreIfAlreadyDefined?: boolean;
+  allowFocusedInput?: boolean;
 }
 
 export type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
@@ -84,11 +85,23 @@ interface RunningShortcutInfo {
   options?: ShortcutOptions;
 }
 
+function getIsAnyInputFocused(document: Document) {
+  const { activeElement } = document;
+
+  if (!activeElement) return;
+
+  if (activeElement.matches("input, textarea")) return true;
+
+  return false;
+}
+
 // It is possible we want to support shortcuts in multiple windows
 export const initializeDocumentShortcuts = memoize((document: Document) => {
   document.body.addEventListener(
     "keydown",
     (event) => {
+      const isAnyInputFocused = getIsAnyInputFocused(document);
+
       for (const [, { hotKey, callbacks }] of shortcutHandlersMap.entries()) {
         if (!compareHotkey(hotKey, event)) {
           continue;
@@ -104,6 +117,10 @@ export const initializeDocumentShortcuts = memoize((document: Document) => {
 
         for (const callbackInfo of callbacks) {
           if (callbackInfo.options?.isEnabled === false) {
+            continue;
+          }
+
+          if (!callbackInfo.options?.allowFocusedInput && isAnyInputFocused) {
             continue;
           }
 

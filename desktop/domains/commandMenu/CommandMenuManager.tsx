@@ -65,7 +65,7 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
       commandMenuStore.session = null;
       return true;
     },
-    { isEnabled: !!currentSession }
+    { isEnabled: !!currentSession, allowFocusedInput: true }
   );
 
   const handleActionSelected = action(async function handleActionSelected(action: ActionData) {
