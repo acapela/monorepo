@@ -58,10 +58,4 @@ const publishedApi = {
 
 export type ElectronPublishedAPI = typeof publishedApi;
 
-declare global {
-  interface Window {
-    electronBridge: ElectronPublishedAPI;
-  }
-}
-
 contextBridge.exposeInMainWorld("electronBridge", publishedApi);
