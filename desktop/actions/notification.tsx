@@ -40,14 +40,14 @@ export const openNotificationInApp = defineAction({
   icon: <IconExternalLink />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["Meta", "O"],
+  shortcut: ["O"],
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: (ctx) => ctx.hasTarget("notification"),
+  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   async handler(context) {
     const notification = context.assertTarget("notification");
 
