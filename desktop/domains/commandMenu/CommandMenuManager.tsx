@@ -34,6 +34,7 @@ actionResultChannel.subscribe(
       actionContext: createActionContext(currentSession?.actionContext.forcedTarget, {
         isContextual: actionResult.isContextual ?? currentSession?.actionContext.isContextual,
         searchPlaceholder: actionResult.searchPlaceholder,
+        initialSearchValue: actionResult.initialSearchValue,
       }),
       getActions(context) {
         return actionResult.getActions(context);

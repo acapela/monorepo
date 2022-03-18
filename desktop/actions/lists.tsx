@@ -31,23 +31,27 @@ export const renameNotificationList = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("list")?.name,
 
   canApply: canApplyCustomListAction,
-  handler: () => ({
-    searchPlaceholder: "List name...",
-    getActions: () => [
-      defineAction({
-        name: (ctx) =>
-          `Rename list "${ctx.assertTarget("list").name}"` + (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
-        handler(ctx) {
-          const list = ctx.assertTarget("list");
-          const title = ctx.searchKeyword.trim();
-          if (!title) {
-            return;
-          }
-          getDb().notificationList.findById(list.id)?.update({ title });
-        },
-      }),
-    ],
-  }),
+  handler: (ctx) => {
+    const list = ctx.assertTarget("list");
+    return {
+      searchPlaceholder: "List name...",
+      initialSearchValue: list.name,
+      getActions: () => [
+        defineAction({
+          name: (ctx) =>
+            `Rename list "${ctx.assertTarget("list").name}"` + (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+          handler(ctx) {
+            const list = ctx.assertTarget("list");
+            const title = ctx.searchKeyword.trim();
+            if (!title) {
+              return;
+            }
+            getDb().notificationList.findById(list.id)?.update({ title });
+          },
+        }),
+      ],
+    };
+  },
 });
 
 export const editNotificationList = defineAction({

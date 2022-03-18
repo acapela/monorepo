@@ -19,6 +19,7 @@ import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { theme } from "@aca/ui/theme";
 
+import { OverlayWindow } from "../window/OverlayWindow";
 import { CommandMenuActionsGroup } from "./CommandMenuActionsGroup";
 import { groupActions } from "./groups";
 import { CommandMenuSession } from "./session";
@@ -32,6 +33,7 @@ interface Props {
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const actionsScrollerRef = useRef<HTMLDivElement>(null);
 
   const { actionContext } = session;
@@ -45,6 +47,8 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     return true;
   });
 
+  const actionsToAlwaysShow = applicableActions.filter((action) => action.alwaysShowInSearch);
+
   const actionsToShow = fuzzySearch(
     applicableActions,
     (action) => {
@@ -53,6 +57,12 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     },
     actionContext.searchKeyword
   );
+
+  actionsToAlwaysShow.forEach((action) => {
+    if (!actionsToShow.includes(action)) {
+      actionsToShow.push(action);
+    }
+  });
 
   const [groupsToShow, flatGroupsActions] = groupActions(actionsToShow, actionContext);
 
@@ -135,43 +145,44 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
   useClickAway(bodyRef, handleClose);
 
   return (
-    <UICover onClick={handleClose}>
-      <UIBody
-        ref={bodyRef}
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-      >
-        <UIHead>
-          <CommandMenuTargetLabel session={session} />
-        </UIHead>
+    <OverlayWindow>
+      <UICover>
+        <UIBody ref={bodyRef}>
+          <UIHead>
+            <CommandMenuTargetLabel session={session} />
+          </UIHead>
 
-        <UIInput
-          placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
-          autoFocus
-          onChange={action((event) => {
-            actionContext.searchKeyword = event.target.value;
-          })}
-          spellCheck={false}
-          value={actionContext.searchKeyword}
-        />
-        <UIActions ref={actionsScrollerRef}>
-          {groupsToShow.map(({ groupItem, items: actions }) => {
-            return (
-              <CommandMenuActionsGroup
-                key={groupItem?.id ?? "no-group"}
-                group={groupItem}
-                actions={actions}
-                session={session}
-                activeAction={activeAction ?? undefined}
-                onSelectRequest={setActiveAction}
-                onApplyRequest={onActionSelected}
-              />
-            );
-          })}
-        </UIActions>
-      </UIBody>
-    </UICover>
+          <UIInput
+            ref={inputRef}
+            placeholder={actionContext.searchPlaceholder ?? "Find anything..."}
+            autoFocus
+            onChange={action((event) => {
+              actionContext.searchKeyword = event.target.value;
+            })}
+            spellCheck={false}
+            value={actionContext.searchKeyword}
+            onFocus={(event) => {
+              event.target.select();
+            }}
+          />
+          <UIActions ref={actionsScrollerRef}>
+            {groupsToShow.map(({ groupItem, items: actions }) => {
+              return (
+                <CommandMenuActionsGroup
+                  key={groupItem?.id ?? "no-group"}
+                  group={groupItem}
+                  actions={actions}
+                  session={session}
+                  activeAction={activeAction ?? undefined}
+                  onSelectRequest={setActiveAction}
+                  onApplyRequest={onActionSelected}
+                />
+              );
+            })}
+          </UIActions>
+        </UIBody>
+      </UICover>
+    </OverlayWindow>
   );
 });
 

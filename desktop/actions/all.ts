@@ -8,6 +8,7 @@ import * as focusActions from "./focus";
 import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
 import * as notificationActions from "./notification";
+import * as searchActions from "./search";
 import * as settingsActions from "./settings";
 import * as slackActions from "./slack";
 import * as snoozeActions from "./snooze";
@@ -22,6 +23,7 @@ export * as notificationActions from "./notification";
 export * as settingsActions from "./settings";
 export * as slackActions from "./slack";
 export * as snoozeActions from "./snooze";
+export * as searchActions from "./search";
 
 /**
  * Convert all '* as' imports into list of actions
@@ -36,7 +38,8 @@ export const allActions = composeActionsFromImports(
   appActions,
   notificationActions,
   snoozeActions,
-  settingsActions
+  settingsActions,
+  searchActions
 );
 
 /**
