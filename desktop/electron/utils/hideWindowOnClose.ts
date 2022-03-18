@@ -1,22 +1,31 @@
 import { BrowserWindow, app } from "electron";
 
-export function handleHideWindowOnClose(window: BrowserWindow) {
-  let isQuittingApp = false;
+let isClosingWindowAllowed = false;
 
-  /**
-   * Important note: this is safe for auto-updater and will not prevent app quit
-   * From docs of: autoUpdater.quitAndInstall:
-   * > Note: autoUpdater.quitAndInstall() will close all application windows first and only emit before-quit event on app after that. This is different from the normal quit event sequence.
-   */
+/**
+ * Important note!
+ *
+ * We need auto-updater to be able to close the windows in order to perform update.
+ */
+
+export function allowWindowClosing() {
+  isClosingWindowAllowed = true;
+}
+
+export function handleHideWindowOnClose(window: BrowserWindow) {
   app.on("before-quit", () => {
-    isQuittingApp = true;
+    isClosingWindowAllowed = true;
   });
 
   window.on("close", (event) => {
-    if (!isQuittingApp) {
-      event.preventDefault();
-      window.hide();
+    if (isClosingWindowAllowed) {
+      // Simply allow it normally
+      return;
     }
+
+    // hide window instead of closing it.
+    event.preventDefault();
+    window.hide();
   });
 
   app.on("activate", () => {
