@@ -36,6 +36,7 @@ export function initializeSystemHandlers() {
   clearAllDataRequest.handle(async () => {
     await clearPersistance();
     await session.defaultSession.clearStorageData();
+    await session.defaultSession.clearCache();
     await restartApp();
   });
 

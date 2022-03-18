@@ -4,6 +4,7 @@ import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
+import { updateAvailableSpaces } from "../apps/notion/worker";
 import { authWindowDefaultOptions } from "./utils";
 
 export const notionURL = "https://www.notion.so";
@@ -43,6 +44,7 @@ export async function loginNotion() {
 export function initializeNotionAuthHandler() {
   loginNotionBridge.handle(async () => {
     await loginNotion();
+    await updateAvailableSpaces();
     tryInitializeServiceSync("notion");
   });
 
