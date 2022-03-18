@@ -5,6 +5,8 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { allowWindowClosing } from "./utils/hideWindowOnClose";
+
 const log = makeLogger("AutoUpdater");
 
 const checkForUpdates = createSharedPromise(async () => {
@@ -50,6 +52,7 @@ export function setupAutoUpdater() {
   });
 
   appUpdateAndRestartRequest.handle(async () => {
+    allowWindowClosing();
     try {
       await autoUpdater.quitAndInstall();
     } catch (error) {
