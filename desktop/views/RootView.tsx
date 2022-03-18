@@ -6,6 +6,7 @@ import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { ErrorRecoveryButtons } from "@aca/desktop/domains/errorRecovery/ErrorRecoveryButtons";
+import { UsersnapProvider } from "@aca/desktop/domains/feedbackWidget";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/auth";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
@@ -58,7 +59,11 @@ export const RootView = observer(function RootView() {
       return <InitialIntegrationsView />;
     }
 
-    return <Router />;
+    return (
+      <UsersnapProvider initParams={{ user: { userId: user.id, email: user.email } }}>
+        <Router />
+      </UsersnapProvider>
+    );
   }
 
   return <AnimatePresence>{renderApp()}</AnimatePresence>;
