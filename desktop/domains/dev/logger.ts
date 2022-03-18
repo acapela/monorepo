@@ -4,7 +4,7 @@ import { runInAction } from "mobx";
 
 import { LogEntry, getAllLogsBridge, logStorage, requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { appState } from "@aca/desktop/electron/appState";
-import { PRELOAD_SCRIPT_PATH, acapelaAppPathUrl, sentryDsn } from "@aca/desktop/electron/mainWindow";
+import { PRELOAD_SCRIPT_PATH, acapelaAppPathUrl, getMainWindow, sentryDsn } from "@aca/desktop/electron/mainWindow";
 import { AppEnvData } from "@aca/desktop/envData";
 
 const allLogs: LogEntry[] = [];
@@ -26,15 +26,11 @@ export function InitializeLogger() {
   };
 
   requestToggleLoggerWindow.handle(async () => {
-    const { mainWindow, loggerWindow } = appState;
-
-    if (!mainWindow) {
-      return;
-    }
+    const { loggerWindow } = appState;
 
     if (!loggerWindow) {
       const newLoggerWindow = new BrowserWindow({
-        parent: mainWindow,
+        parent: getMainWindow(),
         title: "Logger",
         fullscreenable: true,
         webPreferences: {
