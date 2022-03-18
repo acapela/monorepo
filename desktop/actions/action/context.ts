@@ -38,6 +38,7 @@ const routeTargets = cachedComputed((): unknown[] => {
 interface ActionContextConfig {
   isContextual?: boolean;
   searchPlaceholder?: string;
+  initialSearchValue?: string;
 }
 
 export function getImplicitTargets() {
@@ -46,7 +47,7 @@ export function getImplicitTargets() {
 
 export function createActionContext(
   forcedTarget?: unknown,
-  { isContextual = false, searchPlaceholder = "Find anything..." }: ActionContextConfig = {}
+  { isContextual = false, searchPlaceholder = "Find anything...", initialSearchValue = "" }: ActionContextConfig = {}
 ) {
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
@@ -64,7 +65,7 @@ export function createActionContext(
       view<D>(view: ActionView<D>): D {
         return view.getView(context);
       },
-      searchKeyword: "",
+      searchKeyword: initialSearchValue,
       assertView<D>(view: ActionView<D>) {
         const foundView = context.view(view);
 
