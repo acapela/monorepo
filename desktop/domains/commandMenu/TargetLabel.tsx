@@ -32,6 +32,8 @@ export const CommandMenuTargetLabel = styledObserver(function CommandMenuView({ 
 
   const label = getTargetLabel();
 
+  if (!label) return null;
+
   return <UILabel className={className}>{label}</UILabel>;
 })``;
 
