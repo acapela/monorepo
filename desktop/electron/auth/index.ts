@@ -1,7 +1,6 @@
 import { session } from "electron";
 
 import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
-import { appState } from "@aca/desktop/electron/appState";
 
 import { initializeLoginHandler } from "./acapela";
 import { initializeFigmaAuthHandler } from "./figma";
@@ -21,12 +20,10 @@ export function initializeAuthHandlers() {
   initializeJiraAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
-    if (appState.mainWindow) {
-      const cookieStore = session.defaultSession.cookies;
-      const serviceCookies = await cookieStore.get({ url });
-      const cookieRemovalPromises = serviceCookies.map((cookie) => cookieStore.remove(url, cookie.name));
-      session.defaultSession.clearStorageData({ origin: url, storages: ["localstorage"] });
-      await Promise.all([...cookieRemovalPromises, session.defaultSession.clearStorageData({ origin: url })]);
-    }
+    const cookieStore = session.defaultSession.cookies;
+    const serviceCookies = await cookieStore.get({ url });
+    const cookieRemovalPromises = serviceCookies.map((cookie) => cookieStore.remove(url, cookie.name));
+    session.defaultSession.clearStorageData({ origin: url, storages: ["localstorage"] });
+    await Promise.all([...cookieRemovalPromises, session.defaultSession.clearStorageData({ origin: url })]);
   });
 }

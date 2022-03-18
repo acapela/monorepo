@@ -11,15 +11,13 @@ import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
 import { makeLogger, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
 import { initializeServiceSync } from "./apps";
-import { appState } from "./appState";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeDarkModeHandling } from "./darkMode";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
-import { initializeMainWindow } from "./mainWindow";
+import { getMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
-import { initializeSingleInstanceLock } from "./singleInstance";
 
 registerLoggerErrorReporter((body) => {
   try {
@@ -36,11 +34,6 @@ registerLoggerErrorReporter((body) => {
 // Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
 protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
 
-if (!IS_DEV) {
-  // Has to be done before app ready
-  initializeSingleInstanceLock();
-}
-
 const log = makeLogger("Electron-Boot-Sequence");
 
 function initializeApp() {
@@ -51,7 +44,7 @@ function initializeApp() {
   initializeProtocolHandlers();
 
   log.info(`Initialize main window`);
-  initializeMainWindow();
+  getMainWindow();
 
   log.info(`Initialize logger`);
   InitializeLogger();
@@ -81,11 +74,4 @@ app.on("window-all-closed", () => {
     return;
   }
   app.quit();
-});
-
-// If all windows are closed and you eg 'cmd-tab' into the app - re-initialize the window
-app.on("activate", () => {
-  if (!appState.mainWindow) {
-    initializeMainWindow();
-  }
 });

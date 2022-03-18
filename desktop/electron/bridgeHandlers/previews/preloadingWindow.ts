@@ -2,10 +2,9 @@ import { BrowserView, BrowserWindow, app } from "electron";
 import { memoize } from "lodash";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
-import { appState } from "@aca/desktop/electron/appState";
-import { autorunEffect } from "@aca/shared/mobx/utils";
 import { Point } from "@aca/shared/point";
 
+import { getMainWindow } from "../../mainWindow";
 import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
 import { mirrorWindowSize } from "./utils/mirrorWindowSize";
 
@@ -34,7 +33,8 @@ function getWindowSize(window?: BrowserWindow): Point | null {
 }
 
 export const getPreloadingWindow = memoize(() => {
-  const mainWindowSize = getWindowSize(appState.mainWindow ?? undefined);
+  const mainWindow = getMainWindow();
+  const mainWindowSize = getWindowSize(mainWindow);
 
   const preloadingWindow = new BrowserWindow({
     opacity: 0,
@@ -54,14 +54,7 @@ export const getPreloadingWindow = memoize(() => {
   // We don't want this window to interfere with user actions in any way
   preloadingWindow.setIgnoreMouseEvents(true);
 
-  // Always mirror main window size
-  autorunEffect(() => {
-    const { mainWindow } = appState;
-
-    if (!mainWindow) return;
-
-    return mirrorWindowSize(mainWindow, preloadingWindow);
-  });
+  mirrorWindowSize(mainWindow, preloadingWindow);
 
   handleWindowViewsPositioning(preloadingWindow);
 
