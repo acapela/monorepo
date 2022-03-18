@@ -23,6 +23,8 @@ interface Props<I> {
   onChange?: (items: I[]) => void;
   onItemSelected?: (item: I) => void;
   onItemUnselected?: (item: I) => void;
+  onOpen?: () => void;
+  onClose?: () => void;
   newItem?: {
     onCreateRequest: () => void;
     label: string;
@@ -47,6 +49,8 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
   onChange,
   onItemSelected,
   onItemUnselected,
+  onOpen,
+  onClose,
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
   icon,
@@ -86,10 +90,20 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
     onChange?.(newSelectedItems);
   }
 
+  function handleOpen() {
+    onOpen?.();
+    open();
+  }
+
+  function handleClose() {
+    onClose?.();
+    close();
+  }
+
   return (
     <>
       {!!children && (
-        <UICustomTrigger ref={openerRef} onClick={open}>
+        <UICustomTrigger ref={openerRef} onClick={handleOpen}>
           {children}
         </UICustomTrigger>
       )}
@@ -97,7 +111,7 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
         <FieldWithLabel
           isDisabled={isDisabled}
           label={name}
-          onClick={open}
+          onClick={handleOpen}
           pushLabel={hasSelection}
           icon={icon}
           indicateDropdown
@@ -121,7 +135,7 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
       )}
       <AnimatePresence>
         {isOpen && (
-          <Popover anchorRef={openerRef} placement="bottom-start" onCloseRequest={close} enableScreenCover>
+          <Popover anchorRef={openerRef} placement="bottom-start" onCloseRequest={handleClose} enableScreenCover>
             <UIDropdownHolder role="listbox">
               <ItemsDropdown
                 items={items}
@@ -129,9 +143,7 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
                 labelGetter={labelGetter}
                 onItemSelected={handleItemPicked}
                 selectedItems={selectedItems}
-                onCloseRequest={() => {
-                  close();
-                }}
+                onCloseRequest={handleClose}
                 iconGetter={iconGetter}
                 additionalContent={
                   newItem && (
@@ -139,7 +151,7 @@ export const MultipleOptionsDropdown = observer(function MultipleOptionsDropdown
                       icon={<IconPlus />}
                       label={newItem.label}
                       onClick={() => {
-                        close();
+                        handleClose();
                         newItem.onCreateRequest();
                       }}
                     />

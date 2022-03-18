@@ -1,9 +1,8 @@
 import { BrowserView, BrowserWindow, app } from "electron";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
-import { appState } from "@aca/desktop/electron/appState";
-import { autorunEffect } from "@aca/shared/mobx/utils";
 
+import { getMainWindow } from "../../mainWindow";
 import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "./utils/view";
 
 /**
@@ -78,11 +77,5 @@ function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, positio
 }
 
 app.whenReady().then(() => {
-  autorunEffect(() => {
-    const { mainWindow } = appState;
-
-    if (!mainWindow) return;
-
-    return handleWindowViewsPositioning(mainWindow);
-  });
+  return handleWindowViewsPositioning(getMainWindow());
 });

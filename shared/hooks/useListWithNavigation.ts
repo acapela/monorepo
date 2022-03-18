@@ -19,8 +19,8 @@ export function useListWithNavigation<I>(items: I[], config?: UseListWithNavigat
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === items.length - 1;
 
-  useShortcut("Down", next, { isEnabled: isKeyboardEnabled && !isLast });
-  useShortcut("Up", prev, { isEnabled: isKeyboardEnabled && !isFirst });
+  useShortcut("Down", next, { isEnabled: isKeyboardEnabled && !isLast, allowFocusedInput: true });
+  useShortcut("Up", prev, { isEnabled: isKeyboardEnabled && !isFirst, allowFocusedInput: true });
 
   return {
     activeItem,

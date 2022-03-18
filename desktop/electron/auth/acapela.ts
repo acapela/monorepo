@@ -59,23 +59,4 @@ export function initializeLoginHandler() {
   getAcapelaAuthToken().then((token) => {
     authTokenBridgeValue.set(token);
   });
-
-  // Force auth token to allow other origins
-  session.defaultSession.cookies.on("changed", (event, cookie) => {
-    if (cookie.name !== "next-auth.session-token") return;
-    if (cookie.sameSite === "no_restriction") return;
-
-    // Set another cookie with weakened sameSite policy to allow us to make requests from our app which is on a different
-    // domain, namely localhost in development and file:// in production.
-    session.defaultSession.cookies.set({
-      url: "https://" + cookie.domain,
-      domain: cookie.domain,
-      name: cookie.name,
-      value: cookie.value,
-      sameSite: "no_restriction",
-      secure: true,
-      httpOnly: true,
-      expirationDate: cookie.expirationDate,
-    });
-  });
 }

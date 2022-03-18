@@ -39,6 +39,13 @@ function getDefaultSystemMenuTemplate() {
         },
       ],
     },
+    {
+      label: "Window",
+      submenu: [
+        //
+        { role: "close" },
+      ],
+    },
 
     {
       label: "Debug",
