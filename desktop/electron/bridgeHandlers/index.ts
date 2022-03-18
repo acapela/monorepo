@@ -2,6 +2,7 @@ import { initializeCleanupsHandler } from "@aca/desktop/bridge/base/invokeWithCl
 import { initializeAuthHandlers } from "@aca/desktop/electron/auth";
 
 import { initializeContextMenuHandlers } from "./contextMenu";
+import { initializeDialogsHandlers } from "./dialogs";
 import { initializePersistance } from "./persistance";
 import { initPreviewHandler } from "./previews";
 import { initializeSystemHandlers } from "./system";
@@ -15,4 +16,5 @@ export function initializeBridgeHandlers() {
   initializeCleanupsHandler();
   initializeContextMenuHandlers();
   initializeSystemMenuHandlers();
+  initializeDialogsHandlers();
 }
