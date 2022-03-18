@@ -15,8 +15,8 @@ import {
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
+import { wait } from "@aca/shared/time";
 
-import { getAcapelaAuthToken } from "../auth/acapela";
 import { getMainWindow } from "../mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
@@ -48,31 +48,6 @@ export function initializeSystemHandlers() {
   logoutBridge.handle(async () => {
     log("Logging out");
 
-    async function waitForLogout() {
-      if (!(await getAcapelaAuthToken())) {
-        log.info("initial");
-
-        return;
-      }
-
-      return new Promise<void>((resolve) => {
-        async function handleCookiesChange() {
-          if (await getAcapelaAuthToken()) {
-            log.info("still has");
-            return;
-          }
-
-          log.info("cookie change dont have");
-
-          session.defaultSession.cookies.off("changed", handleCookiesChange);
-
-          resolve();
-        }
-
-        session.defaultSession.cookies.on("changed", handleCookiesChange);
-      });
-    }
-
     async function clearLocalAcapelaData() {
       const cookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
 
@@ -95,7 +70,8 @@ export function initializeSystemHandlers() {
 
       await logoutView.webContents.loadURL(`${FRONTEND_URL}/logout`);
 
-      await waitForLogout();
+      // let's give the frontend some time to call the next-auth logout api
+      await wait(1500);
 
       logoutView.close();
 
