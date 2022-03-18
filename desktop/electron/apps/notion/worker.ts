@@ -274,7 +274,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
     const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
 
     if (authorId === "Notion") {
-      log.error("unable to extract authorId from activity", activity, recordMap);
+      log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
     }
 
     result.push({

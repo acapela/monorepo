@@ -91,7 +91,7 @@ function extractTextFromBlockDataItem(
     const name = recordMap.notion_user[mentionedUserId]?.value?.name;
 
     if (!name) {
-      log.error("unable to extract mentioned user from item", item, recordMap);
+      log.error("unable to extract mentioned user from item" + JSON.stringify(item, null, 2));
       return "@...";
     }
 
@@ -104,7 +104,7 @@ function extractTextFromBlockDataItem(
     const title = (recordMap.block[pageId] as BlockPayload<"page">)?.value?.properties?.title?.[0]?.[0];
 
     if (!title) {
-      log.error("unable to extract page title from item", item, recordMap);
+      log.error("unable to extract page title from item" + JSON.stringify(item, null, 2));
     }
 
     return `📄${title}`;
