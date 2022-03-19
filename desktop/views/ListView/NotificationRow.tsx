@@ -67,7 +67,6 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
   );
 
   const title = getNotificationTitle(notification);
-
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -79,7 +78,8 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
           devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]
         }
       >
-        <NotificationAppIcon notification={notification} displayUnreadNotification={notification.isUnread} />
+        <UIUnreadIndicator $isUnread={notification.isUnread} />
+        <NotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
@@ -124,4 +124,18 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" 
   ${NotificationAppIcon} {
     font-size: 24px;
   }
+`;
+
+export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
+  height: 4px;
+  width: 4px;
+
+  ${(props) =>
+    props.$isUnread &&
+    css`
+      ${theme.colors.text.asBg};
+      border: 1px solid ${theme.colors.text};
+    `}
+
+  ${theme.radius.circle}
 `;
