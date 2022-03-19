@@ -17,6 +17,7 @@ import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
+import { FeedbackButton } from "../../domains/feedbackWidget/feedbackButton";
 import { SidebarItem } from "./SidebarItem";
 
 export const SIDEBAR_WIDTH = 270;
@@ -101,6 +102,9 @@ export const Sidebar = observer(({ isOpened }: Props) => {
           <UISidebarItem action={createNotificationList} />
         </UIItemGroup>
       </UIItems>
+      <UIFixedButton>
+        <FeedbackButton />
+      </UIFixedButton>
     </UIHolder>
   );
 });
@@ -134,4 +138,10 @@ const UISidebarItem = styled(SidebarItem)``;
 const UIWindowDragger = styled.div`
   ${systemBarPlaceholder};
   ${theme.common.dragWindow};
+`;
+
+const UIFixedButton = styled.div`
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
 `;
