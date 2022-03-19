@@ -70,4 +70,4 @@ const UITitle = styled.div`
   ${theme.common.ellipsisText}
 `;
 
-const UIUser = styled.div``;
+const UIUser = styled.div``; // TODO(ui): add active style to show click

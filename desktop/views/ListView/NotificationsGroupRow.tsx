@@ -24,6 +24,7 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
+import { UIUnreadIndicator } from "./NotificationRow";
 import { NotificationsRows } from "./NotificationsRows";
 import { RowQuickActions } from "./RowQuickActions";
 import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
@@ -115,6 +116,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
             );
           })}
         <UIHolder ref={elementRef} $isFocused={isFocused}>
+          <UIUnreadIndicator $isUnread={isUnread} />
           <NotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
           <UISendersLabel data-tooltip={allPeople.length > 1 ? allPeople.join(", ") : undefined}>
             {allPeople.length === 1 && allPeople[0]}

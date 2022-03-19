@@ -8,7 +8,6 @@ import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/not
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
-import { theme } from "@aca/ui/theme";
 
 const { figma, jira, linear, notion, slack } = integrationLogos;
 
@@ -47,7 +46,6 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   notification,
   className,
   isOnDarkBackground = uiStore.isInDarkMode,
-  displayUnreadNotification = false,
 }: Props) {
   const targetNotification = notification.inner;
 
@@ -72,8 +70,6 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
         src={iconProps.icon}
         $invert={iconProps.isInverted}
       />
-
-      {displayUnreadNotification && <UIUnreadIndicator />}
     </UIHolder>
   );
 })``;
@@ -98,17 +94,4 @@ const UIIcon = styled.img<{ $invert?: boolean }>`
 
 const UIUnknown = styled.div`
   ${iconStyles}
-`;
-
-export const UIUnreadIndicator = styled.div<{}>`
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 10px;
-  height: 10px;
-  border: 1px solid ${theme.colors.layout.background.value};
-
-  ${theme.colors.primary.asBg}
-
-  ${theme.radius.circle}
 `;
