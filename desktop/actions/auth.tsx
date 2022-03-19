@@ -85,7 +85,7 @@ export const logOut = defineAction({
   group: accountActionsGroup,
   keywords: ["logout", "signout"],
   async handler() {
-    if (!(await showConfirmDialogRequest({ message: "Are you sure to log out?", confirmLabel: "Log out" }))) {
+    if (!(await showConfirmDialogRequest({ message: "Sure you want to log out?", confirmLabel: "Log out" }))) {
       return;
     }
 
