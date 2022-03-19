@@ -9,6 +9,7 @@ import {
   renameNotificationList,
 } from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
+import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButton";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
@@ -17,7 +18,6 @@ import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
-import { FeedbackButton } from "../../domains/feedbackWidget/feedbackButton";
 import { SidebarItem } from "./SidebarItem";
 
 export const SIDEBAR_WIDTH = 270;
