@@ -47,7 +47,8 @@ export function setupAutoUpdater() {
   });
 
   autoUpdater.on("error", (error) => {
-    if (!isDev) {
+    // ignore isDev if ELECTRON_IS_DEV=0 (we use this for e2e tests)
+    if (!isDev && process.env.ELECTRON_IS_DEV !== "0") {
       dialog.showErrorBox("There was a problem updating the application", `${error}`);
     }
 
