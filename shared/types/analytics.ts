@@ -75,6 +75,7 @@ export type AnalyticsEventsMap = {
   "Resolved Notifications Opened": void;
   "Notification Deeplink Opened": { service_name: string | undefined };
   "Notification Group Toggled": void;
+  "Feedback Button Clicked": void;
 
   // Integration related events
   "Linear Integration Added": void;

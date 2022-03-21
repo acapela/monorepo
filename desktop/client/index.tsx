@@ -26,6 +26,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
+import { AnalyticsProvider } from "../analytics/AnalyticsProvider";
 import { SystemMenuManager } from "../domains/systemMenu/SystemMenuManager";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
@@ -65,21 +66,23 @@ function App() {
       <ApolloProvider client={apolloClient}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <DesktopThemeProvider>
-            <BuiltInStyles />
-            <GlobalDesktopStyles />
-            <GlobalShortcutsManager />
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <ServiceWorkerConsolidation />
-            <RootErrorBoundary>
-              <ToastsAndCommunicatesView />
-              <PeekView />
-              <SystemMenuManager />
-              <CommandMenuManager />
-              <RootView />
-              <DebugView />
-            </RootErrorBoundary>
+            <AnalyticsProvider>
+              <BuiltInStyles />
+              <GlobalDesktopStyles />
+              <GlobalShortcutsManager />
+              <PromiseUIRenderer />
+              <TooltipsRenderer />
+              <ToastsRenderer />
+              <ServiceWorkerConsolidation />
+              <RootErrorBoundary>
+                <ToastsAndCommunicatesView />
+                <PeekView />
+                <SystemMenuManager />
+                <CommandMenuManager />
+                <RootView />
+                <DebugView />
+              </RootErrorBoundary>
+            </AnalyticsProvider>
           </DesktopThemeProvider>
         </MotionConfig>
       </ApolloProvider>
