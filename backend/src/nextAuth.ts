@@ -221,7 +221,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
         assert(name && email, "must get name and email from auth adapter");
 
         const user = await db.user.create({ data: { name, email, avatar_url: image } });
-        trackFirstBackendUserEvent(user, "Signed Up");
+        trackFirstBackendUserEvent(user, "Signed Up"); // TODO(bug): ideally await this call first
         updateUserOnboardingStatus(user);
         return toAdapterUser(user);
       },
