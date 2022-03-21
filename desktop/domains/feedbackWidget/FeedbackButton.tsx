@@ -1,8 +1,11 @@
 import React from "react";
 
+import { useAnalytics } from "@aca/desktop/analytics/AnalyticsProvider";
 import { Button } from "@aca/ui/buttons/Button";
 
 import { useUsersnapApi } from ".";
+
+const analytics = useAnalytics();
 
 export function FeedbackButton() {
   const usersnapApi = useUsersnapApi();
@@ -15,6 +18,7 @@ export function FeedbackButton() {
    */
   function handleOpenWidgetIfAllowed() {
     usersnapApi.logEvent("feedback_button_clicked");
+    analytics.track("Feedback Button Clicked");
   }
 
   return (
