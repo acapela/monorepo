@@ -1,6 +1,6 @@
 import React from "react";
 
-import { trackingEvent } from "@aca/desktop/analytics";
+// import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getExactIsRouteActive, getIsRouteActive } from "@aca/desktop/routes";
@@ -99,7 +99,7 @@ export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
   icon: <IconListUnordered4 />,
-  analyticsEvent: trackingEvent("Resolved Notifications Opened"),
+  // analyticsEvent: trackingEvent("Resolved Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
@@ -110,7 +110,7 @@ export const goToSnoozed = defineAction({
   name: "Show snoozed notifications",
   group: navigationActionsGroup,
   icon: <IconClock />,
-  analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
+  // analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: snoozedList.id });

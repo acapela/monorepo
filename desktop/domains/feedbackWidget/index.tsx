@@ -30,7 +30,7 @@ export const UsersnapProvider = ({
       }
       script.remove();
     };
-  }, [USERSNAP_GLOBAL_API_KEY]);
+  }, []);
 
   return <UsersnapContext.Provider value={usersnapApi}>{children}</UsersnapContext.Provider>;
 };

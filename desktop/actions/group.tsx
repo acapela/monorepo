@@ -1,6 +1,6 @@
 import React from "react";
 
-import { trackingEvent } from "@aca/desktop/analytics";
+// import { trackingEvent } from "@aca/desktop/analytics";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowCornerCwLt, IconArrowCornerCwRb } from "@aca/ui/icons";
@@ -32,7 +32,7 @@ function getGroupInfo(context: ActionContext) {
 
 export const toggleNotificationsGroup = defineAction({
   icon: (context) => (getGroupInfo(context)?.isOpened ? <IconArrowCornerCwLt /> : <IconArrowCornerCwRb />),
-  analyticsEvent: trackingEvent("Notification Group Toggled"),
+  // analyticsEvent: trackingEvent("Notification Group Toggled"),
   group: currentListActionsGroup,
   name: (context) => {
     const isOpened = getGroupInfo(context)?.isOpened;

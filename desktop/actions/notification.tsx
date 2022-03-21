@@ -1,6 +1,6 @@
 import React from "react";
 
-import { trackingEvent } from "@aca/desktop/analytics";
+import { useAnalytics } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
@@ -43,6 +43,7 @@ export const openNotificationInApp = defineAction({
   shortcut: ["O"],
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
+    const { trackingEvent } = useAnalytics();
 
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return trackingEvent("Notification Deeplink Opened", { service_name });
@@ -105,8 +106,15 @@ export const resolveNotification = defineAction({
 
     return ctx.isContextual ? "Resolve" : "Resolve Notification";
   },
-  // Note: analytics happens directly in notification entity, as this action is quite complex and we modify many items at once.
-  // Thus it seems easier to track directly in notif.resolve() handler
+  analyticsEvent: (ctx) => {
+    const { trackingEvent } = useAnalytics();
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return trackingEvent("Notification Resolved", { notification_id });
+    }
+  },
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["E"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,

@@ -8,9 +8,11 @@ import React, { useEffect } from "react";
 import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
+import { AnalyticsProvider } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
+import { SystemMenuManager } from "@aca/desktop/domains/systemMenu/SystemMenuManager";
 import { initializeListNotificationsScheduling } from "@aca/desktop/domains/systemNotifications/listScheduler";
 import { accountStore } from "@aca/desktop/store/account";
 import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
@@ -26,8 +28,6 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { AnalyticsProvider } from "../analytics/AnalyticsProvider";
-import { SystemMenuManager } from "../domains/systemMenu/SystemMenuManager";
 import { LoggerWindow } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
