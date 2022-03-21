@@ -135,6 +135,7 @@ desktop/dist-electron-staging/
 desktop/dist-final/
 desktop/dist-staging/
 desktop/dist-production/
+desktop/.env.development
 frontend/Caddyfile
 backend/.prisma/
 backend/hasura/
