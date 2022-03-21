@@ -1,11 +1,10 @@
-import { BrowserView, BrowserWindow, WebContents } from "electron";
-
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/windows/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { SECOND } from "@aca/shared/time";
 import { MaybeCleanup } from "@aca/shared/types";
+import { BrowserView, BrowserWindow, WebContents } from "electron";
 
 import { listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { focusWindowWebContents } from "../../windows/focusWindow";

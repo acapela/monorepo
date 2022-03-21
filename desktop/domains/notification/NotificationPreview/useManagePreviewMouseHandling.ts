@@ -6,6 +6,7 @@ import { createLazyChangeCallback } from "./utils";
 
 export function handlePreviewMouseManagement(url: string, previewElement: HTMLDivElement) {
   const handleIsInsidePreviewChange = createLazyChangeCallback((isInsidePreview: boolean) => {
+    console.log({ isInsidePreview });
     if (isInsidePreview) {
       requestSetPreviewOnTopState({ url, state: "preview-on-top" });
     } else {
@@ -37,8 +38,24 @@ export function handlePreviewMouseManagement(url: string, previewElement: HTMLDi
     handleIsInsidePreviewChange(false, true);
   });
 
-  cleanup.next = createDocumentEvent("mouseenter", handleMouseEvent, { capture: true });
-  cleanup.next = createDocumentEvent("click", handleMouseEvent);
+  createWindowEvent("blur", () => {
+    console.log("blur");
+  });
+
+  createWindowEvent("focus", () => {
+    console.log("focus");
+  });
+
+  cleanup.next = createDocumentEvent("mouseenter", handleMouseEvent);
+  cleanup.next = createDocumentEvent("click", (event) => {
+    const target = event.target as HTMLElement;
+
+    const isInsidePreview = target === previewElement || previewElement.contains(target);
+
+    console.log("CLICK", event.target, { isInsidePreview });
+    window.focus();
+    handleMouseEvent(event);
+  });
   cleanup.next = createDocumentEvent("mousemove", (event) => handleMouseEvent(event, false), { capture: true });
 
   return cleanup.clean;

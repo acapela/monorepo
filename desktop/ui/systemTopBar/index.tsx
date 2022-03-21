@@ -1,8 +1,7 @@
-import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
-
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { theme } from "@aca/ui/theme";
+import React, { ReactNode } from "react";
+import styled, { css } from "styled-components";
 
 import { SYSTEM_BAR_HEIGHT, TRAFFIC_LIGHTS_NEEDED_SPACE } from "./ui";
 import { SystemBarUserMenu } from "./UserMenu";

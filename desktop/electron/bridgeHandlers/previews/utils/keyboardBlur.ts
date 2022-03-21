@@ -1,7 +1,6 @@
+import { evaluateFunctionInWebContents } from "@aca/desktop/electron/utils/webContentsLink";
 import { WebContents } from "electron";
 import { isEqual } from "lodash";
-
-import { evaluateFunctionInWebContents } from "@aca/desktop/electron/utils/webContentsLink";
 
 export function listenForViewKeyboardBlurRequest(webContents: WebContents, callback: () => void) {
   async function handleBeforeInput(event: Electron.Event, input: Electron.Input) {
@@ -22,7 +21,7 @@ export function listenForViewKeyboardBlurRequest(webContents: WebContents, callb
     // if something is focused, blur it, but don't escape preview focus yet.
     if (isAnyInputFocused) {
       await evaluateFunctionInWebContents(webContents, () => {
-        return (document.activeElement as HTMLElement)?.blur();
+        (document.activeElement as HTMLElement)?.blur?.();
       });
       return;
     }

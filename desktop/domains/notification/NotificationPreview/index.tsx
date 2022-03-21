@@ -1,8 +1,3 @@
-import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
-
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
@@ -20,6 +15,10 @@ import { Button } from "@aca/ui/buttons/Button";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
+import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { runActionWithTarget } from "../../runAction";
 import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
@@ -36,7 +35,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   const [isFocused, setIsFocused] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const rootRef = useRef<HTMLDivElement>(null);
+  const previewShapeHolderRef = useRef<HTMLDivElement>(null);
 
   useAutorun(() => {
     if (preloadingNotificationsBridgeChannel.get()[url] === "error") {
@@ -46,13 +45,14 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
     }
   });
 
-  useResizeCallback(rootRef, (entry) => {
+  useResizeCallback(previewShapeHolderRef, (entry) => {
     setPosition(getPreviewPositionFromElement(entry.target as HTMLElement));
   });
 
   useEffect(() => {
     const url = notification.url;
     return previewEventsBridge.subscribe((event) => {
+      console.log({ event });
       if (event.url !== url) return;
 
       if (event.type === "focus") {
@@ -85,7 +85,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   }, [position]);
 
   useLayoutEffect(() => {
-    const previewElement = rootRef.current;
+    const previewElement = previewShapeHolderRef.current;
 
     if (!previewElement) return;
     if (devSettingsStore.hidePreviews) return;
@@ -109,7 +109,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 
   return (
     <>
-      <UIHolder ref={rootRef}>
+      <UIHolder ref={previewShapeHolderRef}>
         <BodyPortal>
           <AnimatePresence>
             {isFocused && (
@@ -162,7 +162,8 @@ const UIEscapeFlyer = styled(PresenceAnimator)`
   isolation: isolate;
   z-index: 1000;
   height: ${SYSTEM_BAR_HEIGHT}px;
-  ${theme.colors.layout.background.opacity(0.9).asBg}
+  ${theme.colors.layout.background.opacity(0.9).asBg};
+  pointer-events: all;
 `;
 
 const UIEscapeLabel = styled(PresenceAnimator)`

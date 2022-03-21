@@ -1,7 +1,6 @@
-import { WebContents } from "electron";
-
 import { removePrefix } from "@aca/shared/text/substring";
 import { MaybeCleanup } from "@aca/shared/types";
+import { WebContents } from "electron";
 
 /**
  * This file allows communication between electron and any view or window without setting up ipc.
@@ -52,7 +51,7 @@ export async function evaluateFunctionInWebContents<R>(web: WebContents, callbac
 
   const result = await web.executeJavaScript(callbackCode);
 
-  return result;
+  return result as R;
 }
 
 export function runEffectInWebContents<D = void>(

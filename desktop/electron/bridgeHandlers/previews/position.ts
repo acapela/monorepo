@@ -1,7 +1,8 @@
+import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { BrowserView, BrowserWindow, app } from "electron";
 
-import { PreviewPosition } from "@aca/desktop/domains/preview";
-
+import { evaluateFunctionInWebContents, runEffectInWebContents } from "../../utils/webContentsLink";
+import { getWindowMainView } from "../../windows/mainView";
 import { getMainWindow } from "../../windows/mainWindow";
 import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "./utils/view";
 
@@ -46,31 +47,57 @@ export function setViewPosition(view: BrowserView, position: PreviewPosition) {
   updateBrowserViewSize(view, window, position);
 }
 
-export function handleWindowViewsPositioning(window: BrowserWindow) {
+export function handleWindowViewsPositioning(browserWindow: BrowserWindow) {
   function updateViews() {
-    updateWindowViewsPosition(window);
+    updateWindowViewsPosition(browserWindow);
   }
 
-  window.on("resize", updateViews);
+  browserWindow.on("resize", updateViews);
+
+  const mainViewWebContents = getWindowMainView(browserWindow)?.webContents ?? browserWindow.webContents;
+
+  mainViewWebContents.on("devtools-opened", updateViews);
+  mainViewWebContents.on("devtools-closed", updateViews);
 
   return () => {
-    window.off("resize", updateViews);
+    browserWindow.off("resize", updateViews);
+    mainViewWebContents.off("devtools-opened", updateViews);
+    mainViewWebContents.off("devtools-closed", updateViews);
   };
 }
 
-function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
+async function getWindowClientBounds(browserWindow: BrowserWindow): Promise<{ width: number; height: number }> {
+  const mainViewWebContents = getWindowMainView(browserWindow)?.webContents;
+
+  const webContents = mainViewWebContents ?? browserWindow.webContents;
+
+  if (!webContents.isDevToolsOpened()) {
+    return browserWindow.getBounds();
+  }
+
+  const { width, height } = await evaluateFunctionInWebContents(webContents, () => {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+  });
+
+  return { width, height };
+}
+
+async function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
   assertViewIsAttachedToWindow(view, window);
 
   // Get desired distance to all the edges. Then get window size and calculate needed size rect.
   const { top, right, bottom, left } = position;
 
-  const [windowWidth, windowHeight] = window.getSize();
+  const { width, height } = await getWindowClientBounds(window);
 
   const electronRect = {
     x: left,
     y: top,
-    width: windowWidth - left - right,
-    height: windowHeight - top - bottom,
+    width: width - left - right,
+    height: height - top - bottom,
   };
 
   view.setBounds(electronRect);
