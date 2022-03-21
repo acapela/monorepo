@@ -258,6 +258,13 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
 
+    // Weird bug were activity is undefined for a user
+    // https://sentry.io/organizations/acapela/issues/3114653912/
+    if (!activity) {
+      log.error("no activity defined", notification);
+      continue;
+    }
+
     const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
     const created_at = new Date(createdAtTimestampAsNumber).toISOString();
