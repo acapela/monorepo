@@ -89,7 +89,7 @@ export function focusMainView() {
 }
 
 export const getMainWindowState = memoize(() => {
-  return createBrowserWindowMobxBinding(getMainWindow(), getMainView());
+  return createBrowserWindowMobxBinding(getMainWindow());
 });
 
 app.whenReady().then(() => {
