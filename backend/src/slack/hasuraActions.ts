@@ -1,3 +1,4 @@
+import { Channel } from "@slack/web-api/dist/response/ChannelsListResponse";
 import { orderBy } from "lodash";
 
 import { getIndividualSlackInstallURL } from "@aca/backend/src/slack/install";
@@ -50,18 +51,51 @@ export const slackUsers: ActionHandler<void, ServiceUser[]> = {
   },
 };
 
+async function fetchRemainingChannels(
+  token: string,
+  accumulatedChannels: Channel[] = [],
+  next_cursor: string | undefined
+): Promise<Channel[]> {
+  if (!next_cursor) {
+    return accumulatedChannels;
+  }
+
+  const { channels, response_metadata } = await slackClient.conversations.list({
+    token: token,
+    exclude_archived: true,
+    types: "private_channel,public_channel",
+    limit: 200,
+    cursor: next_cursor,
+  });
+
+  accumulatedChannels.push(...(channels ?? []));
+
+  return fetchRemainingChannels(token, accumulatedChannels, response_metadata?.next_cursor);
+}
+
 export const slackConversations: ActionHandler<void, SlackConversation[]> = {
   actionName: "slack_conversations",
 
   async handle(userId) {
     const teams = await findSlackTeamsWithTokens(assertDefined(userId, "missing userId"));
+
     const teamUserPromises = teams.map(async (team) => {
-      const { channels } = await slackClient.conversations.list({
+      const { channels: initialChannels, response_metadata } = await slackClient.conversations.list({
         token: team.token,
+        exclude_archived: true,
         types: "private_channel,public_channel",
         limit: 200,
       });
-      return (channels ?? []).map(
+
+      const accumulatedChannels = await fetchRemainingChannels(
+        team.token as string,
+        initialChannels,
+        response_metadata?.next_cursor
+      );
+
+      const channelsWhereUserIsMember = accumulatedChannels.filter((ch) => ch.is_member);
+
+      return channelsWhereUserIsMember.map(
         (channel) =>
           ({
             workspace_id: team.id,
