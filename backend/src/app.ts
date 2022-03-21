@@ -24,7 +24,7 @@ import { router as linearRoutes } from "./linear/router";
 import nextAuth from "./nextAuth";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
-import { router as tracking } from "./tracking/tracking";
+import { router as tracking } from "./tracking";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 const NANOSECONDS_IN_MILLISECOND = 1e6;

@@ -57,6 +57,7 @@ const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
 
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",
+  "AIRTABLE_API_KEY",
   "CUSTOMERIO_APP_API_KEY",
   "CUSTOMERIO_CLIENT_API_KEY",
   "CUSTOMERIO_CLIENT_SITE_ID",

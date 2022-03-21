@@ -13,6 +13,8 @@ import { IS_DEV } from "@aca/shared/dev";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { Maybe } from "@aca/shared/types";
 
+import { updateUserOnboardingStatus } from "./tracking/utils";
+
 // Fail quickly in case of missing env variables
 function assertEnvVariable(value: unknown, varName: string) {
   assert(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
@@ -220,6 +222,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
 
         const user = await db.user.create({ data: { name, email, avatar_url: image } });
         trackFirstBackendUserEvent(user, "Signed Up");
+        updateUserOnboardingStatus(user);
         return toAdapterUser(user);
       },
 

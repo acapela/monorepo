@@ -32,6 +32,7 @@ __metadata:
     "@types/mime-types": ^2.1.1
     "@types/supertest": ^2.0.11
     "@types/uuid": ^8.3.4
+    airtable: ^0.11.2
     cookie-parser: ^1.4.6
     cors: ^2.8.5
     customerio-node: ^3.1.4
@@ -7723,6 +7724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:>=8.0.0 <15":
+  version: 14.18.12
+  resolution: "@types/node@npm:14.18.12"
+  checksum: 8a0273caa0584020adb8802784fc7d4f18f05e6c205335b7f3818a91d6b0c22736b9f51da3428d5bc54076ad47f1a4d6d57990a3ce8489a520ac66b2b3ff24bc
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^14.6.2":
   version: 14.18.5
   resolution: "@types/node@npm:14.18.5"
@@ -8291,7 +8299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abortcontroller-polyfill@npm:^1.1.9":
+"abortcontroller-polyfill@npm:^1.1.9, abortcontroller-polyfill@npm:^1.4.0":
   version: 1.7.3
   resolution: "abortcontroller-polyfill@npm:1.7.3"
   checksum: 55739d7f0c9bd6afa2aabb3148778967c4dd4dcff91f6b9259df38da34f9882d3f7730b0954e9767a19cc16a8dd9a58915da4e8a50220300d45af3817d7557b1
@@ -8414,6 +8422,19 @@ __metadata:
     clean-stack: ^2.0.0
     indent-string: ^4.0.0
   checksum: 1101a33f21baa27a2fa8e04b698271e64616b886795fd43c31068c07533c7b3facfcaf4e9e0cab3624bd88f729a592f1c901a1a229c9e490eafce411a8644b79
+  languageName: node
+  linkType: hard
+
+"airtable@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "airtable@npm:0.11.2"
+  dependencies:
+    "@types/node": ">=8.0.0 <15"
+    abort-controller: ^3.0.0
+    abortcontroller-polyfill: ^1.4.0
+    lodash: ^4.17.21
+    node-fetch: ^2.6.7
+  checksum: bea6d743ed833dd7be4e8c77190139349f98df0720246130e71001c05c5157037a17b0529b4c6b9e1e466ca11fb0e4933340577d18a743b485f80395b6c49e88
   languageName: node
   linkType: hard
 
