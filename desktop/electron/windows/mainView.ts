@@ -38,6 +38,8 @@ export const acapelaAppPathUrl = IS_DEV
   : // In production - load static, bundled file
     `file://${INDEX_HTML_FILE}`;
 
+const windowMainViewMap = new WeakMap<BrowserWindow, BrowserView>();
+
 export function initializeMainView(mainWindow: BrowserWindow) {
   const env: AppEnvData = {
     appName: app.name,
@@ -57,6 +59,10 @@ export function initializeMainView(mainWindow: BrowserWindow) {
     },
   });
 
+  // mainView.webContents.openDevTools({ mode: "detach" });
+
+  windowMainViewMap.set(mainWindow, mainView);
+
   mainView.setBackgroundColor("#00000000");
 
   mainWindow.addBrowserView(mainView);
@@ -71,5 +77,11 @@ export function initializeMainView(mainWindow: BrowserWindow) {
     loadAppInView(mainView);
   });
 
+  mainView.webContents.focus();
+
   return mainView;
+}
+
+export function getWindowMainView(window: BrowserWindow) {
+  return windowMainViewMap.get(window) ?? null;
 }

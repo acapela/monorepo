@@ -8,8 +8,6 @@ export function listenForViewKeyboardBlurRequest(webContents: WebContents, callb
     // Handle Esc press only
     if (input.type !== "keyDown" || input.key !== "Escape") return;
 
-    input.modifiers;
-
     // If it is CMD + Esc - restore focus to main window instantly
     if (isEqual(input.modifiers, ["meta"])) {
       callback();

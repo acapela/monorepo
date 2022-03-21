@@ -1,29 +1,45 @@
-import { RefObject, useEffect } from "react";
-
 import { requestSetPreviewOnTopState } from "@aca/desktop/bridge/preview";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { createDocumentEvent, createElementEvent } from "@aca/shared/domEvents";
+import { createDocumentEvent, createWindowEvent } from "@aca/shared/domEvents";
 
-export function useManagePreviewMouseHandling(url: string, previewRef: RefObject<HTMLDivElement>) {
-  useEffect(() => {
-    const previewElement = previewRef.current!;
+import { createLazyChangeCallback } from "./utils";
 
-    if (!previewElement) return;
-
-    function handleFocusOnPreview() {
+export function handlePreviewMouseManagement(url: string, previewElement: HTMLDivElement) {
+  const handleIsInsidePreviewChange = createLazyChangeCallback((isInsidePreview: boolean) => {
+    if (isInsidePreview) {
       requestSetPreviewOnTopState({ url, state: "preview-on-top" });
-    }
-
-    function handleReleaseFocusOnPreview() {
+    } else {
       requestSetPreviewOnTopState({ url, state: "app-on-top" });
     }
+  });
 
-    const cleanup = createCleanupObject();
+  const cleanup = createCleanupObject();
 
-    cleanup.next = createElementEvent(previewElement, "mouseenter", handleFocusOnPreview);
+  function handleMouseEvent(event: MouseEvent, forceUpdate = true) {
+    const target = event.target as HTMLElement;
 
-    cleanup.next = createDocumentEvent("mouseenter", handleReleaseFocusOnPreview, { capture: true });
+    if (!target) return;
 
-    return cleanup.clean;
-  }, []);
+    const isInsidePreview = target === previewElement || previewElement.contains(target);
+
+    handleIsInsidePreviewChange(isInsidePreview, forceUpdate);
+  }
+
+  cleanup.next = createWindowEvent(
+    "focus",
+    () => {
+      handleIsInsidePreviewChange(false, true);
+    },
+    { capture: true }
+  );
+
+  cleanup.next = createWindowEvent("blur", () => {
+    handleIsInsidePreviewChange(false, true);
+  });
+
+  cleanup.next = createDocumentEvent("mouseenter", handleMouseEvent, { capture: true });
+  cleanup.next = createDocumentEvent("click", handleMouseEvent);
+  cleanup.next = createDocumentEvent("mousemove", (event) => handleMouseEvent(event, false), { capture: true });
+
+  return cleanup.clean;
 }

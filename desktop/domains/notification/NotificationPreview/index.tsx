@@ -10,6 +10,7 @@ import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
+import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -21,7 +22,7 @@ import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { runActionWithTarget } from "../../runAction";
-import { useManagePreviewMouseHandling } from "./useManagePreviewMouseHandling";
+import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
 type Props = {
   notification: NotificationEntity;
@@ -36,8 +37,6 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   const [hasError, setHasError] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useManagePreviewMouseHandling(url, rootRef);
 
   useAutorun(() => {
     if (preloadingNotificationsBridgeChannel.get()[url] === "error") {
@@ -86,11 +85,20 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   }, [position]);
 
   useLayoutEffect(() => {
+    const previewElement = rootRef.current;
+
+    if (!previewElement) return;
     if (devSettingsStore.hidePreviews) return;
     if (!position) return;
     if (hasError) return;
 
-    return requestAttachPreview({ url, position });
+    const stopAttaching = requestAttachPreview({ url, position });
+    const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
+
+    return () => {
+      stopMouseManagement();
+      stopAttaching?.();
+    };
   }, [
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
@@ -102,13 +110,18 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   return (
     <>
       <UIHolder ref={rootRef}>
-        <AnimatePresence>
-          {isFocused && (
-            <UIEscapeFlyer presenceStyles={{ opacity: [0, 1], y: [-10, 0] }}>
-              <UIEscapeLabel>Press {describeShortcut(["Mod", "Esc"])} to return</UIEscapeLabel>
-            </UIEscapeFlyer>
-          )}
-        </AnimatePresence>
+        <BodyPortal>
+          <AnimatePresence>
+            {isFocused && (
+              <UIEscapeFlyer presenceStyles={{ opacity: [0, 1] }}>
+                <UIEscapeLabel presenceStyles={{ y: [10, 0] }}>
+                  Press {describeShortcut(["Mod", "Esc"])} to return
+                </UIEscapeLabel>
+              </UIEscapeFlyer>
+            )}
+          </AnimatePresence>
+        </BodyPortal>
+
         {hasError && (
           <UIErrorHolder>
             <UIErrorLabel>
@@ -124,9 +137,6 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
           </UIErrorHolder>
         )}
       </UIHolder>
-      <BodyPortal>
-        <UIFocusCover $isVisible={isFocused} />
-      </BodyPortal>
     </>
   );
 });
@@ -141,31 +151,21 @@ const UIHolder = styled.div`
   justify-content: center;
 `;
 
-const UIFocusCover = styled.div<{ $isVisible: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  ${theme.colors.layout.background.opacity(0.8).asBg};
-  pointer-events: ${(props) => (props.$isVisible ? "all" : "none")};
-  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
-  transition: 0.15s all;
-`;
-
 const UIEscapeFlyer = styled(PresenceAnimator)`
   position: absolute;
-  bottom: 100%;
-  margin-bottom: 10px;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
   isolation: isolate;
   z-index: 1000;
+  height: ${SYSTEM_BAR_HEIGHT}px;
+  ${theme.colors.layout.background.opacity(0.9).asBg}
 `;
 
-const UIEscapeLabel = styled.div`
+const UIEscapeLabel = styled(PresenceAnimator)`
   ${theme.typo.content.medium};
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
   ${theme.box.panel.hint.padding.radius};

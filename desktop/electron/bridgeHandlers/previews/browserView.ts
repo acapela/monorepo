@@ -7,6 +7,8 @@ import { createCleanupObject } from "@aca/shared/cleanup";
 import { SECOND } from "@aca/shared/time";
 import { MaybeCleanup } from "@aca/shared/types";
 
+import { listenToWebContentsFocus } from "../../utils/webContentsLink";
+import { focusWindowWebContents } from "../../windows/focusWindow";
 import { loadPreviewIfNeeded } from "./load";
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
 import { createDefaultContextMenu } from "./utils/contextMenu";
@@ -47,8 +49,23 @@ function createPreviewBrowserView(url: string) {
     cleanups.next = publishBrowserViewEvents(url, browserView);
     cleanups.next = autoMuteBlurredBrowserView(browserView);
     cleanups.next = listenForViewKeyboardBlurRequest(browserView.webContents, () => {
-      getBrowserViewParentWindow(browserView)?.webContents.focus();
+      const parentWindow = getBrowserViewParentWindow(browserView);
+
+      if (parentWindow) {
+        focusWindowWebContents(parentWindow);
+      }
     });
+
+    cleanups.next = listenToWebContentsFocus(browserView.webContents, (isFocused) => {
+      if (!isFocused) return;
+
+      const parent = getBrowserViewParentWindow(browserView);
+
+      if (!parent) return;
+
+      parent.setTopBrowserView(browserView);
+    });
+
     cleanups.next = createDefaultContextMenu(url, browserView);
 
     return () => {

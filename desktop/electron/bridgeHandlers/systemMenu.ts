@@ -5,6 +5,7 @@ import { SystemMenuItemData, addSystemMenuItem, systemMenuItemClicked } from "@a
 import { removeElementFromArray } from "@aca/shared/array";
 import { groupBy } from "@aca/shared/groupBy";
 
+import { getMainView } from "../windows/mainWindow";
 import { convertShortcutKeysToElectronShortcut } from "./utils/shortcuts";
 
 function getDefaultSystemMenuTemplate() {
@@ -49,7 +50,17 @@ function getDefaultSystemMenuTemplate() {
 
     {
       label: "Debug",
-      submenu: [{ role: "reload" }, { role: "forceReload" }, { role: "toggleDevTools" }],
+      submenu: [
+        { role: "reload" },
+        { role: "forceReload" },
+        {
+          label: "Toggle developer tools",
+          accelerator: "CommandOrControl+Alt+I",
+          click() {
+            getMainView().webContents.toggleDevTools();
+          },
+        },
+      ],
     },
   ];
 
@@ -69,7 +80,9 @@ function convertMenuItemDataToConstructorData(item: SystemMenuItemData): MenuIte
     enabled: !isDisabled,
     accelerator,
     registerAccelerator: false,
-    click() {
+    click(electronItem, window, event) {
+      if (event.triggeredByAccelerator) return;
+
       systemMenuItemClicked.send(item);
     },
   };

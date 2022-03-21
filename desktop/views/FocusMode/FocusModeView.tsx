@@ -37,7 +37,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const list = getInboxListsById(listId);
 
   return (
-    <AppLayout footer={<FocusModeFooter />}>
+    <AppLayout footer={<FocusModeFooter />} transparent>
       <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={snoozeNotification} path={["Notification"]} target={notification} />

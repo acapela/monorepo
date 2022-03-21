@@ -1,7 +1,6 @@
 import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
 import React from "react";
 
-import { uiStore } from "@aca/desktop/store/ui";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClock, IconClockCross } from "@aca/ui/icons";
@@ -12,7 +11,6 @@ import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 function canApplySnooze(context: ActionContext) {
-  if (uiStore.isAnyPreviewFocused) return false;
   if (context.getTarget("notification")?.canSnooze === true) return true;
   if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
 

@@ -2,6 +2,7 @@ import { BrowserView } from "electron";
 import createContextMenu from "electron-context-menu";
 
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
+import { focusMainView } from "@aca/desktop/electron/windows/mainWindow";
 
 import { getBrowserViewParentWindow } from "./view";
 
@@ -20,6 +21,7 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
         {
           label: "Snooze...",
           click: () => {
+            focusMainView();
             previewEventsBridge.send({ url, type: "snooze-request" });
           },
         },

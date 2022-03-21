@@ -52,7 +52,17 @@ function initializeMainWindow() {
 
   const mainView = initializeMainView(mainWindow);
 
-  mainWindow.focus();
+  const mainWindowWebContents = mainWindow.webContents;
+
+  Reflect.set(mainWindow, "webContents", {
+    get() {
+      console.warn(
+        `Reading .webContents from main window. We're not using main window webcontents. Use getWindowMainView(mainWindow).webContents instead`
+      );
+
+      return mainWindowWebContents;
+    },
+  });
 
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.getBrowserViews().forEach((view) => {
@@ -74,8 +84,12 @@ const initializeMainWindowOnce = memoize(initializeMainWindow);
 export const getMainWindow = () => initializeMainWindowOnce().mainWindow;
 export const getMainView = () => initializeMainWindowOnce().mainView;
 
+export function focusMainView() {
+  getMainView().webContents.focus();
+}
+
 export const getMainWindowState = memoize(() => {
-  return createBrowserWindowMobxBinding(getMainWindow());
+  return createBrowserWindowMobxBinding(getMainWindow(), getMainView());
 });
 
 app.whenReady().then(() => {
