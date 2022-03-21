@@ -18,23 +18,25 @@ export async function updateUserOnboardingStatus(user: User) {
       })
       .all();
     if (fetchedResults.length < 1) {
-      return; // user most likely had self-serve onboarding
-    }
-    const record = fetchedResults[0];
-    const funnelStage = record.get(funnelStageField);
-    if (!funnelStage) {
+      // user never filled in typeform
+      identifyBackendUser(user.id, { onboarding: "self_serve" });
       return;
     }
+    const record = fetchedResults[0];
+    const funnelStage = record.get(funnelStageField) as undefined | string;
     if (
+      funnelStage &&
       ["Booked in Product Demo Call", "Attended Product Demo Call", "Onboarded", "Booked in Onboarding Call"].includes(
-        funnelStage as string
+        funnelStage
       )
     ) {
       // assume user had an onboarding call in all of those cases
       identifyBackendUser(user.id, { onboarding: "white_glove" });
-      logger.info("Updated user onboarding info", {
-        userId: user.id,
-      });
+    } else {
+      identifyBackendUser(user.id, { onboarding: "self_serve" });
     }
+    logger.info("Updated user onboarding info", {
+      userId: user.id,
+    });
   }
 }
