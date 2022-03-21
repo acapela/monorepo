@@ -25,7 +25,7 @@ export interface ActionCreateInput {
   analyticsName?: string;
   name: ActionDataThunk<string>;
   supplementaryLabel?: ActionDataThunk<string | undefined | null>;
-  analyticsEvent?: ActionDataThunk<AnalyticsEventInput>;
+  analyticsEvent?: ActionDataThunk<AnalyticsEventInput | undefined>;
   private?: boolean;
   group?: ActionDataThunk<ActionGroupData>;
   alwaysShowInSearch?: boolean;

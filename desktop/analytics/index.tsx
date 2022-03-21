@@ -1,7 +1,6 @@
 import { Analytics, AnalyticsBrowser } from "@segment/analytics-next";
+import { memoize } from "lodash";
 import { autorun } from "mobx";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useState } from "react";
 
 import {
   figmaAuthTokenBridgeValue,
@@ -16,6 +15,7 @@ import { desktopRouter } from "@aca/desktop/routes";
 import { accountStore } from "@aca/desktop/store/account";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
+import { onDocumentReady } from "@aca/shared/document";
 import { VoidableArgument } from "@aca/shared/types";
 import {
   AnalyticsEvent,
@@ -44,98 +44,88 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   };
 }
 
-export const AnalyticsContext = React.createContext<any | undefined>(undefined); // TODO(types): add type definition
+const log = makeLogger("Analytics");
 
-export const AnalyticsProvider = ({ children }: { children: any }) => {
-  const [analytics, setAnalytics] = useState<Analytics | undefined>(undefined);
+const getAnalytics = memoize(async () => {
+  const [analytics] = await AnalyticsBrowser.load({ writeKey: SEGMENT_API_KEY });
 
-  const log = makeLogger("Analytics");
+  log("analytics ready");
 
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      const [response] = await AnalyticsBrowser.load({ writeKey: SEGMENT_API_KEY });
-      setAnalytics(response);
-      log("analytics ready");
-    };
-    loadAnalytics();
-  }, []);
+  return analytics;
+});
 
-  useEffect(() => {
-    if (analytics) {
-      initializeAnalytics();
-    }
-  }, [analytics]);
+onDocumentReady(async () => {
+  try {
+    const analytics = await getAnalytics();
 
-  function track<N extends AnalyticsEventName>(type: N, ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>) {
-    log("sending event", type, payload);
-    analytics.track(type, payload ?? undefined);
+    initializeAnalytics(analytics);
+  } catch (error) {
+    log.error(error, "Failed to initialize analytics");
   }
+});
+
+function initializeAnalytics(analytics: Analytics) {
+  const cleanup = createCleanupObject();
+
+  log("initializing automatic events and profile watching");
+
+  cleanup.next = autorun(() => {
+    const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
+    if (lastAppFocusDateTs > lastAppBlurredDateTs) {
+      analytics.track("App Opened", { app_version: window.electronBridge.env.version });
+    }
+  });
+  // Keep identity updated all the time
+  cleanup.next = autorun(() => {
+    const profile = getUserAnalyticsProfile();
+
+    if (!profile) {
+      return;
+    }
+
+    log("updating profile", { profile });
+
+    // ?
+    analytics.identify(profile.id, profile);
+  });
 
   /**
-   * Type safe version of creating tracking event. I tried to avoid it, but did not find
-   * a way to properly do
+   * Navigation by default is weird in electron as it is nor app nor website (eg. url tracking makes no point as files are local)
    *
-   * const foo: TrackingEvent = {type: "foo", payload: {foo: "bar"}}
+   * It can be solved with Segment middleware like here: https://www.nedrockson.com/posts/electron/segment-analytics-work/
    *
-   * where without using generic we have type-safe connection between type and payload.
+   * But we can simply track our router we have and manually tell Segment what page we're in.
    */
-  function trackingEvent<N extends AnalyticsEventName>(
-    name: N,
-    ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
-  ): AnalyticsEvent<N> {
-    return { type: name, payload: payload as AnalyticsEventPayload<N> };
+  function updatePage() {
+    const { search, url } = desktopRouter.getLocation();
+
+    log("updating page", url);
+
+    // Url makes no point in our context, it'd be something like file://foo/bar
+    analytics.page({ path: url, url: url, search });
   }
 
-  function initializeAnalytics() {
-    const cleanup = createCleanupObject();
-    cleanup.next = autorun(() => {
-      const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
-      if (lastAppFocusDateTs > lastAppBlurredDateTs) {
-        track("App Opened", { app_version: window.electronBridge.env.version });
-      }
-    });
-    // Keep identity updated all the time
-    cleanup.next = autorun(() => {
-      const profile = getUserAnalyticsProfile();
+  // Update page initially
+  updatePage();
 
-      if (!profile) {
-        return;
-      }
+  cleanup.next = desktopRouter.subscribe(updatePage);
 
-      log("updating profile", { profile });
+  return cleanup.clean;
+}
 
-      // ?
-      analytics.identify(profile.id, profile);
-    });
+export async function trackEvent<N extends AnalyticsEventName>(
+  type: N,
+  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
+) {
+  const analytics = await getAnalytics();
 
-    /**
-     * Navigation by default is weird in electron as it is nor app nor website (eg. url tracking makes no point as files are local)
-     *
-     * It can be solved with Segment middleware like here: https://www.nedrockson.com/posts/electron/segment-analytics-work/
-     *
-     * But we can simply track our router we have and manually tell Segment what page we're in.
-     */
-    function updatePage() {
-      const { search, url } = desktopRouter.getLocation();
+  log("sending event", type, payload);
+  analytics.track(type, payload ?? undefined);
+}
 
-      log("updating page", url);
-
-      // Url makes no point in our context, it'd be something like file://foo/bar
-      analytics.page({ path: url, url: url, search });
-    }
-
-    // Update page initially
-    updatePage();
-
-    cleanup.next = desktopRouter.subscribe(updatePage);
-
-    return cleanup.clean;
-  }
-
-  const value = { track, trackingEvent };
-  return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;
-};
-
-export function useAnalytics() {
-  return useContext(AnalyticsContext);
+export function createAnalyticsEvent<N extends AnalyticsEventName>(
+  name: N,
+  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
+): AnalyticsEvent<N> {
+  return { type: name, payload: payload as AnalyticsEventPayload<N> };
 }
