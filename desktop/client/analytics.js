@@ -1,9 +1,7 @@
 /* eslint-disable no-undef */
 // https://app.segment.com/acapela-analytics/sources/development/overview
 
-const IS_PROD = !window.electronBridge?.env?.isDev;
-
-const SEGMENT_KEY = IS_PROD ? "s40GL4Wcl4uYgcy2MdDNFfw9ajeN192y" : "HoxOQAFv8u7an2BwA5nAWKmmiCN0Fb2C";
+import { SEGMENT_API_KEY } from "@aca/desktop/lib/env";
 
 !(function () {
   var analytics = (window.analytics = window.analytics || []);
@@ -54,9 +52,9 @@ const SEGMENT_KEY = IS_PROD ? "s40GL4Wcl4uYgcy2MdDNFfw9ajeN192y" : "HoxOQAFv8u7a
         n.parentNode.insertBefore(t, n);
         analytics._loadOptions = e;
       };
-      analytics._writeKey = SEGMENT_KEY;
+      analytics._writeKey = SEGMENT_API_KEY;
       analytics.SNIPPET_VERSION = "4.15.3";
-      analytics.load(SEGMENT_KEY);
+      analytics.load(SEGMENT_API_KEY);
       analytics.page();
     }
 })();
