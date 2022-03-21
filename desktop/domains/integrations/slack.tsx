@@ -2,7 +2,6 @@ import { gql } from "@apollo/client";
 import { autorun, computed } from "mobx";
 import React from "react";
 
-import { trackEvent } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
@@ -73,7 +72,6 @@ export const slackIntegrationClient: IntegrationClient = {
         if (initialInstallationsCount < getFullInstallationsCount()) {
           if (closeSlackInstallWindow) {
             closeSlackInstallWindow();
-            trackEvent("Slack Integration Added");
           }
           stop();
           resolve();

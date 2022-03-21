@@ -2,7 +2,7 @@ import { runInAction } from "mobx";
 
 import { ActionData, ActionResult, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
-import { trackEvent } from "@aca/desktop/analytics";
+import { useAnalytics } from "@aca/desktop/analytics";
 import { createChannel } from "@aca/shared/channel";
 
 import { makeLogger } from "./dev/makeLogger";
@@ -12,6 +12,8 @@ export const actionResultChannel = createChannel<ActionResult>();
 const log = makeLogger("RunAction");
 
 export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
+  const { track } = useAnalytics();
+
   const { analyticsEvent } = resolveActionData(action, context);
 
   if (!action.canApply(context)) {
@@ -25,7 +27,7 @@ export async function runAction(action: ActionData, context: ActionContext = cre
     });
 
     if (analyticsEvent) {
-      trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
+      track(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));
     }
 
     actionResultChannel.publish(actionResult);
