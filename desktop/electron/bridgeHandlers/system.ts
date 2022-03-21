@@ -17,7 +17,7 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { wait } from "@aca/shared/time";
 
-import { getMainWindow } from "../mainWindow";
+import { getMainWindow } from "../windows/mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 

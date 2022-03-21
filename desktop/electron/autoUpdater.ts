@@ -7,8 +7,8 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
-import { getMainWindow } from "./mainWindow";
-import { allowWindowClosing } from "./utils/hideWindowOnClose";
+import { getMainWindow } from "./windows/mainWindow";
+import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
 const log = makeLogger("AutoUpdater");
 

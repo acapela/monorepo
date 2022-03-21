@@ -1,6 +1,7 @@
 import { PreviewLoadingPriority, PreviewPosition } from "@aca/desktop/domains/preview";
 
 import { createChannelBridge } from "./base/channels";
+import { createInvokeBridge } from "./base/invoke";
 import { createInvokeWithCleanupBridge } from "./base/invokeWithCleanup";
 
 type PreviewGenericData = { url: string };
@@ -14,6 +15,14 @@ export const requestAttachPreview = createInvokeWithCleanupBridge<PreviewGeneric
 );
 
 export const requestPreviewFocus = createInvokeWithCleanupBridge<PreviewGenericData>("preview-focus");
+
+interface RequestSetPreviewOnTopState {
+  url: string;
+  state: "preview-on-top" | "app-on-top";
+}
+
+export const requestSetPreviewOnTopState =
+  createInvokeBridge<RequestSetPreviewOnTopState>("requestSetPreviewOnTopState");
 
 export const updatePreviewPosition =
   createInvokeWithCleanupBridge<{ url: string; position: PreviewPosition }>("update-preview-position");

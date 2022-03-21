@@ -6,10 +6,9 @@ import IS_DEV from "electron-is-dev";
 import { memoize } from "lodash";
 import { autorun } from "mobx";
 
-import { AppEnvData } from "@aca/desktop/envData";
-
-import { applicationFocusStateBridge, applicationStateBridge } from "../bridge/system";
+import { applicationFocusStateBridge, applicationStateBridge } from "../../bridge/system";
 import { initializeChildWindowHandlers } from "./childWindows";
+import { initializeMainView } from "./mainView";
 import { createBrowserWindowMobxBinding } from "./utils/browserWindowMobxBinding";
 import { handleHideWindowOnClose } from "./utils/hideWindowOnClose";
 import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
@@ -28,16 +27,6 @@ if (!IS_DEV) {
   });
 }
 
-function loadAppInWindow(window: BrowserWindow) {
-  return window.loadURL(
-    IS_DEV
-      ? // In dev mode - load from local dev server
-        "http://localhost:3005"
-      : // In production - load static, bundled file
-        `file://${INDEX_HTML_FILE}`
-  );
-}
-
 export const acapelaAppPathUrl = IS_DEV
   ? // In dev mode - load from local dev server
     "http://localhost:3005/"
@@ -45,40 +34,25 @@ export const acapelaAppPathUrl = IS_DEV
     `file://${INDEX_HTML_FILE}`;
 
 function initializeMainWindow() {
-  const env: AppEnvData = {
-    appName: app.name,
-    sentryDsn,
-    isDev: IS_DEV,
-    version: app.getVersion(),
-    windowName: "Root",
-  };
-
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
     title: "Acapela",
-    webPreferences: {
-      contextIsolation: true,
-      preload: path.resolve(__dirname, "preload.js"),
-      additionalArguments: [JSON.stringify(env)],
-      backgroundThrottling: false,
-    },
     minWidth: 900,
     minHeight: 680,
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
     vibrancy: "sidebar",
     trafficLightPosition: { x: 19, y: 18 },
-
+    webPreferences: {
+      devTools: false,
+    },
     //
   });
 
-  mainWindow.focus();
-  // mainWindow.webContents.openDevTools();
+  const mainView = initializeMainView(mainWindow);
 
-  loadAppInWindow(mainWindow).then(() => {
-    mainWindow.focus();
-  });
+  mainWindow.focus();
 
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.getBrowserViews().forEach((view) => {
@@ -86,20 +60,19 @@ function initializeMainWindow() {
     });
   });
 
-  mainWindow.webContents.on("did-fail-load", () => {
-    loadAppInWindow(mainWindow);
-  });
-
   handleHideWindowOnClose(mainWindow);
 
-  initializeChildWindowHandlers(mainWindow);
+  initializeChildWindowHandlers(mainView.webContents);
 
   makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
-  return mainWindow;
+  return { mainWindow, mainView };
 }
 
-export const getMainWindow = memoize(initializeMainWindow);
+const initializeMainWindowOnce = memoize(initializeMainWindow);
+
+export const getMainWindow = () => initializeMainWindowOnce().mainWindow;
+export const getMainView = () => initializeMainWindowOnce().mainView;
 
 export const getMainWindowState = memoize(() => {
   return createBrowserWindowMobxBinding(getMainWindow());

@@ -2,7 +2,7 @@ import { BrowserView, BrowserWindow, app } from "electron";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 
-import { getMainWindow } from "../../mainWindow";
+import { getMainWindow } from "../../windows/mainWindow";
 import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "./utils/view";
 
 /**

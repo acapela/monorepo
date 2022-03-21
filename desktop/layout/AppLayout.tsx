@@ -48,7 +48,7 @@ const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
   min-width: 0;
   position: relative;
 
-  ${theme.colors.layout.background.asBgWithReadableText}
+  /* ${theme.colors.layout.background.asBgWithReadableText} */
 `;
 
 const UIFooter = styled.div``;

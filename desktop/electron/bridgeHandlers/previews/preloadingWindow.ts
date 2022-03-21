@@ -4,7 +4,7 @@ import { memoize } from "lodash";
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { Point } from "@aca/shared/point";
 
-import { getMainWindow } from "../../mainWindow";
+import { getMainWindow } from "../../windows/mainWindow";
 import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
 import { mirrorWindowSize } from "./utils/mirrorWindowSize";
 

@@ -8,7 +8,6 @@ import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
@@ -22,6 +21,7 @@ import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { runActionWithTarget } from "../../runAction";
+import { useManagePreviewMouseHandling } from "./useManagePreviewMouseHandling";
 
 type Props = {
   notification: NotificationEntity;
@@ -36,6 +36,8 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   const [hasError, setHasError] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useManagePreviewMouseHandling(url, rootRef);
 
   useAutorun(() => {
     if (preloadingNotificationsBridgeChannel.get()[url] === "error") {
@@ -85,12 +87,11 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 
   useLayoutEffect(() => {
     if (devSettingsStore.hidePreviews) return;
-    if (!position || !!commandMenuStore.session) return;
+    if (!position) return;
     if (hasError) return;
 
     return requestAttachPreview({ url, position });
   }, [
-    !!commandMenuStore.session,
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,
@@ -133,7 +134,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
-  ${theme.colors.layout.background.asBg};
+  /* ${theme.colors.layout.background.asBg}; */
   position: relative;
   display: flex;
   align-items: center;

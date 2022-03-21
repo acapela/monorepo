@@ -2,6 +2,7 @@ import {
   requestAttachPreview,
   requestPreviewFocus,
   requestPreviewPreload,
+  requestSetPreviewOnTopState,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
@@ -66,5 +67,29 @@ export function initPreviewHandler() {
     if (!browserView) return;
 
     browserView.webContents?.focus();
+  });
+
+  requestSetPreviewOnTopState.handle(async ({ url, state }, event) => {
+    assert(event, "Show browser view can only be called from client side", log.error);
+
+    const targetWindow = getSourceWindowFromIPCEvent(event);
+
+    assert(targetWindow, "No target window for showing browser view", log.error);
+
+    const browserView = requestPreviewBrowserView.getExistingOnly(url);
+
+    if (!browserView) return;
+
+    if (state === "preview-on-top") {
+      targetWindow.setTopBrowserView(browserView);
+    }
+
+    if (state === "app-on-top") {
+      targetWindow.getBrowserViews().forEach((existingView) => {
+        if (existingView === browserView) return;
+
+        targetWindow.setTopBrowserView(existingView);
+      });
+    }
   });
 }

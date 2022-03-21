@@ -36,6 +36,7 @@ const UIBar = styled.div<{ $isFullwidth: boolean }>`
   height: ${SYSTEM_BAR_HEIGHT}px;
   min-height: ${SYSTEM_BAR_HEIGHT}px;
   padding: 0 16px;
+  ${theme.colors.layout.background.asBgWithReadableText}
 
   ${(props) =>
     props.$isFullwidth &&
