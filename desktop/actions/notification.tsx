@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useAnalytics } from "@aca/desktop/analytics";
+import { createAnalyticsEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
 import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
@@ -43,10 +43,9 @@ export const openNotificationInApp = defineAction({
   shortcut: ["O"],
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
-    const { trackingEvent } = useAnalytics();
 
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
-    return trackingEvent("Notification Deeplink Opened", { service_name });
+    return createAnalyticsEvent("Notification Deeplink Opened", { service_name });
   },
   canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
   async handler(context) {
@@ -107,12 +106,11 @@ export const resolveNotification = defineAction({
     return ctx.isContextual ? "Resolve" : "Resolve Notification";
   },
   analyticsEvent: (ctx) => {
-    const { trackingEvent } = useAnalytics();
     const notification = ctx.getTarget("notification");
 
     const notification_id = notification?.id;
     if (notification_id) {
-      return trackingEvent("Notification Resolved", { notification_id });
+      return createAnalyticsEvent("Notification Resolved", { notification_id });
     }
   },
   keywords: ["done", "next", "mark", "complete"],

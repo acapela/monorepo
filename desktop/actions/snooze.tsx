@@ -1,12 +1,12 @@
 import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
 import React from "react";
 
-import { useAnalytics } from "@aca/desktop/analytics";
 import { uiStore } from "@aca/desktop/store/ui";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClock, IconClockCross } from "@aca/ui/icons";
 
+import { createAnalyticsEvent } from "../analytics";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
@@ -32,11 +32,10 @@ export const snoozeNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
-    const { trackingEvent } = useAnalytics();
 
     const notification_id = notification?.id;
     if (notification_id) {
-      return trackingEvent("Notification Resolved", { notification_id });
+      return createAnalyticsEvent("Notification Resolved", { notification_id });
     }
   },
   keywords: ["delay", "time"],

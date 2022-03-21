@@ -18,6 +18,7 @@ import {
   IconSlidersHoriz,
 } from "@aca/ui/icons";
 
+import { createAnalyticsEvent } from "../analytics";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -99,7 +100,7 @@ export const goToResolved = defineAction({
   name: "Show resolved notifications",
   group: navigationActionsGroup,
   icon: <IconListUnordered4 />,
-  // analyticsEvent: trackingEvent("Resolved Notifications Opened"),
+  analyticsEvent: createAnalyticsEvent("Resolved Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
@@ -110,7 +111,7 @@ export const goToSnoozed = defineAction({
   name: "Show snoozed notifications",
   group: navigationActionsGroup,
   icon: <IconClock />,
-  // analyticsEvent: trackingEvent("Snoozed Notifications Opened"),
+  analyticsEvent: createAnalyticsEvent("Snoozed Notifications Opened"),
   canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: snoozedList.id });

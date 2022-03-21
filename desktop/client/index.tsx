@@ -8,7 +8,6 @@ import React, { useEffect } from "react";
 import { render } from "react-dom";
 import { createGlobalStyle } from "styled-components";
 
-import { AnalyticsProvider } from "@aca/desktop/analytics";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
@@ -66,23 +65,21 @@ function App() {
       <ApolloProvider client={apolloClient}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <DesktopThemeProvider>
-            <AnalyticsProvider>
-              <BuiltInStyles />
-              <GlobalDesktopStyles />
-              <GlobalShortcutsManager />
-              <PromiseUIRenderer />
-              <TooltipsRenderer />
-              <ToastsRenderer />
-              <ServiceWorkerConsolidation />
-              <RootErrorBoundary>
-                <ToastsAndCommunicatesView />
-                <PeekView />
-                <SystemMenuManager />
-                <CommandMenuManager />
-                <RootView />
-                <DebugView />
-              </RootErrorBoundary>
-            </AnalyticsProvider>
+            <BuiltInStyles />
+            <GlobalDesktopStyles />
+            <GlobalShortcutsManager />
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
+            <ServiceWorkerConsolidation />
+            <RootErrorBoundary>
+              <ToastsAndCommunicatesView />
+              <PeekView />
+              <SystemMenuManager />
+              <CommandMenuManager />
+              <RootView />
+              <DebugView />
+            </RootErrorBoundary>
           </DesktopThemeProvider>
         </MotionConfig>
       </ApolloProvider>
