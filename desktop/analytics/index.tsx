@@ -1,3 +1,5 @@
+import { Analytics, AnalyticsBrowser } from "@segment/analytics-next";
+import { memoize } from "lodash";
 import { autorun } from "mobx";
 
 import {
@@ -6,9 +8,11 @@ import {
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
+import { applicationFocusStateBridge } from "@aca/desktop/bridge/system";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { SEGMENT_API_KEY } from "@aca/desktop/lib/env";
 import { desktopRouter } from "@aca/desktop/routes";
 import { accountStore } from "@aca/desktop/store/account";
-import { assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
@@ -19,11 +23,6 @@ import {
   AnalyticsEventPayload,
   AnalyticsUserProfile,
 } from "@aca/shared/types/analytics";
-
-import { applicationFocusStateBridge } from "../bridge/system";
-import { makeLogger } from "../domains/dev/makeLogger";
-
-const log = makeLogger("Analytics");
 
 export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   const user = accountStore.user;
@@ -45,39 +44,35 @@ export function getUserAnalyticsProfile(): AnalyticsUserProfile | null {
   };
 }
 
-let isInitialized = false;
+const log = makeLogger("Analytics");
 
-export function trackEvent<N extends AnalyticsEventName>(
-  type: N,
-  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
-) {
-  assert(isInitialized, "Not initialized analytics");
+const getAnalytics = memoize(async () => {
+  const [analytics] = await AnalyticsBrowser.load({ writeKey: SEGMENT_API_KEY });
 
-  log("sending event", type, payload);
-  analytics.track(type, payload ?? undefined);
-}
+  log("analytics ready");
 
-/**
- * Type safe version of creating tracking event. I tried to avoid it, but did not find
- * a way to properly do
- *
- * const foo: TrackingEvent = {type: "foo", payload: {foo: "bar"}}
- *
- * where without using generic we have type-safe connection between type and payload.
- */
-export function trackingEvent<N extends AnalyticsEventName>(
-  name: N,
-  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
-): AnalyticsEvent<N> {
-  return { type: name, payload: payload as AnalyticsEventPayload<N> };
-}
+  return analytics;
+});
 
-function initializeAnalytics() {
+onDocumentReady(async () => {
+  try {
+    const analytics = await getAnalytics();
+
+    initializeAnalytics(analytics);
+  } catch (error) {
+    log.error(error, "Failed to initialize analytics");
+  }
+});
+
+function initializeAnalytics(analytics: Analytics) {
   const cleanup = createCleanupObject();
+
+  log("initializing automatic events and profile watching");
+
   cleanup.next = autorun(() => {
     const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
     if (lastAppFocusDateTs > lastAppBlurredDateTs) {
-      trackEvent("App Opened", { app_version: window.electronBridge.env.version });
+      analytics.track("App Opened", { app_version: window.electronBridge.env.version });
     }
   });
   // Keep identity updated all the time
@@ -115,11 +110,22 @@ function initializeAnalytics() {
 
   cleanup.next = desktopRouter.subscribe(updatePage);
 
-  isInitialized = true;
-
   return cleanup.clean;
 }
 
-onDocumentReady(() => {
-  initializeAnalytics();
-});
+export async function trackEvent<N extends AnalyticsEventName>(
+  type: N,
+  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
+) {
+  const analytics = await getAnalytics();
+
+  log("sending event", type, payload);
+  analytics.track(type, payload ?? undefined);
+}
+
+export function createAnalyticsEvent<N extends AnalyticsEventName>(
+  name: N,
+  ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
+): AnalyticsEvent<N> {
+  return { type: name, payload: payload as AnalyticsEventPayload<N> };
+}

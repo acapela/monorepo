@@ -2,9 +2,9 @@ import { runInAction } from "mobx";
 
 import { ActionData, ActionResult, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
-import { trackEvent } from "@aca/desktop/analytics";
 import { createChannel } from "@aca/shared/channel";
 
+import { trackEvent } from "../analytics";
 import { makeLogger } from "./dev/makeLogger";
 
 export const actionResultChannel = createChannel<ActionResult>();

@@ -5,6 +5,7 @@ import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { IconClock, IconClockCross } from "@aca/ui/icons";
 
+import { createAnalyticsEvent } from "../analytics";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
@@ -27,6 +28,14 @@ export const snoozeNotification = defineAction({
     return ctx.isContextual ? "Snooze" : "Snooze notification...";
   },
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Resolved", { notification_id });
+    }
+  },
   keywords: ["delay", "time"],
   canApply: canApplySnooze,
   icon: <IconClock />,

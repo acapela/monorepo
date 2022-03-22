@@ -100,6 +100,7 @@ async function querySlackConversations() {
         }
       }
     `,
+    fetchPolicy: "no-cache",
   });
   return data?.slack_conversations ?? [];
 }
