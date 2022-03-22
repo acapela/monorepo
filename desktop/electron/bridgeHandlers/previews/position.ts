@@ -1,7 +1,8 @@
-import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { BrowserView, BrowserWindow, app } from "electron";
 
-import { evaluateFunctionInWebContents, runEffectInWebContents } from "../../utils/webContentsLink";
+import { PreviewPosition } from "@aca/desktop/domains/preview";
+
+import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { getWindowMainView } from "../../windows/mainView";
 import { getMainWindow } from "../../windows/mainWindow";
 import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "./utils/view";

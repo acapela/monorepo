@@ -1,3 +1,8 @@
+import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import styled from "styled-components";
+
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
@@ -15,10 +20,6 @@ import { Button } from "@aca/ui/buttons/Button";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
-import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
 
 import { runActionWithTarget } from "../../runAction";
 import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
@@ -52,7 +53,6 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   useEffect(() => {
     const url = notification.url;
     return previewEventsBridge.subscribe((event) => {
-      console.log({ event });
       if (event.url !== url) return;
 
       if (event.type === "focus") {
@@ -144,7 +144,6 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
-  /* ${theme.colors.layout.background.asBg}; */
   position: relative;
   display: flex;
   align-items: center;

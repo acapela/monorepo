@@ -22,9 +22,9 @@ export function attachPreview(view: BrowserView, targetWindow: BrowserWindow) {
 
   targetWindow.addBrowserView(view);
 
-  targetWindow.getBrowserViews().forEach((otherViwe) => {
-    if (otherViwe !== view) {
-      targetWindow.setTopBrowserView(otherViwe);
+  targetWindow.getBrowserViews().forEach((otherView) => {
+    if (otherView !== view) {
+      targetWindow.setTopBrowserView(otherView);
     }
   });
 

@@ -39,7 +39,6 @@ export function createChannelBridge<Data>(key: string) {
       if (process.env.ELECTRON_CONTEXT === "client") {
         return window.electronBridge.send(key, toJS(data));
       } else {
-        // global.electronGlobal.getMainView().webContents.send(key, toJS(data));
         global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
           targetWindow.webContents.send(key, toJS(data));
 

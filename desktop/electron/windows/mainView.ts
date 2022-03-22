@@ -61,6 +61,7 @@ export function initializeMainView(mainWindow: BrowserWindow) {
 
   windowMainViewMap.set(mainWindow, mainView);
 
+  // Make sure mainView is transparent, by itself so it is not guessed from body background
   mainView.setBackgroundColor("#00000000");
 
   mainWindow.addBrowserView(mainView);
