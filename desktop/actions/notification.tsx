@@ -14,7 +14,6 @@ import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
-import { isNotFocusingPreviewAnd } from "./focus";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
@@ -47,7 +46,7 @@ export const openNotificationInApp = defineAction({
     const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
     return createAnalyticsEvent("Notification Deeplink Opened", { service_name });
   },
-  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
+  canApply: (ctx) => ctx.hasTarget("notification"),
   async handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -63,7 +62,7 @@ export const copyNotificationLink = defineAction({
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
   shortcut: ["C"],
   keywords: ["url", "share"],
-  canApply: isNotFocusingPreviewAnd((ctx) => ctx.hasTarget("notification")),
+  canApply: (ctx) => ctx.hasTarget("notification"),
   handler(context) {
     const notification = context.assertTarget("notification");
 
@@ -116,12 +115,12 @@ export const resolveNotification = defineAction({
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["E"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  canApply: isNotFocusingPreviewAnd((ctx) => {
+  canApply: (ctx) => {
     return (
       (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
       (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
     );
-  }),
+  },
   handler(context) {
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
@@ -155,11 +154,11 @@ export const unresolveNotification = defineAction({
   shortcut: ["Shift", "E"],
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
-  canApply: isNotFocusingPreviewAnd((ctx) => {
+  canApply: (ctx) => {
     return (
       ctx.getTarget("notification")?.isResolved || !!ctx.getTarget("group")?.notifications.some((n) => n.isResolved)
     );
-  }),
+  },
   analyticsEvent: "Notification Unresolved",
   handler(context) {
     const notification = context.getTarget("notification");
@@ -181,12 +180,12 @@ export const openFocusMode = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
   shortcut: "Enter",
-  canApply: isNotFocusingPreviewAnd(({ hasTarget }) => {
+  canApply: ({ hasTarget }) => {
     if (getIsRouteActive("focus") || !hasTarget("list", true)) return false;
     if (!hasTarget("notification") && !hasTarget("group")) return false;
 
     return true;
-  }),
+  },
   handler(context) {
     const list = context.assertTarget("list", true);
     const notification = context.getTarget("notification");

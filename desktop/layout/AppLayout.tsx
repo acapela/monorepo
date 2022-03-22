@@ -12,16 +12,17 @@ interface Props {
   children: ReactNode;
   sidebar?: ReactNode;
   footer?: ReactNode;
+  transparent?: boolean;
 }
 
-export const AppLayout = observer(function AppLayout({ children, sidebar, footer }: Props) {
+export const AppLayout = observer(function AppLayout({ children, sidebar, footer, transparent = false }: Props) {
   const { isSidebarOpened } = uiStore;
 
   return (
     <AppLayoutHolder>
       <UIMain>
         {sidebar && <UISidebar>{sidebar}</UISidebar>}
-        <UIBody $isSidebarOpened={isSidebarOpened}>
+        <UIBody $isSidebarOpened={isSidebarOpened} $hasBackground={!transparent}>
           {children}
           <UIFooter>{footer}</UIFooter>
         </UIBody>
@@ -41,14 +42,14 @@ const UIMain = styled.div`
   min-height: 0;
 `;
 
-const UIBody = styled.div<{ $isSidebarOpened: boolean }>`
+const UIBody = styled.div<{ $isSidebarOpened: boolean; $hasBackground: boolean }>`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
   position: relative;
 
-  ${theme.colors.layout.background.asBgWithReadableText}
+  ${(props) => props.$hasBackground && theme.colors.layout.background.asBgWithReadableText}
 `;
 
 const UIFooter = styled.div``;

@@ -1,14 +1,15 @@
 import { RefObject, useEffect } from "react";
 
 import { createElementEvent } from "@aca/shared/domEvents";
-import { createTimeout } from "@aca/shared/time";
+
+import { useMethod } from "./useMethod";
 
 interface Options {
   isEnabled?: boolean;
   secondClickWaitTime?: number;
 }
 
-const DEFAULT_SECOND_CLICK_TIMEOUT = 250;
+const DEFAULT_SECOND_CLICK_TIMEOUT = 500;
 
 /**
  * Allows attaching double click event to an element.
@@ -24,64 +25,37 @@ const DEFAULT_SECOND_CLICK_TIMEOUT = 250;
  * Result it that 'single' click will be executed with delay.
  */
 export function useDoubleClick(ref: RefObject<HTMLElement>, callback: () => void, options?: Options) {
+  const callbackRef = useMethod(callback);
   useEffect(() => {
-    if (!ref.current) return;
+    const element = ref.current!;
+    if (!element) return;
+
     if (options?.isEnabled === false) return;
 
-    /**
-     * Timeout called after 'first click' that is waiting for 2nd click.
-     *
-     * If 2nd click will not happen, it'll then dispatch click normally and clear this variable.
-     */
-    let waitingAfterFirstClickTimeout: (() => void) | null = null;
+    const timeoutMs = options?.secondClickWaitTime ?? DEFAULT_SECOND_CLICK_TIMEOUT;
 
-    /**
-     * Flag indicating that 2nd click did not happen after timeout so we're emitting click normally without interrupting it
-     * in any way.
-     */
-    let isEmittingClickEvent = false;
+    let lastClickEvent: MouseEvent | null = null;
 
-    // Now let's attach click event.
-    return createElementEvent(ref.current, "click", (event) => {
-      // This click event is dispatched by us after unsuccessful waiting for 2nd click. Just pass it normally without doing anything.
-      if (isEmittingClickEvent) {
-        isEmittingClickEvent = false;
+    return createElementEvent(element, "click", (event) => {
+      if (!lastClickEvent) {
+        lastClickEvent = event;
         return;
       }
 
-      // Don't allow event to be captured by other listeners.
-      event.stopPropagation();
-      event.preventDefault();
+      const previousClick = lastClickEvent;
+      lastClickEvent = event;
 
-      /**
-       * This is 2nd click as we were waiting after 1st click!
-       */
-      if (waitingAfterFirstClickTimeout) {
-        // Clear waiting for 2nd click.
-        waitingAfterFirstClickTimeout();
-        waitingAfterFirstClickTimeout = null;
-        // We can call double click callback.
-        callback();
-
+      if (previousClick.defaultPrevented) {
         return;
       }
 
-      /**
-       * This is 1st click.
-       *
-       * Attach timeout waiting for 2nd click
-       */
-      waitingAfterFirstClickTimeout = createTimeout(() => {
-        // 2nd click did not happen after timeout.
+      const timeSinceLastClick = event.timeStamp - previousClick.timeStamp;
 
-        // Clear waiting variable
-        waitingAfterFirstClickTimeout = null;
+      if (timeSinceLastClick > timeoutMs) {
+        return;
+      }
 
-        // Indicate we'll now manually emit 'single' click event for other listeners to capture.
-        isEmittingClickEvent = true;
-        // Emit click event
-        ref.current?.click();
-      }, options?.secondClickWaitTime ?? DEFAULT_SECOND_CLICK_TIMEOUT);
+      callbackRef();
     });
-  }, [ref, ref.current, callback, options?.isEnabled, options?.secondClickWaitTime]);
+  }, [ref, ref.current, options?.isEnabled, options?.secondClickWaitTime]);
 }

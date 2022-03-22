@@ -52,7 +52,7 @@ if (!appEnv.isDev) {
 const rootElement = document.getElementById("root");
 
 const BuiltInStyles = createGlobalStyle`
-  ${globalStyles}
+  ${globalStyles};
 `;
 
 function App() {

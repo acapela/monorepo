@@ -1,6 +1,6 @@
 import { forceWorkerSyncRun, workerSyncStart } from "@aca/desktop/bridge/apps";
 
-import { getMainWindow } from "../mainWindow";
+import { getMainWindow } from "../windows/mainWindow";
 import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
 import { initializeNotionPush } from "./notion/push";

@@ -41,6 +41,10 @@ export function createChannelBridge<Data>(key: string) {
       } else {
         global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
           targetWindow.webContents.send(key, toJS(data));
+
+          targetWindow.getBrowserViews().forEach((view) => {
+            view.webContents.send(key, toJS(data));
+          });
         });
       }
     } catch (error) {

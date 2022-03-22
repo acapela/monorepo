@@ -2,8 +2,7 @@ import { BrowserView } from "electron";
 import createContextMenu from "electron-context-menu";
 
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
-
-import { getBrowserViewParentWindow } from "./view";
+import { focusMainView } from "@aca/desktop/electron/windows/mainWindow";
 
 export function createDefaultContextMenu(url: string, view: BrowserView) {
   const remove = createContextMenu({
@@ -20,6 +19,7 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
         {
           label: "Snooze...",
           click: () => {
+            focusMainView();
             previewEventsBridge.send({ url, type: "snooze-request" });
           },
         },
@@ -37,7 +37,7 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
         {
           label: "Focus back Acapela App",
           click: () => {
-            getBrowserViewParentWindow(view)?.webContents?.focus();
+            focusMainView();
           },
         },
       ];

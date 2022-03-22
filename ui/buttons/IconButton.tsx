@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "@aca/shared/component";
-import { handleWithStopPropagation } from "@aca/shared/events";
+import { handleWithStopPropagationAndPreventDefault } from "@aca/shared/events";
 import { theme } from "@aca/ui/theme";
 
 import { ButtonKind, ButtonSize, getButtonKindtyles, getButtonSizeStyles } from "./variants";
@@ -46,7 +46,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
       ref={ref}
       data-tooltip={tooltip}
       className={className}
-      onClick={onClick ? handleWithStopPropagation(onClick) : onClick}
+      onClick={onClick ? handleWithStopPropagationAndPreventDefault(onClick) : onClick}
       $kind={kind}
       $size={size}
       $isDisabled={isDisabled}

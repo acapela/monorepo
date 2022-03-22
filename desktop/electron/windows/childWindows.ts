@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, WebContents } from "electron";
 
 /**
  * We're creating invisible window as a host for child windows.
@@ -34,8 +34,8 @@ const createChildWindowHost = () => {
   return hostWindow;
 };
 
-export function initializeChildWindowHandlers(parentWindow: BrowserWindow) {
-  parentWindow.webContents.setWindowOpenHandler(({ url }) => {
+export function initializeChildWindowHandlers(webContents: WebContents) {
+  webContents.setWindowOpenHandler(({ url }) => {
     if (url !== "about:blank") {
       return { action: "deny" };
     }

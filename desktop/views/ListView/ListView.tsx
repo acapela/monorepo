@@ -108,6 +108,7 @@ const UIHolder = styled.div<{}>`
   flex-direction: column;
   min-height: 0;
   position: relative;
+  ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
 const UINotifications = styled.div`

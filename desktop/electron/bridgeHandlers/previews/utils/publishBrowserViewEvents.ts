@@ -8,7 +8,6 @@ export function publishBrowserViewEvents(url: string, browserView: BrowserView) 
   const cleanup = createCleanupObject();
 
   cleanup.next = listenToWebContentsFocus(browserView.webContents, (isFocused) => {
-    browserView.webContents.setAudioMuted(!isFocused);
     previewEventsBridge.send({ url, type: isFocused ? "focus" : "blur" });
   });
 

@@ -1,6 +1,7 @@
 import { WebContents } from "electron";
 
 import { removePrefix } from "@aca/shared/text/substring";
+import { MaybeCleanup } from "@aca/shared/types";
 
 /**
  * This file allows communication between electron and any view or window without setting up ipc.
@@ -28,80 +29,120 @@ import { removePrefix } from "@aca/shared/text/substring";
 // We'll assign temp variables in window of given view/window - let's keep track of it.
 let uniqueWindowNameCounter = 0;
 
-export async function evaluateFunctionInWebContents<R>(web: WebContents, callback: () => R) {
-  // Get source of given function
-  const functionDefinitionCode = callback.toString();
+function setupBridgeIfNeeded() {
+  if (window.webContentsBridge) return;
 
-  // We'll assign it to temp window variable - let's remember this temp name
-  const TEMP_FUNCTION_NAME = `__evaluate__callback${uniqueWindowNameCounter++}`;
-
-  const codeToExecute = [
-    // Assign it to temp variable
-    `window.${TEMP_FUNCTION_NAME} = ${functionDefinitionCode}`,
-    // Execute it
-    `window.${TEMP_FUNCTION_NAME}()`,
-  ].join(";");
-
-  // Assign type-safe result
-  const resultPromise: Promise<R> = web.executeJavaScript(
-    codeToExecute,
-    // Treat as trusted event (eg same as elevated code inside click events)
-    true
-  );
-
-  // Now we can also remove this temp function to avoid polluting window
-  const cleanupCode = `delete window.${TEMP_FUNCTION_NAME}`;
-
-  web.executeJavaScript(cleanupCode);
-
-  const result = await resultPromise;
-
-  return result;
+  window.webContentsBridge = {
+    sendMessage(data) {
+      const bodyJSON = JSON.stringify(data);
+      console.info(`__electron ${bodyJSON}`);
+    },
+  };
 }
 
-type Cleanup = () => void;
+async function initializeBridgeForWebContents(web: WebContents) {
+  const initCode = getCallCodeForFunction(setupBridgeIfNeeded);
+  await web.executeJavaScript(initCode);
+}
 
-/**
- * Allows injecting any code into web contents with some cleanup code.
- *
- * const stop = evaluateFunctionWithCleanupInWebContents(web, () => {
- *   const i = setTimeout(stuff);
- *
- *   return () => clearTimeout(i);
- * })
- */
-export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callback: () => Cleanup) {
-  const functionDefinitionCode = callback.toString();
+export async function evaluateFunctionInWebContents<R>(web: WebContents, callback: () => R) {
+  const callbackCode = getCallCodeForFunction(callback);
 
-  const TEMP_FUNCTION_NAME = `__evaluate__callback${uniqueWindowNameCounter++}`;
-  const TEMP_CLEANUP_NAME = `__evaluate__callback_cleanup${uniqueWindowNameCounter++}`;
+  await initializeBridgeForWebContents(web);
 
-  const codeToExecute = [
-    `window.${TEMP_FUNCTION_NAME} = ${functionDefinitionCode}`,
-    `window.${TEMP_CLEANUP_NAME} = window.${TEMP_FUNCTION_NAME}()`,
-    `delete window.${TEMP_FUNCTION_NAME}`,
-  ].join(";");
+  const result = await web.executeJavaScript(callbackCode);
 
-  const resultPromise = web.executeJavaScript(
-    codeToExecute,
-    // Treat as trusted event (eg same as elevated code inside click events)
-    true
+  return result as R;
+}
+
+export function runEffectInWebContents<D = void>(
+  web: WebContents,
+  callback: (send: (data: D) => void) => MaybeCleanup,
+  onData?: (data: D) => void
+) {
+  const bridgeId = `${uniqueWindowNameCounter++}`;
+
+  interface Message {
+    type: "webcontents-communication";
+    bridgeId: string;
+    data: D;
+  }
+
+  const sendFunctionName = `__bridge_send${bridgeId}`;
+  const cleanupName = `__bridge_send_cleanup${bridgeId}`;
+
+  const sendFunction = getCallCodeForFunction((bridgeId: string) => {
+    return function send(data: D) {
+      window.webContentsBridge.sendMessage<Message>({
+        bridgeId,
+        type: "webcontents-communication",
+        data,
+      });
+    };
+  }, bridgeId);
+
+  const initPromise = web.executeJavaScript(
+    [
+      getCallCodeForFunction(setupBridgeIfNeeded),
+      `window.${sendFunctionName} = ${sendFunction}`,
+      `window.${cleanupName} = (${getFunctionCode(callback)})(window.${sendFunctionName})`,
+    ].join(";")
   );
 
-  return async function cleanup() {
-    await resultPromise;
+  const stopListening = listenForWebContentsConsoleMessage<Message>(web, (message) => {
+    if (message?.type !== "webcontents-communication") return;
+    if (message.bridgeId !== bridgeId) return;
 
-    if (web.isDestroyed()) return;
+    onData?.(message.data);
+  });
 
-    await web.executeJavaScript(
+  async function cleanupCode() {
+    web.executeJavaScript(
       [
-        // Perform cleanup
-        `window.${TEMP_CLEANUP_NAME}()`,
-        // Remove cleanup function
-        `delete window.${TEMP_CLEANUP_NAME}`,
+        //
+        `delete window.${sendFunctionName}`,
+        `delete window.${cleanupName}`,
       ].join(";")
     );
+  }
+
+  return async () => {
+    stopListening();
+    await initPromise;
+    await cleanupCode();
   };
+}
+
+interface WebContentsBridge {
+  sendMessage<T = unknown>(body: T): void;
+}
+
+declare global {
+  interface Window {
+    webContentsBridge: WebContentsBridge;
+  }
+}
+
+function getFunctionCode<A extends unknown[]>(callback: (...args: A) => void) {
+  const functionDefinitionCode = callback.toString();
+
+  return functionDefinitionCode;
+}
+
+function getCallCodeForFunction<A extends unknown[]>(callback: (...args: A) => void, ...args: A) {
+  const functionDefinitionCode = getFunctionCode(callback);
+
+  /**
+   * (function foo(a) {
+   *    console.log(a)
+   * })(1)
+   *
+   * (<BODY>)(1)
+   */
+
+  const callableArgs = args.map((arg) => JSON.stringify(arg)).join(", ");
+
+  return `(${functionDefinitionCode})(${callableArgs})`;
 }
 
 /**
@@ -113,12 +154,17 @@ export function evaluateFunctionWithCleanupInWebContents(web: WebContents, callb
  *
  * TODO: with a bit of effort we can send any JSON this way
  */
-export function listenForWebContentsConsoleMessage(web: WebContents, callback: (message: string) => void) {
+function listenForWebContentsConsoleMessage<T = unknown>(web: WebContents, callback: (message: T) => void) {
   function handleConsoleMessage(event: Electron.Event, line: number, message: string) {
-    if (!message.startsWith("electron ")) return;
-    const body = removePrefix(message, "electron ");
+    if (!message.startsWith("__electron ")) return;
+    const bodyJSON = removePrefix(message, "__electron ");
+    try {
+      const body = JSON.parse(bodyJSON);
 
-    callback(body);
+      callback(body);
+    } catch (error) {
+      console.warn(`Incorrect __electron message json: ${bodyJSON}`);
+    }
   }
   web.on("console-message", handleConsoleMessage);
 
@@ -134,46 +180,24 @@ export function listenForWebContentsConsoleMessage(web: WebContents, callback: (
  * This workarounds that by injecting normal focus/blur events and sending info about them without IPC setup
  */
 export function listenToWebContentsFocus(web: WebContents, callback: (isFocused: boolean) => void) {
-  // Get initial focus and call callback
-  evaluateFunctionInWebContents(web, () => {
-    return document.hasFocus();
-  }).then((initialHasFocus) => {
-    callback(initialHasFocus);
-  });
+  return runEffectInWebContents<boolean>(
+    web,
+    (send) => {
+      function handleFocus() {
+        send(true);
+      }
 
-  // Start listening for messages from console
-  const cancelConsoleListening = listenForWebContentsConsoleMessage(web, (message) => {
-    if (message === "has-focus") {
-      callback(true);
-    }
-    if (message === "lost-focus") {
-      callback(false);
-    }
-    //
-  });
+      function handleBlur() {
+        send(false);
+      }
+      window.addEventListener("focus", handleFocus);
+      window.addEventListener("blur", handleBlur);
 
-  // Inject focus/blur events with proper cleanup
-  const stopListeningForEvents = evaluateFunctionWithCleanupInWebContents(web, () => {
-    function handleFocus() {
-      console.info("electron", "has-focus");
-    }
-
-    function handleBlur() {
-      console.info("electron", "lost-focus");
-    }
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("blur", handleBlur);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("blur", handleBlur);
-    };
-  });
-
-  const stop = () => {
-    cancelConsoleListening();
-    stopListeningForEvents();
-  };
-
-  return stop;
+      return () => {
+        window.removeEventListener("focus", handleFocus);
+        window.removeEventListener("blur", handleBlur);
+      };
+    },
+    callback
+  );
 }

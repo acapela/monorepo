@@ -15,9 +15,9 @@ import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeDarkModeHandling } from "./darkMode";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
-import { getMainWindow } from "./mainWindow";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
+import { getMainWindow } from "./windows/mainWindow";
 
 registerLoggerErrorReporter((body) => {
   try {

@@ -8,8 +8,6 @@ export function listenForViewKeyboardBlurRequest(webContents: WebContents, callb
     // Handle Esc press only
     if (input.type !== "keyDown" || input.key !== "Escape") return;
 
-    input.modifiers;
-
     // If it is CMD + Esc - restore focus to main window instantly
     if (isEqual(input.modifiers, ["meta"])) {
       callback();
@@ -24,7 +22,7 @@ export function listenForViewKeyboardBlurRequest(webContents: WebContents, callb
     // if something is focused, blur it, but don't escape preview focus yet.
     if (isAnyInputFocused) {
       await evaluateFunctionInWebContents(webContents, () => {
-        return (document.activeElement as HTMLElement)?.blur();
+        (document.activeElement as HTMLElement)?.blur?.();
       });
       return;
     }

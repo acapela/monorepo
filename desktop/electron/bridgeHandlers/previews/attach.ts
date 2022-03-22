@@ -22,6 +22,12 @@ export function attachPreview(view: BrowserView, targetWindow: BrowserWindow) {
 
   targetWindow.addBrowserView(view);
 
+  targetWindow.getBrowserViews().forEach((otherView) => {
+    if (otherView !== view) {
+      targetWindow.setTopBrowserView(otherView);
+    }
+  });
+
   function detach() {
     log("will detach view");
 

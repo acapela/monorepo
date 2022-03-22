@@ -8,9 +8,9 @@ import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewPosition, getPreviewPositionFromElement } from "@aca/desktop/domains/preview";
+import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -22,6 +22,7 @@ import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
 import { runActionWithTarget } from "../../runAction";
+import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
 type Props = {
   notification: NotificationEntity;
@@ -35,7 +36,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   const [isFocused, setIsFocused] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const rootRef = useRef<HTMLDivElement>(null);
+  const previewShapeHolderRef = useRef<HTMLDivElement>(null);
 
   useAutorun(() => {
     if (preloadingNotificationsBridgeChannel.get()[url] === "error") {
@@ -45,7 +46,7 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
     }
   });
 
-  useResizeCallback(rootRef, (entry) => {
+  useResizeCallback(previewShapeHolderRef, (entry) => {
     setPosition(getPreviewPositionFromElement(entry.target as HTMLElement));
   });
 
@@ -84,13 +85,21 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
   }, [position]);
 
   useLayoutEffect(() => {
+    const previewElement = previewShapeHolderRef.current;
+
+    if (!previewElement) return;
     if (devSettingsStore.hidePreviews) return;
-    if (!position || !!commandMenuStore.session) return;
+    if (!position) return;
     if (hasError) return;
 
-    return requestAttachPreview({ url, position });
+    const stopAttaching = requestAttachPreview({ url, position });
+    const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
+
+    return () => {
+      stopMouseManagement();
+      stopAttaching?.();
+    };
   }, [
-    !!commandMenuStore.session,
     url,
     // Cast position to boolean, as we only want to wait for position to be ready. We don't want to re-run this effect when position changes
     !!position,
@@ -100,14 +109,19 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 
   return (
     <>
-      <UIHolder ref={rootRef}>
-        <AnimatePresence>
-          {isFocused && (
-            <UIEscapeFlyer presenceStyles={{ opacity: [0, 1], y: [-10, 0] }}>
-              <UIEscapeLabel>Press {describeShortcut(["Mod", "Esc"])} to return</UIEscapeLabel>
-            </UIEscapeFlyer>
-          )}
-        </AnimatePresence>
+      <UIHolder ref={previewShapeHolderRef}>
+        <BodyPortal>
+          <AnimatePresence>
+            {isFocused && (
+              <UIEscapeFlyer presenceStyles={{ opacity: [0, 1] }}>
+                <UIEscapeLabel presenceStyles={{ y: [10, 0] }}>
+                  Press {describeShortcut(["Mod", "Esc"])} to return
+                </UIEscapeLabel>
+              </UIEscapeFlyer>
+            )}
+          </AnimatePresence>
+        </BodyPortal>
+
         {hasError && (
           <UIErrorHolder>
             <UIErrorLabel>
@@ -123,9 +137,6 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
           </UIErrorHolder>
         )}
       </UIHolder>
-      <BodyPortal>
-        <UIFocusCover $isVisible={isFocused} />
-      </BodyPortal>
     </>
   );
 });
@@ -133,38 +144,28 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
 const UIHolder = styled.div`
   width: 100%;
   flex-grow: 1;
-  ${theme.colors.layout.background.asBg};
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const UIFocusCover = styled.div<{ $isVisible: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  ${theme.colors.layout.background.opacity(0.8).asBg};
-  pointer-events: ${(props) => (props.$isVisible ? "all" : "none")};
-  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
-  transition: 0.15s all;
-`;
-
 const UIEscapeFlyer = styled(PresenceAnimator)`
   position: absolute;
-  bottom: 100%;
-  margin-bottom: 10px;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
   isolation: isolate;
   z-index: 1000;
+  height: ${SYSTEM_BAR_HEIGHT}px;
+  ${theme.colors.layout.background.opacity(0.9).asBg};
+  pointer-events: all;
 `;
 
-const UIEscapeLabel = styled.div`
+const UIEscapeLabel = styled(PresenceAnimator)`
   ${theme.typo.content.medium};
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
   ${theme.box.panel.hint.padding.radius};
