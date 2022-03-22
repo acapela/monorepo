@@ -1,11 +1,15 @@
 import React from "react";
 
 import { trackEvent } from "@aca/desktop/analytics";
+import { USERSNAP_GLOBAL_API_KEY } from "@aca/desktop/lib/env";
 import { Button } from "@aca/ui/buttons/Button";
 
 import { useUsersnapApi } from ".";
 
 export function FeedbackButton() {
+  if (!USERSNAP_GLOBAL_API_KEY) {
+    return null;
+  }
   const usersnapApi = useUsersnapApi();
 
   /**
