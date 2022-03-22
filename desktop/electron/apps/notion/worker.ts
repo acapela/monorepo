@@ -1,4 +1,4 @@
-import { differenceInMinutes } from "date-fns";
+import { differenceInMilliseconds } from "date-fns";
 import { session } from "electron";
 import fetch from "node-fetch";
 
@@ -28,8 +28,8 @@ import type {
   PageBlockValue,
 } from "./types";
 
-const WINDOW_BLURRED_INTERVAL = 15 * 60 * 1000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL = 90 * 1000; // 90 seconds;
+const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
+const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
 
 let currentInterval: NodeJS.Timer | null = null;
 let timeOfLastSync: Date | null = null;
@@ -72,9 +72,9 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
 /*
   Pulling logic for notion
   - Pull immediately on app start
-  - Pull every 15 minutes if main window is blurred
-  - Pull ever 90 seconds if main window is focused
-  - Pull immediately when window focuses if more than 5 minutes have passed before last pull
+  - Pull every WINDOW_BLURRED_INTERVAL if main window is blurred
+  - Pull every WINDOW_FOCUSED_INTERVAL if main window is focused
+  - Pull immediately when window focuses if more than WINDOW_FOCUSED_INTERVAL have passed before last pull
 */
 export function startNotionSync(): ServiceSyncController {
   const sessionDataPromise = getNotionSessionData();
@@ -125,15 +125,16 @@ export function startNotionSync(): ServiceSyncController {
     serviceName: "notion",
     onWindowFocus() {
       const now = new Date();
-      const isLongTimeSinceLastFocus = !timeOfLastSync || differenceInMinutes(now, timeOfLastSync) > 5;
+      const isLongTimeSinceLastFocus =
+        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
 
       if (isLongTimeSinceLastFocus) {
         runSync();
       }
-      restartPullInterval(WINDOW_FOCUSED_INTERVAL);
+      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
     },
     onWindowBlur() {
-      restartPullInterval(WINDOW_BLURRED_INTERVAL);
+      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
     },
     forceSync() {
       runSync();
@@ -180,7 +181,7 @@ export async function updateAvailableSpaces() {
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
-    throw log.error(new Error(`getSpaces`), `${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+    throw new Error(`getSpaces: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
   /*
@@ -214,7 +215,7 @@ export async function updateAvailableSpaces() {
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
-    throw new Error(`getPublicSpaceData ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+    throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
   const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
@@ -243,65 +244,71 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
   log.debug(`Found ${notificationIds.length} notifications`);
   for (const id of notificationIds) {
-    const notification = recordMap.notification[id].value;
+    try {
+      const notification = recordMap.notification[id].value;
 
-    const notificationProperties = getNotificationProperties(notification, recordMap);
-    if (!notificationProperties) {
-      if (!isKnownAndUnsupported(notification, recordMap)) {
-        log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
+      const notificationProperties = getNotificationProperties(notification, recordMap);
+      if (!notificationProperties) {
+        if (!isKnownAndUnsupported(notification, recordMap)) {
+          log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
+        }
+
+        continue;
       }
 
-      continue;
+      const { url, type, text_preview } = notificationProperties;
+
+      const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">)?.value;
+
+      // Weird bug where activity is undefined for a user
+      // https://sentry.io/organizations/acapela/issues/3114653912/
+      if (!activity) {
+        log.error("no activity defined", notification);
+        continue;
+      }
+
+      const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
+
+      const created_at = new Date(createdAtTimestampAsNumber).toISOString();
+
+      const page_title = getPageTitle(notification, recordMap);
+
+      if (!page_title) {
+        log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
+        continue;
+      }
+
+      const updated_at = created_at;
+
+      const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
+
+      if (authorId === "Notion") {
+        log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+      }
+
+      result.push({
+        notification: {
+          url,
+          text_preview,
+          created_at,
+          updated_at,
+          from: recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion",
+        },
+        type,
+        notionNotification: {
+          notion_original_notification_id: id,
+          page_id: notification.navigable_block_id,
+          page_title,
+          synced_spaced_id: notification.space_id,
+          author_id: authorId,
+        },
+        discussion_id: notificationProperties.discussion_id,
+      });
+    } catch (error) {
+      // We do not want a single mis-shaped notification to tear down the whole sync.
+      // So we just log the error and move on to the next notification.
+      log.error(error);
     }
-
-    const { url, type, text_preview } = notificationProperties;
-
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
-
-    // Weird bug were activity is undefined for a user
-    // https://sentry.io/organizations/acapela/issues/3114653912/
-    if (!activity) {
-      log.error("no activity defined", notification);
-      continue;
-    }
-
-    const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
-
-    const created_at = new Date(createdAtTimestampAsNumber).toISOString();
-
-    const page_title = getPageTitle(notification, recordMap);
-
-    if (!page_title) {
-      log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
-      continue;
-    }
-
-    const updated_at = created_at;
-
-    const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
-
-    if (authorId === "Notion") {
-      log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
-    }
-
-    result.push({
-      notification: {
-        url,
-        text_preview,
-        created_at,
-        updated_at,
-        from: recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion",
-      },
-      type,
-      notionNotification: {
-        notion_original_notification_id: id,
-        page_id: notification.navigable_block_id,
-        page_title,
-        synced_spaced_id: notification.space_id,
-        author_id: authorId,
-      },
-      discussion_id: notificationProperties.discussion_id,
-    });
   }
 
   return result;
@@ -406,7 +413,7 @@ function isKnownAndUnsupported(
   recordMap: GetNotificationLogResult["recordMap"]
 ): boolean {
   if (notification.type === "user-invited") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">).value;
+    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">)?.value;
     if (activity.parent_table === "space") {
       return true;
     }
