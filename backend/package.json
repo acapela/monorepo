@@ -23,6 +23,7 @@
     "@godaddy/terminus": "^4.10.2",
     "@google-cloud/storage": "^5.18.1",
     "@linear/sdk": "^1.22.0",
+    "@octokit/webhooks": "^9.23.0",
     "@sentry/cli": "^1.73.2",
     "@sentry/node": "^6.17.3",
     "@slack/bolt": "^3.9.0",
