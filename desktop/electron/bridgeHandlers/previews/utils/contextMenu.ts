@@ -4,8 +4,6 @@ import createContextMenu from "electron-context-menu";
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { focusMainView } from "@aca/desktop/electron/windows/mainWindow";
 
-import { getBrowserViewParentWindow } from "./view";
-
 export function createDefaultContextMenu(url: string, view: BrowserView) {
   const remove = createContextMenu({
     window: view.webContents,
@@ -39,7 +37,7 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
         {
           label: "Focus back Acapela App",
           click: () => {
-            getBrowserViewParentWindow(view)?.webContents?.focus();
+            focusMainView();
           },
         },
       ];

@@ -59,8 +59,6 @@ export function initializeMainView(mainWindow: BrowserWindow) {
     },
   });
 
-  // mainView.webContents.openDevTools({ mode: "detach" });
-
   windowMainViewMap.set(mainWindow, mainView);
 
   mainView.setBackgroundColor("#00000000");

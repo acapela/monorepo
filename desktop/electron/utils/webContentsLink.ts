@@ -1,6 +1,7 @@
+import { WebContents } from "electron";
+
 import { removePrefix } from "@aca/shared/text/substring";
 import { MaybeCleanup } from "@aca/shared/types";
-import { WebContents } from "electron";
 
 /**
  * This file allows communication between electron and any view or window without setting up ipc.
@@ -157,9 +158,13 @@ function listenForWebContentsConsoleMessage<T = unknown>(web: WebContents, callb
   function handleConsoleMessage(event: Electron.Event, line: number, message: string) {
     if (!message.startsWith("__electron ")) return;
     const bodyJSON = removePrefix(message, "__electron ");
-    const body = JSON.parse(bodyJSON);
+    try {
+      const body = JSON.parse(bodyJSON);
 
-    callback(body);
+      callback(body);
+    } catch (error) {
+      console.warn(`Incorrect __electron message json: ${bodyJSON}`);
+    }
   }
   web.on("console-message", handleConsoleMessage);
 

@@ -16,6 +16,7 @@ export const setBadgeCountRequest = createInvokeBridge<number | string>("set-bad
 export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 export const showMainWindowRequest = createInvokeBridge("show-main-window");
 export const waitForDoNotDisturbToFinish = createInvokeBridge("wait-for-do-not-disturb-to-finish");
+export const focusMainViewRequest = createInvokeBridge("focusMainViewRequest");
 
 export const openLinkRequest = createInvokeBridge<{ url: string }>("open-link");
 

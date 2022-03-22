@@ -3,6 +3,7 @@ import { BrowserWindow, app, session, shell } from "electron";
 import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
   clearAllDataRequest,
+  focusMainViewRequest,
   openLinkRequest,
   restartAppRequest,
   setBadgeCountRequest,
@@ -17,7 +18,7 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { wait } from "@aca/shared/time";
 
-import { getMainWindow } from "../windows/mainWindow";
+import { focusMainView, getMainWindow } from "../windows/mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
@@ -134,5 +135,9 @@ export function initializeSystemHandlers() {
     // Apparently Slack also uses this to set an indeterminate badge:
     // https://github.com/electron/electron/issues/6533#issue-166218687
     app.setBadgeCount(count as number);
+  });
+
+  focusMainViewRequest.handle(async () => {
+    focusMainView();
   });
 }

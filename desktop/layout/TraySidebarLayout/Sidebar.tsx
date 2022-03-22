@@ -14,6 +14,7 @@ import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/deskt
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
+import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
@@ -31,15 +32,16 @@ interface Props {
 }
 
 export const Sidebar = observer(({ isOpened }: Props) => {
-  const sideBarRef = useRef<HTMLDivElement | null>(null);
+  const sideBarRef = useRef<HTMLDivElement>(null);
+  const draggerRef = useRef<HTMLDivElement>(null);
+
+  useDoubleClick(draggerRef, () => {
+    toggleMaximizeRequest();
+  });
 
   return (
     <UIHolder ref={sideBarRef} $isOpened={isOpened}>
-      <UIWindowDragger
-        onDoubleClick={() => {
-          toggleMaximizeRequest();
-        }}
-      />
+      <UIWindowDragger ref={draggerRef} />
       <UIItems>
         <UIItemGroup>
           <ActionSystemMenuItem

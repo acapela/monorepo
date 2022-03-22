@@ -1,7 +1,9 @@
-import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
-import { theme } from "@aca/ui/theme";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
+
+import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
+import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
+import { theme } from "@aca/ui/theme";
 
 import { SYSTEM_BAR_HEIGHT, TRAFFIC_LIGHTS_NEEDED_SPACE } from "./ui";
 import { SystemBarUserMenu } from "./UserMenu";
@@ -14,13 +16,12 @@ interface Props {
 }
 
 export function SystemTopBar({ navigationItems, targetActionItems, titleNode, isFullWidth = false }: Props) {
+  const barRef = useRef<HTMLDivElement>(null);
+  useDoubleClick(barRef, () => {
+    toggleMaximizeRequest();
+  });
   return (
-    <UIBar
-      $isFullwidth={isFullWidth}
-      onDoubleClick={() => {
-        toggleMaximizeRequest();
-      }}
-    >
+    <UIBar ref={barRef} $isFullwidth={isFullWidth}>
       <UIButtons>{navigationItems}</UIButtons>
       <UITitle>{titleNode}</UITitle>
       <UIRightButtons>{targetActionItems}</UIRightButtons>
