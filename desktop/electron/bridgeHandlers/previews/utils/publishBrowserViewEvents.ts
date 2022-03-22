@@ -1,7 +1,8 @@
+import { BrowserView } from "electron";
+
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { listenToWebContentsFocus } from "@aca/desktop/electron/utils/webContentsLink";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { BrowserView } from "electron";
 
 export function publishBrowserViewEvents(url: string, browserView: BrowserView) {
   const cleanup = createCleanupObject();

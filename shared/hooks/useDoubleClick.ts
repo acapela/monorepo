@@ -9,7 +9,7 @@ interface Options {
   secondClickWaitTime?: number;
 }
 
-const DEFAULT_SECOND_CLICK_TIMEOUT = 250;
+const DEFAULT_SECOND_CLICK_TIMEOUT = 500;
 
 /**
  * Allows attaching double click event to an element.

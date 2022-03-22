@@ -1,6 +1,7 @@
-import { evaluateFunctionInWebContents } from "@aca/desktop/electron/utils/webContentsLink";
 import { WebContents } from "electron";
 import { isEqual } from "lodash";
+
+import { evaluateFunctionInWebContents } from "@aca/desktop/electron/utils/webContentsLink";
 
 export function listenForViewKeyboardBlurRequest(webContents: WebContents, callback: () => void) {
   async function handleBeforeInput(event: Electron.Event, input: Electron.Input) {
