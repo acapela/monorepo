@@ -1,14 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import styled, { css } from "styled-components";
 
-import { FocusedActionLayout } from "@aca/frontend/src/layouts/FocusedActionLayout/FocusedActionLayout";
 import { openInNewTab } from "@aca/frontend/src/utils/openInNewTab";
+import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
+import { Logo } from "@aca/ui/icons/logos/AcapelaLogo";
+import { phone } from "@aca/ui/responsive";
+import { theme } from "@aca/ui/theme";
 
 type GitHubAsset = {
   browser_download_url: string;
   name: string;
 };
+
+const videoRatio = 16 / 9;
+const defaultVideoHeightInPixels = 420;
+
 export default function DownloadPage(): JSX.Element {
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
@@ -29,11 +37,97 @@ export default function DownloadPage(): JSX.Element {
 
   return (
     <>
-      <FocusedActionLayout title={`Download Acapela`} description={`Acapela helps you manage all your notifications`}>
-        <Button kind="primary" onClick={handleDownload} isDisabled={downloadURL === null}>
-          Download (MacOS)
-        </Button>
-      </FocusedActionLayout>
+      <UIWrapper>
+        <UIWindow>
+          <UIHead>
+            <UILogo />
+            <UITypo>
+              <UITitle>Download Acapela</UITitle>
+              <UIDescription>Acapela helps you manage all your notifications</UIDescription>
+            </UITypo>
+          </UIHead>
+          <Button kind="primary" onClick={handleDownload} isDisabled={downloadURL === null}>
+            Download (MacOS)
+          </Button>
+        </UIWindow>
+        <UIIFrameHolder>
+          <iframe
+            id="ytplayer"
+            frameBorder="0"
+            allowFullScreen
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+            src="https://www.youtube.com/embed/-AauR0Q3Uzk?autoplay=1&origin=https://app.acape.la&enablejsapi=1"
+          ></iframe>
+        </UIIFrameHolder>
+      </UIWrapper>
     </>
   );
 }
+
+const UIWrapper = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  flex-direction: column;
+  ${theme.gradients.actionPageBg.asBg};
+`;
+
+const UIWindow = styled(PopPresenceAnimator)<{}>`
+  ${theme.colors.layout.background.withBorder.asBg};
+  ${theme.shadow.modal};
+  ${theme.box.panel.pageCart.padding.radius};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 700px;
+  min-width: 420px;
+  margin-bottom: 64px;
+
+  ${phone(css`
+    min-width: 0;
+    width: 100%;
+  `)}
+`;
+
+const UIHead = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  ${theme.spacing.actionsSection.asGap};
+  margin-bottom: 50px;
+`;
+
+const UITypo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  ${theme.spacing.close.asGap};
+`;
+
+const UITitle = styled.div`
+  ${theme.typo.item.title};
+`;
+
+const UIDescription = styled.div`
+  ${theme.typo.content.medium.secondary};
+  max-width: 40ch;
+`;
+
+const UILogo = styled(Logo)<{}>`
+  font-size: 40px;
+`;
+
+const UIIFrameHolder = styled.div<{}>`
+  position: relative;
+  display: flex;
+  height: ${defaultVideoHeightInPixels}px;
+  width: ${defaultVideoHeightInPixels * videoRatio}px;
+
+  ${phone(css`
+    min-width: 0;
+    width: 90%;
+  `)}
+`;
