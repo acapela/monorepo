@@ -38,7 +38,6 @@ select_permissions:
     - created_at
     - email
     - id
-    - import_filters
     - is_bot
     - is_slack_auto_resolve_enabled
     - name
@@ -63,7 +62,6 @@ update_permissions:
     columns:
     - avatar_url
     - current_team_id
-    - import_filters
     - is_slack_auto_resolve_enabled
     - name
     - slack_included_channels
