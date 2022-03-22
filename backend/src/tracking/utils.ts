@@ -8,7 +8,7 @@ export async function updateUserOnboardingStatus(user: User) {
   if (process.env.AIRTABLE_API_KEY) {
     const airtableCRMBaseId = "app9VeGJyHLZ7M5j4";
     const airtableCRMTableId = "tblVcS7p390GbQbC0";
-    const funnelStageField = "Funnel stage";
+    const funnelStageFieldName = "Funnel stage";
     const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(airtableCRMBaseId);
     const fetchedResults = await base(airtableCRMTableId)
       .select({
@@ -23,7 +23,7 @@ export async function updateUserOnboardingStatus(user: User) {
       return;
     }
     const record = fetchedResults[0];
-    const funnelStage = record.get(funnelStageField) as undefined | string;
+    const funnelStage = record.get(funnelStageFieldName) as undefined | string;
     if (
       funnelStage &&
       ["Booked in Product Demo Call", "Attended Product Demo Call", "Onboarded", "Booked in Onboarding Call"].includes(
