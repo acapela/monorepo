@@ -20,6 +20,7 @@ import { router as authenticationRoutes } from "./authentication";
 import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
+import { router as githubRoutes } from "./github/router";
 import { router as linearRoutes } from "./linear/router";
 import nextAuth from "./nextAuth";
 import { router as sentryTunnel } from "./sentryTunnel";
@@ -80,7 +81,8 @@ function setupRoutes(app: Application): void {
     waitlistRoutes,
     tracking,
     linearRoutes,
-    atlassianRoutes
+    atlassianRoutes,
+    githubRoutes
   );
 
   nextAuth(app);
