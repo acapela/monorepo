@@ -12,6 +12,7 @@ export type {
   linear_issue as LinearIssue,
   linear_oauth_token as LinearOauthToken,
   notification_linear as NotificationLinear,
+  notification_slack_message as NotificationSlackMessage,
   user as User,
   user_slack_installation as UserSlackInstallation,
   whitelist as Whitelist,
