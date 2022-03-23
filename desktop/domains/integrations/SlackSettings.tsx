@@ -10,8 +10,11 @@ import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { VStack } from "@aca/ui/Stack";
 import { Toggle } from "@aca/ui/toggle";
 
+import { SlackChannelsByTeamFilters } from "./SlackFilterSettings";
+
 export const SlackSettings = observer(() => {
   const user = accountStore.assertUser;
+
   return (
     <VStack gap={16}>
       <SettingRow
@@ -34,6 +37,8 @@ export const SlackSettings = observer(() => {
           />
         </SettingRow>
       </VStack>
+
+      <SlackChannelsByTeamFilters />
     </VStack>
   );
 });
