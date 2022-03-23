@@ -80,7 +80,7 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
     name: listEntity.title,
     listEntity: listEntity,
     isCustom: true,
-    query: listEntity.inboxNotifications,
+    getNotifications: () => listEntity.inboxNotifications.all,
   });
 });
 

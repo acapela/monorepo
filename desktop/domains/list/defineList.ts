@@ -4,7 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity, NotificationsQuery, notificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
@@ -17,7 +17,7 @@ interface DefineListConfig {
   icon?: ReactNode;
   isCustom?: boolean;
   filter?: EntityFilterInputByDefinition<typeof notificationEntity>;
-  query?: NotificationsQuery;
+  getNotifications?: () => NotificationEntity[];
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
 }
@@ -31,29 +31,29 @@ export function defineNotificationsList({
   name,
   isCustom,
   filter,
-  query,
+  getNotifications,
   listEntity,
   icon,
   dontShowCount = false,
 }: DefineListConfig) {
-  assert(filter || query, "Defined list has to either include filter or getNotifications handler");
+  assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
   const getRawNotificationsQuery = cachedComputed(() => {
     const db = getDb();
 
     if (filter) {
-      return db.notification.query(filter);
+      return db.notification.query(filter).all;
     }
 
-    if (query) {
-      return query;
+    if (getNotifications) {
+      return getNotifications();
     }
 
     throw 2;
   });
 
   const getAllGroupedNotifications = cachedComputed(() => {
-    const groups = groupNotifications(getRawNotificationsQuery().all);
+    const groups = groupNotifications(getRawNotificationsQuery());
     return groups;
   });
 
