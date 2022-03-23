@@ -66,7 +66,9 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             .map((list, index) => {
               const isActive = getExactIsRouteActive("list", { listId: list.id });
               const count = list.getAllNotifications().length;
-              const additionalShortcut: ShortcutDefinition = ["Meta", `${index + 2}` as ShortcutKey];
+              // A double digit number shortcut doesn't exist in keuboard and  will crash the app! .e.g Meta+`10`
+              const additionalShortcut: ShortcutDefinition | undefined =
+                index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
               return (
                 <Fragment key={list.id}>
                   <ActionSystemMenuItem
