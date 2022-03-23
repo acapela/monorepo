@@ -50,8 +50,6 @@ function initializeMainWindow() {
     //
   });
 
-  mainWindow.webContents.focus();
-
   const mainView = initializeMainView(mainWindow);
 
   const mainWindowWebContents = mainWindow.webContents;
