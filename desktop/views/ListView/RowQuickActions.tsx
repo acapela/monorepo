@@ -15,8 +15,20 @@ interface Props {
 export const RowQuickActions = observer(({ target }: Props) => {
   return (
     <UIHolder>
-      <ActionIconButton kind="transparent" action={resolveNotification} target={target} showTitleInTooltip />
-      <ActionIconButton kind="transparent" action={snoozeNotification} target={target} showTitleInTooltip />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={resolveNotification}
+        target={target}
+        showTitleInTooltip
+      />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={snoozeNotification}
+        target={target}
+        showTitleInTooltip
+      />
     </UIHolder>
   );
 });
@@ -24,4 +36,5 @@ export const RowQuickActions = observer(({ target }: Props) => {
 const UIHolder = styled.div`
   display: flex;
   align-items: center;
+  gap: 4px;
 `;
