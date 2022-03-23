@@ -66,7 +66,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             .map((list, index) => {
               const isActive = getExactIsRouteActive("list", { listId: list.id });
               const count = list.getAllNotifications().length;
-              // A double digit number shortcut doesn't exist in keuboard and  will crash the app! .e.g Meta+`10`
+              // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
               const additionalShortcut: ShortcutDefinition | undefined =
                 index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
               return (
