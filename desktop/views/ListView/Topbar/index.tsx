@@ -7,7 +7,6 @@ import { deleteNotificationList, renameNotificationList } from "@aca/desktop/act
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
-import { TopBarDivider } from "@aca/desktop/ui/systemTopBar/ui";
 import { theme } from "@aca/ui/theme";
 
 import { ListNotificationsSettings } from "./NotificationsSettings";
@@ -19,20 +18,16 @@ interface Props {
 export const ListViewTopBar = observer(({ list }: Props) => {
   return (
     <SystemTopBar
-      navigationItems={<></>}
+      navigationItems={<TopBarActionButton action={forceNotificationsSync} />}
       titleNode={<UITitle>{list?.name}</UITitle>}
       targetActionItems={
-        <>
-          {list?.listEntity && (
-            <>
-              <ListNotificationsSettings list={list.listEntity} />
-              <TopBarActionButton action={renameNotificationList} />
-              <TopBarActionButton action={deleteNotificationList} />
-              <TopBarDivider />
-            </>
-          )}
-          <TopBarActionButton action={forceNotificationsSync} />
-        </>
+        list?.listEntity && (
+          <>
+            <ListNotificationsSettings list={list.listEntity} />
+            <TopBarActionButton action={renameNotificationList} />
+            <TopBarActionButton action={deleteNotificationList} />
+          </>
+        )
       }
     />
   );
