@@ -7,6 +7,7 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { checkAccessToInternet } from "./utils/internet";
 import { getMainWindow } from "./windows/mainWindow";
 import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
@@ -14,6 +15,13 @@ const log = makeLogger("AutoUpdater");
 
 const checkForUpdates = createSharedPromise(async () => {
   log.info("Checking for update");
+  const hasAccessToInternet = await checkAccessToInternet();
+
+  if (!hasAccessToInternet) {
+    log.info("Skipping check - no internet access");
+    return null;
+  }
+
   const result = await autoUpdater.checkForUpdates();
   return result;
 });
@@ -47,6 +55,13 @@ export function setupAutoUpdater() {
   });
 
   autoUpdater.on("error", (error) => {
+    const knownErrors = ["net::ERR_CONNECTION_RESET"];
+
+    if (error?.message && knownErrors.includes(error.message)) {
+      log.info(`Auto updater failed with known error`, error.message);
+      return;
+    }
+
     // ignore isDev if ELECTRON_IS_DEV=0 (we use this for e2e tests)
     if (!isDev && process.env.ELECTRON_IS_DEV !== "0") {
       dialog.showErrorBox("There was a problem updating the application", `${error}`);
@@ -68,6 +83,14 @@ export function setupAutoUpdater() {
   checkForUpdatesRequest.handle(async () => {
     try {
       const checkResult = await checkForUpdates();
+
+      if (checkResult === null) {
+        dialog.showMessageBox(getMainWindow(), {
+          message: "Did not check app updates",
+          detail: `Seems you have no access to the internet`,
+        });
+        return;
+      }
 
       if (!checkResult.downloadPromise) {
         dialog.showMessageBox(getMainWindow(), { message: "App is up to date" });
