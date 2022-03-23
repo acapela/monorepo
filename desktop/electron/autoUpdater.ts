@@ -55,9 +55,15 @@ export function setupAutoUpdater() {
   });
 
   autoUpdater.on("error", (error) => {
-    const knownErrors = ["net::ERR_CONNECTION_RESET"];
+    const knownErrors = ["net::ERR_CONNECTION_RESET", "HttpError: 404"];
 
-    if (error?.message && knownErrors.includes(error.message)) {
+    const errorMessage = `${error}`;
+
+    const isIgnoredError = knownErrors.some((knownError) => {
+      errorMessage.includes(knownError);
+    });
+
+    if (isIgnoredError) {
       log.info(`Auto updater failed with known error`, error.message);
       return;
     }
