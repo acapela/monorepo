@@ -22,7 +22,7 @@ export function SystemTopBar({ navigationItems, targetActionItems, titleNode, is
   });
 
   return (
-    <UIBar key={`${isFullWidth}`} ref={barRef} $isFullwidth={isFullWidth}>
+    <UIBar ref={barRef} $isFullwidth={isFullWidth}>
       <UIButtons>{navigationItems}</UIButtons>
       <UITitle>{titleNode}</UITitle>
       <UIRightButtons>{targetActionItems}</UIRightButtons>
