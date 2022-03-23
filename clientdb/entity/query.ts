@@ -42,6 +42,8 @@ export type EntityFilterInputByDefinition<Def> = Def extends EntityDefinition<in
   ? EntityFilterInput<D, C>
   : never;
 
+export type EntityQueryByDefinition<Def> = Def extends EntityDefinition<infer D, infer C> ? EntityQuery<D, C> : never;
+
 export function resolveSortInput<Data, Connections>(
   sort?: EntityQuerySortInput<Data, Connections>
 ): EntityQuerySortConfig<Data, Connections> | null {
