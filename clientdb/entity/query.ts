@@ -220,7 +220,7 @@ export function createEntityQuery<Data, Connections>(
   );
 
   const getById = cachedComputed(
-    (id: string) => {
+    function getById(id: string) {
       return byIdMapComputed.get()[id] ?? null;
     },
     { name: `${queryKeyBase}.getById` }

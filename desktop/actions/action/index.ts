@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import { cachedComputed } from "@aca/clientdb";
 import { MaybePromise } from "@aca/shared/promises";
 import { MaybeCleanup } from "@aca/shared/types";
 import { AnalyticsEventInput, resolveAnalyticsEventInput } from "@aca/shared/types/analytics";
@@ -47,7 +48,7 @@ export interface ActionData extends ActionCreateInput {
 /**
  * Some action fields might be functions that depend on context - this will resolve final data providing some specific context.
  */
-export function resolveActionData(action: ActionData, context: ActionContext) {
+export const resolveActionData = cachedComputed(function resolveActionData(action: ActionData, context: ActionContext) {
   return {
     ...action,
     name: resolveActionDataThunk(action.name, context),
@@ -65,7 +66,7 @@ export function resolveActionData(action: ActionData, context: ActionContext) {
       return resolveAnalyticsEventInput(eventInput);
     },
   };
-}
+});
 
 /**
  * Helper that also resolves action data, but requiring target to be provided instead of full context.
@@ -89,9 +90,9 @@ export function defineAction(input: ActionCreateInput): ActionData {
   const action: ActionData = {
     id: getUUID(),
     isAction: actionSymbol,
-    canApply: () => true,
-    keywords(context) {
-      const keywords = resolvedRawKeywords(context);
+    ...input,
+    keywords: cachedComputed(function actionKeywords(context) {
+      const keywords = [...resolvedRawKeywords(context)];
 
       const supplementaryLabel = resolveActionDataThunk(input.supplementaryLabel, context);
 
@@ -106,8 +107,12 @@ export function defineAction(input: ActionCreateInput): ActionData {
       }
 
       return keywords;
-    },
-    ...input,
+    }),
+    canApply: cachedComputed(function actionCanApply(context) {
+      if (!input.canApply) return true;
+
+      return input.canApply(context);
+    }),
   };
 
   return action;
@@ -125,10 +130,13 @@ export function getIsAction(input: unknown): input is ActionData {
  * Some params of action can be either value of function of context => value. This is helper
  * that resolves this thunk into an actual value.
  */
-export function resolveActionDataThunk<T>(thunk: ActionDataThunk<T>, context: ActionContext): T {
+export const resolveActionDataThunk = cachedComputed(function resolveActionDataThunk<T>(
+  thunk: ActionDataThunk<T>,
+  context: ActionContext
+): T {
   if (typeof thunk === "function") {
     return (thunk as ActionContextCallback<T>)(context);
   }
 
   return thunk;
-}
+});

@@ -83,3 +83,11 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
   return { get, has };
 }
+
+export function deepMemoize<A extends unknown[], R>(callback: (...args: A) => R, options?: Options) {
+  const deepMap = createDeepMap<R>(options);
+
+  return function getMemoized(...args: A): R {
+    return deepMap.get(args, () => callback(...args));
+  };
+}

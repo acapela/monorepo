@@ -3,6 +3,7 @@ import { IComputedValueOptions, Reaction, createAtom } from "mobx";
 import { IS_DEV } from "@aca/shared/dev";
 import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
+import { SECOND } from "@aca/shared/time";
 
 import { createBiddableTimeout } from "./biddableTimeout";
 
@@ -10,8 +11,6 @@ export type LazyComputed<T> = {
   get(): T;
   dispose(): void;
 };
-
-const SECOND = 1000;
 
 export const KEEP_ALIVE_TIME_AFTER_UNOBSERVED = 15 * SECOND;
 
@@ -40,7 +39,6 @@ const namesMap = new Map<string, number>();
  */
 export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedComputedOptions<T> = {}): LazyComputed<T> {
   const { name = "LazyComputed", equals, debugId } = options;
-
   const log = debugId ? createLogger(`Cached Computed - ${debugId}`, !!debugId) : undefined;
 
   log?.(`Creating`);

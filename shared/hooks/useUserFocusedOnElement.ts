@@ -2,6 +2,7 @@ import { RefObject, useEffect } from "react";
 
 import { createDocumentEvent, createElementEvent } from "@aca/shared/domEvents";
 
+import { createLazyChangeCallback } from "../callbacks/lazyChangeCallback";
 import { createCleanupObject } from "../cleanup";
 
 /**
@@ -38,16 +39,27 @@ export function useUserFocusedOnElement(
 
     const cleanup = createCleanupObject();
 
+    /**
+     * Let's not spam focusCallback on each mouse move
+     */
+    const handleFocusSignal = createLazyChangeCallback((isFocused: boolean) => {
+      if (isFocused) {
+        focusCallback?.();
+      } else {
+        blurCallback?.();
+      }
+    });
+
     cleanup.next = createElementEvent(element, "mouseenter", () => {
       if (!getIsUserEnterOrLeaveEvent()) {
         return;
       }
 
-      focusCallback?.();
+      handleFocusSignal(true);
     });
 
     cleanup.next = createElementEvent(element, "mousemove", () => {
-      focusCallback?.();
+      handleFocusSignal(true);
     });
 
     cleanup.next = createElementEvent(element, "mouseleave", () => {
@@ -55,7 +67,7 @@ export function useUserFocusedOnElement(
         return;
       }
 
-      blurCallback?.();
+      handleFocusSignal(false);
     });
 
     return cleanup.clean;

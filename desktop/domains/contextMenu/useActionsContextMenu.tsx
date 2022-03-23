@@ -1,5 +1,5 @@
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
-import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
+import { ActionContext, useActionContext } from "@aca/desktop/actions/action/context";
 import { resolveGroupData } from "@aca/desktop/actions/action/group";
 import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
 
@@ -56,7 +56,7 @@ export function useActionsContextMenu(
   actions: ActionData[] | ActionData[][],
   target?: unknown
 ) {
-  const context = createActionContext(target);
+  const context = useActionContext(target);
 
   const equalActions = useEqualRef(actions);
 

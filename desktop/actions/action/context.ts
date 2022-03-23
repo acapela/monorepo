@@ -1,12 +1,15 @@
 import assert from "assert";
 
 import { makeObservable, observable } from "mobx";
+import { useMemo } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
+import { deepMemoize } from "@aca/shared/deepMap";
+import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";
@@ -16,7 +19,7 @@ export type ActionContextCallback<T> = (context: ActionContext) => T;
 
 export type ActionDataThunk<T> = T | ActionContextCallback<T>;
 
-const routeTargets = cachedComputed((): unknown[] => {
+const routeTargets = cachedComputed(function routeTargets(): unknown[] {
   const focusRoute = getRouteParamsIfActive("focus");
 
   if (focusRoute) {
@@ -45,10 +48,11 @@ export function getImplicitTargets() {
   return [uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
 }
 
-export function createActionContext(
+export const createActionContext = deepMemoize(function createActionContext(
   forcedTarget?: unknown,
-  { isContextual = false, searchPlaceholder = "Find anything...", initialSearchValue = "" }: ActionContextConfig = {}
+  options?: ActionContextConfig
 ) {
+  const { isContextual = false, searchPlaceholder = "Find anything...", initialSearchValue = "" } = options ?? {};
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
     const targets = [forcedTarget, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
@@ -80,6 +84,16 @@ export function createActionContext(
     },
     { searchKeyword: observable }
   );
+
+  return context;
+});
+
+export function useActionContext(forcedTarget?: unknown, options?: ActionContextConfig) {
+  const equalOptions = useEqualRef(options);
+
+  const context = useMemo(() => {
+    return createActionContext(forcedTarget, equalOptions);
+  }, [forcedTarget, equalOptions]);
 
   return context;
 }
