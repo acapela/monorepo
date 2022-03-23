@@ -9,7 +9,6 @@ import {
   refreshNotificationPreview,
 } from "@aca/desktop/actions/focus";
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
-import { toggleFocusModeStats } from "@aca/desktop/actions/settings";
 import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -34,8 +33,6 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
           <TopBarDivider />
           <TopBarActionButton action={goToPreviousNotification} />
           <TopBarActionButton action={goToNextNotification} />
-          <TopBarDivider />
-          <TopBarActionButton action={toggleFocusModeStats} />
         </>
       }
       targetActionItems={

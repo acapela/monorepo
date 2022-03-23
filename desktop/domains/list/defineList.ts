@@ -4,7 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, NotificationsQuery, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
@@ -17,7 +17,7 @@ interface DefineListConfig {
   icon?: ReactNode;
   isCustom?: boolean;
   filter?: EntityFilterInputByDefinition<typeof notificationEntity>;
-  getNotifications?: () => NotificationEntity[];
+  query?: NotificationsQuery;
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
 }
@@ -31,29 +31,30 @@ export function defineNotificationsList({
   name,
   isCustom,
   filter,
-  getNotifications,
+  query,
   listEntity,
   icon,
   dontShowCount = false,
 }: DefineListConfig) {
-  assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
+  assert(filter || query, "Defined list has to either include filter or getNotifications handler");
 
-  const getRawNotificationsList = cachedComputed(() => {
+  const getRawNotificationsQuery = cachedComputed(() => {
     const db = getDb();
 
     if (filter) {
-      return db.notification.query(filter).all;
+      return db.notification.query(filter);
     }
 
-    if (getNotifications) {
-      return getNotifications();
+    if (query) {
+      return query;
     }
 
-    return [];
+    throw 2;
   });
 
   const getAllGroupedNotifications = cachedComputed(() => {
-    return groupNotifications(getRawNotificationsList());
+    const groups = groupNotifications(getRawNotificationsQuery().all);
+    return groups;
   });
 
   const getFlattenedNotifications = cachedComputed(() =>

@@ -4,7 +4,6 @@ import styled from "styled-components";
 
 import { forceNotificationsSync } from "@aca/desktop/actions/app";
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
-import { findNotification } from "@aca/desktop/actions/search";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
@@ -21,7 +20,6 @@ export const ListViewTopBar = observer(({ list }: Props) => {
     <SystemTopBar
       navigationItems={
         <>
-          <TopBarActionButton action={findNotification} />
           <TopBarActionButton action={forceNotificationsSync} />
         </>
       }
