@@ -1,9 +1,9 @@
 import React from "react";
 
-import { requestPreviewFocus } from "@aca/desktop/bridge/preview";
+import { requestForceReloadPreview, requestPreviewFocus } from "@aca/desktop/bridge/preview";
 import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
@@ -25,6 +25,22 @@ export const exitFocusMode = defineAction({
     if (notification) {
       uiStore.focusedTarget = notification;
     }
+  },
+});
+
+export const refreshNotificationPreview = defineAction({
+  name: (ctx) => (ctx.isContextual ? "Refresh" : "Refresh notification preview"),
+  group: currentNotificationActionsGroup,
+  icon: <IconRefreshCcw />,
+  keywords: ["reload"],
+  shortcut: ["Mod", "R"],
+  canApply: () => getIsRouteActive("focus"),
+  async handler(context) {
+    const notification = context.view(focusPageView)?.notification;
+
+    if (!notification) return;
+
+    await requestForceReloadPreview({ url: notification.url });
   },
 });
 

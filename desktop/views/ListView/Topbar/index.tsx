@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { forceNotificationsSync } from "@aca/desktop/actions/app";
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { findNotification } from "@aca/desktop/actions/search";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
@@ -21,6 +22,7 @@ export const ListViewTopBar = observer(({ list }: Props) => {
       navigationItems={
         <>
           <TopBarActionButton action={findNotification} />
+          <TopBarActionButton action={forceNotificationsSync} />
         </>
       }
       titleNode={<UITitle>{list?.name}</UITitle>}

@@ -23,6 +23,10 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
 
   if (currentLoadState === "loading" || currentLoadState === "ready") return;
 
+  return await forceLoadPreview(browserView, url);
+}
+
+export async function forceLoadPreview(browserView: BrowserView, url: string) {
   try {
     preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
     await loadURLWithFilters(browserView, url);

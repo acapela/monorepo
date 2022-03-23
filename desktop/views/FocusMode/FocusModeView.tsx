@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { exitFocusMode } from "@aca/desktop/actions/focus";
+import { exitFocusMode, refreshNotificationPreview } from "@aca/desktop/actions/focus";
 import {
   copyNotificationLink,
   openNotificationInApp,
@@ -42,6 +42,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
       <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={snoozeNotification} path={["Notification"]} target={notification} />
       <SystemMenuGroup>
+        <ActionSystemMenuItem action={refreshNotificationPreview} path={["Notification"]} target={notification} />
         <ActionSystemMenuItem action={openNotificationInApp} path={["Notification"]} target={notification} />
         <ActionSystemMenuItem action={copyNotificationLink} path={["Notification"]} target={notification} />
         <ActionSystemMenuItem action={exitFocusMode} path={["View"]} target={notification} group="foo" />

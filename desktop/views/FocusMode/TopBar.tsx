@@ -4,9 +4,9 @@ import styled from "styled-components";
 
 import {
   exitFocusMode,
-  focusOnNotificationPreview,
   goToNextNotification,
   goToPreviousNotification,
+  refreshNotificationPreview,
 } from "@aca/desktop/actions/focus";
 import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
 import { toggleFocusModeStats } from "@aca/desktop/actions/settings";
@@ -34,6 +34,8 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
           <TopBarDivider />
           <TopBarActionButton action={goToPreviousNotification} />
           <TopBarActionButton action={goToNextNotification} />
+          <TopBarDivider />
+          <TopBarActionButton action={toggleFocusModeStats} />
         </>
       }
       targetActionItems={
@@ -42,9 +44,9 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
           <TopBarActionButton action={snoozeNotification} />
 
           <TopBarDivider />
-          <TopBarActionButton action={focusOnNotificationPreview} />
+          <TopBarActionButton action={refreshNotificationPreview} />
+
           <TopBarActionButton action={openNotificationInApp} />
-          <TopBarActionButton action={toggleFocusModeStats} />
         </>
       }
       titleNode={
