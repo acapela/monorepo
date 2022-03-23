@@ -1,0 +1,3 @@
+table:
+  name: github_installation
+  schema: public

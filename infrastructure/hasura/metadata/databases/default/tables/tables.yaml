@@ -1,6 +1,8 @@
 - "!include public_account.yaml"
 - "!include public_atlassian_refresh_token_expiry.yaml"
 - "!include public_atlassian_site.yaml"
+- "!include public_github_account.yaml"
+- "!include public_github_installation.yaml"
 - "!include public_jira_account.yaml"
 - "!include public_jira_webhook.yaml"
 - "!include public_linear_issue.yaml"
