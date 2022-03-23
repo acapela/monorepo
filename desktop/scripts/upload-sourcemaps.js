@@ -24,6 +24,18 @@ async function main() {
       ["releases", "files", version, "upload-sourcemaps", `./dist-${env}`, "--url-prefix", `app:///dist-${env}`],
       true
     );
+    await cli.execute(
+      [
+        "releases",
+        "files",
+        version,
+        "upload-sourcemaps",
+        `./dist-${env}`,
+        "--url-prefix",
+        `/Applications/${env === "production" ? "Acapela" : "Alepaca"}.app/Contents/Resources/app.asar/dist-${env}`,
+      ],
+      true
+    );
   }
 
   console.info("finalizing release...");
