@@ -26,6 +26,7 @@ import type {
   GetSpacesResult,
   NotificationPayload,
   PageBlockValue,
+  UserMentionedActivityValue,
 } from "./types";
 
 const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
@@ -350,15 +351,19 @@ function getNotificationProperties(
   | undefined {
   const pageId = notification.navigable_block_id;
 
-  if (!pageId) return;
+  if (!pageId) {
+    return;
+  }
 
   if (notification.type === "user-mentioned") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">).value;
+    const activity: UserMentionedActivityValue | undefined = (
+      recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">
+    ).value;
     const url =
       notionURL +
       "/" +
       stripDashes(pageId) +
-      (pageId !== activity.mentioned_block_id ? `#${stripDashes(activity.mentioned_block_id)}` : "");
+      (pageId !== activity?.mentioned_block_id ? `#${stripDashes(activity?.mentioned_block_id)}` : "");
 
     return {
       type: "notification_notion_user_mentioned",
@@ -414,7 +419,7 @@ function isKnownAndUnsupported(
 ): boolean {
   if (notification.type === "user-invited") {
     const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">)?.value;
-    if (activity.parent_table === "space") {
+    if (activity?.parent_table === "space") {
       return true;
     }
   }
