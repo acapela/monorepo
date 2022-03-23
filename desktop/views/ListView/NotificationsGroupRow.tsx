@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { uniq } from "lodash";
 import { action } from "mobx";
 import React, { useEffect, useMemo, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
@@ -201,6 +201,32 @@ const UICountIndicator = styled.div`
   align-items: center;
   justify-content: center;
   line-height: 1;
+
+  ${(props) => {
+    const children = props.children;
+
+    if (typeof children !== "number" && typeof children !== "string") {
+      return null;
+    }
+
+    const digitAsString = `${children}`;
+
+    const digitsCount = digitAsString.length;
+
+    if (digitsCount <= 1) return;
+
+    if (digitsCount === 2) {
+      return css`
+        font-size: 0.8em;
+        font-weight: bold;
+      `;
+    }
+
+    return css`
+      font-size: 0.66em;
+      font-weight: bolder;
+    `;
+  }}
 `;
 
 const UIToggleIconAnimator = styled(motion.div)`
