@@ -80,9 +80,7 @@ const createNotificationsListFromListEntity = memoize((listEntity: NotificationL
     name: listEntity.title,
     listEntity: listEntity,
     isCustom: true,
-    getNotifications() {
-      return listEntity.inboxNotifications.all;
-    },
+    query: listEntity.inboxNotifications,
   });
 });
 

@@ -32,15 +32,17 @@ type AnyMap = Map<unknown, unknown>;
  */
 export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
   const root = new Map<unknown, unknown>();
-  root.set(equalReuserSymbol, createReuseValueGroup());
+  if (checkEquality) {
+    root.set(equalReuserSymbol, createReuseValueGroup());
+  }
 
   function getFinalTargetMap(path: unknown[]) {
     let currentTarget = root;
-    const currentReuser = currentTarget.get(equalReuserSymbol) as EqualValueReuser;
 
     for (let part of path) {
       if (part === undefined) part = undefinedSymbol;
       if (checkEquality) {
+        const currentReuser = currentTarget.get(equalReuserSymbol) as EqualValueReuser;
         part = currentReuser(part);
       }
 
@@ -51,7 +53,9 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
       const nestedMap = new Map();
 
-      nestedMap.set(equalReuserSymbol, createReuseValueGroup());
+      if (checkEquality) {
+        nestedMap.set(equalReuserSymbol, createReuseValueGroup());
+      }
 
       currentTarget.set(part, nestedMap);
 

@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
+import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -192,3 +193,5 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   });
 
 export type NotificationEntity = EntityByDefinition<typeof notificationEntity>;
+
+export type NotificationsQuery = EntityQueryByDefinition<typeof notificationEntity>;
