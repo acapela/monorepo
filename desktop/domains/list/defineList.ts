@@ -9,7 +9,6 @@ import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domain
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
-import { measureTime } from "@aca/shared/dev";
 import { None } from "@aca/shared/none";
 
 interface DefineListConfig {
@@ -54,9 +53,7 @@ export function defineNotificationsList({
   });
 
   const getAllGroupedNotifications = cachedComputed(() => {
-    const end = measureTime("groups");
     const groups = groupNotifications(getRawNotificationsQuery().all);
-    end();
     return groups;
   });
 
