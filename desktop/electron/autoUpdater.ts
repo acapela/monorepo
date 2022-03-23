@@ -7,6 +7,7 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { checkAccessToInternet } from "./utils/internet";
 import { getMainWindow } from "./windows/mainWindow";
 import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
@@ -14,6 +15,13 @@ const log = makeLogger("AutoUpdater");
 
 const checkForUpdates = createSharedPromise(async () => {
   log.info("Checking for update");
+  const hasAccessToInternet = await checkAccessToInternet();
+
+  if (!hasAccessToInternet) {
+    log.info("Skipping check - no internet access");
+    return null;
+  }
+
   const result = await autoUpdater.checkForUpdates();
   return result;
 });
@@ -68,6 +76,14 @@ export function setupAutoUpdater() {
   checkForUpdatesRequest.handle(async () => {
     try {
       const checkResult = await checkForUpdates();
+
+      if (checkResult === null) {
+        dialog.showMessageBox(getMainWindow(), {
+          message: "Did not check app updates",
+          detail: `Seems you have no access to the internet`,
+        });
+        return;
+      }
 
       if (!checkResult.downloadPromise) {
         dialog.showMessageBox(getMainWindow(), { message: "App is up to date" });
