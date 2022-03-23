@@ -85,13 +85,10 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
-        {!isFocused && (
-          <>
-            {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
+        {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
 
-            <NotificationDate notification={notification} />
-          </>
-        )}
+        <NotificationDate notification={notification} />
+
         {isFocused && <RowQuickActions target={notification} />}
       </UIHolder>
     </ActionTrigger>

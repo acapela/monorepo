@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { resolveNotification } from "@aca/desktop/actions/notification";
-import { snoozeNotification } from "@aca/desktop/actions/snooze";
+import { resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
+import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
@@ -21,6 +21,7 @@ export const RowQuickActions = observer(({ target }: Props) => {
         action={resolveNotification}
         target={target}
         showTitleInTooltip
+        notApplicableMode="hide"
       />
       <ActionIconButton
         kind="transparent"
@@ -28,6 +29,23 @@ export const RowQuickActions = observer(({ target }: Props) => {
         action={snoozeNotification}
         target={target}
         showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={unsnoozeNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={unresolveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
       />
     </UIHolder>
   );

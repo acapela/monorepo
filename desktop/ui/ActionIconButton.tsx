@@ -8,7 +8,9 @@ import { IconButton } from "@aca/ui/buttons/IconButton";
 import { ButtonKind, ButtonSize } from "@aca/ui/buttons/variants";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 
-interface Props {
+import { SharedActionButtonProps } from "./actionShared";
+
+interface Props extends SharedActionButtonProps {
   action: ActionData;
   target?: unknown;
   hideShortcutTooltip?: boolean;
@@ -26,18 +28,19 @@ export const ActionIconButton = styledObserver(function ActionIconButton({
   kind,
   size,
   className,
+  notApplicableMode = "disable",
 }: Props) {
   const context = createActionContext(target);
   const { icon, canApply, shortcut, name } = resolveActionData(action, context);
 
-  const isDisabled = !canApply(context);
+  const isApplicable = canApply(context);
 
   function getTooltip() {
     const parts: string[] = [];
 
     if (showTitleInTooltip) parts.push(name);
 
-    if (!hideShortcutTooltip && shortcut && !isDisabled) {
+    if (!hideShortcutTooltip && shortcut && !isApplicable) {
       if (showTitleInTooltip) {
         parts.push(`(${describeShortcut(shortcut)})`);
       } else {
@@ -49,6 +52,10 @@ export const ActionIconButton = styledObserver(function ActionIconButton({
 
     return parts.join(" ");
   }
+
+  if (!isApplicable && notApplicableMode === "hide") return null;
+
+  const isDisabled = notApplicableMode === "disable" && !isApplicable;
 
   return (
     <IconButton
