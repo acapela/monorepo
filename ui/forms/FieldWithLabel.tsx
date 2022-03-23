@@ -22,14 +22,38 @@ export interface Props {
   className?: string;
 }
 export const FieldWithLabel = styledForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { className, pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input", hasError = false },
+  {
+    className,
+    pushLabel,
+    icon,
+    label,
+    children,
+    onClick,
+    indicateDropdown,
+    cursorType = "input",
+    hasError = false,
+    isDisabled = false,
+  },
   forwardedRef
 ) {
   const id = useId();
 
+  function handleClick() {
+    if (!isDisabled) {
+      onClick?.();
+    }
+  }
+
   return (
     <LayoutGroup>
-      <UIHolder className={className} onClick={onClick} ref={forwardedRef} cursorType={cursorType} hasError={hasError}>
+      <UIHolder
+        className={className}
+        onClick={handleClick}
+        ref={forwardedRef}
+        $cursorType={cursorType}
+        $hasError={hasError}
+        $isDisabled={isDisabled}
+      >
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -50,24 +74,30 @@ export const FieldWithLabel = styledForwardRef<HTMLDivElement, Props>(function F
           </UIFlyingOverlay>
           {children}
         </UIContentHolder>
-        {indicateDropdown && <UIDropdownIcon />}
+        {indicateDropdown && !isDisabled && <UIDropdownIcon />}
       </UIHolder>
     </LayoutGroup>
   );
 })``;
 
-const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
+const UIHolder = styled.div<{ $cursorType: CursorType; $hasError: boolean; $isDisabled: boolean }>`
   position: relative;
   display: flex;
   ${theme.box.control.regular.padding.size.radius};
 
   width: 100%;
 
-  ${theme.transitions.hover()}
+  ${(props) => {
+    if (!props.$isDisabled) {
+      return css`
+        ${theme.transitions.hover()}
+        ${theme.colors.layout.background.interactive};
+      `;
+    }
+  }}
 
-  ${theme.colors.layout.background.interactive};
   ${(props) =>
-    props.hasError
+    props.$hasError
       ? css`
           border: 1px solid ${theme.colors.status.danger.value};
         `
@@ -79,9 +109,14 @@ const UIHolder = styled.div<{ cursorType: CursorType; hasError: boolean }>`
   outline: none;
 
   ${(props) => {
-    const { cursorType } = props;
+    const { $cursorType, $isDisabled } = props;
 
-    if (cursorType === "input")
+    if ($isDisabled)
+      return css`
+        ${theme.colors.layout.backgroundAccent.asBgWithReadableText}
+      `;
+
+    if ($cursorType === "input")
       return css`
         cursor: text;
       `;
