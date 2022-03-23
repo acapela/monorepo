@@ -1,4 +1,3 @@
-import { memoize } from "lodash";
 import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
@@ -7,6 +6,7 @@ import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { weakMemoize } from "@aca/shared/deepMap";
 import { typedKeys } from "@aca/shared/object";
 import { IconClock, IconListUnordered4 } from "@aca/ui/icons";
 
@@ -74,7 +74,7 @@ export const snoozedList = defineNotificationsList({
   filter: { isSnoozed: true },
 });
 
-const createNotificationsListFromListEntity = memoize((listEntity: NotificationListEntity) => {
+const createNotificationsListFromListEntity = weakMemoize((listEntity: NotificationListEntity) => {
   return defineNotificationsList({
     id: listEntity.id,
     name: listEntity.title,

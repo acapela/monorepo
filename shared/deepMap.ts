@@ -1,8 +1,8 @@
 import { EqualValueReuser, createReuseValueGroup } from "./createEqualReuser";
 
-const targetSymbol = Symbol("target");
-const equalReuserSymbol = Symbol("equalReuserSymbol");
-const undefinedSymbol = Symbol("undefined");
+const targetSymbol = { symbol: Symbol("target") };
+const equalReuserSymbol = { symbol: Symbol("equalReuserSymbol") };
+const undefinedSymbol = { symbol: Symbol("undefined") };
 
 interface Options {
   /**
@@ -14,6 +14,7 @@ interface Options {
    * Both would return the same ref value, even tho those are identical, but different ref objects as input
    */
   checkEquality?: boolean;
+  useWeakMap?: boolean;
 }
 
 type AnyMap = Map<unknown, unknown>;
@@ -30,8 +31,10 @@ type AnyMap = Map<unknown, unknown>;
  *   return 42;
  * }); // 42
  */
-export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
-  const root = new Map<unknown, unknown>();
+export function createDeepMap<V>({ checkEquality = false, useWeakMap = false }: Options = {}) {
+  const MapToUse = useWeakMap ? WeakMap : Map;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const root = new MapToUse<any, unknown>();
   if (checkEquality) {
     root.set(equalReuserSymbol, createReuseValueGroup());
   }
@@ -51,7 +54,7 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
         continue;
       }
 
-      const nestedMap = new Map();
+      const nestedMap = new MapToUse();
 
       if (checkEquality) {
         nestedMap.set(equalReuserSymbol, createReuseValueGroup());
@@ -93,6 +96,14 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
  */
 export function deepMemoize<A extends unknown[], R>(callback: (...args: A) => R, options?: Options) {
   const deepMap = createDeepMap<R>(options);
+
+  return function getMemoized(...args: A): R {
+    return deepMap.get(args, () => callback(...args));
+  };
+}
+
+export function weakMemoize<A extends object[], R>(callback: (...args: A) => R) {
+  const deepMap = createDeepMap<R>({ useWeakMap: true });
 
   return function getMemoized(...args: A): R {
     return deepMap.get(args, () => callback(...args));
