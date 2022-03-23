@@ -73,6 +73,7 @@ const UITitle = styled.div`
   flex-grow: 2;
   display: flex;
   justify-content: center;
+  padding: 0 16px;
   ${theme.common.ellipsisText}
 `;
 
