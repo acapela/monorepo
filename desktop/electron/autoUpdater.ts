@@ -55,6 +55,13 @@ export function setupAutoUpdater() {
   });
 
   autoUpdater.on("error", (error) => {
+    const knownErrors = ["net::ERR_CONNECTION_RESET"];
+
+    if (error?.message && knownErrors.includes(error.message)) {
+      log.info(`Auto updater failed with known error`, error.message);
+      return;
+    }
+
     // ignore isDev if ELECTRON_IS_DEV=0 (we use this for e2e tests)
     if (!isDev && process.env.ELECTRON_IS_DEV !== "0") {
       dialog.showErrorBox("There was a problem updating the application", `${error}`);
