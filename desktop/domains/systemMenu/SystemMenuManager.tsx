@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 
+import { forceNotificationsSync } from "@aca/desktop/actions/app";
 import { logOut } from "@aca/desktop/actions/auth";
 import { goToSettings } from "@aca/desktop/actions/navigation";
 import { toggleFocusModeStats, toggleShowShortcutsBar } from "@aca/desktop/actions/settings";
@@ -24,6 +25,7 @@ export const SystemMenuManager = observer(function SystemMenuManager() {
     <>
       <ActionSystemMenuItem action={toggleShowShortcutsBar} path={["View"]} />
       <ActionSystemMenuItem action={toggleFocusModeStats} path={["View"]} />
+      <ActionSystemMenuItem action={forceNotificationsSync} path={["View"]} />
       <ActionSystemMenuItem action={logOut} path={[appName, "Account"]} />
       <ActionSystemMenuItem action={goToSettings} path={[appName, "Preferences"]} />
       {typedKeys(THEME_LABELS).map((themeValue) => {

@@ -20,8 +20,9 @@ export function SystemTopBar({ navigationItems, targetActionItems, titleNode, is
   useDoubleClick(barRef, () => {
     toggleMaximizeRequest();
   });
+
   return (
-    <UIBar ref={barRef} $isFullwidth={isFullWidth}>
+    <UIBar key={`${isFullWidth}`} ref={barRef} $isFullwidth={isFullWidth}>
       <UIButtons>{navigationItems}</UIButtons>
       <UITitle>{titleNode}</UITitle>
       <UIRightButtons>{targetActionItems}</UIRightButtons>
@@ -38,13 +39,17 @@ const UIBar = styled.div<{ $isFullwidth: boolean }>`
   padding: 0 16px;
   ${theme.colors.layout.background.asBgWithReadableText}
 
-  ${(props) =>
-    props.$isFullwidth &&
-    css`
-      body:not(.fullscreen) & {
+  ${(props) => {
+    if (props.$isFullwidth) {
+      return css`
         padding-left: ${TRAFFIC_LIGHTS_NEEDED_SPACE}px;
-      }
-    `}
+      `;
+    }
+  }}
+
+  body.fullscreen & {
+    padding-left: 16px;
+  }
 
   -webkit-app-region: drag;
 
@@ -68,6 +73,7 @@ const UITitle = styled.div`
   flex-grow: 2;
   display: flex;
   justify-content: center;
+  padding: 0 16px;
   ${theme.common.ellipsisText}
 `;
 

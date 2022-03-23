@@ -1,5 +1,6 @@
 import {
   requestAttachPreview,
+  requestForceReloadPreview,
   requestPreviewFocus,
   requestPreviewPreload,
   requestSetPreviewOnTopState,
@@ -11,7 +12,7 @@ import { assert } from "@aca/shared/assert";
 
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
-import { loadPreviewIfNeeded } from "./load";
+import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
 import { setViewPosition } from "./position";
 
 const log = makeLogger("BrowserView");
@@ -67,6 +68,14 @@ export function initPreviewHandler() {
     if (!browserView) return;
 
     browserView.webContents?.focus();
+  });
+
+  requestForceReloadPreview.handle(async ({ url }) => {
+    const browserView = requestPreviewBrowserView.getExistingOnly(url);
+
+    if (!browserView) return;
+
+    await forceLoadPreview(browserView, url);
   });
 
   requestSetPreviewOnTopState.handle(async ({ url, state }, event) => {

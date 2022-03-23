@@ -24,6 +24,8 @@ interface RequestSetPreviewOnTopState {
 export const requestSetPreviewOnTopState =
   createInvokeBridge<RequestSetPreviewOnTopState>("requestSetPreviewOnTopState");
 
+export const requestForceReloadPreview = createInvokeBridge<PreviewGenericData>("requestForceReloadPreview");
+
 export const updatePreviewPosition =
   createInvokeWithCleanupBridge<{ url: string; position: PreviewPosition }>("update-preview-position");
 

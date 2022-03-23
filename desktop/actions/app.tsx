@@ -7,8 +7,10 @@ import {
   toggleFullscreenRequest,
   toggleMaximizeRequest,
 } from "@aca/desktop/bridge/system";
-import { IconArrowsExpand, IconArrowsMove2, IconBox } from "@aca/ui/icons";
+import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw } from "@aca/ui/icons";
 
+import { forceWorkerSyncRun } from "../bridge/apps";
+import { getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -66,5 +68,16 @@ export const showCommandMenu = defineAction({
   icon: <IconBox />,
   handler() {
     //
+  },
+});
+
+export const forceNotificationsSync = defineAction({
+  icon: <IconRefreshCcw />,
+  name: "Sync notifications",
+  shortcut: ["Mod", "R"],
+  canApply: () => getIsRouteActive("list"),
+  group: appActionsGroup,
+  handler() {
+    forceWorkerSyncRun(["notion", "figma"]);
   },
 });
