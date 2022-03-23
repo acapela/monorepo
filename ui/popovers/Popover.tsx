@@ -76,6 +76,8 @@ export const Popover = styled<PopoverProps>(
       throttledUpdate?.();
     });
 
+    if (!anchorElement) return null;
+
     if (isDisabled) return null;
 
     const popoverNode = (

@@ -22,7 +22,7 @@ export const TooltipLabel = styled<TooltipLabelProps>(
   ({ anchorRef, label, isDisabled, shortcut, placement = "top" }) => {
     return (
       <TooltipFlyer anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
-        <UITooltip presenceStyles={POP_PRESENCE_STYLES}>
+        <UITooltip presenceStyles={POP_PRESENCE_STYLES} transition={{ duration: 0.2 }}>
           {label}
           {shortcut && <Shortcut shortcut={shortcut} />}
         </UITooltip>
