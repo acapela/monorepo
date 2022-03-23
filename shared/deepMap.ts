@@ -83,3 +83,14 @@ export function createDeepMap<V>({ checkEquality = false }: Options = {}) {
 
   return { get, has };
 }
+
+/**
+ * Lodash memoize is based on serialization and is only using first arguments as cache keys
+ */
+export function deepMemoize<A extends unknown[], R>(callback: (...args: A) => R, options?: Options) {
+  const deepMap = createDeepMap<R>(options);
+
+  return function getMemoized(...args: A): R {
+    return deepMap.get(args, () => callback(...args));
+  };
+}

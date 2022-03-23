@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
+import { cachedComputed } from "@aca/clientdb";
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
+import { ActionContext } from "@aca/desktop/actions/action/context";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
 import {
   getIsLastArrayElement,
@@ -12,7 +14,7 @@ import {
   getNextItemInArray,
   getPreviousItemInArray,
 } from "@aca/shared/array";
-import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { useFuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 import { isNotNullish } from "@aca/shared/nullish";
 import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
@@ -28,6 +30,14 @@ interface Props {
   session: CommandMenuSession;
   onActionSelected: (action: ActionData) => void;
 }
+
+const getActionSearchTerms = cachedComputed(function getActionSearchTerms(
+  action: ActionData,
+  actionContext: ActionContext
+) {
+  const { name, keywords = [], supplementaryLabel } = resolveActionData(action, actionContext);
+  return [name, supplementaryLabel, ...keywords].filter(isNotNullish);
+});
 
 export const CommandMenuView = observer(function CommandMenuView({ session, onActionSelected }: Props) {
   const [activeAction, setActiveAction] = useState<ActionData | null>(null);
@@ -48,11 +58,10 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
 
   const actionsToAlwaysShow = applicableActions.filter((action) => action.alwaysShowInSearch);
 
-  const actionsToShow = fuzzySearch(
+  const actionsToShow = useFuzzySearch(
     applicableActions,
     (action) => {
-      const { name, keywords = [], supplementaryLabel } = resolveActionData(action, actionContext);
-      return [name, supplementaryLabel, ...keywords].filter(isNotNullish);
+      return getActionSearchTerms(action, actionContext);
     },
     actionContext.searchKeyword
   );

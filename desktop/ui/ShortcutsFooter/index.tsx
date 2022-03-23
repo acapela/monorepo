@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
-import { createActionContext } from "@aca/desktop/actions/action/context";
+import { useActionContext } from "@aca/desktop/actions/action/context";
 import { showCommandMenu } from "@aca/desktop/actions/app";
 import { toggleShowShortcutsBar } from "@aca/desktop/actions/settings";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
@@ -25,11 +25,11 @@ export const ShortcutsFooter = observer(function ShortcutsFooter({ actions, targ
 
   useActionsContextMenu(holderRef, [toggleShowShortcutsBar]);
 
+  const context = useActionContext(target, { isContextual: true });
+
   if (!applicationWideSettingsBridge.get().showShortcutsBar) {
     return null;
   }
-
-  const context = createActionContext(target, { isContextual: true });
 
   const applicableActions = actions.filter((action) => {
     return action.canApply(context);

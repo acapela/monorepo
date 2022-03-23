@@ -5,7 +5,9 @@ import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 
 import { getNotificationTitle } from "./title";
 
-export const getNotificationSearchTerms = cachedComputed((notification: NotificationEntity) => {
+export const getNotificationSearchTerms = cachedComputed(function getNotificationSearchTerms(
+  notification: NotificationEntity
+) {
   const title = getNotificationTitle(notification);
 
   return [title, notification.from];

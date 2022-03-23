@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
-import { createActionContext } from "@aca/desktop/actions/action/context";
+import { useActionContext } from "@aca/desktop/actions/action/context";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { styledObserverForwardRef } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
@@ -25,7 +25,7 @@ export const ActionTrigger = styledObserverForwardRef<HTMLDivElement, Props>(fun
   { action, target, children, className, onMouseEnter, onMouseLeave },
   ref
 ) {
-  const context = createActionContext(target);
+  const context = useActionContext(target);
 
   return (
     <UIHolder

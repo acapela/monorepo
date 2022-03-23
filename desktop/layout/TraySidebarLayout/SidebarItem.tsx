@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
-import { createActionContext } from "@aca/desktop/actions/action/context";
+import { useActionContext } from "@aca/desktop/actions/action/context";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
@@ -31,7 +31,7 @@ export const SidebarItem = observer(function SidebarItem({
   additionalShortcut,
   contextMenuActions = [],
 }: Props) {
-  const context = createActionContext(target, { isContextual: true });
+  const context = useActionContext(target, { isContextual: true });
   const { name, icon = <IconFolder /> } = resolveActionData(action, context);
   const elementRef = useRef<HTMLDivElement>(null);
 

@@ -1,9 +1,10 @@
+import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { NotificationsGroup, getIsNotificationsGroup } from "./group";
 
-export function getNotificationParentGroupInList(
+export const getNotificationParentGroupInList = cachedComputed(function getNotificationParentGroupInList(
   notification: NotificationEntity,
   list: NotificationsList
 ): NotificationsGroup | null {
@@ -12,4 +13,4 @@ export function getNotificationParentGroupInList(
   const groups = groupsList.filter(getIsNotificationsGroup);
 
   return groups.find((group) => group.notifications.includes(notification)) ?? null;
-}
+});

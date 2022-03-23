@@ -1,9 +1,8 @@
 import { requestSetPreviewOnTopState } from "@aca/desktop/bridge/preview";
 import { focusMainViewRequest } from "@aca/desktop/bridge/system";
+import { createLazyChangeCallback } from "@aca/shared/callbacks/lazyChangeCallback";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { createDocumentEvent, createWindowEvent } from "@aca/shared/domEvents";
-
-import { createLazyChangeCallback } from "./utils";
 
 /**
  * This handles putting proper layer of the app on top.
