@@ -1,0 +1,46 @@
+table:
+  name: user_slack_channels_by_team
+  schema: public
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      user_id:
+        _eq: X-Hasura-User-Id
+    columns:
+    - created_at
+    - id
+    - included_channels
+    - slack_workspace_id
+    - updated_at
+    - user_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - id
+    - included_channels
+    - slack_workspace_id
+    - updated_at
+    - user_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - included_channels
+    - updated_at
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
