@@ -32,7 +32,9 @@ async function main() {
         "upload-sourcemaps",
         `./dist-${env}`,
         "--url-prefix",
-        `/Applications/${env === "production" ? "Acapela" : "Alepaca"}.app/Contents/Resources/app.asar/dist-${env}`,
+        `file:///Applications/${
+          env === "production" ? "Acapela" : "Alepaca"
+        }.app/Contents/Resources/app.asar/dist-${env}`,
       ],
       true
     );
