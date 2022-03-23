@@ -13,6 +13,10 @@ import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlack
 import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
+import {
+  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
+  USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
+} from "@aca/shared/slack";
 
 export function findUserForSlackInstallation(slackUserId: string) {
   try {
@@ -97,6 +101,50 @@ async function checkIsInvolvedInThread(
   return Boolean(await db.slack_thread_involed_user.findFirst({ where: { user_id: slackUserId, thread_ts: ts } }));
 }
 
+async function isChannelIncluded(user: User, message: GenericMessageEvent) {
+  const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
+    Array.isArray(jsonB) && jsonB.includes(channel);
+
+  const deprecatedIncludedChannels = user.slack_included_channels;
+
+  const isMigrationComplete = jsonIncludesChannel(
+    deprecatedIncludedChannels,
+    USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER
+  );
+  if (!isMigrationComplete) {
+    return jsonIncludesChannel(deprecatedIncludedChannels, message.channel);
+  }
+
+  const channelsByTeam = await db.user_slack_channels_by_team.findMany({
+    where: {
+      user_id: user.id,
+    },
+  });
+
+  // This is the efficient way of managing it, but team has to be part of the message event
+  if (message.team) {
+    const teamChannelsHolder = channelsByTeam.find((cbt) => cbt.slack_workspace_id === message.team);
+    if (teamChannelsHolder) {
+      const { included_channels } = teamChannelsHolder;
+      return (
+        jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
+        jsonIncludesChannel(included_channels, message.channel)
+      );
+    } else {
+      return false;
+    }
+  }
+
+  // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things
+  channelsByTeam.forEach((cbt) => {
+    if (jsonIncludesChannel(cbt.included_channels, message.channel)) {
+      return true;
+    }
+  });
+
+  return false;
+}
+
 /**
  * Creates notification for the given user who are in the Slack conversation in which the message was posted. If the
  * conversation is a Slack channel we only create a notification if it was a mention or within a thread.
@@ -114,13 +162,12 @@ async function createNotificationFromMessage(
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
-  const includedChannels = userSlackInstallation.user.slack_included_channels;
-  const isChannelIncluded = Array.isArray(includedChannels) && includedChannels.includes(message.channel);
+
   if (
     !userToken ||
     (isAuthor && !isMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
-    (!is_IM_or_MPIM && !isMentioned && !isChannelIncluded)
+    (!is_IM_or_MPIM && !isMentioned && !isChannelIncluded(userSlackInstallation.user, message))
   ) {
     return;
   }
