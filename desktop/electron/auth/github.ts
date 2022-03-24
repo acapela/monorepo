@@ -11,7 +11,7 @@ const userAgent =
 export async function loginGitHub() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
-  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/github/install", { userAgent });
+  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/github/auth", { userAgent });
 
   return new Promise<void>((resolve) => {
     function checkIfCallbackSuccessful() {
@@ -19,9 +19,8 @@ export async function loginGitHub() {
       const url = window.webContents.getURL();
       const { origin, pathname } = new URL(url);
       //TODO
-      // console.log(origin, pathname);
       // if (origin === "https://github.com" && pathname.includes())
-      if (origin === FRONTEND_URL && pathname.endsWith("callback")) {
+      if (origin === FRONTEND_URL && pathname.endsWith("todotodo")) {
         githubAuthTokenBridgeValue.set(true);
         window.close();
         resolve();
