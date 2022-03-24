@@ -11,20 +11,18 @@ import { SlackTeamConversationsDropdown } from "@aca/desktop/ui/Filters/SlackTea
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { SlackConversationsQuery } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
-import {
-  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
-  USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
-} from "@aca/shared/slack";
+import { USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER } from "@aca/shared/slack";
 import { VStack } from "@aca/ui/Stack";
 import { Toggle } from "@aca/ui/toggle";
 
 import { makeLogger } from "../dev/makeLogger";
+import { migrateToNewFilters } from "./slackFilterMigration";
 
 const log = makeLogger("SlackGeneralConversationFilter");
 
-type SlackWorkspaceId = string;
-type SlackConversationId = string;
-type SlackConversationByTeam = Record<SlackWorkspaceId, SlackConversationsQuery["slack_conversations"]>;
+export type SlackWorkspaceId = string;
+export type SlackConversationId = string;
+export type SlackConversationByTeam = Record<SlackWorkspaceId, SlackConversationsQuery["slack_conversations"]>;
 
 /*
   Hello! And welcome to this very complex component.
@@ -66,14 +64,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
       runInAction(async () => {
         const availableConversations = await updateAvailableChannels();
 
-        const selectedConversationByTeamPreMigration =
-          transformPreviousChannelFilterIntoTeamChannelFilteringFormat(availableConversations);
-
-        migrateToNewUserSlackChannelsFiltersByTeam(selectedConversationByTeamPreMigration);
-
-        user.update({
-          slack_included_channels: [USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER],
-        });
+        migrateToNewFilters(availableConversations);
       });
     }
     startup();
@@ -129,68 +120,6 @@ export const SlackChannelsByTeamFilters = observer(() => {
     setAvailableSlackConversationsByTeam(conversationsByTeams);
 
     return conversationsByTeams;
-  }
-
-  function migrateToNewUserSlackChannelsFiltersByTeam(
-    previouslyExistingSelected: Record<SlackWorkspaceId, SlackConversationId[]>
-  ) {
-    const teamIds = slackInstallations?.all.map((si) => si.team_id);
-
-    assert(teamIds, "slack installation not defined for user");
-
-    teamIds.forEach((teamId) => {
-      if (!teamId) {
-        log.error("Slack installation does not include team id");
-        return;
-      }
-
-      const createdFiltersForTeam = userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).all;
-      if (createdFiltersForTeam.length === 0) {
-        const included_channels = previouslyExistingSelected[teamId] ?? [];
-        userSlackChannelsByTeam.create({
-          slack_workspace_id: teamId,
-          included_channels,
-        });
-      }
-    });
-  }
-
-  function transformPreviousChannelFilterIntoTeamChannelFilteringFormat(
-    availableConversations: SlackConversationByTeam
-  ) {
-    const previousFormatSelectedChannels = user.slack_included_channels as string[] | null;
-
-    const previousFormatNeverIncludedSelectedChannels =
-      !previousFormatSelectedChannels ||
-      !Array.isArray(previousFormatSelectedChannels) ||
-      previousFormatSelectedChannels.length === 0;
-
-    if (previousFormatNeverIncludedSelectedChannels) {
-      return {};
-    }
-
-    const hasUserAlreadyMigratedToNewFormat =
-      Array.isArray(user.slack_included_channels) &&
-      user.slack_included_channels.includes(USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER);
-    if (hasUserAlreadyMigratedToNewFormat) {
-      return {};
-    }
-
-    const selectedConversationByTeamPreMigration: Record<SlackWorkspaceId, SlackConversationId[]> = {};
-
-    /*
-      user.slack_included_channels only includes is a SlackConversationIds[], i.e. string[].
-      Since we want to divide filters by team, we need find which teams these user.slack_included_channels belong to
-    */
-    Object.keys(availableConversations).forEach((teamId) => {
-      const previouslySelectedConversationsForThisTeam = availableConversations[teamId].filter(
-        ({ id: slackConversationId }) => previousFormatSelectedChannels.includes(slackConversationId)
-      );
-
-      selectedConversationByTeamPreMigration[teamId] = previouslySelectedConversationsForThisTeam.map((c) => c.id);
-    });
-
-    return selectedConversationByTeamPreMigration;
   }
 
   // Done so that we don't over fetch the api, but still keep some updates

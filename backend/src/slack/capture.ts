@@ -101,10 +101,22 @@ async function checkIsInvolvedInThread(
   return Boolean(await db.slack_thread_involed_user.findFirst({ where: { user_id: slackUserId, thread_ts: ts } }));
 }
 
-async function isChannelIncluded(user: User, message: GenericMessageEvent) {
-  const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
-    Array.isArray(jsonB) && jsonB.includes(channel);
+const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
+  Array.isArray(jsonB) && jsonB.includes(channel);
 
+/*
+  ## Migrating from `user.slack_selected_channels` and `user_slack_channels_by_team`
+
+  We're currently migrating data from both places.
+
+  Migration starts right after the SlackSettings component is booted for the first time.
+  After we migrate, user.slack_included_channels contents are replaced by `USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER`
+  We use this placeholder here to understand where to look for the corresponding filter.
+
+  Note: I believe that `user.slack_included_channels` should be removed by June 2022.
+  If you still find the migration code here and are reading this after the fact... you're it!  
+  */
+async function isChannelIncludedInChannelFilters(user: User, message: GenericMessageEvent) {
   const deprecatedIncludedChannels = user.slack_included_channels;
 
   const isMigrationComplete = jsonIncludesChannel(
@@ -136,13 +148,7 @@ async function isChannelIncluded(user: User, message: GenericMessageEvent) {
   }
 
   // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things
-  channelsByTeam.forEach((cbt) => {
-    if (jsonIncludesChannel(cbt.included_channels, message.channel)) {
-      return true;
-    }
-  });
-
-  return false;
+  return channelsByTeam.some((cbt) => jsonIncludesChannel(cbt.included_channels, message.channel));
 }
 
 /**
@@ -167,7 +173,7 @@ async function createNotificationFromMessage(
     !userToken ||
     (isAuthor && !isMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
-    (!is_IM_or_MPIM && !isMentioned && !(await isChannelIncluded(userSlackInstallation.user, message)))
+    (!is_IM_or_MPIM && !isMentioned && !(await isChannelIncludedInChannelFilters(userSlackInstallation.user, message)))
   ) {
     return;
   }

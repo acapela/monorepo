@@ -1,11 +1,8 @@
 import { observer } from "mobx-react";
 import React from "react";
 
-import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { SlackConversationsQuery } from "@aca/gql";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
-
-import { getWorkspaceLabel } from "./utils";
 
 interface Props {
   checkSelected: (id: string) => boolean;
@@ -36,11 +33,7 @@ export const SlackTeamConversationsDropdown = observer(
         items={conversations}
         keyGetter={(channel) => channel.id}
         isDisabled={isDisabled}
-        labelGetter={(channel) =>
-          (channel.is_private ? "🔒" : "#") +
-          channel.name +
-          getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
-        }
+        labelGetter={(channel) => (channel.is_private ? "🔒" : "#") + channel.name}
         selectedItems={conversations.filter(({ id }) => checkSelected(id))}
         onOpen={handleDropdownOpen}
         onChange={onChange}
