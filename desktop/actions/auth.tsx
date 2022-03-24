@@ -108,6 +108,7 @@ export const restartAndClearElectronData = defineAction({
     ) {
       return;
     }
+
     clearAllDataRequest();
   },
 });

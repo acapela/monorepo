@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."user_slack_channels_by_team" add column "user_slack_installation_id" uuid
+--  not null;
