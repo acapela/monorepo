@@ -25,7 +25,17 @@ import {
 } from "@aca/shared/types/analytics";
 
 export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null {
+  const user = accountStore.user;
+
+  if (!user) return null;
+
   return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    created_at: new Date(user.created_at), // will convert string into Date type if necessary,
+    avatar: user.avatar_url,
+
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
     notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,
     linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
