@@ -15,6 +15,7 @@ export const SlackToasts = observer(() => {
         .map((install) => (
           <Toast
             key={install.id}
+            id={install.id}
             title={`Missing Slack permissions for ${install.team_name}`}
             description="A permission update is needed to make the Slack integration work smoothly"
             action={connectSlack}
