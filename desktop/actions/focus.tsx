@@ -5,6 +5,7 @@ import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@ac
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
+import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { focusPageView } from "./views/focus";
@@ -41,6 +42,11 @@ export const refreshNotificationPreview = defineAction({
     if (!notification) return;
 
     await requestForceReloadPreview({ url: notification.url });
+
+    addToast({
+      message: `Refreshing notification preview...`,
+      durationMs: 2000,
+    });
   },
 });
 

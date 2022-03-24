@@ -1,5 +1,7 @@
 import { Cleanup, MaybeCleanup } from "./types";
 
+export type CleanupOrder = "from-first" | "from-last";
+
 /**
  * Useful for cases when we have to clean multiple things in effects.
  *
@@ -13,11 +15,17 @@ import { Cleanup, MaybeCleanup } from "./types";
  *   return cleanup.clean;
  * })
  */
-export function createCleanupObject() {
+export function createCleanupObject(defaultCleanupOrder: CleanupOrder = "from-first") {
   const cleanups = new Set<Cleanup>();
   const cleanupObject = {
-    clean() {
-      cleanups.forEach((cleanup) => {
+    clean(order: CleanupOrder = defaultCleanupOrder) {
+      const cleanupsList = [...cleanups];
+
+      if (order === "from-last") {
+        cleanupsList.reverse();
+      }
+
+      cleanupsList.forEach((cleanup) => {
         cleanups.delete(cleanup);
         cleanup();
       });
@@ -31,6 +39,9 @@ export function createCleanupObject() {
       if (!cleanupToAdd) return;
 
       cleanups.add(cleanupToAdd);
+    },
+    get size() {
+      return cleanups.size;
     },
   };
 

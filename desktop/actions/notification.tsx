@@ -11,8 +11,11 @@ import { groupNotifications } from "@aca/desktop/domains/group/groupNotification
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { createCleanupObject } from "@aca/shared/cleanup";
+import { pluralize } from "@aca/shared/text/pluralize";
 import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
 
+import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
@@ -50,6 +53,8 @@ export const openNotificationInApp = defineAction({
   async handler(context) {
     const notification = context.assertTarget("notification");
 
+    addToast({ message: `Opening notification in app...`, durationMs: 2000 });
+
     const url = await convertToLocalAppUrlIfAny(notification);
 
     await openAppUrl(url);
@@ -62,11 +67,18 @@ export const copyNotificationLink = defineAction({
   name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
   shortcut: ["C"],
   keywords: ["url", "share"],
-  canApply: (ctx) => ctx.hasTarget("notification"),
+  canApply: (ctx) => ctx.hasTarget("notification") || ctx.hasTarget("group"),
   handler(context) {
-    const notification = context.assertTarget("notification");
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
 
-    window.electronBridge.copyToClipboard(notification.url);
+    const url = notification?.url ?? group?.notifications.at(0)?.url ?? null;
+
+    if (!url) return;
+
+    window.electronBridge.copyToClipboard(url);
+
+    addToast({ title: "Notification link copied", message: url });
   },
 });
 
@@ -74,11 +86,21 @@ export const markNotificationUnread = defineAction({
   icon: <IconGlasses />,
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
-  shortcut: ["Shift", "U"],
+  shortcut: ["U"],
   keywords: ["snooze", "remind"],
   canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
-    context.getTarget("notification")?.update({ last_seen_at: null });
+    const { undo } = context.assertTarget("notification").update({ last_seen_at: null });
+
+    addToast({
+      message: `Marked as unread`,
+      action: {
+        label: "Undo",
+        callback() {
+          undo();
+        },
+      },
+    });
   },
 });
 
@@ -90,7 +112,17 @@ export const markNotificationRead = defineAction({
   keywords: ["seen", "done"],
   canApply: (ctx) => !ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
-    context.getTarget("notification")?.update({ last_seen_at: new Date().toISOString() });
+    const { undo } = context.assertTarget("notification").update({ last_seen_at: new Date().toISOString() });
+
+    addToast({
+      message: `Marked as read`,
+      action: {
+        label: "Undo",
+        callback() {
+          undo();
+        },
+      },
+    });
   },
 });
 
@@ -137,13 +169,25 @@ export const resolveNotification = defineAction({
         null;
     }
 
-    notification?.resolve();
+    const cancel = createCleanupObject();
+
+    cancel.next = notification?.resolve()?.undo;
 
     group?.notifications.forEach((notification) => {
-      notification.resolve();
+      cancel.next = notification.resolve()?.undo;
     });
 
     displayZenModeIfFinished(context);
+
+    addToast({
+      message: pluralize`${cancel.size} ${["notification"]} resolved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
   },
 });
 
@@ -166,12 +210,23 @@ export const unresolveNotification = defineAction({
 
     focusNextItemIfAvailable(context);
 
-    notification?.update({ resolved_at: null });
+    const cancel = createCleanupObject();
+
+    cancel.next = notification?.update({ resolved_at: null }).undo;
+
     group?.notifications.forEach((notification) => {
-      notification.update({ resolved_at: null });
+      cancel.next = notification.update({ resolved_at: null }).undo;
     });
 
-    displayZenModeIfFinished(context);
+    addToast({
+      message: pluralize`${cancel.size} ${["notification"]} unresolved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
   },
 });
 

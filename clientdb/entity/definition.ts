@@ -4,6 +4,7 @@ import { Entity } from "@aca/clientdb";
 import { getHash } from "@aca/shared/hash";
 
 import { DatabaseLinker } from "./entitiesConnections";
+import { EntityUpdateResult } from "./entity";
 import { SortResult } from "./query";
 import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
@@ -62,7 +63,7 @@ export interface EntityDefinition<Data, Connections> {
 
 export interface ConnectionsManager<Data> extends DatabaseLinker {
   createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
-  updateSelf(data: Partial<Data>): void;
+  updateSelf(data: Partial<Data>): EntityUpdateResult;
 }
 
 type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;

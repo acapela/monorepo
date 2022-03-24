@@ -10,9 +10,14 @@ import { DatabaseLinker } from "./entitiesConnections";
 import { EntityStore } from "./store";
 import { EntityChangeSource } from "./types";
 
+export interface EntityUpdateResult {
+  hadChanges: boolean;
+  undo: (source?: EntityChangeSource) => void;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type EntityMethods<Data, Connections> = {
-  update(data: Partial<Data>, source?: EntityChangeSource): boolean;
+  update(data: Partial<Data>, source?: EntityChangeSource): EntityUpdateResult;
   getData(): Data;
   getKey(): string;
   getKeyName(): string;
@@ -76,7 +81,7 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
         });
       },
       updateSelf(data) {
-        entity.update(data, "user");
+        return entity.update(data, "user");
       },
     }) ?? ({} as C);
 
@@ -135,7 +140,7 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       const rawObject = toJS(entity);
       return pick(rawObject, rawDataKeys);
     },
-    update(input, source: EntityChangeSource = "user") {
+    update(input, source: EntityChangeSource = "user"): EntityUpdateResult {
       const changedKeys = typedKeys(input).filter((keyToUpdate) => {
         const value = input[keyToUpdate];
         if (value === undefined) return false;
@@ -146,9 +151,15 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       });
 
       // No changes will be made, return early
-      if (!changedKeys.length) return false;
+      if (!changedKeys.length)
+        return {
+          hadChanges: false,
+          undo: () => void 0,
+        };
 
       const dataBeforeUpdate = entity.getData();
+
+      const undoData = pick(dataBeforeUpdate, changedKeys);
 
       store.events.emit("itemWillUpdate", entity, input, source);
 
@@ -164,7 +175,12 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
 
       store.events.emit("itemUpdated", entity, dataBeforeUpdate, source);
 
-      return true;
+      return {
+        hadChanges: true,
+        undo(source = "user") {
+          entityMethods.update(undoData, source);
+        },
+      };
     },
   };
 

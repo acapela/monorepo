@@ -159,7 +159,8 @@ const UIHolder = styled.div<{ $lifecycle: SnoozeLifecycle }>`
   display: inline-flex;
   gap: 8px;
   padding: 4px;
-  ${theme.radius.button};
+  ${theme.radius.badge};
+  ${theme.typo.label.semibold}
 
   svg {
     height: 1rem;

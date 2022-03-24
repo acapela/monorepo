@@ -3,6 +3,9 @@ import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import {
+  copyNotificationLink,
+  markNotificationRead,
+  markNotificationUnread,
   openFocusMode,
   openNotificationInApp,
   resolveNotification,
@@ -43,6 +46,8 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
     [
       [openFocusMode, openNotificationInApp],
       [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
+      [copyNotificationLink],
+      [markNotificationRead, markNotificationUnread],
     ],
     notification
   );

@@ -5,7 +5,12 @@ import React, { useEffect, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
-import { openFocusMode, resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
+import {
+  copyNotificationLink,
+  openFocusMode,
+  resolveNotification,
+  unresolveNotification,
+} from "@aca/desktop/actions/notification";
 import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -44,6 +49,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
     [
       [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
       [toggleNotificationsGroup, openFocusMode],
+      [copyNotificationLink],
     ],
     group
   );

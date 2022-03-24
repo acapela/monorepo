@@ -4,6 +4,7 @@ import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 import { IconChartLine, IconKeyboardHide } from "@aca/ui/icons";
 
+import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -28,8 +29,20 @@ export const toggleShowShortcutsBar = defineAction({
   keywords: ["footer", "hide", "ui"],
   icon: <IconKeyboardHide />,
   handler() {
-    applicationWideSettingsBridge.update((settings) => {
-      settings.showShortcutsBar = !settings.showShortcutsBar;
+    const toggle = () => {
+      applicationWideSettingsBridge.update((settings) => {
+        settings.showShortcutsBar = !settings.showShortcutsBar;
+      });
+    };
+
+    toggle();
+
+    addToast({
+      message: "Shortcuts bar toggled",
+      action: {
+        label: "Undo",
+        callback: toggle,
+      },
     });
   },
 });

@@ -27,7 +27,7 @@ function prepareContextMenuItemsFromActions(
     }
   });
 
-  return result;
+  return result.filter((action) => action.enabled);
 }
 
 function convertActionToContextMenuItem(

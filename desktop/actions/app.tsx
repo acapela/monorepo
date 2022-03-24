@@ -10,6 +10,7 @@ import {
 import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw } from "@aca/ui/icons";
 
 import { forceWorkerSyncRun } from "../bridge/apps";
+import { addToast } from "../domains/toasts/store";
 import { getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
@@ -50,8 +51,13 @@ export const checkForUpdates = defineAction({
   name: "Check for updates",
   group: appActionsGroup,
   icon: <IconBox />,
-  handler() {
-    checkForUpdatesRequest();
+  async handler() {
+    const removeToast = addToast({ message: "Checking for update..." });
+    try {
+      await checkForUpdatesRequest();
+    } finally {
+      removeToast();
+    }
   },
 });
 
@@ -77,7 +83,9 @@ export const forceNotificationsSync = defineAction({
   shortcut: ["Mod", "R"],
   canApply: () => getIsRouteActive("list"),
   group: appActionsGroup,
-  handler() {
-    forceWorkerSyncRun(["notion", "figma"]);
+  async handler() {
+    await forceWorkerSyncRun(["notion", "figma"]);
+
+    addToast({ message: "Sent notifications sync request...", durationMs: 2000 });
   },
 });

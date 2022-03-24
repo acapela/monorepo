@@ -60,7 +60,9 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
         titleNode="Settings"
       />
       <UIHolder>
-        <UIHeader>Settings</UIHeader>
+        <UIHeader>
+          <UIHeaderMain>Settings</UIHeaderMain>
+        </UIHeader>
 
         <UIBody>
           <UINav>
@@ -77,16 +79,16 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
                 </UINavItem>
               );
             })}
+            <UIVersionInfo>
+              v{window.electronBridge.env.version}
+              {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
+            </UIVersionInfo>
           </UINav>
           <UIActiveSection>
             {sectionId === "integrations" && <IntegrationsManager />}
             {sectionId === "general" && <GeneralSettings />}
             {sectionId === "notifications" && <NotificationsSettings />}
             {sectionId === "account" && <AccountSettings />}
-            <UIVersionInfo>
-              v{window.electronBridge.env.version}
-              {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
-            </UIVersionInfo>
           </UIActiveSection>
         </UIBody>
       </UIHolder>
@@ -131,13 +133,13 @@ const UIActiveSection = styled.div`
 
 const UIHeader = styled.div<{}>`
   ${theme.typo.pageTitle.medium};
-  display: flex;
-  align-items: center;
-  ${theme.spacing.actions.asGap};
-  margin-top: 3px;
 `;
 
+const UIHeaderMain = styled.div``;
+
 const UIVersionInfo = styled.div`
-  ${theme.typo.label.secondary.center};
-  margin-top: 24px;
+  ${theme.typo.label};
+  opacity: 0.3;
+  margin-top: 16px;
+  padding-left: 12px;
 `;
