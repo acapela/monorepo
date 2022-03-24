@@ -57,6 +57,7 @@ jobs:
           node-version: "16"
       - name: Install dependencies
         run: |
+          npm config set ignore-scripts true
           npm i "electron-builder@$(jq -r '.devDependencies["electron-builder"]' ./desktop/package.json)" -g --force
           electron-builder --version
           npm i "electron-notarize@$(jq -r '.devDependencies["electron-notarize"]' ./desktop/package.json)" -g --force
