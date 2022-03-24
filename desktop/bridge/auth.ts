@@ -48,6 +48,12 @@ export const jiraAuthTokenBridgeValue = createBridgeValue<boolean>("jira-auth-to
   isPersisted: true,
 });
 
+export const githubAuthTokenBridgeValue = createBridgeValue<boolean>("github-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+export const loginGitHubBridge = createInvokeBridge<{ logout: boolean } | void>("login-github");
+
 /*
   NEW SERVICE!?!?!?
   Add new services here! Until refactored
@@ -59,6 +65,7 @@ const allServices = [
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
+  githubAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {
