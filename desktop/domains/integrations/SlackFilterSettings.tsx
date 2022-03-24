@@ -1,5 +1,5 @@
 import { subMinutes } from "date-fns";
-import { computed, runInAction } from "mobx";
+import { comparer, computed, runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -70,33 +70,38 @@ export const SlackChannelsByTeamFilters = observer(() => {
     startup();
   }, []);
 
-  const selectedConversationsFilterByTeam: Record<SlackWorkspaceId, SlackConversationId[]> = computed(() => {
-    const teamIds = slackInstallations?.all.map((si) => si.team_id);
-    const result: Record<SlackWorkspaceId, SlackConversationId[]> = {};
+  const selectedConversationsFilterByTeam: Record<SlackWorkspaceId, SlackConversationId[]> = computed(
+    () => {
+      const teamIds = slackInstallations?.all.map((si) => si.team_id);
+      const result: Record<SlackWorkspaceId, SlackConversationId[]> = {};
 
-    teamIds?.forEach((teamId) => {
-      if (!teamId) {
-        log.error("Slack installation does not include team id");
-        return;
-      }
+      teamIds?.forEach((teamId) => {
+        if (!teamId) {
+          log.error("Slack installation does not include team id");
+          return;
+        }
 
-      const storedSlackChannelsForTeam = userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).first;
+        const storedSlackChannelsForTeam = userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).first;
 
-      if (!storedSlackChannelsForTeam) {
-        // We expect this to be filled in later;
-        return;
-      }
+        if (!storedSlackChannelsForTeam) {
+          // We expect this to be filled in later;
+          return;
+        }
 
-      if (!Array.isArray(storedSlackChannelsForTeam.included_channels)) {
-        log.error("slack included_channel filter not stored properly", storedSlackChannelsForTeam);
-        return;
-      }
+        if (!Array.isArray(storedSlackChannelsForTeam.included_channels)) {
+          log.error("slack included_channel filter not stored properly", storedSlackChannelsForTeam);
+          return;
+        }
 
-      result[teamId] = storedSlackChannelsForTeam.included_channels ?? [];
-    });
+        result[teamId] = storedSlackChannelsForTeam.included_channels ?? [];
+      });
 
-    return result;
-  }).get();
+      return result;
+    },
+    {
+      equals: comparer.structural,
+    }
+  ).get();
 
   const allConversationsSelectedForTeamMap: Record<SlackConversationId, boolean> = computed(() => {
     return Object.keys(selectedConversationsFilterByTeam).reduce((acc, curr) => {
