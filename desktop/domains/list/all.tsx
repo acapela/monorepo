@@ -4,6 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { githubIntegrationClient } from "@aca/desktop/domains/integrations/github";
 import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
@@ -57,7 +58,21 @@ export const jiraList = defineNotificationsList({
   filter: { kind: "notification_jira_issue", isResolved: false, isSnoozed: false },
 });
 
-const integrationLists = { slack: slackList, notion: notionList, figma: figmaList, linear: linearList, jira: jiraList };
+export const githubList = defineNotificationsList({
+  id: "github",
+  name: "GitHub",
+  icon: githubIntegrationClient.icon,
+  filter: { kind: "notification_github", isResolved: false, isSnoozed: false },
+});
+
+const integrationLists = {
+  slack: slackList,
+  notion: notionList,
+  figma: figmaList,
+  linear: linearList,
+  jira: jiraList,
+  github: githubList,
+};
 
 export const resolvedList = defineNotificationsList({
   id: "resolved",

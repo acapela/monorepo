@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 
-import { linearAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
+import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { authWindowDefaultOptions } from "./utils";
@@ -17,8 +17,12 @@ export async function loginGitHub() {
     function checkIfCallbackSuccessful() {
       if (window.isDestroyed()) return;
       const url = window.webContents.getURL();
-      if (url.startsWith(FRONTEND_URL) && url.split("?")[0].endsWith("callback")) {
-        linearAuthTokenBridgeValue.set(true);
+      const { origin, pathname } = new URL(url);
+      //TODO
+      // console.log(origin, pathname);
+      // if (origin === "https://github.com" && pathname.includes())
+      if (origin === FRONTEND_URL && pathname.endsWith("callback")) {
+        githubAuthTokenBridgeValue.set(true);
         window.close();
         resolve();
         return;
@@ -50,11 +54,12 @@ export async function logoutGitHub() {
   //   if (window.isDestroyed()) return;
   //   if (!window.webContents.getURL().startsWith("https://linear.app")) continue;
   //   await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore");', true);
-  //   linearAuthTokenBridgeValue.set(false);
+  //   githubAuthTokenBridgeValue.set(false);
   //   break;
   // }
   //
   // window.close();
+  await githubAuthTokenBridgeValue.set(false);
 }
 
 export function initializeGitHubAuthHandler() {
