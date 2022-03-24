@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   authTokenBridgeValue,
   googleAuthTokenBridgeValue,
@@ -9,7 +11,6 @@ import { clearAllDataRequest } from "@aca/desktop/bridge/system";
 import { IconLogOut, IconPlus, IconRefreshCw } from "@aca/ui/icons";
 import { GoogleGLogoIcon } from "@aca/ui/icons/logos/GoogleGLogo";
 import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
-import React from "react";
 
 import { showConfirmDialogRequest } from "../bridge/dialogs";
 import { defineAction } from "./action";
@@ -107,6 +108,7 @@ export const restartAndClearElectronData = defineAction({
     ) {
       return;
     }
+
     clearAllDataRequest();
   },
 });
