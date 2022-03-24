@@ -13,7 +13,6 @@ import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@ac
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
-import { getUserSlackInstallationFilter } from "./userSlackInstallation";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
@@ -37,13 +36,11 @@ function handleInstallationResponse(res: ServerResponse, redirectURL?: string, s
 }
 
 async function storeUserSlackInstallation(userId: string, installation: SlackInstallation) {
-  const slackInstallationFilter = getUserSlackInstallationFilter({
-    teamId: installation.team?.id,
-    userId: installation.user.id,
-  });
-  const userSlackInstallation = await db.user_slack_installation.findFirst({
-    where: slackInstallationFilter,
-  });
+  const where = {
+    slack_team_id: installation.team?.id,
+    slack_user_id: installation.user.id,
+  };
+  const userSlackInstallation = await db.user_slack_installation.findFirst({ where });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data = installation as any;
@@ -55,12 +52,19 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
       );
     }
     await db.user_slack_installation.updateMany({
-      where: { user_id: userId, ...slackInstallationFilter },
+      where: { user_id: userId, ...where },
       data: { data },
     });
   } else {
     await db.$transaction([
-      db.user_slack_installation.create({ data: { user_id: userId, data } }),
+      db.user_slack_installation.create({
+        data: {
+          user_id: userId,
+          slack_team_id: installation.team!.id,
+          slack_user_id: installation.user.id,
+          data,
+        },
+      }),
       db.user.update({
         where: { id: userId },
         data: {
@@ -106,6 +110,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     },
 
     async fetchInstallation(query) {
+      const getUserSlackInstallationFilter = ({ teamId, userId }: Partial<{ teamId: string; userId: string }>) => ({
+        AND: [teamId ? { slack_team_id: teamId } : {}, userId ? { slack_user_id: userId } : {}],
+      });
       let userSlackInstallation = await db.user_slack_installation.findFirst({
         where: getUserSlackInstallationFilter(query),
       });
