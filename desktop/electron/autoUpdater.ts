@@ -55,7 +55,7 @@ export function setupAutoUpdater() {
   });
 
   autoUpdater.on("error", (error) => {
-    const knownErrors = ["net::ERR_CONNECTION_RESET", "HttpError: 404"];
+    const knownErrors = ["net::ERR_CONNECTION_RESET", "HttpError: 404", "net::ERR_NETWORK_IO_SUSPENDED"];
 
     const errorMessage = `${error}`;
 
