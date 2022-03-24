@@ -29,10 +29,6 @@ const ghApp = new App({
 
 router.post("/v1/github/webhook", createNodeMiddleware(ghApp.webhooks, { path: "/v1/github/webhook" }));
 
-ghApp.webhooks.on("installation.created", () => {
-  throw new Error("installation creation is handled in the oauth callback");
-});
-
 ghApp.webhooks.on("installation.deleted", async (event) => {
   try {
     await Promise.all([
@@ -52,8 +48,28 @@ ghApp.webhooks.on("installation.deleted", async (event) => {
   }
 });
 
+ghApp.webhooks.on("installation.created", async (event) => {
+  await db.github_installation.create({
+    data: {
+      id: event.payload.installation.id,
+      account_id: event.payload.installation.target_id,
+      account_login: event.payload.installation.account.login,
+      target_type: event.payload.installation.target_type,
+      repository_selection: event.payload.installation.repository_selection,
+    },
+  });
+});
+
 ghApp.webhooks.on("issue_comment", (event) => {
-  console.info(event);
+  console.info("issue_comment", event);
+});
+
+ghApp.webhooks.on("issues", (event) => {
+  console.info("issues", event);
+});
+
+ghApp.webhooks.on("pull_request", (event) => {
+  console.info("issues", event);
 });
 
 router.get("/v1/github/callback", async (req: Request, res: Response) => {
@@ -75,40 +91,21 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
   }
 
   const octokit = new Octokit({ auth: oauthRes.authentication.token });
-  let installations, user;
+  let user;
   try {
-    [installations, user] = await Promise.all([
-      octokit.request("GET /user/installations"),
-      octokit.request("GET /user"),
-    ]);
+    user = await octokit.request("GET /user");
   } catch (e) {
     logger.error("oauth error: " + e);
     throw new BadRequestError("oauth error");
   }
 
-  const installation = installations.data.installations.find((i) => i.id === installationId);
-  if (!installation) {
-    throw new BadRequestError("installation not found");
-  }
-
-  await Promise.all([
-    db.github_account.create({
-      data: {
-        github_installation_id: installationId,
-        user_id: userId,
-        github_user_id: user.data.id,
-        github_login: user.data.login,
-      },
-    }),
-    db.github_installation.create({
-      data: {
-        id: installation.id,
-        account_id: installation.target_id,
-        account_login: installation.account?.login || "",
-        target_type: installation.target_type,
-        repository_selection: installation.repository_selection,
-      },
-    }),
-  ]);
+  await db.github_account.create({
+    data: {
+      github_installation_id: installationId,
+      user_id: userId,
+      github_user_id: user.data.id,
+      github_login: user.data.login,
+    },
+  });
   res.status(HttpStatus.OK).end();
 });
