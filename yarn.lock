@@ -123,6 +123,7 @@ __metadata:
     react-chicane: ^0.6.1
     ts-node: ^10.4.0
     url-pattern: ^1.0.3
+    zod: ^3.14.2
   peerDependencies:
     framer-motion: "*"
     mobx: "*"
@@ -25620,6 +25621,13 @@ fsevents@^1.2.7:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.14.2":
+  version: 3.14.2
+  resolution: "zod@npm:3.14.2"
+  checksum: 397c300f0957126519c6d9fa95b8ea08f8dc2d0692e8c40be78d070a69e88cacec9d7b960c33f61382b7c1647c0850bea5c299bcdfbe7a671a8bf0fb3e6923cf
   languageName: node
   linkType: hard
 

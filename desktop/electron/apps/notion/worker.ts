@@ -1,6 +1,7 @@
 import { differenceInMilliseconds } from "date-fns";
 import { session } from "electron";
 import fetch from "node-fetch";
+import { z } from "zod";
 
 import {
   NotionNotificationType,
@@ -17,17 +18,18 @@ import { assert } from "@aca/shared/assert";
 import { wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
-import type {
-  ActivityPayload,
-  BlockPayload,
+import {
   CollectionViewPageBlockValue,
+  CommentedActivityValue,
   GetNotificationLogResult,
   GetPublicSpaceDataResult,
   GetSpacesResult,
-  NotificationPayload,
+  Notification,
   PageBlockValue,
+  RecordMap,
+  UserInvitedActivityValue,
   UserMentionedActivityValue,
-} from "./types";
+} from "./schema";
 
 const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
 const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
@@ -163,9 +165,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
-  const result = (await response.json()) as GetNotificationLogResult;
-
-  return result;
+  return GetNotificationLogResult.parse(await response.json());
 }
 
 export async function updateAvailableSpaces() {
@@ -190,7 +190,7 @@ export async function updateAvailableSpaces() {
     It also includes the concept of a `space_view` which includes a bit of information about all
     the spaces the user is involved with, i.e including spaces where there user is a guest.
   */
-  const getSpacesResult = (await getSpacesResponse.json()) as GetSpacesResult;
+  const getSpacesResult = GetSpacesResult.parse(await getSpacesResponse.json());
 
   // Includes spaces that you're a member of and spaces where you're a guest
   const allSpaceIds = Object.values(getSpacesResult[sessionData.notionUserId].space_view).map(
@@ -219,7 +219,7 @@ export async function updateAvailableSpaces() {
     throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
-  const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
+  const getPublicSpacesResult = GetPublicSpaceDataResult.parse(await getPublicSpaceDataResponse.json());
 
   const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
@@ -238,7 +238,7 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
+function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNotificationLog>>): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
   const result: NotionWorkerSync = [];
@@ -246,7 +246,12 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
   log.debug(`Found ${notificationIds.length} notifications`);
   for (const id of notificationIds) {
     try {
-      const notification = recordMap.notification[id].value;
+      const notification = recordMap.notification?.[id].value;
+
+      if (!notification) {
+        log.error(new Error("Notification not found"), `Notification ${id} not found`);
+        continue;
+      }
 
       const notificationProperties = getNotificationProperties(notification, recordMap);
       if (!notificationProperties) {
@@ -259,7 +264,7 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
       const { url, type, text_preview } = notificationProperties;
 
-      const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">)?.value;
+      const activity = recordMap.activity?.[notification.activity_id]?.value;
 
       // Weird bug where activity is undefined for a user
       // https://sentry.io/organizations/acapela/issues/3114653912/
@@ -281,10 +286,19 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
       const updated_at = created_at;
 
-      const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
+      if (activity.type !== "commented") {
+        continue;
+      }
+
+      const authorId = activity.edits[0]?.authors?.[0]?.id ?? "Notion";
 
       if (authorId === "Notion") {
         log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+      }
+
+      if (!notification.navigable_block_id) {
+        log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
+        continue;
       }
 
       result.push({
@@ -316,20 +330,23 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 }
 
 function getPageTitle(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
   const blockId = notification.navigable_block_id;
-  const typeOfBlock = recordMap?.block[blockId]?.value.type;
+  if (!blockId) {
+    return;
+  }
+  const blockValue = recordMap?.block?.[blockId]?.value;
 
-  if (typeOfBlock === "page") {
-    const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
-    return block.properties.title[0][0];
+  const pageBlockResult = PageBlockValue.safeParse(blockValue);
+  if (pageBlockResult.success) {
+    return pageBlockResult.data.properties.title[0][0];
   }
 
-  if (typeOfBlock === "collection_view_page") {
-    const block = (recordMap.block[blockId] as BlockPayload<"collection_view_page">)
-      .value as CollectionViewPageBlockValue;
+  const collectionPageBlockResult = CollectionViewPageBlockValue.safeParse(blockValue);
+  if (collectionPageBlockResult.success) {
+    const block = collectionPageBlockResult.data;
     const collection = recordMap.collection && recordMap.collection[block.collection_id].value;
     if (!collection) {
       log.error(
@@ -344,8 +361,8 @@ function getPageTitle(
 }
 
 function getNotificationProperties(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ):
   | { type: NotionNotificationType; url: string; text_preview?: string | undefined; discussion_id?: string | undefined }
   | undefined {
@@ -356,9 +373,7 @@ function getNotificationProperties(
   }
 
   if (notification.type === "user-mentioned") {
-    const activity: UserMentionedActivityValue | undefined = (
-      recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">
-    ).value;
+    const activity = UserMentionedActivityValue.parse(recordMap.activity?.[notification.activity_id].value);
     const url =
       notionURL +
       "/" +
@@ -373,7 +388,7 @@ function getNotificationProperties(
   }
 
   if (notification.type === "commented") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
+    const activity = CommentedActivityValue.parse(recordMap.activity?.[notification.activity_id].value);
 
     // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
     if (!activity) {
@@ -384,7 +399,15 @@ function getNotificationProperties(
       return;
     }
 
-    const discussion = recordMap.discussion[activity.discussion_id].value;
+    const discussion = recordMap.discussion?.[activity.discussion_id].value;
+
+    if (!discussion) {
+      log.error(
+        `Discussion with id ${activity.discussion_id} not found in recordMap: `,
+        JSON.stringify(recordMap, null, 2)
+      );
+      return;
+    }
 
     const parentDiscussionBlock = discussion.parent_id;
     const url =
@@ -414,19 +437,15 @@ function getNotificationProperties(
 }
 
 function isKnownAndUnsupported(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ): boolean {
   if (notification.type === "user-invited") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">)?.value;
+    const activity = UserInvitedActivityValue.parse(recordMap.activity?.[notification.activity_id]?.value);
     if (activity?.parent_table === "space") {
       return true;
     }
   }
 
-  if (notification.type === "reminder") {
-    return true;
-  }
-
-  return false;
+  return notification.type === "reminder";
 }
