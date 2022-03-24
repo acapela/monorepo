@@ -12,6 +12,7 @@ import { accountEntity } from "./account";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
+import { notificationGitHubEntity } from "./notification/github/issue";
 import { notificationJiraEntity } from "./notification/jira/issue";
 import { notificationLinearEntity } from "./notification/linear/issue";
 import { notificationNotionEntity } from "./notification/notion/baseNotification";
@@ -58,6 +59,7 @@ export const appClientDbEntities = {
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
   notificationJira: notificationJiraEntity,
+  notificationGitHub: notificationGitHubEntity,
   account: accountEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
