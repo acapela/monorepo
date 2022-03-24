@@ -8,11 +8,11 @@ import { slackIntegrationClient } from "./slack";
 import { IntegrationClient } from "./types";
 
 export const integrationClients = {
-  jira: jiraIntegrationClient,
   slack: slackIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,
   linear: linearIntegrationClient,
+  jira: jiraIntegrationClient,
 };
 
 export type SupportedIntegration = keyof typeof integrationClients;

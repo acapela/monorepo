@@ -1,6 +1,6 @@
 import { uniq } from "lodash";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { defineAction } from "@aca/desktop/actions/action";
@@ -13,11 +13,14 @@ import {
 } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { PublicErrorData } from "@aca/desktop/domains/errors/types";
+import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
 import { useAutorun } from "@aca/shared/sharedState";
 import { BodyPortal } from "@aca/ui/BodyPortal";
+import { IconBox } from "@aca/ui/icons";
 
 import { SlackToasts } from "./SlackToasts";
 import { Toast } from "./Toast";
+import { ToastsFromStore } from "./ToastsFromStore";
 
 // Open notifications are neither resolved nor snoozed
 function getOpenNotifications() {
@@ -34,6 +37,9 @@ function getOpenNotifications() {
 
 export const ToastsAndCommunicatesView = observer(() => {
   const { isUpdateReadyToInstall, updateDownloadingPercent } = applicationStateBridge.get();
+
+  const holderRef = useRef<HTMLDivElement>(null);
+  const isHovered = useIsElementOrChildHovered(holderRef);
 
   const [errors, setErrors] = useState<PublicErrorData[]>([]);
   useEffect(() => {
@@ -62,27 +68,33 @@ export const ToastsAndCommunicatesView = observer(() => {
 
   return (
     <BodyPortal>
-      <UIHolder>
+      <UIHolder ref={holderRef}>
+        <ToastsFromStore shouldPauseAutohide={isHovered} />
         <SlackToasts />
         {isUpdateReadyToInstall && (
           <Toast
             key="update-ready"
+            id="update-ready"
             title="Update available"
             description="New version of Acapela is available."
+            icon={<IconBox />}
             action={installUpdate}
           />
         )}
         {updateDownloadingPercent && (
           <Toast
             key="downloading"
-            title="Downloading update"
-            description={`${Math.round(updateDownloadingPercent)}%`}
+            id="downloading"
+            title="Downloading update..."
+            icon={<IconBox />}
+            progressPercent={updateDownloadingPercent}
           />
         )}
         {errors.map((error) => {
           return (
             <Toast
               key={error.id}
+              id={error.id}
               title="Error"
               description={error.message}
               action={defineAction({
@@ -102,11 +114,10 @@ export const ToastsAndCommunicatesView = observer(() => {
 const UIHolder = styled.div`
   position: fixed;
   bottom: 10px;
-  right: 10px;
+  right: 20px;
   width: 320px;
   z-index: 9999;
   display: flex;
-  gap: 8px;
   flex-direction: column;
   pointer-events: none;
 

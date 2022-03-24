@@ -11,7 +11,7 @@ import { ActionTrigger } from "../ActionTrigger";
 export const SystemBarUserMenu = observer(function SystemBarUserMenu() {
   const { assertUser: user } = accountStore;
   return (
-    <UIHolder>
+    <UIHolder data-tooltip="Open settings">
       <ActionTrigger action={goToSettings}>
         <Avatar src={user.avatar_url} />
       </ActionTrigger>

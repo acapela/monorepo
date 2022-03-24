@@ -100,6 +100,14 @@ export const restartAndClearElectronData = defineAction({
   analyticsEvent: "App Restarted",
   keywords: ["reload", "restart"],
   async handler() {
+    if (
+      !(await showConfirmDialogRequest({
+        message: "Sure you want to erase all app data?",
+        confirmLabel: "Restart app data",
+      }))
+    ) {
+      return;
+    }
     clearAllDataRequest();
   },
 });

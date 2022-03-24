@@ -7,6 +7,7 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowTop, IconEdit2, IconPlus, IconSlidersHoriz, IconTrash } from "@aca/ui/icons";
 
 import { showConfirmDialogRequest } from "../bridge/dialogs";
+import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
@@ -47,7 +48,16 @@ export const renameNotificationList = defineAction({
             if (!title) {
               return;
             }
-            getDb().notificationList.findById(list.id)?.update({ title });
+
+            const undo = getDb().notificationList.findById(list.id)?.update({ title }).undo;
+
+            addToast({
+              message: `List renamed`,
+              action: {
+                label: `Undo`,
+                callback: () => undo?.(),
+              },
+            });
           },
         }),
       ],
@@ -92,6 +102,10 @@ export const deleteNotificationList = defineAction({
 
     desktopRouter.navigate("list", { listId: allNotificationsList.id });
     getDb().notificationList.removeById(list.id);
+
+    addToast({
+      message: `List removed`,
+    });
   },
 });
 
@@ -205,6 +219,10 @@ export const createNotificationList = defineAction({
             seen_at: new Date().toISOString(),
           });
           desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
+
+          addToast({
+            message: `List created`,
+          });
         },
       }),
     ],

@@ -17,3 +17,5 @@ export function createFunctionWithProps<F extends AnyFunction, Props>(
 
   return functionClone as FunctionWithProps<F, Props>;
 }
+
+export const emptyFunction = () => void 0;

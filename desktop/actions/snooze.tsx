@@ -1,11 +1,14 @@
 import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
 import React from "react";
 
+import { createCleanupObject } from "@aca/shared/cleanup";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
+import { pluralize } from "@aca/shared/text/pluralize";
 import { IconClock, IconClockCross } from "@aca/ui/icons";
 
 import { createAnalyticsEvent } from "../analytics";
+import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
@@ -71,9 +74,21 @@ export const unsnoozeNotification = defineAction({
   icon: <IconClockCross />,
   shortcut: ["Mod", "W"],
   handler(ctx) {
-    ctx.getTarget("notification")?.update({ snoozed_until: null });
+    const cancel = createCleanupObject("from-last");
+
+    cancel.next = ctx.getTarget("notification")?.update({ snoozed_until: null }).undo;
     ctx.getTarget("group")?.notifications.forEach((notification) => {
-      notification.update({ snoozed_until: null });
+      cancel.next = notification.update({ snoozed_until: null }).undo;
+    });
+
+    addToast({
+      message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean();
+        },
+      },
     });
   },
 });
@@ -142,17 +157,29 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
 
       focusNextItemIfAvailable(context);
 
+      const cancel = createCleanupObject("from-last");
+
       if (notification) {
-        notification.snooze(date);
+        cancel.next = notification.snooze(date)?.undo;
       }
 
       if (group) {
         group.notifications.forEach((notification) => {
-          notification.snooze(date);
+          cancel.next = notification.snooze(date)?.undo;
         });
       }
 
       displayZenModeIfFinished(context);
+
+      addToast({
+        message: pluralize`${cancel.size} ${["notification"]} snoozed`,
+        action: {
+          label: "Undo",
+          callback() {
+            cancel.clean();
+          },
+        },
+      });
     },
   });
 }

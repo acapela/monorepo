@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
+import { addToast } from "@aca/desktop/domains/toasts/store";
 import { styledObserver } from "@aca/shared/component";
 
 import { FilterLabel } from "./FilterLabel";
@@ -41,6 +42,16 @@ export const ListFilters = styledObserver(({ value, onChange, className }: Props
             }}
             onRemoveRequest={(filterToRemove) => {
               onChange(value.filter((existingFilter) => existingFilter.id !== filterToRemove.id));
+
+              addToast({
+                message: "Filter removed",
+                action: {
+                  label: "Undo",
+                  callback() {
+                    onChange(value);
+                  },
+                },
+              });
             }}
           />
         );
