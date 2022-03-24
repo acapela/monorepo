@@ -3,7 +3,10 @@ import { runInAction } from "mobx";
 import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 import { assert } from "@aca/shared/assert";
-import { USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER } from "@aca/shared/slack";
+import {
+  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
+  USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
+} from "@aca/shared/slack";
 
 import { makeLogger } from "../dev/makeLogger";
 import { SlackConversationByTeam, SlackConversationId, SlackWorkspaceId } from "./SlackFilterSettings";
@@ -33,19 +36,22 @@ export function migrateToNewUserSlackChannelsFiltersByTeam(
 
   assert(teamIds, "slack installation not defined for user");
 
-  teamIds.forEach((teamId) => {
-    if (!teamId) {
+  db.userSlackInstallation?.all.forEach(({ team_id: slack_workspace_id, id: user_slack_installation_id }) => {
+    if (!slack_workspace_id) {
       log.error("Slack installation does not include team id");
       return;
     }
 
-    const createdFiltersForTeam = db.userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).all;
+    const createdFiltersForTeam = db.userSlackChannelsByTeam.query({ slack_workspace_id }).all;
 
     if (createdFiltersForTeam.length === 0) {
-      const included_channels = previouslyExistingSelected[teamId] ?? [];
+      const included_channels = previouslyExistingSelected[slack_workspace_id] ?? [
+        USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
+      ];
       db.userSlackChannelsByTeam.create({
-        slack_workspace_id: teamId,
+        slack_workspace_id,
         included_channels,
+        user_slack_installation_id,
       });
     }
   });

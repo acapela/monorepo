@@ -22,6 +22,7 @@ const userSlackChannelsByTeamFragment = gql`
     created_at
     slack_workspace_id
     included_channels
+    user_slack_installation_id
   }
 `;
 
@@ -49,7 +50,15 @@ export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTea
   sync: createHasuraSyncSetupFromFragment<UserSlackChannelsByTeamFragment, Constraints>(
     userSlackChannelsByTeamFragment,
     {
-      insertColumns: ["id", "user_id", "included_channels", "slack_workspace_id", "created_at", "updated_at"],
+      insertColumns: [
+        "id",
+        "user_id",
+        "included_channels",
+        "slack_workspace_id",
+        "created_at",
+        "updated_at",
+        "user_slack_installation_id",
+      ],
       updateColumns: ["included_channels", "updated_at"],
       upsertConstraint: "user_slack_channels_by_team_pkey",
     }
