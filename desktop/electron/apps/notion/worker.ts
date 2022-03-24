@@ -324,7 +324,7 @@ function getPageTitle(
 
   if (typeOfBlock === "page") {
     const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
-    return block.properties.title[0][0];
+    return block?.properties?.title?.[0]?.[0] ?? "Untitled";
   }
 
   if (typeOfBlock === "collection_view_page") {
@@ -339,7 +339,7 @@ function getPageTitle(
       return;
     }
 
-    return collection.name[0][0];
+    return collection?.name?.[0]?.[0] ?? "Untitled";
   }
 }
 
@@ -363,7 +363,9 @@ function getNotificationProperties(
       notionURL +
       "/" +
       stripDashes(pageId) +
-      (pageId !== activity?.mentioned_block_id ? `#${stripDashes(activity?.mentioned_block_id)}` : "");
+      (activity?.mentioned_block_id && pageId !== activity.mentioned_block_id
+        ? `#${stripDashes(activity.mentioned_block_id)}`
+        : "");
 
     return {
       type: "notification_notion_user_mentioned",
@@ -386,14 +388,19 @@ function getNotificationProperties(
 
     const discussion = recordMap.discussion[activity.discussion_id].value;
 
+    if (!discussion) {
+      log.error(
+        `Discussion for notification id ${notification.id} not found in recordMap: `,
+        JSON.stringify(recordMap, null, 2)
+      );
+      return;
+    }
+
     const parentDiscussionBlock = discussion.parent_id;
     const url =
-      notionURL +
-      "/" +
-      stripDashes(pageId) +
-      "?d=" +
-      `${stripDashes(discussion.id)}` +
-      `#${stripDashes(parentDiscussionBlock)}`;
+      notionURL + "/" + stripDashes(pageId) + "?d=" + `${stripDashes(discussion.id)}` + parentDiscussionBlock
+        ? `#${stripDashes(parentDiscussionBlock)}`
+        : "";
 
     return {
       type: "notification_notion_commented",
