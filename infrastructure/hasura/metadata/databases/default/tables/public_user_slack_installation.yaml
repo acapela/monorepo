@@ -12,11 +12,6 @@ object_relationships:
 computed_fields:
 - definition:
     function:
-      name: get_user_slack_installation_slack_team_id
-      schema: public
-  name: slack_team_id
-- definition:
-    function:
       name: user_slack_installation_team_id
       schema: public
   name: team_id
@@ -35,10 +30,11 @@ select_permissions:
     columns:
     - created_at
     - id
+    - slack_team_id
+    - slack_user_id
     - updated_at
     - user_id
     computed_fields:
-    - slack_team_id
     - team_id
     - team_name
     - user_scopes

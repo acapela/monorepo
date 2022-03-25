@@ -9,7 +9,6 @@ import {
   parseAndTransformToTipTapJSON,
   parseSlackMarkdown,
 } from "@aca/backend/src/slack/md/parser";
-import { getUserSlackInstallationFilter } from "@aca/backend/src/slack/userSlackInstallation";
 import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
@@ -21,7 +20,7 @@ import {
 export function findUserForSlackInstallation(slackUserId: string) {
   try {
     return db.user.findFirst({
-      where: { user_slack_installation: { some: { data: { path: ["user", "id"], equals: slackUserId } } } },
+      where: { user_slack_installation: { some: { slack_user_id: slackUserId } } },
     });
   } catch (error) {
     logger.warn(error, `Error while querying for slack user ${slackUserId}`);
@@ -61,7 +60,7 @@ async function findUserSlackInstallations(eventContextId: string) {
     where: {
       OR: (authorizations ?? [])
         .filter((auth) => auth.team_id && auth.user_id)
-        .map((auth) => getUserSlackInstallationFilter({ teamId: auth.team_id, userId: auth.user_id })),
+        .map((auth) => ({ slack_team_id: auth.team_id, slack_user_id: auth.user_id })),
     },
     include: { user: true },
   });
