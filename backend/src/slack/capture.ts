@@ -14,6 +14,7 @@ import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
+import { isNotNullish } from "@aca/shared/nullish";
 import {
   USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
   USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
@@ -96,11 +97,13 @@ const createTextPreviewFromSlackMessage = async (
 };
 
 async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
-  const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user);
-  await db.slack_thread_involed_user.createMany({
-    data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
-    skipDuplicates: true,
-  });
+  const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user).filter(isNotNullish);
+  if (userIds.length > 0) {
+    await db.slack_thread_involed_user.createMany({
+      data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
+      skipDuplicates: true,
+    });
+  }
 }
 
 // A user is involved in a thread if they have posted in it or were mentioned in it
@@ -261,7 +264,7 @@ export function setupSlackCapture(app: SlackApp) {
     try {
       await recordInvolvedThreadUsers(message);
     } catch (error) {
-      logger.error(error, "Error recording involved thread users");
+      logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
     }
 
     const userSlackInstallations = await findUserSlackInstallations(eventContextId);
