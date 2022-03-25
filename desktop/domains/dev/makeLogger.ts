@@ -1,6 +1,6 @@
 import { isError } from "lodash";
 
-import { LogEntry, Severity, logStorage } from "@aca/desktop/bridge/logger";
+import type { LogEntry, Severity } from "@aca/desktop/bridge/logger";
 import { getUUID } from "@aca/shared/uuid";
 
 /*
@@ -49,6 +49,14 @@ export function registerLoggerErrorReporter(reporter: ErrorReporter) {
   errorReporter = reporter;
 }
 
+type LogEntryHandler = (entry: LogEntry) => void;
+
+let logEntryHandler: LogEntryHandler | null = null;
+
+export function registerLogEntryHandler(handler: LogEntryHandler) {
+  logEntryHandler = handler;
+}
+
 export function makeLogger(prefix: string, isEnabled = true) {
   const now = () => new Date().toISOString();
 
@@ -64,7 +72,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
       text: preparedBody.join("\n"),
     };
 
-    logStorage.send(logEntry);
+    logEntryHandler?.(logEntry);
 
     if (severity === "Error") {
       errorReporter?.(body);

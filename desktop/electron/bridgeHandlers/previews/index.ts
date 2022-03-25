@@ -10,6 +10,7 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
 
+import { setBrowserViewZIndex } from "../../windows/viewZIndex";
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
 import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
@@ -90,15 +91,11 @@ export function initPreviewHandler() {
     if (!browserView) return;
 
     if (state === "preview-on-top") {
-      targetWindow.setTopBrowserView(browserView);
+      setBrowserViewZIndex(browserView, "aboveMainView");
     }
 
     if (state === "app-on-top") {
-      targetWindow.getBrowserViews().forEach((existingView) => {
-        if (existingView === browserView) return;
-
-        targetWindow.setTopBrowserView(existingView);
-      });
+      setBrowserViewZIndex(browserView, "belowMainView");
     }
   });
 }

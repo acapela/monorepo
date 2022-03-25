@@ -6,7 +6,6 @@ import { Router } from "@aca/frontend/src/router";
 import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { Button } from "@aca/ui/buttons/Button";
 import { TextInput } from "@aca/ui/forms/TextInput";
-import { addToast } from "@aca/ui/toasts/data";
 
 function ResendInviteForm() {
   const [email, setEmail] = useState("");
@@ -24,7 +23,8 @@ function ResendInviteForm() {
         }).then(() => {
           setIsSubmitting(false);
           setEmail("");
-          addToast({ type: "success", title: "Email sent!" });
+          // TODO: use toasts somehow so it doesn't conflict with electron approach.
+          alert("Email sent");
         });
       }}
     >

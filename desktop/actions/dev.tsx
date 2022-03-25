@@ -2,8 +2,7 @@ import { subDays } from "date-fns";
 import React from "react";
 
 import { resetAllServices } from "@aca/desktop/bridge/auth";
-import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
-import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
+import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -88,7 +87,7 @@ export const toggleOpenLoggerWindow = defineAction({
   name: "Toggle dev logs window",
   group: devActionsGroup,
   handler() {
-    requestToggleLoggerWindow();
+    devSettingsStore.showLogsWindow = !devSettingsStore.showLogsWindow;
   },
 });
 
@@ -130,5 +129,17 @@ export const simulateListWasNotSeen = defineAction({
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     list.listEntity?.update({ seen_at: subDays(new Date(), 180).toISOString() });
+  },
+});
+
+export const simulateKnownError = defineAction({
+  icon: devIcon,
+  group: devActionsGroup,
+  name: () => "Simulate known error",
+  handler() {
+    showErrorToUserChannel.send({
+      id: "dummy",
+      message: "Known test error with lengthy content to test the ui of toast with a lot of text",
+    });
   },
 });

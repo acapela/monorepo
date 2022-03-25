@@ -16,7 +16,6 @@ import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { AppThemeProvider } from "@aca/ui/theme";
-import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
 const routeToComponent = {
   root: Index,
@@ -46,7 +45,6 @@ export const App = () => {
         <BuiltInStyles />
         <PromiseUIRenderer />
         <TooltipsRenderer />
-        <ToastsRenderer />
         <Component />
       </AppThemeProvider>
     </>

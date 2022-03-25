@@ -37,6 +37,11 @@ export const focusPageView = createActionView((context) => {
         return view.goToNextNotification();
       }
     },
+    focusPrevItemIfAvailable() {
+      if (view.list.getAllNotifications().length > 0) {
+        return view.goToPreviousNotification();
+      }
+    },
     displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
         desktopRouter.navigate("list", { listId: list.id });

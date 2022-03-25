@@ -4,6 +4,7 @@ import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
 import {
   clearAllDataRequest,
   focusMainViewRequest,
+  focusSenderViewRequest,
   openLinkRequest,
   restartAppRequest,
   setBadgeCountRequest,
@@ -139,5 +140,9 @@ export function initializeSystemHandlers() {
 
   focusMainViewRequest.handle(async () => {
     focusMainView();
+  });
+
+  focusSenderViewRequest.handle(async (data, event) => {
+    event?.sender.focus();
   });
 }

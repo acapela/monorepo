@@ -1,7 +1,8 @@
-import { action, autorun, observable, reaction, runInAction, untracked } from "mobx";
+import { action, autorun, observable, reaction, runInAction, toJS, untracked } from "mobx";
 
 import { getUUID } from "@aca/shared/uuid";
 
+import { Effect, createEffect } from "../effect";
 import { MaybeCleanup } from "../types";
 
 /**
@@ -11,6 +12,12 @@ export function runUntracked<T>(getter: () => T): T {
   const inActionGetter = action(() => untracked(() => getter()));
 
   return inActionGetter();
+}
+
+export function serializeUntracked<T>(item: T): T {
+  return runUntracked(() => {
+    return toJS(item) as T;
+  });
 }
 
 type Cleanup = () => void;
@@ -152,5 +159,88 @@ export function asyncComputedWithCleanup<T>(
     get busy() {
       return busy.get();
     },
+  };
+}
+
+function getArrayDiff<T>(itemsNow: T[], itemsBefore: T[], keyGetter?: (item: T) => string) {
+  if (keyGetter) {
+    const keysNow = itemsNow.map((item) => keyGetter(item));
+    const keysBefore = itemsBefore.map((item) => keyGetter(item));
+
+    const addedItems = itemsNow.filter((itemNow) => {
+      return !keysBefore.includes(keyGetter(itemNow));
+    });
+
+    const removedItems = itemsBefore.filter((itemBefore) => {
+      return !keysNow.includes(keyGetter(itemBefore));
+    });
+
+    return [addedItems, removedItems] as const;
+  }
+
+  const addedItems = itemsNow.filter((itemNow) => {
+    return !itemsBefore.includes(itemNow);
+  });
+
+  const removedItems = itemsBefore.filter((itemBefore) => {
+    return !itemsNow.includes(itemBefore);
+  });
+
+  return [addedItems, removedItems] as const;
+}
+
+export function mobxWatchAddedAndRemovedItems<T>(
+  getter: () => T[],
+  callback: (addedItems: T[], removedItems: T[]) => void,
+  keyGetter?: (item: T) => string
+) {
+  const stop = reaction(getter, (itemsNow, itemsBefore) => {
+    const [addedItems, removedItems] = getArrayDiff(itemsNow, itemsBefore, keyGetter);
+
+    callback(addedItems, removedItems);
+  });
+
+  return () => {
+    stop();
+  };
+}
+
+export function mobxItemAddedToArrayEffect<T>(
+  getter: () => T[],
+  callback: (item: T) => MaybeCleanup,
+  keyGetter?: (item: T) => string
+) {
+  const effectsMap = new Map<string | T, Effect<[T]>>();
+
+  const stopWatchingArray = mobxWatchAddedAndRemovedItems(
+    getter,
+    (addedItems, removedItems) => {
+      addedItems.forEach((addedItem) => {
+        const key = keyGetter?.(addedItem) ?? addedItem;
+        const effect = createEffect(callback);
+
+        effectsMap.set(key, effect);
+
+        effect.run(addedItem);
+      });
+
+      removedItems.forEach((addedItem) => {
+        const key = keyGetter?.(addedItem) ?? addedItem;
+        const effect = effectsMap.get(key);
+
+        effect?.clean();
+
+        effectsMap.delete(key);
+      });
+    },
+    keyGetter
+  );
+
+  return () => {
+    stopWatchingArray();
+    effectsMap.forEach((effect, key) => {
+      effectsMap.delete(key);
+      effect.clean();
+    });
   };
 }

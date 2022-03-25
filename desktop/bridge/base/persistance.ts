@@ -4,7 +4,7 @@ import { useObserver } from "mobx-react";
 import { isPrimitive } from "utility-types";
 
 import { createChannel } from "@aca/shared/channel";
-import { runUntracked } from "@aca/shared/mobx/utils";
+import { runUntracked, serializeUntracked } from "@aca/shared/mobx/utils";
 import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 
 import { createChannelBridge } from "./channels";
@@ -72,14 +72,16 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
   });
 
   async function set(value: T) {
+    const serializableValue = serializeUntracked(value);
     if (isEqual(get(), value)) {
       return;
     }
 
     const valueData: ValueData = {
-      value,
+      value: serializableValue,
       updatedAt: new Date(),
     };
+
     localChannel.publish(valueData);
 
     bridgeValueChangeChannel.send({ key: valueKey, data: valueData });

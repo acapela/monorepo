@@ -1,8 +1,8 @@
-import { motion } from "framer-motion";
-import React, { ReactNode, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
+import { removeToast } from "@aca/desktop/domains/toasts/store";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { emptyFunction } from "@aca/shared/functions";
 import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
@@ -11,52 +11,76 @@ import { usePausableTimeout } from "@aca/shared/hooks/usePausableTimeout";
 import { DAY } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconInfo } from "@aca/ui/icons";
-import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+import { PresenceAnimator, PresenceStyles } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
-interface Props {
-  id: string;
-  icon?: ReactNode;
-  title?: string;
-  description?: string;
-  action?: ActionData;
-  actionLabel?: {
-    label: string;
-    callback: () => void;
-  };
-  target?: unknown;
-  onCloseRequest?: () => void;
-  autoCloseAfterMs?: number;
-  progressPercent?: number;
+export interface MetaToastProps {
+  disablePositionalAnimations?: boolean;
   pauseAutoHide?: boolean;
+  animationsDelay?: number;
+}
+
+export interface ToastProps extends MetaToastProps {
+  title?: string;
+  message: string;
+  durationMs?: number;
+  id: string;
+  onCloseRequest?: () => void;
+  action?: {
+    label: string;
+    callback?: () => void;
+  };
+  actionObject?: {
+    action: ActionData;
+    target?: unknown;
+  };
 }
 
 export function Toast({
   title,
-  description,
-  action,
-  target,
+  message,
+  durationMs,
   id,
-  onCloseRequest,
-  autoCloseAfterMs,
-  actionLabel,
-  progressPercent,
-  icon = <IconInfo />,
+  disablePositionalAnimations,
+  animationsDelay = 0,
+  action,
+  actionObject,
   pauseAutoHide,
-}: Props) {
+}: ToastProps) {
+  function onCloseRequest() {
+    removeToast(id);
+  }
+
   const toastRef = useRef<HTMLDivElement>(null);
   const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
 
-  usePausableTimeout(autoCloseAfterMs ?? DAY, !pauseAutoHide && !isHovered && !!autoCloseAfterMs, () => {
+  const shouldPlayAutoHide = !pauseAutoHide && !isHovered && !!durationMs;
+
+  usePausableTimeout(durationMs ?? DAY, shouldPlayAutoHide, () => {
     onCloseRequestRef();
   });
 
+  function getAnimationStyles(): PresenceStyles {
+    if (disablePositionalAnimations) {
+      return {
+        opacity: [0, 1],
+      };
+    }
+
+    return {
+      opacity: [0, 1],
+      y: [40, 0],
+      scale: [0.7, 1],
+      height: ["0", "auto"],
+    };
+  }
+
   return (
     <UIAnimator
-      layoutId={id}
-      presenceStyles={{ opacity: [0, 1], y: [40, 0], scale: [0.7, 1], height: ["0", "auto"] }}
-      transition={{ duration: 0.5 }}
+      layoutId={disablePositionalAnimations ? undefined : id}
+      presenceStyles={getAnimationStyles()}
+      transition={{ duration: 0.25, delay: animationsDelay }}
     >
       <UIToast
         ref={toastRef}
@@ -64,30 +88,28 @@ export function Toast({
           onCloseRequest?.();
         }}
       >
-        <UIIcon>{icon}</UIIcon>
+        <UIIcon>
+          <IconInfo />
+        </UIIcon>
 
         <UIBody>
           <UIHead>
             {title && <UITitle>{title}</UITitle>}
-            {description && <UIDescription>{description}</UIDescription>}
+            {message && <UIDescription>{message}</UIDescription>}
           </UIHead>
-          {progressPercent !== undefined && (
-            <UIProgressBar>
-              <UIProgressBarIndicator
-                animate={{
-                  scaleX: progressPercent / 100,
-                }}
-              />
-            </UIProgressBar>
-          )}
         </UIBody>
         <UIActions>
-          {action && <ActionButton kind="primary" action={action} target={target} />}
-          {actionLabel && (
-            <Button kind="secondary" onClick={() => actionLabel.callback()}>
-              {actionLabel.label}
+          {action && (
+            <Button
+              kind="secondary"
+              onClick={() => {
+                action.callback?.();
+              }}
+            >
+              {action.label}
             </Button>
           )}
+          {actionObject && <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />}
         </UIActions>
       </UIToast>
     </UIAnimator>
@@ -98,7 +120,7 @@ const UIAnimator = styled(PresenceAnimator)`
   will-change: transform, filter;
 `;
 
-export const UIToast = styled.div`
+const UIToast = styled.div`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   ${theme.box.panel.toast.padding.radius}
   ${theme.shadow.modal};
@@ -145,18 +167,4 @@ const UIActions = styled.div`
   justify-content: flex-end;
   align-self: stretch;
   align-items: center;
-`;
-
-const UIProgressBar = styled.div`
-  height: 4px;
-  ${theme.colors.layout.backgroundAccent.hover.asBg};
-  border-radius: 2px;
-  overflow: hidden;
-  width: 100%;
-`;
-const UIProgressBarIndicator = styled(motion.div)`
-  ${theme.colors.primary.asBg};
-  height: inherit;
-  width: 100%;
-  transform-origin: left;
 `;

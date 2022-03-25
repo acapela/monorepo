@@ -1,4 +1,4 @@
-import { Menu, MenuItemConstructorOptions, app } from "electron";
+import { Menu, MenuItemConstructorOptions, app, webContents } from "electron";
 import { throttle } from "lodash";
 
 import { SystemMenuItemData, addSystemMenuItem, systemMenuItemClicked } from "@aca/desktop/bridge/systemMenu";
@@ -52,7 +52,15 @@ function getDefaultSystemMenuTemplate() {
       label: "Debug",
       submenu: [
         { role: "reload" },
-        { role: "forceReload" },
+        {
+          label: "Reload all views",
+          accelerator: "Shift+CommandOrControl+R",
+          click() {
+            webContents.getAllWebContents().forEach((webContents) => {
+              webContents.reloadIgnoringCache();
+            });
+          },
+        },
         {
           label: "Toggle developer tools",
           accelerator: "CommandOrControl+Alt+I",

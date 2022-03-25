@@ -28,6 +28,7 @@ const electronGlobal = {
         },
       });
     }
+
     ipcMain.on(channel, handler);
 
     return function cancel() {

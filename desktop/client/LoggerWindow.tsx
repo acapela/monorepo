@@ -8,7 +8,26 @@ import { LogEntry, getAllLogsBridge, logStorage } from "@aca/desktop/bridge/logg
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { theme } from "@aca/ui/theme";
 
-export const LoggerWindow = observer(function LoggerWindow() {
+import { devSettingsStore } from "../domains/dev/store";
+import { NewBrowserWindow } from "../domains/window/NewBrowserWindow";
+
+export const LoggerWindowManager = observer(function LoggerWindowManager() {
+  const { showLogsWindow } = devSettingsStore;
+
+  if (!showLogsWindow) return null;
+
+  return (
+    <NewBrowserWindow
+      onClosed={() => {
+        devSettingsStore.showLogsWindow = false;
+      }}
+    >
+      <LoggerWindow />
+    </NewBrowserWindow>
+  );
+});
+
+const LoggerWindow = observer(function LoggerWindow() {
   const [allLogs, { push: addLog, set: setLogEntryList }] = useList<LogEntry>([]);
   const [filteredPrefixes, { set: setFilteredPrefixes }] = useList<string>([]);
 
