@@ -37,16 +37,30 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
 const log = makeLogger("Analytics");
 
 const getAnalytics = memoize(async () => {
-  const [analytics] = await AnalyticsBrowser.load({ writeKey: SEGMENT_API_KEY });
+  try {
+    if (!SEGMENT_API_KEY) {
+      log("No segment key - skip analytics init");
+      return null;
+    }
+    const [analytics] = await AnalyticsBrowser.load({ writeKey: SEGMENT_API_KEY });
 
-  log("analytics ready");
+    log("analytics ready");
 
-  return analytics;
+    return analytics;
+  } catch (error) {
+    log.error("Failed to initialize analytics", error);
+    return null;
+  }
 });
 
 onDocumentReady(async () => {
   try {
     const analytics = await getAnalytics();
+
+    if (!analytics) {
+      log(`Skipping analytics profile - analytics not initialized`);
+      return;
+    }
 
     initializeAnalytics(analytics);
   } catch (error) {
@@ -107,10 +121,13 @@ export async function trackEvent<N extends AnalyticsEventName>(
   type: N,
   ...[payload]: VoidableArgument<AnalyticsEventPayload<N>>
 ) {
-  const analytics = await getAnalytics();
-
   log("sending event", type, payload);
-  analytics.track(type, payload ?? undefined);
+  try {
+    const analytics = await getAnalytics();
+    await analytics?.track(type, payload ?? undefined);
+  } catch (error) {
+    log.error(`Failed to trackEvent`, type, payload, error);
+  }
 }
 
 export function createAnalyticsEvent<N extends AnalyticsEventName>(

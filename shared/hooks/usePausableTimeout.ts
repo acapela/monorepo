@@ -23,12 +23,12 @@ export function usePausableTimeout(time: number, isPlaying: boolean, callback: (
     }, timeRemaining);
 
     return () => {
+      cancelTimeout();
+
       const cancelTime = new Date();
 
       const playDuration = cancelTime.getTime() - playStartTime.getTime();
       timeRemainingRef.current -= playDuration;
-
-      cancelTimeout();
     };
   }, [isPlaying]);
 }

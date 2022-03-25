@@ -57,6 +57,21 @@ export const listPageView = createActionView((context) => {
 
       uiStore.focusedTarget = null;
     },
+    focusPrevItemIfAvailable() {
+      const { nextListItem, prevListItem } = view;
+
+      if (prevListItem) {
+        uiStore.focusedTarget = prevListItem;
+        return;
+      }
+
+      if (nextListItem) {
+        uiStore.focusedTarget = nextListItem;
+        return;
+      }
+
+      uiStore.focusedTarget = null;
+    },
     displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
         uiStore.isDisplayingZenImage = true;

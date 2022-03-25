@@ -9,7 +9,7 @@
  *
  */
 
-import { toJS } from "mobx";
+import { serializeUntracked } from "@aca/shared/mobx/utils";
 
 export type ElectronChannelSubscriber<T> = (data: T, event: ElectronChannelEventUnified<T>) => void;
 export type ElectronSubscribeCleanup = () => void;
@@ -36,14 +36,35 @@ export function createChannelBridge<Data>(key: string) {
    */
   function send(data: Data) {
     try {
+      const sendableData = serializeUntracked(data);
       if (process.env.ELECTRON_CONTEXT === "client") {
-        return window.electronBridge.send(key, toJS(data));
+        return window.electronBridge.send(key, sendableData);
       } else {
         global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
-          targetWindow.webContents.send(key, toJS(data));
+          targetWindow.webContents.send(key, sendableData);
 
           targetWindow.getBrowserViews().forEach((view) => {
-            view.webContents.send(key, toJS(data));
+            view.webContents.send(key, sendableData);
+          });
+        });
+      }
+    } catch (error) {
+      console.info(`Failed to send message for channel ${key}`, { data });
+      throw error;
+    }
+  }
+
+  function sendSync(data: Data) {
+    try {
+      const sendableData = serializeUntracked(data);
+      if (process.env.ELECTRON_CONTEXT === "client") {
+        return window.electronBridge.sendSync(key, sendableData);
+      } else {
+        global.electronGlobal.BrowserWindow.getAllWindows().forEach((targetWindow) => {
+          targetWindow.webContents.send(key, sendableData);
+
+          targetWindow.getBrowserViews().forEach((view) => {
+            view.webContents.send(key, sendableData);
           });
         });
       }
@@ -56,5 +77,6 @@ export function createChannelBridge<Data>(key: string) {
   return {
     subscribe,
     send,
+    sendSync,
   };
 }

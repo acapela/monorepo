@@ -85,6 +85,7 @@ export const UIButton = styled.button<{
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
+  outline: none;
 
   ${theme.radius.button};
   ${theme.transitions.hover()};

@@ -91,7 +91,7 @@ export function createElectronBundler(env: BuildEnvironment): Parcel {
 export function createClientBundler(env: BuildEnvironment): Parcel {
   const distDir = path.resolve(__dirname, `dist${getDistSuffix(env)}/client`);
   return new Parcel({
-    entries: path.resolve(CLIENT_DIR, "index.html"),
+    entries: [path.resolve(CLIENT_DIR, "index.html"), path.resolve(CLIENT_DIR, "overlay.html")],
     defaultConfig: "@parcel/config-default",
     mode: isDev(env) ? "development" : "production",
     defaultTargetOptions: {

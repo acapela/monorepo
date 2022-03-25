@@ -82,6 +82,10 @@ export function setupAutoUpdater() {
       await autoUpdater.quitAndInstall();
     } catch (error) {
       log.error(error);
+      dialog.showMessageBox(getMainWindow(), {
+        message: "Failed to install update",
+        detail: `${error}`,
+      });
       throw error;
     }
   });

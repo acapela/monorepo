@@ -2,8 +2,9 @@ import { BrowserView, BrowserWindow } from "electron";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
+import { assertViewIsNotAttachedToWindow } from "../../windows/viewUtils";
+import { addBrowserViewWithZIndex } from "../../windows/viewZIndex";
 import { attachViewToPreloadingWindow, getPreloadingWindow } from "./preloadingWindow";
-import { assertViewIsNotAttachedToWindow } from "./utils/view";
 
 const log = makeLogger("BrowserView");
 
@@ -20,13 +21,7 @@ export function attachPreview(view: BrowserView, targetWindow: BrowserWindow) {
   // Should never happen, but make sure to throw early if it does.
   assertViewIsNotAttachedToWindow(view, targetWindow);
 
-  targetWindow.addBrowserView(view);
-
-  targetWindow.getBrowserViews().forEach((otherView) => {
-    if (otherView !== view) {
-      targetWindow.setTopBrowserView(otherView);
-    }
-  });
+  addBrowserViewWithZIndex(targetWindow, view, "belowApp");
 
   function detach() {
     log("will detach view");

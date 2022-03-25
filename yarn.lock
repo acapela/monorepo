@@ -339,6 +339,7 @@ __metadata:
     react-dom: ^17.0.2
     react-use: ^17.3.2
     styled-components: ^5.3.3
+    trace-unhandled: ^2.0.1
     ts-node: ^10.4.0
     tslib: ^2.3.1
     type-fest: ^2.11.1
@@ -11092,7 +11093,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+"cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-spawn@npm:7.0.3"
   dependencies:
@@ -13798,6 +13799,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"foreground-child@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "foreground-child@npm:2.0.0"
+  dependencies:
+    cross-spawn: ^7.0.0
+    signal-exit: ^3.0.2
+  checksum: f77ec9aff621abd6b754cb59e690743e7639328301fbea6ff09df27d2befaf7dd5b77cec51c32323d73a81a7d91caaf9413990d305cbe3d873eec4fe58960956
+  languageName: node
+  linkType: hard
+
 "forever-agent@npm:~0.6.1":
   version: 0.6.1
   resolution: "forever-agent@npm:0.6.1"
@@ -14823,6 +14834,16 @@ fsevents@^1.2.7:
     inherits: ^2.0.3
     minimalistic-assert: ^1.0.1
   checksum: e350096e659c62422b85fa508e4b3669017311aa4c49b74f19f8e1bc7f3a54a584fdfd45326d4964d6011f2b2d882e38bea775a96046f2a61b7779a979629d8f
+  languageName: node
+  linkType: hard
+
+"haxec@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "haxec@npm:2.0.1"
+  dependencies:
+    foreground-child: ^2.0.0
+    spawn-wrap: ^2.0.0
+  checksum: 64ceb5d9c526d5f2134a74a653b6d3a93cbd197cda48313a0c9060e996e1e63ce95ba65d9eed78bcad75126ddae4850c29fdedc591b744c9e8c65f95b4e9dc2e
   languageName: node
   linkType: hard
 
@@ -23043,6 +23064,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"spawn-wrap@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "spawn-wrap@npm:2.0.0"
+  dependencies:
+    foreground-child: ^2.0.0
+    is-windows: ^1.0.2
+    make-dir: ^3.0.0
+    rimraf: ^3.0.0
+    signal-exit: ^3.0.2
+    which: ^2.0.1
+  checksum: 5a518e37620def6d516b86207482a4f76bcf3c37c57d8d886d9fa399b04e5668d11fd12817b178029b02002a5ebbd09010374307effa821ba39594042f0a2d96
+  languageName: node
+  linkType: hard
+
 "spdx-correct@npm:^3.0.0":
   version: 3.1.1
   resolution: "spdx-correct@npm:3.1.1"
@@ -24201,6 +24236,17 @@ fsevents@^1.2.7:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
+  languageName: node
+  linkType: hard
+
+"trace-unhandled@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "trace-unhandled@npm:2.0.1"
+  dependencies:
+    haxec: ^2.0.1
+  bin:
+    trace-unhandled: bin.js
+  checksum: f33cb0fffa5204ca47b23a67b31d3c14e62daf1ce70f36f3be6db6253e6faf029f1f2720738310366de4a2188d6b8dd35ae841c7f5bb6f7d2bed6529814d9a20
   languageName: node
   linkType: hard
 

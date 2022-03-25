@@ -157,7 +157,9 @@ export const resolveNotification = defineAction({
     const notification = context.getTarget("notification");
     let group = context.getTarget("group");
 
-    focusNextItemIfAvailable(context);
+    const cancel = createCleanupObject();
+
+    cancel.next = focusNextItemIfAvailable(context);
 
     if (!group && notification) {
       // If the given notification is part of a group which can be previewed through a single notification, we treat
@@ -168,8 +170,6 @@ export const resolveNotification = defineAction({
           .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
         null;
     }
-
-    const cancel = createCleanupObject();
 
     cancel.next = notification?.resolve()?.undo;
 
@@ -208,9 +208,9 @@ export const unresolveNotification = defineAction({
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
 
-    focusNextItemIfAvailable(context);
-
     const cancel = createCleanupObject();
+
+    cancel.next = focusNextItemIfAvailable(context);
 
     cancel.next = notification?.update({ resolved_at: null }).undo;
 

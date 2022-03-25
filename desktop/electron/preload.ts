@@ -6,6 +6,7 @@ import { IpcRendererEvent, clipboard, contextBridge, ipcRenderer } from "electro
 
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 import { AppEnvData } from "@aca/desktop/envData";
+import { serializeUntracked } from "@aca/shared/mobx/utils";
 
 const appEnvJSON = process.argv.pop();
 const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
@@ -28,7 +29,12 @@ const appEnv: AppEnvData = JSON.parse(appEnvJSON as string);
 const publishedApi = {
   invoke: async (key: string, data: unknown) => {
     // TODO (security): reject other channels than registered bridges
-    return ipcRenderer.invoke(key, data);
+    try {
+      return ipcRenderer.invoke(key, serializeUntracked(data));
+    } catch (error) {
+      console.error(`Failed to invoke ${key}`, data, error);
+      throw error;
+    }
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribe: (channel: string, subscriber: ElectronChannelSubscriber<any>) => {
@@ -36,7 +42,12 @@ const publishedApi = {
     function handler(event: IpcRendererEvent, data: unknown) {
       subscriber(data, {
         reply(data: unknown) {
-          ipcRenderer.send(channel, data);
+          try {
+            ipcRenderer.send(channel, serializeUntracked(data));
+          } catch (error) {
+            console.error(`Failed to reply on channel ${channel}`, data, error);
+            throw error;
+          }
         },
       });
     }
@@ -47,8 +58,27 @@ const publishedApi = {
     };
   },
   send: (channel: string, data: unknown) => {
+    const sendableData = serializeUntracked(data);
+    try {
+      ipcRenderer.send(channel, sendableData);
+      ipcRenderer.send("broadcast-request", { channel, data: sendableData });
+    } catch (error) {
+      console.error(`Failed to send message on channel ${channel}`, data, error);
+      throw error;
+    }
+
     // TODO (security): reject other channels than registered bridges
-    ipcRenderer.send(channel, data);
+  },
+  sendSync: (channel: string, data: unknown) => {
+    const sendableData = serializeUntracked(data);
+    try {
+      ipcRenderer.sendSync(channel, sendableData);
+      ipcRenderer.send("broadcast-request", { channel, data: sendableData });
+    } catch (error) {
+      console.error(`Failed to send message on channel ${channel}`, data, error);
+      throw error;
+    }
+    // TODO (security): reject other channels than registered bridges
   },
   copyToClipboard: (thing: string) => {
     clipboard.write({ text: thing });

@@ -1,59 +1,22 @@
-import path from "path";
+import { BrowserView, BrowserWindow } from "electron";
 
-import * as Sentry from "@sentry/electron";
-import { BrowserView, BrowserWindow, app } from "electron";
-import IS_DEV from "electron-is-dev";
-
-import { AppEnvData } from "@aca/desktop/envData";
-
+import { appEnvData } from "./env";
+import { PRELOAD_SCRIPT_PATH, getEntryHTMLFilePath } from "./paths";
 import { handleMainViewPosition } from "./utils/mainViewPosition";
-
-// Note - please always use 'path' module for paths (especially with slashes) instead of eg `${pathA}/${pathB}` to avoid breaking it on windows.
-// Note - do not use relative paths without __dirname
-const DIST_PATH = path.resolve(__dirname, "../client");
-const INDEX_HTML_FILE = path.resolve(DIST_PATH, "index.html");
-export const PRELOAD_SCRIPT_PATH = path.resolve(__dirname, "preload.js");
-export const sentryDsn = "https://ed39ac35046641e988dcea60c3bab87b@o485543.ingest.sentry.io/6170771";
-
-if (!IS_DEV) {
-  Sentry.init({
-    dsn: sentryDsn,
-    release: app.getVersion(),
-  });
-}
+import { setBrowserViewZIndex } from "./viewZIndex";
 
 function loadAppInView(view: BrowserView) {
-  return view.webContents.loadURL(
-    IS_DEV
-      ? // In dev mode - load from local dev server
-        "http://localhost:3005"
-      : // In production - load static, bundled file
-        `file://${INDEX_HTML_FILE}`
-  );
+  return view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
 }
-
-export const acapelaAppPathUrl = IS_DEV
-  ? // In dev mode - load from local dev server
-    "http://localhost:3005/"
-  : // In production - load static, bundled file
-    `file://${INDEX_HTML_FILE}`;
 
 const windowMainViewMap = new WeakMap<BrowserWindow, BrowserView>();
 
 export function initializeMainView(mainWindow: BrowserWindow) {
-  const env: AppEnvData = {
-    appName: app.name,
-    sentryDsn,
-    isDev: IS_DEV,
-    version: app.getVersion(),
-    windowName: "Root",
-  };
-
   const mainView = new BrowserView({
     webPreferences: {
       contextIsolation: true,
-      preload: path.resolve(__dirname, "preload.js"),
-      additionalArguments: [JSON.stringify(env)],
+      preload: PRELOAD_SCRIPT_PATH,
+      additionalArguments: [JSON.stringify(appEnvData)],
       backgroundThrottling: false,
       devTools: true,
     },
@@ -68,7 +31,7 @@ export function initializeMainView(mainWindow: BrowserWindow) {
 
   handleMainViewPosition(mainWindow, mainView);
 
-  mainWindow.setTopBrowserView(mainView);
+  setBrowserViewZIndex(mainView, "app");
 
   loadAppInView(mainView);
 
