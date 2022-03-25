@@ -15,6 +15,7 @@ export type {
   notification_slack_message as NotificationSlackMessage,
   user as User,
   user_slack_installation as UserSlackInstallation,
+  user_slack_channels_by_team as UserSlackChannelsByTeam,
   whitelist as Whitelist,
 } from "@prisma/client";
 
