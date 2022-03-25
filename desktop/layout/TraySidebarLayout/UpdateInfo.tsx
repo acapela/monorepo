@@ -25,7 +25,7 @@ export const SidebarUpdateInfo = observer(() => {
       );
     }
 
-    if (!isUpdateReadyToInstall) {
+    if (isUpdateReadyToInstall) {
       return (
         <UIUpdateInfoBox key="ready">
           <UITitle>Update ready to install</UITitle>
