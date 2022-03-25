@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
+import { uniqBy } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
@@ -54,10 +55,12 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
     where: { id: { in: notifications.map((n) => n.id) } },
     data: { resolved_at: new Date().toISOString() },
   });
-  for (const notification of notifications) {
+  // we are only interested in one notification auto resolve event per user
+  const uniqueNotificationsByUser = uniqBy(notifications, (n) => n.user_id);
+  for (const notification of uniqueNotificationsByUser) {
     trackBackendUserEvent(notification.user_id, "Notification Resolved", {
       notification_id: notification.id,
-      auto: true,
+      wasAutoResolved: true,
     });
   }
 }
