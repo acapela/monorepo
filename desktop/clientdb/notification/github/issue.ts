@@ -14,7 +14,10 @@ const notificationGitHubFragment = gql`
     updated_at
     type
     issue_id
-    issue_title
+    title
+    repository_id
+    repository_full_name
+    pr_id
   }
 `;
 
