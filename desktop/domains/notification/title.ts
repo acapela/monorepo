@@ -69,11 +69,11 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_github": {
       switch (inner.type) {
         case "mention":
-          return `Mentioned you in "${inner.issue_title}"`;
+          return `Mentioned you in "${inner.title}"`;
         case "assign":
-          return `Assigned you to "${inner.issue_title}"`;
+          return `Assigned you to "${inner.title}"`;
       }
-      return `Unhandled notification in "${inner.issue_title}"`;
+      return `Unhandled notification in "${inner.title}"`;
     }
     default:
       return "Unhandled notification!!";

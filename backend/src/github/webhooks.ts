@@ -10,9 +10,7 @@ export function addWebhookHandlers(webhooks: Webhooks) {
   webhooks.on("issue_comment.created", commentCreated);
 
   webhooks.on("issues.assigned", issueAssigned);
-  webhooks.on("pull_request.assigned", (event) => {
-    console.info("pull_request.assigned", event.payload);
-  });
+  webhooks.on("pull_request.assigned", issueAssigned);
 
   webhooks.on("issues.opened", (event) => {
     console.info("issues.opened", event.payload);
@@ -100,14 +98,18 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
         },
         type: "mention",
         issue_id: event.payload.issue.id,
-        issue_title: event.payload.issue.title,
+        title: event.payload.issue.title,
+        repository_id: event.payload.repository.id,
+        repository_full_name: event.payload.repository.full_name,
       },
     })
   );
   await Promise.all(notificationPromises);
 }
 
-async function issueAssigned(event: EmitterWebhookEvent<"issues.assigned">) {
+async function issueAssigned(
+  event: EmitterWebhookEvent<"issues.assigned"> | EmitterWebhookEvent<"pull_request.assigned">
+) {
   const installationId = event.payload.installation?.id;
   if (!installationId) throw new Error("installation id is missing");
   if (!event.payload.assignee) throw new Error("assignee is missing");
@@ -130,18 +132,24 @@ async function issueAssigned(event: EmitterWebhookEvent<"issues.assigned">) {
   const senderAccount = accounts.find((a) => a.github_account.github_user_id === event.payload.sender.id);
   const senderName = senderAccount?.github_account.user.name || event.payload.sender.login;
 
+  const isIssue = event.name === "issues";
+  const issueOrPr = isIssue ? event.payload.issue : event.payload.pull_request;
+
   await db.notification_github.create({
     data: {
       notification: {
         create: {
           user_id: assigneeAccount.user_id,
-          url: event.payload.issue.html_url,
+          url: issueOrPr.html_url,
           from: senderName,
         },
       },
       type: "assign",
-      issue_id: event.payload.issue.id,
-      issue_title: event.payload.issue.title,
+      issue_id: isIssue ? issueOrPr.id : null,
+      pr_id: !isIssue ? issueOrPr.id : null,
+      title: issueOrPr.title,
+      repository_id: event.payload.repository.id,
+      repository_full_name: event.payload.repository.full_name,
     },
   });
 }

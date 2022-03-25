@@ -8,12 +8,15 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
-    - id
-    - notification_id
-    - type
-    - issue_id
-    - issue_title
     - created_at
+    - id
+    - issue_id
+    - notification_id
+    - pr_id
+    - repository_full_name
+    - repository_id
+    - title
+    - type
     - updated_at
     filter:
       notification:
