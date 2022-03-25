@@ -70,7 +70,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     const [didGet, maybeValue] = getInitialPersistedValue();
 
     if (didGet) {
-      return mixValueWithDefaults(maybeValue);
+      return mixValueWithDefaults(maybeValue as T);
     }
 
     return getDefault();
