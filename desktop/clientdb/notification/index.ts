@@ -1,6 +1,6 @@
 import { isFuture } from "date-fns";
 import gql from "graphql-tag";
-import { createAtom } from "mobx";
+import { action, createAtom } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
@@ -118,10 +118,13 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
       const snoozeDate = new Date(notification.snoozed_until);
 
-      return createDateTimeout(snoozeDate, () => {
-        snoozePassedAtom.reportChanged();
-        refreshIndex();
-      });
+      return createDateTimeout(
+        snoozeDate,
+        action(() => {
+          snoozePassedAtom.reportChanged();
+          refreshIndex();
+        })
+      );
     });
 
     const connections = {
