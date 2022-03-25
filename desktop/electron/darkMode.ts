@@ -5,8 +5,6 @@ import { uiSettingsBridge } from "../bridge/ui";
 
 export function initializeDarkModeHandling() {
   autorun(() => {
-    if (!uiSettingsBridge.isReady) return;
-
     const { theme } = uiSettingsBridge.get();
 
     function getElectronTheme() {

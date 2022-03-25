@@ -61,9 +61,7 @@ export const uiStore = makeAutoObservable({
   },
   // Any part of the app is focused
   get isAppFocused() {
-    if (!applicationStateBridge.isReady) return true;
-
-    return applicationStateBridge.get().isFocused;
+    return applicationStateBridge.value.isFocused;
   },
   get isAnyPreviewFocused(): boolean {
     // If 'client' is directly focused, there is no way some preview is
@@ -102,13 +100,12 @@ window.matchMedia(preferDarkMediaQuery).addEventListener("change", (event) => {
 });
 
 autorun(() => {
-  const { isReady: isPersistedSettingsReady, value: persistedSettings } = uiSettingsBridge.observables;
+  const {
+    value: { theme },
+  } = uiSettingsBridge;
 
-  if (isPersistedSettingsReady.get()) {
-    const { theme } = persistedSettings.get();
-    const isInDarkMode = theme == "dark" || (theme == "auto" && isSystemDarkBox.get());
-    runInAction(() => {
-      uiStore.isInDarkMode = isInDarkMode;
-    });
-  }
+  const isInDarkMode = theme == "dark" || (theme == "auto" && isSystemDarkBox.get());
+  runInAction(() => {
+    uiStore.isInDarkMode = isInDarkMode;
+  });
 });

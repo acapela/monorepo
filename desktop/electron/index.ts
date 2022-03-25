@@ -20,7 +20,8 @@ import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeIpcBroadcast } from "./ipcBroadcast";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
-import { getMainWindow } from "./windows/mainWindow";
+import { getAppEnvData } from "./windows/env";
+import { getMainWindow, setAppEnvData } from "./windows/mainWindow";
 
 registerLogEntryHandler((entry) => {
   logStorage.send(entry);
@@ -48,7 +49,11 @@ protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privil
 
 const log = makeLogger("Electron-Boot-Sequence");
 
-function initializeApp() {
+async function initializeApp() {
+  const appEnvData = await getAppEnvData();
+
+  setAppEnvData(appEnvData);
+
   log.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
 

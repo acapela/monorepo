@@ -4,6 +4,9 @@ import IS_DEV from "electron-is-dev";
 import { memoize } from "lodash";
 import { autorun } from "mobx";
 
+import { AppEnvData } from "@aca/desktop/envData";
+import { assert } from "@aca/shared/assert";
+
 import { applicationFocusStateBridge, applicationStateBridge } from "../../bridge/system";
 import { initializeChildWindowHandlers } from "./childWindows";
 import { initializeMainView } from "./mainView";
@@ -20,7 +23,14 @@ if (!IS_DEV) {
   });
 }
 
+let appEnvData: AppEnvData | null = null;
+
+export function setAppEnvData(data: AppEnvData) {
+  appEnvData = data;
+}
+
 function initializeMainWindow() {
+  assert(appEnvData, "Cannot call initializeMainWindow before calling setAppEnvData");
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -37,9 +47,9 @@ function initializeMainWindow() {
     //
   });
 
-  const mainView = initializeMainView(mainWindow);
+  const mainView = initializeMainView(mainWindow, appEnvData);
 
-  const overlayView = initializeOverlayView(mainWindow, mainView);
+  const overlayView = initializeOverlayView(mainWindow, mainView, appEnvData);
 
   const mainWindowWebContents = mainWindow.webContents;
 

@@ -19,9 +19,22 @@ export async function clearPersistance() {
   });
 }
 
-export function initializePersistance() {
-  storage.setDataPath(PERSISTANCE_DIR);
+storage.setDataPath(PERSISTANCE_DIR);
 
+export async function getAllPersistedValues() {
+  return new Promise<Record<string, unknown>>((resolve, reject) => {
+    storage.getAll((error, data) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(data as Record<string, unknown>);
+    });
+  });
+}
+
+export function initializePersistance() {
   requestPersistValue.handle(async ({ key, data }) => {
     console.info(`Persisting value ${key}`);
     await persistValue(key, data);

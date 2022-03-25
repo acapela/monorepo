@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { autorun, computed } from "mobx";
+import { autorun } from "mobx";
 import React from "react";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
@@ -24,11 +24,7 @@ export const slackIntegrationClient: IntegrationClient = {
   name: "Slack",
   description: "Important or urgent conversations.",
   icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
-
   additionalSettings: <SlackSettings />,
-  get isReady() {
-    return computed(() => accountStore.user !== null);
-  },
   getCanConnect: () => !!accountStore.user,
   getAccounts: () =>
     accountStore.user?.slackInstallations.all.map((i) => ({ kind: "account", id: i.team_id!, name: i.team_name! })) ??

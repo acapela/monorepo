@@ -25,19 +25,6 @@ export const RootView = observer(function RootView() {
   const user = authStore.userTokenData;
 
   function renderApp() {
-    if (!authStore.isReady) {
-      return (
-        <LoadingScreen
-          key="no-auth-store"
-          longLoadingFallback={{
-            timeout: 5000,
-            fallbackNode: <ErrorRecoveryButtons />,
-            hint: "Seems it is taking too long...",
-          }}
-        />
-      );
-    }
-
     if (!user) {
       return <LoginView />;
     }

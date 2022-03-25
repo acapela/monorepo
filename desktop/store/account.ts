@@ -11,7 +11,7 @@ import { authStore } from "./auth";
 
 export const accountStore = makeAutoObservable({
   get user() {
-    if (!authStore.isReady || !authStore.userTokenData) return null;
+    if (!authStore.userTokenData) return null;
 
     return getNullableDb()?.user.findById(authStore.userTokenData.id) ?? null;
   },

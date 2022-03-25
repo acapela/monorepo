@@ -33,38 +33,59 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
 
   const localChannel = createChannel<ValueData>();
 
+  function getInitialPersistedValue() {
+    try {
+      if (!isPersisted) {
+        return [false, null] as const;
+      }
+
+      if (typeof window === "undefined") {
+        return [false, null] as const;
+      }
+
+      const initialPersistedValues = window.electronBridge.env.initialPersistedValues;
+      const maybePersistedValue: ValueWithUpdateDate<T> | undefined = Reflect.get(initialPersistedValues, valueKey);
+
+      if (maybePersistedValue === undefined) {
+        return [false, null] as const;
+      }
+
+      return [true, maybePersistedValue.value] as const;
+    } catch (error) {
+      return [false, null] as const;
+    }
+  }
+
+  function mixValueWithDefaults(value: T) {
+    const defaultValue = getDefault();
+
+    if (isPrimitive(defaultValue)) {
+      return value;
+    }
+
+    return { ...defaultValue, ...value };
+  }
+
+  function getInitialValue() {
+    const [didGet, maybeValue] = getInitialPersistedValue();
+
+    if (didGet) {
+      return mixValueWithDefaults(maybeValue);
+    }
+
+    return getDefault();
+  }
+
   const observableValueData = observable.box<ValueData>(
-    { updatedAt: null, value: getDefault() },
+    { updatedAt: null, value: getInitialValue() },
     { deep: false, equals: isEqual }
   );
-
-  const isReady = observable.box(!isPersisted);
 
   localChannel.subscribe(
     action((value) => {
       observableValueData.set(value);
-      isReady.set(true);
     })
   );
-
-  function initialize() {
-    if (!isPersisted) {
-      return;
-    }
-    setTimeout(() => {
-      requestGetPersistedValue(valueKey).then(
-        action((value) => {
-          if (value !== null) {
-            localChannel.publish(value as ValueData);
-          } else {
-            isReady.set(true);
-          }
-        })
-      );
-    }, 1);
-  }
-
-  initialize();
 
   bridgeValueChangeChannel.subscribe(({ key, data }) => {
     if (key !== valueKey) return;
@@ -73,7 +94,7 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
 
   async function set(value: T) {
     const serializableValue = serializeUntracked(value);
-    if (isEqual(get(), value)) {
+    if (isEqual(getValue(), value)) {
       return;
     }
 
@@ -91,31 +112,29 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     }
   }
 
-  function getWithDefaults() {
-    const defaultValue = getDefault();
-    const currentValue = observableValueData.get().value;
-
-    if (isPrimitive(defaultValue)) {
-      return currentValue;
-    }
-
-    return { ...defaultValue, ...currentValue };
-  }
-
   function update(updater: ValueUpdater<T>) {
     runUntracked(() => {
-      const newValue = updateValue(get(), updater);
+      const newValue = updateValue(getValue(), updater);
 
       set(newValue);
     });
   }
 
-  function get() {
-    return getWithDefaults();
+  const equalComputed = computed(
+    () => {
+      const value = observableValueData.get().value;
+
+      return mixValueWithDefaults(value);
+    },
+    { equals: isEqual }
+  );
+
+  function getValue() {
+    return equalComputed.get();
   }
 
   function use() {
-    return useObserver(() => get());
+    return useObserver(() => getValue());
   }
 
   function reset() {
@@ -123,22 +142,16 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
   }
 
   const valueManager = {
-    get isReady() {
-      return isReady.get();
-    },
     get lastUpdateDate() {
       return observableValueData.get().updatedAt;
     },
-    get,
+    get: getValue,
     set,
     use,
     update,
     reset,
-    observables: {
-      isReady,
-      get value() {
-        return computed(() => getWithDefaults());
-      },
+    get value() {
+      return getValue();
     },
   };
 
