@@ -6,9 +6,9 @@ import { getBrowserViewParentWindow } from "./viewUtils";
 const viewsZIndexMap = new WeakMap<BrowserView, number>();
 
 export enum viewsKnownZIndex {
-  belowApp = 1,
+  belowMainView = 1,
   app = 2,
-  aboveApp = 3,
+  aboveMainView = 3,
   overlay = 4,
 }
 

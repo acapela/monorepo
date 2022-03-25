@@ -91,11 +91,11 @@ export function initPreviewHandler() {
     if (!browserView) return;
 
     if (state === "preview-on-top") {
-      setBrowserViewZIndex(browserView, "aboveApp");
+      setBrowserViewZIndex(browserView, "aboveMainView");
     }
 
     if (state === "app-on-top") {
-      setBrowserViewZIndex(browserView, "belowApp");
+      setBrowserViewZIndex(browserView, "belowMainView");
     }
   });
 }

@@ -60,7 +60,7 @@ function createPreviewBrowserView(url: string) {
     cleanups.next = listenToWebContentsFocus(browserView.webContents, (isFocused) => {
       if (!isFocused) return;
 
-      setBrowserViewZIndex(browserView, isFocused ? "aboveApp" : "belowApp");
+      setBrowserViewZIndex(browserView, isFocused ? "aboveMainView" : "belowMainView");
     });
 
     cleanups.next = createDefaultContextMenu(url, browserView);

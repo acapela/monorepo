@@ -21,7 +21,7 @@ export function attachPreview(view: BrowserView, targetWindow: BrowserWindow) {
   // Should never happen, but make sure to throw early if it does.
   assertViewIsNotAttachedToWindow(view, targetWindow);
 
-  addBrowserViewWithZIndex(targetWindow, view, "belowApp");
+  addBrowserViewWithZIndex(targetWindow, view, "belowMainView");
 
   function detach() {
     log("will detach view");
