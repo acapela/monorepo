@@ -19,8 +19,17 @@ export async function loginGitHub() {
       const url = window.webContents.getURL();
       const { origin, pathname } = new URL(url);
       //TODO
-      // if (origin === "https://github.com" && pathname.includes())
-      if (origin === FRONTEND_URL && pathname.endsWith("todotodo")) {
+      const ghMatch =
+        origin === "https://github.com" && /^\/(organizations\/(.+)\/)?settings\/installations\/(\d+)$/.exec(pathname);
+      if (ghMatch) {
+        const organization = ghMatch[2];
+        const installationId = ghMatch[3];
+        const query = organization ? `?org=${organization}` : "";
+        window.webContents.loadURL(FRONTEND_URL + `/api/backend/v1/github/link/${installationId}${query}`, {
+          userAgent,
+        });
+      }
+      if (origin === FRONTEND_URL && pathname.endsWith("done")) {
         githubAuthTokenBridgeValue.set(true);
         window.close();
         resolve();
