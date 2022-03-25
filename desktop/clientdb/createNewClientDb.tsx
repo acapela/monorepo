@@ -24,6 +24,7 @@ import { notificationSlackMessageEntity } from "./notification/slack/message";
 import { teamEntity } from "./team";
 import { teamMemberEntity } from "./teamMember";
 import { userEntity } from "./user";
+import { userSlackChannelsByTeamEntity } from "./userSlackChannelsByTeam";
 import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 interface CreateNewClientDbInput {
@@ -60,6 +61,7 @@ export const appClientDbEntities = {
   account: accountEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
+  userSlackChannelsByTeam: userSlackChannelsByTeamEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {

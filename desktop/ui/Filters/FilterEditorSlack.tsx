@@ -88,7 +88,7 @@ function useSlackUsers() {
   return data?.slack_users ?? [];
 }
 
-async function querySlackConversations() {
+export async function querySlackConversations() {
   const { data } = await apolloClient.query<SlackConversationsQuery, SlackConversationsQueryVariables>({
     query: gql`
       query SlackConversations {

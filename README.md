@@ -81,6 +81,7 @@ Setting Slack up is optional in development, but if you want to work on it you h
 4. Head to "Basic Information" and find the "App-Level Tokens", where you will want to click "Generate token", give it a name of your choosing and add the `authorizations:read` scope. You will need the token in the next step.
 5. Fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET`, `SLACK_APP_TOKEN` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info. Also add `SLACK_STATE_SECRET` which can be any random string.
 6. To start using Slack's actions, open the frontend, navigate to a team's settings page and click the button for linking the team to Slack.
+7. Need to test working with multiple workspaces? You need to go to your Slack App Settings > Manage Distribution > Make App Public.
 
 #### Updating testing/staging/production Slack App manifest
 

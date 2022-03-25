@@ -5,11 +5,15 @@ import * as SlackBolt from "@slack/bolt";
 import { noop } from "lodash";
 
 import { db } from "@aca/db";
-import { assertDefined } from "@aca/shared/assert";
+import { assert, assertDefined } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
-import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@aca/shared/slack";
+import {
+  SLACK_INSTALL_ERROR_KEY,
+  SLACK_WORKSPACE_ALREADY_USED_ERROR,
+  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
+} from "@aca/shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
@@ -56,6 +60,9 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
       data: { data },
     });
   } else {
+    const slack_workspace_id = data?.["team"]?.["id"];
+    assert(slack_workspace_id, "Unable to extract team id from slack installation data");
+
     await db.$transaction([
       db.user_slack_installation.create({
         data: {
@@ -63,6 +70,13 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
           slack_team_id: installation.team!.id,
           slack_user_id: installation.user.id,
           data,
+          user_slack_channels_by_team: {
+            create: {
+              user_id: userId,
+              included_channels: [USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER],
+              slack_workspace_id,
+            },
+          },
         },
       }),
       db.user.update({

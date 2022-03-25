@@ -1,6 +1,14 @@
 table:
   name: user_slack_installation
   schema: public
+object_relationships:
+- name: user_slack_channels_by_team
+  using:
+    foreign_key_constraint_on:
+      column: user_slack_installation_id
+      table:
+        name: user_slack_channels_by_team
+        schema: public
 computed_fields:
 - definition:
     function:
