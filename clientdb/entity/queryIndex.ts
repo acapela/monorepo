@@ -140,43 +140,63 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
     return value;
   }
 
-  function addItemToIndex(entity: TargetEntity) {
+  /**
+   * Map keeping info to what index 'page' item currently belongs to
+   */
+  const currentItemIndexMap = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
+
+  function updateItemIndex(entity: TargetEntity) {
+    // Item might already be indexed somewhere
+    const currentIndexList = currentItemIndexMap.get(entity);
     const indexValue = getCurrentIndexValue(entity);
-    const list = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
+    // Get where it should be indexed now
+    const targetIndexList = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
+
+    // There is no need to do anything - indexed value did not change
+    if (currentIndexList === targetIndexList) return;
 
     runInAction(() => {
-      list.push(entity);
+      if (currentIndexList) {
+        currentIndexList.remove(entity);
+      }
+      targetIndexList.push(entity);
+
+      currentItemIndexMap.set(entity, targetIndexList);
     });
   }
 
   function removeItemFromIndex(entity: TargetEntity) {
-    const indexValue = getCurrentIndexValue(entity);
-    const list = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
+    const currentIndexList = currentItemIndexMap.get(entity);
+
+    if (!currentIndexList) {
+      console.warn("bad state - trying to remove item from index, but item is not in any index");
+      return;
+    }
+
     runInAction(() => {
-      list.remove(entity);
+      currentIndexList.remove(entity);
+      currentItemIndexMap.delete(entity);
     });
   }
 
   function populateIndex() {
     runInAction(() => {
       store.items.forEach((entity) => {
-        addItemToIndex(entity);
+        updateItemIndex(entity);
       });
     });
   }
 
   populateIndex();
 
-  const cancelAdded = store.events.on("itemAdded", addItemToIndex);
-  const cancelWillUpdate = store.events.on("itemWillUpdate", removeItemFromIndex);
-  const cancelUpdated = store.events.on("itemUpdated", addItemToIndex);
+  const cancelAdded = store.events.on("itemAdded", updateItemIndex);
+  const cancelUpdated = store.events.on("itemUpdated", updateItemIndex);
   const cancelDeleted = store.events.on("itemRemoved", removeItemFromIndex);
 
   function destroy() {
     cancelAdded();
     cancelUpdated();
     cancelDeleted();
-    cancelWillUpdate();
   }
 
   function findResultsForIndexValue(indexValue: TargetValue) {

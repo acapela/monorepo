@@ -83,6 +83,9 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       updateSelf(data) {
         return entity.update(data, "user");
       },
+      refreshIndex() {
+        store.events.emit("itemUpdated", entity, entity.getData(), "user");
+      },
     }) ?? ({} as C);
 
   // Note: we dont want to add connections as {...data, ...connections}. Connections might have getters so it would simply unwrap them.

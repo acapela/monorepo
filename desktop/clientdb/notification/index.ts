@@ -96,7 +96,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity, updateSelf }) => {
+  .addConnections((notification, { getEntity, updateSelf, refreshIndex }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       return (
         innerEntities
@@ -141,7 +141,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         if (isPast(snoozeDate)) return false;
 
         // If it is snoozed - force components or reactions using this information to re-render / re-run when this changes
-        mobxTickAt(snoozeDate);
+        mobxTickAt(snoozeDate, () => {
+          refreshIndex();
+        });
 
         return true;
       },
