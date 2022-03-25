@@ -2,6 +2,8 @@ import { Cleanup, MaybeCleanup } from "./types";
 
 export type CleanupOrder = "from-first" | "from-last";
 
+export type CleanupObject = ReturnType<typeof createCleanupObject>;
+
 /**
  * Useful for cases when we have to clean multiple things in effects.
  *

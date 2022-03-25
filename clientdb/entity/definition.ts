@@ -1,6 +1,7 @@
 import { AnnotationsMap, IComputedValue } from "mobx";
 
 import { Entity } from "@aca/clientdb";
+import { CleanupObject } from "@aca/shared/cleanup";
 import { getHash } from "@aca/shared/hash";
 
 import { DatabaseLinker } from "./entitiesConnections";
@@ -61,13 +62,17 @@ export interface EntityDefinition<Data, Connections> {
   addEventHandlers(events: EntityUserEvents<Data, Connections>): EntityDefinition<Data, Connections>;
 }
 
-export interface ConnectionsManager<Data> extends DatabaseLinker {
+export interface EntityConnectionsLinker<Data> extends DatabaseLinker {
   createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
   updateSelf(data: Partial<Data>): EntityUpdateResult;
   refreshIndex(): void;
+  cleanup: CleanupObject;
 }
 
-type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;
+type EntityDefinitionGetConnections<Data, Connections> = (
+  item: Data,
+  manager: EntityConnectionsLinker<Data>
+) => Connections;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type EntityDataByDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
