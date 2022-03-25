@@ -51,7 +51,8 @@
     "parcel": "^2.2.1",
     "react-chicane": "^0.6.1",
     "ts-node": "^10.4.0",
-    "url-pattern": "^1.0.3"
+    "url-pattern": "^1.0.3",
+    "zod": "^3.14.2"
   },
   "main": "./dist/electron/index.js",
   "build": {
