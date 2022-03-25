@@ -2,7 +2,6 @@ import { subDays } from "date-fns";
 import React from "react";
 
 import { resetAllServices } from "@aca/desktop/bridge/auth";
-import { requestToggleLoggerWindow } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
@@ -88,7 +87,7 @@ export const toggleOpenLoggerWindow = defineAction({
   name: "Toggle dev logs window",
   group: devActionsGroup,
   handler() {
-    requestToggleLoggerWindow();
+    devSettingsStore.showLogsWindow = !devSettingsStore.showLogsWindow;
   },
 });
 

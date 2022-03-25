@@ -14,5 +14,3 @@ export interface LogEntry {
 export const logStorage = createChannelBridge<LogEntry>("log-storage");
 
 export const getAllLogsBridge = createInvokeBridge<void, LogEntry[]>("get-all-logs");
-
-export const requestToggleLoggerWindow = createInvokeBridge<void, void>("toggle-logger-window");

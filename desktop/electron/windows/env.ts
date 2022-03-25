@@ -10,5 +10,4 @@ export const appEnvData: AppEnvData = {
   sentryDsn: sentryDsn,
   isDev: IS_DEV,
   version: app.getVersion(),
-  windowName: "Root",
 };

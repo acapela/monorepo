@@ -23,7 +23,7 @@ import { logStorage } from "../bridge/logger";
 import { registerLogEntryHandler } from "../domains/dev/makeLogger";
 import { BadgeCountManager } from "../views/BadgeCountManager";
 import { AppStyleProvider } from "./AppStyleProvider";
-import { LoggerWindow } from "./LoggerWindow";
+import { LoggerWindowManager } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
 const appEnv = window.electronBridge.env;
@@ -66,6 +66,7 @@ function App() {
 
           <ServiceWorkerConsolidation />
           <RootErrorBoundary>
+            <LoggerWindowManager />
             <BadgeCountManager />
             <PeekView />
             <SystemMenuManager />
@@ -79,16 +80,5 @@ function App() {
   );
 }
 
-if (appEnv.windowName === "Logger") {
-  render(
-    <>
-      <AppStyleProvider>
-        <LoggerWindow />
-      </AppStyleProvider>
-    </>,
-    rootElement
-  );
-} else {
-  // Main app
-  render(<App />, rootElement);
-}
+// Main app
+render(<App />, rootElement);

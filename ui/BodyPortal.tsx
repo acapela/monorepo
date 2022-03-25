@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useIsomorphicLayoutEffect } from "react-use";
 
+import { useWindow } from "@aca/shared/context/window";
+
 interface Props {
   children: ReactNode;
   onReady?: () => void;
@@ -21,22 +23,27 @@ export function BodyPortal({ children, onReady }: Props) {
   return createPortal(children, body);
 }
 
-function tryGetBody() {
+function tryGetBody(targetWindow: Window) {
   try {
-    return document.body as HTMLBodyElement;
+    return targetWindow.document.body as HTMLBodyElement;
   } catch (error) {
     return null;
   }
 }
 
 export function useBody() {
-  const [body, setBody] = useState<HTMLBodyElement | null>(tryGetBody);
+  const targetWindow = useWindow();
+  const [body, setBody] = useState<HTMLBodyElement | null>(() => {
+    if (!targetWindow) return null;
+
+    return tryGetBody(targetWindow);
+  });
 
   useIsomorphicLayoutEffect(() => {
-    if (!body) {
-      setBody(document.body as HTMLBodyElement);
-    }
-  });
+    if (!targetWindow) return;
+
+    setBody(targetWindow.document.body as HTMLBodyElement);
+  }, [targetWindow]);
 
   return body;
 }
