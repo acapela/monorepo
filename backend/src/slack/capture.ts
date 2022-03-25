@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
+import { uniqBy } from "lodash";
 import { SingleASTNode } from "simple-markdown";
 
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
@@ -11,6 +12,7 @@ import {
 } from "@aca/backend/src/slack/md/parser";
 import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import {
   USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
@@ -42,14 +44,25 @@ const extractMentionedSlackUserIdsFromMd = (text?: string) =>
   extractMentionedSlackUserIds(parseSlackMarkdown(text ?? ""));
 
 async function resolveMessageNotifications(userId: string, whereMessage: Prisma.notification_slack_messageWhereInput) {
-  await db.notification.updateMany({
+  const notifications = await db.notification.findMany({
     where: {
       resolved_at: null,
       user_id: userId,
       notification_slack_message: whereMessage,
     },
+  });
+  await db.notification.updateMany({
+    where: { id: { in: notifications.map((n) => n.id) } },
     data: { resolved_at: new Date().toISOString() },
   });
+  // we are only interested in one notification auto resolve event per user
+  const uniqueNotificationsByUser = uniqBy(notifications, (n) => n.user_id);
+  for (const notification of uniqueNotificationsByUser) {
+    trackBackendUserEvent(notification.user_id, "Notification Resolved", {
+      notification_id: notification.id,
+      wasAutoResolved: true,
+    });
+  }
 }
 
 // A special client authorized with the app token for the few API calls that need app level scopes
