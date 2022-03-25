@@ -11,6 +11,7 @@ import {
 } from "@aca/backend/src/slack/md/parser";
 import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import {
   USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
@@ -42,14 +43,23 @@ const extractMentionedSlackUserIdsFromMd = (text?: string) =>
   extractMentionedSlackUserIds(parseSlackMarkdown(text ?? ""));
 
 async function resolveMessageNotifications(userId: string, whereMessage: Prisma.notification_slack_messageWhereInput) {
-  await db.notification.updateMany({
+  const notifications = await db.notification.findMany({
     where: {
       resolved_at: null,
       user_id: userId,
       notification_slack_message: whereMessage,
     },
+  });
+  await db.notification.updateMany({
+    where: { id: { in: notifications.map((n) => n.id) } },
     data: { resolved_at: new Date().toISOString() },
   });
+  for (const notification of notifications) {
+    trackBackendUserEvent(notification.user_id, "Notification Resolved", {
+      notification_id: notification.id,
+      auto: true,
+    });
+  }
 }
 
 // A special client authorized with the app token for the few API calls that need app level scopes
