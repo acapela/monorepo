@@ -131,5 +131,15 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_github") {
+    return {
+      id: `${targetNotification.issue_id || targetNotification.pr_id}`,
+      name: targetNotification.title || "",
+      integration: "github",
+      integrationTitle: `GitHub ${targetNotification.issue_id ? "issue" : "pull request"}`,
+      isOnePreviewEnough: false,
+    };
+  }
+
   return unknownTarget;
 }
