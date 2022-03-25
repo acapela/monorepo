@@ -64,6 +64,7 @@ export interface EntityDefinition<Data, Connections> {
 export interface ConnectionsManager<Data> extends DatabaseLinker {
   createCache<V>(key: string, getter: (data: Data) => V): IComputedValue<V>;
   updateSelf(data: Partial<Data>): EntityUpdateResult;
+  refreshIndex(): void;
 }
 
 type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: ConnectionsManager<Data>) => Connections;

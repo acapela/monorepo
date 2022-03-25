@@ -57,6 +57,7 @@ jobs:
           node-version: "16"
       - name: Install dependencies
         run: |
+          npm config set ignore-scripts true
           npm i "electron-builder@$(jq -r '.devDependencies["electron-builder"]' ./desktop/package.json)" -g --force
           electron-builder --version
           npm i "electron-notarize@$(jq -r '.devDependencies["electron-notarize"]' ./desktop/package.json)" -g --force
@@ -73,3 +74,5 @@ jobs:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_PRODUCT_WEBHOOK_URL: ${{ secrets.SLACK_PRODUCT_WEBHOOK_URL }}
