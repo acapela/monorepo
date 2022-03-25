@@ -1,5 +1,6 @@
+import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { exitFocusMode, refreshNotificationPreview } from "@aca/desktop/actions/focus";
@@ -19,6 +20,7 @@ import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSyst
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
+import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 
 import { FocusModeFooter } from "./FocusModeFooter";
@@ -35,6 +37,17 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const notification = db.notification.assertFindById(notificationId);
 
   const list = getInboxListsById(listId);
+
+  useEffect(() => {
+    runInAction(() => {
+      uiStore.activeListId = list?.id ?? null;
+      uiStore.activeNotification = notification;
+    });
+    return () => {
+      uiStore.activeListId = null;
+      uiStore.activeNotification = null;
+    };
+  }, [list?.id, notification]);
 
   return (
     <AppLayout footer={<FocusModeFooter />} transparent>

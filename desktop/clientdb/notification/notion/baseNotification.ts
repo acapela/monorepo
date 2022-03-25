@@ -110,7 +110,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   })
   .addAccessValidation((entity) => {
     if (!entity.inner) {
-      console.warn(`No inner for entity`, entity);
+      // console.warn(`No inner for entity`, entity);
     }
 
     return !!entity.inner;
