@@ -140,7 +140,30 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
     return value;
   }
 
+  /**
+   * Map keeping info to what index 'page' item currently belongs to
+   */
   const currentItemIndex = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
+
+  function updateItemIndex(entity: TargetEntity) {
+    // Item might already be indexed somewhere
+    const currentIndexList = currentItemIndex.get(entity);
+    const indexValue = getCurrentIndexValue(entity);
+    // Get where it should be indexed now
+    const targetIndexList = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
+
+    // There is no need to do anything - indexed value did not change
+    if (currentIndexList === targetIndexList) return;
+
+    runInAction(() => {
+      if (currentIndexList) {
+        currentIndexList.remove(entity);
+      }
+      targetIndexList.push(entity);
+
+      currentItemIndex.set(entity, targetIndexList);
+    });
+  }
 
   function removeItemFromIndex(entity: TargetEntity) {
     const currentIndexList = currentItemIndex.get(entity);
@@ -155,24 +178,6 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
     });
 
     currentItemIndex.delete(entity);
-  }
-
-  function updateItemIndex(entity: TargetEntity) {
-    const currentIndexList = currentItemIndex.get(entity);
-    const indexValue = getCurrentIndexValue(entity);
-    const targetIndexList = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
-
-    // There is no need to do anything - indexed value did not change
-    if (currentIndexList === targetIndexList) return;
-
-    runInAction(() => {
-      if (currentIndexList) {
-        currentIndexList.remove(entity);
-      }
-      targetIndexList.push(entity);
-
-      currentItemIndex.set(entity, targetIndexList);
-    });
   }
 
   function populateIndex() {
