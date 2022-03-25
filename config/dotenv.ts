@@ -55,6 +55,9 @@ const requiredEnvVarNamesBackend = [
   "GITHUB_APP_ID",
   "GITHUB_CLIENT_ID",
   "GITHUB_CLIENT_SECRET",
+  "GITHUB_OAUTH_SECRET",
+  "GITHUB_APP_NAME",
+  "GITHUB_WEBHOOK_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;

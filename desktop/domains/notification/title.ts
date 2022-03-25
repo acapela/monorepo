@@ -67,7 +67,13 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       return "Unhandled Jira Notification";
     }
     case "notification_github": {
-      return `Commented in "${inner.issue_title}"`;
+      switch (inner.type) {
+        case "mention":
+          return `Mentioned you in "${inner.issue_title}"`;
+        case "assign":
+          return `Assigned you to "${inner.issue_title}"`;
+      }
+      return `Unhandled notification in "${inner.issue_title}"`;
     }
     default:
       return "Unhandled notification!!";

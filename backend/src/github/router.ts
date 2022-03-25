@@ -11,102 +11,33 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
+import { addWebhookHandlers } from "./webhooks";
+
 export const router = Router();
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const PRIVATE_KEY = Buffer.from(process.env.GITHUB_APP_PRIVATE_KEY, "base64").toString("utf-8");
-const APP_ID = process.env.GITHUB_APP_ID;
 
 const ghApp = new App({
-  appId: APP_ID,
-  privateKey: PRIVATE_KEY,
+  appId: process.env.GITHUB_APP_ID,
+  privateKey: Buffer.from(process.env.GITHUB_APP_PRIVATE_KEY, "base64").toString("utf-8"),
   oauth: {
     clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
   },
   webhooks: {
-    secret: "todo",
+    secret: process.env.GITHUB_WEBHOOK_SECRET,
   },
 });
 
+function getSignedState(uid: string): string {
+  const hmac = createHmac("sha256", process.env.GITHUB_OAUTH_SECRET);
+  hmac.update(uid);
+  return `${uid}:${hmac.digest("hex")}`;
+}
+
+addWebhookHandlers(ghApp.webhooks);
+
 router.post("/v1/github/webhook", createNodeMiddleware(ghApp.webhooks, { path: "/v1/github/webhook" }));
-
-ghApp.webhooks.on("installation.deleted", async (event) => {
-  try {
-    await Promise.all([
-      db.github_installation.deleteMany({
-        where: {
-          id: event.payload.installation.id,
-        },
-      }),
-      db.github_account_to_installation.deleteMany({
-        where: {
-          installation_id: event.payload.installation.id,
-        },
-      }),
-    ]);
-  } catch (e) {
-    logger.error("installation.deleted error: " + e);
-  }
-});
-
-ghApp.webhooks.on("installation.created", async (event) => {
-  await db.github_installation.create({
-    data: {
-      id: event.payload.installation.id,
-      account_id: event.payload.installation.target_id,
-      account_login: event.payload.installation.account.login,
-      target_type: event.payload.installation.target_type,
-      repository_selection: event.payload.installation.repository_selection,
-    },
-  });
-});
-
-// for now we only support mentions in newly created comments
-ghApp.webhooks.on("issue_comment.created", async (event) => {
-  console.info("issue_comment", event.payload);
-  const installationId = event.payload.installation?.id;
-  if (!installationId) throw new Error("installation id is missing");
-  const ghAccounts = await db.github_account_to_installation.findMany({
-    where: {
-      installation_id: installationId,
-    },
-  });
-  const notificationPromises = ghAccounts.map((a) =>
-    db.notification_github.create({
-      data: {
-        notification: {
-          create: {
-            user_id: a.user_id,
-            url: event.payload.comment.html_url,
-            from: event.payload.comment.user.login,
-          },
-        },
-        type: "Comment",
-        issue_id: event.payload.issue.id,
-        issue_title: event.payload.issue.title,
-      },
-    })
-  );
-  await Promise.all(notificationPromises);
-});
-
-ghApp.webhooks.on("issues.assigned", (event) => {
-  console.info("issues.assigned", event.payload);
-});
-
-ghApp.webhooks.on("issues.opened", (event) => {
-  console.info("issues.opened", event.payload);
-});
-
-ghApp.webhooks.on("pull_request.assigned", (event) => {
-  console.info("pull_request.assigned", event.payload);
-});
-
-ghApp.webhooks.on("pull_request.opened", (event) => {
-  console.info("pull_request.opened", event.payload);
-});
 
 router.get("/v1/github/callback", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
@@ -153,7 +84,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
         github_login: user.data.login,
       },
     });
-    res.redirect("https://github.com/apps/acapela-test/installations/new");
+    res.redirect(`https://github.com/apps/${process.env.GITHUB_APP_NAME}/installations/new`);
     return;
   }
 
@@ -225,17 +156,6 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   res.redirect(`${process.env.FRONTEND_URL}/api/backend/v1/github/done`);
 });
 
-router.get("/v1/github/uninstall", async (req: Request, res: Response) => {
-  //TODO
-  res.redirect("https://github.com/apps/acapela-test/installations/new");
-});
-
-function getSignedState(uid: string): string {
-  const hmac = createHmac("sha256", "asdasdasdadsddsddsdsdds");
-  hmac.update(uid);
-  return `${uid}:${hmac.digest("hex")}`;
-}
-
 router.get("/v1/github/auth", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const queryString = qs.stringify({
@@ -243,4 +163,9 @@ router.get("/v1/github/auth", async (req: Request, res: Response) => {
     state: getSignedState(userId),
   });
   res.redirect(`https://github.com/login/oauth/authorize?${queryString}`);
+});
+
+router.get("/v1/github/uninstall", async (req: Request, res: Response) => {
+  //TODO: implement
+  res.redirect(`https://github.com/apps/${process.env.GITHUB_APP_NAME}/installations/new`);
 });
