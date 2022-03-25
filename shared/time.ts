@@ -40,6 +40,18 @@ export function formatMsTimeToPlaybackTime(time: number) {
   return `${minutes}:${paddedSeconds}`;
 }
 
+export function createDateTimeout(date: Date, callback?: () => void) {
+  const now = Date.now();
+
+  if (now >= date.getTime()) return;
+
+  const durationTillTick = date.getTime() - now + 1; // <-- let's add 1 to be sure it will not tick on equal time to requested date
+
+  return createTimeout(() => {
+    callback?.();
+  }, durationTillTick);
+}
+
 export const SECOND = 1000;
 export const MINUTE = SECOND * 60;
 export const QUATER = MINUTE * 15;

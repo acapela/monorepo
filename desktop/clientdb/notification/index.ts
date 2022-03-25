@@ -1,5 +1,6 @@
-import { isPast } from "date-fns";
+import { isFuture } from "date-fns";
 import gql from "graphql-tag";
+import { action, createAtom } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
@@ -18,7 +19,8 @@ import {
   Notification_Insert_Input,
   Notification_Set_Input,
 } from "@aca/gql";
-import { mobxTickAt } from "@aca/shared/mobx/time";
+import { autorunEffect } from "@aca/shared/mobx/utils";
+import { createDateTimeout } from "@aca/shared/time";
 
 import { innerEntities } from "./inner";
 
@@ -96,7 +98,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity, updateSelf, refreshIndex }) => {
+  .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       return (
         innerEntities
@@ -104,6 +106,24 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
           .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .find(Boolean) as any
+      );
+    });
+
+    const snoozePassedAtom = createAtom("Snooze change");
+
+    cleanup.next = autorunEffect(function handleSettingUpSnoozePassedSignal() {
+      // Note: Not sure about this one
+      if (notification.resolved_at) return;
+      if (!notification.snoozed_until) return;
+
+      const snoozeDate = new Date(notification.snoozed_until);
+
+      return createDateTimeout(
+        snoozeDate,
+        action(() => {
+          snoozePassedAtom.reportChanged();
+          refreshIndex();
+        })
       );
     });
 
@@ -138,14 +158,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
         const snoozeDate = new Date(notification.snoozed_until);
 
-        if (isPast(snoozeDate)) return false;
+        const isStillSnoozed = isFuture(snoozeDate);
 
-        // If it is snoozed - force components or reactions using this information to re-render / re-run when this changes
-        mobxTickAt(snoozeDate, () => {
-          refreshIndex();
-        });
+        snoozePassedAtom.reportObserved();
 
-        return true;
+        return isStillSnoozed;
       },
       get canSnooze() {
         if (connections.isResolved) return false;
