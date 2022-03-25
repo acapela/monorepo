@@ -143,11 +143,11 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
   /**
    * Map keeping info to what index 'page' item currently belongs to
    */
-  const currentItemIndex = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
+  const currentItemIndexMap = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
 
   function updateItemIndex(entity: TargetEntity) {
     // Item might already be indexed somewhere
-    const currentIndexList = currentItemIndex.get(entity);
+    const currentIndexList = currentItemIndexMap.get(entity);
     const indexValue = getCurrentIndexValue(entity);
     // Get where it should be indexed now
     const targetIndexList = observableMapGetOrCreate(observableIndex, indexValue, () => observable.array());
@@ -161,12 +161,12 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
       }
       targetIndexList.push(entity);
 
-      currentItemIndex.set(entity, targetIndexList);
+      currentItemIndexMap.set(entity, targetIndexList);
     });
   }
 
   function removeItemFromIndex(entity: TargetEntity) {
-    const currentIndexList = currentItemIndex.get(entity);
+    const currentIndexList = currentItemIndexMap.get(entity);
 
     if (!currentIndexList) {
       console.warn("bad state - trying to remove item from index, but item is not in any index");
@@ -175,9 +175,8 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
 
     runInAction(() => {
       currentIndexList.remove(entity);
+      currentItemIndexMap.delete(entity);
     });
-
-    currentItemIndex.delete(entity);
   }
 
   function populateIndex() {
