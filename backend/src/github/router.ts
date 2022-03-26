@@ -2,7 +2,7 @@ import { createHmac } from "crypto";
 
 import { createNodeMiddleware } from "@octokit/webhooks";
 import { Request, Response, Router } from "express";
-import { App, Octokit } from "octokit";
+import { Octokit } from "octokit";
 import qs from "qs";
 
 import { BadRequestError } from "@aca/backend/src/errors/errorTypes";
@@ -11,23 +11,10 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
+import { CLIENT_ID, ghApp } from "./app";
 import { addWebhookHandlers } from "./webhooks";
 
 export const router = Router();
-
-const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-
-const ghApp = new App({
-  appId: process.env.GITHUB_APP_ID,
-  privateKey: Buffer.from(process.env.GITHUB_APP_PRIVATE_KEY, "base64").toString("utf-8"),
-  oauth: {
-    clientId: CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  },
-  webhooks: {
-    secret: process.env.GITHUB_WEBHOOK_SECRET,
-  },
-});
 
 function getSignedState(uid: string): string {
   const hmac = createHmac("sha256", process.env.GITHUB_OAUTH_SECRET);
