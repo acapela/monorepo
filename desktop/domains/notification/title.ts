@@ -72,6 +72,8 @@ function getTitle(inner: NotificationEntity["inner"]): string {
           return `Mentioned you in "${inner.title}"`;
         case "assign":
           return `Assigned you to "${inner.title}"`;
+        case "review":
+          return `Review requested for "${inner.title}"`;
       }
       return `Unhandled notification in "${inner.title}"`;
     }
