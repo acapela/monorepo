@@ -26,6 +26,8 @@ addWebhookHandlers(ghApp.webhooks);
 
 router.post("/v1/github/webhook", createNodeMiddleware(ghApp.webhooks, { path: "/v1/github/webhook" }));
 
+const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/github/done`;
+
 router.get("/v1/github/callback", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const { code, setup_action, installation_id, state } = req.query;
@@ -88,7 +90,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     update: pk,
   });
 
-  res.redirect(`${process.env.FRONTEND_URL}/api/backend/v1/github/done`);
+  res.redirect(doneEndpoint);
 });
 
 router.get("/v1/github/done", async (req: Request, res: Response) => {
@@ -102,7 +104,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   const { org } = req.query;
   if (!org) {
     // no organization, ignore
-    res.redirect(`${process.env.FRONTEND_URL}/api/backend/v1/github/done`);
+    res.redirect(doneEndpoint);
     return;
   }
 
@@ -140,7 +142,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
     create: pk,
     update: pk,
   });
-  res.redirect(`${process.env.FRONTEND_URL}/api/backend/v1/github/done`);
+  res.redirect(doneEndpoint);
 });
 
 router.get("/v1/github/auth", async (req: Request, res: Response) => {
@@ -152,7 +154,19 @@ router.get("/v1/github/auth", async (req: Request, res: Response) => {
   res.redirect(`https://github.com/login/oauth/authorize?${queryString}`);
 });
 
-router.get("/v1/github/uninstall", async (req: Request, res: Response) => {
-  //TODO: implement
-  res.redirect(`https://github.com/apps/${process.env.GITHUB_APP_NAME}/installations/new`);
+router.get("/v1/github/unlink/:installation", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+  const installationId = parseInt(req.params.installation, 10);
+  if (isNaN(installationId)) throw new BadRequestError("installation id is invalid");
+
+  // TODO api call to uninstall app
+  await db.github_account_to_installation.delete({
+    where: {
+      user_id_installation_id: {
+        user_id: userId,
+        installation_id: installationId,
+      },
+    },
+  });
+  res.redirect(doneEndpoint);
 });
