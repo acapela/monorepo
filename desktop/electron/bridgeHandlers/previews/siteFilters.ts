@@ -67,7 +67,13 @@ const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
 
 export async function loadURLWithFilters(browserView: BrowserView, url: string) {
-  const applicableSiteFilters = siteFilters.filter((filter) => filter.on(new URL(url)));
+  let parsedURL: URL;
+  try {
+    parsedURL = new URL(url);
+  } catch (_) {
+    throw new Error("Invalid URL: " + url);
+  }
+  const applicableSiteFilters = siteFilters.filter((filter) => filter.on(parsedURL));
   const filteredURL = applicableSiteFilters.reduce(
     (currentURL, filter) => filter.rewriteURL?.(new URL(currentURL)) ?? currentURL,
     url
