@@ -20,10 +20,24 @@ if (!IS_DEV) {
   });
 }
 
+function getScreenSize(): { width: number; height: number } {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { screen } = require("electron");
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
+  return {
+    width: Math.round(width * 0.85),
+    height: Math.round(height * 0.9),
+  };
+}
+
 function initializeMainWindow() {
+  const { width, height } = getScreenSize();
+
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 680,
+    width,
+    height,
     title: "Acapela",
     minWidth: 900,
     minHeight: 680,
