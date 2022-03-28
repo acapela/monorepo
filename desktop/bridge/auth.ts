@@ -52,7 +52,9 @@ export const githubAuthTokenBridgeValue = createBridgeValue<boolean>("github-aut
   getDefault: () => false,
   isPersisted: true,
 });
-export const loginGitHubBridge = createInvokeBridge<{ logout: boolean } | void>("login-github");
+export const loginGitHubBridge = createInvokeBridge<{ logout: boolean; installationId?: number } | void>(
+  "login-github"
+);
 
 /*
   NEW SERVICE!?!?!?
