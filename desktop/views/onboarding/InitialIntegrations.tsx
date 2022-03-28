@@ -3,9 +3,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { defineAction } from "@aca/desktop/actions/action";
+import { AppLayout } from "@aca/desktop/layout/AppLayout";
+import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
+import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
 import { IconArrowRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -22,52 +25,78 @@ const completeOnboarding = defineAction({
 
 export const InitialIntegrationsView = observer(function InitialIntegrationsView() {
   return (
-    <UIHolder>
-      <UIBody>
-        <UIHead>
-          <UIHeader>Setup Integrations</UIHeader>
-          <UIDescription>
-            To help you stay on top of things, and make the most of the tools you already use.
-          </UIDescription>
-        </UIHead>
+    <AppLayout>
+      <SystemTopBar isFullWidth isUserMenuIncluded={false} />
+      <UIHolder>
+        <UIBody>
+          <UINav>
+            <UIHeader>
+              <UIHeaderMain>Setup Integrations</UIHeaderMain>
+            </UIHeader>
 
-        <IntegrationsManager />
-        <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
-      </UIBody>
-    </UIHolder>
+            <UIDescription>
+              To help you stay on top of things, and make the most of the tools you already use.
+            </UIDescription>
+            <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
+          </UINav>
+          <UIActiveSection>
+            <IntegrationsManager />
+          </UIActiveSection>
+        </UIBody>
+      </UIHolder>
+    </AppLayout>
   );
 });
 
 const UIHolder = styled.div<{}>`
-  ${theme.colors.layout.background.asBgWithReadableText};
+  ${appViewContainerStyles};
+  display: flex;
+  flex-direction: column;
+  ${theme.layout.settingsPageMaxWidth}
+
+  ${theme.spacing.pageSections.asGap}
+  overflow: hidden;
+`;
+
+const UINav = styled.nav`
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 240px;
   flex-grow: 1;
+  width: 100%;
 `;
 
 const UIBody = styled.div`
-  ${theme.layout.settingsPageMaxWidth};
-  padding: 80px;
-  gap: 32px;
-
   display: flex;
-  flex-direction: column;
+  gap: 24px;
+  overflow: auto;
 `;
 
-const UIHead = styled.div`
-  gap: 16px;
+const UIActiveSection = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
 
-  display: flex;
-  flex-direction: column;
+  /* Visually appears at same heigh of first nav item */
+  padding-top: 80px;
+  padding-bottom: 80px;
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+  }
 `;
 
 const UIHeader = styled.div<{}>`
   ${theme.typo.pageTitle.medium};
 `;
 
+const UIHeaderMain = styled.div``;
+
 const UIDescription = styled.div`
   ${theme.typo.content};
-  max-width: 300px;
 `;
 
 const UIActionButton = styled(ActionButton)`
-  width: 160px;
+  width: 100%;
 `;

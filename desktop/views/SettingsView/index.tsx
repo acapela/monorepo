@@ -60,12 +60,11 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
         titleNode="Settings"
       />
       <UIHolder>
-        <UIHeader>
-          <UIHeaderMain>Settings</UIHeaderMain>
-        </UIHeader>
-
         <UIBody>
           <UINav>
+            <UIHeader key="settings-header">
+              <UIHeaderMain>Settings</UIHeaderMain>
+            </UIHeader>
             {settingsSections.map((section) => {
               return (
                 <UINavItem
@@ -98,7 +97,6 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
 
 const UIHolder = styled.div<{}>`
   ${appViewContainerStyles};
-  padding-top: 24px;
   display: flex;
   flex-direction: column;
   ${theme.layout.settingsPageMaxWidth}
@@ -108,6 +106,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UINav = styled.nav`
+  padding-top: 24px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -126,6 +125,10 @@ const UIActiveSection = styled.div`
   flex-grow: 1;
   overflow-y: auto;
 
+  /* Visually appears at same heigh of first nav item */
+  padding-top: 80px;
+  padding-bottom: 80px;
+
   &::-webkit-scrollbar {
     width: 0 !important;
   }
@@ -133,6 +136,7 @@ const UIActiveSection = styled.div`
 
 const UIHeader = styled.div<{}>`
   ${theme.typo.pageTitle.medium};
+  padding-bottom: 24px;
 `;
 
 const UIHeaderMain = styled.div``;
