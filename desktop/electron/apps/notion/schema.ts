@@ -7,7 +7,6 @@ const NotionUserPayload = z.object({
   value: z.object({
     email: z.string(),
     id: z.string(),
-    mobile_onboarding_completed: z.boolean(),
     name: z.string(),
     onboarding_completed: z.boolean(),
     profile_photo: z.string(),
