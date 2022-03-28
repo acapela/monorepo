@@ -9,7 +9,7 @@ const NotionUserPayload = z.object({
     id: z.string(),
     name: z.string(),
     onboarding_completed: z.boolean(),
-    profile_photo: z.string(),
+    profile_photo: z.string().optional(),
     version: z.number(),
   }),
 });
@@ -27,12 +27,6 @@ const DiscussionPayload = z.object({
   }),
 });
 
-const UserPermission = z.object({
-  role: Role,
-  type: z.literal("user_permission"),
-  user_id: z.string(),
-});
-
 const SpaceView = z.object({
   role: Role,
   value: z.object({
@@ -46,7 +40,6 @@ const SpacePayload = z.object({
     id: z.string(),
     version: z.number(),
     name: z.string(),
-    permissions: z.array(UserPermission),
     icon: z.string().optional(),
     pages: z.array(z.string()),
     created_time: z.number(),
@@ -55,8 +48,6 @@ const SpacePayload = z.object({
     created_by_id: z.string(),
     last_edited_by_table: z.string(), //e.g. notion_user
     last_edited_by_id: z.string(),
-    plan_type: z.string(), //e.g. team
-    invite_link_enabled: z.boolean(),
   }),
 });
 
