@@ -20,7 +20,7 @@ if (!IS_DEV) {
   });
 }
 
-function getScreenSize(): { width: number; height: number } {
+function getAppWindowSize(): { width: number; height: number } {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { screen } = require("electron");
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -33,7 +33,7 @@ function getScreenSize(): { width: number; height: number } {
 }
 
 function initializeMainWindow() {
-  const { width, height } = getScreenSize();
+  const { width, height } = getAppWindowSize();
 
   const mainWindow = new BrowserWindow({
     width,
