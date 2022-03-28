@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, session } from "electron";
 
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
@@ -8,6 +8,10 @@ import { authWindowDefaultOptions } from "./utils";
 const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
 
+function checkIfDone(url: URL): boolean {
+  return url.origin === FRONTEND_URL && url.pathname.endsWith("done");
+}
+
 export async function loginGitHub() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
@@ -16,11 +20,10 @@ export async function loginGitHub() {
   return new Promise<void>((resolve) => {
     function checkIfCallbackSuccessful() {
       if (window.isDestroyed()) return;
-      const url = window.webContents.getURL();
-      const { origin, pathname } = new URL(url);
-      //TODO
+      const url = new URL(window.webContents.getURL());
       const ghMatch =
-        origin === "https://github.com" && /^\/(organizations\/(.+)\/)?settings\/installations\/(\d+)$/.exec(pathname);
+        url.origin === "https://github.com" &&
+        /^\/(organizations\/(.+)\/)?settings\/installations\/(\d+)$/.exec(url.pathname);
       if (ghMatch) {
         const organization = ghMatch[2];
         const installationId = ghMatch[3];
@@ -29,7 +32,7 @@ export async function loginGitHub() {
           userAgent,
         });
       }
-      if (origin === FRONTEND_URL && pathname.endsWith("done")) {
+      if (checkIfDone(url)) {
         githubAuthTokenBridgeValue.set(true);
         window.close();
         resolve();
@@ -42,37 +45,44 @@ export async function loginGitHub() {
   });
 }
 
-export async function logoutGitHub() {
-  // const window = new BrowserWindow({
-  //   opacity: 0,
-  //   transparent: false,
-  //   alwaysOnTop: true,
-  //   focusable: false,
-  //   width: 100,
-  //   height: 100,
-  //   x: 1,
-  //   y: 1,
-  // });
-  // window.setIgnoreMouseEvents(true);
-  //
-  // await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/linear/unlink", { userAgent });
-  //
-  // for (let i = 0; i < 30; i++) {
-  //   await new Promise((resolve) => setTimeout(resolve, 500));
-  //   if (window.isDestroyed()) return;
-  //   if (!window.webContents.getURL().startsWith("https://linear.app")) continue;
-  //   await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore");', true);
-  //   githubAuthTokenBridgeValue.set(false);
-  //   break;
-  // }
-  //
-  // window.close();
-  await githubAuthTokenBridgeValue.set(false);
+export async function logoutGitHub(installationId?: number) {
+  const window = new BrowserWindow({
+    opacity: 0,
+    transparent: false,
+    alwaysOnTop: true,
+    focusable: false,
+    width: 100,
+    height: 100,
+    x: 1,
+    y: 1,
+  });
+  window.setIgnoreMouseEvents(true);
+
+  await window.webContents.loadURL(
+    `${FRONTEND_URL}/api/backend/v1/github/unlink${installationId ? "/" + installationId : ""}`,
+    { userAgent }
+  );
+
+  for (let i = 0; i < 30; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    if (window.isDestroyed()) return;
+    const url = new URL(window.webContents.getURL());
+    if (!checkIfDone(url)) continue;
+    // if installationId is passed, don't clear cookies
+    if (installationId) break;
+    const serviceCookies = await session.defaultSession.cookies.get({ url: "https://github.com" });
+    await Promise.all(
+      serviceCookies.map((cookie) => session.defaultSession.cookies.remove("https://github.com", cookie.name))
+    );
+    await githubAuthTokenBridgeValue.set(false);
+    break;
+  }
+  window.close();
 }
 
 export function initializeGitHubAuthHandler() {
   loginGitHubBridge.handle(async (input) => {
-    if (input?.logout) return logoutGitHub();
+    if (input?.logout) return logoutGitHub(input?.installationId);
     return loginGitHub();
   });
 }

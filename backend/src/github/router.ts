@@ -154,19 +154,74 @@ router.get("/v1/github/auth", async (req: Request, res: Response) => {
   res.redirect(`https://github.com/login/oauth/authorize?${queryString}`);
 });
 
+async function unlinkInstallation(userId: string, installationId: number): Promise<void> {
+  const installation = await db.github_installation.findFirst({ where: { id: installationId } });
+
+  if (!installation) return;
+
+  const linkedAccounts = await db.github_account_to_installation.findMany({
+    where: {
+      installation_id: installationId,
+    },
+  });
+
+  const isAllowed = linkedAccounts.find((a) => a.user_id === userId);
+  if (!isAllowed) throw new BadRequestError("installation id is invalid");
+
+  if (linkedAccounts.length <= 1) {
+    try {
+      await ghApp.octokit.request("DELETE /app/installations/{installation_id}", {
+        installation_id: installationId,
+      });
+    } catch (e) {
+      logger.error("could not unlink account: " + e);
+    }
+  }
+  try {
+    await db.github_account_to_installation.delete({
+      where: {
+        user_id_installation_id: {
+          user_id: userId,
+          installation_id: installationId,
+        },
+      },
+    });
+  } catch (e) {
+    logger.error("could not unlink account: " + e);
+  }
+}
+
 router.get("/v1/github/unlink/:installation", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const installationId = parseInt(req.params.installation, 10);
   if (isNaN(installationId)) throw new BadRequestError("installation id is invalid");
 
-  // TODO api call to uninstall app
-  await db.github_account_to_installation.delete({
+  await unlinkInstallation(userId, installationId);
+  res.redirect(doneEndpoint);
+});
+
+router.get("/v1/github/unlink", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+
+  const linkedInstallations = await db.github_account_to_installation.findMany({
     where: {
-      user_id_installation_id: {
-        user_id: userId,
-        installation_id: installationId,
-      },
+      user_id: userId,
     },
   });
+
+  // unlink all installations for a user
+  for (const i of linkedInstallations) {
+    await unlinkInstallation(userId, i.installation_id);
+  }
+
+  try {
+    await db.github_account.delete({
+      where: {
+        user_id: userId,
+      },
+    });
+  } catch (e) {
+    logger.error("could not unlink account: " + e);
+  }
   res.redirect(doneEndpoint);
 });
