@@ -34,7 +34,7 @@ if (!appEnv.isDev) {
     release: appEnv.version,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
-    debug: true,
+    maxValueLength: 1000,
   });
 
   autorun(() => {

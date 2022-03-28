@@ -17,6 +17,7 @@ if (!IS_DEV) {
   Sentry.init({
     dsn: sentryDsn,
     release: app.getVersion(),
+    maxValueLength: 1000,
   });
 }
 
