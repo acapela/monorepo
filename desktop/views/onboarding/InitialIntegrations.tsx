@@ -9,6 +9,8 @@ import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
 import { IconArrowRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
+import { SettingsLayout } from "../SettingsView/shared";
+
 const completeOnboarding = defineAction({
   name: "Continue",
   icon: <IconArrowRight />,
@@ -22,52 +24,27 @@ const completeOnboarding = defineAction({
 
 export const InitialIntegrationsView = observer(function InitialIntegrationsView() {
   return (
-    <UIHolder>
-      <UIBody>
-        <UIHead>
-          <UIHeader>Setup Integrations</UIHeader>
+    <SettingsLayout
+      isUserMenuIncluded={false}
+      headerTitle="Setup Integrations"
+      navItems={
+        <>
           <UIDescription>
             To help you stay on top of things, and make the most of the tools you already use.
           </UIDescription>
-        </UIHead>
-
-        <IntegrationsManager />
-        <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
-      </UIBody>
-    </UIHolder>
+          <UIActionButton action={completeOnboarding} kind="primary" iconAtStart={false} />
+        </>
+      }
+      body={<IntegrationsManager />}
+    />
   );
 });
 
-const UIHolder = styled.div<{}>`
-  ${theme.colors.layout.background.asBgWithReadableText};
-  flex-grow: 1;
-`;
-
-const UIBody = styled.div`
-  ${theme.layout.settingsPageMaxWidth};
-  padding: 80px;
-  gap: 32px;
-
-  display: flex;
-  flex-direction: column;
-`;
-
-const UIHead = styled.div`
-  gap: 16px;
-
-  display: flex;
-  flex-direction: column;
-`;
-
-const UIHeader = styled.div<{}>`
-  ${theme.typo.pageTitle.medium};
-`;
-
 const UIDescription = styled.div`
   ${theme.typo.content};
-  max-width: 300px;
+  padding-bottom: 24px;
 `;
 
 const UIActionButton = styled(ActionButton)`
-  width: 160px;
+  width: 100%;
 `;

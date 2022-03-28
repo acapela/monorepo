@@ -10,12 +10,19 @@ import { SystemBarUserMenu } from "./UserMenu";
 
 interface Props {
   isFullWidth?: boolean;
+  isUserMenuIncluded?: boolean;
   navigationItems?: ReactNode;
   targetActionItems?: ReactNode;
   titleNode?: ReactNode;
 }
 
-export function SystemTopBar({ navigationItems, targetActionItems, titleNode, isFullWidth = false }: Props) {
+export function SystemTopBar({
+  navigationItems,
+  targetActionItems,
+  titleNode,
+  isFullWidth = false,
+  isUserMenuIncluded = true,
+}: Props) {
   const barRef = useRef<HTMLDivElement>(null);
   useDoubleClick(barRef, () => {
     toggleMaximizeRequest();
@@ -26,9 +33,7 @@ export function SystemTopBar({ navigationItems, targetActionItems, titleNode, is
       <UIButtons>{navigationItems}</UIButtons>
       <UITitle>{titleNode}</UITitle>
       <UIRightButtons>{targetActionItems}</UIRightButtons>
-      <UIUser>
-        <SystemBarUserMenu />
-      </UIUser>
+      <UIUser>{isUserMenuIncluded && <SystemBarUserMenu />}</UIUser>
     </UIBar>
   );
 }
