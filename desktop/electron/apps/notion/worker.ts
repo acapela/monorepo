@@ -264,6 +264,13 @@ function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNoti
 
       const { url, type, text_preview } = notificationProperties;
 
+      try {
+        new URL(url);
+      } catch (e) {
+        log.error(new Error("Invalid URL: " + url));
+        continue;
+      }
+
       const activity = recordMap.activity?.[notification.activity_id]?.value;
 
       // Weird bug where activity is undefined for a user
@@ -411,19 +418,14 @@ function getNotificationProperties(
       return;
     }
 
-    if (!discussion) {
-      log.error(
-        `Discussion for notification id ${notification.id} not found in recordMap: `,
-        JSON.stringify(recordMap, null, 2)
-      );
-      return;
-    }
-
     const parentDiscussionBlock = discussion.parent_id;
     const url =
-      notionURL + "/" + stripDashes(pageId) + "?d=" + `${stripDashes(discussion.id)}` + parentDiscussionBlock
-        ? `#${stripDashes(parentDiscussionBlock)}`
-        : "";
+      notionURL +
+      "/" +
+      stripDashes(pageId) +
+      "?d=" +
+      `${stripDashes(discussion.id)}` +
+      (parentDiscussionBlock ? `#${stripDashes(parentDiscussionBlock)}` : "");
 
     return {
       type: "notification_notion_commented",

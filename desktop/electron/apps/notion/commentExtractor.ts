@@ -44,7 +44,13 @@ export function extractBlockMention(
   { mentioned_block_id, mentioned_property }: z.infer<typeof UserMentionedActivityValue>,
   recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
-  const properties = PageBlockValue.parse(recordMap.block?.[mentioned_block_id].value).properties;
+  const blockValue = recordMap.block?.[mentioned_block_id].value;
+  let properties;
+  try {
+    properties = PageBlockValue.parse(blockValue).properties;
+  } catch (e) {
+    throw new Error(`Failed to parse block value: ${JSON.stringify(blockValue, null, 2)}`);
+  }
 
   if (!properties[mentioned_property]) {
     return;
