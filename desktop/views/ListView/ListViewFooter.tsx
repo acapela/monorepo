@@ -6,9 +6,10 @@ import {
   openFocusMode,
   openNotificationInApp,
   resolveNotification,
+  snoozeNotification,
   unresolveNotification,
+  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
-import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { ShortcutsFooter } from "@aca/desktop/ui/ShortcutsFooter";
 
 export function ListViewFooter() {

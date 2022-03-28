@@ -2,8 +2,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { resolveNotification, unresolveNotification } from "@aca/desktop/actions/notification";
-import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
+import {
+  resolveNotification,
+  snoozeNotification,
+  unresolveNotification,
+  unsnoozeNotification,
+} from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";

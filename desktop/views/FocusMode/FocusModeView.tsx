@@ -7,9 +7,9 @@ import {
   copyNotificationLink,
   openNotificationInApp,
   resolveNotification,
+  snoozeNotification,
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
-import { snoozeNotification } from "@aca/desktop/actions/snooze";
 import { getDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { NotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";

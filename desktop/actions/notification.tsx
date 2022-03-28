@@ -13,11 +13,21 @@ import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
-import { IconCheck, IconCheckboxSquare, IconExternalLink, IconGlasses, IconLink1, IconTarget } from "@aca/ui/icons";
+import {
+  IconCheck,
+  IconCheckboxSquare,
+  IconClock,
+  IconClockCross,
+  IconExternalLink,
+  IconGlasses,
+  IconLink1,
+  IconTarget,
+} from "@aca/ui/icons";
 
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
+import { canApplySnooze, getSnoozeSuggestionActions } from "./snooze";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<OpenAppUrl> {
@@ -37,94 +47,6 @@ async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Prom
     return { fallback };
   }
 }
-
-export const openNotificationInApp = defineAction({
-  icon: <IconExternalLink />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
-  shortcut: ["O"],
-  analyticsEvent: (ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
-    return createAnalyticsEvent("Notification Deeplink Opened", { service_name });
-  },
-  canApply: (ctx) => ctx.hasTarget("notification"),
-  async handler(context) {
-    const notification = context.assertTarget("notification");
-
-    addToast({ message: `Opening notification in app...`, durationMs: 2000 });
-
-    const url = await convertToLocalAppUrlIfAny(notification);
-
-    await openAppUrl(url);
-  },
-});
-
-export const copyNotificationLink = defineAction({
-  icon: <IconLink1 />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
-  shortcut: ["C"],
-  keywords: ["url", "share"],
-  canApply: (ctx) => ctx.hasTarget("notification") || ctx.hasTarget("group"),
-  handler(context) {
-    const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
-
-    const url = notification?.url ?? group?.notifications.at(0)?.url ?? null;
-
-    if (!url) return;
-
-    window.electronBridge.copyToClipboard(url);
-
-    addToast({ title: "Notification link copied", message: url });
-  },
-});
-
-export const markNotificationUnread = defineAction({
-  icon: <IconGlasses />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
-  shortcut: ["U"],
-  keywords: ["snooze", "remind"],
-  canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
-  handler(context) {
-    const { undo } = context.assertTarget("notification").update({ last_seen_at: null });
-
-    addToast({
-      message: `Marked as unread`,
-      action: {
-        label: "Undo",
-        callback() {
-          undo();
-        },
-      },
-    });
-  },
-});
-
-export const markNotificationRead = defineAction({
-  icon: <IconGlasses />,
-  group: currentNotificationActionsGroup,
-  name: (ctx) => (ctx.isContextual ? "Mark read" : "Mark notification as read"),
-  shortcut: ["U"],
-  keywords: ["seen", "done"],
-  canApply: (ctx) => !ctx.getTarget("notification")?.last_seen_at,
-  handler(context) {
-    const { undo } = context.assertTarget("notification").update({ last_seen_at: new Date().toISOString() });
-
-    addToast({
-      message: `Marked as read`,
-      action: {
-        label: "Undo",
-        callback() {
-          undo();
-        },
-      },
-    });
-  },
-});
 
 export const resolveNotification = defineAction({
   icon: <IconCheck />,
@@ -230,6 +152,72 @@ export const unresolveNotification = defineAction({
   },
 });
 
+export const snoozeNotification = defineAction({
+  group: currentNotificationActionsGroup,
+  name: (ctx) => {
+    if (ctx.hasTarget("group")) {
+      return ctx.isContextual ? "Snooze all" : "Snooze group...";
+    }
+
+    return ctx.isContextual ? "Snooze" : "Snooze notification...";
+  },
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Resolved", { notification_id });
+    }
+  },
+  keywords: ["delay", "time"],
+  canApply: canApplySnooze,
+  icon: <IconClock />,
+  shortcut: ["H"],
+  handler() {
+    return {
+      searchPlaceholder: "In 3 days...",
+      isContextual: true,
+      getActions: (context) => {
+        return getSnoozeSuggestionActions(context);
+      },
+    };
+  },
+});
+
+export const unsnoozeNotification = defineAction({
+  group: currentNotificationActionsGroup,
+  name: "Cancel snooze",
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  keywords: ["now", "remove", "schedule", "do", "unsnooze", "undo"],
+  canApply: (ctx) => {
+    if (ctx.getTarget("notification")?.isSnoozed === true) return true;
+    if (ctx.getTarget("group")?.notifications.some((n) => n.isSnoozed) === true) return true;
+
+    return false;
+  },
+  icon: <IconClockCross />,
+  shortcut: ["Mod", "W"],
+  handler(ctx) {
+    const cancel = createCleanupObject("from-last");
+
+    cancel.next = ctx.getTarget("notification")?.update({ snoozed_until: null }).undo;
+    ctx.getTarget("group")?.notifications.forEach((notification) => {
+      cancel.next = notification.update({ snoozed_until: null }).undo;
+    });
+
+    addToast({
+      message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean();
+        },
+      },
+    });
+  },
+});
+
 export const openFocusMode = defineAction({
   icon: <IconTarget />,
   group: currentNotificationActionsGroup,
@@ -278,5 +266,99 @@ export const openFocusMode = defineAction({
     if (group) {
       requestPreviewPreload({ url: group.notifications[0].url, priority: PreviewLoadingPriority.next });
     }
+  },
+});
+
+export const openNotificationInApp = defineAction({
+  icon: <IconExternalLink />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Open App" : "Open notification in app"),
+  shortcut: ["O"],
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const service_name = (notification?.kind && getIntegration(notification?.kind)?.name) ?? undefined;
+    return createAnalyticsEvent("Notification Deeplink Opened", { service_name });
+  },
+  canApply: (ctx) => ctx.hasTarget("notification"),
+  async handler(context) {
+    const notification = context.assertTarget("notification");
+
+    addToast({ message: `Opening notification in app...`, durationMs: 2000 });
+
+    const url = await convertToLocalAppUrlIfAny(notification);
+
+    await openAppUrl(url);
+  },
+});
+
+export const copyNotificationLink = defineAction({
+  icon: <IconLink1 />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Copy link" : "Copy notification link"),
+  shortcut: ["C"],
+  keywords: ["url", "share"],
+  canApply: (ctx) => ctx.hasTarget("notification") || ctx.hasTarget("group"),
+  handler(context) {
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
+
+    const url = notification?.url ?? group?.notifications.at(0)?.url ?? null;
+
+    if (!url) return;
+
+    window.electronBridge.copyToClipboard(url);
+
+    addToast({ title: "Notification link copied", message: url });
+  },
+});
+
+export const markNotificationUnread = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
+  shortcut: ["U"],
+  keywords: ["snooze", "remind"],
+  canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
+  handler(context) {
+    const { undo } = context.assertTarget("notification").update({ last_seen_at: null });
+
+    addToast({
+      message: `Marked as unread`,
+      action: {
+        label: "Undo",
+        callback() {
+          undo();
+        },
+      },
+    });
+  },
+});
+
+export const markNotificationRead = defineAction({
+  icon: <IconGlasses />,
+  group: currentNotificationActionsGroup,
+  name: (ctx) => (ctx.isContextual ? "Mark read" : "Mark notification as read"),
+  shortcut: ["U"],
+  keywords: ["seen", "done"],
+  canApply: (ctx) => {
+    const notification = ctx.getTarget("notification");
+    if (!notification) {
+      return false;
+    }
+    return !notification.last_seen_at;
+  },
+  handler(context) {
+    const { undo } = context.assertTarget("notification").update({ last_seen_at: new Date().toISOString() });
+
+    addToast({
+      message: `Marked as read`,
+      action: {
+        label: "Undo",
+        callback() {
+          undo();
+        },
+      },
+    });
   },
 });

@@ -6,8 +6,7 @@ import {
   goToNextNotification,
   goToPreviousNotification,
 } from "@aca/desktop/actions/focus";
-import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
-import { snoozeNotification } from "@aca/desktop/actions/snooze";
+import { openNotificationInApp, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
 import { ShortcutsFooter } from "@aca/desktop/ui/ShortcutsFooter";
 
 export function FocusModeFooter() {
