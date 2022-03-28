@@ -128,17 +128,7 @@ const BlockValueCommon = z.object({
   last_edited_by_table: z.string(),
 });
 
-export const PageBlockValue = BlockValueCommon.extend({
-  type: z.literal("page"),
-  alive: z.boolean(),
-  content: z.array(z.string()),
-  created_by_id: z.string(),
-  created_by_table: z.string(),
-  created_time: z.number(),
-  format: z.unknown(),
-  last_edited_by: z.string().optional(),
-  properties: z.record(z.array(BlockDataItem)),
-});
+export const SomeBlockValue = z.object({ properties: z.record(z.array(BlockDataItem)) });
 
 export const CollectionViewPageBlockValue = BlockValueCommon.extend({
   type: z.literal("collection_view_page"),

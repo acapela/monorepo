@@ -9,8 +9,8 @@ import {
   NotionDateDataIndicator,
   NotionPageReferenceDataIndicator,
   NotionUserDataIndicator,
-  PageBlockValue,
   RecordMap,
+  SomeBlockValue,
   UserMentionedActivityValue,
 } from "./schema";
 
@@ -47,7 +47,7 @@ export function extractBlockMention(
   const blockValue = recordMap.block?.[mentioned_block_id].value;
   let properties;
   try {
-    properties = PageBlockValue.parse(blockValue).properties;
+    properties = SomeBlockValue.parse(blockValue).properties;
   } catch (e) {
     throw new Error(`Failed to parse block value: ${JSON.stringify(blockValue, null, 2)}`);
   }
@@ -110,7 +110,7 @@ function extractTextFromBlockDataItem(
   if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
 
-    const title = PageBlockValue.parse(recordMap.block?.[pageId].value).properties?.title?.[0]?.[0];
+    const title = SomeBlockValue.parse(recordMap.block?.[pageId].value).properties?.title?.[0]?.[0];
     return `📄${title}`;
   }
 

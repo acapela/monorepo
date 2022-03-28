@@ -25,8 +25,8 @@ import {
   GetPublicSpaceDataResult,
   GetSpacesResult,
   Notification,
-  PageBlockValue,
   RecordMap,
+  SomeBlockValue,
   UserInvitedActivityValue,
   UserMentionedActivityValue,
 } from "./schema";
@@ -346,7 +346,7 @@ function getPageTitle(
   }
   const blockValue = recordMap?.block?.[blockId]?.value;
 
-  const pageBlockResult = PageBlockValue.safeParse(blockValue);
+  const pageBlockResult = SomeBlockValue.safeParse(blockValue);
   if (pageBlockResult.success) {
     return pageBlockResult.data.properties.title?.[0]?.[0] ?? "Untitled";
   }
