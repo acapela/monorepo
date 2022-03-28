@@ -4,7 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { defineAction } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { allActions } from "@aca/desktop/actions/all";
-import { searchListActionsGroup } from "@aca/desktop/actions/groups";
+import { isNotificationAction, searchListActionsGroup } from "@aca/desktop/actions/groups";
 import { goToList } from "@aca/desktop/actions/lists";
 import { getSnoozeOptionsForSearch } from "@aca/desktop/actions/snooze";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
@@ -37,11 +37,17 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
 export function createDefaultCommandMenuSession(): CommandMenuSession {
   const actionContext = createActionContext();
 
+  const notificationActions = allActions.filter(isNotificationAction);
+  const remainingActions = allActions.filter((ac) => !isNotificationAction(ac));
+
+  // Prioritize actions from our main entity
+  const sortedActions = [...notificationActions, ...remainingActions];
+
   return createCommandMenuSession({
     actionContext,
     getActions(context) {
-      if (context.searchKeyword.length < 2) return allActions;
-      return [...getSearchActions(context), ...allActions];
+      if (context.searchKeyword.length < 2) return sortedActions;
+      return [...getSearchActions(context), ...sortedActions];
     },
   });
 }
