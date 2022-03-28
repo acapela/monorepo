@@ -5,93 +5,26 @@ import { createCleanupObject } from "@aca/shared/cleanup";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { pluralize } from "@aca/shared/text/pluralize";
-import { IconClock, IconClockCross } from "@aca/ui/icons";
+import { IconClock } from "@aca/ui/icons";
 
-import { createAnalyticsEvent } from "../analytics";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
-function canApplySnooze(context: ActionContext) {
+export function canApplySnooze(context: ActionContext) {
   if (context.getTarget("notification")?.canSnooze === true) return true;
   if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
 
   return false;
 }
 
-export const snoozeNotification = defineAction({
-  group: currentNotificationActionsGroup,
-  name: (ctx) => {
-    if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Snooze all" : "Snooze group...";
-    }
-
-    return ctx.isContextual ? "Snooze" : "Snooze notification...";
-  },
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  analyticsEvent: (ctx) => {
-    const notification = ctx.getTarget("notification");
-
-    const notification_id = notification?.id;
-    if (notification_id) {
-      return createAnalyticsEvent("Notification Resolved", { notification_id });
-    }
-  },
-  keywords: ["delay", "time"],
-  canApply: canApplySnooze,
-  icon: <IconClock />,
-  shortcut: ["H"],
-  handler() {
-    return {
-      searchPlaceholder: "In 3 days...",
-      isContextual: true,
-      getActions: (context) => {
-        return getSnoozeSuggestionActions(context);
-      },
-    };
-  },
-});
-
 export function getSnoozeOptionsForSearch(context: ActionContext) {
   if (!canApplySnooze(context)) return [];
 
   return getSnoozeSuggestionActions(context);
 }
-
-export const unsnoozeNotification = defineAction({
-  group: currentNotificationActionsGroup,
-  name: "Cancel snooze",
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["now", "remove", "schedule", "do", "unsnooze", "undo"],
-  canApply: (ctx) => {
-    if (ctx.getTarget("notification")?.isSnoozed === true) return true;
-    if (ctx.getTarget("group")?.notifications.some((n) => n.isSnoozed) === true) return true;
-
-    return false;
-  },
-  icon: <IconClockCross />,
-  shortcut: ["Mod", "W"],
-  handler(ctx) {
-    const cancel = createCleanupObject("from-last");
-
-    cancel.next = ctx.getTarget("notification")?.update({ snoozed_until: null }).undo;
-    ctx.getTarget("group")?.notifications.forEach((notification) => {
-      cancel.next = notification.update({ snoozed_until: null }).undo;
-    });
-
-    addToast({
-      message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
-      action: {
-        label: "Undo",
-        callback() {
-          cancel.clean();
-        },
-      },
-    });
-  },
-});
 
 const DEFAULT_WORK_START_HOUR = 9;
 const DEFAULT_WORK_END_HOUR = 17;
