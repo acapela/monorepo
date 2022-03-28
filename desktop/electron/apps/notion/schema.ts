@@ -161,17 +161,19 @@ const BlockPayload = <T>(type: z.ZodType<T>) => z.object({ role: z.string(), val
 
 const CollectionPayload = z.object({
   role: z.string(),
-  value: z.object({
-    id: z.string(),
-    version: z.number(),
-    name: z.array(z.array(z.string())), //[["Maybe a Collection"]],
-    schema: z.unknown(),
-    parent_id: z.string(),
-    parent_table: z.string(), //"block",
-    alive: z.boolean(),
-    migrated: z.boolean(),
-    space_id: z.string(),
-  }),
+  value: z
+    .object({
+      id: z.string(),
+      version: z.number(),
+      name: z.array(z.array(z.string())), //[["Maybe a Collection"]],
+      schema: z.unknown(),
+      parent_id: z.string(),
+      parent_table: z.string(), //"block",
+      alive: z.boolean(),
+      migrated: z.boolean(),
+      space_id: z.string(),
+    })
+    .optional(),
 });
 
 const CommonCommentActivityEdit = z.object({
@@ -254,7 +256,9 @@ export const UserMentionedActivityValue = ActivityValueCommon.extend({
 
 export const ActivityPayload = z.object({
   role: z.string(),
-  value: z.discriminatedUnion("type", [UserInvitedActivityValue, CommentedActivityValue, UserMentionedActivityValue]),
+  value: z
+    .discriminatedUnion("type", [UserInvitedActivityValue, CommentedActivityValue, UserMentionedActivityValue])
+    .optional(),
 });
 
 export const GetSpacesResult = z.record(
