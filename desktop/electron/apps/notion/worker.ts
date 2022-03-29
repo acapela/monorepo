@@ -364,7 +364,8 @@ function getPageTitle(
       return;
     }
 
-    return collection?.name?.[0]?.[0] ?? "Untitled";
+    const name = collection?.name?.flat()[0];
+    return typeof name === "string" ? name : "Untitled";
   }
 }
 

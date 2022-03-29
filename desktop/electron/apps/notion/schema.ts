@@ -65,7 +65,6 @@ export const Notification = z.object({
   collection_id: z.string().optional(),
   end_time: z.string(),
   type: z.enum(["user-mentioned", "commented", "user-invited", "reminder"]),
-  channel: z.string(),
 });
 
 const NotificationPayload = z.object({
@@ -151,7 +150,7 @@ const CollectionPayload = z.object({
     .object({
       id: z.string(),
       version: z.number(),
-      name: z.array(z.array(z.string())).optional(), //[["Maybe a Collection"]],
+      name: z.array(z.unknown()).optional(), //[["Maybe a Collection"]],
       schema: z.unknown(),
       parent_id: z.string(),
       parent_table: z.string(), //"block",
@@ -206,11 +205,9 @@ const ActivityEdit = z.union([
 
 const ActivityValueCommon = z.object({
   id: z.string(),
-  context_id: z.string(),
   edits: z.array(ActivityEdit),
   end_time: z.string(),
 
-  in_log: z.boolean(),
   index: z.number(),
   invalid: z.boolean(),
 
