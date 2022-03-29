@@ -348,7 +348,8 @@ function getPageTitle(
 
   const pageBlockResult = SomeBlockValue.safeParse(blockValue);
   if (pageBlockResult.success) {
-    return pageBlockResult.data.properties.title?.[0]?.[0] ?? "Untitled";
+    const [titleElement] = pageBlockResult.data.properties.title;
+    return Array.isArray(titleElement) && typeof titleElement[0] == "string" ? titleElement[0] : "Untitled";
   }
 
   const collectionPageBlockResult = CollectionViewPageBlockValue.safeParse(blockValue);

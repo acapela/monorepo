@@ -105,7 +105,13 @@ const BlockDateItem = z.tuple([
     ]),
   ]),
 ]);
-export const BlockDataItem = z.union([BlockTextItem, BlockMentionItem, BlockPageReferenceItem, BlockDateItem]);
+export const BlockDataItem = z.union([
+  BlockTextItem,
+  BlockMentionItem,
+  BlockPageReferenceItem,
+  BlockDateItem,
+  z.array(z.unknown()),
+]);
 
 const BlockValueCommon = z.object({
   id: z.string(),

@@ -85,10 +85,13 @@ function extractTextFromBlockDataItem(
   }
 
   // It's a string with or without formatting e.g bold and italic -> ["this string", [["b","i"]]]
-  if (item.length === 1 || item[0] !== NotionBlockDSLDataIndicator) {
+  if ((item.length === 1 || item[0] !== NotionBlockDSLDataIndicator) && typeof item[0] == "string") {
     return item[0];
   }
 
+  if (!Array.isArray(item[1])) {
+    return;
+  }
   const notionDSLData = item[1][0];
 
   if (!Array.isArray(notionDSLData)) {
