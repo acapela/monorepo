@@ -117,7 +117,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
-      isOnePreviewEnough: false,
+      isOnePreviewEnough: true,
     };
   }
 
