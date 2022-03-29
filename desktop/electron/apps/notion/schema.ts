@@ -7,8 +7,7 @@ const NotionUserPayload = z.object({
   value: z.object({
     email: z.string(),
     id: z.string(),
-    name: z.string(),
-    onboarding_completed: z.boolean(),
+    name: z.string().optional(),
     profile_photo: z.string().optional(),
     version: z.number(),
   }),
@@ -146,7 +145,7 @@ const CollectionPayload = z.object({
     .object({
       id: z.string(),
       version: z.number(),
-      name: z.array(z.array(z.string())), //[["Maybe a Collection"]],
+      name: z.array(z.array(z.string())).optional(), //[["Maybe a Collection"]],
       schema: z.unknown(),
       parent_id: z.string(),
       parent_table: z.string(), //"block",
