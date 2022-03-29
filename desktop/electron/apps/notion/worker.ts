@@ -383,6 +383,10 @@ function getNotificationProperties(
   const activityValue = recordMap.activity?.[notification.activity_id].value;
 
   if (notification.type === "user-mentioned") {
+    if (!activityValue) {
+      log.error(new Error("Missing activity value for notification " + JSON.stringify(notification, null, 2)));
+      return;
+    }
     const activity = UserMentionedActivityValue.parse(activityValue);
     const url =
       notionURL +
