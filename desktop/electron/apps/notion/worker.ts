@@ -383,9 +383,15 @@ function getNotificationProperties(
 
   const activityValue = recordMap.activity?.[notification.activity_id].value;
 
+  function logMissingActivity() {
+    log.error(
+      new Error("Missing activity value for notification " + JSON.stringify({ notification, recordMap }, null, 2))
+    );
+  }
+
   if (notification.type === "user-mentioned") {
     if (!activityValue) {
-      log.error(new Error("Missing activity value for notification " + JSON.stringify(notification, null, 2)));
+      logMissingActivity();
       return;
     }
     const activity = UserMentionedActivityValue.parse(activityValue);
@@ -406,19 +412,10 @@ function getNotificationProperties(
 
   if (notification.type === "commented") {
     if (!activityValue) {
-      log.error(new Error("Missing activity value for notification " + JSON.stringify(notification, null, 2)));
+      logMissingActivity();
       return;
     }
     const activity = CommentedActivityValue.parse(activityValue);
-
-    // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
-    if (!activity) {
-      log.error(
-        `Comment Activity for notification id ${notification.id} not found in recordMap: `,
-        JSON.stringify(recordMap, null, 2)
-      );
-      return;
-    }
 
     const discussion = recordMap.discussion?.[activity.discussion_id].value;
 
