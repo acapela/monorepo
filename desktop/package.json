@@ -75,6 +75,7 @@
     "publish": {
       "provider": "github",
       "releaseType": "release"
-    }
+    },
+    "npmRebuild": false
   }
 }
