@@ -380,8 +380,10 @@ function getNotificationProperties(
     return;
   }
 
+  const activityValue = recordMap.activity?.[notification.activity_id].value;
+
   if (notification.type === "user-mentioned") {
-    const activity = UserMentionedActivityValue.parse(recordMap.activity?.[notification.activity_id].value);
+    const activity = UserMentionedActivityValue.parse(activityValue);
     const url =
       notionURL +
       "/" +
@@ -398,7 +400,11 @@ function getNotificationProperties(
   }
 
   if (notification.type === "commented") {
-    const activity = CommentedActivityValue.parse(recordMap.activity?.[notification.activity_id].value);
+    if (!activityValue) {
+      log.error(new Error("Missing activity value for notification " + JSON.stringify(notification, null, 2)));
+      return;
+    }
+    const activity = CommentedActivityValue.parse(activityValue);
 
     // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
     if (!activity) {
