@@ -154,8 +154,6 @@ const CollectionPayload = z.object({
       schema: z.unknown(),
       parent_id: z.string(),
       parent_table: z.string(), //"block",
-      alive: z.boolean(),
-      migrated: z.boolean(),
       space_id: z.string(),
     })
     .optional(),
@@ -173,7 +171,6 @@ const CommonCommentActivityEdit = z.object({
 const ActivityCommentEditData = z.object({
   id: z.string(),
   text: z.array(BlockDataItem),
-  alive: z.boolean(),
   version: z.number(),
   space_id: z.string(),
   parent_id: z.string(),
@@ -209,7 +206,6 @@ const ActivityValueCommon = z.object({
   end_time: z.string(),
 
   index: z.number(),
-  invalid: z.boolean(),
 
   navigable_block_id: z.string().optional(),
   parent_id: z.string(),
