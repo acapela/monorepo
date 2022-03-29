@@ -2,6 +2,7 @@ import { subDays } from "date-fns";
 import React from "react";
 
 import { resetAllServices } from "@aca/desktop/bridge/auth";
+import { getAllLogsBridge } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
@@ -88,6 +89,18 @@ export const toggleOpenLoggerWindow = defineAction({
   group: devActionsGroup,
   handler() {
     devSettingsStore.showLogsWindow = !devSettingsStore.showLogsWindow;
+  },
+});
+
+export const copyLogsIntoClipboard = defineAction({
+  icon: devIcon,
+  name: "Copy dev logs into clipboard",
+  group: devActionsGroup,
+  async handler() {
+    const logs = await getAllLogsBridge();
+    await navigator.clipboard.writeText(
+      logs.map((l) => `[${l.timestamp}] ${l.severity} (${l.prefix}): ${l.text}`).join("\n")
+    );
   },
 });
 
