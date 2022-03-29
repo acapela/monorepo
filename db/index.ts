@@ -11,6 +11,7 @@ export type {
   jira_webhook as JiraWebhook,
   linear_issue as LinearIssue,
   linear_oauth_token as LinearOauthToken,
+  notification as Notification,
   notification_linear as NotificationLinear,
   notification_slack_message as NotificationSlackMessage,
   user as User,

@@ -6,10 +6,12 @@ import { logger } from "@aca/shared/logger";
 
 import { refreshExpiringAtlassianProperties } from "../atlassian/utils";
 import { HttpStatus } from "../http";
+import { markSlackConversationsAsRead } from "../slack/events";
 
 export const router = Router();
 
 const handlers: Record<string, Function> = {
+  "mark-slack-conversations-as-read": markSlackConversationsAsRead,
   "refresh-expiring-atlassian-properties": refreshExpiringAtlassianProperties,
 };
 
@@ -48,9 +50,6 @@ router.post("/v1/cron", middlewareAuthenticateHasura, async (req: Request, res: 
       message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
-    logger.info(`Failed handling cron (${cronName})`, {
-      failureReason: anyError.message,
-      status: status,
-    });
+    logger.error(anyError, `Failed handling cron (${cronName})`);
   }
 });

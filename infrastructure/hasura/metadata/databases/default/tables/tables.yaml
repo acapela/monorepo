@@ -24,5 +24,6 @@
 - "!include public_team_member.yaml"
 - "!include public_user.yaml"
 - "!include public_user_slack_channels_by_team.yaml"
+- "!include public_user_slack_conversation_read.yaml"
 - "!include public_user_slack_installation.yaml"
 - "!include public_whitelist.yaml"

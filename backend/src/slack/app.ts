@@ -182,7 +182,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  if (!(error instanceof NoInstallationFoundError)) {
+  if (!error.message.startsWith("No Slack installation")) {
     // we ignore no installation found errors for now, since they are expected for events for which we do not have
     // users anymore
     logger.error(error.original ?? error, "Error occurred during a slack flow:\n" + JSON.stringify(error, null, 2));
