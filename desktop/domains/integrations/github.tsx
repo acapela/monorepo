@@ -1,9 +1,6 @@
-import { gql } from "@apollo/client";
 import React from "react";
 
-import { GitHubInstallation } from "@aca/db";
 import { defineAction } from "@aca/desktop/actions/action";
-import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
@@ -15,7 +12,6 @@ import { IntegrationClient } from "./types";
 const connectNewOrganization = defineAction({
   name: "Connect",
   async handler() {
-    await queryGitHubInstallations();
     await loginGitHubBridge();
   },
 });
@@ -41,21 +37,3 @@ export const githubIntegrationClient: IntegrationClient = {
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.github} />,
 };
-
-// TODO: display in settings page
-async function queryGitHubInstallations(): Promise<GitHubInstallation[]> {
-  const {
-    data: { github_installations },
-  } = await apolloClient.query<{ github_installations: GitHubInstallation[] }, null>({
-    query: gql`
-      query GetGitHubInstallations {
-        github_installations {
-          id
-          isOrg
-          name
-        }
-      }
-    `,
-  });
-  return github_installations;
-}
