@@ -4,6 +4,7 @@ import { autorun } from "mobx";
 
 import {
   figmaAuthTokenBridgeValue,
+  githubAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   notionAuthTokenBridgeValue,
@@ -41,6 +42,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     linear_installed_at: (!!linearAuthTokenBridgeValue.get() && linearAuthTokenBridgeValue.lastUpdateDate) || undefined,
     jira_installed_at: (!!jiraAuthTokenBridgeValue.get() && jiraAuthTokenBridgeValue.lastUpdateDate) || undefined,
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
+    github_installed_at: (githubAuthTokenBridgeValue.get() && githubAuthTokenBridgeValue.lastUpdateDate) || undefined,
   };
 }
 
