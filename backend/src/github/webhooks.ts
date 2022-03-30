@@ -20,12 +20,14 @@ async function installationDeleted(event: EmitterWebhookEvent<"installation.dele
     await Promise.all([
       db.github_installation.deleteMany({
         where: {
-          id: event.payload.installation.id,
+          installation_id: event.payload.installation.id,
         },
       }),
       db.github_account_to_installation.deleteMany({
         where: {
-          installation_id: event.payload.installation.id,
+          github_installation: {
+            installation_id: event.payload.installation.id,
+          },
         },
       }),
     ]);
@@ -34,16 +36,9 @@ async function installationDeleted(event: EmitterWebhookEvent<"installation.dele
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function installationCreated(event: EmitterWebhookEvent<"installation.created">) {
-  await db.github_installation.create({
-    data: {
-      id: event.payload.installation.id,
-      account_id: event.payload.installation.target_id,
-      account_login: event.payload.installation.account.login,
-      target_type: event.payload.installation.target_type,
-      repository_selection: event.payload.installation.repository_selection,
-    },
-  });
+  // this is ignored for now
 }
 
 // for now, we only support mentions in newly created comments
@@ -59,7 +54,9 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
   const [ghAccounts, commentCreatorAccount] = await Promise.all([
     db.github_account_to_installation.findMany({
       where: {
-        installation_id: installationId,
+        github_installation: {
+          installation_id: installationId,
+        },
         github_account: {
           github_login: {
             in: mentionUsers,
@@ -70,7 +67,9 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
     }),
     db.github_account_to_installation.findFirst({
       where: {
-        installation_id: installationId,
+        github_installation: {
+          installation_id: installationId,
+        },
         github_account: {
           github_user_id: commentCreator.id,
         },
@@ -112,7 +111,9 @@ async function issueOrPrAssigned(
   const assigneeId = event.payload.assignee.id;
   const accounts = await db.github_account_to_installation.findMany({
     where: {
-      installation_id: installationId,
+      github_installation: {
+        installation_id: installationId,
+      },
       github_account: {
         github_user_id: {
           in: [senderId, assigneeId],
@@ -161,7 +162,9 @@ async function reviewRequested(event: EmitterWebhookEvent<"pull_request.review_r
   const senderId = event.payload.sender.id;
   const accounts = await db.github_account_to_installation.findMany({
     where: {
-      installation_id: installationId,
+      github_installation: {
+        installation_id: installationId,
+      },
       github_account: {
         github_user_id: {
           in: [senderId, requestedReviewer.id],

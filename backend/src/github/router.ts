@@ -77,10 +77,39 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     return;
   }
 
-  // link installation to user
+  let installations;
+  try {
+    installations = await octokit.request("GET /user/installations");
+  } catch (e) {
+    logger.error("oauth error: " + e);
+    throw new BadRequestError("oauth error");
+  }
+
+  const installation = installations.data.installations.find((i) => i.id === installationId);
+
+  if (!installation || !installation.account) throw new BadRequestError("installation not found");
+
+  const installationData = {
+    account_id: installation.account.id!,
+    account_login: installation.account.login!,
+    target_type: installation.target_type,
+    repository_selection: installation.repository_selection,
+  };
+
+  const dbInstallation = await db.github_installation.upsert({
+    where: {
+      installation_id: installationId,
+    },
+    create: {
+      installation_id: installationId,
+      ...installationData,
+    },
+    update: installationData,
+  });
+
   const pk = {
     user_id: userId,
-    installation_id: installationId,
+    installation_id: dbInstallation.id,
   };
   await db.github_account_to_installation.upsert({
     where: {
@@ -109,7 +138,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   }
 
   const [installation, account, octokit] = await Promise.all([
-    db.github_installation.findUnique({ where: { id: installationId } }),
+    db.github_installation.findUnique({ where: { installation_id: installationId } }),
     db.github_account.findUnique({ where: { user_id: userId } }),
     ghApp.getInstallationOctokit(installationId),
   ]);
@@ -131,9 +160,17 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   }
   if (!isMember) throw new BadRequestError("user not member of the organization");
 
+  const foundInstallation = await db.github_installation.findFirst({
+    where: {
+      installation_id: installationId,
+    },
+  });
+
+  if (!foundInstallation) throw new BadRequestError("installation not found");
+
   const pk = {
     user_id: userId,
-    installation_id: installationId,
+    installation_id: foundInstallation.id,
   };
   await db.github_account_to_installation.upsert({
     where: {
@@ -155,13 +192,15 @@ router.get("/v1/github/auth", async (req: Request, res: Response) => {
 });
 
 async function unlinkInstallation(userId: string, installationId: number): Promise<void> {
-  const installation = await db.github_installation.findFirst({ where: { id: installationId } });
+  const installation = await db.github_installation.findFirst({ where: { installation_id: installationId } });
 
   if (!installation) return;
 
   const linkedAccounts = await db.github_account_to_installation.findMany({
     where: {
-      installation_id: installationId,
+      github_installation: {
+        installation_id: installationId,
+      },
     },
   });
 
@@ -178,10 +217,10 @@ async function unlinkInstallation(userId: string, installationId: number): Promi
     }
   }
   try {
-    await db.github_account_to_installation.delete({
+    await db.github_account_to_installation.deleteMany({
       where: {
-        user_id_installation_id: {
-          user_id: userId,
+        user_id: userId,
+        github_installation: {
           installation_id: installationId,
         },
       },
@@ -207,11 +246,14 @@ router.get("/v1/github/unlink", async (req: Request, res: Response) => {
     where: {
       user_id: userId,
     },
+    include: {
+      github_installation: true,
+    },
   });
 
   // unlink all installations for a user
   for (const i of linkedInstallations) {
-    await unlinkInstallation(userId, i.installation_id);
+    await unlinkInstallation(userId, i.github_installation.installation_id);
   }
 
   try {
