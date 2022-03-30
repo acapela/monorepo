@@ -100,6 +100,10 @@ async function issueOrPrAssigned(
 
   const senderId = event.payload.sender.id;
   const assigneeId = event.payload.assignee.id;
+
+  // ignore self-assignments
+  if (senderId === assigneeId) return;
+
   const accounts = await db.github_account_to_installation.findMany({
     where: {
       github_installation: {
@@ -151,6 +155,10 @@ async function reviewRequested(event: EmitterWebhookEvent<"pull_request.review_r
   if (!requestedReviewer) throw new Error("requested_reviewer is missing");
 
   const senderId = event.payload.sender.id;
+
+  // ignore self-assinged review request
+  if (senderId === requestedReviewer.id) return;
+
   const accounts = await db.github_account_to_installation.findMany({
     where: {
       github_installation: {
