@@ -1,20 +1,11 @@
 import React from "react";
 
-import { defineAction } from "@aca/desktop/actions/action";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
-import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
+import { getDb } from "@aca/desktop/clientdb";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
-
-const connectNewOrganization = defineAction({
-  name: "Connect",
-  async handler() {
-    await loginGitHubBridge();
-  },
-});
 
 export const githubIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -22,18 +13,28 @@ export const githubIntegrationClient: IntegrationClient = {
   name: "GitHub",
   description: "New issues, comments and mentions.",
   isReady: githubAuthTokenBridgeValue.observables.isReady,
-  additionalSettings: (
-    <SettingRow title="Link another organization" description="TODO">
-      <ActionButton action={connectNewOrganization} kind="primary" iconAtStart={false} />
-    </SettingRow>
-  ),
-  getCanConnect: () => !githubAuthTokenBridgeValue.get(),
-  getAccounts: () => (githubAuthTokenBridgeValue.get() ? [{ kind: "account", id: "github", name: "GitHub" }] : []),
+  getCanConnect: () => true,
+  getAccounts: () => {
+    const db = getDb();
+    return githubAuthTokenBridgeValue.get()
+      ? db.githubInstallation.all.map((i) => ({
+          kind: "account",
+          id: `${i.id}:${i.installation_id}`,
+          name: `${i.account_login}${i.target_type === "Organization" ? " (Organization)" : ""}`,
+        }))
+      : [];
+  },
   async connect() {
     await loginGitHubBridge();
   },
-  async disconnect() {
-    await loginGitHubBridge({ logout: true });
+  async disconnect(accountId) {
+    const [id, installationId] = accountId.split(":");
+    const db = getDb();
+    await loginGitHubBridge({
+      logout: true,
+      installationId: db.githubInstallation.all.length > 1 ? parseInt(installationId, 10) : undefined,
+    });
+    db.githubInstallation.removeById(id, "sync");
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.github} />,
 };
