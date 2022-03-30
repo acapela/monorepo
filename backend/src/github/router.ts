@@ -104,7 +104,10 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
       installation_id: installationId,
       ...installationData,
     },
-    update: installationData,
+    update: {
+      ...installationData,
+      updated_at: new Date(),
+    },
   });
 
   const pk = {
@@ -179,6 +182,17 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
     create: pk,
     update: pk,
   });
+
+  // force sync
+  await db.github_installation.update({
+    where: {
+      installation_id: installationId,
+    },
+    data: {
+      updated_at: new Date(),
+    },
+  });
+
   res.redirect(doneEndpoint);
 });
 
