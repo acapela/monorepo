@@ -1,4 +1,3 @@
-import { githubInstallations } from "@aca/backend/src/github/hasuraActions";
 import { linearUsers } from "@aca/backend/src/linear/hasuraActions";
 import {
   getIndividualSlackInstallationURLHandler,
@@ -17,5 +16,4 @@ export const handlers: ActionHandler<any, any>[] = [
   linearUsers,
   slackUsers,
   slackConversations,
-  githubInstallations,
 ];
