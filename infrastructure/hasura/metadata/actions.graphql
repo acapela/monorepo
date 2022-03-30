@@ -10,10 +10,6 @@ type Query {
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 }
 
-type Query {
-  github_installations: [GitHubInstallation!]!
-}
-
 type Mutation {
   invite_user(input: InviteUserInput!): InviteUserOutput
 }

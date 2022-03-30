@@ -1,3 +1,27 @@
 table:
   name: github_installation
   schema: public
+array_relationships:
+- name: github_account_to_installations
+  using:
+    foreign_key_constraint_on:
+      column: installation_id
+      table:
+        name: github_account_to_installation
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - account_id
+    - account_login
+    - created_at
+    - id
+    - installation_id
+    - repository_selection
+    - target_type
+    - updated_at
+    filter:
+      github_account_to_installations:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user

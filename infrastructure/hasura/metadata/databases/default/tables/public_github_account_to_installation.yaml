@@ -5,3 +5,6 @@ object_relationships:
 - name: github_account
   using:
     foreign_key_constraint_on: user_id
+- name: github_installation
+  using:
+    foreign_key_constraint_on: installation_id
