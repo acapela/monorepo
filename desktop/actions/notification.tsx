@@ -102,7 +102,7 @@ export const resolveNotification = defineAction({
     displayZenModeIfFinished(context);
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} resolved`,
+      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
       action: {
         label: "Undo",
         callback() {
