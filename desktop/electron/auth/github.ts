@@ -23,10 +23,10 @@ export async function loginGitHub() {
       const url = new URL(window.webContents.getURL());
       const ghMatch =
         url.origin === "https://github.com" &&
-        /^\/(organizations\/(.+)\/)?settings\/installations\/(\d+)$/.exec(url.pathname);
+        /^\/(((organizations\/(.+)\/)?settings)|(apps\/.+))\/installations\/(\d+)$/.exec(url.pathname);
       if (ghMatch) {
-        const organization = ghMatch[2];
-        const installationId = ghMatch[3];
+        const organization = ghMatch[5] ? ":missing:permissions:" : ghMatch[4];
+        const installationId = ghMatch[6];
         const query = organization ? `?org=${organization}` : "";
         window.webContents.loadURL(FRONTEND_URL + `/api/backend/v1/github/link/${installationId}${query}`, {
           userAgent,

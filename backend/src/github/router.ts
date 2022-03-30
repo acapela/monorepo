@@ -131,20 +131,24 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
     githubApp.getInstallationOctokit(installationId),
   ]);
 
-  if (!installation || installation.target_type !== "Organization" || installation.account_login !== org) {
+  if (!installation || installation.target_type !== "Organization") {
     throw new BadRequestError("installation id does not exist");
   }
+  if (org !== ":missing:permissions:" && installation.account_login !== org) {
+    throw new BadRequestError("organization does not match");
+  }
+
   if (!account) throw new BadRequestError("account does not exist");
 
   let isMember = false;
   try {
     await octokit.request("GET /orgs/{org}/members/{username}", {
-      org,
+      org: installation.account_login,
       username: account.github_login,
     });
     isMember = true;
   } catch (e) {
-    logger.error(`member status error (${org}/${account.github_login}): ` + e);
+    logger.error(`member status error (${installation.account_login}/${account.github_login}): ` + e);
   }
   if (!isMember) throw new BadRequestError("user not member of the organization");
 
