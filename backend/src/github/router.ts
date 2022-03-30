@@ -11,7 +11,7 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-import { CLIENT_ID, ghApp } from "./app";
+import { CLIENT_ID, githubApp } from "./app";
 import { addWebhookHandlers } from "./webhooks";
 
 export const router = Router();
@@ -22,9 +22,9 @@ function getSignedState(uid: string): string {
   return `${uid}:${hmac.digest("hex")}`;
 }
 
-addWebhookHandlers(ghApp.webhooks);
+addWebhookHandlers(githubApp.webhooks);
 
-router.post("/v1/github/webhook", createNodeMiddleware(ghApp.webhooks, { path: "/v1/github/webhook" }));
+router.post("/v1/github/webhook", createNodeMiddleware(githubApp.webhooks, { path: "/v1/github/webhook" }));
 
 const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/github/done`;
 
@@ -37,7 +37,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
 
   let oauthRes;
   try {
-    oauthRes = await ghApp.oauth.createToken({
+    oauthRes = await githubApp.oauth.createToken({
       code: code as string,
     });
   } catch (e) {
@@ -54,10 +54,11 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     throw new BadRequestError("oauth error");
   }
 
+  // if setup_action is not set we handle it as default oauth callback
+  // we will just store the authenticated user here
   if (setup_action !== "install") {
     const validState = getSignedState(userId);
     if (validState !== state) throw new BadRequestError("invalid state");
-    // this is the first callback, we have now successfully installed the oauth app
     const pk = {
       user_id: userId,
     };
@@ -77,6 +78,8 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     return;
   }
 
+  // this callback happens after installing the app
+  // now we can save the installation id and link it to the current user
   let installations;
   try {
     installations = await octokit.request("GET /user/installations");
@@ -89,37 +92,19 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
 
   if (!installation || !installation.account) throw new BadRequestError("installation not found");
 
-  const installationData = {
-    account_id: installation.account.id!,
-    account_login: installation.account.login!,
-    target_type: installation.target_type,
-    repository_selection: installation.repository_selection,
-  };
-
-  const dbInstallation = await db.github_installation.upsert({
-    where: {
+  await db.github_installation.create({
+    data: {
       installation_id: installationId,
+      account_id: installation.account.id!,
+      account_login: installation.account.login!,
+      target_type: installation.target_type,
+      repository_selection: installation.repository_selection,
+      github_account_to_installation: {
+        create: {
+          user_id: userId,
+        },
+      },
     },
-    create: {
-      installation_id: installationId,
-      ...installationData,
-    },
-    update: {
-      ...installationData,
-      updated_at: new Date(),
-    },
-  });
-
-  const pk = {
-    user_id: userId,
-    installation_id: dbInstallation.id,
-  };
-  await db.github_account_to_installation.upsert({
-    where: {
-      user_id_installation_id: pk,
-    },
-    create: pk,
-    update: pk,
   });
 
   res.redirect(doneEndpoint);
@@ -143,7 +128,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   const [installation, account, octokit] = await Promise.all([
     db.github_installation.findUnique({ where: { installation_id: installationId } }),
     db.github_account.findUnique({ where: { user_id: userId } }),
-    ghApp.getInstallationOctokit(installationId),
+    githubApp.getInstallationOctokit(installationId),
   ]);
 
   if (!installation || installation.target_type !== "Organization" || installation.account_login !== org) {
@@ -221,9 +206,9 @@ async function unlinkInstallation(userId: string, installationId: number): Promi
   const isAllowed = linkedAccounts.find((a) => a.user_id === userId);
   if (!isAllowed) throw new BadRequestError("installation is not linked to the current user");
 
-  if (linkedAccounts.length <= 1) {
+  if (linkedAccounts.length === 1) {
     try {
-      await ghApp.octokit.request("DELETE /app/installations/{installation_id}", {
+      await githubApp.octokit.request("DELETE /app/installations/{installation_id}", {
         installation_id: installationId,
       });
     } catch (e) {

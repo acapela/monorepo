@@ -2,7 +2,7 @@ import { App } from "octokit";
 
 export const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 
-export const ghApp = new App({
+export const githubApp = new App({
   appId: process.env.GITHUB_APP_ID,
   privateKey: Buffer.from(process.env.GITHUB_APP_PRIVATE_KEY, "base64").toString("utf-8"),
   oauth: {
