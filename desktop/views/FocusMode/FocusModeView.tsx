@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
@@ -39,13 +40,19 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const list = getInboxListsById(listId);
 
   useEffect(() => {
+    const activeListId = list?.id ?? null;
+    const activeNotification = notification;
     runInAction(() => {
-      uiStore.activeListId = list?.id ?? null;
-      uiStore.activeNotification = notification;
+      uiStore.activeListId = activeListId;
+      uiStore.activeNotification = activeNotification;
     });
     return () => {
-      uiStore.activeListId = null;
-      uiStore.activeNotification = null;
+      if (uiStore.activeNotification === activeNotification && uiStore.activeListId === activeListId) {
+        uiStore.activeListId = null;
+        uiStore.activeNotification = null;
+      } else {
+        Sentry.captureException(new Error("Tried to reset values set by another component"));
+      }
     };
   }, [list?.id, notification]);
 
