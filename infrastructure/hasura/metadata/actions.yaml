@@ -26,15 +26,6 @@ actions:
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
   permissions:
   - role: user
-- name: github_installations
-  definition:
-    kind: ""
-    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-    headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-  permissions:
-  - role: user
 - name: invite_user
   definition:
     kind: synchronous
