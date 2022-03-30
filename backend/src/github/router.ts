@@ -148,36 +148,26 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
   }
   if (!isMember) throw new BadRequestError("user not member of the organization");
 
-  const foundInstallation = await db.github_installation.findFirst({
-    where: {
-      installation_id: installationId,
-    },
-  });
-
-  if (!foundInstallation) throw new BadRequestError("installation not found");
-
-  const pk = {
-    user_id: userId,
-    installation_id: foundInstallation.id,
-  };
-  await db.github_account_to_installation.upsert({
-    where: {
-      user_id_installation_id: pk,
-    },
-    create: pk,
-    update: pk,
-  });
-
-  // force sync
   await db.github_installation.update({
-    where: {
-      installation_id: installationId,
-    },
+    where: { id: installation.id },
     data: {
       updated_at: new Date(),
+      github_account_to_installation: {
+        upsert: {
+          where: {
+            user_id_installation_id: {
+              user_id: userId,
+              installation_id: installation.id,
+            },
+          },
+          update: {},
+          create: {
+            user_id: userId,
+          },
+        },
+      },
     },
   });
-
   res.redirect(doneEndpoint);
 });
 
