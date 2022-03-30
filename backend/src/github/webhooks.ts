@@ -17,20 +17,11 @@ export function addWebhookHandlers(webhooks: Webhooks) {
 
 async function installationDeleted(event: EmitterWebhookEvent<"installation.deleted">) {
   try {
-    await Promise.all([
-      db.github_installation.deleteMany({
-        where: {
-          installation_id: event.payload.installation.id,
-        },
-      }),
-      db.github_account_to_installation.deleteMany({
-        where: {
-          github_installation: {
-            installation_id: event.payload.installation.id,
-          },
-        },
-      }),
-    ]);
+    await db.github_installation.deleteMany({
+      where: {
+        installation_id: event.payload.installation.id,
+      },
+    });
   } catch (e) {
     logger.error("installation.deleted error: " + e);
   }
