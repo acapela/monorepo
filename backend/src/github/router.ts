@@ -219,7 +219,7 @@ async function unlinkInstallation(userId: string, installationId: number): Promi
   });
 
   const isAllowed = linkedAccounts.find((a) => a.user_id === userId);
-  if (!isAllowed) throw new BadRequestError("installation id is invalid");
+  if (!isAllowed) throw new BadRequestError("installation is not linked to the current user");
 
   if (linkedAccounts.length <= 1) {
     try {
