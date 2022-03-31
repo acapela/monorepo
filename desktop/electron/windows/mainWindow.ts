@@ -8,15 +8,15 @@ import { applicationFocusStateBridge, applicationStateBridge } from "../../bridg
 import { initializeChildWindowHandlers } from "./childWindows";
 import { initializeMainView } from "./mainView";
 import { initializeOverlayView } from "./overlayView";
-import { sentryDsn } from "./paths";
 import { createBrowserWindowMobxBinding } from "./utils/browserWindowMobxBinding";
 import { handleHideWindowOnClose } from "./utils/hideWindowOnClose";
 import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
 
 if (!IS_DEV) {
   Sentry.init({
-    dsn: sentryDsn,
+    dsn: process.env.SENTRY_DSN,
     release: app.getVersion(),
+    environment: process.env.STAGE,
     maxValueLength: 1000,
   });
 }
