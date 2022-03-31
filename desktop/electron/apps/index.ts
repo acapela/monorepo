@@ -36,7 +36,7 @@ function startFigmaIfReady() {
     console.info("[Figma] Not ready to sync: session not present");
     return;
   }
-  startFigmaSync();
+  addHandler(startFigmaSync());
   initializeFigmaPush();
 }
 

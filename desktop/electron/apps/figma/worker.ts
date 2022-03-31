@@ -1,18 +1,16 @@
-import { differenceInDays, differenceInWeeks } from "date-fns";
+import { differenceInDays, differenceInMilliseconds, differenceInWeeks } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
-import WebSocket from "ws";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
 
+import { ServiceSyncController } from "../types";
 import {
   FigmaCommentMessageMeta,
   FigmaCommentNotification,
-  FigmaSessionState,
-  FigmaSocketMessage,
   FigmaUserNotification,
   GetFigmaUserNotificationsResponse,
 } from "./types";
@@ -25,9 +23,6 @@ interface FigmaSessionData {
 }
 
 const log = makeLogger("Figma-Worker");
-function isUserNotification(payload: FigmaUserNotification | undefined): payload is FigmaUserNotification {
-  return payload !== undefined;
-}
 
 function isCommentNotification(payload: FigmaCommentNotification | unknown): payload is FigmaCommentNotification {
   return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
@@ -36,9 +31,64 @@ function isCommentNotification(payload: FigmaCommentNotification | unknown): pay
 export function isFigmaReadyToSync() {
   return authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
 }
-export async function startFigmaSync() {
+
+const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
+const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
+
+let currentInterval: NodeJS.Timer | null = null;
+let timeOfLastSync: Date | null = null;
+let isSyncing = false;
+
+export function startFigmaSync(): ServiceSyncController {
+  async function runSync() {
+    if (isSyncing) {
+      return;
+    }
+    try {
+      isSyncing = true;
+      await captureLatestNotifications();
+    } catch (e) {
+      log.error(e);
+    }
+
+    isSyncing = false;
+
+    timeOfLastSync = new Date();
+  }
+
+  function restartPullInterval(timeInterval: number) {
+    if (currentInterval) {
+      clearInterval(currentInterval);
+    }
+    currentInterval = setInterval(captureLatestNotifications, timeInterval);
+  }
+
+  runSync();
+
+  return {
+    serviceName: "figma",
+    onWindowFocus() {
+      const now = new Date();
+      const isLongTimeSinceLastFocus =
+        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
+
+      if (isLongTimeSinceLastFocus) {
+        runSync();
+      }
+      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
+    },
+    onWindowBlur() {
+      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
+    },
+    forceSync() {
+      runSync();
+    },
+  };
+}
+
+async function captureLatestNotifications() {
   let figmaSessionData;
-  log.info("Fetching session variables");
+  log.info("Capturing started");
   try {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
@@ -50,11 +100,8 @@ export async function startFigmaSync() {
   // First sync extract all of the notifications from a standard rest endpoint.
   // This sync will get and sync all relevant notifications since last app open
   // Relevant notification: !read && !resolved && !rejected && created less than 2 weeks ago
-  getInitialFigmaSync(figmaSessionData);
-
-  // The figma socket based sync will subscribe to user events
-  // and sync every new notification as it comes in
-  startFigmaSocketBasedSync(figmaSessionData);
+  await getInitialFigmaSync(figmaSessionData);
+  log.info(`Capturing complete`);
 }
 
 export async function getFigmaSessionData(): Promise<FigmaSessionData> {
@@ -143,84 +190,6 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   log.info(`Attempting to sync ${relevantFigmaNotifications.length} relevant notifications`);
 
   transformAndSyncFigmaNotifications(relevantFigmaNotifications, figmaUserId);
-}
-
-async function startFigmaSocketBasedSync({ cookie, figmaUserId, release_git_tag }: FigmaSessionData) {
-  // The realtime user token is used to establish a websocket subscription where we will get data
-  // that included the user notification
-  // It looks like this: "/me-979019639379984679:1643202911:0:2678f875be063e1ee888c7fa008c7b761fdf1241"
-  let figmaRealtimeUserToken: string | null = null;
-
-  try {
-    const response = await fetch(figmaURL + "/api/user/state", {
-      method: "GET",
-      headers: {
-        cookie,
-      },
-    });
-
-    figmaRealtimeUserToken = ((await response.json()) as FigmaSessionState).meta.user_realtime_token;
-  } catch (e) {
-    log.error(e as Error);
-
-    return;
-  }
-
-  if (!figmaRealtimeUserToken) {
-    log.error("unable to extract figma real time user token");
-    return;
-  }
-
-  const ws = new WebSocket(`wss://www.figma.com/api/realtime_v2?release_git_tag=${release_git_tag}`, {
-    perMessageDeflate: true,
-    headers: {
-      cookie,
-    },
-  });
-
-  // Seems like figma uses pings to keep the connection open
-  function startPingInterval() {
-    setInterval(() => {
-      ws.ping("ping");
-      // 31/32 seconds is the ping interval seen in figma
-    }, 31.5 * 1000);
-  }
-
-  ws.on("open", function open() {
-    startPingInterval();
-
-    // Subscription to messages related to user, including user notifications
-    ws.send(`tok:${figmaRealtimeUserToken}`);
-    log.info("Opening socket connection");
-  });
-
-  ws.on("message", function message(data) {
-    // Many times we receive plain text responses, as indications that subscriptions have been successful and others
-    // Otherwise we'll receive a message that resembles
-    if (!data.toString().includes("method") || !data.toString().includes("type")) {
-      return;
-    }
-
-    // Every other message received fits this structure
-    const message = JSON.parse(data.toString("utf-8")) as FigmaSocketMessage;
-
-    // We want to get newly created user notifications, that's why we're listing to "post" messages only
-    if (
-      message.method !== "post" ||
-      message.type !== "user_notification" ||
-      !isUserNotification(message.user_notification)
-    ) {
-      return;
-    }
-
-    log.info("Received socket user notification");
-
-    const userNotificationMessage: FigmaUserNotification = message.user_notification;
-
-    transformAndSyncFigmaNotifications([userNotificationMessage], figmaUserId);
-  });
-
-  ws.on("error", (e) => log.error(e));
 }
 
 function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNotification[], figmaUserId: string) {
