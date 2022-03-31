@@ -49,6 +49,9 @@ protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privil
 const log = makeLogger("Electron-Boot-Sequence");
 
 function initializeApp() {
+  log.info(`Initialize logger`);
+  InitializeLogger();
+
   log.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
 
@@ -57,9 +60,6 @@ function initializeApp() {
 
   log.info(`Initialize main window`);
   getMainWindow();
-
-  log.info(`Initialize logger`);
-  InitializeLogger();
 
   log.info(`Initialize service sync`);
   initializeServiceSync();
