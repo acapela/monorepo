@@ -11,6 +11,7 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
   isPersisted: true,
 });
 export const loginBridge = createInvokeBridge<"google" | "slack">("login");
+export const autoLoginBridge = createInvokeBridge("auto-login");
 
 export const logoutBridge = createInvokeBridge("logout");
 

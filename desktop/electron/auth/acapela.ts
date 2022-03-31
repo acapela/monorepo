@@ -1,9 +1,8 @@
 import { BrowserWindow, session } from "electron";
 import fetch from "node-fetch";
 
-import { authTokenBridgeValue, loginBridge } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, autoLoginBridge, loginBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
-import { IS_CI, IS_DEV } from "@aca/shared/dev";
 
 import { syncGoogleAuthState } from "./google";
 import { authWindowDefaultOptions } from "./utils";
@@ -67,11 +66,9 @@ export function initializeLoginHandler() {
     await loginAcapela(loginProvider);
   });
 
-  if (IS_DEV || IS_CI) {
-    setTimeout(() => {
-      autoLoginAcapelaForEnd2EndTest();
-    }, 500);
-  }
+  autoLoginBridge.handle(async () => {
+    await autoLoginAcapelaForEnd2EndTest();
+  });
 
   getAcapelaAuthToken().then((token) => {
     authTokenBridgeValue.set(token);
