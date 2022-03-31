@@ -1,4 +1,3 @@
-import { differenceInMilliseconds } from "date-fns";
 import { session } from "electron";
 import fetch from "node-fetch";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import {
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
+import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 import { wait } from "@aca/shared/time";
@@ -30,13 +29,6 @@ import {
   UserInvitedActivityValue,
   UserMentionedActivityValue,
 } from "./schema";
-
-const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
-
-let currentInterval: NodeJS.Timer | null = null;
-let timeOfLastSync: Date | null = null;
-let isSyncing = false;
 
 const log = makeLogger("Notion-Worker");
 
@@ -72,77 +64,29 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
   return { cookie, notionUserId };
 }
 
-/*
-  Pulling logic for notion
-  - Pull immediately on app start
-  - Pull every WINDOW_BLURRED_INTERVAL if main window is blurred
-  - Pull every WINDOW_FOCUSED_INTERVAL if main window is focused
-  - Pull immediately when window focuses if more than WINDOW_FOCUSED_INTERVAL have passed before last pull
-*/
 export function startNotionSync(): ServiceSyncController {
-  const sessionDataPromise = getNotionSessionData();
-
   async function runSync() {
-    if (isSyncing) {
-      return;
-    }
+    const sessionData = await getNotionSessionData();
 
-    const sessionData = await sessionDataPromise;
+    log.info(`Capturing started`);
 
-    try {
-      isSyncing = true;
-      log.info(`Capturing started`);
+    await updateAvailableSpaces();
 
-      await updateAvailableSpaces();
+    const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
-      const syncEnabledSpaces = notionSelectedSpaceValue.get();
+    log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
 
-      log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
-      for (const spaceToSync of syncEnabledSpaces.selected) {
-        log.debug(`Capturing started for space: ${spaceToSync}`);
-        const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
-        notionSyncPayload.send(extractNotifications(notificationLog));
-        await wait(10000);
-      }
+    for (const spaceToSync of syncEnabledSpaces.selected) {
+      log.debug(`Capturing started for space: ${spaceToSync}`);
 
-      timeOfLastSync = new Date();
+      const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+      notionSyncPayload.send(extractNotifications(notificationLog));
 
-      log.info(`Capturing complete`);
-    } catch (e: unknown) {
-      log.error(e as Error);
-    } finally {
-      isSyncing = false;
+      await wait(10000);
     }
   }
 
-  function restartPullInterval(timeInterval: number) {
-    if (currentInterval) {
-      clearInterval(currentInterval);
-    }
-    currentInterval = setInterval(runSync, timeInterval);
-  }
-
-  runSync();
-
-  return {
-    serviceName: "notion",
-    onWindowFocus() {
-      const now = new Date();
-      const isLongTimeSinceLastFocus =
-        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
-
-      if (isLongTimeSinceLastFocus) {
-        runSync();
-      }
-      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
-    },
-    onWindowBlur() {
-      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
-    },
-    forceSync() {
-      runSync();
-    },
-  };
+  return makeServiceSyncController("notion", runSync);
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {

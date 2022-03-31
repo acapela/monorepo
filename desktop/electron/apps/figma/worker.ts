@@ -7,7 +7,7 @@ import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/br
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
 
-import { ServiceSyncController } from "../types";
+import { ServiceSyncController } from "../serviceSyncController";
 import {
   FigmaCommentMessageMeta,
   FigmaCommentNotification,
