@@ -6,7 +6,7 @@
     "@playwright/test": "^1.20.1"
   },
   "scripts": {
-    "test": "APP=e2e xvfb-maybe playwright test --workers 1",
+    "test": "APP=e2e LOGGING_LEVEL=debug xvfb-maybe playwright test --workers 1",
     "test:debug": "PWDEBUG=1 APP=e2e playwright test",
     "dev": "ts-node --transpile-only ./cli/dev.ts"
   },
