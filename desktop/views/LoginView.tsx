@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { loginToAcapelaWithGoogle, loginToAcapelaWithSlack } from "@aca/desktop/actions/auth";
-import { autoLoginBridge } from "@aca/desktop/bridge/auth";
+import { autoLoginBridge, canAutoLoginBridge } from "@aca/desktop/bridge/auth";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
-import { IS_CI, IS_DEV } from "@aca/shared/dev";
 
 import { FocusedActionView } from "./FocusedActionView";
 
 export function LoginView() {
+  const [canAutoLogin, setCanAutoLogin] = useState(false);
+  useEffect(() => {
+    canAutoLoginBridge().then(setCanAutoLogin);
+  }, []);
   return (
     <FocusedActionView title="Sign into Acapela">
-      {(IS_DEV || IS_CI) && (
+      {canAutoLogin && (
         <button
           onClick={() => {
             autoLoginBridge();

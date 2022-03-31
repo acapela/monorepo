@@ -1,8 +1,9 @@
 import { BrowserWindow, session } from "electron";
 import fetch from "node-fetch";
 
-import { authTokenBridgeValue, autoLoginBridge, loginBridge } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, autoLoginBridge, canAutoLoginBridge, loginBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
+import { IS_CI, IS_DEV } from "@aca/shared/dev";
 
 import { syncGoogleAuthState } from "./google";
 import { authWindowDefaultOptions } from "./utils";
@@ -54,9 +55,14 @@ export async function loginAcapela(provider: "slack" | "google") {
   });
 }
 
-async function autoLoginAcapelaForEnd2EndTest() {
+async function fetchTestUserJWT() {
   const response = await fetch("http://localhost:3000/api/e2e/test_user");
   const { jwt } = await response.json();
+  return jwt;
+}
+
+async function autoLoginAcapelaForEnd2EndTest() {
+  const jwt = await fetchTestUserJWT();
   await session.defaultSession.cookies.set({ name: NEXT_AUTH_COOKIE_KEY, value: jwt, url: "http://localhost:3000" });
   await authTokenBridgeValue.set(jwt);
 }
@@ -66,6 +72,7 @@ export function initializeLoginHandler() {
     await loginAcapela(loginProvider);
   });
 
+  canAutoLoginBridge.handle(async () => (IS_DEV || IS_CI) && !!(await fetchTestUserJWT()));
   autoLoginBridge.handle(async () => {
     await autoLoginAcapelaForEnd2EndTest();
   });
