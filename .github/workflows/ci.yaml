@@ -57,7 +57,7 @@ jobs:
       - uses: ./.github/actions/node-and-yarn
       - run: yarn desktop build:test
       - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-      - run: yarn prisma generate
+      - run: prisma generate
       - run: yarn e2e test electron
         env:
           ELECTRON_IS_DEV: 0
