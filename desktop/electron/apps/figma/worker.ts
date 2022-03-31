@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInMilliseconds, differenceInWeeks } from "date-fns";
+import { differenceInDays, differenceInWeeks } from "date-fns";
 import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
@@ -7,7 +7,7 @@ import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/br
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
 
-import { ServiceSyncController } from "../serviceSyncController";
+import { ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
 import {
   FigmaCommentMessageMeta,
   FigmaCommentNotification,
@@ -32,63 +32,13 @@ export function isFigmaReadyToSync() {
   return authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
 }
 
-const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
-
-let currentInterval: NodeJS.Timer | null = null;
-let timeOfLastSync: Date | null = null;
-let isSyncing = false;
-
 export function startFigmaSync(): ServiceSyncController {
-  async function runSync() {
-    if (isSyncing) {
-      return;
-    }
-    try {
-      isSyncing = true;
-      await captureLatestNotifications();
-    } catch (e) {
-      log.error(e);
-    }
-
-    isSyncing = false;
-
-    timeOfLastSync = new Date();
-  }
-
-  function restartPullInterval(timeInterval: number) {
-    if (currentInterval) {
-      clearInterval(currentInterval);
-    }
-    currentInterval = setInterval(captureLatestNotifications, timeInterval);
-  }
-
-  runSync();
-
-  return {
-    serviceName: "figma",
-    onWindowFocus() {
-      const now = new Date();
-      const isLongTimeSinceLastFocus =
-        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
-
-      if (isLongTimeSinceLastFocus) {
-        runSync();
-      }
-      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
-    },
-    onWindowBlur() {
-      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
-    },
-    forceSync() {
-      runSync();
-    },
-  };
+  return makeServiceSyncController("figma", async () => await captureLatestNotifications());
 }
 
 async function captureLatestNotifications() {
   let figmaSessionData;
-  log.info("Capturing started");
+
   try {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
@@ -101,7 +51,6 @@ async function captureLatestNotifications() {
   // This sync will get and sync all relevant notifications since last app open
   // Relevant notification: !read && !resolved && !rejected && created less than 2 weeks ago
   await getInitialFigmaSync(figmaSessionData);
-  log.info(`Capturing complete`);
 }
 
 export async function getFigmaSessionData(): Promise<FigmaSessionData> {
