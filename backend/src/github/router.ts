@@ -29,7 +29,13 @@ router.post("/v1/github/webhook", createNodeMiddleware(githubApp.webhooks, { pat
 const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/github/done`;
 
 router.get("/v1/github/callback", async (req: Request, res: Response) => {
-  const userId = getUserIdFromRequest(req);
+  let userId;
+  try {
+    userId = getUserIdFromRequest(req);
+  } catch (e) {
+    logger.warn(e);
+  }
+
   const { code, setup_action, installation_id, state } = req.query;
   if (!code) throw new BadRequestError("code is missing");
   const installationId = parseInt(installation_id as string, 10);
@@ -57,6 +63,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
   // if setup_action is not set we handle it as default oauth callback
   // we will just store the authenticated user here
   if (setup_action !== "install") {
+    if (!userId) throw new BadRequestError("session is missing");
     const validState = getSignedState(userId);
     if (validState !== state) throw new BadRequestError("invalid state");
     const pk = {
@@ -99,11 +106,17 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
       account_login: installation.account.login!,
       target_type: installation.target_type,
       repository_selection: installation.repository_selection,
-      github_account_to_installation: {
-        create: {
-          user_id: userId,
-        },
-      },
+      // if the userId is missing the session was just created by an admin without an acapela account
+      ...(userId
+        ? {
+            installed_by: userId,
+            github_account_to_installation: {
+              create: {
+                user_id: userId,
+              },
+            },
+          }
+        : {}),
     },
   });
 
