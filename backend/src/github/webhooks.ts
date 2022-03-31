@@ -100,28 +100,11 @@ async function issueOrPrAssigned(
 
   const senderId = event.payload.sender.id;
   const assigneeId = event.payload.assignee.id;
-
   // ignore self-assignments
   if (senderId === assigneeId) return;
 
-  const accounts = await db.github_account_to_installation.findMany({
-    where: {
-      github_installation: {
-        installation_id: installationId,
-      },
-      github_account: {
-        github_user_id: {
-          in: [senderId, assigneeId],
-        },
-      },
-    },
-    include: { github_account: { include: { user: true } } },
-  });
-
-  const assigneeAccount = accounts.find((a) => a.github_account.github_user_id === assigneeId);
+  const [senderAccount, assigneeAccount] = await getAccounts(installationId, [senderId, assigneeId]);
   if (!assigneeAccount) return;
-
-  const senderAccount = accounts.find((a) => a.github_account.github_user_id === senderId);
   const senderName = senderAccount?.github_account.user.name || event.payload.sender.login;
 
   const isIssue = event.name === "issues";
@@ -155,28 +138,12 @@ async function reviewRequested(event: EmitterWebhookEvent<"pull_request.review_r
   if (!requestedReviewer) throw new Error("requested_reviewer is missing");
 
   const senderId = event.payload.sender.id;
-
+  const requestedReviewerId = requestedReviewer.id;
   // ignore self-assinged review request
-  if (senderId === requestedReviewer.id) return;
+  if (senderId === requestedReviewerId) return;
 
-  const accounts = await db.github_account_to_installation.findMany({
-    where: {
-      github_installation: {
-        installation_id: installationId,
-      },
-      github_account: {
-        github_user_id: {
-          in: [senderId, requestedReviewer.id],
-        },
-      },
-    },
-    include: { github_account: { include: { user: true } } },
-  });
-
-  const requestedReviewerAccount = accounts.find((a) => a.github_account.github_user_id === requestedReviewer.id);
+  const [senderAccount, requestedReviewerAccount] = await getAccounts(installationId, [senderId, requestedReviewerId]);
   if (!requestedReviewerAccount) return;
-
-  const senderAccount = accounts.find((a) => a.github_account.github_user_id === senderId);
   const senderName = senderAccount?.github_account.user.name || event.payload.sender.login;
 
   await db.notification_github.create({
@@ -195,4 +162,21 @@ async function reviewRequested(event: EmitterWebhookEvent<"pull_request.review_r
       repository_full_name: event.payload.repository.full_name,
     },
   });
+}
+
+async function getAccounts(installationId: number, accountIds: number[]) {
+  const accounts = await db.github_account_to_installation.findMany({
+    where: {
+      github_installation: {
+        installation_id: installationId,
+      },
+      github_account: {
+        github_user_id: {
+          in: accountIds,
+        },
+      },
+    },
+    include: { github_account: { include: { user: true } } },
+  });
+  return accountIds.map((id) => accounts.find((a) => a.github_account.github_user_id === id));
 }
