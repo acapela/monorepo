@@ -1,6 +1,7 @@
 import { BrowserWindow, session } from "electron";
 
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
+import { addToast } from "@aca/desktop/domains/toasts/store";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { authWindowDefaultOptions } from "./utils";
@@ -33,6 +34,15 @@ export async function loginGitHub() {
         });
       }
       if (checkIfDone(url)) {
+        const callbackError = url.searchParams.get("error");
+        if (callbackError === "install_requested") {
+          addToast({
+            title: "Insufficient permissions",
+            message: "Permissions were requested. Try again once granted.",
+            durationMs: 10 * 1000,
+          });
+        }
+
         githubAuthTokenBridgeValue.set(true);
         window.close();
         resolve();

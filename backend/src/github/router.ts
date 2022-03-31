@@ -60,6 +60,11 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     throw new BadRequestError("oauth error");
   }
 
+  if (setup_action === "request") {
+    res.redirect(`${doneEndpoint}?error=install_requested`);
+    return;
+  }
+
   // if setup_action is not set we handle it as default oauth callback
   // we will just store the authenticated user here
   if (setup_action !== "install") {
