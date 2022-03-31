@@ -4,26 +4,30 @@ const Role = z.enum(["read_and_write", "editor", "read"]);
 
 const NotionUserPayload = z.object({
   role: z.string(),
-  value: z.object({
-    email: z.string(),
-    id: z.string(),
-    name: z.string().optional(),
-    profile_photo: z.string().optional(),
-    version: z.number(),
-  }),
+  value: z
+    .object({
+      email: z.string(),
+      id: z.string(),
+      name: z.string().optional(),
+      profile_photo: z.string().optional(),
+      version: z.number(),
+    })
+    .optional(),
 });
 
 const DiscussionPayload = z.object({
   role: z.string(),
-  value: z.object({
-    comments: z.array(z.string()),
-    id: z.string(),
-    parent_id: z.string(),
-    parent_table: z.string(),
-    resolved: z.boolean(),
-    space_id: z.string(),
-    version: z.number(),
-  }),
+  value: z
+    .object({
+      comments: z.array(z.string()),
+      id: z.string(),
+      parent_id: z.string(),
+      parent_table: z.string(),
+      resolved: z.boolean(),
+      space_id: z.string(),
+      version: z.number(),
+    })
+    .optional(),
 });
 
 const SpaceView = z.object({
@@ -69,7 +73,7 @@ export const Notification = z.object({
 
 const NotificationPayload = z.object({
   role: z.string(),
-  value: Notification,
+  value: Notification.optional(),
 });
 
 const NotionUserId = z.string();
@@ -142,7 +146,7 @@ export const CollectionViewPageBlockValue = BlockValueCommon.extend({
   view_ids: z.array(z.string()),
 });
 
-const BlockPayload = <T>(type: z.ZodType<T>) => z.object({ role: z.string(), value: type });
+const BlockPayload = <T>(type: z.ZodType<T>) => z.object({ role: z.string(), value: type.optional() });
 
 const CollectionPayload = z.object({
   role: z.string(),
