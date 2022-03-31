@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.18.1"
+    "@playwright/test": "^1.20.1"
   },
   "scripts": {
-    "test": "xvfb-maybe playwright test --workers 1",
+    "test": "APP=e2e xvfb-maybe playwright test --workers 1",
     "test:debug": "PWDEBUG=1 APP=e2e playwright test",
     "dev": "ts-node --transpile-only ./cli/dev.ts"
   },
   "dependencies": {
-    "playwright": "^1.18.1",
+    "playwright": "^1.20.1",
     "xvfb-maybe": "^0.2.1"
   }
 }
