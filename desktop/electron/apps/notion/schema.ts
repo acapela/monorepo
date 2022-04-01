@@ -68,7 +68,7 @@ export const Notification = z.object({
   navigable_block_id: z.string().optional(),
   collection_id: z.string().optional(),
   end_time: z.string(),
-  type: z.enum(["user-mentioned", "commented", "user-invited", "reminder"]),
+  type: z.string(),
 });
 
 const NotificationPayload = z.object({
@@ -206,7 +206,7 @@ const ActivityEdit = z.union([
 
 const ActivityValueCommon = z.object({
   id: z.string(),
-  edits: z.array(ActivityEdit),
+  edits: z.array(ActivityEdit).optional(),
   end_time: z.string(),
 
   index: z.number(),

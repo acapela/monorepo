@@ -237,7 +237,7 @@ function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNoti
 
       const updated_at = created_at;
 
-      const authorId = activity.edits[0]?.authors?.[0]?.id ?? "Notion";
+      const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
       if (authorId === "Notion") {
         log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
       }
