@@ -10,7 +10,7 @@ import { HttpStatus } from "../http";
 export const router = Router();
 
 const handlers: Record<string, Function> = {
-  "refresh-expiring-atlassian-properties": refreshExpiringAtlassianProperties,
+  "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
 };
 
 interface CronPayload {
