@@ -28,4 +28,6 @@ for (let i = 0; i < 100; i++) {
 }
 
 // start e2e tests
-$`yarn e2e test electron`;
+await $`yarn e2e test electron`;
+
+process.exit(0);
