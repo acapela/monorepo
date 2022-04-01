@@ -23,8 +23,8 @@ __metadata:
     "@octokit/webhooks": ^9.23.0
     "@sentry/cli": ^1.73.2
     "@sentry/node": ^6.17.3
-    "@slack/bolt": ^3.9.0
-    "@slack/web-api": ^6.6.0
+    "@slack/bolt": ^3.11.0
+    "@slack/web-api": ^6.7.1
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.12
     "@types/express": 4.17.13
@@ -6052,26 +6052,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/bolt@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "@slack/bolt@npm:3.9.0"
+"@slack/bolt@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "@slack/bolt@npm:3.11.0"
   dependencies:
     "@slack/logger": ^3.0.0
-    "@slack/oauth": ^2.4.0
+    "@slack/oauth": ^2.5.1
     "@slack/socket-mode": ^1.2.0
     "@slack/types": ^2.4.0
-    "@slack/web-api": ^6.6.0
+    "@slack/web-api": ^6.7.1
     "@types/express": ^4.16.1
     "@types/node": ">=12"
     "@types/promise.allsettled": ^1.0.3
     "@types/tsscmp": ^1.0.0
-    axios: ^0.21.4
+    axios: ^0.26.1
     express: ^4.16.4
     please-upgrade-node: ^3.2.0
     promise.allsettled: ^1.0.2
     raw-body: ^2.3.3
     tsscmp: ^1.0.6
-  checksum: cf38d8556f7562410a666bc39e1e1f000f1d5e002195a94909b19606a1db885feee3618c6b9a353f96e032efd5937c50e30bc9c2edb2e635f5d8ddee7ba708d1
+  checksum: 25491d656e20b4d6fa90e936560e19e5e4d687bc43d8ca339e4302a2dae75125ee68eaf5e17e56893340e68928c6faa2222f4ce8b391b1925c61797b4644f994
   languageName: node
   linkType: hard
 
@@ -6084,9 +6084,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/oauth@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@slack/oauth@npm:2.4.0"
+"@slack/oauth@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "@slack/oauth@npm:2.5.1"
   dependencies:
     "@slack/logger": ^3.0.0
     "@slack/web-api": ^6.3.0
@@ -6094,7 +6094,7 @@ __metadata:
     "@types/node": ">=12"
     jsonwebtoken: ^8.5.1
     lodash.isstring: ^4.0.1
-  checksum: 286f03a90f60117bc3250760941114fd7e23500eb9c17e8ab4ef3b7ce8b9f8193eae7ec0e38e6c722fa6acb079e8fd6c7eace7b812cb749c80f84ee75987476f
+  checksum: 02e4331a037737999ef4c50e19d074a27540432e755aa69bc4da3fe5f9eb8176cd620f2e7bce08acad28bbda589d50689928de7d42cc96d4ee63af132e10109b
   languageName: node
   linkType: hard
 
@@ -6149,22 +6149,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/web-api@npm:^6.6.0":
-  version: 6.6.0
-  resolution: "@slack/web-api@npm:6.6.0"
+"@slack/web-api@npm:^6.7.1":
+  version: 6.7.1
+  resolution: "@slack/web-api@npm:6.7.1"
   dependencies:
     "@slack/logger": ^3.0.0
     "@slack/types": ^2.0.0
     "@types/is-stream": ^1.1.0
     "@types/node": ">=12.0.0"
-    axios: ^0.25.0
+    axios: ^0.26.1
     eventemitter3: ^3.1.0
     form-data: ^2.5.0
     is-electron: 2.2.0
     is-stream: ^1.1.0
     p-queue: ^6.6.1
     p-retry: ^4.0.0
-  checksum: d3f385137643267f5eaed7413d7fef4e2416bdfedac971393c16307a504829b1c927efdbf0ed4b8895bdc9534a5013dbe840e266493c9db446af765e932babce
+  checksum: 178bb156ba703637d2a2ce7700a161730c5d8293fab18308c46d06a5b23bbe8eb5b2a7358c78a7cf2e995f5a36a1c0d25e4df016727ad86f351dbb0c40fd868d
   languageName: node
   linkType: hard
 
@@ -9443,12 +9443,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "axios@npm:0.25.0"
+"axios@npm:^0.26.1":
+  version: 0.26.1
+  resolution: "axios@npm:0.26.1"
   dependencies:
-    follow-redirects: ^1.14.7
-  checksum: 2a8a3787c05f2a0c9c3878f49782357e2a9f38945b93018fb0c4fd788171c43dceefbb577988628e09fea53952744d1ecebde234b561f1e703aa43e0a598a3ad
+    follow-redirects: ^1.14.8
+  checksum: d9eb58ff4bc0b36a04783fc9ff760e9245c829a5a1052ee7ca6013410d427036b1d10d04e7380c02f3508c5eaf3485b1ae67bd2adbfec3683704745c8d7a6e1a
   languageName: node
   linkType: hard
 
@@ -14139,13 +14139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.7":
-  version: 1.14.7
-  resolution: "follow-redirects@npm:1.14.7"
+"follow-redirects@npm:^1.14.8":
+  version: 1.14.9
+  resolution: "follow-redirects@npm:1.14.9"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: f6d03e5e30877431065bca0d1b2e3db93949eb799d368a5c07ea8a4b71205f0349a3f8f0191bf13a07c93885522834dca1dc8e527dc99a772c6911fba24edc5f
+  checksum: f5982e0eb481818642492d3ca35a86989c98af1128b8e1a62911a3410621bc15d2b079e8170b35b19d3bdee770b73ed431a257ed86195af773771145baa57845
   languageName: node
   linkType: hard
 
