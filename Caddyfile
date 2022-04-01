@@ -15,11 +15,6 @@ handle_path /api/auth/* {
 	reverse_proxy {$BACKEND_HOST}
 }
 
-handle_path /api/e2e/* {
-	rewrite * /api/e2e{path}
-	reverse_proxy {$BACKEND_HOST}
-}
-
 handle_path /api/backend/healthz {
 	rewrite * /healthz
 	reverse_proxy {$BACKEND_HOST}

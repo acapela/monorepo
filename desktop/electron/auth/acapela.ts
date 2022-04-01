@@ -56,7 +56,7 @@ export async function loginAcapela(provider: "slack" | "google") {
 }
 
 async function fetchTestUserJWT() {
-  const response = await fetch("http://localhost:3000/api/e2e/test_user");
+  const response = await fetch("http://localhost:3000/api/backend/e2e/test_user");
   const { jwt } = await response.json();
   return jwt;
 }
