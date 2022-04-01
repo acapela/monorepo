@@ -52,6 +52,7 @@ jobs:
     concurrency:
       group: e2e-${{ github.ref }}
       cancel-in-progress: true
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
