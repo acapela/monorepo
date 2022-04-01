@@ -28,6 +28,7 @@ import { createClientBundler, createElectronBundler, removeDirectory } from "./p
  */
 
 async function start() {
+  const config = process.argv.pop();
   console.info(`Starting desktop dev mode...`);
   // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
   removeDirectory(path.resolve(__dirname, "dist"));
@@ -72,7 +73,7 @@ async function start() {
     }
 
     // Either initial or file change build is successful - initialize or restart electron
-    if (event.type === "buildSuccess") {
+    if (event.type === "buildSuccess" && config !== "no-electron") {
       startOrRestartElectron();
     }
   });

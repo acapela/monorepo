@@ -66,7 +66,8 @@
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
     "generate": "yarn db update && tooling gql frontend",
-    "typecheck": "tsc --project tsconfig.typecheck.json"
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "run-e2e-tests": "zx ./scripts/run-e2e-tests.mjs"
   },
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json,html}": "prettier --write",

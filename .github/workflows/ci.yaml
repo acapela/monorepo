@@ -55,11 +55,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
-      - run: yarn desktop build:test
+      - name: Setup dotenv
+        run: cp .env.sample .env
+      - name: Run hasura migrations
+        run: |
+          docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
+          sleep 5
+          yarn hasura:update
+          yarn generate
       - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-      - run: yarn e2e test electron
+      - run: yarn run-e2e-tests
         env:
-          ELECTRON_IS_DEV: 0
           DISPLAY: ":99.0"
 
   release:
