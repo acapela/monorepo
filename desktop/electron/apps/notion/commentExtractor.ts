@@ -20,6 +20,9 @@ export function extractNotionComment(
   activity: z.infer<typeof CommentedActivityValue>,
   recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
+  if (!activity.edits) {
+    return;
+  }
   const lastEditIndex = activity.edits.length - 1;
   const commentActivityEdit = activity.edits[lastEditIndex];
 
