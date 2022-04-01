@@ -38,7 +38,7 @@ export function defineNotificationsList({
 }: DefineListConfig) {
   assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
 
-  const getRawNotificationsQuery = cachedComputed(() => {
+  const getRawNotificationsQuery = cachedComputed(function getRawNotificationsQuery() {
     const db = getDb();
 
     if (filter) {
@@ -52,18 +52,18 @@ export function defineNotificationsList({
     throw 2;
   });
 
-  const getAllGroupedNotifications = cachedComputed(() => {
+  const getAllGroupedNotifications = cachedComputed(function getAllGroupedNotifications() {
     const groups = groupNotifications(getRawNotificationsQuery());
     return groups;
   });
 
-  const getFlattenedNotifications = cachedComputed(() =>
-    getAllGroupedNotifications().flatMap((notificationOrGroup) =>
+  const getFlattenedNotifications = cachedComputed(function getFlattenedNotifications() {
+    return getAllGroupedNotifications().flatMap((notificationOrGroup) =>
       getIsNotificationsGroup(notificationOrGroup) ? notificationOrGroup.notifications : [notificationOrGroup]
-    )
-  );
+    );
+  });
 
-  const getNotificationIndex = cachedComputed((notification: NotificationEntity) => {
+  const getNotificationIndex = cachedComputed(function getNotificationIndex(notification: NotificationEntity) {
     const groupedNotifications = getAllGroupedNotifications();
 
     const index: GroupedNotificationsIndex | undefined = findAndMap(groupedNotifications, (notificationOrGroup, i) => {
@@ -83,7 +83,10 @@ export function defineNotificationsList({
     return index;
   });
 
-  const getAdjacentNotification = cachedComputed((notification: NotificationEntity, direction: -1 | 1) => {
+  const getAdjacentNotification = cachedComputed(function getAdjacentNotification(
+    notification: NotificationEntity,
+    direction: -1 | 1
+  ) {
     const index = getNotificationIndex(notification);
 
     if (index === null) return null;
@@ -115,16 +118,18 @@ export function defineNotificationsList({
     }
   });
 
-  const getNextNotification = cachedComputed((notification: NotificationEntity) =>
-    getAdjacentNotification(notification, +1)
-  );
+  const getNextNotification = cachedComputed(function getNextNotification(notification: NotificationEntity) {
+    return getAdjacentNotification(notification, +1);
+  });
 
-  const getPreviousNotification = cachedComputed((notification: NotificationEntity) =>
-    getAdjacentNotification(notification, -1)
-  );
+  const getPreviousNotification = cachedComputed(function getPreviousNotification(notification: NotificationEntity) {
+    return getAdjacentNotification(notification, -1);
+  });
 
   const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
-  const getNotificationsToPreload = cachedComputed((focusedNotification?: NotificationEntity) => {
+  const getNotificationsToPreload = cachedComputed(function getNotificationsToPreload(
+    focusedNotification?: NotificationEntity
+  ) {
     const notificationsToPreload = focusedNotification ? [focusedNotification] : [];
 
     const [firstNotificationOrGroup] = getAllGroupedNotifications();
