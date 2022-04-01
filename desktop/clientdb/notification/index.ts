@@ -2,7 +2,7 @@ import { isFuture } from "date-fns";
 import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
-import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
@@ -99,7 +99,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   ),
 })
   .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
-    const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
+    const getInner = (): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       return (
         innerEntities
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,7 +107,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .find(Boolean) as any
       );
-    });
+    };
 
     const snoozePassedAtom = createAtom("Snooze change");
 
@@ -132,6 +132,18 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         return getInner();
       },
       get kind() {
+        if (!getInner()) {
+          //TODO: @adam rescue us from this ugly hack
+          // hack: there's a race condition where the inner notification loads after the
+          // notification entity. All of our layers of caching prevents them from being
+          // loaded into an app list, given that `kind` is used as a filter option and on
+          // first load `kind` returns `null`.
+          // My working theory is that a change in a connected property is not observable
+          setTimeout(() => {
+            updateSelf({ updated_at: new Date().toISOString() });
+          }, 1500);
+        }
+
         return getInner()?.__typename ?? null;
       },
       get isResolved() {
