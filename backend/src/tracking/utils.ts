@@ -35,6 +35,8 @@ export async function updateUserOnboardingStatus(user: User) {
     } else {
       identifyBackendUser(user.id, { onboarding: "self_serve" });
     }
+
+    await base(airtableCRMTableId).update(record.id, { "Funnel stage": "Onboarded" });
     logger.info("Updated user onboarding info", {
       userId: user.id,
     });
