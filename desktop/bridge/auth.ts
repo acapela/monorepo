@@ -12,6 +12,9 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
 });
 export const loginBridge = createInvokeBridge<"google" | "slack">("login");
 
+export const canAutoLoginBridge = createInvokeBridge<void, boolean>("can-auto-login");
+export const autoLoginBridge = createInvokeBridge("auto-login");
+
 export const logoutBridge = createInvokeBridge("logout");
 
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {

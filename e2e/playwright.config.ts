@@ -1,6 +1,6 @@
 import { PlaywrightTestConfig } from "@playwright/test";
 
-import { IS_CI } from "./helper/utils";
+import { IS_CI } from "@aca/shared/dev";
 
 const config: PlaywrightTestConfig = {
   retries: IS_CI ? 2 : 0, // We still have some flakiness, but hopefully this number will go to 0 at some point.
@@ -10,5 +10,6 @@ const config: PlaywrightTestConfig = {
     trace: "retain-on-failure",
   },
   forbidOnly: IS_CI,
+  globalSetup: require.resolve("./global-setup.ts"),
 };
 export default config;
