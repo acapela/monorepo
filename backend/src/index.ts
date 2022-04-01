@@ -14,11 +14,6 @@ if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.STAGE,
-    sampleRate: 0.01,
-    ignoreErrors: [
-      /^No Slack installation for query/,
-      /^Error in query graph construction: DomainError\(FieldNotFound { name: "some", container_type: "model", container_name: "user_slack_installation" }\)/,
-    ],
     maxValueLength: 1000,
   });
 }
