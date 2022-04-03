@@ -57,6 +57,7 @@ export async function getFigmaSessionData(): Promise<FigmaSessionData> {
   const figmaWindow = new BrowserWindow({
     width: 0,
     height: 0,
+    show: false,
   });
 
   figmaWindow.hide();
