@@ -1,3 +1,4 @@
+import { defer } from "lodash";
 import React from "react";
 
 import { createAnalyticsEvent } from "@aca/desktop/analytics";
@@ -99,7 +100,10 @@ export const resolveNotification = defineAction({
       cancel.next = notification.resolve()?.undo;
     });
 
-    displayZenModeIfFinished(context);
+    // Waiting for lists to get updated
+    defer(() => {
+      displayZenModeIfFinished(context);
+    });
 
     addToast({
       message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
@@ -141,7 +145,7 @@ export const unresolveNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} unresolved`,
+      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} unresolved`,
       action: {
         label: "Undo",
         callback() {

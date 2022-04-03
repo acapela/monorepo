@@ -89,6 +89,10 @@ export const snoozedList = defineNotificationsList({
   filter: { isSnoozed: true },
 });
 
+export const canListShowZenScreen = (list: NotificationsList) => {
+  return list.id !== snoozedList.id && list.id !== resolvedList.id;
+};
+
 const createNotificationsListFromListEntity = weakMemoize((listEntity: NotificationListEntity) => {
   return defineNotificationsList({
     id: listEntity.id,
