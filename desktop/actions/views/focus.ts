@@ -45,10 +45,11 @@ export const focusPageView = createActionView((context) => {
     },
     displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
-        desktopRouter.navigate("list", { listId: list.id });
         if (canListShowZenScreen(view.list)) {
           uiStore.isDisplayingZenImage = true;
         }
+
+        desktopRouter.navigate("list", { listId: list.id });
       }
     },
     goToPreviousNotification() {
