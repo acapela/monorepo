@@ -176,7 +176,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
 
   return (
     <>
-      {slackInstallations.all.map(({ team_id, team_name }) => {
+      {slackInstallations.all.map(({ id: user_slack_installation_id, team_id, team_name }) => {
         if (!team_id) {
           return <></>;
         }
@@ -189,11 +189,27 @@ export const SlackChannelsByTeamFilters = observer(() => {
 
         const areAllConversationsAllowed = allConversationsSelectedForTeamMap[team_id] ?? false;
         const availableConversations = availableSlackConversationsByTeam[team_id] ?? [];
+        const channelFilter = userSlackChannelsByTeam.query({ user_slack_installation_id }).first;
+        const areBotsEnabled = channelFilter?.are_bots_enabled;
 
         return (
           <VStack gap={16} key={team_id}>
             {/* This slackInstallations.count > 1 is not a bug. Please ping @omar if you feel like refactoring */}
             {slackInstallations.count > 1 && <UITitle>{team_name} Notification Configuration</UITitle>}
+
+            <VStack gap={8}>
+              <SettingRow
+                title="Include Messages from Apps and Bots"
+                description="Messages from apps like Google Calendar, Asana, or Github will turn into notifications."
+              >
+                <Toggle
+                  isDisabled
+                  isSet={areBotsEnabled}
+                  onChange={(are_bots_enabled) => channelFilter?.update({ are_bots_enabled })}
+                />
+              </SettingRow>
+            </VStack>
+
             <VStack gap={8}>
               <SettingRow
                 title="Include All Channels"

@@ -23,6 +23,7 @@ const userSlackChannelsByTeamFragment = gql`
     slack_workspace_id
     included_channels
     user_slack_installation_id
+    are_bots_enabled
   }
 `;
 
@@ -58,8 +59,9 @@ export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTea
         "created_at",
         "updated_at",
         "user_slack_installation_id",
+        "are_bots_enabled",
       ],
-      updateColumns: ["included_channels", "updated_at"],
+      updateColumns: ["included_channels", "updated_at", "are_bots_enabled"],
       upsertConstraint: "user_slack_channels_by_team_pkey",
     }
   ),
