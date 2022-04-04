@@ -244,7 +244,7 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
     }
 
     // Notifies all issue watchers when the status of the issue was updated
-    if (payload.changelog.items.some(({ fieldId }) => fieldId === "status")) {
+    if (changeLogItem.fieldId === "status") {
       // We're attempting to do a round-robin of access_token usage based on "least recently used access token"
       // The point is that we would like to distribute api rate limit "cost" of making an api call between
       // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
