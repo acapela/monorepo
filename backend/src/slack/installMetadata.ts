@@ -8,8 +8,5 @@ export type InstallMetadata = { teamId?: string; userId?: string; redirectURL?: 
  */
 
 export function parseMetadata({ metadata }: { metadata?: string }): InstallMetadata {
-  if (!metadata) {
-    throw new Error("Missing metadata");
-  }
-  return JSON.parse(metadata);
+  return metadata ? JSON.parse(metadata) : {};
 }

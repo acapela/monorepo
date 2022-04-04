@@ -1,6 +1,5 @@
 import { ServerResponse } from "http";
 
-import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import { noop } from "lodash";
 
@@ -145,6 +144,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   },
 
   installerOptions: {
+    legacyStateVerification: true,
     callbackOptions: {
       success(installation, options, req, res) {
         const { redirectURL } = parseMetadata(installation);
@@ -158,7 +158,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         const { redirectURL } = parseMetadata({ metadata: options.metadata });
         const isAlreadyUsedError = Boolean(error.stack?.includes(SLACK_WORKSPACE_ALREADY_USED_ERROR));
         if (!isAlreadyUsedError) {
-          Sentry.captureException(error);
+          logger.error(error, "Error during slack installation");
         }
         handleInstallationResponse(res, redirectURL, {
           // puts the error into the URL's query params for the frontend to pick it up
