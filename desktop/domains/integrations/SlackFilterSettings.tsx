@@ -190,7 +190,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
         const areAllConversationsAllowed = allConversationsSelectedForTeamMap[team_id] ?? false;
         const availableConversations = availableSlackConversationsByTeam[team_id] ?? [];
         const channelFilter = userSlackChannelsByTeam.query({ user_slack_installation_id }).first;
-        const areBotsEnabled = channelFilter?.are_bots_enabled;
+        const areBotsEnabled = !!channelFilter?.are_bots_enabled;
 
         return (
           <VStack gap={16} key={team_id}>

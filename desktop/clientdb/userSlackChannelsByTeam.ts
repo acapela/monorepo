@@ -42,6 +42,7 @@ export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTea
     __typename: "user_slack_channels_by_team",
     user_id: getContextValue(userIdContext) ?? undefined,
     included_channels: [],
+    are_bots_enabled: true,
     ...getGenericDefaultData(),
   }),
   customObservableAnnotations: {
