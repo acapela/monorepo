@@ -122,7 +122,13 @@ export async function updateAvailableSpaces() {
       cookie: sessionData.cookie,
     },
     body: JSON.stringify({}),
-  });
+  })
+    // fetch only rejects for network errors which we want to ignore
+    .catch(() => null);
+
+  if (!getSpacesResponse) {
+    return;
+  }
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
     clearNotionSessionData();
