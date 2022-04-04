@@ -1,6 +1,7 @@
 import { defer } from "lodash";
 import React from "react";
 
+import { focusPageView } from "@aca/desktop/actions/views/focus";
 import { createAnalyticsEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
@@ -72,6 +73,9 @@ export const resolveNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: (ctx) => {
     return (
+      // This is the primary action for moving through lists in focus mode, we do not want to block this behavior
+      // just because a notification is already resolved.
+      ctx.hasView(focusPageView) ||
       (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
       (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
     );
