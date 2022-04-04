@@ -16,7 +16,7 @@ export const box = {
   panel: {
     toast: createBox({ x: 20, y: 15, radius: 8 }),
     primaryPopover: createBox({ x: 20, y: 20, radius: 8 }),
-    pageCart: createBox({ x: 20, y: 20, radius: 8 }),
+    pageCart: createBox({ x: 20, y: 20, radius: 8, gap: 8 }),
     tooltip: createBox({ x: 12, y: 10, gap: 10, radius: 4 }),
     hint: createBox({ x: 14, y: 6, gap: 10, radius: 4 }),
     badge: createBox({ x: 6, y: 3, gap: 10, radius: 10 }),

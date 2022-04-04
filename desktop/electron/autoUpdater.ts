@@ -1,5 +1,3 @@
-import { dialog } from "electron";
-import isDev from "electron-is-dev";
 import * as electronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 
@@ -7,8 +5,8 @@ import { appUpdateAndRestartRequest, applicationStateBridge, checkForUpdatesRequ
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { createSharedPromise } from "@aca/shared/promises";
 
+import { addToast } from "../domains/toasts/store";
 import { checkAccessToInternet } from "./utils/internet";
-import { getMainWindow } from "./windows/mainWindow";
 import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
 const log = makeLogger("AutoUpdater");
@@ -64,14 +62,16 @@ export function setupAutoUpdater() {
     });
 
     if (isIgnoredError) {
-      log.info(`Auto updater failed with known error`, error.message);
+      log.info(`Failed with known error`, error.message);
       return;
     }
 
+    // TODO: Update errors are super prevalent right now, bring back toast if
+    // todo: we get more stable
     // ignore isDev if ELECTRON_IS_DEV=0 (we use this for e2e tests)
-    if (!isDev && process.env.ELECTRON_IS_DEV !== "0") {
-      dialog.showErrorBox("There was a problem updating the application", `${error}`);
-    }
+    // if (!isDev && process.env.ELECTRON_IS_DEV !== "0") {
+    //   addToast({ title: "Error updating the application", message: error.message });
+    // }
 
     log.error("There was a problem updating the application", error);
   });
@@ -91,18 +91,26 @@ export function setupAutoUpdater() {
       const checkResult = await checkForUpdates();
 
       if (checkResult === null) {
-        dialog.showMessageBox(getMainWindow(), {
-          message: "Did not check app updates",
-          detail: `Seems you have no access to the internet`,
+        addToast({
+          title: "Did not check app updates",
+          message: "Seems you have no access to the internet",
+          durationMs: 10 * 1000,
         });
         return;
       }
 
       if (!checkResult.downloadPromise) {
-        dialog.showMessageBox(getMainWindow(), { message: "App is up to date" });
+        addToast({
+          message: "App is up to date",
+          durationMs: 8 * 1000,
+        });
       }
     } catch (error) {
-      dialog.showErrorBox("Failed to check for update", `${error}`);
+      addToast({
+        title: "Failed to update",
+        message: (error as Error)?.message ? (error as Error).message : (error as string),
+        durationMs: 10 * 1000,
+      });
       log.error(error);
       throw error;
     }

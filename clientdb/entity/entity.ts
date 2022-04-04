@@ -3,6 +3,7 @@ import { action, computed, extendObservable, makeAutoObservable, runInAction, to
 
 import { waitForEntityAllAwaitingPushOperations } from "@aca/clientdb";
 import { assert } from "@aca/shared/assert";
+import { CleanupObject, createCleanupObject } from "@aca/shared/cleanup";
 import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
@@ -27,6 +28,7 @@ type EntityMethods<Data, Connections> = {
   waitForSync(): Promise<void>;
   definition: EntityDefinition<Data, Connections>;
   db: DatabaseLinker;
+  cleanup: CleanupObject;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -69,6 +71,8 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
     }
   );
 
+  const cleanupObject = createCleanupObject();
+
   const connections =
     config.getConnections?.(observableData, {
       ...linker,
@@ -83,6 +87,11 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       updateSelf(data) {
         return entity.update(data, "user");
       },
+      refreshIndex() {
+        if (entity.isRemoved()) return;
+        store.events.emit("itemUpdated", entity, entity.getData(), "user");
+      },
+      cleanup: cleanupObject,
     }) ?? ({} as C);
 
   // Note: we dont want to add connections as {...data, ...connections}. Connections might have getters so it would simply unwrap them.
@@ -109,6 +118,7 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
   const entityMethods: EntityMethods<D, C> = {
     definition,
     db: linker,
+    cleanup: cleanupObject,
     remove(source) {
       store.removeById(entityMethods.getKey(), source);
     },

@@ -5,7 +5,7 @@ import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { getWindowMainView } from "../../windows/mainView";
 import { getMainWindow } from "../../windows/mainWindow";
-import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "./utils/view";
+import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "../../windows/viewUtils";
 
 /**
  * Flow:

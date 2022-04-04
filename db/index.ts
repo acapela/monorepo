@@ -17,6 +17,8 @@ export type {
   user_slack_installation as UserSlackInstallation,
   user_slack_channels_by_team as UserSlackChannelsByTeam,
   whitelist as Whitelist,
+  github_account as GitHubAccount,
+  github_installation as GitHubInstallation,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

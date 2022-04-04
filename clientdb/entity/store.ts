@@ -235,6 +235,7 @@ export function createEntityStore<Data, Connections>(
       let didRemove = false;
 
       runInAction(() => {
+        entity.cleanup.clean();
         didRemove = items.remove(entity);
         delete itemsMap[id];
       });

@@ -38,19 +38,35 @@ function setupBridgeIfNeeded() {
       console.info(`__electron ${bodyJSON}`);
     },
   };
+
+  return null;
 }
 
 async function initializeBridgeForWebContents(web: WebContents) {
   const initCode = getCallCodeForFunction(setupBridgeIfNeeded);
-  await web.executeJavaScript(initCode);
+  await guardedExecuteJavaScript(web, initCode);
 }
 
-export async function evaluateFunctionInWebContents<R>(web: WebContents, callback: () => R) {
-  const callbackCode = getCallCodeForFunction(callback);
+async function guardedExecuteJavaScript<T>(webContents: WebContents, code: string) {
+  try {
+    const result = await webContents.executeJavaScript(code, true);
+
+    return result as T;
+  } catch (error) {
+    console.error(`Failed to execute javascript in webContents`, code, error);
+  }
+}
+
+export async function evaluateFunctionInWebContents<R, A extends unknown[]>(
+  web: WebContents,
+  callback: (...args: A) => R,
+  ...args: A
+) {
+  const callbackCode = getCallCodeForFunction(callback, ...args);
 
   await initializeBridgeForWebContents(web);
 
-  const result = await web.executeJavaScript(callbackCode);
+  const result = await guardedExecuteJavaScript(web, callbackCode);
 
   return result as R;
 }
@@ -81,11 +97,14 @@ export function runEffectInWebContents<D = void>(
     };
   }, bridgeId);
 
-  const initPromise = web.executeJavaScript(
+  const initPromise = guardedExecuteJavaScript(
+    web,
     [
       getCallCodeForFunction(setupBridgeIfNeeded),
       `window.${sendFunctionName} = ${sendFunction}`,
       `window.${cleanupName} = (${getFunctionCode(callback)})(window.${sendFunctionName})`,
+      // We don't want this block to return non-serializable result that would throw
+      "0",
     ].join(";")
   );
 
@@ -97,11 +116,15 @@ export function runEffectInWebContents<D = void>(
   });
 
   async function cleanupCode() {
-    web.executeJavaScript(
+    if (web.isDestroyed()) return;
+
+    await guardedExecuteJavaScript(
+      web,
       [
-        //
         `delete window.${sendFunctionName}`,
         `delete window.${cleanupName}`,
+        // We don't want this block to return non-serializable result that would throw
+        "0",
       ].join(";")
     );
   }

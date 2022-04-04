@@ -5,7 +5,7 @@ import { initializeFigmaPush } from "./figma/push";
 import { isFigmaReadyToSync, startFigmaSync } from "./figma/worker";
 import { initializeNotionPush } from "./notion/push";
 import { isNotionReadyToSync, startNotionSync } from "./notion/worker";
-import { ServiceSyncController, WorkerService } from "./types";
+import { ServiceSyncController, WorkerService } from "./serviceSyncController";
 
 interface Handler {
   serviceName: WorkerService;
@@ -36,7 +36,7 @@ function startFigmaIfReady() {
     console.info("[Figma] Not ready to sync: session not present");
     return;
   }
-  startFigmaSync();
+  addHandler(startFigmaSync());
   initializeFigmaPush();
 }
 

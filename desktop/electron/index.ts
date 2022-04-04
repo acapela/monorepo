@@ -6,18 +6,30 @@ import * as Sentry from "@sentry/electron";
 import { app, protocol } from "electron";
 import IS_DEV from "electron-is-dev";
 import { runInAction } from "mobx";
+import { register, setLogger } from "trace-unhandled";
 
 import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
-import { makeLogger, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
+import { makeLogger, registerLogEntryHandler, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
+import { logStorage } from "../bridge/logger";
 import { initializeServiceSync } from "./apps";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
 import { initializeDarkModeHandling } from "./darkMode";
 import { initializeGlobalShortcuts } from "./globalShortcuts";
+import { initializeIpcBroadcast } from "./ipcBroadcast";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
 import { getMainWindow } from "./windows/mainWindow";
+
+registerLogEntryHandler((entry) => {
+  logStorage.send(entry);
+});
+
+register();
+setLogger((msg) => {
+  console.info("from unhandled", msg);
+});
 
 registerLoggerErrorReporter((body) => {
   try {
@@ -37,6 +49,9 @@ protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privil
 const log = makeLogger("Electron-Boot-Sequence");
 
 function initializeApp() {
+  log.info(`Initialize logger`);
+  InitializeLogger();
+
   log.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
 
@@ -46,9 +61,6 @@ function initializeApp() {
   log.info(`Initialize main window`);
   getMainWindow();
 
-  log.info(`Initialize logger`);
-  InitializeLogger();
-
   log.info(`Initialize service sync`);
   initializeServiceSync();
 
@@ -57,6 +69,8 @@ function initializeApp() {
   initializeDefaultSession();
 
   initializeDarkModeHandling();
+
+  initializeIpcBroadcast();
 
   setupAutoUpdater();
 }

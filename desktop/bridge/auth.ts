@@ -12,6 +12,9 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
 });
 export const loginBridge = createInvokeBridge<"google" | "slack">("login");
 
+export const canAutoLoginBridge = createInvokeBridge<void, boolean>("can-auto-login");
+export const autoLoginBridge = createInvokeBridge("auto-login");
+
 export const logoutBridge = createInvokeBridge("logout");
 
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {
@@ -48,6 +51,14 @@ export const jiraAuthTokenBridgeValue = createBridgeValue<boolean>("jira-auth-to
   isPersisted: true,
 });
 
+export const githubAuthTokenBridgeValue = createBridgeValue<boolean>("github-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+export const loginGitHubBridge = createInvokeBridge<{ logout: boolean; installationId?: number } | void>(
+  "login-github"
+);
+
 /*
   NEW SERVICE!?!?!?
   Add new services here! Until refactored
@@ -59,6 +70,7 @@ const allServices = [
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
+  githubAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {

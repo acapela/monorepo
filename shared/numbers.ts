@@ -33,3 +33,9 @@ export function getTotal<T>(items: T[], numberGetter: (item: T) => number): numb
 export function floorNumberByInterval(value: number, interval: number) {
   return Math.floor(value / interval) * interval;
 }
+
+export function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

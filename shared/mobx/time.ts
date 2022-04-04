@@ -24,33 +24,28 @@ export const mobxTicks = mapValues(timeDuration, (duration) => {
 
 const log = createLogger("Mobx tick", false);
 
-export const createMobxTickAtDateAtom = memoize(
-  (date: Date) => {
-    const now = Date.now();
+export function createMobxTickAtDateAtom(date: Date, callback?: () => void) {
+  const now = Date.now();
 
-    if (now >= date.getTime()) return null;
+  if (now >= date.getTime()) return null;
 
-    const durationTillTick = date.getTime() - now;
+  const durationTillTick = date.getTime() - now + 1; // <-- let's add 1 to be sure it will not tick on equal time to requested date
 
-    // Create mobx atom that will tick at given time
-    const atom = createAtom(`Time tick`);
+  // Create mobx atom that will tick at given time
+  const atom = createAtom(`Time tick`);
 
-    log("Will schedule tick in", durationTillTick);
+  log("Will schedule tick in", durationTillTick);
 
-    // TODO: Should we ignore long-running ones (eg scheduled for next month?)
+  createTimeout(() => {
+    log("Tick fired");
+    callback?.();
+    atom.reportChanged();
+  }, durationTillTick);
 
-    createTimeout(() => {
-      log("Tick fired");
-      atom.reportChanged();
-    }, durationTillTick);
+  return atom;
+}
 
-    return atom;
-  },
-  // Let's reuse ticks that point to the same time
-  (date) => date.getTime()
-);
-
-export const mobxTickAt = (date: Date) => {
-  const atom = createMobxTickAtDateAtom(date);
+export function mobxTickAt(date: Date, callback?: () => void) {
+  const atom = createMobxTickAtDateAtom(date, callback);
   atom?.reportObserved();
-};
+}

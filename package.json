@@ -66,7 +66,8 @@
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
     "generate": "yarn db update && tooling gql frontend",
-    "typecheck": "tsc --project tsconfig.typecheck.json"
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "run-e2e-tests": "zx ./scripts/run-e2e-tests.mjs"
   },
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json,html}": "prettier --write",
@@ -119,7 +120,7 @@
   "dependencies": {
     "@aca/tooling": "0.1.0",
     "@install-binary/berglas": "0.6.2",
-    "@install-binary/hasura": "2.3.0",
+    "@install-binary/hasura": "2.4.0",
     "@tiptap/extension-placeholder": "^2.0.0-beta.31",
     "@vvo/tzdb": "^6.44.0",
     "axios": "^0.24.0",
@@ -136,6 +137,7 @@
     "react-dom": "^17.0.2",
     "react-use": "^17.3.2",
     "styled-components": "^5.3.3",
+    "trace-unhandled": "^2.0.1",
     "ts-node": "^10.4.0",
     "type-fest": "^2.11.1",
     "typescript": "4.5.5",

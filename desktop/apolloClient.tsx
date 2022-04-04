@@ -11,9 +11,9 @@ import { TypedTypePolicies } from "@aca/gql";
 import { IS_DEV } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 import { Maybe } from "@aca/shared/types";
-import { addToast } from "@aca/ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
+import { addToast } from "./domains/toasts/store";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
@@ -103,11 +103,11 @@ if (isClient) {
     for (const graphqlError of graphQLErrors) {
       const message = formatGraphqlErrorMessage(graphqlError);
 
-      addToast({ type: "error", title: message, timeout: 4000 });
+      addToast({ message: message, durationMs: 4000 });
     }
 
     if (networkError) {
-      addToast({ type: "error", title: "Network error", timeout: 4000 });
+      addToast({ message: "Network error", durationMs: 4000 });
     }
   });
 }

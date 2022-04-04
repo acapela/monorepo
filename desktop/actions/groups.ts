@@ -1,5 +1,6 @@
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 
+import { ActionData } from "./action";
 import { defineGroup } from "./action/group";
 import { appActionsGroup } from "./app";
 import { accountActionsGroup } from "./auth";
@@ -29,6 +30,8 @@ export const currentNotificationActionsGroup = defineGroup({
     return "Notification";
   },
 });
+
+export const isNotificationAction = (action: ActionData) => action.group === currentNotificationActionsGroup;
 
 export const groupsPriority = [
   currentListActionsGroup,

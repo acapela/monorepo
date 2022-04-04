@@ -2,11 +2,9 @@ import "@aca/desktop/analytics";
 
 import { ApolloProvider } from "@apollo/client";
 import * as Sentry from "@sentry/electron/renderer";
-import { MotionConfig } from "framer-motion";
 import { autorun } from "mobx";
 import React, { useEffect } from "react";
 import { render } from "react-dom";
-import { createGlobalStyle } from "styled-components";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
@@ -14,31 +12,30 @@ import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorB
 import { SystemMenuManager } from "@aca/desktop/domains/systemMenu/SystemMenuManager";
 import { initializeListNotificationsScheduling } from "@aca/desktop/domains/systemNotifications/listScheduler";
 import { accountStore } from "@aca/desktop/store/account";
-import { DesktopThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
-import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { GlobalShortcutsManager } from "@aca/desktop/views/GlobalShortcutsManager";
 import { PeekView } from "@aca/desktop/views/PeekView";
 import { RootView } from "@aca/desktop/views/RootView";
-import { ToastsAndCommunicatesView } from "@aca/desktop/views/ToastsAndCommunicates";
-import { POP_ANIMATION_CONFIG } from "@aca/ui/animations";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
-import { globalStyles } from "@aca/ui/styles/global";
-import { ToastsRenderer } from "@aca/ui/toasts/ToastsRenderer";
 
-import { LoggerWindow } from "./LoggerWindow";
+import { logStorage } from "../bridge/logger";
+import { registerLogEntryHandler } from "../domains/dev/makeLogger";
+import { BadgeCountManager } from "../views/BadgeCountManager";
+import { AppStyleProvider } from "./AppStyleProvider";
+import { LoggerWindowManager } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
 
 const appEnv = window.electronBridge.env;
 
 if (!appEnv.isDev) {
   Sentry.init({
-    dsn: appEnv.sentryDsn,
+    dsn: process.env.SENTRY_DSN,
     release: appEnv.version,
+    environment: process.env.STAGE,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
-    debug: true,
+    maxValueLength: 1000,
   });
 
   autorun(() => {
@@ -49,11 +46,11 @@ if (!appEnv.isDev) {
   });
 }
 
-const rootElement = document.getElementById("root");
+registerLogEntryHandler((entry) => {
+  logStorage.send(entry);
+});
 
-const BuiltInStyles = createGlobalStyle`
-  ${globalStyles};
-`;
+const rootElement = document.getElementById("root");
 
 function App() {
   useEffect(() => {
@@ -63,44 +60,26 @@ function App() {
   return (
     <>
       <ApolloProvider client={apolloClient}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <DesktopThemeProvider>
-            <BuiltInStyles />
-            <GlobalDesktopStyles />
-            <GlobalShortcutsManager />
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <ServiceWorkerConsolidation />
-            <RootErrorBoundary>
-              <ToastsAndCommunicatesView />
-              <PeekView />
-              <SystemMenuManager />
-              <CommandMenuManager />
-              <RootView />
-              <DebugView />
-            </RootErrorBoundary>
-          </DesktopThemeProvider>
-        </MotionConfig>
+        <AppStyleProvider>
+          <GlobalShortcutsManager />
+          <PromiseUIRenderer />
+          <TooltipsRenderer />
+
+          <ServiceWorkerConsolidation />
+          <RootErrorBoundary>
+            <LoggerWindowManager />
+            <BadgeCountManager />
+            <PeekView />
+            <SystemMenuManager />
+            <CommandMenuManager />
+            <RootView />
+            <DebugView />
+          </RootErrorBoundary>
+        </AppStyleProvider>
       </ApolloProvider>
     </>
   );
 }
 
-if (appEnv.windowName === "Logger") {
-  render(
-    <>
-      <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-        <DesktopThemeProvider>
-          <BuiltInStyles />
-          <GlobalDesktopStyles />
-          <LoggerWindow />
-        </DesktopThemeProvider>
-      </MotionConfig>
-    </>,
-    rootElement
-  );
-} else {
-  // Main app
-  render(<App />, rootElement);
-}
+// Main app
+render(<App />, rootElement);

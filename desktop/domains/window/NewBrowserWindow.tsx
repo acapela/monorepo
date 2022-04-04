@@ -57,7 +57,7 @@ function prepareFeaturesString(options: WindowInitialOptions) {
  * Simply do <NewBrowserWindow>Foo</NewBrowserWindow> and Foo will be rendered in a new window
  */
 export const NewBrowserWindow = forwardRef<Window, Props>(function NewBrowserWindow(
-  { children, options = {} }: Props,
+  { children, options = {}, onClosed }: Props,
   ref
 ) {
   const [newWindow, setNewWindowBody] = useState<Window | null>(null);
@@ -87,6 +87,7 @@ export const NewBrowserWindow = forwardRef<Window, Props>(function NewBrowserWin
     newWindow.addEventListener("unload", () => {
       setIsClosed(true);
       setNewWindowBody(null);
+      onClosed();
     });
 
     setNewWindowBody(newWindow);

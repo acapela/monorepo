@@ -1,6 +1,6 @@
-import { differenceInMilliseconds } from "date-fns";
 import { session } from "electron";
 import fetch from "node-fetch";
+import { z } from "zod";
 
 import {
   NotionNotificationType,
@@ -11,30 +11,24 @@ import {
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
+import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 import { wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
-import type {
-  ActivityPayload,
-  BlockPayload,
+import {
   CollectionViewPageBlockValue,
+  CommentedActivityValue,
   GetNotificationLogResult,
   GetPublicSpaceDataResult,
   GetSpacesResult,
-  NotificationPayload,
-  PageBlockValue,
+  Notification,
+  RecordMap,
+  SomeBlockValue,
+  UserInvitedActivityValue,
   UserMentionedActivityValue,
-} from "./types";
-
-const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
-
-let currentInterval: NodeJS.Timer | null = null;
-let timeOfLastSync: Date | null = null;
-let isSyncing = false;
+} from "./schema";
 
 const log = makeLogger("Notion-Worker");
 
@@ -70,77 +64,29 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
   return { cookie, notionUserId };
 }
 
-/*
-  Pulling logic for notion
-  - Pull immediately on app start
-  - Pull every WINDOW_BLURRED_INTERVAL if main window is blurred
-  - Pull every WINDOW_FOCUSED_INTERVAL if main window is focused
-  - Pull immediately when window focuses if more than WINDOW_FOCUSED_INTERVAL have passed before last pull
-*/
 export function startNotionSync(): ServiceSyncController {
-  const sessionDataPromise = getNotionSessionData();
-
   async function runSync() {
-    if (isSyncing) {
-      return;
-    }
+    const sessionData = await getNotionSessionData();
 
-    const sessionData = await sessionDataPromise;
+    log.info(`Capturing started`);
 
-    try {
-      isSyncing = true;
-      log.info(`Capturing started`);
+    await updateAvailableSpaces();
 
-      await updateAvailableSpaces();
+    const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
-      const syncEnabledSpaces = notionSelectedSpaceValue.get();
+    log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
 
-      log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
-      for (const spaceToSync of syncEnabledSpaces.selected) {
-        log.debug(`Capturing started for space: ${spaceToSync}`);
-        const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
-        notionSyncPayload.send(extractNotifications(notificationLog));
-        await wait(10000);
-      }
+    for (const spaceToSync of syncEnabledSpaces.selected) {
+      log.debug(`Capturing started for space: ${spaceToSync}`);
 
-      timeOfLastSync = new Date();
+      const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+      notionSyncPayload.send(extractNotifications(notificationLog));
 
-      log.info(`Capturing complete`);
-    } catch (e: unknown) {
-      log.error(e as Error);
-    } finally {
-      isSyncing = false;
+      await wait(10000);
     }
   }
 
-  function restartPullInterval(timeInterval: number) {
-    if (currentInterval) {
-      clearInterval(currentInterval);
-    }
-    currentInterval = setInterval(runSync, timeInterval);
-  }
-
-  runSync();
-
-  return {
-    serviceName: "notion",
-    onWindowFocus() {
-      const now = new Date();
-      const isLongTimeSinceLastFocus =
-        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
-
-      if (isLongTimeSinceLastFocus) {
-        runSync();
-      }
-      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
-    },
-    onWindowBlur() {
-      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
-    },
-    forceSync() {
-      runSync();
-    },
-  };
+  return makeServiceSyncController("notion", runSync);
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
@@ -163,9 +109,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
-  const result = (await response.json()) as GetNotificationLogResult;
-
-  return result;
+  return GetNotificationLogResult.parse(await response.json());
 }
 
 export async function updateAvailableSpaces() {
@@ -190,7 +134,7 @@ export async function updateAvailableSpaces() {
     It also includes the concept of a `space_view` which includes a bit of information about all
     the spaces the user is involved with, i.e including spaces where there user is a guest.
   */
-  const getSpacesResult = (await getSpacesResponse.json()) as GetSpacesResult;
+  const getSpacesResult = GetSpacesResult.parse(await getSpacesResponse.json());
 
   // Includes spaces that you're a member of and spaces where you're a guest
   const allSpaceIds = Object.values(getSpacesResult[sessionData.notionUserId].space_view).map(
@@ -219,7 +163,7 @@ export async function updateAvailableSpaces() {
     throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
-  const getPublicSpacesResult = (await getPublicSpaceDataResponse.json()) as GetPublicSpaceDataResult;
+  const getPublicSpacesResult = GetPublicSpaceDataResult.parse(await getPublicSpaceDataResponse.json());
 
   const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
@@ -238,7 +182,7 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSync {
+function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNotificationLog>>): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
   const result: NotionWorkerSync = [];
@@ -246,7 +190,12 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
   log.debug(`Found ${notificationIds.length} notifications`);
   for (const id of notificationIds) {
     try {
-      const notification = recordMap.notification[id].value;
+      const notification = recordMap.notification?.[id].value;
+
+      if (!notification) {
+        log.error(new Error("Notification not found"), `Notification ${id} not found`);
+        continue;
+      }
 
       const notificationProperties = getNotificationProperties(notification, recordMap);
       if (!notificationProperties) {
@@ -259,7 +208,14 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 
       const { url, type, text_preview } = notificationProperties;
 
-      const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">)?.value;
+      try {
+        new URL(url);
+      } catch (e) {
+        log.error(new Error("Invalid URL: " + url));
+        continue;
+      }
+
+      const activity = recordMap.activity?.[notification.activity_id]?.value;
 
       // Weird bug where activity is undefined for a user
       // https://sentry.io/organizations/acapela/issues/3114653912/
@@ -282,9 +238,13 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
       const updated_at = created_at;
 
       const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
-
       if (authorId === "Notion") {
         log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+      }
+
+      if (!notification.navigable_block_id) {
+        log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
+        continue;
       }
 
       result.push({
@@ -316,20 +276,24 @@ function extractNotifications(payload: GetNotificationLogResult): NotionWorkerSy
 }
 
 function getPageTitle(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
   const blockId = notification.navigable_block_id;
-  const typeOfBlock = recordMap?.block[blockId]?.value.type;
+  if (!blockId) {
+    return;
+  }
+  const blockValue = recordMap?.block?.[blockId]?.value;
 
-  if (typeOfBlock === "page") {
-    const block = (recordMap.block[blockId] as BlockPayload<"page">).value as PageBlockValue;
-    return block?.properties?.title?.[0]?.[0] ?? "Untitled";
+  const pageBlockResult = SomeBlockValue.safeParse(blockValue);
+  if (pageBlockResult.success) {
+    const [titleElement] = pageBlockResult.data.properties.title;
+    return Array.isArray(titleElement) && typeof titleElement[0] == "string" ? titleElement[0] : "Untitled";
   }
 
-  if (typeOfBlock === "collection_view_page") {
-    const block = (recordMap.block[blockId] as BlockPayload<"collection_view_page">)
-      .value as CollectionViewPageBlockValue;
+  const collectionPageBlockResult = CollectionViewPageBlockValue.safeParse(blockValue);
+  if (collectionPageBlockResult.success) {
+    const block = collectionPageBlockResult.data;
     const collection = recordMap.collection && recordMap.collection[block.collection_id].value;
     if (!collection) {
       log.error(
@@ -339,13 +303,14 @@ function getPageTitle(
       return;
     }
 
-    return collection?.name?.[0]?.[0] ?? "Untitled";
+    const name = collection?.name?.flat()[0];
+    return typeof name === "string" ? name : "Untitled";
   }
 }
 
 function getNotificationProperties(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ):
   | { type: NotionNotificationType; url: string; text_preview?: string | undefined; discussion_id?: string | undefined }
   | undefined {
@@ -355,10 +320,20 @@ function getNotificationProperties(
     return;
   }
 
+  const activityValue = recordMap.activity?.[notification.activity_id].value;
+
+  function logMissingActivity() {
+    log.error(
+      new Error("Missing activity value for notification " + JSON.stringify({ notification, recordMap }, null, 2))
+    );
+  }
+
   if (notification.type === "user-mentioned") {
-    const activity: UserMentionedActivityValue | undefined = (
-      recordMap.activity[notification.activity_id] as ActivityPayload<"user-mentioned">
-    ).value;
+    if (!activityValue) {
+      logMissingActivity();
+      return;
+    }
+    const activity = UserMentionedActivityValue.parse(activityValue);
     const url =
       notionURL +
       "/" +
@@ -375,22 +350,17 @@ function getNotificationProperties(
   }
 
   if (notification.type === "commented") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"commented">).value;
-
-    // https://sentry.io/organizations/acapela/issues/3086700355/?project=6170771
-    if (!activity) {
-      log.error(
-        `Comment Activity for notification id ${notification.id} not found in recordMap: `,
-        JSON.stringify(recordMap, null, 2)
-      );
+    if (!activityValue) {
+      logMissingActivity();
       return;
     }
+    const activity = CommentedActivityValue.parse(activityValue);
 
-    const discussion = recordMap.discussion[activity.discussion_id].value;
+    const discussion = recordMap.discussion?.[activity.discussion_id].value;
 
     if (!discussion) {
       log.error(
-        `Discussion for notification id ${notification.id} not found in recordMap: `,
+        `Discussion with id ${activity.discussion_id} not found in recordMap: `,
         JSON.stringify(recordMap, null, 2)
       );
       return;
@@ -398,9 +368,12 @@ function getNotificationProperties(
 
     const parentDiscussionBlock = discussion.parent_id;
     const url =
-      notionURL + "/" + stripDashes(pageId) + "?d=" + `${stripDashes(discussion.id)}` + parentDiscussionBlock
-        ? `#${stripDashes(parentDiscussionBlock)}`
-        : "";
+      notionURL +
+      "/" +
+      stripDashes(pageId) +
+      "?d=" +
+      `${stripDashes(discussion.id)}` +
+      (parentDiscussionBlock ? `#${stripDashes(parentDiscussionBlock)}` : "");
 
     return {
       type: "notification_notion_commented",
@@ -421,19 +394,15 @@ function getNotificationProperties(
 }
 
 function isKnownAndUnsupported(
-  notification: NotificationPayload["value"],
-  recordMap: GetNotificationLogResult["recordMap"]
+  notification: z.infer<typeof Notification>,
+  recordMap: z.infer<typeof RecordMap>
 ): boolean {
   if (notification.type === "user-invited") {
-    const activity = (recordMap.activity[notification.activity_id] as ActivityPayload<"user-invited">)?.value;
+    const activity = UserInvitedActivityValue.parse(recordMap.activity?.[notification.activity_id]?.value);
     if (activity?.parent_table === "space") {
       return true;
     }
   }
 
-  if (notification.type === "reminder") {
-    return true;
-  }
-
-  return false;
+  return notification.type === "reminder";
 }
