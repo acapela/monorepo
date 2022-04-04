@@ -38,13 +38,16 @@ export function defineNotificationsList({
   dontShowCount = false,
   ...config
 }: DefineListConfig) {
+  const getActiveNotification = cachedComputed(() => (uiStore.activeListId === id ? uiStore.activeNotification : null));
+
   const getRawNotificationsQuery = cachedComputed(() => {
     const db = getDb();
 
     let notifications = "filter" in config ? db.notification.query(config.filter).all : config.getNotifications();
 
-    const { activeListId, activeNotification } = uiStore;
-    if (activeListId === id && activeNotification && !notifications.some((n) => n == activeNotification)) {
+    // Retains the active notification in the active list, to enable navigating to the next/previous notification
+    const activeNotification = getActiveNotification();
+    if (activeNotification && !notifications.some((n) => n == activeNotification)) {
       notifications = orderBy([...notifications, activeNotification], (n) => getReverseTime(n.created_at));
     }
     return notifications;
