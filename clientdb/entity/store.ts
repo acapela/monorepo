@@ -1,5 +1,5 @@
 import { memoize } from "lodash";
-import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
+import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
@@ -179,17 +179,7 @@ export function createEntityStore<Data, Connections>(
       runInAction(() => {
         items.push(entity);
         itemsMap[id] = entity;
-
-        if (getIsEntityAccessable(entity)) {
-          events.emit("itemAdded", entity, source);
-        } else {
-          const stop = autorun(() => {
-            if (getIsEntityAccessable(entity)) {
-              stop();
-              events.emit("itemAdded", entity, source);
-            }
-          });
-        }
+        events.emit("itemAdded", entity, source);
       });
 
       return entity;
