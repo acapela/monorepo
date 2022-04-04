@@ -97,6 +97,7 @@ async function querySlackInstallationURL(teamId?: string) {
         }
       `,
       variables: { input: { teamId, redirectURL: "" } },
+      fetchPolicy: "no-cache",
     }
   );
   return assertDefined(slackInstallation?.url, "missing slack installation url");
