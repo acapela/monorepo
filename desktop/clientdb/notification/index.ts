@@ -132,18 +132,6 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         return getInner();
       },
       get kind() {
-        if (!getInner()) {
-          //TODO: @adam rescue us from this ugly hack
-          // hack: there's a race condition where the inner notification loads after the
-          // notification entity. All of our layers of caching prevents them from being
-          // loaded into an app list, given that `kind` is used as a filter option and on
-          // first load `kind` returns `null`.
-          // My working theory is that a change in a connected property is not observable
-          setTimeout(() => {
-            updateSelf({ updated_at: new Date().toISOString() });
-          }, 1500);
-        }
-
         return getInner()?.__typename ?? null;
       },
       get isResolved() {
@@ -217,7 +205,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   })
   .addAccessValidation((notification) => {
     if (!notification.inner) {
-      log.error(`No inner for entity ${notification.id}`);
+      log.debug(`No inner for entity ${notification.id}`);
       return false;
     }
     return true;
