@@ -2,7 +2,7 @@ import { isFuture } from "date-fns";
 import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
 import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
@@ -99,7 +99,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   ),
 })
   .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
-    const getInner = (): EntityByDefinition<typeof innerEntities[number]> | undefined => {
+    const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       return (
         innerEntities
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,7 +107,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .find(Boolean) as any
       );
-    };
+    });
 
     const snoozePassedAtom = createAtom("Snooze change");
 
