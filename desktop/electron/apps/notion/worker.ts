@@ -18,6 +18,7 @@ import { wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
+  ActivityValueCommon,
   CollectionViewPageBlockValue,
   CommentedActivityValue,
   GetNotificationLogResult,
@@ -221,7 +222,7 @@ function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNoti
         continue;
       }
 
-      const activity = recordMap.activity?.[notification.activity_id]?.value;
+      const activity = ActivityValueCommon.parse(recordMap.activity?.[notification.activity_id]?.value);
 
       // Weird bug where activity is undefined for a user
       // https://sentry.io/organizations/acapela/issues/3114653912/

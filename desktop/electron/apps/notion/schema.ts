@@ -204,7 +204,7 @@ const ActivityEdit = z.union([
   z.object({ authors: z.array(z.object({ id: z.string() })) }),
 ]);
 
-const ActivityValueCommon = z.object({
+export const ActivityValueCommon = z.object({
   id: z.string(),
   edits: z.array(ActivityEdit).optional(),
   end_time: z.string(),
@@ -239,9 +239,7 @@ export const UserMentionedActivityValue = ActivityValueCommon.extend({
 
 export const ActivityPayload = z.object({
   role: z.string(),
-  value: z
-    .discriminatedUnion("type", [UserInvitedActivityValue, CommentedActivityValue, UserMentionedActivityValue])
-    .optional(),
+  value: z.unknown().optional(),
 });
 
 export const GetSpacesResult = z.record(
