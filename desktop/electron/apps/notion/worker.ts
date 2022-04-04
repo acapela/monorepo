@@ -330,7 +330,10 @@ function getNotificationProperties(
 
   function logMissingActivity() {
     log.error(
-      new Error("Missing activity value for notification " + JSON.stringify({ notification, recordMap }, null, 2))
+      new Error(
+        "Missing activity value for notification " +
+          JSON.stringify({ notification, activities: recordMap.activity }, null, 2)
+      )
     );
   }
 
