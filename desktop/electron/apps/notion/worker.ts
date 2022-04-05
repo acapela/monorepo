@@ -81,7 +81,9 @@ export function startNotionSync(): ServiceSyncController {
       log.debug(`Capturing started for space: ${spaceToSync}`);
 
       const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
-      notionSyncPayload.send(extractNotifications(notificationLog));
+      if (notificationLog) {
+        notionSyncPayload.send(extractNotifications(notificationLog));
+      }
 
       await wait(10000);
     }
@@ -103,7 +105,13 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
       size: 20,
       type: "mentions",
     }),
-  });
+  })
+    // fetch only rejects for network errors which we want to ignore
+    .catch(() => null);
+
+  if (!response) {
+    return;
+  }
 
   if (response.status >= 400 && response.status < 500) {
     clearNotionSessionData();
@@ -189,7 +197,9 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNotificationLog>>): NotionWorkerSync {
+function extractNotifications(
+  payload: NonNullable<Awaited<ReturnType<typeof fetchNotionNotificationLog>>>
+): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
   const result: NotionWorkerSync = [];
