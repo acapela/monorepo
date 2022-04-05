@@ -1,6 +1,7 @@
 import { differenceInMilliseconds, differenceInMinutes } from "date-fns";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { IS_DEV } from "@aca/shared/dev";
 
 interface UrlLoadState {
   url: string;
@@ -34,26 +35,20 @@ export function markLoadRequestedTime(url: string) {
 export function markHtmlPageLoadTime(url: string) {
   const urlLoadState = allStates[url];
 
-  if (!urlLoadState) {
-    log.error(`url ${url} attempted to handle html page load before load requested`);
-    return;
-  }
+  assertLoadPreviouslyRequested(urlLoadState);
 
-  urlLoadState.loadRequested = new Date();
+  urlLoadState.htmlPageLoad = new Date();
 }
 
 export function markFullPageLoadTime(url: string) {
   const urlLoadState = allStates[url];
 
-  if (!urlLoadState) {
-    log.error(`url ${url} attempted to handle html page load before load requested`);
-    return;
-  }
+  assertLoadPreviouslyRequested(urlLoadState);
 
   urlLoadState.fullPageLoad = new Date();
 
   if (urlLoadState.browserViewAttached) {
-    log.info("Loaded after BrowserView Attached", { ...urlLoadState, ...instrumentationResult(urlLoadState) });
+    log.info("Loaded after BrowserView Attached", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
     return;
   }
 }
@@ -61,38 +56,41 @@ export function markFullPageLoadTime(url: string) {
 export function markViewAttachedTime(url: string) {
   const urlLoadState = allStates[url];
 
-  if (!urlLoadState) {
-    log.error(`url ${url} attempted to handle html page load before load requested`);
-    return;
-  }
+  assertLoadPreviouslyRequested(urlLoadState);
 
   urlLoadState.browserViewAttached = new Date();
   if (urlLoadState.fullPageLoad) {
-    log.debug("BrowserView Attached after loaded", { ...urlLoadState, ...instrumentationResult(urlLoadState) });
+    log.debug("BrowserView Attached after loaded", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
   }
 }
 
 export function markViewDisposedTime(url: string) {
   const urlLoadState = allStates[url];
 
-  if (!urlLoadState) {
-    log.error(`url ${url} attempted to handle html page load before load requested`);
-    return;
-  }
+  assertLoadPreviouslyRequested(urlLoadState);
 
   urlLoadState.browserViewDisposed = new Date();
 
   if (!urlLoadState.browserViewAttached) {
-    log.debug("BrowserView never used", { ...urlLoadState, ...instrumentationResult(urlLoadState) });
+    log.debug("BrowserView never used", { ...urlLoadState, ...instrumentDisposalResult(urlLoadState) });
   }
 }
 
-function instrumentationResult({
-  loadRequested,
-  fullPageLoad,
-  browserViewAttached,
-  browserViewDisposed,
-}: UrlLoadState) {
+function assertLoadPreviouslyRequested(urlLoadState: UrlLoadState): asserts urlLoadState {
+  if (urlLoadState && urlLoadState.loadRequested) {
+    return;
+  }
+
+  const error = new Error("Invalid state for `UrlLoadState");
+
+  if (IS_DEV) {
+    log.error(error);
+  }
+
+  throw error;
+}
+
+function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAttached }: UrlLoadState) {
   if (fullPageLoad && browserViewAttached) {
     const wasFullyLoadedBeforePreview = fullPageLoad.getTime() < browserViewAttached.getTime();
     const deltaBetweenFullyLoadedAndAttached = Math.abs(fullPageLoad.getTime() - browserViewAttached.getTime());
@@ -103,7 +101,10 @@ function instrumentationResult({
       timeBetweenFullyLoadedAndPreviewAttached: wasFullyLoadedBeforePreview ? deltaBetweenFullyLoadedAndAttached : 0,
     };
   }
+  return {};
+}
 
+function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisposed }: UrlLoadState) {
   if (fullPageLoad && browserViewDisposed) {
     const wasFullyLoadedBeforeDisposed = fullPageLoad.getTime() < browserViewDisposed.getTime();
     return {
