@@ -6,6 +6,8 @@ import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { DesktopUserSlackInstallationFragment } from "@aca/gql";
 import { USER_SCOPES, isSubsetOf } from "@aca/shared/slack";
 
+import { userSlackChannelsByTeamEntity } from "./userSlackChannelsByTeam";
+
 const userSlackInstallationFragment = gql`
   fragment DesktopUserSlackInstallation on user_slack_installation {
     id
@@ -24,9 +26,12 @@ export const userSlackInstallationEntity = defineEntity<DesktopUserSlackInstalla
   keyField: "id",
   keys: getFragmentKeys<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),
   sync: createHasuraSyncSetupFromFragment<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),
-}).addConnections((installation) => ({
+}).addConnections((installation, { getEntity }) => ({
   get hasAllScopes() {
     return isSubsetOf(USER_SCOPES, installation.user_scopes);
+  },
+  get channelFilters() {
+    return getEntity(userSlackChannelsByTeamEntity).query({ user_slack_installation_id: installation.id });
   },
 }));
 

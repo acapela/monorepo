@@ -118,7 +118,7 @@ const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
   Note: I believe that `user.slack_included_channels` should be removed by June 2022.
   If you still find the migration code here and are reading this after the fact... you're it!  
   */
-async function isChannelIncludedInChannelFilters(user: User, message: GenericMessageEvent) {
+async function isMessageAllowedByTeamFilters(user: User, message: GenericMessageEvent) {
   const deprecatedIncludedChannels = user.slack_included_channels;
 
   const isMigrationComplete = jsonIncludesChannel(
@@ -135,22 +135,28 @@ async function isChannelIncludedInChannelFilters(user: User, message: GenericMes
     },
   });
 
+  const isMessageFromBot = !!message.bot_id;
+
   // This is the efficient way of managing it, but team has to be part of the message event
   if (message.team) {
     const teamChannelsHolder = channelsByTeam.find((cbt) => cbt.slack_workspace_id === message.team);
-    if (teamChannelsHolder) {
-      const { included_channels } = teamChannelsHolder;
-      return (
-        jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
-        jsonIncludesChannel(included_channels, message.channel)
-      );
-    } else {
+    if (!teamChannelsHolder) {
       return false;
     }
+    const { included_channels, are_bots_enabled } = teamChannelsHolder;
+    if (isMessageFromBot && !are_bots_enabled) {
+      return false;
+    }
+    return (
+      jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
+      jsonIncludesChannel(included_channels, message.channel)
+    );
   }
 
   // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things
-  return channelsByTeam.some((cbt) => jsonIncludesChannel(cbt.included_channels, message.channel));
+  return channelsByTeam.some(({ included_channels, are_bots_enabled }) => {
+    return jsonIncludesChannel(included_channels, message.channel) && (isMessageFromBot ? are_bots_enabled : true);
+  });
 }
 
 /**
@@ -175,7 +181,7 @@ async function createNotificationFromMessage(
     !userToken ||
     (isAuthor && !isMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
-    (!is_IM_or_MPIM && !isMentioned && !(await isChannelIncludedInChannelFilters(userSlackInstallation.user, message)))
+    (!is_IM_or_MPIM && !isMentioned && !(await isMessageAllowedByTeamFilters(userSlackInstallation.user, message)))
   ) {
     return;
   }
