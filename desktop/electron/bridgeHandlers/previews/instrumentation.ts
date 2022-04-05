@@ -1,7 +1,6 @@
 import { differenceInMilliseconds, differenceInMinutes } from "date-fns";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { IS_DEV } from "@aca/shared/dev";
 
 interface UrlLoadState {
   url: string;
@@ -18,6 +17,9 @@ const log = makeLogger("BrowserViewLoadState");
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 
+/*
+  We garbage collect every five minutes for url states that are older than 5 minutes
+*/
 setInterval(() => {
   for (const url of Object.keys(allStates)) {
     const loadRequested = allStates[url].loadRequested;
@@ -35,7 +37,9 @@ export function markLoadRequestedTime(url: string) {
 export function markHtmlPageLoadTime(url: string) {
   const urlLoadState = allStates[url];
 
-  assertLoadPreviouslyRequested(urlLoadState);
+  if (!isUrlStatePreviouslyRequested(urlLoadState)) {
+    return;
+  }
 
   urlLoadState.htmlPageLoad = new Date();
 }
@@ -43,7 +47,9 @@ export function markHtmlPageLoadTime(url: string) {
 export function markFullPageLoadTime(url: string) {
   const urlLoadState = allStates[url];
 
-  assertLoadPreviouslyRequested(urlLoadState);
+  if (!isUrlStatePreviouslyRequested(urlLoadState)) {
+    return;
+  }
 
   urlLoadState.fullPageLoad = new Date();
 
@@ -56,7 +62,9 @@ export function markFullPageLoadTime(url: string) {
 export function markViewAttachedTime(url: string) {
   const urlLoadState = allStates[url];
 
-  assertLoadPreviouslyRequested(urlLoadState);
+  if (!isUrlStatePreviouslyRequested(urlLoadState)) {
+    return;
+  }
 
   urlLoadState.browserViewAttached = new Date();
   if (urlLoadState.fullPageLoad) {
@@ -67,7 +75,9 @@ export function markViewAttachedTime(url: string) {
 export function markViewDisposedTime(url: string) {
   const urlLoadState = allStates[url];
 
-  assertLoadPreviouslyRequested(urlLoadState);
+  if (!isUrlStatePreviouslyRequested(urlLoadState)) {
+    return;
+  }
 
   urlLoadState.browserViewDisposed = new Date();
 
@@ -76,18 +86,8 @@ export function markViewDisposedTime(url: string) {
   }
 }
 
-function assertLoadPreviouslyRequested(urlLoadState: UrlLoadState): asserts urlLoadState {
-  if (urlLoadState && urlLoadState.loadRequested) {
-    return;
-  }
-
-  const error = new Error("Invalid state for `UrlLoadState");
-
-  if (IS_DEV) {
-    log.error(error);
-  }
-
-  throw error;
+function isUrlStatePreviouslyRequested(urlLoadState: UrlLoadState): boolean {
+  return !!urlLoadState && !!urlLoadState.loadRequested;
 }
 
 function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAttached }: UrlLoadState) {
@@ -98,7 +98,9 @@ function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAt
       fullLoadTimeInMs: Math.abs(differenceInMilliseconds(loadRequested, fullPageLoad)),
       wasFullyLoadedBeforePreview,
       userLoadWaitTimeInMs: wasFullyLoadedBeforePreview ? 0 : deltaBetweenFullyLoadedAndAttached,
-      timeBetweenFullyLoadedAndPreviewAttached: wasFullyLoadedBeforePreview ? deltaBetweenFullyLoadedAndAttached : 0,
+      timeBetweenFullyLoadedAndPreviewAttachedInMs: wasFullyLoadedBeforePreview
+        ? deltaBetweenFullyLoadedAndAttached
+        : 0,
     };
   }
   return {};
@@ -110,7 +112,7 @@ function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisp
     return {
       fullLoadTimeInMs: Math.abs(differenceInMilliseconds(loadRequested, fullPageLoad)),
       wasFullyLoadedBeforeDisposed,
-      timeBetweenFullyLoadedAndDisposed: !wasFullyLoadedBeforeDisposed
+      timeBetweenFullyLoadedAndDisposedInMs: !wasFullyLoadedBeforeDisposed
         ? fullPageLoad.getTime() - browserViewDisposed.getTime()
         : 0,
     };
@@ -118,7 +120,7 @@ function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisp
 
   if (!fullPageLoad && browserViewDisposed) {
     return {
-      timeBetweenRequestedAndDisposed: browserViewDisposed.getTime() - loadRequested.getTime(),
+      timeBetweenRequestedAndDisposedInMs: browserViewDisposed.getTime() - loadRequested.getTime(),
     };
   }
 
