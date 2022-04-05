@@ -11,6 +11,7 @@ import { listenToWebContentsFocus } from "../../utils/webContentsLink";
 import { focusWindowWebContents } from "../../windows/focusWindow";
 import { getBrowserViewParentWindow } from "../../windows/viewUtils";
 import { setBrowserViewZIndex } from "../../windows/viewZIndex";
+import { markViewDisposedTime } from "./instrumentation";
 import { loadPreviewIfNeeded } from "./load";
 import { attachViewToPreloadingWindow } from "./preloadingWindow";
 import { createDefaultContextMenu } from "./utils/contextMenu";
@@ -104,6 +105,7 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
       });
 
       destroyBrowserView(view);
+      markViewDisposedTime(url);
     },
     destroyTimeout: SECOND * 0.5,
   }

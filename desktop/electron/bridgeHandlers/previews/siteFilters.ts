@@ -1,10 +1,16 @@
-import { BrowserView } from "electron";
+import { BrowserView, WebContents } from "electron";
 import { StylesPart, css } from "styled-components";
+
+import { createCleanupObject } from "@aca/shared/cleanup";
+
+import { onElementAdded, onElementHidden, onElementRemoved } from "./elementObservers";
+import { markFullPageLoadTime, markHtmlPageLoadTime } from "./instrumentation";
 
 type SiteFilter = {
   on: (url: URL) => boolean;
   rewriteURL?: (url: URL) => string;
   css?: StylesPart;
+  onLoad?: (webContents: WebContents, url: string) => void;
 };
 
 const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
@@ -12,6 +18,8 @@ const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
 const siteFilters: SiteFilter[] = [
   {
     on: (url) => isHostSlack(url),
+    onLoad: (webContents, url) =>
+      onElementRemoved(webContents, () => markFullPageLoadTime(url), ".p-bookmarks_bar__placeholder_holder"),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
     css: css`
       .p-client {
@@ -36,6 +44,8 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
+    onLoad: (webContents, url) =>
+      onElementRemoved(webContents, () => markFullPageLoadTime(url), ".p-bookmarks_bar__placeholder_holder"),
     css: css`
       .p-workspace-layout {
         grid-template-columns: auto 40% !important;
@@ -44,6 +54,7 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => url.hostname.endsWith("notion.so"),
+    onLoad: (webContents, url) => onElementAdded(webContents, () => markFullPageLoadTime(url), ".whenContentEditable"),
     css: css`
       .notion-sidebar-container {
         display: none;
@@ -52,6 +63,24 @@ const siteFilters: SiteFilter[] = [
         width: 100% !important;
       }
     `,
+  },
+  {
+    on: (url) => url.hostname.endsWith("figma.com"),
+    onLoad: (webContents, url) =>
+      onElementRemoved(webContents, () => markFullPageLoadTime(url), '[class^="progress_bar--outer"]'),
+  },
+  {
+    on: (url) => url.hostname.endsWith("linear.app"),
+    onLoad: (webContents, url) => onElementHidden(webContents, () => markFullPageLoadTime(url), "#loading"),
+  },
+  {
+    on: (url) => url.hostname.endsWith("atlassian.net"),
+    onLoad: (webContents, url) =>
+      onElementAdded(webContents, () => markFullPageLoadTime(url), '[data-test-id="issue.activity.comment"]'),
+  },
+  {
+    on: (url) => url.hostname.endsWith("github.com"),
+    onLoad: (_, url) => () => markFullPageLoadTime(url), // github is 95% ssr
   },
 ];
 
@@ -79,10 +108,25 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
     url
   );
 
+  const cleanup = createCleanupObject();
+
+  function handleOnPageContentsLoaded() {
+    markHtmlPageLoadTime(url);
+    cleanup.next = applicableSiteFilters[0]?.onLoad?.(browserView.webContents, url);
+  }
+
+  browserView.webContents.on("did-finish-load", handleOnPageContentsLoaded);
+
   const insertApplicableCss = async () =>
     browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
   await browserView.webContents.loadURL(filteredURL, { userAgent });
   await insertApplicableCss();
 
   browserView.webContents.on("did-navigate", insertApplicableCss);
+
+  return function cleanupUrlLoading() {
+    browserView.webContents.off("did-finish-load", handleOnPageContentsLoaded);
+    browserView.webContents.off("did-navigate", insertApplicableCss);
+    cleanup.clean();
+  };
 }
