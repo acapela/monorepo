@@ -249,10 +249,7 @@ export const openFocusMode = defineAction({
       if (group.isOnePreviewEnough) {
         group.notifications.forEach((n) => n.markAsSeen());
       }
-      const lastNotificationIndex = group.notifications.length - 1;
-      const notificationToShow = group.isOnePreviewEnough
-        ? group.notifications[lastNotificationIndex]
-        : group.notifications[0];
+      const notificationToShow = group.notifications[0];
       desktopRouter.navigate("focus", { listId: list.id, notificationId: notificationToShow.id });
       return;
     }
