@@ -19,7 +19,6 @@ const DiscussionPayload = z.object({
   role: z.string(),
   value: z
     .object({
-      comments: z.array(z.string()),
       id: z.string(),
       parent_id: z.string(),
       parent_table: z.string(),
