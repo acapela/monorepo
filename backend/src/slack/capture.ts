@@ -135,6 +135,8 @@ async function isMessageAllowedByTeamFilters(user: User, message: GenericMessage
     },
   });
 
+  const isMessageFromBot = !!message.bot_id;
+
   // This is the efficient way of managing it, but team has to be part of the message event
   if (message.team) {
     const teamChannelsHolder = channelsByTeam.find((cbt) => cbt.slack_workspace_id === message.team);
@@ -142,7 +144,6 @@ async function isMessageAllowedByTeamFilters(user: User, message: GenericMessage
       return false;
     }
     const { included_channels, are_bots_enabled } = teamChannelsHolder;
-    const isMessageFromBot = !!message.bot_id;
     if (isMessageFromBot && !are_bots_enabled) {
       return false;
     }
@@ -154,7 +155,6 @@ async function isMessageAllowedByTeamFilters(user: User, message: GenericMessage
 
   // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things
   return channelsByTeam.some(({ included_channels, are_bots_enabled }) => {
-    const isMessageFromBot = !!message.bot_id;
     return jsonIncludesChannel(included_channels, message.channel) && (isMessageFromBot ? are_bots_enabled : true);
   });
 }
