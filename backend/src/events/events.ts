@@ -3,11 +3,12 @@ import { Request, Response, Router } from "express";
 import { extractAndAssertBearerToken } from "@aca/backend/src/authentication";
 import { AuthenticationError } from "@aca/backend/src/errors/errorTypes";
 import { createHasuraEventsHandler } from "@aca/backend/src/hasura";
-import { Account, LinearIssue, NotificationSlackMessage, User } from "@aca/db";
+import { Account, LinearIssue, NotificationSlackMessage, User, UserSlackInstallation } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
 import { handleAccountUpdates } from "../atlassian";
 import { handleLinearIssueChanges } from "../linear/events";
+import { handleUserSlackInstallationChanges } from "../slack/capture";
 import { handleNotificationSlackMessageChanges } from "../slack/events";
 import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
@@ -19,12 +20,14 @@ const hasuraEvents = createHasuraEventsHandler<{
   account_updates: Account;
   linear_issue_updates: LinearIssue;
   notification_slack_message: NotificationSlackMessage;
+  user_slack_installation_updates: UserSlackInstallation;
   user_updates: User;
 }>();
 
 hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE", "DELETE"], handleAccountUpdates);
 hasuraEvents.addHandler("linear_issue_updates", ["INSERT", "UPDATE"], handleLinearIssueChanges);
 hasuraEvents.addHandler("notification_slack_message", ["DELETE"], handleNotificationSlackMessageChanges);
+hasuraEvents.addHandler("user_slack_installation_updates", ["INSERT"], handleUserSlackInstallationChanges);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
