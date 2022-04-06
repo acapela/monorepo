@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 import axios from "axios";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
-import { keyBy, map } from "lodash";
+import { keyBy } from "lodash";
 import qs from "qs";
 
 import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
@@ -15,7 +15,7 @@ import { logger } from "@aca/shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";
-import { fetchSubscribers, fetchViewer, getRandomLinearClient, getUsersForOrganizationId } from "./utils";
+import { fetchSubscribersAndUsers, fetchViewer, getRandomLinearClient, getUsersForOrganizationId } from "./utils";
 
 export const router = Router();
 
@@ -137,34 +137,44 @@ router.get("/v1/linear/unlink", async (req: Request, res: Response) => {
 async function saveComment(payload: CommentWebhook) {
   const usersForOrg = await getUsersForOrganizationId(payload.organizationId);
   if (!usersForOrg.length) return;
-  const linearClient = getRandomLinearClient(usersForOrg);
-  const subscribers = await fetchSubscribers(linearClient, payload.data.issue.id);
-  const subscriberIds = map(subscribers, "id");
-  const subscriberByName = keyBy(subscribers, "displayName");
-  const mentionIds = [...payload.data.body.matchAll(/@([^\s]+)/gm)]
-    .map((m) => subscriberByName[m[1]])
-    .filter(Boolean)
-    .map((u) => u.id);
-  const notificationPromises = usersForOrg
-    .filter((u) => u.linear_user_id !== payload.data.userId && subscriberIds.includes(u.linear_user_id || ""))
-    .map((u) =>
-      db.notification_linear.create({
-        data: {
-          notification: {
-            create: {
-              user_id: u.user_id,
-              url: payload.url,
-              from: payload.data.user.name,
-            },
+
+  const { subscribers, users } = await fetchSubscribersAndUsers(
+    getRandomLinearClient(usersForOrg),
+    payload.data.issue.id,
+    usersForOrg.map((u) => u.linear_user_id)
+  );
+  const subscriberIds = new Set(subscribers.map((s) => s.id));
+  const usersByName = keyBy(users, (u) => u.displayName);
+  const mentionIds = new Set(
+    [...payload.data.body.matchAll(/@([^\s]+)/gm)]
+      .map((m) => usersByName[m[1]])
+      .filter(Boolean)
+      .map((u) => u.id)
+  );
+
+  const subscribedOrMentionedUsers = usersForOrg.filter(
+    (u) =>
+      u.linear_user_id !== payload.data.userId &&
+      (subscriberIds.has(u.linear_user_id || "") || mentionIds.has(u.linear_user_id || ""))
+  );
+  const notificationPromises = subscribedOrMentionedUsers.map((u) =>
+    db.notification_linear.create({
+      data: {
+        notification: {
+          create: {
+            user_id: u.user_id,
+            url: payload.url,
+            from: payload.data.user.name,
           },
-          type: "Comment",
-          issue_id: payload.data.issueId,
-          issue_title: payload.data.issue.title,
-          creator_id: payload.data.userId,
-          origin: mentionIds.includes(u.linear_user_id) ? "mention" : "comment",
         },
-      })
-    );
+        type: "Comment",
+        issue_id: payload.data.issueId,
+        issue_title: payload.data.issue.title,
+        creator_id: payload.data.userId,
+        origin: mentionIds.has(u.linear_user_id) ? "mention" : "comment",
+      },
+    })
+  );
   return Promise.all(notificationPromises);
 }
 
