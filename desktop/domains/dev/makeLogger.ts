@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { isError } from "lodash";
 
 import type { LogEntry, Severity } from "@aca/desktop/bridge/logger";
@@ -88,28 +89,28 @@ export function makeLogger(prefix: string, isEnabled = true) {
       if (!isEnabled) return;
       const result = performLog("Error", args);
 
-      console.error(...result);
+      console.error(chalk.redBright(...result));
     },
     warn(...args: unknown[]) {
       if (!isEnabled) return;
 
       const result = performLog("Warning", args);
 
-      console.warn(...result);
+      console.warn(chalk.yellowBright(...result));
     },
     info(...args: unknown[]) {
       if (!isEnabled) return;
 
       const result = performLog("Info", args);
 
-      console.info(...result);
+      console.info(chalk.blueBright(...result));
     },
     debug(...args: unknown[]) {
       if (!isEnabled) return;
 
       const result = performLog("Debug", args);
 
-      console.info(...result);
+      console.info(chalk.dim(...result));
     },
     assert(value: unknown, message: string) {
       if (!isEnabled) return;
@@ -118,7 +119,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
 
       const result = performLog("Error", [`[Assert]: ${message}`]);
 
-      console.error(...result);
+      console.error(chalk.redBright(...result));
     },
   };
 
