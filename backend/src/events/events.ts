@@ -25,7 +25,7 @@ const hasuraEvents = createHasuraEventsHandler<{
 
 hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE", "DELETE"], handleAccountUpdates);
 hasuraEvents.addHandler("linear_issue_updates", ["INSERT", "UPDATE"], handleLinearIssueChanges);
-hasuraEvents.addHandler("linear_oauth_token_updates", ["INSERT", "UPDATE"], handleLinearOauthTokenCreated);
+hasuraEvents.addHandler("linear_oauth_token_updates", ["INSERT"], handleLinearOauthTokenCreated);
 hasuraEvents.addHandler("notification_slack_message", ["DELETE"], handleNotificationSlackMessageChanges);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
