@@ -1,5 +1,3 @@
-import { createHmac } from "crypto";
-
 import { createNodeMiddleware } from "@octokit/webhooks";
 import { Request, Response, Router } from "express";
 import { Octokit } from "octokit";
@@ -10,16 +8,13 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
+import { getSignedState } from "../utils";
 import { githubApp, githubOnboardingApp } from "./app";
 import { addWebhookHandlers } from "./webhooks";
 
 export const router = Router();
 
-function getSignedState(uid: string): string {
-  const hmac = createHmac("sha256", process.env.GITHUB_OAUTH_SECRET);
-  hmac.update(uid);
-  return `${uid}:${hmac.digest("hex")}`;
-}
+const oauthStateSecret = process.env.GITHUB_OAUTH_SECRET;
 
 addWebhookHandlers(githubApp.webhooks);
 
@@ -70,7 +65,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
   // we will just store the authenticated user here
   if (setup_action !== "install") {
     if (!userId) throw new BadRequestError("session is missing");
-    const validState = getSignedState(userId);
+    const validState = getSignedState(userId, oauthStateSecret);
     if (validState !== state) throw new BadRequestError("invalid state");
     const pk = {
       user_id: userId,
@@ -198,7 +193,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
 
 router.get("/v1/github/auth", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
-  res.redirect(githubOnboardingApp.getWebFlowAuthorizationUrl({ state: getSignedState(userId) }).url);
+  res.redirect(githubOnboardingApp.getWebFlowAuthorizationUrl({ state: getSignedState(userId, oauthStateSecret) }).url);
 });
 
 async function unlinkInstallation(userId: string, installationId: number): Promise<void> {
