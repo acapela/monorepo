@@ -29,6 +29,7 @@ insert_permissions:
     - updated_at
     - url
     - user_id
+    - was_auto_resolved
   role: user
 select_permissions:
 - permission:
@@ -44,6 +45,7 @@ select_permissions:
     - updated_at
     - url
     - user_id
+    - was_auto_resolved
     filter:
       user_id:
         _eq: X-Hasura-User-Id
@@ -60,6 +62,7 @@ update_permissions:
     - text_preview
     - updated_at
     - url
+    - was_auto_resolved
     filter:
       user_id:
         _eq: X-Hasura-User-Id

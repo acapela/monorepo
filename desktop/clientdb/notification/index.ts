@@ -31,6 +31,7 @@ const notificationFragment = gql`
     url
     text_preview
     resolved_at
+    was_auto_resolved
     updated_at
     created_at
     last_seen_at
@@ -185,7 +186,10 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       const isSnoozedNow = !dataBefore.snoozed_until && notification.snoozed_until;
 
       if (isResolvedNow) {
-        trackEvent("Notification Resolved", { notification_id: notification.id });
+        trackEvent("Notification Resolved", {
+          notification_id: notification.id,
+          was_auto_resolved: notification.was_auto_resolved ? true : undefined,
+        });
       }
 
       if (isSnoozedNow) {
