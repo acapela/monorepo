@@ -2,6 +2,7 @@ import chalk from "chalk";
 import { isError } from "lodash";
 
 import type { LogEntry, Severity } from "@aca/desktop/bridge/logger";
+import { IS_DEV } from "@aca/shared/dev";
 import { getUUID } from "@aca/shared/uuid";
 
 /*
@@ -46,8 +47,14 @@ type ErrorReporter = (body: unknown[]) => void;
 
 let errorReporter: ErrorReporter | null = null;
 
+let devOnlyLogOverwrite: { prefix: LogEntry["prefix"]; allowsAllErrors: boolean } | null = null;
+
 export function registerLoggerErrorReporter(reporter: ErrorReporter) {
   errorReporter = reporter;
+}
+
+export function registerDevOnlyLogOverwrite(config: { prefix: LogEntry["prefix"]; allowsAllErrors: boolean } | null) {
+  devOnlyLogOverwrite = config;
 }
 
 type LogEntryHandler = (entry: LogEntry) => void;
@@ -87,12 +94,25 @@ export function makeLogger(prefix: string, isEnabled = true) {
   const levels = {
     error(...args: unknown[]) {
       if (!isEnabled) return;
-      const result = performLog("Error", args);
 
+      if (
+        IS_DEV &&
+        devOnlyLogOverwrite &&
+        devOnlyLogOverwrite.prefix !== prefix &&
+        !devOnlyLogOverwrite.allowsAllErrors
+      ) {
+        return;
+      }
+
+      const result = performLog("Error", args);
       console.error(chalk.redBright(...result));
     },
     warn(...args: unknown[]) {
       if (!isEnabled) return;
+
+      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+        return;
+      }
 
       const result = performLog("Warning", args);
 
@@ -101,12 +121,20 @@ export function makeLogger(prefix: string, isEnabled = true) {
     info(...args: unknown[]) {
       if (!isEnabled) return;
 
+      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+        return;
+      }
+
       const result = performLog("Info", args);
 
       console.info(chalk.blueBright(...result));
     },
     debug(...args: unknown[]) {
       if (!isEnabled) return;
+
+      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+        return;
+      }
 
       const result = performLog("Debug", args);
 
@@ -116,6 +144,15 @@ export function makeLogger(prefix: string, isEnabled = true) {
       if (!isEnabled) return;
 
       if (value) return;
+
+      if (
+        IS_DEV &&
+        devOnlyLogOverwrite &&
+        devOnlyLogOverwrite.prefix !== prefix &&
+        !devOnlyLogOverwrite.allowsAllErrors
+      ) {
+        return;
+      }
 
       const result = performLog("Error", [`[Assert]: ${message}`]);
 
