@@ -3,9 +3,11 @@ import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
-import { authTokenBridgeValue, figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { addToast } from "@aca/desktop/domains/toasts/store";
 import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
+import { timeDuration } from "@aca/shared/time";
 
 import { ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
 import {
@@ -28,6 +30,19 @@ function isCommentNotification(payload: FigmaCommentNotification | unknown): pay
   return payload !== undefined && (payload as FigmaCommentNotification).comment !== undefined;
 }
 
+function handleFigmaNotAuthorized() {
+  addToast({
+    title: "Figma Sync Stopped",
+    message: "Please reconnect to restart sync",
+    durationMs: 2 * timeDuration.day,
+    action: {
+      label: "Reconnect",
+      callback: () => loginFigmaBridge(),
+    },
+  });
+  clearFigmaSessionData();
+}
+
 export function isFigmaReadyToSync() {
   return authTokenBridgeValue.get() !== null && figmaAuthTokenBridgeValue.get() !== null;
 }
@@ -43,7 +58,7 @@ async function captureLatestNotifications() {
     figmaSessionData = await getFigmaSessionData();
   } catch (e) {
     log.error("Error getting figma session data," + JSON.stringify(e));
-    clearFigmaSessionData();
+    handleFigmaNotAuthorized();
     return;
   }
   log.info("Done fetching session variables");
@@ -116,7 +131,10 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   });
 
   if (!response.ok) {
-    clearFigmaSessionData();
+    if (response.status >= 400 && response.status < 500) {
+      handleFigmaNotAuthorized();
+    }
+
     throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
   }
 
