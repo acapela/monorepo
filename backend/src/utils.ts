@@ -1,3 +1,5 @@
+import { createHmac } from "crypto";
+
 import { Request, Response } from "express";
 import { get } from "lodash";
 
@@ -70,4 +72,10 @@ export async function getPublicBackendURL() {
   }
 
   return process.env.BACKEND_API_ENDPOINT;
+}
+
+export function getSignedState(uid: string, oauthStateSecret: string): string {
+  const hmac = createHmac("sha256", oauthStateSecret);
+  hmac.update(uid);
+  return `${uid}:${hmac.digest("hex")}`;
 }
