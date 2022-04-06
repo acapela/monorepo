@@ -9,12 +9,13 @@ import {
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
-import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { addToast } from "@aca/desktop/domains/toasts/store";
 import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
-import { wait } from "@aca/shared/time";
+import { timeDuration, wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
@@ -42,6 +43,20 @@ export function isNotionReadyToSync() {
 export interface NotionSessionData {
   cookie: string;
   notionUserId: string;
+}
+
+function handleNotionNotAuthorized() {
+  clearNotionSessionData();
+
+  addToast({
+    title: "Notion Sync Stopped",
+    message: "Please reconnect to restart sync",
+    durationMs: 2 * timeDuration.day,
+    action: {
+      label: "Reconnect",
+      callback: () => loginNotionBridge(),
+    },
+  });
 }
 
 export async function getNotionSessionData(): Promise<NotionSessionData> {
@@ -114,7 +129,8 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
   }
 
   if (response.status >= 400 && response.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
@@ -140,7 +156,8 @@ export async function updateAvailableSpaces() {
   }
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getSpaces: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
@@ -174,7 +191,8 @@ export async function updateAvailableSpaces() {
   });
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
