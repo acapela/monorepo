@@ -47,14 +47,37 @@ type ErrorReporter = (body: unknown[]) => void;
 
 let errorReporter: ErrorReporter | null = null;
 
-let devOnlyLogOverwrite: { prefix: LogEntry["prefix"]; allowsAllErrors: boolean } | null = null;
+let devOnlyLogOverwrite: { prefixes: LogEntry["prefix"][]; allowsAllErrors: boolean } | null = null;
 
 export function registerLoggerErrorReporter(reporter: ErrorReporter) {
   errorReporter = reporter;
 }
 
-export function registerDevOnlyLogOverwrite(config: { prefix: LogEntry["prefix"]; allowsAllErrors: boolean } | null) {
+export function registerDevOnlyLogOverwrite(
+  config: { prefixes: LogEntry["prefix"][]; allowsAllErrors: boolean } | null
+) {
   devOnlyLogOverwrite = config;
+  if (config !== null) {
+    console.info(
+      chalk.greenBright(`
+    **
+  
+    Registering Dev Only Log Overwrite for : ${config.prefixes.join(", ")}
+    
+    **
+    `)
+    );
+  } else {
+    console.info(
+      chalk.greenBright(`
+    **
+  
+    Removing Dev Only Log Overwrite
+    
+    **
+    `)
+    );
+  }
 }
 
 type LogEntryHandler = (entry: LogEntry) => void;
@@ -98,7 +121,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
       if (
         IS_DEV &&
         devOnlyLogOverwrite &&
-        devOnlyLogOverwrite.prefix !== prefix &&
+        !devOnlyLogOverwrite.prefixes.includes(prefix) &&
         !devOnlyLogOverwrite.allowsAllErrors
       ) {
         return;
@@ -110,7 +133,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
     warn(...args: unknown[]) {
       if (!isEnabled) return;
 
-      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+      if (IS_DEV && devOnlyLogOverwrite && !devOnlyLogOverwrite.prefixes.includes(prefix)) {
         return;
       }
 
@@ -121,7 +144,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
     info(...args: unknown[]) {
       if (!isEnabled) return;
 
-      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+      if (IS_DEV && devOnlyLogOverwrite && !devOnlyLogOverwrite.prefixes.includes(prefix)) {
         return;
       }
 
@@ -132,7 +155,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
     debug(...args: unknown[]) {
       if (!isEnabled) return;
 
-      if (IS_DEV && devOnlyLogOverwrite && devOnlyLogOverwrite.prefix !== prefix) {
+      if (IS_DEV && devOnlyLogOverwrite && !devOnlyLogOverwrite.prefixes.includes(prefix)) {
         return;
       }
 
@@ -148,7 +171,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
       if (
         IS_DEV &&
         devOnlyLogOverwrite &&
-        devOnlyLogOverwrite.prefix !== prefix &&
+        !devOnlyLogOverwrite.prefixes.includes(prefix) &&
         !devOnlyLogOverwrite.allowsAllErrors
       ) {
         return;
