@@ -1,10 +1,9 @@
-import { differenceInMilliseconds, differenceInMinutes } from "date-fns";
-import { keys } from "lodash";
+import { differenceInMilliseconds } from "date-fns";
+import { BrowserView } from "electron";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 interface URLLoadState {
-  webContentsId: string;
   url: string;
   loadRequested: Date;
   htmlPageLoad?: Date;
@@ -13,31 +12,16 @@ interface URLLoadState {
   browserViewDisposed?: Date;
 }
 
-const allStates: Record<URLLoadState["webContentsId"], URLLoadState> = {};
+const allStates: WeakMap<BrowserView, URLLoadState> = new WeakMap();
 
-const log = makeLogger("BrowserViewLoadState");
+const log = makeLogger("BrowserViewLoadInstrumentation");
 
-const FIVE_MINUTES = 5 * 60 * 1000;
-
-/*
-  We garbage collect every five minutes for url states that are older than 5 minutes
-*/
-setInterval(() => {
-  for (const url of keys(allStates)) {
-    const loadRequested = allStates[url].loadRequested;
-    const wasLoadRequestedOverFiveMinutesAgo = Math.abs(differenceInMinutes(new Date(), loadRequested)) > 5;
-    if (wasLoadRequestedOverFiveMinutesAgo) {
-      delete allStates[url];
-    }
-  }
-}, FIVE_MINUTES);
-
-export function markLoadRequestedTime(webContentsId: string, url: string) {
-  allStates[webContentsId] = { webContentsId, url, loadRequested: new Date() };
+export function markLoadRequestedTime(browserView: BrowserView, url: string) {
+  allStates.set(browserView, { url, loadRequested: new Date() });
 }
 
-export function markHtmlPageLoadTime(webContentsId: string) {
-  const urlLoadState = allStates[webContentsId];
+export function markHtmlPageLoadTime(browserView: BrowserView) {
+  const urlLoadState = allStates.get(browserView);
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -46,8 +30,8 @@ export function markHtmlPageLoadTime(webContentsId: string) {
   urlLoadState.htmlPageLoad = new Date();
 }
 
-export function markFullPageLoadTime(webContentsId: string) {
-  const urlLoadState = allStates[webContentsId];
+export function markFullPageLoadTime(browserView: BrowserView) {
+  const urlLoadState = allStates.get(browserView);
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -61,8 +45,8 @@ export function markFullPageLoadTime(webContentsId: string) {
   }
 }
 
-export function markViewAttachedTime(webContentsId: string) {
-  const urlLoadState = allStates[webContentsId];
+export function markViewAttachedTime(browserView: BrowserView) {
+  const urlLoadState = allStates.get(browserView);
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -74,8 +58,8 @@ export function markViewAttachedTime(webContentsId: string) {
   }
 }
 
-export function markViewDisposedTime(webContentsId: string) {
-  const urlLoadState = allStates[webContentsId];
+export function markViewDisposedTime(browserView: BrowserView) {
+  const urlLoadState = allStates.get(browserView);
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -88,7 +72,7 @@ export function markViewDisposedTime(webContentsId: string) {
   }
 }
 
-function isUrlStatePreviouslyRequested(urlLoadState: URLLoadState): boolean {
+function isUrlStatePreviouslyRequested(urlLoadState: URLLoadState | undefined): urlLoadState is URLLoadState {
   return !!urlLoadState && !!urlLoadState.loadRequested;
 }
 
@@ -114,8 +98,8 @@ function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisp
     return {
       fullLoadTimeInMs: Math.abs(differenceInMilliseconds(loadRequested, fullPageLoad)),
       wasFullyLoadedBeforeDisposed,
-      timeBetweenFullyLoadedAndDisposedInMs: !wasFullyLoadedBeforeDisposed
-        ? fullPageLoad.getTime() - browserViewDisposed.getTime()
+      timeBetweenFullyLoadedAndDisposedInMs: wasFullyLoadedBeforeDisposed
+        ? browserViewDisposed.getTime() - fullPageLoad.getTime()
         : 0,
     };
   }

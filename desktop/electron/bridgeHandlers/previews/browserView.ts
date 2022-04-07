@@ -104,7 +104,7 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
         delete stateMap[url];
       });
 
-      markViewDisposedTime(view.webContents.id.toString());
+      markViewDisposedTime(view);
       destroyBrowserView(view);
     },
     destroyTimeout: SECOND * 0.5,
