@@ -119,21 +119,17 @@ async function handleIssueOfOrigin(
 }
 
 async function createInitialNotification(payload: CreateInitialNotificationPayload) {
-  const existingDbIssue = await db.linear_issue.findFirst({
+  await db.linear_issue.upsert({
     where: {
       id: payload.issueId,
     },
+    update: {},
+    create: {
+      id: payload.issueId,
+      organization_id: payload.organizationId,
+      title: payload.issueTitle,
+    },
   });
-
-  if (!existingDbIssue) {
-    await db.linear_issue.create({
-      data: {
-        id: payload.issueId,
-        organization_id: payload.organizationId,
-        title: payload.issueTitle,
-      },
-    });
-  }
 
   await db.notification.create({
     data: {
