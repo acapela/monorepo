@@ -3,6 +3,7 @@ import { memoize } from "lodash";
 import { autorun } from "mobx";
 
 import {
+  asanaAuthTokenBridgeValue,
   figmaAuthTokenBridgeValue,
   githubAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
@@ -47,6 +48,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
     github_installed_at: (githubAuthTokenBridgeValue.get() && githubAuthTokenBridgeValue.lastUpdateDate) || undefined,
     gmail_installed_at: nullableDate(getNullableDb()?.gmailAccount.all[0].created_at) ?? undefined,
+    asana_installed_at: (asanaAuthTokenBridgeValue.get() && asanaAuthTokenBridgeValue.lastUpdateDate) || undefined,
   };
 }
 

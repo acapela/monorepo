@@ -62,6 +62,13 @@ export const loginGitHubBridge = createInvokeBridge<{ logout: boolean; installat
 
 export const loginGmailBridge = createInvokeWithCleanupBridge("login-gmail");
 
+export const asanaAuthTokenBridgeValue = createBridgeValue<boolean>("asana-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+
+export const loginAsanaBridge = createInvokeBridge<{ logout: boolean } | void>("login-asana");
+
 /*
   NEW SERVICE!?!?!?
   Add new services here! Until refactored
@@ -74,6 +81,7 @@ const allServices = [
   linearAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
   githubAuthTokenBridgeValue,
+  asanaAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {
