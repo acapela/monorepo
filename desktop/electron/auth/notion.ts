@@ -7,7 +7,8 @@ import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 import { updateAvailableSpaces } from "../apps/notion/worker";
 import { authWindowDefaultOptions } from "./utils";
 
-export const notionURL = "https://www.notion.so";
+export const notionDomain = "www.notion.so";
+export const notionURL = `https://${notionDomain}`;
 
 export async function getNotionAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: notionURL });

@@ -22,6 +22,7 @@ export function initializeAuthHandlers() {
   initializeGitHubAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
+    console.trace(url);
     const cookieStore = session.defaultSession.cookies;
     const serviceCookies = await cookieStore.get({ url });
     const cookieRemovalPromises = serviceCookies.map((cookie) => cookieStore.remove(url, cookie.name));

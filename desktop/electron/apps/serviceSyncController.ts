@@ -3,6 +3,8 @@ import { capitalize } from "lodash";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
+import { checkAccessToInternet } from "../utils/internet";
+
 export type WorkerService = "notion" | "figma";
 
 export interface ServiceSyncController {
@@ -22,7 +24,7 @@ const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
   - Pull every WINDOW_FOCUSED_INTERVAL if main window is focused
   - Pull immediately when window focuses if more than WINDOW_FOCUSED_INTERVAL have passed before last pull
 */
-export function makeServiceSyncController(serviceName: WorkerService, cb: () => Promise<void>) {
+export function makeServiceSyncController(serviceName: WorkerService, serviceDomain: string, cb: () => Promise<void>) {
   function serviceSyncBuilder() {
     let currentInterval: NodeJS.Timer | null = null;
     let timeOfLastSync: Date | null = null;
@@ -32,6 +34,12 @@ export function makeServiceSyncController(serviceName: WorkerService, cb: () => 
 
     async function runSync() {
       if (isSyncing) {
+        return;
+      }
+
+      const hasConnectionToService = await checkAccessToInternet(serviceDomain);
+      if (!hasConnectionToService) {
+        log.info("Internet disconnected - aborting sync");
         return;
       }
 
