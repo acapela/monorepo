@@ -95,7 +95,7 @@ async function startOrRestartElectron() {
   console.info(`Starting new electron instance in dev mode`);
 
   // Start new instance of electron running in dev mode
-  currentElectronInstance = $`yarn electron dist/electron/index.js`;
+  currentElectronInstance = $`FORCE_COLOR=1 yarn electron dist/electron/index.js`;
 
   currentElectronInstance.catch((error) => {
     // We either ctrl+c or restarted due to file change.
