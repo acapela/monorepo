@@ -1,12 +1,11 @@
 import { differenceInDays, differenceInWeeks } from "date-fns";
-import { BrowserWindow } from "electron";
 import fetch from "node-fetch";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
-import { clearFigmaSessionData, figmaDomain, figmaURL } from "@aca/desktop/electron/auth/figma";
+import { FigmaSessionData, clearFigmaSessionData, figmaDomain, figmaURL } from "@aca/desktop/electron/auth/figma";
 import { timeDuration } from "@aca/shared/time";
 
 import { ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
@@ -16,13 +15,6 @@ import {
   FigmaUserNotification,
   GetFigmaUserNotificationsResponse,
 } from "./types";
-
-interface FigmaSessionData {
-  cookie: string;
-  release_git_tag: string;
-  figmaUserId: string;
-  trackingSessionId: string;
-}
 
 const log = makeLogger("Figma-Worker");
 
@@ -52,67 +44,17 @@ export function startFigmaSync(): ServiceSyncController {
 }
 
 async function captureLatestNotifications() {
-  let figmaSessionData;
+  const figmaSessionData = await figmaAuthTokenBridgeValue.get();
 
-  try {
-    figmaSessionData = await getFigmaSessionData();
-  } catch (e) {
-    log.error("Error getting figma session data," + JSON.stringify(e));
-    handleFigmaNotAuthorized();
+  if (!figmaSessionData) {
+    log.info("no session data - stopping sync");
     return;
   }
-  log.info("Done fetching session variables");
+
   // First sync extract all of the notifications from a standard rest endpoint.
   // This sync will get and sync all relevant notifications since last app open
   // Relevant notification: !read && !resolved && !rejected && created less than 2 weeks ago
   await getInitialFigmaSync(figmaSessionData);
-}
-
-export async function getFigmaSessionData(): Promise<FigmaSessionData> {
-  const figmaWindow = new BrowserWindow({
-    width: 0,
-    height: 0,
-    show: false,
-  });
-
-  figmaWindow.hide();
-
-  await figmaWindow.webContents.loadURL(figmaURL);
-
-  // This is used for version controlling the app with their api
-  // We may need to keep a static version of this, but verify that their API is working every week
-  const release_git_tag = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.release_git_tag");
-
-  const figmaUserId = await figmaWindow.webContents.executeJavaScript("window.INITIAL_OPTIONS.user_data.id");
-
-  // This seems to be used for distributed tracing mechanisms (e.g. https://www.jaegertracing.io/)
-  // Some apis don't work without this
-  const trackingSessionId = await figmaWindow.webContents.executeJavaScript(
-    "window.INITIAL_OPTIONS.tracking_session_id"
-  );
-
-  const figmaCookies = await figmaWindow.webContents.session.cookies.get({
-    url: figmaURL,
-  });
-
-  figmaWindow.close();
-
-  const cookie = figmaCookies
-    .filter((cookie) => cookie.domain?.includes("figma.com"))
-    .map((cookie) => cookie.name + "=" + cookie.value)
-    .join("; ");
-
-  log.assert(release_git_tag, "Cant find figma release tag");
-  log.assert(figmaUserId, "Cant find figma user is");
-  log.assert(trackingSessionId, "cant find tracking session id");
-  log.assert(cookie, "cant find figma cookie");
-
-  return {
-    release_git_tag,
-    figmaUserId,
-    cookie,
-    trackingSessionId,
-  };
 }
 
 const isLessThan2WeeksOld = (isoString: string) => differenceInWeeks(new Date(), new Date(isoString)) < 2;

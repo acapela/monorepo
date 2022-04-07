@@ -1,5 +1,6 @@
 import { createInvokeWithCleanupBridge } from "@aca/desktop/bridge/base/invokeWithCleanup";
 
+import { FigmaSessionData } from "../electron/auth/figma";
 import { notionSelectedSpaceValue } from "./apps/notion";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
@@ -23,7 +24,7 @@ export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("noti
 });
 export const loginNotionBridge = createInvokeBridge("login-notion");
 
-export const figmaAuthTokenBridgeValue = createBridgeValue<string | null>("figma-auth-token", {
+export const figmaAuthTokenBridgeValue = createBridgeValue<FigmaSessionData | null>("figma-auth-session-data", {
   getDefault: () => null,
   isPersisted: true,
 });
