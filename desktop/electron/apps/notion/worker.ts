@@ -9,12 +9,13 @@ import {
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
-import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { addToast } from "@aca/desktop/domains/toasts/store";
 import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
-import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
-import { wait } from "@aca/shared/time";
+import { timeDuration, wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
@@ -44,6 +45,20 @@ export interface NotionSessionData {
   notionUserId: string;
 }
 
+function handleNotionNotAuthorized() {
+  clearNotionSessionData();
+
+  addToast({
+    title: "Notion Sync Stopped",
+    message: "Please reconnect to restart sync",
+    durationMs: 2 * timeDuration.day,
+    action: {
+      label: "Reconnect",
+      callback: () => loginNotionBridge(),
+    },
+  });
+}
+
 export async function getNotionSessionData(): Promise<NotionSessionData> {
   const cookies = await session.defaultSession.cookies.get({
     url: notionURL,
@@ -66,28 +81,30 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
 }
 
 export function startNotionSync(): ServiceSyncController {
-  async function runSync() {
-    const sessionData = await getNotionSessionData();
+  return makeServiceSyncController("notion", notionDomain, runSync);
+}
 
-    log.info(`Capturing started`);
+async function runSync() {
+  const sessionData = await getNotionSessionData();
 
-    await updateAvailableSpaces();
+  log.info(`Capturing started`);
 
-    const syncEnabledSpaces = notionSelectedSpaceValue.get();
+  await updateAvailableSpaces();
 
-    log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
+  const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
-    for (const spaceToSync of syncEnabledSpaces.selected) {
-      log.debug(`Capturing started for space: ${spaceToSync}`);
+  log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
 
-      const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+  for (const spaceToSync of syncEnabledSpaces.selected) {
+    log.debug(`Capturing started for space: ${spaceToSync}`);
+
+    const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+    if (notificationLog) {
       notionSyncPayload.send(extractNotifications(notificationLog));
-
-      await wait(10000);
     }
-  }
 
-  return makeServiceSyncController("notion", runSync);
+    await wait(10000);
+  }
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
@@ -103,10 +120,17 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
       size: 20,
       type: "mentions",
     }),
-  });
+  })
+    // fetch only rejects for network errors which we want to ignore
+    .catch(() => null);
+
+  if (!response) {
+    return;
+  }
 
   if (response.status >= 400 && response.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
@@ -132,7 +156,8 @@ export async function updateAvailableSpaces() {
   }
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getSpaces: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
@@ -166,7 +191,8 @@ export async function updateAvailableSpaces() {
   });
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
@@ -189,7 +215,9 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNotificationLog>>): NotionWorkerSync {
+function extractNotifications(
+  payload: NonNullable<Awaited<ReturnType<typeof fetchNotionNotificationLog>>>
+): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
   const result: NotionWorkerSync = [];

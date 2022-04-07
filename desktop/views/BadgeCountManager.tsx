@@ -20,7 +20,9 @@ function getOpenNotifications() {
 
 export const BadgeCountManager = observer(() => {
   useAutorun(() => {
-    if (!applicationWideSettingsBridge.get().showNotificationsCountBadge) {
+    const settings = applicationWideSettingsBridge.get();
+
+    if (!settings.showNotificationsCountBadge) {
       setBadgeCountRequest(0);
       return;
     }
@@ -29,11 +31,16 @@ export const BadgeCountManager = observer(() => {
 
     if (openNotifications === undefined) return;
 
-    const unreadCount = openNotifications.filter((n) => n.isUnread).length;
-    if (unreadCount > 0) {
-      setBadgeCountRequest(unreadCount);
+    if (!settings.showUnreadNotificationsCountBadge) {
+      setBadgeCountRequest(openNotifications.length);
     } else {
-      setBadgeCountRequest(openNotifications.length > 0 ? "•" : 0);
+      const unreadCount = openNotifications.filter((n) => n.isUnread).length;
+      if (unreadCount > 0) {
+        setBadgeCountRequest(unreadCount);
+      } else {
+        // If there are open notifications, but all are read, we still show an indicator
+        setBadgeCountRequest(openNotifications.length > 0 ? "•" : 0);
+      }
     }
   });
 

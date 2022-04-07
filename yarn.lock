@@ -315,6 +315,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.10.2
     "@vvo/tzdb": ^6.44.0
     axios: ^0.24.0
+    chalk: ^4.1.2
     commitizen: ^4.2.4
     common-tags: ^1.8.2
     cz-conventional-changelog: ^3.3.0

@@ -1,9 +1,14 @@
+import { LinearClient } from "@linear/sdk";
 import { detailedDiff } from "deep-object-diff";
 import { isEmpty } from "lodash";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
-import { LinearIssue, db } from "@aca/db";
+import { LinearIssue, LinearOauthToken, db } from "@aca/db";
 
+import {
+  isSupportedInitialLinearNotificationType,
+  linearNotificationTypeHandler,
+} from "./initialSyncNotificationImport";
 import { IssueData } from "./types";
 import {
   NotificationOrigin,
@@ -80,4 +85,46 @@ async function saveIssue(payload: LinearIssue, origin: NotificationOrigin, notif
       })
     );
   return Promise.all(notificationPromises);
+}
+
+export async function handleLinearOauthTokenCreated(event: HasuraEvent<LinearOauthToken>) {
+  if (event.type !== "create") {
+    return;
+  }
+
+  const linearOauthToken = event.item;
+
+  const previousExistingLinearNotifications = await db.notification_linear.findFirst({
+    where: {
+      notification: {
+        user_id: linearOauthToken.user_id,
+      },
+    },
+  });
+
+  if (!previousExistingLinearNotifications) {
+    await importInitialNotificationsFromLinear(linearOauthToken);
+  }
+}
+
+const AMOUNT_OF_INITIAL_NOTIFICATIONS_TO_SYNC = 5;
+
+async function importInitialNotificationsFromLinear(linearOauthToken: LinearOauthToken) {
+  const client = new LinearClient({
+    accessToken: linearOauthToken.access_token,
+  });
+
+  const notifications = await client.notifications({ includeArchived: false });
+
+  // This is more cumbersome but way more performant than an array filter.
+  let countOfInitialNotifications = 0;
+  for (const notification of notifications.nodes) {
+    if (countOfInitialNotifications === AMOUNT_OF_INITIAL_NOTIFICATIONS_TO_SYNC) {
+      return;
+    }
+    if (isSupportedInitialLinearNotificationType(notification.type)) {
+      await linearNotificationTypeHandler[notification.type](linearOauthToken, notification);
+      countOfInitialNotifications++;
+    }
+  }
 }

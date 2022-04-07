@@ -15,6 +15,7 @@ insert_permissions:
       user_id:
         _eq: X-Hasura-User-Id
     columns:
+    - are_bots_enabled
     - created_at
     - id
     - included_channels
@@ -26,6 +27,7 @@ insert_permissions:
 select_permissions:
 - permission:
     columns:
+    - are_bots_enabled
     - created_at
     - id
     - included_channels
@@ -41,6 +43,7 @@ update_permissions:
 - permission:
     check: null
     columns:
+    - are_bots_enabled
     - included_channels
     - updated_at
     filter:
