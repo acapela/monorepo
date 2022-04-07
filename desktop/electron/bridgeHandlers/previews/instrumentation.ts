@@ -2,7 +2,7 @@ import { differenceInMilliseconds, differenceInMinutes } from "date-fns";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
-interface UrlLoadState {
+interface URLLoadState {
   url: string;
   loadRequested: Date;
   htmlPageLoad?: Date;
@@ -11,7 +11,7 @@ interface UrlLoadState {
   browserViewDisposed?: Date;
 }
 
-const allStates: Record<UrlLoadState["url"], UrlLoadState> = {};
+const allStates: Record<URLLoadState["url"], URLLoadState> = {};
 
 const log = makeLogger("BrowserViewLoadState");
 
@@ -86,11 +86,11 @@ export function markViewDisposedTime(url: string) {
   }
 }
 
-function isUrlStatePreviouslyRequested(urlLoadState: UrlLoadState): boolean {
+function isUrlStatePreviouslyRequested(urlLoadState: URLLoadState): boolean {
   return !!urlLoadState && !!urlLoadState.loadRequested;
 }
 
-function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAttached }: UrlLoadState) {
+function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAttached }: URLLoadState) {
   if (fullPageLoad && browserViewAttached) {
     const wasFullyLoadedBeforePreview = fullPageLoad.getTime() < browserViewAttached.getTime();
     const deltaBetweenFullyLoadedAndAttached = Math.abs(fullPageLoad.getTime() - browserViewAttached.getTime());
@@ -106,7 +106,7 @@ function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAt
   return {};
 }
 
-function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisposed }: UrlLoadState) {
+function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisposed }: URLLoadState) {
   if (fullPageLoad && browserViewDisposed) {
     const wasFullyLoadedBeforeDisposed = fullPageLoad.getTime() < browserViewDisposed.getTime();
     return {

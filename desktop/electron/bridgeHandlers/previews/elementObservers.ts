@@ -9,7 +9,7 @@ export function onElementAdded(
   callback: () => void,
   targetElementSelector: string
 ): MaybeCleanup {
-  return onElementMutated(webContents, callback, targetElementSelector, false);
+  return onElementMutated(webContents, callback, { targetElementSelector, isTargetRemoval: false });
 }
 
 export function onElementRemoved(
@@ -17,7 +17,7 @@ export function onElementRemoved(
   callback: () => void,
   targetElementSelector: string
 ): MaybeCleanup {
-  return onElementMutated(webContents, callback, targetElementSelector, true);
+  return onElementMutated(webContents, callback, { targetElementSelector, isTargetRemoval: true });
 }
 
 /*
@@ -30,15 +30,20 @@ export function onElementRemoved(
   We start observing the <body> tag of the document and look for all added/remove nested elements
   When the css selector matches the element, we'll trigger a callback and cleanup the observer.
 */
+
+interface ObserverInputProps {
+  targetElementSelector: string;
+  isTargetRemoval: boolean;
+}
+
 export function onElementMutated(
   webContents: WebContents,
   callback: () => void,
-  targetElementSelector: string,
-  isTargetRemoval: boolean
+  { targetElementSelector, isTargetRemoval }: ObserverInputProps
 ): MaybeCleanup {
-  return runEffectInWebContents<void, { target: string; isTargetRemoval: boolean }>(
+  return runEffectInWebContents<void, ObserverInputProps>(
     webContents,
-    (send, input) => {
+    (onTargetFound, input) => {
       // Needs to be defined within this scope. Don't make the silly mistake I made of moving it out
       const ELEMENT_NODE_TYPE = 1;
 
@@ -47,9 +52,9 @@ export function onElementMutated(
         throw new Error("input never passed in");
       }
 
-      const isTargetAlreadyLoaded = window.document.querySelector(input!.target);
+      const isTargetAlreadyLoaded = document.querySelector(input.targetElementSelector);
       if (isTargetAlreadyLoaded && !input.isTargetRemoval) {
-        send();
+        onTargetFound();
         return;
       }
 
@@ -60,27 +65,24 @@ export function onElementMutated(
         subtree: true,
       };
 
-      const mo = new MutationObserver(function callback(mutationList) {
-        mutationList.forEach((mutation) => {
-          switch (mutation.type) {
-            // this fires for all nested changes in children list of the dom tree
-            case "childList":
-              // eslint-disable-next-line no-case-declarations
-              const nodes = input!.isTargetRemoval ? mutation.removedNodes : mutation.addedNodes;
-
-              for (const mutatedNode of nodes) {
-                if (mutatedNode.nodeType === ELEMENT_NODE_TYPE) {
-                  const element: Element = mutatedNode as Element;
-                  if (element.matches(input.target)) {
-                    send();
-                    mo.disconnect();
-                    return;
-                  }
-                }
-              }
-              break;
+      const mo = new MutationObserver(function callback(mutations) {
+        for (const mutation of mutations) {
+          if (mutation.type !== "childList") {
+            continue;
           }
-        });
+
+          const nodes = input!.isTargetRemoval ? mutation.removedNodes : mutation.addedNodes;
+          for (const mutatedNode of nodes) {
+            if (mutatedNode.nodeType === ELEMENT_NODE_TYPE) {
+              const element: Element = mutatedNode as Element;
+              if (element.matches(input.targetElementSelector)) {
+                onTargetFound();
+                mo.disconnect();
+                return;
+              }
+            }
+          }
+        }
       });
 
       let hasBaseElementLoaded = false;
@@ -89,7 +91,7 @@ export function onElementMutated(
       // However, this is an extra step to make sure that things don't break
       const clear = setInterval(() => {
         if (!hasBaseElementLoaded) {
-          const baseTarget = window.document.querySelector("body");
+          const baseTarget = document.querySelector("body");
           if (!baseTarget) {
             return;
           }
@@ -104,7 +106,7 @@ export function onElementMutated(
       };
     },
     callback,
-    { target: targetElementSelector, isTargetRemoval }
+    { targetElementSelector, isTargetRemoval }
   );
 }
 
@@ -143,9 +145,9 @@ export function onElementHidden(
           }
 
           const mo = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
+            for (const mutation of mutations) {
               if (mutation.attributeName !== "style") {
-                return;
+                continue;
               }
               const mutatedElement = mutation.target as HTMLElement;
 
@@ -154,7 +156,7 @@ export function onElementHidden(
                 mo.disconnect();
                 return;
               }
-            });
+            }
           });
 
           mo.observe(el, { attributes: true });
