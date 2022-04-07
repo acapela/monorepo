@@ -3,17 +3,19 @@ import { createHmac } from "crypto";
 import Asana from "asana";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
+import { get } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
-import { db } from "@aca/db";
+import { AsanaAccount, User, db } from "@aca/db";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState } from "../utils";
+import { Webhook } from "./types";
 
 const { ASANA_OAUTH_SECRET, ASANA_CLIENT_ID, ASANA_CLIENT_SECRET } = process.env;
 
@@ -154,12 +156,104 @@ router.post("/v1/asana/webhook/:id", async (req: Request, res: Response) => {
   const dbWebhook = await db.asana_webhook.findFirst({
     where: { id: req.params.id },
     include: {
-      asana_account: true,
+      asana_account: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
   if (!dbWebhook || !dbWebhook.secret) throw new BadRequestError("webhook id not found in database");
   const whSignature = createHmac("sha256", dbWebhook.secret!).update(JSON.stringify(req.body)).digest("hex");
   if (req.headers["x-hook-signature"] !== whSignature) throw new BadRequestError("invalid webhook signature");
-  console.info(req.body.events);
   res.status(HttpStatus.OK).end();
+
+  for (const event of req.body.events) {
+    await processEvent(event, dbWebhook.asana_account);
+  }
 });
+
+async function processEvent(event: Webhook, account: AsanaAccount & { user: User }) {
+  // ignore event that was triggered by the user themselves
+  // if (account.asana_user_id === event.user.gid) return;
+  //
+  const client = createClient();
+  client.useOauth({ credentials: account });
+
+  if (event.resource.resource_type === "story" && event.resource.resource_subtype === "comment_added") {
+    const comment = await client.stories.findById(event.resource.gid);
+
+    // asana converts mentions to weird links to personal projects
+    // some logic is required to resolve these ids to the actual user id
+    const mentionUsers = [...comment.text.matchAll(/https:\/\/app\.asana\.com\/0\/(\d+)\/list/gm)].map((m) => m[1]);
+    const userIds = await resolveMentions(client, mentionUsers);
+    const isMentioned = userIds.includes(account.asana_user_id);
+    if (!isMentioned) return; // ignoring normal comments for now
+    await createCommentNotification(account, comment, isMentioned);
+    return;
+  }
+  if (event.resource.resource_type === "task" && event.change?.field === "assignee") {
+    if (!event.change.new_value) return; // unassigned
+    if (event.change.new_value.gid !== event.user.gid) return; // assigned to someone else
+    const [assigner, task] = await Promise.all([
+      client.users.findById(event.user.gid),
+      client.tasks.findById(event.resource.gid),
+    ]);
+    await createAssignNotification(account, assigner, task);
+    return;
+  }
+  // TODO: handle status changes
+  console.info(JSON.stringify(event));
+}
+
+async function resolveMentions(client: Asana.Client, users: string[]) {
+  const userIds: string[] = [];
+  for (const user of users) {
+    const project = await client.projects.findById(user);
+    if (project.members.length) continue;
+    userIds.push(get(project, "owner.gid"));
+  }
+  return userIds;
+}
+
+async function createCommentNotification(
+  account: AsanaAccount & { user: User },
+  comment: Asana.resources.Stories.Type,
+  isMentioned: boolean
+) {
+  return db.notification_asana.create({
+    data: {
+      notification: {
+        create: {
+          user_id: account.user.id,
+          url: `https://app.asana.com/0/0/${comment.target.gid}/${comment.gid}/f`,
+          from: comment.created_by.name,
+        },
+      },
+      type: isMentioned ? "mention" : "comment",
+      title: comment.target.name,
+      task_id: comment.target.gid,
+    },
+  });
+}
+
+async function createAssignNotification(
+  account: AsanaAccount & { user: User },
+  assigner: Asana.resources.Users.Type,
+  task: Asana.resources.Tasks.Type
+) {
+  return db.notification_asana.create({
+    data: {
+      notification: {
+        create: {
+          user_id: account.user.id,
+          url: get(task, "permalink_url", ""),
+          from: assigner.name,
+        },
+      },
+      type: "assign",
+      title: task.name,
+      task_id: task.gid,
+    },
+  });
+}
