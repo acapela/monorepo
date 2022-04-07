@@ -10,7 +10,7 @@ type SiteFilter = {
   on: (url: URL) => boolean;
   rewriteURL?: (url: URL) => string;
   css?: StylesPart;
-  onLoad?: (webContents: WebContents, url: string) => void;
+  onLoad?: (webContents: WebContents) => void;
 };
 
 const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
@@ -18,8 +18,12 @@ const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
 const siteFilters: SiteFilter[] = [
   {
     on: (url) => isHostSlack(url),
-    onLoad: (webContents, url) =>
-      onElementRemoved(webContents, () => markFullPageLoadTime(url), ".p-bookmarks_bar__placeholder_holder"),
+    onLoad: (webContents) =>
+      onElementRemoved(
+        webContents,
+        () => markFullPageLoadTime(webContents.id.toString()),
+        ".p-bookmarks_bar__placeholder_holder"
+      ),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
     css: css`
       .p-client {
@@ -44,8 +48,12 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
-    onLoad: (webContents, url) =>
-      onElementRemoved(webContents, () => markFullPageLoadTime(url), ".p-bookmarks_bar__placeholder_holder"),
+    onLoad: (webContents) =>
+      onElementRemoved(
+        webContents,
+        () => markFullPageLoadTime(webContents.id.toString()),
+        ".p-bookmarks_bar__placeholder_holder"
+      ),
     css: css`
       .p-workspace-layout {
         grid-template-columns: auto 40% !important;
@@ -54,7 +62,8 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => url.hostname.endsWith("notion.so"),
-    onLoad: (webContents, url) => onElementAdded(webContents, () => markFullPageLoadTime(url), ".whenContentEditable"),
+    onLoad: (webContents) =>
+      onElementAdded(webContents, () => markFullPageLoadTime(webContents.id.toString()), ".whenContentEditable"),
     css: css`
       .notion-sidebar-container {
         display: none;
@@ -66,21 +75,30 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => url.hostname.endsWith("figma.com"),
-    onLoad: (webContents, url) =>
-      onElementRemoved(webContents, () => markFullPageLoadTime(url), '[class^="progress_bar--outer"]'),
+    onLoad: (webContents) =>
+      onElementRemoved(
+        webContents,
+        () => markFullPageLoadTime(webContents.id.toString()),
+        '[class^="progress_bar--outer"]'
+      ),
   },
   {
     on: (url) => url.hostname.endsWith("linear.app"),
-    onLoad: (webContents, url) => onElementHidden(webContents, () => markFullPageLoadTime(url), "#loading"),
+    onLoad: (webContents) =>
+      onElementHidden(webContents, () => markFullPageLoadTime(webContents.id.toString()), "#loading"),
   },
   {
     on: (url) => url.hostname.endsWith("atlassian.net"),
-    onLoad: (webContents, url) =>
-      onElementAdded(webContents, () => markFullPageLoadTime(url), '[data-test-id="issue.activity.comment"]'),
+    onLoad: (webContents) =>
+      onElementAdded(
+        webContents,
+        () => markFullPageLoadTime(webContents.id.toString()),
+        '[data-test-id="issue.activity.comment"]'
+      ),
   },
   {
     on: (url) => url.hostname.endsWith("github.com"),
-    onLoad: (_, url) => () => markFullPageLoadTime(url), // github is 95% ssr
+    onLoad: (webContents) => () => markFullPageLoadTime(webContents.id.toString()), // github is 95% ssr
   },
 ];
 
@@ -111,8 +129,8 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
   const cleanup = createCleanupObject();
 
   function handleOnPageContentsLoaded() {
-    markHtmlPageLoadTime(url);
-    cleanup.next = applicableSiteFilters[0]?.onLoad?.(browserView.webContents, url);
+    markHtmlPageLoadTime(browserView.webContents.id.toString());
+    cleanup.next = applicableSiteFilters[0]?.onLoad?.(browserView.webContents);
   }
 
   browserView.webContents.on("did-finish-load", handleOnPageContentsLoaded);

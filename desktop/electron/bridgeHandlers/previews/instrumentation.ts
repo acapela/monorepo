@@ -1,8 +1,10 @@
 import { differenceInMilliseconds, differenceInMinutes } from "date-fns";
+import { keys } from "lodash";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 interface URLLoadState {
+  webContentsId: string;
   url: string;
   loadRequested: Date;
   htmlPageLoad?: Date;
@@ -11,7 +13,7 @@ interface URLLoadState {
   browserViewDisposed?: Date;
 }
 
-const allStates: Record<URLLoadState["url"], URLLoadState> = {};
+const allStates: Record<URLLoadState["webContentsId"], URLLoadState> = {};
 
 const log = makeLogger("BrowserViewLoadState");
 
@@ -21,7 +23,7 @@ const FIVE_MINUTES = 5 * 60 * 1000;
   We garbage collect every five minutes for url states that are older than 5 minutes
 */
 setInterval(() => {
-  for (const url of Object.keys(allStates)) {
+  for (const url of keys(allStates)) {
     const loadRequested = allStates[url].loadRequested;
     const wasLoadRequestedOverFiveMinutesAgo = Math.abs(differenceInMinutes(new Date(), loadRequested)) > 5;
     if (wasLoadRequestedOverFiveMinutesAgo) {
@@ -30,12 +32,12 @@ setInterval(() => {
   }
 }, FIVE_MINUTES);
 
-export function markLoadRequestedTime(url: string) {
-  allStates[url] = { url, loadRequested: new Date() };
+export function markLoadRequestedTime(webContentsId: string, url: string) {
+  allStates[webContentsId] = { webContentsId, url, loadRequested: new Date() };
 }
 
-export function markHtmlPageLoadTime(url: string) {
-  const urlLoadState = allStates[url];
+export function markHtmlPageLoadTime(webContentsId: string) {
+  const urlLoadState = allStates[webContentsId];
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -44,8 +46,8 @@ export function markHtmlPageLoadTime(url: string) {
   urlLoadState.htmlPageLoad = new Date();
 }
 
-export function markFullPageLoadTime(url: string) {
-  const urlLoadState = allStates[url];
+export function markFullPageLoadTime(webContentsId: string) {
+  const urlLoadState = allStates[webContentsId];
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -59,8 +61,8 @@ export function markFullPageLoadTime(url: string) {
   }
 }
 
-export function markViewAttachedTime(url: string) {
-  const urlLoadState = allStates[url];
+export function markViewAttachedTime(webContentsId: string) {
+  const urlLoadState = allStates[webContentsId];
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;
@@ -72,8 +74,8 @@ export function markViewAttachedTime(url: string) {
   }
 }
 
-export function markViewDisposedTime(url: string) {
-  const urlLoadState = allStates[url];
+export function markViewDisposedTime(webContentsId: string) {
+  const urlLoadState = allStates[webContentsId];
 
   if (!isUrlStatePreviouslyRequested(urlLoadState)) {
     return;

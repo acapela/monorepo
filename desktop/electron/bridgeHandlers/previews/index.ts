@@ -43,7 +43,7 @@ export function initPreviewHandler() {
 
     loadPreviewIfNeeded(browserView, url);
 
-    markViewAttachedTime(url);
+    markViewAttachedTime(browserView.webContents.id.toString());
     const detach = attachPreview(browserView, targetWindow);
 
     setViewPosition(browserView, position);

@@ -29,7 +29,7 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
 
 export async function forceLoadPreview(browserView: BrowserView, url: string) {
   try {
-    markLoadRequestedTime(url);
+    markLoadRequestedTime(browserView.webContents.id.toString(), url);
     preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
     await loadURLWithFilters(browserView, url);
     await ensureBrowserViewHasBackground(browserView);
