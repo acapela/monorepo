@@ -3,7 +3,6 @@ import { createHmac } from "crypto";
 import { createNodeMiddleware } from "@octokit/webhooks";
 import { Request, Response, Router } from "express";
 import { Octokit } from "octokit";
-import qs from "qs";
 
 import { BadRequestError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
@@ -11,7 +10,7 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-import { CLIENT_ID, githubApp } from "./app";
+import { githubApp, githubOnboardingApp } from "./app";
 import { addWebhookHandlers } from "./webhooks";
 
 export const router = Router();
@@ -43,7 +42,8 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
 
   let oauthRes;
   try {
-    oauthRes = await githubApp.oauth.createToken({
+    const oauthApp = setup_action ? githubApp.oauth : githubOnboardingApp;
+    oauthRes = await oauthApp.createToken({
       code: code as string,
     });
   } catch (e) {
@@ -51,7 +51,8 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
     throw new BadRequestError("oauth error");
   }
 
-  const octokit = new Octokit({ auth: oauthRes.authentication.token });
+  const authToken = oauthRes.authentication.token;
+  const octokit = new Octokit({ auth: authToken });
   let user;
   try {
     user = await octokit.request("GET /user");
@@ -80,10 +81,12 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
         ...pk,
         github_user_id: user.data.id,
         github_login: user.data.login,
+        oauth_token: authToken,
       },
       update: {
         github_user_id: user.data.id,
         github_login: user.data.login,
+        oauth_token: authToken,
       },
     });
     res.redirect(`https://github.com/apps/${process.env.GITHUB_APP_NAME}/installations/new`);
@@ -195,11 +198,7 @@ router.get("/v1/github/link/:installation", async (req: Request, res: Response) 
 
 router.get("/v1/github/auth", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
-  const queryString = qs.stringify({
-    client_id: CLIENT_ID,
-    state: getSignedState(userId),
-  });
-  res.redirect(`https://github.com/login/oauth/authorize?${queryString}`);
+  res.redirect(githubOnboardingApp.getWebFlowAuthorizationUrl({ state: getSignedState(userId) }).url);
 });
 
 async function unlinkInstallation(userId: string, installationId: number): Promise<void> {
