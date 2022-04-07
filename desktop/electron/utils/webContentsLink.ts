@@ -71,24 +71,26 @@ export async function evaluateFunctionInWebContents<R, A extends unknown[]>(
   return result as R;
 }
 
-export function runEffectInWebContents<D = void>(
+export function runEffectInWebContents<Return = void, Input = undefined>(
   web: WebContents,
-  callback: (send: (data: D) => void) => MaybeCleanup,
-  onData?: (data: D) => void
+  callback: (send: (data: Return) => void, input?: Input) => MaybeCleanup,
+  onData?: (data: Return) => void,
+  input?: Input
 ) {
   const bridgeId = `${uniqueWindowNameCounter++}`;
 
   interface Message {
     type: "webcontents-communication";
     bridgeId: string;
-    data: D;
+    data: Return;
   }
 
   const sendFunctionName = `__bridge_send${bridgeId}`;
   const cleanupName = `__bridge_send_cleanup${bridgeId}`;
+  const inputDataName = `__bridge_data_input${bridgeId}`;
 
   const sendFunction = getCallCodeForFunction((bridgeId: string) => {
-    return function send(data: D) {
+    return function send(data: Return) {
       window.webContentsBridge.sendMessage<Message>({
         bridgeId,
         type: "webcontents-communication",
@@ -102,7 +104,8 @@ export function runEffectInWebContents<D = void>(
     [
       getCallCodeForFunction(setupBridgeIfNeeded),
       `window.${sendFunctionName} = ${sendFunction}`,
-      `window.${cleanupName} = (${getFunctionCode(callback)})(window.${sendFunctionName})`,
+      `window.${inputDataName} = ${input && JSON.stringify(input)}`,
+      `window.${cleanupName} = (${getFunctionCode(callback)})(window.${sendFunctionName}, window.${inputDataName})`,
       // We don't want this block to return non-serializable result that would throw
       "0",
     ].join(";")
@@ -123,6 +126,7 @@ export function runEffectInWebContents<D = void>(
       [
         `delete window.${sendFunctionName}`,
         `delete window.${cleanupName}`,
+        `delete window.${inputDataName}`,
         // We don't want this block to return non-serializable result that would throw
         "0",
       ].join(";")

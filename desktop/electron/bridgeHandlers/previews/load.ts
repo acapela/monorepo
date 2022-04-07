@@ -5,6 +5,7 @@ import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
+import { markLoadRequestedTime } from "./instrumentation";
 import { loadURLWithFilters } from "./siteFilters";
 
 const log = makeLogger("Preview Manager");
@@ -28,6 +29,7 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
 
 export async function forceLoadPreview(browserView: BrowserView, url: string) {
   try {
+    markLoadRequestedTime(browserView, url);
     preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
     await loadURLWithFilters(browserView, url);
     await ensureBrowserViewHasBackground(browserView);
