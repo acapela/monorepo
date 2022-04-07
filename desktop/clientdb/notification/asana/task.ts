@@ -13,7 +13,6 @@ const notificationAsanaFragment = gql`
     created_at
     updated_at
     task_id
-    project_id
     type
     title
   }
