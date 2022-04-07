@@ -5,7 +5,8 @@ import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 
 import { authWindowDefaultOptions } from "./utils";
 
-export const figmaURL = "https://www.figma.com";
+export const figmaDomain = "www.figma.com";
+export const figmaURL = `https://${figmaDomain}`;
 
 export async function getFigmaAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: figmaURL });

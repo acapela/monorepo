@@ -13,7 +13,7 @@ import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } f
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
 import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
-import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 import { timeDuration, wait } from "@aca/shared/time";
 
@@ -81,30 +81,30 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
 }
 
 export function startNotionSync(): ServiceSyncController {
-  async function runSync() {
-    const sessionData = await getNotionSessionData();
+  return makeServiceSyncController("notion", notionDomain, runSync);
+}
 
-    log.info(`Capturing started`);
+async function runSync() {
+  const sessionData = await getNotionSessionData();
 
-    await updateAvailableSpaces();
+  log.info(`Capturing started`);
 
-    const syncEnabledSpaces = notionSelectedSpaceValue.get();
+  await updateAvailableSpaces();
 
-    log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
+  const syncEnabledSpaces = notionSelectedSpaceValue.get();
 
-    for (const spaceToSync of syncEnabledSpaces.selected) {
-      log.debug(`Capturing started for space: ${spaceToSync}`);
+  log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
 
-      const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
-      if (notificationLog) {
-        notionSyncPayload.send(extractNotifications(notificationLog));
-      }
+  for (const spaceToSync of syncEnabledSpaces.selected) {
+    log.debug(`Capturing started for space: ${spaceToSync}`);
 
-      await wait(10000);
+    const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+    if (notificationLog) {
+      notionSyncPayload.send(extractNotifications(notificationLog));
     }
-  }
 
-  return makeServiceSyncController("notion", runSync);
+    await wait(10000);
+  }
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {

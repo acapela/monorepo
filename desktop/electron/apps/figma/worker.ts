@@ -6,7 +6,7 @@ import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figm
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
-import { clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
+import { clearFigmaSessionData, figmaDomain, figmaURL } from "@aca/desktop/electron/auth/figma";
 import { timeDuration } from "@aca/shared/time";
 
 import { ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
@@ -48,7 +48,7 @@ export function isFigmaReadyToSync() {
 }
 
 export function startFigmaSync(): ServiceSyncController {
-  return makeServiceSyncController("figma", async () => await captureLatestNotifications());
+  return makeServiceSyncController("figma", figmaDomain, async () => await captureLatestNotifications());
 }
 
 async function captureLatestNotifications() {
