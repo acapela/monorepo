@@ -8,13 +8,12 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
+    - created_at
     - id
     - notification_id
     - task_id
-    - project_id
-    - type
     - title
-    - created_at
+    - type
     - updated_at
     filter:
       notification:

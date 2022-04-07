@@ -22,6 +22,7 @@ export type {
   whitelist as Whitelist,
   github_account as GitHubAccount,
   github_installation as GitHubInstallation,
+  asana_account as AsanaAccount,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");
