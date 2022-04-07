@@ -11,6 +11,7 @@ import { isClient } from "@aca/shared/document";
 import { accountEntity } from "./account";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
+import { notificationAsanaEntity } from "./notification/asana/task";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
 import { githubInstallationEntity } from "./notification/github/installation";
 import { notificationGitHubEntity } from "./notification/github/issue";
@@ -64,6 +65,8 @@ export const appClientDbEntities = {
   notificationJira: notificationJiraEntity,
   notificationGitHub: notificationGitHubEntity,
   notificationGmail: notificationGmailEntity,
+  notificationAsana: notificationAsanaEntity,
+
   account: accountEntity,
 
   gmailAccount: gmailAccountEntity,
