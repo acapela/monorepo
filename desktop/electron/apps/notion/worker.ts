@@ -250,14 +250,22 @@ function extractNotifications(
         continue;
       }
 
-      const activity = ActivityValueCommon.parse(recordMap.activity?.[notification.activity_id]?.value);
+      const activityValue = recordMap.activity?.[notification.activity_id]?.value;
 
       // Weird bug where activity is undefined for a user
       // https://sentry.io/organizations/acapela/issues/3114653912/
-      if (!activity) {
-        log.error("no activity defined", notification);
+      if (!activityValue) {
+        log.error(
+          new Error(
+            `No activities found for notification ${JSON.stringify(notification)} with acitivities ${JSON.stringify(
+              recordMap.activity
+            )}`
+          )
+        );
         continue;
       }
+
+      const activity = ActivityValueCommon.parse(activityValue);
 
       const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
