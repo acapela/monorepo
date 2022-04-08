@@ -81,6 +81,9 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       return "";
     }
     case "notification_asana": {
+      if (inner.type.startsWith("status:")) {
+        return `Updated "${inner.title}" to "${inner.type.split(":")[1]}"`;
+      }
       switch (inner.type) {
         case "mention":
           return `Mentioned you in "${inner.title}"`;
