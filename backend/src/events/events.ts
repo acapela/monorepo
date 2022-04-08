@@ -19,7 +19,7 @@ logger.info("Initialize hasura event handlers");
 const hasuraEvents = createHasuraEventsHandler<{
   account_updates: Account;
   linear_issue_updates: LinearIssue;
-  notification_slack_message: NotificationSlackMessage;
+  notification_slack_message_updates: NotificationSlackMessage;
   linear_oauth_token_updates: LinearOauthToken;
   user_slack_installation_updates: UserSlackInstallation;
   user_updates: User;
@@ -28,7 +28,7 @@ const hasuraEvents = createHasuraEventsHandler<{
 hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE", "DELETE"], handleAccountUpdates);
 hasuraEvents.addHandler("linear_issue_updates", ["INSERT", "UPDATE"], handleLinearIssueChanges);
 hasuraEvents.addHandler("linear_oauth_token_updates", ["INSERT"], handleLinearOauthTokenCreated);
-hasuraEvents.addHandler("notification_slack_message", ["DELETE"], handleNotificationSlackMessageChanges);
+hasuraEvents.addHandler("notification_slack_message_updates", ["DELETE"], handleNotificationSlackMessageChanges);
 hasuraEvents.addHandler("user_slack_installation_updates", ["INSERT"], handleUserSlackInstallationChanges);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
