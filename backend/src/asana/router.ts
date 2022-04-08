@@ -10,7 +10,7 @@ import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTyp
 import { HttpStatus } from "@aca/backend/src/http";
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
-import { AsanaAccount, User, db } from "@aca/db";
+import { AsanaAccount, AsanaWebhook, User, db } from "@aca/db";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
@@ -177,16 +177,17 @@ router.post("/v1/asana/webhook/:id", async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).end();
 
   for (const event of req.body.events) {
-    await processEvent(event, dbWebhook.asana_account);
+    await processEvent(event, dbWebhook);
   }
 });
 
-async function processEvent(event: Webhook, account: AsanaAccount & { user: User }) {
+type WebhookEvent = AsanaWebhook & { asana_account: AsanaAccount & { user: User } };
+async function processEvent(event: Webhook, webhook: WebhookEvent) {
   // ignore event that was triggered by the user themselves
-  if (account.asana_user_id === event.user.gid) return;
+  if (webhook.asana_account.asana_user_id === event.user.gid) return;
 
   const client = createClient();
-  client.useOauth({ credentials: account });
+  client.useOauth({ credentials: webhook.asana_account });
 
   if (event.resource.resource_type === "story" && event.resource.resource_subtype === "comment_added") {
     const comment = await client.stories.findById(event.resource.gid);
@@ -195,9 +196,9 @@ async function processEvent(event: Webhook, account: AsanaAccount & { user: User
     // some logic is required to resolve these ids to the actual user id
     const mentionUsers = [...comment.text.matchAll(/https:\/\/app\.asana\.com\/0\/(\d+)\/list/gm)].map((m) => m[1]);
     const userIds = await resolveMentions(client, mentionUsers);
-    const isMentioned = userIds.includes(account.asana_user_id);
+    const isMentioned = userIds.includes(webhook.asana_account.asana_user_id);
     if (!isMentioned) return; // ignoring normal comments for now
-    await createCommentNotification(account, comment, isMentioned);
+    await createCommentNotification(webhook, comment, isMentioned);
     return;
   }
   if (event.resource.resource_type === "task" && event.change?.field === "assignee") {
@@ -207,7 +208,7 @@ async function processEvent(event: Webhook, account: AsanaAccount & { user: User
       client.users.findById(event.user.gid),
       client.tasks.findById(event.resource.gid),
     ]);
-    await createAssignNotification(account, assigner, task);
+    await createAssignNotification(webhook, assigner, task);
     return;
   }
   if (
@@ -220,7 +221,7 @@ async function processEvent(event: Webhook, account: AsanaAccount & { user: User
       client.tasks.findById(event.resource.gid),
       client.sections.findById(event.parent.gid),
     ]);
-    await createStatusChangeNotification(account, actor, task, section);
+    await createStatusChangeNotification(webhook, actor, task, section);
     return;
   }
   // TODO: add further changes here
@@ -237,7 +238,7 @@ async function resolveMentions(client: Asana.Client, users: string[]) {
 }
 
 async function createCommentNotification(
-  account: AsanaAccount & { user: User },
+  webhook: WebhookEvent,
   comment: Asana.resources.Stories.Type,
   isMentioned: boolean
 ) {
@@ -245,7 +246,7 @@ async function createCommentNotification(
     data: {
       notification: {
         create: {
-          user_id: account.user.id,
+          user_id: webhook.asana_account.user.id,
           url: `https://app.asana.com/0/0/${comment.target.gid}/${comment.gid}/f`,
           from: comment.created_by.name,
         },
@@ -253,12 +254,17 @@ async function createCommentNotification(
       type: isMentioned ? "mention" : "comment",
       title: comment.target.name,
       task_id: comment.target.gid,
+      asana_webhook: {
+        connect: {
+          id: webhook.id,
+        },
+      },
     },
   });
 }
 
 async function createAssignNotification(
-  account: AsanaAccount & { user: User },
+  webhook: WebhookEvent,
   assigner: Asana.resources.Users.Type,
   task: Asana.resources.Tasks.Type
 ) {
@@ -266,7 +272,7 @@ async function createAssignNotification(
     data: {
       notification: {
         create: {
-          user_id: account.user.id,
+          user_id: webhook.asana_account.user.id,
           url: get(task, "permalink_url", ""),
           from: assigner.name,
         },
@@ -274,12 +280,17 @@ async function createAssignNotification(
       type: "assign",
       title: task.name,
       task_id: task.gid,
+      asana_webhook: {
+        connect: {
+          id: webhook.id,
+        },
+      },
     },
   });
 }
 
 async function createStatusChangeNotification(
-  account: AsanaAccount & { user: User },
+  webhook: WebhookEvent,
   actor: Asana.resources.Users.Type,
   task: Asana.resources.Tasks.Type,
   section: Asana.resources.Sections.Type
@@ -288,7 +299,7 @@ async function createStatusChangeNotification(
     data: {
       notification: {
         create: {
-          user_id: account.user.id,
+          user_id: webhook.asana_account.user.id,
           url: get(task, "permalink_url", ""),
           from: actor.name,
         },
@@ -296,6 +307,11 @@ async function createStatusChangeNotification(
       type: `status:${section.name}`,
       title: task.name,
       task_id: task.gid,
+      asana_webhook: {
+        connect: {
+          id: webhook.id,
+        },
+      },
     },
   });
 }

@@ -23,6 +23,7 @@ export type {
   github_account as GitHubAccount,
   github_installation as GitHubInstallation,
   asana_account as AsanaAccount,
+  asana_webhook as AsanaWebhook,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");
