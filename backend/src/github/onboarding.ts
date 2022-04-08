@@ -7,6 +7,7 @@ async function createOnboardingNotifications(userId: string) {
   const account = (await db.github_account.findUnique({ where: { user_id: userId } }))!;
   const authToken = account.oauth_token;
   if (!authToken) {
+    // Accounts that have gotten added before we had this onboarding flow, won't have the token
     return;
   }
 
