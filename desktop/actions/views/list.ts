@@ -4,6 +4,7 @@ import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { getNextNotificationsList, getPreviousNotificationsList } from "@aca/desktop/domains/list/all";
+import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -73,7 +74,7 @@ export const listPageView = createActionView((context) => {
       uiStore.focusedTarget = null;
     },
     displayZenModeIfFinished() {
-      if (view.list.getAllNotifications().length == 0) {
+      if (canListShowZenScreen(view.list) && view.list.getAllNotifications().length == 0) {
         uiStore.isDisplayingZenImage = true;
       }
     },

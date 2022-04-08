@@ -28,6 +28,7 @@ import { createClientBundler, createElectronBundler, removeDirectory } from "./p
  */
 
 async function start() {
+  const config = process.argv.pop();
   console.info(`Starting desktop dev mode...`);
   // Let's remove previous files in dist to avoid gradually polluting it (files are hashed)
   removeDirectory(path.resolve(__dirname, "dist"));
@@ -72,7 +73,7 @@ async function start() {
     }
 
     // Either initial or file change build is successful - initialize or restart electron
-    if (event.type === "buildSuccess") {
+    if (event.type === "buildSuccess" && config !== "no-electron") {
       startOrRestartElectron();
     }
   });
@@ -94,7 +95,7 @@ async function startOrRestartElectron() {
   console.info(`Starting new electron instance in dev mode`);
 
   // Start new instance of electron running in dev mode
-  currentElectronInstance = $`yarn electron dist/electron/index.js`;
+  currentElectronInstance = $`FORCE_COLOR=1 yarn electron dist/electron/index.js`;
 
   currentElectronInstance.catch((error) => {
     // We either ctrl+c or restarted due to file change.

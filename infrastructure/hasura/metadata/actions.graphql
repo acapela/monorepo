@@ -132,3 +132,9 @@ type SlackConversation {
   name: String!
   is_private: Boolean!
 }
+
+type GitHubInstallation {
+  id: Int!
+  name: String!
+  isOrg: Boolean!
+}

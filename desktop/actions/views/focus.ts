@@ -1,5 +1,6 @@
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 
@@ -44,8 +45,11 @@ export const focusPageView = createActionView((context) => {
     },
     displayZenModeIfFinished() {
       if (view.list.getAllNotifications().length == 0) {
+        if (canListShowZenScreen(view.list)) {
+          uiStore.isDisplayingZenImage = true;
+        }
+
         desktopRouter.navigate("list", { listId: list.id });
-        uiStore.isDisplayingZenImage = true;
       }
     },
     goToPreviousNotification() {

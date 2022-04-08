@@ -3,6 +3,7 @@ import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 import { SingleASTNode } from "simple-markdown";
 
+import { HasuraEvent } from "@aca/backend/src/hasura";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import {
   convertMessageContentToPlainText,
@@ -106,6 +107,8 @@ async function checkIsInvolvedInThread(
 const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
   Array.isArray(jsonB) && jsonB.includes(channel);
 
+type TeamFilterMessage = Pick<GenericMessageEvent, "bot_id" | "team" | "channel">;
+
 /*
   ## Migrating from `user.slack_selected_channels` and `user_slack_channels_by_team`
 
@@ -118,7 +121,7 @@ const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
   Note: I believe that `user.slack_included_channels` should be removed by June 2022.
   If you still find the migration code here and are reading this after the fact... you're it!  
   */
-async function isChannelIncludedInChannelFilters(user: User, message: GenericMessageEvent) {
+async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMessage) {
   const deprecatedIncludedChannels = user.slack_included_channels;
 
   const isMigrationComplete = jsonIncludesChannel(
@@ -135,23 +138,32 @@ async function isChannelIncludedInChannelFilters(user: User, message: GenericMes
     },
   });
 
+  const isMessageFromBot = !!message.bot_id;
+
   // This is the efficient way of managing it, but team has to be part of the message event
   if (message.team) {
     const teamChannelsHolder = channelsByTeam.find((cbt) => cbt.slack_workspace_id === message.team);
-    if (teamChannelsHolder) {
-      const { included_channels } = teamChannelsHolder;
-      return (
-        jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
-        jsonIncludesChannel(included_channels, message.channel)
-      );
-    } else {
+    if (!teamChannelsHolder) {
       return false;
     }
+    const { included_channels, are_bots_enabled } = teamChannelsHolder;
+    if (isMessageFromBot && !are_bots_enabled) {
+      return false;
+    }
+    return (
+      jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
+      jsonIncludesChannel(included_channels, message.channel)
+    );
   }
 
   // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things
-  return channelsByTeam.some((cbt) => jsonIncludesChannel(cbt.included_channels, message.channel));
+  return channelsByTeam.some(({ included_channels, are_bots_enabled }) => {
+    return jsonIncludesChannel(included_channels, message.channel) && (isMessageFromBot ? are_bots_enabled : true);
+  });
 }
+
+const getInstallationData = (userSlackInstallation: UserSlackInstallation) =>
+  userSlackInstallation.data as unknown as SlackInstallation;
 
 /**
  * Creates notification for the given user who are in the Slack conversation in which the message was posted. If the
@@ -159,10 +171,11 @@ async function isChannelIncludedInChannelFilters(user: User, message: GenericMes
  */
 async function createNotificationFromMessage(
   userSlackInstallation: UserSlackInstallation & { user: User },
-  message: GenericMessageEvent
+  message: Pick<GenericMessageEvent, "channel" | "thread_ts" | "ts" | "text" | "user" | "channel_type"> &
+    TeamFilterMessage
 ) {
-  const slackInstallData = userSlackInstallation.data as unknown as SlackInstallation;
-  const { id: slackUserId, token: userToken } = slackInstallData.user;
+  const installationData = getInstallationData(userSlackInstallation);
+  const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
   const mentionedSlackUserIds = extractMentionedSlackUserIdsFromMd(message.text);
@@ -175,7 +188,7 @@ async function createNotificationFromMessage(
     !userToken ||
     (isAuthor && !isMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
-    (!is_IM_or_MPIM && !isMentioned && !(await isChannelIncludedInChannelFilters(userSlackInstallation.user, message)))
+    (!is_IM_or_MPIM && !isMentioned && !(await isMessageAllowedByTeamFilters(userSlackInstallation.user, message)))
   ) {
     return;
   }
@@ -220,6 +233,40 @@ async function createNotificationFromMessage(
       },
     },
   });
+}
+
+export async function handleUserSlackInstallationChanges(event: HasuraEvent<UserSlackInstallation>) {
+  if (event.type !== "create") {
+    return;
+  }
+  const userSlackInstallation = event.item;
+  const userId = userSlackInstallation.user_id;
+  const user = await db.user.findUnique({ where: { id: userId } });
+  assert(user, "missing user for id " + userId);
+
+  const { token } = getInstallationData(userSlackInstallation).user;
+  const { channels } = await slackClient.conversations.list({ token, types: "im,mpim", exclude_archived: true });
+  for (const conversation of channels ?? []) {
+    const { messages, unread_count_display } = await slackClient.conversations.history({
+      token,
+      channel: conversation.id!,
+      unreads: true,
+    });
+    for (const message of (messages ?? []).slice(0, Number(unread_count_display) || 0)) {
+      await createNotificationFromMessage(
+        { ...userSlackInstallation, user },
+        {
+          text: message.text,
+          channel: conversation.id!,
+          // Caution: When we change the filter in the conversations.list, this needs to also be updated
+          channel_type: conversation.is_im ? "im" : "mpim",
+          user: message.user!,
+          ts: message.ts!,
+          ...message,
+        }
+      );
+    }
+  }
 }
 
 export function setupSlackCapture(app: SlackApp) {

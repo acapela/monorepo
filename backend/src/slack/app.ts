@@ -1,6 +1,5 @@
 import { ServerResponse } from "http";
 
-import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import { noop } from "lodash";
 
@@ -145,6 +144,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   },
 
   installerOptions: {
+    legacyStateVerification: true,
     callbackOptions: {
       success(installation, options, req, res) {
         const { redirectURL } = parseMetadata(installation);
@@ -158,7 +158,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         const { redirectURL } = parseMetadata({ metadata: options.metadata });
         const isAlreadyUsedError = Boolean(error.stack?.includes(SLACK_WORKSPACE_ALREADY_USED_ERROR));
         if (!isAlreadyUsedError) {
-          Sentry.captureException(error);
+          logger.error(error, "Error during slack installation");
         }
         handleInstallationResponse(res, redirectURL, {
           // puts the error into the URL's query params for the frontend to pick it up
@@ -172,6 +172,14 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 export const slackReceiver = new SlackBolt.ExpressReceiver({
   ...sharedOptions,
   endpoints: { events: "/slack/events", commands: "/slack/commands", options: "/slack/options" },
+  unhandledRequestHandler() {
+    // We don't want this to show up as an error, as we have old installations on prod for which it keeps showing up
+    logger.warn(
+      "An incoming event was not acknowledged within 3 seconds. " +
+        "\n" +
+        "Ensure that the ack() argument is called in a listener."
+    );
+  },
 });
 
 export const slackApp = new SlackBolt.App({
@@ -182,10 +190,10 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
-  if (!error.message.startsWith("No Slack installation")) {
-    // we ignore no installation found errors for now, since they are expected for events for which we do not have
-    // users anymore
-    logger.error(error.original ?? error, "Error occurred during a slack flow:\n" + JSON.stringify(error, null, 2));
+  if (error.message.includes("No Slack installation")) {
+    logger.warn(error, "Missing slack installation");
+  } else {
+    logger.error(error.original ?? error, "Error occurred during a slack flow");
   }
 });
 

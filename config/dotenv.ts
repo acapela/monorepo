@@ -51,6 +51,13 @@ const requiredEnvVarNamesBackend = [
   "SLACK_CLIENT_ID",
   "SLACK_CLIENT_SECRET",
   "FRONTEND_URL",
+  "GITHUB_APP_PRIVATE_KEY",
+  "GITHUB_APP_ID",
+  "GITHUB_CLIENT_ID",
+  "GITHUB_CLIENT_SECRET",
+  "GITHUB_OAUTH_SECRET",
+  "GITHUB_APP_NAME",
+  "GITHUB_WEBHOOK_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;

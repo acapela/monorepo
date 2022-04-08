@@ -1,5 +1,7 @@
+import * as Sentry from "@sentry/react";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { exitFocusMode, refreshNotificationPreview } from "@aca/desktop/actions/focus";
@@ -19,6 +21,7 @@ import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSyst
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
+import { uiStore } from "@aca/desktop/store/ui";
 import { uiSettings } from "@aca/desktop/store/uiSettings";
 
 import { FocusModeFooter } from "./FocusModeFooter";
@@ -35,6 +38,23 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const notification = db.notification.assertFindById(notificationId);
 
   const list = getInboxListsById(listId);
+
+  useEffect(() => {
+    const activeListId = list?.id ?? null;
+    const activeNotification = notification;
+    runInAction(() => {
+      uiStore.activeListId = activeListId;
+      uiStore.activeNotification = activeNotification;
+    });
+    return () => {
+      if (uiStore.activeNotification === activeNotification && uiStore.activeListId === activeListId) {
+        uiStore.activeListId = null;
+        uiStore.activeNotification = null;
+      } else {
+        Sentry.captureException(new Error("Tried to reset values set by another component"));
+      }
+    };
+  }, [list?.id, notification]);
 
   return (
     <AppLayout footer={<FocusModeFooter />} transparent>

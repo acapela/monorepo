@@ -4,6 +4,9 @@ commonLabels:
   env: staging
 resources:
   - ../base
+replicas:
+  - name: api
+    count: 2
 configMapGenerator:
   - name: api-default
     envs:

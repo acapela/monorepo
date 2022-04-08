@@ -1,5 +1,7 @@
+import { defer } from "lodash";
 import React from "react";
 
+import { focusPageView } from "@aca/desktop/actions/views/focus";
 import { createAnalyticsEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
@@ -71,6 +73,9 @@ export const resolveNotification = defineAction({
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   canApply: (ctx) => {
     return (
+      // This is the primary action for moving through lists in focus mode, we do not want to block this behavior
+      // just because a notification is already resolved.
+      ctx.hasView(focusPageView) ||
       (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
       (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
     );
@@ -99,10 +104,13 @@ export const resolveNotification = defineAction({
       cancel.next = notification.resolve()?.undo;
     });
 
-    displayZenModeIfFinished(context);
+    // Waiting for lists to get updated
+    defer(() => {
+      displayZenModeIfFinished(context);
+    });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} resolved`,
+      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
       action: {
         label: "Undo",
         callback() {
@@ -141,7 +149,7 @@ export const unresolveNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} unresolved`,
+      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} unresolved`,
       action: {
         label: "Undo",
         callback() {
@@ -241,10 +249,7 @@ export const openFocusMode = defineAction({
       if (group.isOnePreviewEnough) {
         group.notifications.forEach((n) => n.markAsSeen());
       }
-      const lastNotificationIndex = group.notifications.length - 1;
-      const notificationToShow = group.isOnePreviewEnough
-        ? group.notifications[lastNotificationIndex]
-        : group.notifications[0];
+      const notificationToShow = group.notifications[0];
       desktopRouter.navigate("focus", { listId: list.id, notificationId: notificationToShow.id });
       return;
     }

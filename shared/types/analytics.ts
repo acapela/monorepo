@@ -129,6 +129,7 @@ export type AnalyticsUserProfile = {
   figma_installed_at?: Date;
   linear_installed_at?: Date;
   jira_installed_at?: Date;
+  github_installed_at?: Date;
   onboarding: "self_serve" | "white_glove";
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case

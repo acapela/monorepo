@@ -12,7 +12,7 @@ export const router = Router();
 
 const handlers: Record<string, Function> = {
   "mark-slack-conversations-as-read": markSlackConversationsAsRead,
-  "refresh-expiring-atlassian-properties": refreshExpiringAtlassianProperties,
+  "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
 };
 
 interface CronPayload {

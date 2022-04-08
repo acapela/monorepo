@@ -130,4 +130,5 @@ custom_types:
   - name: SlackUser
   - name: ServiceUser
   - name: SlackConversation
+  - name: GitHubInstallation
   scalars: []

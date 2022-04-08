@@ -7,7 +7,8 @@ import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
 import { updateAvailableSpaces } from "../apps/notion/worker";
 import { authWindowDefaultOptions } from "./utils";
 
-export const notionURL = "https://www.notion.so";
+export const notionDomain = "www.notion.so";
+export const notionURL = `https://${notionDomain}`;
 
 export async function getNotionAuthToken() {
   const cookies = await session.defaultSession.cookies.get({ url: notionURL });
@@ -24,6 +25,15 @@ export async function loginNotion() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
   window.webContents.loadURL(notionURL + "/login");
+
+  /*
+    This is done as some previous actions that trigger a figma login may steal focus
+    I believe the right fix for this is have the login screens as modals, but this would require
+    managing closing the modals https://github.com/electron/electron/issues/30232
+  */
+  window.webContents.on("did-finish-load", () => {
+    window.focus();
+  });
 
   return new Promise<void>((resolve) => {
     window.webContents.on("did-navigate-in-page", async () => {

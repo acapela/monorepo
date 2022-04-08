@@ -1,5 +1,5 @@
 import { createInvokeBridge } from "@aca/desktop/bridge/base/invoke";
-import { WorkerService } from "@aca/desktop/electron/apps/types";
+import { WorkerService } from "@aca/desktop/electron/apps/serviceSyncController";
 
 /*
   The render thread has to load up quite a few things before it is ready to take in

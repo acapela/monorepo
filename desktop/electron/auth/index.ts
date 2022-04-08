@@ -4,6 +4,7 @@ import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
 
 import { initializeLoginHandler } from "./acapela";
 import { initializeFigmaAuthHandler } from "./figma";
+import { initializeGitHubAuthHandler } from "./github";
 import { initializeGoogleAuthHandler } from "./google";
 import { initializeJiraAuthHandler } from "./jira";
 import { initializeLinearAuthHandler } from "./linear";
@@ -18,8 +19,10 @@ export function initializeAuthHandlers() {
   initializeFigmaAuthHandler();
   initializeLinearAuthHandler();
   initializeJiraAuthHandler();
+  initializeGitHubAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
+    console.trace(url);
     const cookieStore = session.defaultSession.cookies;
     const serviceCookies = await cookieStore.get({ url });
     const cookieRemovalPromises = serviceCookies.map((cookie) => cookieStore.remove(url, cookie.name));

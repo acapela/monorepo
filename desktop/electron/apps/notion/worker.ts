@@ -1,4 +1,3 @@
-import { differenceInMilliseconds } from "date-fns";
 import { session } from "electron";
 import fetch from "node-fetch";
 import { z } from "zod";
@@ -10,15 +9,17 @@ import {
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
-import { authTokenBridgeValue, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-import { ServiceSyncController } from "@aca/desktop/electron/apps/types";
-import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
+import { addToast } from "@aca/desktop/domains/toasts/store";
+import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
+import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
-import { wait } from "@aca/shared/time";
+import { timeDuration, wait } from "@aca/shared/time";
 
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
+  ActivityValueCommon,
   CollectionViewPageBlockValue,
   CommentedActivityValue,
   GetNotificationLogResult,
@@ -31,13 +32,6 @@ import {
   UserMentionedActivityValue,
 } from "./schema";
 
-const WINDOW_BLURRED_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes;
-const WINDOW_FOCUSED_INTERVAL_MS = 90 * 1000; // 90 seconds;
-
-let currentInterval: NodeJS.Timer | null = null;
-let timeOfLastSync: Date | null = null;
-let isSyncing = false;
-
 const log = makeLogger("Notion-Worker");
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
@@ -49,6 +43,20 @@ export function isNotionReadyToSync() {
 export interface NotionSessionData {
   cookie: string;
   notionUserId: string;
+}
+
+function handleNotionNotAuthorized() {
+  clearNotionSessionData();
+
+  addToast({
+    title: "Notion Sync Stopped",
+    message: "Please reconnect to restart sync",
+    durationMs: 2 * timeDuration.day,
+    action: {
+      label: "Reconnect",
+      callback: () => loginNotionBridge(),
+    },
+  });
 }
 
 export async function getNotionSessionData(): Promise<NotionSessionData> {
@@ -72,77 +80,31 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
   return { cookie, notionUserId };
 }
 
-/*
-  Pulling logic for notion
-  - Pull immediately on app start
-  - Pull every WINDOW_BLURRED_INTERVAL if main window is blurred
-  - Pull every WINDOW_FOCUSED_INTERVAL if main window is focused
-  - Pull immediately when window focuses if more than WINDOW_FOCUSED_INTERVAL have passed before last pull
-*/
 export function startNotionSync(): ServiceSyncController {
-  const sessionDataPromise = getNotionSessionData();
+  return makeServiceSyncController("notion", notionDomain, runSync);
+}
 
-  async function runSync() {
-    if (isSyncing) {
-      return;
+async function runSync() {
+  const sessionData = await getNotionSessionData();
+
+  log.info(`Capturing started`);
+
+  await updateAvailableSpaces();
+
+  const syncEnabledSpaces = notionSelectedSpaceValue.get();
+
+  log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
+
+  for (const spaceToSync of syncEnabledSpaces.selected) {
+    log.debug(`Capturing started for space: ${spaceToSync}`);
+
+    const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
+    if (notificationLog) {
+      notionSyncPayload.send(extractNotifications(notificationLog));
     }
 
-    const sessionData = await sessionDataPromise;
-
-    try {
-      isSyncing = true;
-      log.info(`Capturing started`);
-
-      await updateAvailableSpaces();
-
-      const syncEnabledSpaces = notionSelectedSpaceValue.get();
-
-      log.debug(`Capturing from ${syncEnabledSpaces.selected.length} spaces`);
-      for (const spaceToSync of syncEnabledSpaces.selected) {
-        log.debug(`Capturing started for space: ${spaceToSync}`);
-        const notificationLog = await fetchNotionNotificationLog(sessionData, spaceToSync);
-        notionSyncPayload.send(extractNotifications(notificationLog));
-        await wait(10000);
-      }
-
-      timeOfLastSync = new Date();
-
-      log.info(`Capturing complete`);
-    } catch (e: unknown) {
-      log.error(e as Error);
-    } finally {
-      isSyncing = false;
-    }
+    await wait(10000);
   }
-
-  function restartPullInterval(timeInterval: number) {
-    if (currentInterval) {
-      clearInterval(currentInterval);
-    }
-    currentInterval = setInterval(runSync, timeInterval);
-  }
-
-  runSync();
-
-  return {
-    serviceName: "notion",
-    onWindowFocus() {
-      const now = new Date();
-      const isLongTimeSinceLastFocus =
-        !timeOfLastSync || differenceInMilliseconds(now, timeOfLastSync) > WINDOW_FOCUSED_INTERVAL_MS;
-
-      if (isLongTimeSinceLastFocus) {
-        runSync();
-      }
-      restartPullInterval(WINDOW_FOCUSED_INTERVAL_MS);
-    },
-    onWindowBlur() {
-      restartPullInterval(WINDOW_BLURRED_INTERVAL_MS);
-    },
-    forceSync() {
-      runSync();
-    },
-  };
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
@@ -158,10 +120,17 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
       size: 20,
       type: "mentions",
     }),
-  });
+  })
+    // fetch only rejects for network errors which we want to ignore
+    .catch(() => null);
+
+  if (!response) {
+    return;
+  }
 
   if (response.status >= 400 && response.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
   }
 
@@ -178,10 +147,17 @@ export async function updateAvailableSpaces() {
       cookie: sessionData.cookie,
     },
     body: JSON.stringify({}),
-  });
+  })
+    // fetch only rejects for network errors which we want to ignore
+    .catch(() => null);
+
+  if (!getSpacesResponse) {
+    return;
+  }
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getSpaces: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
@@ -215,7 +191,8 @@ export async function updateAvailableSpaces() {
   });
 
   if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    clearNotionSessionData();
+    handleNotionNotAuthorized();
+
     throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
@@ -238,7 +215,9 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNotificationLog>>): NotionWorkerSync {
+function extractNotifications(
+  payload: NonNullable<Awaited<ReturnType<typeof fetchNotionNotificationLog>>>
+): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
 
   const result: NotionWorkerSync = [];
@@ -271,7 +250,7 @@ function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNoti
         continue;
       }
 
-      const activity = recordMap.activity?.[notification.activity_id]?.value;
+      const activity = ActivityValueCommon.parse(recordMap.activity?.[notification.activity_id]?.value);
 
       // Weird bug where activity is undefined for a user
       // https://sentry.io/organizations/acapela/issues/3114653912/
@@ -293,12 +272,7 @@ function extractNotifications(payload: Awaited<ReturnType<typeof fetchNotionNoti
 
       const updated_at = created_at;
 
-      if (activity.type !== "commented") {
-        continue;
-      }
-
-      const authorId = activity.edits[0]?.authors?.[0]?.id ?? "Notion";
-
+      const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
       if (authorId === "Notion") {
         log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
       }
@@ -385,7 +359,10 @@ function getNotificationProperties(
 
   function logMissingActivity() {
     log.error(
-      new Error("Missing activity value for notification " + JSON.stringify({ notification, recordMap }, null, 2))
+      new Error(
+        "Missing activity value for notification " +
+          JSON.stringify({ notification, activities: recordMap.activity }, null, 2)
+      )
     );
   }
 
