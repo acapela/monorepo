@@ -45,8 +45,7 @@
     "octokit": "^1.7.1",
     "pg": "^8.7.1",
     "slack-block-builder": "^2.4.2",
-    "ts-node": "^10.4.0",
-    "uuid": "^8.3.2"
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "@types/asana": "^0.18.5",

@@ -3,54 +3,38 @@ import { createHmac } from "crypto";
 import Asana from "asana";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
-import { get } from "lodash";
-import { v4 as uuidv4 } from "uuid";
 
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
-import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
-import { AsanaAccount, AsanaWebhook, User, db } from "@aca/db";
-import { IS_DEV } from "@aca/shared/dev";
+import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState } from "../utils";
-import { Webhook } from "./types";
-
-const { ASANA_OAUTH_SECRET, ASANA_CLIENT_ID, ASANA_CLIENT_SECRET } = process.env;
-
-function createClient() {
-  return Asana.Client.create({
-    clientId: ASANA_CLIENT_ID,
-    clientSecret: ASANA_CLIENT_SECRET,
-    redirectUri: `${process.env.FRONTEND_URL}/api/backend/v1/asana/callback`,
-  });
-}
-
-async function getWebhookEndpoint(): Promise<string> {
-  return `${IS_DEV ? await getDevPublicTunnelURL(3000) : process.env.FRONTEND_URL}/api/backend/v1/asana/webhook`;
-}
+import { createClient, getWebhookEndpoint } from "./utils";
+import { processEvent } from "./webhooks";
 
 export const router = Router();
 
 router.get("/v1/asana/auth", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const client = createClient();
-  res.redirect(`${client.app.asanaAuthorizeUrl()}&state=${getSignedState(userId, ASANA_OAUTH_SECRET)}`);
+  // oauth redirect with signed state
+  res.redirect(`${client.app.asanaAuthorizeUrl()}&state=${getSignedState(userId, process.env.ASANA_OAUTH_SECRET)}`);
 });
 
+// oauth callback endpoint
 router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const { code, state } = req.query;
   if (!code) throw new BadRequestError("code is missing");
   if (!state) throw new BadRequestError("state is missing");
-  const validState = getSignedState(userId, ASANA_OAUTH_SECRET);
-  if (validState !== state) throw new BadRequestError("invalid state");
+  if (getSignedState(userId, process.env.ASANA_OAUTH_SECRET) !== state) throw new BadRequestError("invalid state");
 
   const client = createClient();
   let asanaCredentials;
   try {
-    // types are not correct, we have to use any here ¯\_(ツ)_/¯
+    // type definitions are not correct, we have to use any here ¯\_(ツ)_/¯
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     asanaCredentials = (await client.app.accessTokenFromCode(code as string)) as any;
   } catch (e) {
@@ -65,6 +49,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     asana_user_id: asanaCredentials.data.gid,
     expires_at: expiresAt,
   };
+  // create or update the asana account
   await db.asana_account.upsert({
     where: {
       user_id: userId,
@@ -75,11 +60,16 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
       ...asanaAccount,
     },
   });
+  // authenticate the client with the current user
   client.useOauth({ credentials: asanaCredentials });
 
-  // we only support max 100 workspaces/projects for now
+  // the first step is to get all the workspaces for the user
+  // TODO: use pagination in the future (we only support max 100 workspaces/projects for now)
   const workspaces = await client.workspaces.findAll({ limit: 100 });
   let existingWebhooks: Asana.resources.Webhooks.Type[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  // load all projects and existing webhooks
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let projects: any[] = [];
   for (const workspace of workspaces.data) {
@@ -91,35 +81,41 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     existingWebhooks = existingWebhooks.concat(whs.data as Asana.resources.Webhooks.Type[]);
   }
 
+  // create webhooks for all projects
   const whEndpoint = await getWebhookEndpoint();
   for (const project of projects) {
     // check if the webhook is already configured
-    if (existingWebhooks.find((w) => w.resource.gid === project.gid && w.target.startsWith(whEndpoint))) continue;
-    const whId = uuidv4();
+    const existingWebhook = existingWebhooks.find(
+      (w) => w.resource.gid === project.gid && w.target.startsWith(whEndpoint)
+    );
+    // if a webhook for the project already exists, remove it first before we create a new one
+    if (existingWebhook) {
+      await Promise.all([
+        client.webhooks.deleteById(existingWebhook.gid),
+        db.asana_webhook.deleteMany({ where: { id: existingWebhook.target.split(whEndpoint)[1] } }),
+      ]);
+    }
+
     // we cannot do this in parallel, as the db entry needs to exist before the webhook is created
-    await db.asana_webhook.create({
+    const dbWebhook = await db.asana_webhook.create({
       data: {
-        id: whId,
         user_id: userId,
         project_id: project.gid,
         workspace_id: project.workspace,
       },
     });
-    await client.webhooks.create(project.gid, `${whEndpoint}/${whId}`, {});
+    await client.webhooks.create(project.gid, `${whEndpoint}${dbWebhook.id}`, {});
   }
   res.status(HttpStatus.OK).end();
 });
 
+// unlink removes the asana account and all webhooks
 router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
 
   const asanaAccount = await db.asana_account.findFirst({
-    where: {
-      user_id: userId,
-    },
-    include: {
-      asana_webhook: true,
-    },
+    where: { user_id: userId },
+    include: { asana_webhook: true },
   });
 
   if (!asanaAccount) throw new NotFoundError("asana account not found");
@@ -137,181 +133,42 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
     );
   }
 
-  await db.asana_account.deleteMany({
-    where: {
-      user_id: userId,
-    },
-  });
+  await db.asana_account.deleteMany({ where: { user_id: userId } });
 
   res.redirect("https://app.asana.com/");
 });
 
+// webhook handler
 router.post("/v1/asana/webhook/:id", async (req: Request, res: Response) => {
+  // the first webhook we get contains an x-hook-secret header
+  // we need to save the secret to the database to verify future webhooks
   const hooksSecret = req.headers["x-hook-secret"];
   if (hooksSecret) {
     res.setHeader("x-hook-secret", hooksSecret);
     await db.asana_webhook.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        secret: hooksSecret as string,
-      },
+      where: { id: req.params.id },
+      data: { secret: hooksSecret as string },
     });
     res.status(HttpStatus.OK).end();
     return;
   }
+
   const dbWebhook = await db.asana_webhook.findFirst({
     where: { id: req.params.id },
-    include: {
-      asana_account: {
-        include: {
-          user: true,
-        },
-      },
-    },
+    include: { asana_account: { include: { user: true } } },
   });
+  // check webhook id and secret
   if (!dbWebhook || !dbWebhook.secret) throw new BadRequestError("webhook id not found in database");
+
+  // verify webhook signature
   const whSignature = createHmac("sha256", dbWebhook.secret!).update(JSON.stringify(req.body)).digest("hex");
   if (req.headers["x-hook-signature"] !== whSignature) throw new BadRequestError("invalid webhook signature");
+
+  // accept webhook
   res.status(HttpStatus.OK).end();
 
+  // a webhook contains multiple events, process them one by one
   for (const event of req.body.events) {
     await processEvent(event, dbWebhook);
   }
 });
-
-type WebhookEvent = AsanaWebhook & { asana_account: AsanaAccount & { user: User } };
-async function processEvent(event: Webhook, webhook: WebhookEvent) {
-  // ignore event that was triggered by the user themselves
-  if (webhook.asana_account.asana_user_id === event.user.gid) return;
-
-  const client = createClient();
-  client.useOauth({ credentials: webhook.asana_account });
-
-  if (event.resource.resource_type === "story" && event.resource.resource_subtype === "comment_added") {
-    const comment = await client.stories.findById(event.resource.gid);
-
-    // asana converts mentions to weird links to personal projects
-    // some logic is required to resolve these ids to the actual user id
-    const mentionUsers = [...comment.text.matchAll(/https:\/\/app\.asana\.com\/0\/(\d+)\/list/gm)].map((m) => m[1]);
-    const userIds = await resolveMentions(client, mentionUsers);
-    const isMentioned = userIds.includes(webhook.asana_account.asana_user_id);
-    if (!isMentioned) return; // ignoring normal comments for now
-    await createCommentNotification(webhook, comment, isMentioned);
-    return;
-  }
-  if (event.resource.resource_type === "task" && event.change?.field === "assignee") {
-    if (!event.change.new_value) return; // unassigned
-    if (event.change.new_value.gid !== event.user.gid) return; // assigned to someone else
-    const [assigner, task] = await Promise.all([
-      client.users.findById(event.user.gid),
-      client.tasks.findById(event.resource.gid),
-    ]);
-    await createAssignNotification(webhook, assigner, task);
-    return;
-  }
-  if (
-    event.action === "added" &&
-    event.resource.resource_type === "task" &&
-    event.parent?.resource_type === "section"
-  ) {
-    const [actor, task, section] = await Promise.all([
-      client.users.findById(event.user.gid),
-      client.tasks.findById(event.resource.gid),
-      client.sections.findById(event.parent.gid),
-    ]);
-    await createStatusChangeNotification(webhook, actor, task, section);
-    return;
-  }
-  // TODO: add further changes here
-}
-
-async function resolveMentions(client: Asana.Client, users: string[]) {
-  const userIds: string[] = [];
-  for (const user of users) {
-    const project = await client.projects.findById(user);
-    if (project.members.length) continue;
-    userIds.push(get(project, "owner.gid"));
-  }
-  return userIds;
-}
-
-async function createCommentNotification(
-  webhook: WebhookEvent,
-  comment: Asana.resources.Stories.Type,
-  isMentioned: boolean
-) {
-  return db.notification_asana.create({
-    data: {
-      notification: {
-        create: {
-          user_id: webhook.asana_account.user.id,
-          url: `https://app.asana.com/0/0/${comment.target.gid}/${comment.gid}/f`,
-          from: comment.created_by.name,
-        },
-      },
-      type: isMentioned ? "mention" : "comment",
-      title: comment.target.name,
-      task_id: comment.target.gid,
-      asana_webhook: {
-        connect: {
-          id: webhook.id,
-        },
-      },
-    },
-  });
-}
-
-async function createAssignNotification(
-  webhook: WebhookEvent,
-  assigner: Asana.resources.Users.Type,
-  task: Asana.resources.Tasks.Type
-) {
-  return db.notification_asana.create({
-    data: {
-      notification: {
-        create: {
-          user_id: webhook.asana_account.user.id,
-          url: get(task, "permalink_url", ""),
-          from: assigner.name,
-        },
-      },
-      type: "assign",
-      title: task.name,
-      task_id: task.gid,
-      asana_webhook: {
-        connect: {
-          id: webhook.id,
-        },
-      },
-    },
-  });
-}
-
-async function createStatusChangeNotification(
-  webhook: WebhookEvent,
-  actor: Asana.resources.Users.Type,
-  task: Asana.resources.Tasks.Type,
-  section: Asana.resources.Sections.Type
-) {
-  return db.notification_asana.create({
-    data: {
-      notification: {
-        create: {
-          user_id: webhook.asana_account.user.id,
-          url: get(task, "permalink_url", ""),
-          from: actor.name,
-        },
-      },
-      type: `status:${section.name}`,
-      title: task.name,
-      task_id: task.gid,
-      asana_webhook: {
-        connect: {
-          id: webhook.id,
-        },
-      },
-    },
-  });
-}
