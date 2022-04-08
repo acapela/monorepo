@@ -14,12 +14,8 @@ async function createOnboardingNotifications(userId: string) {
   const { data: notifications } = await octokit.request("GET /notifications");
   for (const notification of notifications) {
     const { reason, subject } = notification;
-    const generalFields = {
-      title: subject.title,
-      repository_id: notification.repository.id,
-      repository_full_name: notification.repository.full_name,
-    };
-    const userFields = { user_id: account.user_id, created_at: notification.updated_at };
+    let notificationFields: { url: string; from: string };
+    let notificationGithubFields;
 
     switch (reason) {
       case "mention": {
@@ -31,61 +27,48 @@ async function createOnboardingNotifications(userId: string) {
         } else {
           issueId = commentOrIssue.id;
         }
-        await db.notification_github.create({
-          data: {
-            notification: {
-              create: {
-                url: commentOrIssue.html_url,
-                from: commentOrIssue.user.login,
-                ...userFields,
-              },
-            },
-            type: "mention",
-            issue_id: issueId,
-            ...generalFields,
-          },
-        });
+        notificationFields = { url: commentOrIssue.html_url, from: commentOrIssue.user.login };
+        notificationGithubFields = { type: "mention", issue_id: issueId };
         break;
       }
+
       case "assign": {
         const { data: issueOrPR } = await octokit.request(subject.url);
         const isIssue = Buffer.from(issueOrPR.node_id, "base64").toString().split(":")[1].startsWith("Issue");
-        await db.notification_github.create({
-          data: {
-            notification: {
-              create: {
-                url: issueOrPR.html_url,
-                from: issueOrPR.user.login,
-                ...userFields,
-              },
-            },
-            type: "assign",
-            issue_id: isIssue ? issueOrPR.id : null,
-            pr_id: !isIssue ? issueOrPR.id : null,
-            ...generalFields,
-          },
-        });
+        notificationFields = { url: issueOrPR.html_url, from: issueOrPR.user.login };
+        notificationGithubFields = {
+          type: "assign",
+          issue_id: isIssue ? issueOrPR.id : null,
+          pr_id: !isIssue ? issueOrPR.id : null,
+        };
         break;
       }
+
       case "review_requested": {
         const { data: pr } = await octokit.request(subject.url);
-        await db.notification_github.create({
-          data: {
-            notification: {
-              create: {
-                url: pr.html_url,
-                from: pr.user.login,
-                ...userFields,
-              },
-            },
-            type: "review",
-            pr_id: pr.id,
-            ...generalFields,
-          },
-        });
+        notificationFields = { url: pr.html_url, from: pr.user.login };
+        notificationGithubFields = { type: "review", pr_id: pr.id };
         break;
       }
+
+      default:
+        return;
     }
+
+    await db.notification_github.upsert({
+      where: { github_notification_id: notification.id },
+      create: {
+        github_notification_id: notification.id,
+        notification: {
+          create: { user_id: account.user_id, created_at: notification.updated_at, ...notificationFields },
+        },
+        title: subject.title,
+        repository_id: notification.repository.id,
+        repository_full_name: notification.repository.full_name,
+        ...notificationGithubFields,
+      },
+      update: {},
+    });
   }
 }
 
