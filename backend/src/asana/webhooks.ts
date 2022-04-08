@@ -6,12 +6,12 @@ import { AsanaAccount, AsanaWebhook, User, db } from "@aca/db";
 
 import { createClient } from "./utils";
 
-type WebhookEvent = AsanaWebhook & { asana_account: AsanaAccount & { user: User } };
+type DbWebhook = AsanaWebhook & { asana_account: AsanaAccount & { user: User } };
 
-export async function processEvent(event: Webhook, webhook: WebhookEvent) {
+export async function processEvent(event: Webhook, webhook: DbWebhook) {
   // ignore event that was triggered by the user themselves
   // it is useful to comment this line if you want to test the webhooks
-  if (webhook.asana_account.asana_user_id === event.user.gid) return;
+  //if (webhook.asana_account.asana_user_id === event.user.gid) return;
 
   const client = createClient();
   // the oauth client also handles expired tokens internally and will refresh them
@@ -43,7 +43,7 @@ export async function processEvent(event: Webhook, webhook: WebhookEvent) {
     return;
   }
 
-  // detect status changes
+  // detect section changes (like "In Progress" or "Done")
   if (
     event.action === "added" &&
     event.resource.resource_type === "task" &&
@@ -54,10 +54,21 @@ export async function processEvent(event: Webhook, webhook: WebhookEvent) {
       client.tasks.findById(event.resource.gid),
       client.sections.findById(event.parent.gid),
     ]);
-    await createStatusChangeNotification(webhook, actor, task, section);
+    await createStatusChangeNotification(webhook, actor, task, section.name);
+    return;
+  }
+
+  // detect status changes
+  if (event.resource.resource_type === "task" && event.change?.field === "completed") {
+    const [actor, task] = await Promise.all([
+      client.users.findById(event.user.gid),
+      client.tasks.findById(event.resource.gid),
+    ]);
+    await createStatusChangeNotification(webhook, actor, task, task.completed ? "completed" : "uncompleted");
     return;
   }
   // TODO: add further events here
+  // console.info(event); //for debugging
 }
 
 // every asana user has a personal project, that is linked when being mentioned
@@ -73,7 +84,7 @@ async function resolveMentions(client: Asana.Client, users: string[]) {
 }
 
 async function createCommentNotification(
-  webhook: WebhookEvent,
+  webhook: DbWebhook,
   comment: Asana.resources.Stories.Type,
   isMentioned: boolean
 ) {
@@ -82,6 +93,7 @@ async function createCommentNotification(
       notification: {
         create: {
           user_id: webhook.asana_account.user.id,
+          // the `/f` at the end enables full-screen preview of the comment (can be removed by preference)
           url: `https://app.asana.com/0/0/${comment.target.gid}/${comment.gid}/f`,
           from: comment.created_by.name,
         },
@@ -99,7 +111,7 @@ async function createCommentNotification(
 }
 
 async function createAssignNotification(
-  webhook: WebhookEvent,
+  webhook: DbWebhook,
   assigner: Asana.resources.Users.Type,
   task: Asana.resources.Tasks.Type
 ) {
@@ -125,10 +137,10 @@ async function createAssignNotification(
 }
 
 async function createStatusChangeNotification(
-  webhook: WebhookEvent,
+  webhook: DbWebhook,
   actor: Asana.resources.Users.Type,
   task: Asana.resources.Tasks.Type,
-  section: Asana.resources.Sections.Type
+  status: string
 ) {
   return db.notification_asana.create({
     data: {
@@ -139,7 +151,7 @@ async function createStatusChangeNotification(
           from: actor.name,
         },
       },
-      type: `status:${section.name}`,
+      type: `status:${status}`,
       title: task.name,
       task_id: task.gid,
       asana_webhook: {
