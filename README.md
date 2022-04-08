@@ -127,6 +127,8 @@ Similar to the slack integration, setting up Linear is optional in development.
    2. Configure `GITHUB_APP_PRIVATE_KEY`
 4. Configure a webhook secret and set `GITHUB_WEBHOOK_SECRET`
 5. Make sure you also configure `GITHUB_CLIENT_ID`, `GITHUB_APP_ID` and `GITHUB_APP_NAME` correctly
+6. Set up an OAuth app using [this link](https://github.com/settings/applications/new?oauth_application[callback_url]=http://localhost:3000/api/backend/v1/github/callback)
+   1. Configure `GITHUB_ONBOARDING_OAUTH_CLIENT_ID` and `GITHUB_ONBOARDING_OAUTH_CLIENT_SECRET`
 
 ## Commit Message Convention
 
