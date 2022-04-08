@@ -80,13 +80,14 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   // we only support max 100 workspaces/projects for now
   const workspaces = await client.workspaces.findAll({ limit: 100 });
   let existingWebhooks: Asana.resources.Webhooks.Type[] = [];
-  let projects: Asana.resources.Projects.Type[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let projects: any[] = [];
   for (const workspace of workspaces.data) {
     const [pjs, whs] = await Promise.all([
       client.projects.findAll({ workspace: workspace.gid, limit: 100 }),
       client.webhooks.getAll(workspace.gid, { limit: 100 }),
     ]);
-    projects = projects.concat(pjs.data);
+    projects = projects.concat(pjs.data.map((p) => ({ ...p, workspace: workspace.gid })));
     existingWebhooks = existingWebhooks.concat(whs.data as Asana.resources.Webhooks.Type[]);
   }
 
@@ -96,7 +97,14 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     if (existingWebhooks.find((w) => w.resource.gid === project.gid && w.target.startsWith(whEndpoint))) continue;
     const whId = uuidv4();
     // we cannot do this in parallel, as the db entry needs to exist before the webhook is created
-    await db.asana_webhook.create({ data: { id: whId, user_id: userId } });
+    await db.asana_webhook.create({
+      data: {
+        id: whId,
+        user_id: userId,
+        project_id: project.gid,
+        workspace_id: project.workspace,
+      },
+    });
     await client.webhooks.create(project.gid, `${whEndpoint}/${whId}`, {});
   }
   res.status(HttpStatus.OK).end();
