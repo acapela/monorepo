@@ -175,8 +175,8 @@ router.post("/v1/asana/webhook/:id", async (req: Request, res: Response) => {
 
 async function processEvent(event: Webhook, account: AsanaAccount & { user: User }) {
   // ignore event that was triggered by the user themselves
-  // if (account.asana_user_id === event.user.gid) return;
-  //
+  if (account.asana_user_id === event.user.gid) return;
+
   const client = createClient();
   client.useOauth({ credentials: account });
 
@@ -202,8 +202,20 @@ async function processEvent(event: Webhook, account: AsanaAccount & { user: User
     await createAssignNotification(account, assigner, task);
     return;
   }
-  // TODO: handle status changes
-  console.info(JSON.stringify(event));
+  if (
+    event.action === "added" &&
+    event.resource.resource_type === "task" &&
+    event.parent?.resource_type === "section"
+  ) {
+    const [actor, task, section] = await Promise.all([
+      client.users.findById(event.user.gid),
+      client.tasks.findById(event.resource.gid),
+      client.sections.findById(event.parent.gid),
+    ]);
+    await createStatusChangeNotification(account, actor, task, section);
+    return;
+  }
+  // TODO: add further changes here
 }
 
 async function resolveMentions(client: Asana.Client, users: string[]) {
@@ -252,6 +264,28 @@ async function createAssignNotification(
         },
       },
       type: "assign",
+      title: task.name,
+      task_id: task.gid,
+    },
+  });
+}
+
+async function createStatusChangeNotification(
+  account: AsanaAccount & { user: User },
+  actor: Asana.resources.Users.Type,
+  task: Asana.resources.Tasks.Type,
+  section: Asana.resources.Sections.Type
+) {
+  return db.notification_asana.create({
+    data: {
+      notification: {
+        create: {
+          user_id: account.user.id,
+          url: get(task, "permalink_url", ""),
+          from: actor.name,
+        },
+      },
+      type: `status:${section.name}`,
       title: task.name,
       task_id: task.gid,
     },
