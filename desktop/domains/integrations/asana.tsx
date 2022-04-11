@@ -1,13 +1,14 @@
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { asanaAuthTokenBridgeValue, loginAsanaBridge } from "@aca/desktop/bridge/auth";
+import { asanaAuthTokenBridgeValue, loginAsanaBridge, logoutAsanaBridge } from "@aca/desktop/bridge/auth";
+import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
-const LINEAR_URL_SCHEME = "asana:/";
-const asanaURL = "https://app.asana.com";
+const URL_SCHEME = "asana:/";
+const ROOT_URL = "https://app.asana.com";
 
 export const asanaIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -15,20 +16,19 @@ export const asanaIntegrationClient: IntegrationClient = {
   name: "Asana",
   description: "New issues, task assignments and comments.",
   isReady: asanaAuthTokenBridgeValue.observables.isReady,
-  getCanConnect: () => !asanaAuthTokenBridgeValue.get(),
-  getAccounts: () => (asanaAuthTokenBridgeValue.get() ? [{ kind: "account", id: "asana", name: "Asana" }] : []),
-  convertToLocalAppUrl: async ({ url }) => {
-    return {
-      protocol: "asana",
-      localUrl: url.replace(asanaURL, LINEAR_URL_SCHEME),
-      fallback: url,
-    };
-  },
+  getCanConnect: () => !accountStore.user?.asanaAccounts.hasItems,
+  getAccounts: () =>
+    accountStore.user?.asanaAccounts.hasItems ? [{ kind: "account", id: "asana", name: "Asana" }] : [],
+  convertToLocalAppUrl: async ({ url }) => ({
+    protocol: "asana",
+    localUrl: url.replace(ROOT_URL, URL_SCHEME),
+    fallback: url,
+  }),
   async connect() {
     await loginAsanaBridge();
   },
   async disconnect() {
-    await loginAsanaBridge({ logout: true });
+    await logoutAsanaBridge();
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.asana} />,
 };

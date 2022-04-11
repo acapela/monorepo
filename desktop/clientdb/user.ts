@@ -9,6 +9,7 @@ import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
 import { accountEntity } from "./account";
+import { asanaAccountEntity } from "./asanaAccount";
 import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 const userFragment = gql`
@@ -59,6 +60,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     },
     get slackInstallations() {
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id });
+    },
+    get asanaAccounts() {
+      return getEntity(asanaAccountEntity).query({ user_id: user.id });
     },
     get isNew() {
       const timeSinceUserCreatedInSeconds = Math.abs(differenceInSeconds(new Date(), new Date(user.created_at)));

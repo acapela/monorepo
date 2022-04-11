@@ -67,7 +67,8 @@ export const asanaAuthTokenBridgeValue = createBridgeValue<boolean>("asana-auth-
   isPersisted: true,
 });
 
-export const loginAsanaBridge = createInvokeBridge<{ logout: boolean } | void>("login-asana");
+export const loginAsanaBridge = createInvokeBridge("login-asana");
+export const logoutAsanaBridge = createInvokeBridge("logout-asana");
 
 /*
   NEW SERVICE!?!?!?

@@ -1,6 +1,6 @@
 import { BrowserWindow, session } from "electron";
 
-import { asanaAuthTokenBridgeValue, loginAsanaBridge } from "@aca/desktop/bridge/auth";
+import { asanaAuthTokenBridgeValue, loginAsanaBridge, logoutAsanaBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
 import { authWindowDefaultOptions } from "./utils";
@@ -61,8 +61,6 @@ export async function logoutAsana() {
 }
 
 export function initializeAsanaAuthHandler() {
-  loginAsanaBridge.handle(async (input) => {
-    if (input?.logout) return logoutAsana();
-    return loginAsana();
-  });
+  loginAsanaBridge.handle(() => loginAsana());
+  logoutAsanaBridge.handle(() => logoutAsana());
 }
