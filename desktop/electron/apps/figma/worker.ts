@@ -1,5 +1,5 @@
+import axios, { AxiosResponse } from "axios";
 import { differenceInDays, differenceInWeeks } from "date-fns";
-import fetch from "node-fetch";
 
 import { FigmaWorkerSync, figmaSyncPayload } from "@aca/desktop/bridge/apps/figma";
 import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
@@ -65,14 +65,14 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
 
   // WARNING!
   // Figma notifications are all marked as read whenever this api call is made
-  const response = await fetch(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
-    method: "GET",
-    headers: {
-      cookie,
-    },
-  });
-
-  if (!response.ok) {
+  let response: AxiosResponse;
+  try {
+    response = await axios.get(figmaURL + "/api/user_notifications?current_org_id=&currentView=folder", {
+      headers: { cookie },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    const response = error.response as AxiosResponse;
     if (response.status >= 400 && response.status < 500) {
       handleFigmaNotAuthorized();
     }
@@ -80,7 +80,7 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
     throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
   }
 
-  const result = (await response.json()) as GetFigmaUserNotificationsResponse;
+  const result = response.data as GetFigmaUserNotificationsResponse;
 
   // This is the case of someone that goes on vacation and doesn't go into figma
   const isUnreadButLessThan2WeeksOld = ({ read_at, created_at }: FigmaUserNotification) =>

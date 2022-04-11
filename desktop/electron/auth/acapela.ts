@@ -1,5 +1,5 @@
+import axios from "axios";
 import { BrowserWindow, session } from "electron";
-import fetch from "node-fetch";
 
 import { authTokenBridgeValue, autoLoginBridge, canAutoLoginBridge, loginBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
@@ -56,9 +56,9 @@ export async function loginAcapela(provider: "slack" | "google") {
 }
 
 async function fetchTestUserJWT() {
-  const response = await fetch("http://localhost:3000/api/backend/e2e/test_user");
-  const { jwt } = await response.json();
-  return jwt;
+  const response = await axios.get("http://localhost:3000/api/backend/e2e/test_user");
+  const { jwt } = response.data;
+  return jwt as string;
 }
 
 async function autoLoginAcapelaForEnd2EndTest() {
