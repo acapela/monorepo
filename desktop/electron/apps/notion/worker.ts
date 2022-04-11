@@ -1,5 +1,5 @@
+import axios from "axios";
 import { session } from "electron";
-import fetch from "node-fetch";
 import { z } from "zod";
 
 import {
@@ -108,57 +108,47 @@ async function runSync() {
 }
 
 async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceId: string) {
-  const response = await fetch(notionURL + "/api/v3/getNotificationLog", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: sessionData.cookie,
-    },
-    body: JSON.stringify({
-      // Notion uses the space id for tracking within their help-desk
-      spaceId,
-      size: 20,
-      type: "mentions",
-    }),
-  })
-    // fetch only rejects for network errors which we want to ignore
-    .catch(() => null);
+  const response = await axios
+    .post(
+      notionURL + "/api/v3/getNotificationLog",
+      {
+        // Notion uses the space id for tracking within their help-desk
+        spaceId,
+        size: 20,
+        type: "mentions",
+      },
+      { headers: { cookie: sessionData.cookie } }
+    )
+    .catch(({ response }) => {
+      if (response?.status >= 400 && response?.status < 500) {
+        handleNotionNotAuthorized();
+
+        throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
+      }
+    });
 
   if (!response) {
     return;
   }
 
-  if (response.status >= 400 && response.status < 500) {
-    handleNotionNotAuthorized();
-
-    throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
-  }
-
-  return GetNotificationLogResult.parse(await response.json());
+  return GetNotificationLogResult.parse(response.data);
 }
 
 export async function updateAvailableSpaces() {
   const sessionData = await getNotionSessionData();
 
-  const getSpacesResponse = await fetch(notionURL + "/api/v3/getSpaces", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: sessionData.cookie,
-    },
-    body: JSON.stringify({}),
-  })
-    // fetch only rejects for network errors which we want to ignore
-    .catch(() => null);
+  const spacesResponse = await axios
+    .post(notionURL + "/api/v3/getSpaces", {}, { headers: { cookie: sessionData.cookie } })
+    .catch(({ response }) => {
+      if (response?.status >= 400 && response?.status < 500) {
+        handleNotionNotAuthorized();
 
-  if (!getSpacesResponse) {
+        throw new Error(`getSpaces: ${response.status} - ${response.statusText}`);
+      }
+    });
+
+  if (!spacesResponse) {
     return;
-  }
-
-  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    handleNotionNotAuthorized();
-
-    throw new Error(`getSpaces: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
   }
 
   /*
@@ -166,7 +156,7 @@ export async function updateAvailableSpaces() {
     It also includes the concept of a `space_view` which includes a bit of information about all
     the spaces the user is involved with, i.e including spaces where there user is a guest.
   */
-  const getSpacesResult = GetSpacesResult.parse(await getSpacesResponse.json());
+  const getSpacesResult = GetSpacesResult.parse(spacesResponse.data);
 
   // Includes spaces that you're a member of and spaces where you're a guest
   const allSpaceIds = Object.values(getSpacesResult[sessionData.notionUserId].space_view).map(
@@ -178,25 +168,28 @@ export async function updateAvailableSpaces() {
     didn't provide us with the name of spaces the user was a guest in.
     We're still able to get notifications from spaces in which the user only has guest access.
   */
-  const getPublicSpaceDataResponse = await fetch(notionURL + "/api/v3/getPublicSpaceData", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: sessionData.cookie,
-    },
-    body: JSON.stringify({
-      spaceIds: allSpaceIds,
-      type: "space-ids",
-    }),
-  });
+  const publicSpaceResponse = await axios
+    .post(
+      notionURL + "/api/v3/getPublicSpaceData",
+      {
+        spaceIds: allSpaceIds,
+        type: "space-ids",
+      },
+      { headers: { cookie: sessionData.cookie } }
+    )
+    .catch(({ response }) => {
+      if (response?.status >= 400 && response?.status < 500) {
+        handleNotionNotAuthorized();
 
-  if (getSpacesResponse.status >= 400 && getSpacesResponse.status < 500) {
-    handleNotionNotAuthorized();
+        throw new Error(`getPublicSpaceData: ${response.status} - ${response.statusText}`);
+      }
+    });
 
-    throw new Error(`getPublicSpaceData: ${getSpacesResponse.status} - ${getSpacesResponse.statusText}`);
+  if (!publicSpaceResponse) {
+    return;
   }
 
-  const getPublicSpacesResult = GetPublicSpaceDataResult.parse(await getPublicSpaceDataResponse.json());
+  const getPublicSpacesResult = GetPublicSpaceDataResult.parse(publicSpaceResponse.data);
 
   const allSpaces = getPublicSpacesResult.results.map(({ id, name }) => ({ id, name }));
 
