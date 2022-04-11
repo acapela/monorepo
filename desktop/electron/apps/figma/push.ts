@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/electron";
+import axios from "axios";
 import { omit } from "lodash";
-import fetch from "node-fetch";
 
 import { figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
@@ -33,8 +33,7 @@ export async function initializeFigmaPush() {
       return;
     }
 
-    const response = await fetch(figmaURL + `/api/file/${event.inner.file_id}/unread_comments`, {
-      method: "DELETE",
+    await axios.delete(figmaURL + `/api/file/${event.inner.file_id}/unread_comments`, {
       headers: {
         "content-type": "application/json",
         cookie: session.cookie,
@@ -42,13 +41,7 @@ export async function initializeFigmaPush() {
         "x-csrf-bypass": "yes",
         tsid: session.trackingSessionId,
       },
-      body: JSON.stringify({
-        comment_ids: [commentId],
-      }),
+      data: { comment_ids: [commentId] },
     });
-
-    if (!response.ok) {
-      log.error("Unable to delete unread comment" + JSON.stringify(await response.json()));
-    }
   });
 }
