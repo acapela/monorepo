@@ -43,23 +43,27 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   }
 
   const expiresAt = addSeconds(new Date(), asanaCredentials.expires_in);
-  const asanaAccount = {
+  const asanaAccountData = {
     access_token: asanaCredentials.access_token,
     refresh_token: asanaCredentials.refresh_token,
     asana_user_id: asanaCredentials.data.gid,
     expires_at: expiresAt,
   };
   // create or update the asana account
-  await db.asana_account.upsert({
-    where: {
-      user_id: userId,
-    },
-    update: asanaAccount,
-    create: {
-      user_id: userId,
-      ...asanaAccount,
-    },
-  });
+  let asanaAccount = await db.asana_account.findFirst({ where: { user_id: userId } });
+  if (asanaAccount) {
+    await db.asana_account.update({
+      where: { id: asanaAccount.id },
+      data: asanaAccountData,
+    });
+  } else {
+    asanaAccount = await db.asana_account.create({
+      data: {
+        user_id: userId,
+        ...asanaAccountData,
+      },
+    });
+  }
   // authenticate the client with the current user
   client.useOauth({ credentials: asanaCredentials });
 
@@ -99,7 +103,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     // we cannot do this in parallel, as the db entry needs to exist before the webhook is created
     const dbWebhook = await db.asana_webhook.create({
       data: {
-        user_id: userId,
+        asana_account_id: asanaAccount.id,
         project_id: project.gid,
         workspace_id: project.workspace,
       },

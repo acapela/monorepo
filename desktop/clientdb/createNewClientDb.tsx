@@ -9,6 +9,7 @@ import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
 import { accountEntity } from "./account";
+import { asanaAccountEntity } from "./asanaAccount";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationAsanaEntity } from "./notification/asana/task";
@@ -70,6 +71,8 @@ export const appClientDbEntities = {
   account: accountEntity,
 
   gmailAccount: gmailAccountEntity,
+  asanaAccount: asanaAccountEntity,
+
   githubInstallation: githubInstallationEntity,
 
   userSlackInstallation: userSlackInstallationEntity,
