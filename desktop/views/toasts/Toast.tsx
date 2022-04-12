@@ -97,20 +97,22 @@ export function Toast({
             {title && <UITitle>{title}</UITitle>}
             {message && <UIDescription>{message}</UIDescription>}
           </UIHead>
+          <UIActions>
+            {action && (
+              <Button
+                kind="secondary"
+                onClick={() => {
+                  action.callback?.();
+                }}
+              >
+                {action.label}
+              </Button>
+            )}
+            {actionObject && (
+              <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />
+            )}
+          </UIActions>
         </UIBody>
-        <UIActions>
-          {action && (
-            <Button
-              kind="secondary"
-              onClick={() => {
-                action.callback?.();
-              }}
-            >
-              {action.label}
-            </Button>
-          )}
-          {actionObject && <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />}
-        </UIActions>
       </UIToast>
     </UIAnimator>
   );
@@ -128,12 +130,14 @@ const UIToast = styled.div`
   margin: 5px 0;
 
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
 `;
 
 const UIIcon = styled.div`
   font-size: 20px;
+  margin-top: 4px;
 `;
 
 const UIBody = styled.div`
@@ -164,7 +168,6 @@ const UIDescription = styled.div`
 
 const UIActions = styled.div`
   display: flex;
-  justify-content: flex-end;
   align-self: stretch;
   align-items: center;
 `;
