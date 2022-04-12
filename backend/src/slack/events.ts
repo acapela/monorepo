@@ -23,6 +23,8 @@ export async function markSlackConversationsAsRead() {
     JSON.stringify([c.user_slack_installation_id, c.slack_conversation_id, c.slack_thread_ts])
   );
   for (const items of Object.values(groupedConversations)) {
+    // TODO: we have a bug here, disabling it temporarily
+    break;
     const [{ user_slack_installation, slack_conversation_id }] = items;
     const lastMessageTs = items.reduce(
       (acc, { slack_last_message_ts }) => Math.max(acc, Number(slack_last_message_ts)),
