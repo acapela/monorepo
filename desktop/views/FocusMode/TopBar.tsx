@@ -8,8 +8,7 @@ import {
   goToPreviousNotification,
   refreshNotificationPreview,
 } from "@aca/desktop/actions/focus";
-import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
-import { snoozeNotification } from "@aca/desktop/actions/snooze";
+import { openNotificationInApp, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";

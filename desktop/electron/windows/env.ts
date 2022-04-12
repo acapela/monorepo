@@ -2,16 +2,15 @@ import { app } from "electron";
 import IS_DEV from "electron-is-dev";
 
 import { AppEnvData } from "@aca/desktop/envData";
+import { createSyncPromise } from "@aca/shared/promises";
 
-import { getAllPersistedValues } from "../bridgeHandlers/persistance";
-import { sentryDsn } from "./paths";
+import { getAllPersistedValues } from "../bridgeHandlers/persistanceLoader";
 
-export async function getAppEnvData(): Promise<AppEnvData> {
+async function getAppEnvData(): Promise<AppEnvData> {
   const persistedValues = await getAllPersistedValues();
 
   const appEnvData: AppEnvData = {
     appName: app.name,
-    sentryDsn: sentryDsn,
     isDev: IS_DEV,
     version: app.getVersion(),
     initialPersistedValues: persistedValues,
@@ -19,3 +18,9 @@ export async function getAppEnvData(): Promise<AppEnvData> {
 
   return appEnvData;
 }
+
+export const appEnvData = createSyncPromise(getAppEnvData);
+
+export const appAndEnvReadyPromise = app.whenReady().then(() => {
+  return appEnvData.promise;
+});

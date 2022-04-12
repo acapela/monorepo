@@ -17,7 +17,7 @@
     "build:bundle": "NODE_ENV=production ts-node build.ts",
     "build:electron": "electron-builder build --mac default --universal -p never",
     "build:staging": "rm -rf dist && yarn build:bundle staging && cp -r dist-staging dist && yarn build:electron",
-    "build:test": "rm -rf dist && yarn build:bundle staging && cp -r dist-staging dist",
+    "build:test": "rm -rf dist && yarn build:bundle development",
     "build:production": "rm -rf dist && yarn build:bundle production && cp -r dist-production dist && yarn build:electron",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.js",
     "upload-bundle": "./scripts/upload-bundle.sh"
@@ -47,11 +47,11 @@
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
     "node-cleanup": "^2.1.2",
-    "node-fetch": "^2.6.7",
     "parcel": "^2.2.1",
     "react-chicane": "^0.6.1",
     "ts-node": "^10.4.0",
-    "url-pattern": "^1.0.3"
+    "url-pattern": "^1.0.3",
+    "zod": "^3.14.2"
   },
   "main": "./dist/electron/index.js",
   "build": {
@@ -74,6 +74,7 @@
     "publish": {
       "provider": "github",
       "releaseType": "release"
-    }
+    },
+    "npmRebuild": false
   }
 }

@@ -1,32 +1,40 @@
+import { z } from "zod";
+
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 import {
   BlockDataItem,
-  BlockPayload,
   CommentedActivityValue,
-  GetNotificationLogResult,
   NotionBlockDSLDataIndicator,
   NotionDateDataIndicator,
   NotionPageReferenceDataIndicator,
   NotionUserDataIndicator,
+  RecordMap,
+  SomeBlockValue,
   UserMentionedActivityValue,
-} from "./types";
+} from "./schema";
 
 const log = makeLogger("Notion-Worker");
 
 export function extractNotionComment(
-  activity: CommentedActivityValue,
-  recordMap: GetNotificationLogResult["recordMap"]
+  activity: z.infer<typeof CommentedActivityValue>,
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
+  if (!activity.edits) {
+    return;
+  }
   const lastEditIndex = activity.edits.length - 1;
   const commentActivityEdit = activity.edits[lastEditIndex];
 
-  let commentBlockItems: BlockDataItem[] | undefined;
-  if (commentActivityEdit.type === "comment-created") {
-    commentBlockItems = commentActivityEdit.comment_data.text;
-  } else if (commentActivityEdit.type === "comment-changed") {
-    commentBlockItems = commentActivityEdit.comment_data.after.text;
+  if (!("comment_data" in commentActivityEdit)) {
+    return;
   }
+  const commentBlockItems =
+    commentActivityEdit.type === "comment-created"
+      ? commentActivityEdit.comment_data.text
+      : commentActivityEdit.type === "comment-changed"
+      ? commentActivityEdit.comment_data.after.text
+      : null;
 
   if (!commentBlockItems || !commentBlockItems.length) {
     return;
@@ -36,24 +44,31 @@ export function extractNotionComment(
 }
 
 export function extractBlockMention(
-  activity: UserMentionedActivityValue,
-  recordMap: GetNotificationLogResult["recordMap"]
+  { mentioned_block_id, mentioned_property }: z.infer<typeof UserMentionedActivityValue>,
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
-  const { mentioned_block_id, mentioned_property } = activity;
-
-  const properties = (recordMap.block[mentioned_block_id] as BlockPayload<"page">).value?.properties;
-
-  if (!properties || !properties[mentioned_property]) {
+  const blockValue = recordMap.block?.[mentioned_block_id]?.value;
+  if (!blockValue) {
     return;
   }
-  const blockItems = properties[mentioned_property] as BlockDataItem[];
+  let properties;
+  try {
+    properties = SomeBlockValue.parse(blockValue).properties;
+  } catch (e) {
+    throw new Error(`Failed to parse block value: ${JSON.stringify(blockValue, null, 2)}`);
+  }
+
+  if (!properties[mentioned_property]) {
+    return;
+  }
+  const blockItems = properties[mentioned_property];
 
   return extractTextFromBlockDataItems(blockItems, recordMap);
 }
 
 function extractTextFromBlockDataItems(
-  items: BlockDataItem[],
-  recordMap: GetNotificationLogResult["recordMap"]
+  items: z.infer<typeof BlockDataItem>[],
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
   let result = "";
   for (const blockItem of items) {
@@ -68,18 +83,21 @@ function extractTextFromBlockDataItems(
 }
 
 function extractTextFromBlockDataItem(
-  item: BlockDataItem,
-  recordMap: GetNotificationLogResult["recordMap"]
+  item: z.infer<typeof BlockDataItem>,
+  recordMap: z.infer<typeof RecordMap>
 ): string | undefined {
   if (!item) {
     return;
   }
 
   // It's a string with or without formatting e.g bold and italic -> ["this string", [["b","i"]]]
-  if (item.length === 1 || item[0] !== NotionBlockDSLDataIndicator) {
+  if ((item.length === 1 || item[0] !== NotionBlockDSLDataIndicator) && typeof item[0] == "string") {
     return item[0];
   }
 
+  if (!Array.isArray(item[1])) {
+    return;
+  }
   const notionDSLData = item[1][0];
 
   if (!Array.isArray(notionDSLData)) {
@@ -88,7 +106,7 @@ function extractTextFromBlockDataItem(
 
   if (notionDSLData[0] === NotionUserDataIndicator) {
     const mentionedUserId = notionDSLData[1];
-    const name = recordMap.notion_user[mentionedUserId]?.value?.name;
+    const name = recordMap.notion_user?.[mentionedUserId]?.value?.name;
 
     if (!name) {
       log.error("unable to extract mentioned user from item" + JSON.stringify(item, null, 2));
@@ -101,12 +119,7 @@ function extractTextFromBlockDataItem(
   if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
 
-    const title = (recordMap.block[pageId] as BlockPayload<"page">)?.value?.properties?.title?.[0]?.[0];
-
-    if (!title) {
-      log.error("unable to extract page title from item" + JSON.stringify(item, null, 2));
-    }
-
+    const title = SomeBlockValue.parse(recordMap.block?.[pageId].value).properties?.title?.[0]?.[0];
     return `📄${title}`;
   }
 

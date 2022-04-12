@@ -1,7 +1,10 @@
 import { test } from "@playwright/test";
 import { _electron as electron } from "playwright";
 
-const launchElectron = () => electron.launch({ args: ["../desktop/dist/electron/index.js"] });
+const launchElectron = () =>
+  electron.launch({
+    args: ["../desktop/dist/electron/index.js", "--user-data-dir=/tmp/electron-test-" + new Date().toISOString()],
+  });
 
 test("Electron app is starting", async () => {
   const electronApp = await launchElectron();

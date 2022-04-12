@@ -29,7 +29,7 @@ export const NotificationsSettings = observer(function ThemeSelector() {
       </SettingRow>
       <SettingRow
         title="Show notifications count badge"
-        description="Show number of new notifications next to Acapela app icon"
+        description="Show number of unresolved notifications next to Acapela app icon"
       >
         <Toggle
           size="small"
@@ -41,21 +41,36 @@ export const NotificationsSettings = observer(function ThemeSelector() {
         />
       </SettingRow>
       {settings.showNotificationsCountBadge && (
-        <SettingRow
-          title="Lists to count notifications for count badge"
-          description="Select lists from which to count notifications to show next to Acapela app icon"
-        >
-          <MultipleOptionsDropdown<NotificationListEntity>
-            items={allLists.all}
-            keyGetter={(l) => l.id}
-            labelGetter={(l) => l.title}
-            selectedItems={allLists.all.filter((l) => settings.notificationsCountBadgeListIds.includes(l.id))}
-            placeholder="All lists"
-            onChange={(lists) => {
-              applicationWideSettingsBridge.update({ notificationsCountBadgeListIds: lists.map((l) => l.id) });
-            }}
-          />
-        </SettingRow>
+        <>
+          <SettingRow
+            title="Only count unread notifications for count badge"
+            description="Shows number of unread notifications that have not been resolved yet"
+          >
+            <Toggle
+              size="small"
+              isDisabled
+              isSet={settings.showUnreadNotificationsCountBadge}
+              onChange={(isEnabled) => {
+                applicationWideSettingsBridge.update({ showUnreadNotificationsCountBadge: isEnabled });
+              }}
+            />
+          </SettingRow>
+          <SettingRow
+            title="Lists to count notifications for count badge"
+            description="Select lists from which to count notifications to show next to Acapela app icon"
+          >
+            <MultipleOptionsDropdown<NotificationListEntity>
+              items={allLists.all}
+              keyGetter={(l) => l.id}
+              labelGetter={(l) => l.title}
+              selectedItems={allLists.all.filter((l) => settings.notificationsCountBadgeListIds.includes(l.id))}
+              placeholder="All lists"
+              onChange={(lists) => {
+                applicationWideSettingsBridge.update({ notificationsCountBadgeListIds: lists.map((l) => l.id) });
+              }}
+            />
+          </SettingRow>
+        </>
       )}
     </SettingsList>
   );

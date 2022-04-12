@@ -117,7 +117,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "linear",
       integrationTitle: "Linear issue",
-      isOnePreviewEnough: false,
+      isOnePreviewEnough: true,
     };
   }
 
@@ -127,6 +127,16 @@ export function getNotificationGroupTarget(
       name: targetNotification.issue_title,
       integration: "jira",
       integrationTitle: "Jira issue",
+      isOnePreviewEnough: false,
+    };
+  }
+
+  if (targetNotification.__typename === "notification_github") {
+    return {
+      id: `${targetNotification.issue_id || targetNotification.pr_id}`,
+      name: targetNotification.title || "",
+      integration: "github",
+      integrationTitle: `GitHub ${targetNotification.issue_id ? "issue" : "pull request"}`,
       isOnePreviewEnough: false,
     };
   }

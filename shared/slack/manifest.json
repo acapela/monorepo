@@ -20,8 +20,13 @@
 
         "channels:read",
         "groups:read",
-        "im:read",
         "mpim:read",
+        "im:read",
+
+        "channels:write",
+        "groups:write",
+        "mpim:write",
+        "im:write",
 
         "users:read",
         "reactions:read"

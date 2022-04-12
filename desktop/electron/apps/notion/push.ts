@@ -1,5 +1,4 @@
-import * as Sentry from "@sentry/electron";
-import fetch from "node-fetch";
+import axios from "axios";
 
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
 import { notionURL } from "@aca/desktop/electron/auth/notion";
@@ -24,13 +23,9 @@ export async function initializeNotionPush() {
       return;
     }
 
-    const response = await fetch(notionURL + "/api/v3/saveTransactions", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        cookie: sessionData.cookie,
-      },
-      body: JSON.stringify({
+    await axios.post(
+      notionURL + "/api/v3/saveTransactions",
+      {
         requestId: getUUID(),
         transactions: [
           {
@@ -52,11 +47,8 @@ export async function initializeNotionPush() {
             ],
           },
         ],
-      }),
-    });
-
-    if (!response.ok) {
-      Sentry.captureException("[Notion] Unable to archive notification" + JSON.stringify(await response.json()));
-    }
+      },
+      { headers: { cookie: sessionData.cookie } }
+    );
   });
 }

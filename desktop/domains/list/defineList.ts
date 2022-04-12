@@ -1,26 +1,29 @@
+import { orderBy } from "lodash";
 import { ReactNode } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
 import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, getReverseTime, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
+import { uiStore } from "@aca/desktop/store/ui";
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
 import { None } from "@aca/shared/none";
 
-interface DefineListConfig {
+type DefineListConfig = {
   id: string;
   name: string;
   icon?: ReactNode;
   isCustom?: boolean;
-  filter?: EntityFilterInputByDefinition<typeof notificationEntity>;
-  getNotifications?: () => NotificationEntity[];
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
-}
+} & (
+  | { getNotifications: () => NotificationEntity[] }
+  | { filter: EntityFilterInputByDefinition<typeof notificationEntity> }
+);
 
 // For non-grouped notifications the index is a single number
 // For grouped notifications the index is a number tuple, containing both the group's index and the within group index
@@ -30,40 +33,38 @@ export function defineNotificationsList({
   id,
   name,
   isCustom,
-  filter,
-  getNotifications,
   listEntity,
   icon,
   dontShowCount = false,
+  ...config
 }: DefineListConfig) {
-  assert(filter || getNotifications, "Defined list has to either include filter or getNotifications handler");
+  const getActiveNotification = cachedComputed(() => (uiStore.activeListId === id ? uiStore.activeNotification : null));
 
-  const getRawNotificationsQuery = cachedComputed(() => {
+  const getRawNotificationsQuery = cachedComputed(function getRawNotificationsQuery() {
     const db = getDb();
 
-    if (filter) {
-      return db.notification.query(filter).all;
-    }
+    let notifications = "filter" in config ? db.notification.query(config.filter).all : config.getNotifications();
 
-    if (getNotifications) {
-      return getNotifications();
+    // Retains the active notification in the active list, to enable navigating to the next/previous notification
+    const activeNotification = getActiveNotification();
+    if (activeNotification && !notifications.some((n) => n == activeNotification)) {
+      notifications = orderBy([...notifications, activeNotification], (n) => getReverseTime(n.created_at));
     }
-
-    throw 2;
+    return notifications;
   });
 
-  const getAllGroupedNotifications = cachedComputed(() => {
+  const getAllGroupedNotifications = cachedComputed(function getAllGroupedNotifications() {
     const groups = groupNotifications(getRawNotificationsQuery());
     return groups;
   });
 
-  const getFlattenedNotifications = cachedComputed(() =>
-    getAllGroupedNotifications().flatMap((notificationOrGroup) =>
+  const getFlattenedNotifications = cachedComputed(function getFlattenedNotifications() {
+    return getAllGroupedNotifications().flatMap((notificationOrGroup) =>
       getIsNotificationsGroup(notificationOrGroup) ? notificationOrGroup.notifications : [notificationOrGroup]
-    )
-  );
+    );
+  });
 
-  const getNotificationIndex = cachedComputed((notification: NotificationEntity) => {
+  const getNotificationIndex = cachedComputed(function getNotificationIndex(notification: NotificationEntity) {
     const groupedNotifications = getAllGroupedNotifications();
 
     const index: GroupedNotificationsIndex | undefined = findAndMap(groupedNotifications, (notificationOrGroup, i) => {
@@ -83,7 +84,10 @@ export function defineNotificationsList({
     return index;
   });
 
-  const getAdjacentNotification = cachedComputed((notification: NotificationEntity, direction: -1 | 1) => {
+  const getAdjacentNotification = cachedComputed(function getAdjacentNotification(
+    notification: NotificationEntity,
+    direction: -1 | 1
+  ) {
     const index = getNotificationIndex(notification);
 
     if (index === null) return null;
@@ -115,16 +119,18 @@ export function defineNotificationsList({
     }
   });
 
-  const getNextNotification = cachedComputed((notification: NotificationEntity) =>
-    getAdjacentNotification(notification, +1)
-  );
+  const getNextNotification = cachedComputed(function getNextNotification(notification: NotificationEntity) {
+    return getAdjacentNotification(notification, +1);
+  });
 
-  const getPreviousNotification = cachedComputed((notification: NotificationEntity) =>
-    getAdjacentNotification(notification, -1)
-  );
+  const getPreviousNotification = cachedComputed(function getPreviousNotification(notification: NotificationEntity) {
+    return getAdjacentNotification(notification, -1);
+  });
 
   const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
-  const getNotificationsToPreload = cachedComputed((focusedNotification?: NotificationEntity) => {
+  const getNotificationsToPreload = cachedComputed(function getNotificationsToPreload(
+    focusedNotification?: NotificationEntity
+  ) {
     const notificationsToPreload = focusedNotification ? [focusedNotification] : [];
 
     const [firstNotificationOrGroup] = getAllGroupedNotifications();

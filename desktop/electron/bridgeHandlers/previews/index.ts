@@ -13,6 +13,7 @@ import { assert } from "@aca/shared/assert";
 import { setBrowserViewZIndex } from "../../windows/viewZIndex";
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
+import { markViewAttachedTime } from "./instrumentation";
 import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
 import { setViewPosition } from "./position";
 
@@ -40,11 +41,12 @@ export function initPreviewHandler() {
 
     const { cancel: cancelPreloadingRequest, item: browserView } = requestPreviewBrowserView(url);
 
+    loadPreviewIfNeeded(browserView, url);
+
+    markViewAttachedTime(browserView);
     const detach = attachPreview(browserView, targetWindow);
 
     setViewPosition(browserView, position);
-
-    loadPreviewIfNeeded(browserView, url);
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw

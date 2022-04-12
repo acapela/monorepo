@@ -9,9 +9,10 @@ import {
   copyNotificationLink,
   openFocusMode,
   resolveNotification,
+  snoozeNotification,
   unresolveNotification,
+  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
-import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";

@@ -1,5 +1,6 @@
 import { createInvokeWithCleanupBridge } from "@aca/desktop/bridge/base/invokeWithCleanup";
 
+import { FigmaSessionData } from "../electron/auth/figma";
 import { notionSelectedSpaceValue } from "./apps/notion";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
@@ -12,6 +13,9 @@ export const authTokenBridgeValue = createBridgeValue<string | null>("auth-token
 });
 export const loginBridge = createInvokeBridge<"google" | "slack">("login");
 
+export const canAutoLoginBridge = createInvokeBridge<void, boolean>("can-auto-login");
+export const autoLoginBridge = createInvokeBridge("auto-login");
+
 export const logoutBridge = createInvokeBridge("logout");
 
 export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("notion-auth-token", {
@@ -20,7 +24,7 @@ export const notionAuthTokenBridgeValue = createBridgeValue<string | null>("noti
 });
 export const loginNotionBridge = createInvokeBridge("login-notion");
 
-export const figmaAuthTokenBridgeValue = createBridgeValue<string | null>("figma-auth-token", {
+export const figmaAuthTokenBridgeValue = createBridgeValue<FigmaSessionData | null>("figma-auth-session-data", {
   getDefault: () => null,
   isPersisted: true,
 });
@@ -48,6 +52,14 @@ export const jiraAuthTokenBridgeValue = createBridgeValue<boolean>("jira-auth-to
   isPersisted: true,
 });
 
+export const githubAuthTokenBridgeValue = createBridgeValue<boolean>("github-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+export const loginGitHubBridge = createInvokeBridge<{ logout: boolean; installationId?: number } | void>(
+  "login-github"
+);
+
 /*
   NEW SERVICE!?!?!?
   Add new services here! Until refactored
@@ -59,6 +71,7 @@ const allServices = [
   figmaAuthTokenBridgeValue,
   linearAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
+  githubAuthTokenBridgeValue,
 ];
 
 export function resetAllServices() {

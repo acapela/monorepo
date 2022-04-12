@@ -1,3 +1,12 @@
+- name: mark-resolved-slack-conversations-as-read
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: '* * * * *'
+  include_in_metadata: true
+  payload:
+    handler: mark-slack-conversations-as-read
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: update-atlassian-refresh-token
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * 1 * *'

@@ -3,8 +3,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { openNotificationInApp, resolveNotification } from "@aca/desktop/actions/notification";
-import { snoozeNotification } from "@aca/desktop/actions/snooze";
+import { openNotificationInApp, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { previewEventsBridge, requestAttachPreview, updatePreviewPosition } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";

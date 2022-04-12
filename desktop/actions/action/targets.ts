@@ -6,6 +6,9 @@ import { getIsNotificationsList } from "@aca/desktop/domains/list/defineList";
 
 import { createPredicates } from "./predicates";
 
+export const getIsNotification = (input: unknown): input is NotificationEntity =>
+  (input as NotificationEntity)?.__typename === "notification";
+
 /**
  * All types of targets that action context is able to recognize are here
  *
@@ -16,9 +19,7 @@ import { createPredicates } from "./predicates";
  * GOOD: foo: (item: unknown) => item is Notification
  */
 export const targetPredicates = {
-  notification(input: unknown): input is NotificationEntity {
-    return (input as NotificationEntity)?.__typename === "notification";
-  },
+  notification: getIsNotification,
   list: getIsNotificationsList,
   group: getIsNotificationsGroup,
   integration: getIsIntegrationClient,

@@ -46,6 +46,7 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
     globalPeekShortcut: null as ShortcutKeys | null,
     enableDesktopNotifications: true,
     showNotificationsCountBadge: true,
+    showUnreadNotificationsCountBadge: false,
     notificationsCountBadgeListIds: [] as string[],
     showShortcutsBar: true,
   }),

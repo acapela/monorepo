@@ -9,9 +9,10 @@ import {
   openFocusMode,
   openNotificationInApp,
   resolveNotification,
+  snoozeNotification,
   unresolveNotification,
+  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
-import { snoozeNotification, unsnoozeNotification } from "@aca/desktop/actions/snooze";
 import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";

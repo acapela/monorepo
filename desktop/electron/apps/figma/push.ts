@@ -1,17 +1,22 @@
 import * as Sentry from "@sentry/electron";
+import axios from "axios";
 import { omit } from "lodash";
-import fetch from "node-fetch";
 
+import { figmaAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { figmaURL } from "@aca/desktop/electron/auth/figma";
 
-import { getFigmaSessionData } from "./worker";
+const log = makeLogger("Figma-Push");
 
 export async function initializeFigmaPush() {
-  console.info("[Figma] Starting figma push handling");
-  const session = await getFigmaSessionData();
+  log.info("Starting figma push handling");
 
   notificationResolvedChannel.subscribe(async (event) => {
+    const session = await figmaAuthTokenBridgeValue.get();
+    if (!session) {
+      return;
+    }
     if (event.inner.__typename !== "notification_figma_comment") return;
 
     console.info("[Figma] Received resolved request 'notification_figma_comment'");
@@ -28,8 +33,7 @@ export async function initializeFigmaPush() {
       return;
     }
 
-    const response = await fetch(figmaURL + `/api/file/${event.inner.file_id}/unread_comments`, {
-      method: "DELETE",
+    await axios.delete(figmaURL + `/api/file/${event.inner.file_id}/unread_comments`, {
       headers: {
         "content-type": "application/json",
         cookie: session.cookie,
@@ -37,13 +41,7 @@ export async function initializeFigmaPush() {
         "x-csrf-bypass": "yes",
         tsid: session.trackingSessionId,
       },
-      body: JSON.stringify({
-        comment_ids: [commentId],
-      }),
+      data: { comment_ids: [commentId] },
     });
-
-    if (!response.ok) {
-      Sentry.captureException("[Figma] Unable to delete unread comment" + JSON.stringify(await response.json()));
-    }
   });
 }

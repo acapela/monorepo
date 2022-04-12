@@ -30,11 +30,12 @@ const appEnv = window.electronBridge.env;
 
 if (!appEnv.isDev) {
   Sentry.init({
-    dsn: appEnv.sentryDsn,
+    dsn: process.env.SENTRY_DSN,
     release: appEnv.version,
+    environment: process.env.STAGE,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
-    debug: true,
+    maxValueLength: 1000,
   });
 
   autorun(() => {

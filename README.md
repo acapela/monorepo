@@ -118,6 +118,18 @@ Similar to the slack integration, setting up Linear is optional in development.
    - `read:me` can be found in `Permissions` -> `User identity API`
    - `*:jira` can be found in `Permissions` -> `Jira API`
 
+### GitHub
+
+1. Setup a new GitHub app using [this link](https://github.com/settings/apps/new?name=my-cool-acapela&url=https://acapela.com&callback_urls[]=http://localhost:3000/api/backend/v1/github/callback&webhook_active=true&webhook_url=https://my-acapela.ngrok.io/api/backend/v1/github/webhook&request_oauth_on_install=true&public=true&issues=read&metadata=read&pull_requests=read&members=read&events[]=issues&events[]=issue_comment&events[]=pull_request&events[]=organization&events[]=repository&events[]=member&events[]=meta) and update your ngrok endpoint.
+2. Generate a new client secret and configure `GITHUB_CLIENT_SECRET`
+3. Generate a new private key
+   1. Encode the private key to base64 using `cat my-cool-acapela.private-key.pem | base64 -w 0`
+   2. Configure `GITHUB_APP_PRIVATE_KEY`
+4. Configure a webhook secret and set `GITHUB_WEBHOOK_SECRET`
+5. Make sure you also configure `GITHUB_CLIENT_ID`, `GITHUB_APP_ID` and `GITHUB_APP_NAME` correctly
+6. Set up an OAuth app using [this link](https://github.com/settings/applications/new?oauth_application[callback_url]=http://localhost:3000/api/backend/v1/github/callback)
+   1. Configure `GITHUB_ONBOARDING_OAUTH_CLIENT_ID` and `GITHUB_ONBOARDING_OAUTH_CLIENT_SECRET`
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.

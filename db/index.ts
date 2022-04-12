@@ -7,16 +7,20 @@ export type {
   PrismaPromise,
   account as Account,
   atlassian_site as AtlassianSite,
+  github_account_to_installation as GithubAccountToInstallation,
   jira_account as JiraAccount,
   jira_webhook as JiraWebhook,
   linear_issue as LinearIssue,
   linear_oauth_token as LinearOauthToken,
+  notification as Notification,
   notification_linear as NotificationLinear,
   notification_slack_message as NotificationSlackMessage,
   user as User,
   user_slack_installation as UserSlackInstallation,
   user_slack_channels_by_team as UserSlackChannelsByTeam,
   whitelist as Whitelist,
+  github_account as GitHubAccount,
+  github_installation as GitHubInstallation,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

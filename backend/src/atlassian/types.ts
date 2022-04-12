@@ -56,7 +56,7 @@ export interface JiraWebhookPayload {
   timestamp: number; // 1646076066182
 
   // User that created the event
-  user: AtlassianUser;
+  user?: AtlassianUser;
 }
 
 interface Comment {

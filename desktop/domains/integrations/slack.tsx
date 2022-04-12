@@ -76,7 +76,9 @@ export const slackIntegrationClient: IntegrationClient = {
     });
   },
   async disconnect(teamId) {
-    accountStore.user?.slackInstallations.query({ team_id: teamId }).first?.remove();
+    const installation = accountStore.user?.slackInstallations.query({ team_id: teamId }).first;
+    installation?.channelFilters.all.forEach((channelFilter) => channelFilter.remove());
+    installation?.remove();
   },
 };
 
@@ -93,6 +95,7 @@ async function querySlackInstallationURL(teamId?: string) {
         }
       `,
       variables: { input: { teamId, redirectURL: "" } },
+      fetchPolicy: "no-cache",
     }
   );
   return assertDefined(slackInstallation?.url, "missing slack installation url");

@@ -50,15 +50,15 @@ const log = makeLogger("Notification-Events");
 
 export type NotificationInner = EntityDataByDefinition<typeof innerEntities[number]>;
 
+export const getReverseTime = (timestamp: string) => -1 * new Date(timestamp).getTime();
+
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   name: "notification",
   updatedAtField: "updated_at",
   keyField: "id",
   keys: getFragmentKeys<DesktopNotificationFragment>(notificationFragment),
-  defaultSort: (notification) => {
-    // Show newest first
-    return -1 * new Date(notification.created_at).getTime();
-  },
+  // Show newest first
+  defaultSort: (notification) => getReverseTime(notification.created_at),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification",
     user_id: getContextValue(userIdContext) ?? undefined,
@@ -205,7 +205,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   })
   .addAccessValidation((notification) => {
     if (!notification.inner) {
-      log.error(`No inner for entity ${notification.id}`);
+      log.debug(`No inner for entity ${notification.id}`);
       return false;
     }
     return true;

@@ -31,6 +31,7 @@ async function start() {
   const lastArg = process.argv.pop();
   if (lastArg === "staging") return startBuildForEnv("staging");
   if (lastArg === "production") return startBuildForEnv("production");
+  if (lastArg === "development") return startBuildForEnv("development");
   await startBuildForEnv("staging");
   await startBuildForEnv("production");
 }

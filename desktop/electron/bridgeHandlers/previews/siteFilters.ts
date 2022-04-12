@@ -1,10 +1,16 @@
 import { BrowserView } from "electron";
 import { StylesPart, css } from "styled-components";
 
+import { createCleanupObject } from "@aca/shared/cleanup";
+
+import { onElementAdded, onElementHidden, onElementRemoved } from "./elementObservers";
+import { markFullPageLoadTime, markHtmlPageLoadTime } from "./instrumentation";
+
 type SiteFilter = {
   on: (url: URL) => boolean;
   rewriteURL?: (url: URL) => string;
   css?: StylesPart;
+  onLoad?: (browserView: BrowserView) => void;
 };
 
 const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
@@ -12,6 +18,12 @@ const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
 const siteFilters: SiteFilter[] = [
   {
     on: (url) => isHostSlack(url),
+    onLoad: (browserView) =>
+      onElementRemoved(
+        browserView.webContents,
+        () => markFullPageLoadTime(browserView),
+        ".p-bookmarks_bar__placeholder_holder"
+      ),
     rewriteURL: (url) => url.toString().replace("/archives/", "/messages/"),
     css: css`
       .p-client {
@@ -36,6 +48,12 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
+    onLoad: (browserView) =>
+      onElementRemoved(
+        browserView.webContents,
+        () => markFullPageLoadTime(browserView),
+        ".p-bookmarks_bar__placeholder_holder"
+      ),
     css: css`
       .p-workspace-layout {
         grid-template-columns: auto 40% !important;
@@ -44,6 +62,8 @@ const siteFilters: SiteFilter[] = [
   },
   {
     on: (url) => url.hostname.endsWith("notion.so"),
+    onLoad: (browserView) =>
+      onElementAdded(browserView.webContents, () => markFullPageLoadTime(browserView), ".whenContentEditable"),
     css: css`
       .notion-sidebar-container {
         display: none;
@@ -52,6 +72,33 @@ const siteFilters: SiteFilter[] = [
         width: 100% !important;
       }
     `,
+  },
+  {
+    on: (url) => url.hostname.endsWith("figma.com"),
+    onLoad: (browserView) =>
+      onElementRemoved(
+        browserView.webContents,
+        () => markFullPageLoadTime(browserView),
+        '[class^="progress_bar--outer"]'
+      ),
+  },
+  {
+    on: (url) => url.hostname.endsWith("linear.app"),
+    onLoad: (browserView) =>
+      onElementHidden(browserView.webContents, () => markFullPageLoadTime(browserView), "#loading"),
+  },
+  {
+    on: (url) => url.hostname.endsWith("atlassian.net"),
+    onLoad: (browserView) =>
+      onElementAdded(
+        browserView.webContents,
+        () => markFullPageLoadTime(browserView),
+        '[data-test-id="issue.activity.comment"]'
+      ),
+  },
+  {
+    on: (url) => url.hostname.endsWith("github.com"),
+    onLoad: (browserView) => () => markFullPageLoadTime(browserView), // github is 95% ssr
   },
 ];
 
@@ -67,11 +114,26 @@ const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
 
 export async function loadURLWithFilters(browserView: BrowserView, url: string) {
-  const applicableSiteFilters = siteFilters.filter((filter) => filter.on(new URL(url)));
+  let parsedURL: URL;
+  try {
+    parsedURL = new URL(url);
+  } catch (_) {
+    throw new Error("Invalid URL: " + url);
+  }
+  const applicableSiteFilters = siteFilters.filter((filter) => filter.on(parsedURL));
   const filteredURL = applicableSiteFilters.reduce(
     (currentURL, filter) => filter.rewriteURL?.(new URL(currentURL)) ?? currentURL,
     url
   );
+
+  const cleanup = createCleanupObject();
+
+  function handleOnPageContentsLoaded() {
+    markHtmlPageLoadTime(browserView);
+    cleanup.next = applicableSiteFilters[0]?.onLoad?.(browserView);
+  }
+
+  browserView.webContents.on("did-finish-load", handleOnPageContentsLoaded);
 
   const insertApplicableCss = async () =>
     browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
@@ -79,4 +141,10 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
   await insertApplicableCss();
 
   browserView.webContents.on("did-navigate", insertApplicableCss);
+
+  return function cleanupUrlLoading() {
+    browserView.webContents.off("did-finish-load", handleOnPageContentsLoaded);
+    browserView.webContents.off("did-navigate", insertApplicableCss);
+    cleanup.clean();
+  };
 }
