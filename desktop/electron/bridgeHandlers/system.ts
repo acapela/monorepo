@@ -139,10 +139,14 @@ export function initializeSystemHandlers() {
   });
 
   focusMainViewRequest.handle(async () => {
-    focusMainView();
+    if (getMainWindow().isFocused()) {
+      focusMainView();
+    }
   });
 
   focusSenderViewRequest.handle(async (data, event) => {
-    event?.sender.focus();
+    if (getMainWindow().isFocused()) {
+      event?.sender.focus();
+    }
   });
 }
