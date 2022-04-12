@@ -1,4 +1,14 @@
-import { action, autorun, observable, reaction, runInAction, toJS, untracked } from "mobx";
+import {
+  CreateObservableOptions,
+  IObservableValue,
+  action,
+  autorun,
+  observable,
+  reaction,
+  runInAction,
+  toJS,
+  untracked,
+} from "mobx";
 
 import { getUUID } from "@aca/shared/uuid";
 
@@ -243,4 +253,28 @@ export function mobxItemAddedToArrayEffect<T>(
       effect.clean();
     });
   };
+}
+
+export function lazyBox<T>(getter: () => T, options?: CreateObservableOptions) {
+  let createdBox: IObservableValue<T> | undefined;
+
+  const lazyBox = {
+    get() {
+      if (!createdBox) {
+        createdBox = observable.box(getter(), options);
+      }
+
+      return createdBox.get();
+    },
+    set(value: T) {
+      if (!createdBox) {
+        createdBox = observable.box(value, options);
+        return;
+      }
+
+      createdBox.set(value);
+    },
+  };
+
+  return lazyBox;
 }

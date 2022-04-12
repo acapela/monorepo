@@ -1,10 +1,10 @@
 import { isEqual } from "lodash";
-import { action, computed, observable } from "mobx";
+import { action, computed } from "mobx";
 import { useObserver } from "mobx-react";
 import { isPrimitive } from "utility-types";
 
 import { createChannel } from "@aca/shared/channel";
-import { runUntracked, serializeUntracked } from "@aca/shared/mobx/utils";
+import { lazyBox, runUntracked, serializeUntracked } from "@aca/shared/mobx/utils";
 import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 
 import { createChannelBridge } from "./channels";
@@ -28,31 +28,35 @@ interface BridgeValueConfig<T> {
   isPersisted?: boolean;
 }
 
+function getInitialPersistedValues() {
+  if (process.env.ELECTRON_CONTEXT === "client") {
+    return window.electronBridge.env.initialPersistedValues;
+  } else {
+    return global.electronGlobal.appEnvData.get().initialPersistedValues;
+  }
+}
+
 export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
   type ValueData = ValueWithUpdateDate<T>;
 
   const localChannel = createChannel<ValueData>();
 
-  function getInitialPersistedValue() {
+  function getInitialPersistedValue(): ValueData | null {
     try {
       if (!isPersisted) {
-        return [false, null] as const;
+        null;
       }
 
-      if (typeof window === "undefined") {
-        return [false, null] as const;
-      }
-
-      const initialPersistedValues = window.electronBridge.env.initialPersistedValues;
+      const initialPersistedValues = getInitialPersistedValues();
       const maybePersistedValue: ValueWithUpdateDate<T> | undefined = Reflect.get(initialPersistedValues, valueKey);
 
       if (maybePersistedValue === undefined) {
-        return [false, null] as const;
+        return null;
       }
 
-      return [true, maybePersistedValue.value] as const;
+      return maybePersistedValue;
     } catch (error) {
-      return [false, null] as const;
+      return null;
     }
   }
 
@@ -66,20 +70,23 @@ export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted
     return { ...defaultValue, ...value };
   }
 
-  function getInitialValue() {
-    const [didGet, maybeValue] = getInitialPersistedValue();
+  function getInitialValue(): ValueData {
+    const persistedValue = getInitialPersistedValue();
 
-    if (didGet) {
-      return mixValueWithDefaults(maybeValue as T);
+    if (!persistedValue) {
+      return {
+        updatedAt: null,
+        value: getDefault(),
+      };
     }
 
-    return getDefault();
+    return {
+      updatedAt: persistedValue.updatedAt ? new Date(persistedValue.updatedAt) : null,
+      value: persistedValue.value,
+    };
   }
 
-  const observableValueData = observable.box<ValueData>(
-    { updatedAt: null, value: getInitialValue() },
-    { deep: false, equals: isEqual }
-  );
+  const observableValueData = lazyBox(getInitialValue, { deep: false, equals: isEqual });
 
   localChannel.subscribe(
     action((value) => {

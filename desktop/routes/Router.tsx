@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { allRouteNames, desktopRouter } from "@aca/desktop/routes";
@@ -12,14 +12,8 @@ import { Redirect } from "./Redirect";
 export function Router() {
   const activeRoute = desktopRouter.useRoute(allRouteNames);
 
-  useEffect(() => {
-    if (!activeRoute) {
-      desktopRouter.navigate("list", { listId: allNotificationsList.id });
-    }
-  }, [activeRoute]);
-
   if (!activeRoute) {
-    return <>"404"</>;
+    return <Redirect to={desktopRouter.createURL("list", { listId: allNotificationsList.id })} />;
   }
 
   switch (activeRoute.name) {
@@ -35,5 +29,5 @@ export function Router() {
       return <FocusModeView notificationId={activeRoute.params.notificationId} listId={activeRoute.params.listId} />;
   }
 
-  return <>"404"</>;
+  return <Redirect to={desktopRouter.createURL("list", { listId: allNotificationsList.id })} />;
 }

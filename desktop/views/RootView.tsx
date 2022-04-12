@@ -11,6 +11,7 @@ import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/auth";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 
+import { setAppVibrancyRequest } from "../bridge/system";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
 import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
@@ -23,6 +24,11 @@ export const RootView = observer(function RootView() {
   }, []);
 
   const user = authStore.userTokenData;
+
+  useEffect(() => {
+    if (!user || !db) return;
+    setAppVibrancyRequest("sidebar");
+  }, [user, db]);
 
   function renderApp() {
     if (!user) {

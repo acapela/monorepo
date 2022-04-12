@@ -7,6 +7,7 @@ import {
   focusSenderViewRequest,
   openLinkRequest,
   restartAppRequest,
+  setAppVibrancyRequest,
   setBadgeCountRequest,
   showMainWindowRequest,
   toggleDevtoolsRequest,
@@ -98,6 +99,16 @@ export function initializeSystemHandlers() {
     } else {
       senderWindow.maximize();
     }
+  });
+
+  setAppVibrancyRequest.handle(async (vibrancy, event) => {
+    if (!event) return;
+
+    const senderWindow = getSourceWindowFromIPCEvent(event);
+
+    if (!senderWindow) return;
+
+    senderWindow.setVibrancy(vibrancy);
   });
 
   toggleFullscreenRequest.handle(async (_, event) => {

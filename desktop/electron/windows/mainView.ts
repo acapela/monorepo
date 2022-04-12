@@ -6,8 +6,8 @@ import { PRELOAD_SCRIPT_PATH, getEntryHTMLFilePath } from "./paths";
 import { handleMainViewPosition } from "./utils/mainViewPosition";
 import { setBrowserViewZIndex } from "./viewZIndex";
 
-function loadAppInView(view: BrowserView) {
-  return view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
+async function loadAppInView(view: BrowserView) {
+  await view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
 }
 
 const windowMainViewMap = new WeakMap<BrowserWindow, BrowserView>();

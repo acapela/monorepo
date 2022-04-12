@@ -1,10 +1,9 @@
-import { BrowserView, BrowserWindow, app } from "electron";
+import { BrowserView, BrowserWindow } from "electron";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { getWindowMainView } from "../../windows/mainView";
-import { getMainWindow } from "../../windows/mainWindow";
 import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "../../windows/viewUtils";
 
 /**
@@ -103,7 +102,3 @@ async function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, p
 
   view.setBounds(electronRect);
 }
-
-app.whenReady().then(() => {
-  return handleWindowViewsPositioning(getMainWindow());
-});

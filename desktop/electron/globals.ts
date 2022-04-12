@@ -3,6 +3,7 @@ import { BrowserWindow, IpcMainEvent, app, ipcMain, webContents } from "electron
 import { ElectronChannelSubscriber } from "@aca/desktop/bridge/base/channels";
 
 import { getSourceWindowFromIPCEvent } from "./utils/ipc";
+import { appEnvData } from "./windows/env";
 
 /**
  * Important note.
@@ -19,6 +20,7 @@ const electronGlobal = {
   getSourceWindowFromIPCEvent,
   webContents,
   appReadyPromise: app.whenReady(),
+  appEnvData: appEnvData,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscribe: (channel: string, subscriber: ElectronChannelSubscriber<any>) => {
     function handler(event: IpcMainEvent, data: unknown) {
