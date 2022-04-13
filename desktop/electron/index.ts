@@ -8,7 +8,6 @@ import IS_DEV from "electron-is-dev";
 import { runInAction } from "mobx";
 import { register, setLogger } from "trace-unhandled";
 
-import { InitializeLogger } from "@aca/desktop/domains/dev/logger";
 import { makeLogger, registerLogEntryHandler, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
 import { logStorage } from "../bridge/logger";
@@ -20,7 +19,11 @@ import { initializeGlobalShortcuts } from "./globalShortcuts";
 import { initializeIpcBroadcast } from "./ipcBroadcast";
 import { initializeProtocolHandlers } from "./protocol";
 import { initializeDefaultSession } from "./session";
+import { appEnvData } from "./windows/env";
 import { getMainWindow } from "./windows/mainWindow";
+
+// Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
+protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
 
 registerLogEntryHandler((entry) => {
   logStorage.send(entry);
@@ -43,14 +46,12 @@ registerLoggerErrorReporter((body) => {
   }
 });
 
-// Mark default scheme as secure, thus allowing us to make credentialed requests for secure sites
-protocol.registerSchemesAsPrivileged([{ scheme: IS_DEV ? "http" : "file", privileges: { secure: true } }]);
-
 const log = makeLogger("Electron-Boot-Sequence");
 
-function initializeApp() {
-  log.info(`Initialize logger`);
-  InitializeLogger();
+async function initializeApp() {
+  await appEnvData.promise;
+
+  initializeDarkModeHandling();
 
   log.info(`Initialize bridge handlers`);
   initializeBridgeHandlers();
@@ -68,15 +69,14 @@ function initializeApp() {
 
   initializeDefaultSession();
 
-  initializeDarkModeHandling();
-
   initializeIpcBroadcast();
 
   setupAutoUpdater();
 }
 
 log.info(`Waiting for app ready`);
-app.on("ready", () => {
+
+app.whenReady().then(() => {
   log.info(`Electron App is ready`);
   runInAction(initializeApp);
 });

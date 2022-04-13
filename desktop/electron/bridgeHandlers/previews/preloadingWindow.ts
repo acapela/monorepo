@@ -1,9 +1,10 @@
-import { BrowserView, BrowserWindow, app } from "electron";
+import { BrowserView, BrowserWindow } from "electron";
 import { memoize } from "lodash";
 
 import { PreviewPosition } from "@aca/desktop/domains/preview";
 import { Point } from "@aca/shared/point";
 
+import { appAndEnvReadyPromise } from "../../windows/env";
 import { getMainWindow } from "../../windows/mainWindow";
 import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
 import { mirrorWindowSize } from "./utils/mirrorWindowSize";
@@ -75,6 +76,6 @@ export function attachViewToPreloadingWindow(
 /**
  * Lets initialize preloading window as soon as possible (so we dont wait for React to request it)
  */
-app.whenReady().then(() => {
+appAndEnvReadyPromise.then(() => {
   getPreloadingWindow();
 });

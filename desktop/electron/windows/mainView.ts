@@ -1,17 +1,18 @@
 import { BrowserView, BrowserWindow } from "electron";
 
-import { appEnvData } from "./env";
+import { AppEnvData } from "@aca/desktop/envData";
+
 import { PRELOAD_SCRIPT_PATH, getEntryHTMLFilePath } from "./paths";
 import { handleMainViewPosition } from "./utils/mainViewPosition";
 import { setBrowserViewZIndex } from "./viewZIndex";
 
-function loadAppInView(view: BrowserView) {
-  return view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
+async function loadAppInView(view: BrowserView) {
+  await view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
 }
 
 const windowMainViewMap = new WeakMap<BrowserWindow, BrowserView>();
 
-export function initializeMainView(mainWindow: BrowserWindow) {
+export function initializeMainView(mainWindow: BrowserWindow, appEnvData: AppEnvData) {
   const mainView = new BrowserView({
     webPreferences: {
       contextIsolation: true,

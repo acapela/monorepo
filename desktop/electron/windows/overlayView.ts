@@ -1,14 +1,15 @@
 import { BrowserView, BrowserWindow } from "electron";
 
+import { AppEnvData } from "@aca/desktop/envData";
+
 import { evaluateFunctionInWebContents } from "../utils/webContentsLink";
-import { appEnvData } from "./env";
 import { handleOverlayViewPosition } from "./overlayUtils/overlayViewPosition";
 import { PRELOAD_SCRIPT_PATH, getEntryHTMLFilePath } from "./paths";
 import { setBrowserViewZIndex } from "./viewZIndex";
 
 const windowMainViewMap = new WeakMap<BrowserWindow, BrowserView>();
 
-export function initializeOverlayView(mainWindow: BrowserWindow, mainView: BrowserView) {
+export function initializeOverlayView(mainWindow: BrowserWindow, mainView: BrowserView, appEnvData: AppEnvData) {
   const overlayView = new BrowserView({
     webPreferences: {
       contextIsolation: true,

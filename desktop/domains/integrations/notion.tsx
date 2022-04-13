@@ -20,7 +20,6 @@ export const notionIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_notion",
   name: "Notion",
   description: "Comments, mentions and page invitations.",
-  isReady: notionAuthTokenBridgeValue.observables.isReady,
   getCanConnect: () => !notionAuthTokenBridgeValue.get(),
   getAccounts: () => (notionAuthTokenBridgeValue.get() ? [{ kind: "account", id: "notion", name: "Notion" }] : []),
   getWorkspaces: () => {

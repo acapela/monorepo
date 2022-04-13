@@ -1,4 +1,3 @@
-import { IComputedValue, IObservableValue } from "mobx";
 import { ReactNode } from "react";
 
 import { OpenAppUrl } from "@aca/desktop/bridge/apps";
@@ -14,7 +13,6 @@ export interface IntegrationClient {
   description: string;
   icon: ReactNode;
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
-  isReady: IObservableValue<boolean> | IComputedValue<boolean>;
   // Returns false if an account is already connected and this integration only supports a single account
   getCanConnect?(): boolean;
   getAccounts(): IntegrationAccount[];

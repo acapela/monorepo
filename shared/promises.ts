@@ -72,3 +72,37 @@ export function createSharedPromise<T>(getter: () => Promise<T>) {
 
   return get;
 }
+
+interface ValueBox<V> {
+  value: V;
+}
+
+export function createSyncPromise<T>(getter: () => Promise<T>) {
+  let resolvedValue: ValueBox<T> | null = null;
+  let error: ValueBox<unknown> | null = null;
+
+  const promise = getter();
+
+  promise
+    .then((value) => {
+      resolvedValue = { value };
+    })
+    .catch((value) => {
+      error = { value };
+    });
+
+  return {
+    promise,
+    get() {
+      if (error) {
+        throw error.value;
+      }
+
+      if (!resolvedValue) {
+        throw new Error(`Called .get on createSyncPromise before it resolved`);
+      }
+
+      return resolvedValue.value;
+    },
+  };
+}

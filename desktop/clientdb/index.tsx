@@ -10,8 +10,6 @@ import { wait } from "@aca/shared/time";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
 const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid, setSelf }) => {
-  if (!authStore.isReady) return { value: null };
-
   const userId = computed(() => authStore.userTokenData?.id).get();
   const teamId = computed(() => authStore.teamId).get();
 

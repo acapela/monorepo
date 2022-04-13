@@ -1,11 +1,13 @@
 import * as Sentry from "@sentry/electron";
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, nativeTheme } from "electron";
 import IS_DEV from "electron-is-dev";
 import { memoize } from "lodash";
 import { autorun } from "mobx";
 
 import { applicationFocusStateBridge, applicationStateBridge } from "../../bridge/system";
+import { handleWindowViewsPositioning } from "../bridgeHandlers/previews/position";
 import { initializeChildWindowHandlers } from "./childWindows";
+import { appEnvData } from "./env";
 import { initializeMainView } from "./mainView";
 import { initializeOverlayView } from "./overlayView";
 import { createBrowserWindowMobxBinding } from "./utils/browserWindowMobxBinding";
@@ -43,18 +45,17 @@ function initializeMainWindow() {
     minWidth: 900,
     minHeight: 680,
     titleBarStyle: "hiddenInset",
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#1C1C1C" : "#ffffff",
     fullscreenable: true,
-    vibrancy: "sidebar",
     trafficLightPosition: { x: 19, y: 18 },
     webPreferences: {
       devTools: false,
     },
-    //
   });
 
-  const mainView = initializeMainView(mainWindow);
+  const mainView = initializeMainView(mainWindow, appEnvData.get());
 
-  const overlayView = initializeOverlayView(mainWindow, mainView);
+  const overlayView = initializeOverlayView(mainWindow, mainView, appEnvData.get());
 
   const mainWindowWebContents = mainWindow.webContents;
 
@@ -80,6 +81,10 @@ function initializeMainWindow() {
 
   makeLinksOpenInDefaultBrowser(mainWindow.webContents);
 
+  initializeMainWindowBridge(mainWindow);
+
+  handleWindowViewsPositioning(mainWindow);
+
   return { mainWindow, mainView, overlayView };
 }
 
@@ -97,9 +102,8 @@ export const getMainWindowState = memoize(() => {
   return createBrowserWindowMobxBinding(getMainWindow());
 });
 
-app.whenReady().then(() => {
-  const mainWindowState = getMainWindowState();
-
+function initializeMainWindowBridge(mainWindow: BrowserWindow) {
+  const mainWindowState = createBrowserWindowMobxBinding(mainWindow);
   autorun(() => {
     const { isFocused } = mainWindowState;
 
@@ -117,4 +121,4 @@ app.whenReady().then(() => {
 
     applicationStateBridge.update({ isFullscreen });
   });
-});
+}

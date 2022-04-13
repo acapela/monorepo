@@ -3,6 +3,7 @@ import { action, makeAutoObservable } from "mobx";
 
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { assert } from "@aca/shared/assert";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 
 import { watchUserTeamId } from "./currentTeam";
@@ -17,13 +18,8 @@ import { watchUserTeamId } from "./currentTeam";
  */
 
 export const authStore = makeAutoObservable({
-  get isReady() {
-    return authTokenBridgeValue.isReady;
-  },
   get userTokenData() {
-    if (!authStore.isReady) return null;
-
-    const rawToken = authTokenBridgeValue.get();
+    const rawToken = authTokenBridgeValue.value;
 
     if (!rawToken) return null;
 
@@ -56,3 +52,6 @@ autorunEffect(() => {
     })
   );
 });
+
+devAssignWindowVariable("authStore", authStore);
+devAssignWindowVariable("authTokenBridgeValue", authTokenBridgeValue);

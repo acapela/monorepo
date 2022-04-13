@@ -1,4 +1,3 @@
-import { computed } from "mobx";
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
@@ -19,9 +18,6 @@ export const jiraIntegrationClient: IntegrationClient = {
   description: "Jira issue updates and comments",
   icon: <IntegrationIcon imageUrl={integrationLogos.jira} />,
 
-  get isReady() {
-    return computed(() => accountStore.user !== null);
-  },
   getAccounts: () => (getAtlassianAccounts().length > 0 ? [{ kind: "account", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
     return !!accountStore.user && getAtlassianAccounts().length == 0;
