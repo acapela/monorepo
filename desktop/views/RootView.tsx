@@ -15,6 +15,7 @@ import { setAppVibrancyRequest } from "../bridge/system";
 import { LoadingScreen } from "./LoadingView";
 import { LoginView } from "./LoginView";
 import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
+import { OnboardingView } from "./OnboardingView/OnboardingView";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
@@ -31,6 +32,8 @@ export const RootView = observer(function RootView() {
   }, [user, db]);
 
   function renderApp() {
+    return <OnboardingView />;
+
     if (!user) {
       return <LoginView />;
     }
