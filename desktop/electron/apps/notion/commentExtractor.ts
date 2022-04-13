@@ -51,12 +51,11 @@ export function extractBlockMention(
   if (!blockValue) {
     return;
   }
-  let properties;
-  try {
-    properties = SomeBlockValue.parse(blockValue).properties;
-  } catch (e) {
-    throw new Error(`Failed to parse block value: ${JSON.stringify(blockValue, null, 2)}`);
+  const blockParseResult = SomeBlockValue.safeParse(blockValue);
+  if (!blockParseResult.success) {
+    return;
   }
+  const { properties } = blockParseResult.data;
 
   if (!properties[mentioned_property]) {
     return;
