@@ -1,5 +1,4 @@
-import { subMinutes } from "date-fns";
-import { groupBy } from "lodash";
+import { subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
@@ -14,28 +13,21 @@ export async function handleNotificationSlackMessageChanges(event: HasuraEvent<N
 
 export async function markSlackConversationsAsRead() {
   const oldReadConversations = await db.user_slack_conversation_read.findMany({
-    where: { updated_at: { lt: subMinutes(new Date(), 1).toISOString() } },
+    where: { updated_at: { lt: subSeconds(new Date(), 30).toISOString() } },
     include: { user_slack_installation: true },
   });
-  // We try to group conversations on the db level, but there is room for race conditions, so we also group
-  // after querying
-  const groupedConversations = groupBy(oldReadConversations, (c) =>
-    JSON.stringify([c.user_slack_installation_id, c.slack_conversation_id, c.slack_thread_ts])
-  );
-  for (const items of Object.values(groupedConversations)) {
-    // TODO: we have a bug here, disabling it temporarily
-    break;
-    const [{ user_slack_installation, slack_conversation_id }] = items;
-    const lastMessageTs = items.reduce(
-      (acc, { slack_last_message_ts }) => Math.max(acc, Number(slack_last_message_ts)),
-      0
-    );
+  for (const readConversation of oldReadConversations) {
     try {
-      await slackClient.conversations.mark({
-        token: (user_slack_installation.data as unknown as SlackInstallation).user.token,
-        channel: slack_conversation_id,
-        ts: lastMessageTs.toString(),
-      });
+      const token = (readConversation.user_slack_installation.data as unknown as SlackInstallation).user.token;
+      const channel = readConversation.slack_conversation_id;
+      const { channel: conversation } = await slackClient.conversations.info({ token, channel });
+      if (Number(conversation?.last_read) < Number(readConversation.slack_last_message_ts)) {
+        await slackClient.conversations.mark({
+          token,
+          channel,
+          ts: readConversation.slack_last_message_ts,
+        });
+      }
     } catch (e) {
       logger.error(e);
     }
