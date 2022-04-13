@@ -32,7 +32,6 @@ async function addRelatedSlackMessageToMarkAsReadQueue(notification_id: string) 
 export async function handleNotificationChanges(event: HasuraEvent<Notification>) {
   if (
     event.type == "update" &&
-    !event.item.was_auto_resolved &&
     event.item.resolved_at &&
     !event.itemBefore.resolved_at &&
     // we only want to test this feature in staging for now
