@@ -5,12 +5,14 @@ import { UnprocessableEntityError, isHttpError } from "@aca/backend/src/errors/e
 import { logger } from "@aca/shared/logger";
 
 import { refreshExpiringAtlassianProperties } from "../atlassian/utils";
+import { renewGmailWatchers } from "../gmail/capture";
 import { HttpStatus } from "../http";
 import { markSlackConversationsAsRead } from "../slack/events";
 
 export const router = Router();
 
 const handlers: Record<string, Function> = {
+  "renew-gmail-watchers": renewGmailWatchers,
   "mark-slack-conversations-as-read": markSlackConversationsAsRead,
   "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
 };

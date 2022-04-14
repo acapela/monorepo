@@ -1,0 +1,20 @@
+table:
+  schema: public
+  name: notification_gmail
+object_relationships:
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - created_at
+        - updated_at
+        - notification_id
+        - gmail_account_id
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id

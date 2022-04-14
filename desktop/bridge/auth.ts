@@ -60,6 +60,8 @@ export const loginGitHubBridge = createInvokeBridge<{ logout: boolean; installat
   "login-github"
 );
 
+export const loginGmailBridge = createInvokeWithCleanupBridge("login-gmail");
+
 /*
   NEW SERVICE!?!?!?
   Add new services here! Until refactored

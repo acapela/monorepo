@@ -1,55 +1,55 @@
 table:
-  name: notion_space_user
   schema: public
+  name: notion_space_user
 object_relationships:
-- name: notion_space
-  using:
-    foreign_key_constraint_on: notion_space_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: notion_space
+    using:
+      foreign_key_constraint_on: notion_space_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      user_id:
-        _eq: X-Hasura-User-Id
-    columns:
-    - created_at
-    - first_synced_at
-    - id
-    - is_sync_enabled
-    - notion_space_id
-    - updated_at
-    - user_id
-  role: user
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - created_at
+        - first_synced_at
+        - id
+        - is_sync_enabled
+        - notion_space_id
+        - updated_at
+        - user_id
+      backend_only: false
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - first_synced_at
-    - id
-    - is_sync_enabled
-    - notion_space_id
-    - updated_at
-    - user_id
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - first_synced_at
+        - id
+        - is_sync_enabled
+        - notion_space_id
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
 update_permissions:
-- permission:
-    check: null
-    columns:
-    - is_sync_enabled
-    - updated_at
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - is_sync_enabled
+        - updated_at
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
 delete_permissions:
-- permission:
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id

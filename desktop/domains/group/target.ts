@@ -141,5 +141,9 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_gmail") {
+    return { id: targetNotification.id, name: "", integration: "gmail", integrationTitle: "jemel" };
+  }
+
   return unknownTarget;
 }
