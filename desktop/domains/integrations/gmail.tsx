@@ -10,7 +10,7 @@ import { IntegrationClient } from "./types";
 export const gmailIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_gmail",
-  name: "GMail",
+  name: "Gmail",
   description: "New emails",
   getCanConnect: () => !getDb().gmailAccount.hasItems,
   getAccounts: () =>

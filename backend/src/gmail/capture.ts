@@ -58,6 +58,9 @@ export async function renewGmailWatchers() {
 const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
   headers.find((h) => h.name === name)?.value;
 
+const isMessageAlreadyRecorded = (id: string) => db.notification_gmail.findUnique({ where: { gmail_message_id: id } });
+
+// Listens to messages posted to the Gmail topic's subscription
 export function listenToGmailSubscription() {
   const pubsub = new PubSub({ projectId: PROJECT_ID });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
@@ -72,22 +75,26 @@ export function listenToGmailSubscription() {
       throw new Error("Missing gmail account for email " + eventData.emailAddress);
     }
     const { account } = gmailAccount;
+
+    // We need to use historyId to fetch messages that came thereafter. Initially there is no historyId set, so we just
+    // save the current one and early-return.
     await db.gmail_account.update({
       where: { id: gmailAccount.id },
       data: { last_history_id: eventData.historyId },
     });
-
     const lastHistoryId = gmailAccount.last_history_id;
     if (!lastHistoryId) {
       return;
     }
+
     const gmail = createGmailClientForAccount(account);
     const historyResponse = await gmail.users.history.list({
       userId: account.provider_account_id,
       startHistoryId: lastHistoryId.toString(),
     });
-    for (const { message } of (historyResponse.data.history ?? []).flatMap((h) => h.messagesAdded ?? [])) {
-      if (!message?.id || (await db.notification_gmail.findUnique({ where: { gmail_message_id: message.id } }))) {
+    const newMessages = (historyResponse.data.history ?? []).flatMap((h) => h.messagesAdded ?? []);
+    for (const { message } of newMessages) {
+      if (!message?.id || (await isMessageAlreadyRecorded(message.id))) {
         continue;
       }
       const { data } = await gmail.users.messages

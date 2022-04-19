@@ -8,9 +8,11 @@ import { IntegrationCard } from "./IntegrationCard";
 export function IntegrationsManager() {
   return (
     <UIHolder>
-      {integrationClientList.map((integration) => {
-        return <IntegrationCard key={integration.name} service={integration} />;
-      })}
+      {integrationClientList
+        .filter((integration) => process.env.STAGE !== "production" || integration.name !== "Gmail")
+        .map((integration) => (
+          <IntegrationCard key={integration.name} service={integration} />
+        ))}
     </UIHolder>
   );
 }
