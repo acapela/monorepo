@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { openFocusMode, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconCheck, IconTime } from "@aca/ui/icons";
@@ -25,16 +26,16 @@ export function OnboardingNotificationRow({ notification, onSelectRequest, onDes
   const holderRef = useRef<HTMLDivElement>(null);
   useUserFocusedOnElement(holderRef, onSelectRequest, onDeselectRequest);
 
-  useShortcut("E", () => onResolve?.(notification), { isEnabled: isSelected });
+  useShortcut(resolveNotification.shortcut!, () => onResolve?.(notification), { isEnabled: isSelected });
   useShortcut(
-    "H",
+    snoozeNotification.shortcut!,
     () => {
       onSnooze?.(notification);
       return true;
     },
     { isEnabled: isSelected }
   );
-  useShortcut("Enter", () => onOpen?.(notification), { isEnabled: isSelected });
+  useShortcut(openFocusMode.shortcut!, () => onOpen?.(notification), { isEnabled: isSelected });
 
   return (
     <UIHolder
@@ -79,7 +80,7 @@ const UIHolder = styled.div<{ $isSelected: boolean }>`
   gap: 10px;
   height: 48px;
   padding: 0 20px;
-  ${(props) => props.$isSelected && theme.colors.layout.backgroundAccent.hover.asBgWithReadableText};
+  ${(props) => props.$isSelected && theme.colors.layout.backgroundAccent.hover.asBg};
 `;
 const UIIcon = styled.div`
   font-size: 20px;

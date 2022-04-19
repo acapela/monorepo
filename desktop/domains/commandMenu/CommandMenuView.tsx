@@ -212,12 +212,12 @@ const UIBody = styled(PopPresenceAnimator)`
   max-height: 60vh;
   width: 100%;
   padding-top: 16px;
-  border-radius: 10px;
+  ${theme.radius.panel};
   color: #fff;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 50px #0004;
+  ${theme.shadow.popoverPrimaryPanel};
 `;
 
 const UIInputHolder = styled.div<{ $hasKeyword: boolean }>`

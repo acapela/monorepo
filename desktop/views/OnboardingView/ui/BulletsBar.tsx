@@ -30,10 +30,7 @@ export function BulletsBar<T>({ items, activeItem, onActivateRequest, allowMovin
               onActivateRequest(item);
             }}
           >
-            <UIBulletHolder
-            //
-            //  data-tooltip={wouldSkipNextStep ? "Cannot skip previous step" : undefined}
-            >
+            <UIBulletHolder>
               <UIBullet />
             </UIBulletHolder>
           </UIBulletClicker>
@@ -57,7 +54,6 @@ const UIBulletClicker = styled.div<{ $isActive: boolean; $isDisabled: boolean }>
   align-items: center;
 
   opacity: ${(props) => (props.$isActive ? 0.7 : 0.3)};
-  /* pointer-events: ${(props) => (props.$isDisabled ? "none" : "all")}; */
 
   ${theme.transitions.hover()}
 

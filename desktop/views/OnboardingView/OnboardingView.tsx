@@ -5,8 +5,10 @@ import styled, { keyframes } from "styled-components";
 
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { desktopRouter } from "@aca/desktop/routes";
+import { accountStore } from "@aca/desktop/store/account";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
 import { getNextItemInArray } from "@aca/shared/array";
+import { nowISO } from "@aca/shared/dates/iso";
 import { getObjectKey } from "@aca/shared/object";
 import { createTimeout } from "@aca/shared/time";
 import { fadeInKeyframes } from "@aca/ui/animations";
@@ -17,13 +19,26 @@ import { OnboardingStage, onboardingStages } from "./stage";
 import { BulletsBar } from "./ui/BulletsBar";
 import { OnboardingAnimationsOrchestrator } from "./ui/enterAnimations";
 
+/**
+ * ~time until last stage will fade out (~ because it is spring animation without set duration)
+ */
+const ONBOARDING_EXIT_DELAY = 150;
+
 export const OnboardingView = observer(function OnboardingView() {
+  const user = accountStore.user;
   const [currentStage, setCurrentStage] = useState<OnboardingStage | null>(onboardingStages[0]);
 
   function goToNextStage() {
     const nextStage = getNextItemInArray(onboardingStages, currentStage);
 
     setCurrentStage(nextStage);
+  }
+
+  function finishOnboarding() {
+    user?.update({ onboarding_finished_at: nowISO() });
+
+    startOnboardingFinishedAnimation();
+    desktopRouter.navigate("home");
   }
 
   /**
@@ -33,9 +48,8 @@ export const OnboardingView = observer(function OnboardingView() {
     if (currentStage) return;
     // Wait a moment to allow last stage to partially fade out to create a bit more smooth transition
     return createTimeout(() => {
-      startOnboardingFinishedAnimation();
-      desktopRouter.navigate("home");
-    }, 150);
+      finishOnboarding();
+    }, ONBOARDING_EXIT_DELAY);
   }, [currentStage]);
 
   return (
@@ -102,7 +116,7 @@ const UIWindowDragger = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 20;
+  ${theme.zIndex.top}
 `;
 
 const UIBullets = styled.div`

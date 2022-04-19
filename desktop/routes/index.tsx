@@ -119,7 +119,7 @@ type RedirectProps<RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes
 /**
  * Type safe version of Redirect component
  */
-export function Redirect<
+export function AppRedirect<
   RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
 >(props: RedirectProps<RouteName>) {
   useLayoutEffect(() => {

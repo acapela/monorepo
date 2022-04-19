@@ -31,6 +31,8 @@ const sampleNotificationTitles = [
   "Adam mentioned you in #product",
 ];
 
+const FAKE_APP_FADE_OUT_DURATION = 350;
+
 /**
  * getItemFromArrayByIndexWithLoop([1,2,3,4,5], 12) -> 3
  */
@@ -81,7 +83,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                         index={6}
                         content="Go back to notifications list"
                         onCompleted={async () => {
-                          await wait(350);
+                          await wait(FAKE_APP_FADE_OUT_DURATION);
                           onContinue();
                         }}
                       >

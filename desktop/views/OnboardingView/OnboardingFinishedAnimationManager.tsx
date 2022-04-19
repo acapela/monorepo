@@ -17,7 +17,7 @@ export function OnboardingFinishedAnimationManager() {
   return <Styles />;
 }
 
-const animationDuration = 3500;
+const animationDurationInMs = 3500;
 
 const createFadeAnimation = memoize(function createFadeAnimation(backgroundColor: string) {
   const animation = keyframes`
@@ -42,7 +42,7 @@ const createFadeAnimation = memoize(function createFadeAnimation(backgroundColor
 export async function startOnboardingFinishedAnimation() {
   document.body.classList.add("animate-after-onboarding");
 
-  await wait(animationDuration + 200);
+  await wait(animationDurationInMs + 200);
 
   document.body.classList.remove("animate-after-onboarding");
 }
@@ -59,7 +59,7 @@ const Styles = createGlobalStyle`
       const animation = createFadeAnimation(rootBg);
 
       return css`
-        animation: ${animation} ${animationDuration / 1000}s ease-out both;
+        animation: ${animation} ${animationDurationInMs / 1000}s ease-out both;
       `;
     }}
     

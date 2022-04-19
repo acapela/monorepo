@@ -15,7 +15,7 @@ export const StageWelcome = observer(({ onContinue }: OnboardingStageProps) => {
   return (
     <OnboardingStageContainer>
       <OnboardingStageSections>
-        <OnboardingAnimationItem key="foo">
+        <OnboardingAnimationItem>
           <UILogoHolder>
             <UILogo />
             <UIShadowAnimator />

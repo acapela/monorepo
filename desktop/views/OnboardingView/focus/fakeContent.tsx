@@ -10,7 +10,6 @@ import { getRandomInt } from "@aca/shared/numbers";
  */
 
 const springTransition: Transition = {
-  // duration: 1,
   type: "spring",
   stiffness: 150,
   damping: 30,

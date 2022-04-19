@@ -10,7 +10,7 @@ import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
-import { Redirect } from "../routes";
+import { AppRedirect } from "../routes";
 import { accountStore } from "../store/account";
 import { onboardingStore } from "../store/onboarding";
 import { Logo } from "../ui/Logo";
@@ -22,15 +22,15 @@ export const LoginView = observer(function LoginView() {
     return <LoginPanelView />;
   }
 
-  if (user.isNew) {
-    return <Redirect to="onboarding" />;
+  if (!user.didFinishOnboarding) {
+    return <AppRedirect to="onboarding" />;
   }
 
   if (!onboardingStore.hasLinkedApps) {
-    return <Redirect to="connect" />;
+    return <AppRedirect to="connect" />;
   }
 
-  return <Redirect to="home" />;
+  return <AppRedirect to="home" />;
 });
 
 const LoginPanelView = observer(() => {

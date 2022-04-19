@@ -73,7 +73,6 @@ const UISidebar = styled.div`
   ${spacing};
   flex-grow: 1;
   max-width: 200px;
-  /* ${theme.colors.layout.backgroundAccent.asBg}; */
   display: flex;
   flex-direction: column;
   gap: 30px;

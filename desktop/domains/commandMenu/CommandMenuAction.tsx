@@ -69,12 +69,10 @@ const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
   display: flex;
   gap: 15px;
   align-items: center;
-  border-left: 2px solid #fff0;
+  border-left: 2px solid transparent;
 
   ${UIIcon} {
     opacity: ${(props) => (props.$isActive ? 1 : 0.75)};
-    /* transform: scale(${(props) => (props.$isActive ? 1.15 : 1)}); */
-    /* color: ${(props) => (props.$isActive ? theme.colors.primary.value : "inherit")}; */
   }
 
   ${(props) =>

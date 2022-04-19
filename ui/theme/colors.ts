@@ -34,6 +34,7 @@ const lightGray = color("hsl(220, 33%, 98%)", {
 const blue = color("hsl(204, 100%, 50%)");
 
 const green = color("hsl(169,100%,37%)");
+const success = color("hsl(147,81%,46%)");
 
 const divider = color("#8882");
 
@@ -43,6 +44,7 @@ const inverted = color("#111827");
 
 export const defaultColors = {
   primary,
+  success,
   secondary,
   text: darkGrey,
   inverted,

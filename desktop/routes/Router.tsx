@@ -1,7 +1,7 @@
 import React from "react";
 
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
-import { Redirect, allRouteNames, desktopRouter } from "@aca/desktop/routes";
+import { AppRedirect, allRouteNames, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
@@ -15,12 +15,12 @@ export function Router() {
   const activeRoute = desktopRouter.useRoute(allRouteNames);
 
   if (!activeRoute) {
-    return <Redirect to="list" params={{ listId: allNotificationsList.id }} />;
+    return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
   }
 
   switch (activeRoute.name) {
     case "home":
-      return <Redirect to="list" params={{ listId: allNotificationsList.id }} />;
+      return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
     case "settings":
       return <SettingsView sectionId={activeRoute.params.section} />;
     case "notification":
@@ -37,5 +37,5 @@ export function Router() {
       return <LoginView />;
   }
 
-  return <Redirect to="list" params={{ listId: allNotificationsList.id }} />;
+  return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
 }

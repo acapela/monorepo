@@ -81,7 +81,7 @@ const UICheckPlaceholder = styled.div`
   height: 1em;
   max-height: 1em;
   line-height: 1em;
-  color: #16d96e;
+  ${theme.colors.success.asColor};
 `;
 
 const buttonHighlight = css`
