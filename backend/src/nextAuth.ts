@@ -6,10 +6,12 @@ import AtlassianProvider from "next-auth/providers/atlassian";
 import GoogleProvider from "next-auth/providers/google";
 import SlackProvider from "next-auth/providers/slack";
 
+import { setupGmailWatcher } from "@aca/backend/src/gmail/capture";
 import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
+import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { Maybe } from "@aca/shared/types";
 
@@ -33,8 +35,6 @@ assertEnvVariable(process.env.SLACK_CLIENT_SECRET, "SLACK_CLIENT_SECRET");
 
 const toAdapterUser = (user: User): AdapterUser => ({ ...user, id: user.id, emailVerified: user.email_verified });
 const toMaybeAdapterUser = (user: Maybe<User>): AdapterUser | null => (user ? toAdapterUser(user) : null);
-
-const GOOGLE_AUTH_SCOPES = ["userinfo.profile", "userinfo.email"];
 
 const ACCOUNTS_WITHOUT_USER_UPDATES = ["atlassian"];
 
@@ -80,13 +80,13 @@ function nextAuthMiddleware(req: Request, res: Response) {
       },
 
       async redirect({ url, baseUrl }) {
-        if (url.includes("/auth/atlassian")) {
+        if (url.includes("/auth/sign-in")) {
           return `${baseUrl}/auth/success`;
         }
         return url;
       },
 
-      async signIn({ account }) {
+      async signIn({ account, profile }) {
         db.user
           .findFirst({
             where: {
@@ -102,11 +102,14 @@ function nextAuthMiddleware(req: Request, res: Response) {
 
         try {
           // If our current account has no refresh token, try to update it if we have it now.
-          if (typeof account.refreshToken == "string") {
+          if (typeof account.refresh_token == "string") {
             await db.account.updateMany({
               where: { provider_account_id: account.providerAccountId, provider_id: account.provider },
-              data: { refresh_token: account.refreshToken },
+              data: { access_token: account.access_token, refresh_token: account.refresh_token, email: profile.email },
             });
+            if (account.provider == "google" && account.scope?.includes(GMAIL_SCOPE)) {
+              await setupGmailWatcher(account);
+            }
           }
 
           return true;
@@ -189,7 +192,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
         authorization: `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams({
           prompt: "select_account", // always ask which google user to use, instead of auto picking
           access_type: "offline", // !!! Get new refresh token each time user gives content for our access scopes
-          scope: GOOGLE_AUTH_SCOPES.map((scopeName) => `https://www.googleapis.com/auth/${scopeName}`).join(" "),
+          scope: GOOGLE_AUTH_SCOPES,
         })}`,
         allowDangerousEmailAccountLinking: true,
       }),

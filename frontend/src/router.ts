@@ -9,7 +9,7 @@ const routes = {
   appDownload: "/app/download",
   appLogin: "/app/login",
   errorTestPage: "/obscure-error-test-page",
-  authAtlassian: "/auth/atlassian",
+  authSignIn: "/auth/sign-in",
   authError: "/auth/error",
   authSuccess: "/auth/success",
 } as const;

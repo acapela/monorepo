@@ -5,6 +5,8 @@ import figma from "./figma.png";
 // @ts-ignore
 import github from "./github.svg";
 // @ts-ignore
+import gmail from "./gmail.png";
+// @ts-ignore
 import jira from "./jira.svg";
 // @ts-ignore
 import linear from "./linear.png";
@@ -13,4 +15,4 @@ import notion from "./notion.png";
 // @ts-ignore
 import slack from "./slack.png";
 
-export const integrationLogos = { figma, linear, notion, slack, jira, github };
+export const integrationLogos = { figma, linear, notion, slack, jira, github, gmail };

@@ -8,6 +8,7 @@ export type {
   account as Account,
   atlassian_site as AtlassianSite,
   github_account_to_installation as GithubAccountToInstallation,
+  gmail_account as GmailAccount,
   jira_account as JiraAccount,
   jira_webhook as JiraWebhook,
   linear_issue as LinearIssue,

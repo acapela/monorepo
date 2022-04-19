@@ -1,87 +1,87 @@
 table:
-  name: team_member
   schema: public
+  name: team_member
 object_relationships:
-- name: team
-  using:
-    foreign_key_constraint_on: team_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      team:
-        memberships:
-          _and:
-          - user_id:
-              _eq: X-Hasura-User-Id
-          - user_id:
-              _ceq: user_id
-    columns:
-    - created_at
-    - id
-    - team_id
-    - timezone
-    - updated_at
-    - user_id
-    - work_end_hour_in_utc
-    - work_start_hour_in_utc
-  role: user
-select_permissions:
-- permission:
-    columns:
-    - created_at
-    - has_joined
-    - id
-    - team_id
-    - timezone
-    - updated_at
-    - user_id
-    - work_end_hour_in_utc
-    - work_start_hour_in_utc
-    filter:
-      team:
-        memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
-  role: user
-update_permissions:
-- permission:
-    check: null
-    columns:
-    - timezone
-    - work_end_hour_in_utc
-    - work_start_hour_in_utc
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
-delete_permissions:
-- permission:
-    filter:
-      team:
-        owner_id:
-          _eq: X-Hasura-User-Id
-  role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
+  - role: user
+    permission:
+      check:
+        team:
+          memberships:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - user_id:
+                  _ceq: user_id
       columns:
-      - team_id
-      - user_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: team_member_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+        - created_at
+        - id
+        - team_id
+        - timezone
+        - updated_at
+        - user_id
+        - work_end_hour_in_utc
+        - work_start_hour_in_utc
+      backend_only: false
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - has_joined
+        - id
+        - team_id
+        - timezone
+        - updated_at
+        - user_id
+        - work_end_hour_in_utc
+        - work_start_hour_in_utc
+      filter:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - timezone
+        - work_end_hour_in_utc
+        - work_start_hour_in_utc
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        team:
+          owner_id:
+            _eq: X-Hasura-User-Id
+event_triggers:
+  - name: team_member_updates
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+      delete:
+        columns: '*'
+      update:
+        columns:
+          - team_id
+          - user_id
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER

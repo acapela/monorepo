@@ -77,6 +77,9 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       }
       return `Unhandled notification in "${inner.title}"`;
     }
+    case "notification_gmail": {
+      return "";
+    }
     default:
       return "Unhandled notification!!";
   }

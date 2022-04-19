@@ -72,12 +72,15 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    const response = error.response as AxiosResponse;
-    if (response.status >= 400 && response.status < 500) {
-      handleFigmaNotAuthorized();
+    const response = error.response as AxiosResponse | undefined;
+    if (response) {
+      if (response.status >= 400 && response.status < 500) {
+        handleFigmaNotAuthorized();
+      }
+      throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
     }
 
-    throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
+    throw error;
   }
 
   const result = response.data as GetFigmaUserNotificationsResponse;

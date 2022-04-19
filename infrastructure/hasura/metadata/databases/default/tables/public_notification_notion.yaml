@@ -1,56 +1,56 @@
 table:
-  name: notification_notion
   schema: public
+  name: notification_notion
 object_relationships:
-- name: notification
-  using:
-    foreign_key_constraint_on: notification_id
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-    columns:
-    - author_id
-    - created_at
-    - id
-    - notification_id
-    - notion_original_notification_id
-    - notion_space_id
-    - page_id
-    - page_title
-    - space_id
-    - updated_at
-  role: user
+  - role: user
+    permission:
+      check:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+      columns:
+        - author_id
+        - created_at
+        - id
+        - notification_id
+        - notion_original_notification_id
+        - notion_space_id
+        - page_id
+        - page_title
+        - space_id
+        - updated_at
+      backend_only: false
 select_permissions:
-- permission:
-    columns:
-    - author_id
-    - created_at
-    - id
-    - notification_id
-    - notion_original_notification_id
-    - notion_space_id
-    - page_id
-    - page_title
-    - space_id
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - author_id
+        - created_at
+        - id
+        - notification_id
+        - notion_original_notification_id
+        - notion_space_id
+        - page_id
+        - page_title
+        - space_id
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
 update_permissions:
-- permission:
-    check: null
-    columns:
-    - page_title
-    - space_id
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - page_title
+        - space_id
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+      check: null
