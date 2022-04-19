@@ -14,8 +14,13 @@ export function initializeGmailAuthHandler() {
         scope: GOOGLE_AUTH_WITH_GMAIL_SCOPES,
       })}`
     );
-    return () => {
-      window.destroy();
-    };
+    return new Promise<void>((resolve) => {
+      window.webContents.on("did-navigate-in-page", async () => {
+        if (window.webContents.getURL().includes("/auth/success")) {
+          window.close();
+          resolve();
+        }
+      });
+    });
   });
 }
