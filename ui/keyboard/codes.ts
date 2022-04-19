@@ -158,4 +158,5 @@ export type ShortcutKey =
   | "6"
   | "7"
   | "8"
-  | "9";
+  | "9"
+  | "?";

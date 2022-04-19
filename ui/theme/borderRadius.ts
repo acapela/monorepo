@@ -14,6 +14,6 @@ export const radius = {
   badge: buildBorderRadiusStyle(3),
   secondaryItem: secondaryItem,
   primaryItem: primaryItem,
-  panel: primaryItem,
+  panel: buildBorderRadiusStyle(10),
   circle: buildBorderRadiusStyle(1000),
 };

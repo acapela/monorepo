@@ -9,6 +9,6 @@ const launchElectron = () =>
 test("Electron app is starting", async () => {
   const electronApp = await launchElectron();
   const window = await electronApp.firstWindow();
-  await window.waitForSelector("text=Sign into Acapela");
+  await window.waitForSelector("text=Log in to Acapela");
   await electronApp.close();
 });

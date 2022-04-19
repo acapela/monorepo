@@ -22,6 +22,7 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { logStorage } from "../bridge/logger";
 import { registerLogEntryHandler } from "../domains/dev/makeLogger";
 import { BadgeCountManager } from "../views/BadgeCountManager";
+import { OnboardingFinishedAnimationManager } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
 import { AppStyleProvider } from "./AppStyleProvider";
 import { LoggerWindowManager } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
@@ -61,6 +62,7 @@ function App() {
     <>
       <ApolloProvider client={apolloClient}>
         <AppStyleProvider>
+          <OnboardingFinishedAnimationManager />
           <GlobalShortcutsManager />
           <PromiseUIRenderer />
           <TooltipsRenderer />

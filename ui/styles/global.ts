@@ -37,6 +37,7 @@ export const globalStyles = css`
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-size: 14px;
+    overflow: hidden;
   }
 `;
 

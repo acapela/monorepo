@@ -12,6 +12,7 @@ export const gmailIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_gmail",
   name: "Gmail",
   description: "New emails",
+  getIsConnected: () => getDb().gmailAccount.hasItems,
   getCanConnect: () => !getDb().gmailAccount.hasItems,
   getAccounts: () =>
     getDb().gmailAccount.all.map((gmailAccount) => ({ kind: "account", id: gmailAccount.id, name: "Gmail" })),

@@ -2,8 +2,7 @@ import { differenceInSeconds } from "date-fns";
 import gql from "graphql-tag";
 import { observable } from "mobx";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -19,6 +18,7 @@ const userFragment = gql`
     email
     avatar_url
     is_slack_auto_resolve_enabled
+    onboarding_finished_at
     slack_included_channels
     updated_at
     created_at
@@ -38,6 +38,7 @@ export const userEntity = defineEntity<DesktopUserFragment>({
   getDefaultValues: () => ({
     __typename: "user",
     has_slack_installation: null,
+    onboarding_finished_at: null,
     avatar_url: null,
     slack_included_channels: [],
     ...getGenericDefaultData(),
@@ -46,7 +47,7 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     slack_included_channels: observable.ref,
   },
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {
-    updateColumns: ["is_slack_auto_resolve_enabled", "slack_included_channels"],
+    updateColumns: ["is_slack_auto_resolve_enabled", "slack_included_channels", "onboarding_finished_at"],
   }),
 }).addConnections((user, { getEntity }) => {
   return {
@@ -60,7 +61,12 @@ export const userEntity = defineEntity<DesktopUserFragment>({
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id });
     },
     get isNew() {
-      return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
+      const timeSinceUserCreatedInSeconds = Math.abs(differenceInSeconds(new Date(), new Date(user.created_at)));
+
+      return timeSinceUserCreatedInSeconds < 60;
+    },
+    get didFinishOnboarding() {
+      return !!user.onboarding_finished_at;
     },
   };
 });

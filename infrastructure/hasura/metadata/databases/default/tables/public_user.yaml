@@ -42,6 +42,7 @@ select_permissions:
         - is_bot
         - is_slack_auto_resolve_enabled
         - name
+        - onboarding_finished_at
         - slack_included_channels
         - updated_at
       computed_fields:
@@ -64,6 +65,7 @@ update_permissions:
         - current_team_id
         - is_slack_auto_resolve_enabled
         - name
+        - onboarding_finished_at
         - slack_included_channels
       filter:
         id:
@@ -85,6 +87,7 @@ event_triggers:
           - updated_at
           - current_team_id
           - id
+          - onboarding_finished_at
     retry_conf:
       num_retries: 0
       interval_sec: 10

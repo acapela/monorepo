@@ -6,6 +6,7 @@ export const box = {
     compact: createBox({ x: 8, height: 28, gap: 10, radius: 6 }),
     sidebar: createBox({ x: 16, height: 28, gap: 10, radius: 6 }),
     compactWide: createBox({ x: 12, height: 28, width: 46, gap: 10, radius: 6 }),
+    primary: createBox({ x: 24, height: 48, width: 46, gap: 10, radius: 6 }),
   },
   items: {
     selectItem: createBox({ x: 12, height: 36, gap: 10, radius: 4 }),

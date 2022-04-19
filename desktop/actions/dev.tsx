@@ -5,10 +5,11 @@ import { resetAllServices } from "@aca/desktop/bridge/auth";
 import { getAllLogsBridge } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
-import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
+import { desktopRouter } from "../routes";
+import { startOnboardingFinishedAnimation } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 import { listPageView } from "./views/list";
@@ -115,10 +116,37 @@ export const clearAllIntegrations = defineAction({
 
 export const restartOnboarding = defineAction({
   icon: devIcon,
-  name: "Restart onboarding",
+  name: "Show onboarding",
   group: devActionsGroup,
   handler() {
-    onboardingStore.onboardingStatus = "ongoing";
+    desktopRouter.navigate("onboarding");
+  },
+});
+
+export const showOnboardingFinishedAnimation = defineAction({
+  icon: devIcon,
+  name: "Show onboarding finished animation",
+  group: devActionsGroup,
+  handler() {
+    startOnboardingFinishedAnimation();
+  },
+});
+
+export const goToLoginView = defineAction({
+  icon: devIcon,
+  name: "Go to login view",
+  group: devActionsGroup,
+  handler() {
+    desktopRouter.navigate("login");
+  },
+});
+
+export const showConnectionsOnboarding = defineAction({
+  icon: devIcon,
+  name: "Show connections onboarding",
+  group: devActionsGroup,
+  handler() {
+    desktopRouter.navigate("connect");
   },
 });
 

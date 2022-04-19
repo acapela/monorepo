@@ -57,23 +57,29 @@ export const CommandMenuAction = observer(function CommandMenuAction({
 
 const UIIcon = styled.div`
   font-size: 1.33em;
+  transition: 0.2s all;
+  ${theme.colors.layout.backgroundAccent.active.asBg}
+  padding: 0.2em;
+  border-radius: 6px;
 `;
 
 const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
   ${theme.box.items.primarySelectItem.size.padding};
   ${theme.typo.content.medium};
   display: flex;
-  ${theme.spacing.actions.asGap};
+  gap: 15px;
   align-items: center;
+  border-left: 2px solid transparent;
 
   ${UIIcon} {
-    opacity: ${(props) => (props.$isActive ? 1 : 0.5)};
+    opacity: ${(props) => (props.$isActive ? 1 : 0.75)};
   }
 
   ${(props) =>
     props.$isActive &&
     css`
       ${theme.colors.layout.actionPanel.active.asBg}
+      border-left-color: ${theme.colors.primary.value};
     `}
 `;
 
@@ -85,15 +91,17 @@ const UIName = styled.div`
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`
-  gap: 4px;
-  ${theme.typo.label.medium};
+  ${theme.typo.content.semibold};
   .key {
+    transition: 0.2s all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
-    ${theme.colors.layout.actionPanel.active.asBg};
     ${theme.box.panel.shortcut.size.padding.radius};
     text-align: center;
     ${theme.radius.badge};
-    min-width: 2.5ch;
+    min-width: 2ch;
   }
 `;
 

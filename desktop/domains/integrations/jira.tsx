@@ -17,7 +17,9 @@ export const jiraIntegrationClient: IntegrationClient = {
   name: "Atlassian Jira",
   description: "Jira issue updates and comments",
   icon: <IntegrationIcon imageUrl={integrationLogos.jira} />,
-
+  getIsConnected: () => {
+    return !!accountStore.user && getAtlassianAccounts().length > 0;
+  },
   getAccounts: () => (getAtlassianAccounts().length > 0 ? [{ kind: "account", id: "jira", name: "Jira" }] : []),
   getCanConnect() {
     return !!accountStore.user && getAtlassianAccounts().length == 0;

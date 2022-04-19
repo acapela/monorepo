@@ -42,6 +42,7 @@ interface ActionContextConfig {
   isContextual?: boolean;
   searchPlaceholder?: string;
   initialSearchValue?: string;
+  hideTarget?: boolean;
 }
 
 export function getImplicitTargets() {
@@ -52,7 +53,12 @@ export const createActionContext = deepMemoize(function createActionContext(
   forcedTarget?: unknown,
   options?: ActionContextConfig
 ) {
-  const { isContextual = false, searchPlaceholder = "Find anything...", initialSearchValue = "" } = options ?? {};
+  const {
+    isContextual = false,
+    searchPlaceholder = "Find anything...",
+    initialSearchValue = "",
+    hideTarget = false,
+  } = options ?? {};
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
     const targets = [forcedTarget, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
@@ -63,6 +69,7 @@ export const createActionContext = deepMemoize(function createActionContext(
   const context = makeObservable(
     {
       searchPlaceholder,
+      hideTarget,
       isContextual,
       // Not really used, but makes it easier to debug actions
       forcedTarget,

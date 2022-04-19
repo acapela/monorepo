@@ -59,7 +59,7 @@ export function TooltipsRenderer() {
 
   // If active tooltip element is clicked - instantly hide tooltip
   useDocumentEvent(
-    "click",
+    "mousedown",
     (event) => {
       const target = event.target as HTMLElement;
       const tooltipHost = getClosestElementTooltipHost(target);

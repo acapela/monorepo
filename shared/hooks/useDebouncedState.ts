@@ -14,7 +14,7 @@ export function useDebouncedState<S>(initial: S | (() => S), time: number) {
 export function useThrottledState<S>(initial: S | (() => S), time: number) {
   const [value, setValue] = useMountSafeState(initial);
 
-  const setThrottled = useConst(() => throttle(setValue, time));
+  const setThrottled = useConst(() => throttle(setValue, time, { leading: true }));
 
   return [value, setThrottled] as const;
 }

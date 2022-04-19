@@ -19,6 +19,7 @@ export async function getAcapelaAuthToken() {
 
 export async function loginAcapela(provider: "slack" | "google") {
   const currentToken = await getAcapelaAuthToken();
+
   if (currentToken) {
     authTokenBridgeValue.set(currentToken);
     console.info("Already logged in");

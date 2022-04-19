@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
+import { autorun } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
@@ -9,15 +10,17 @@ import { ErrorRecoveryButtons } from "@aca/desktop/domains/errorRecovery/ErrorRe
 import { UsersnapProvider } from "@aca/desktop/domains/feedbackWidget";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/auth";
-import { onboardingStore } from "@aca/desktop/store/onboarding";
 
 import { setAppVibrancyRequest } from "../bridge/system";
+import { desktopRouter } from "../routes";
 import { LoadingScreen } from "./LoadingView";
-import { LoginView } from "./LoginView";
-import { InitialIntegrationsView } from "./onboarding/InitialIntegrations";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
+  /**
+   * If user is not logged in - we want to redirect to /login before we render Router
+   */
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     attachActionsShortcutsHandler(allActions);
@@ -30,34 +33,42 @@ export const RootView = observer(function RootView() {
     setAppVibrancyRequest("sidebar");
   }, [user, db]);
 
-  function renderApp() {
-    if (!user) {
-      return <LoginView />;
-    }
+  useLayoutEffect(() => {
+    const stop = autorun(() => {
+      if (!authStore.userTokenData) {
+        desktopRouter.navigate("login");
+      }
+    });
 
-    if (!db) {
-      return (
-        <LoadingScreen
-          key="db-initializing"
-          longLoadingFallback={{
-            timeout: 5000,
-            fallbackNode: <ErrorRecoveryButtons />,
-            hint: "Seems it is taking too long...",
-          }}
-        />
-      );
-    }
+    setIsReady(true);
 
-    if (onboardingStore.onboardingStatus === "ongoing") {
-      return <InitialIntegrationsView />;
-    }
+    return () => {
+      stop();
+    };
+  }, []);
 
-    return (
-      <UsersnapProvider initParams={{ user: { userId: user.id, email: user.email } }}>
-        <Router />
-      </UsersnapProvider>
-    );
-  }
+  /**
+   * We can render app when:
+   * - there is no user (log in)
+   * - there is user and db is ready
+   */
+  const shouldRenderApp = isReady && (!user || !!db);
 
-  return <AnimatePresence>{renderApp()}</AnimatePresence>;
+  return (
+    <UsersnapProvider initParams={user ? { user: { userId: user.id, email: user.email } } : undefined}>
+      <AnimatePresence>
+        {!shouldRenderApp && (
+          <LoadingScreen
+            key="db-initializing"
+            longLoadingFallback={{
+              timeout: 5000,
+              fallbackNode: <ErrorRecoveryButtons />,
+              hint: "Seems it is taking too long...",
+            }}
+          />
+        )}
+        {shouldRenderApp && <Router />}
+      </AnimatePresence>
+    </UsersnapProvider>
+  );
 });

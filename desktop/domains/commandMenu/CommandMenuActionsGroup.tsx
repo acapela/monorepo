@@ -62,8 +62,8 @@ export const CommandMenuActionsGroup = observer(function CommandMenuActionsGroup
 const UIHolder = styled(motion.div)``;
 
 const UIGroupLabel = styled.div`
-  padding: 4px 24px;
-  ${theme.typo.label.semibold}
+  padding: 6px 24px;
+  ${theme.typo.label.semibold.secondary}
   ${theme.colors.layout.actionPanel.hover.asBg};
   ${theme.common.ellipsisText}
 `;

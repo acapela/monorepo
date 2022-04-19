@@ -1,6 +1,6 @@
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { SupportedIntegration } from "@aca/desktop/domains/integrations";
+import { SupportedIntegrationName } from "@aca/desktop/domains/integrations";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { isNotNullish } from "@aca/shared/nullish";
 
@@ -9,7 +9,7 @@ import { countRepeats } from "./utils";
 export interface NotificationGroupTarget {
   id: string;
   name: string;
-  integration: SupportedIntegration | "unknown";
+  integration: SupportedIntegrationName | "unknown";
   integrationTitle: string;
   isOnePreviewEnough?: boolean;
 }

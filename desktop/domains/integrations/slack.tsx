@@ -26,6 +26,9 @@ export const slackIntegrationClient: IntegrationClient = {
   icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
   additionalSettings: <SlackSettings />,
   getCanConnect: () => !!accountStore.user,
+  getIsConnected: () => {
+    return accountStore.user?.slackInstallations.hasItems ?? false;
+  },
   getAccounts: () =>
     accountStore.user?.slackInstallations.all.map((i) => ({ kind: "account", id: i.team_id!, name: i.team_name! })) ??
     [],

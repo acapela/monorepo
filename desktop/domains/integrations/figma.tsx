@@ -14,6 +14,7 @@ export const figmaIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_figma_comment",
   name: "Figma",
   description: "Get important updates and comments",
+  getIsConnected: () => !!figmaAuthTokenBridgeValue.get(),
   getCanConnect: () => !figmaAuthTokenBridgeValue.get(),
   getAccounts: () => (figmaAuthTokenBridgeValue.get() ? [{ kind: "account", id: "figma", name: "Figma" }] : []),
   disconnect: async () => {
