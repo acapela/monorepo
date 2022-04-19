@@ -2,6 +2,7 @@ import { unsafeAssertType } from "@aca/shared/assert";
 
 import { figmaIntegrationClient } from "./figma";
 import { githubIntegrationClient } from "./github";
+import { gmailIntegrationClient } from "./gmail";
 import { jiraIntegrationClient } from "./jira";
 import { linearIntegrationClient } from "./linear";
 import { notionIntegrationClient } from "./notion";
@@ -15,6 +16,7 @@ export const integrationClients = {
   linear: linearIntegrationClient,
   jira: jiraIntegrationClient,
   github: githubIntegrationClient,
+  gmail: gmailIntegrationClient,
 };
 
 export type SupportedIntegration = keyof typeof integrationClients;

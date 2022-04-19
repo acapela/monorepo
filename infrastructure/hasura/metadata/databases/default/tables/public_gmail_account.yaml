@@ -1,0 +1,18 @@
+table:
+  schema: public
+  name: gmail_account
+object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+      filter:
+        account:
+          user_id:
+            _eq: X-Hasura-User-Id

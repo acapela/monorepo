@@ -1,5 +1,6 @@
 import { notificationFigmaCommentEntity } from "./figma/comment";
 import { notificationGitHubEntity } from "./github/issue";
+import { notificationGmailEntity } from "./gmail/message";
 import { notificationJiraEntity } from "./jira/issue";
 import { notificationLinearEntity } from "./linear/issue";
 import { notificationNotionEntity } from "./notion/baseNotification";
@@ -12,4 +13,5 @@ export const innerEntities = [
   notificationLinearEntity,
   notificationJiraEntity,
   notificationGitHubEntity,
+  notificationGmailEntity,
 ];

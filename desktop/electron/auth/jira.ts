@@ -11,7 +11,7 @@ const userAgent =
 export async function loginJira() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
 
-  await window.webContents.loadURL(FRONTEND_URL + "/auth/atlassian", { userAgent });
+  await window.webContents.loadURL(FRONTEND_URL + "/auth/sign-in?provider=atlassian", { userAgent });
 
   return new Promise<void>((resolve) => {
     window.webContents.on("did-navigate-in-page", async () => {

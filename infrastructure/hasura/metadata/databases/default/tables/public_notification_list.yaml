@@ -1,56 +1,56 @@
 table:
-  name: notification_list
   schema: public
+  name: notification_list
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      user_id:
-        _eq: X-Hasura-User-Id
-    columns:
-    - created_at
-    - filters
-    - id
-    - notifications_interval_ms
-    - seen_at
-    - title
-    - updated_at
-    - user_id
-  role: user
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - created_at
+        - filters
+        - id
+        - notifications_interval_ms
+        - seen_at
+        - title
+        - updated_at
+        - user_id
+      backend_only: false
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - filters
-    - id
-    - notifications_interval_ms
-    - seen_at
-    - title
-    - updated_at
-    - user_id
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - filters
+        - id
+        - notifications_interval_ms
+        - seen_at
+        - title
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
 update_permissions:
-- permission:
-    check: null
-    columns:
-    - created_at
-    - filters
-    - id
-    - notifications_interval_ms
-    - seen_at
-    - title
-    - updated_at
-    - user_id
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - filters
+        - id
+        - notifications_interval_ms
+        - seen_at
+        - title
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
 delete_permissions:
-- permission:
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id

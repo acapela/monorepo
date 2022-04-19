@@ -21,6 +21,7 @@
   "dependencies": {
     "@aca/config": "0.1.0",
     "@godaddy/terminus": "^4.10.2",
+    "@google-cloud/pubsub": "^2.19.0",
     "@google-cloud/storage": "^5.18.1",
     "@linear/sdk": "^1.22.0",
     "@octokit/webhooks": "^9.23.0",
@@ -35,7 +36,7 @@
     "date-fns-tz": "^1.2.2",
     "deep-object-diff": "^1.1.7",
     "express-async-errors": "^3.1.1",
-    "googleapis": "^92.0.0",
+    "googleapis": "^100.0.0",
     "helmet": "^4.6.0",
     "mime-types": "^2.1.34",
     "next-auth": "npm:next-auth-danger-link@4.1.2-714d80",

@@ -1,25 +1,25 @@
 table:
-  name: notification_github
   schema: public
+  name: notification_github
 object_relationships:
-- name: notification
-  using:
-    foreign_key_constraint_on: notification_id
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - id
-    - issue_id
-    - notification_id
-    - pr_id
-    - repository_full_name
-    - repository_id
-    - title
-    - type
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - id
+        - issue_id
+        - notification_id
+        - pr_id
+        - repository_full_name
+        - repository_id
+        - title
+        - type
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id

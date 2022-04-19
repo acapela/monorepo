@@ -1,55 +1,55 @@
 table:
-  name: notification_figma_comment
   schema: public
+  name: notification_figma_comment
 object_relationships:
-- name: notification
-  using:
-    foreign_key_constraint_on: notification_id
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-    columns:
-    - author_id
-    - created_at
-    - figma_notification_id
-    - file_id
-    - file_name
-    - id
-    - is_mention
-    - notification_id
-    - thread_comment_id
-    - updated_at
-  role: user
+  - role: user
+    permission:
+      check:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+      columns:
+        - author_id
+        - created_at
+        - figma_notification_id
+        - file_id
+        - file_name
+        - id
+        - is_mention
+        - notification_id
+        - thread_comment_id
+        - updated_at
+      backend_only: false
 select_permissions:
-- permission:
-    columns:
-    - author_id
-    - created_at
-    - figma_notification_id
-    - file_id
-    - file_name
-    - id
-    - is_mention
-    - notification_id
-    - thread_comment_id
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - author_id
+        - created_at
+        - figma_notification_id
+        - file_id
+        - file_name
+        - id
+        - is_mention
+        - notification_id
+        - thread_comment_id
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
 update_permissions:
-- permission:
-    check: null
-    columns:
-    - file_name
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - file_name
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+      check: null

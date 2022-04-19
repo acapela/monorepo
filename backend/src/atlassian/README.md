@@ -28,7 +28,7 @@ is set to `Not sharing` at this moment. If you need to test something that requi
 We're currently using [NextAuth.js](https://next-auth.js.org/providers/atlassian) to provide all of the authorization
 nit-picks with Atlassian. The flow is pretty straightforward:
 
-1. Users are directed to the frontend path: `/auth/atlassian`
+1. Users are directed to the frontend path: `/auth/sign-in?provider=atlassian`
 2. This page will trigger nextAuth's atlassian authentication flow
 3. User's will need to select the `AtlassianSite` they like to link (e.g acapela-team.atlassian.net)
 4. User's are then redirected to `/auth/success` where the whole flow ends
