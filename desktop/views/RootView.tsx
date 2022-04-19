@@ -17,6 +17,9 @@ import { LoadingScreen } from "./LoadingView";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
+  /**
+   * If user is not logged in - we want to redirect to /login before we render Router
+   */
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -44,6 +47,11 @@ export const RootView = observer(function RootView() {
     };
   }, []);
 
+  /**
+   * We can render app when:
+   * - there is no user (log in)
+   * - there is user and db is ready
+   */
   const shouldRenderApp = isReady && (!user || !!db);
 
   return (

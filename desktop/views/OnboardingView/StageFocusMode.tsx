@@ -22,7 +22,7 @@ import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
-const sampleTitles = [
+const sampleNotificationTitles = [
   "Heiki mentioned you in #welcome",
   "New message in #bugs",
   "New private message from @Roland",
@@ -31,6 +31,9 @@ const sampleTitles = [
   "Adam mentioned you in #product",
 ];
 
+/**
+ * getItemFromArrayByIndexWithLoop([1,2,3,4,5], 12) -> 3
+ */
 function getItemFromArrayByIndexWithLoop<T>(items: T[], index: number) {
   return items[index % items.length];
 }
@@ -49,10 +52,12 @@ function useChangesCount(input: unknown) {
 }
 
 export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) => {
+  // Avoid stagger animations long delay if user clicks next too many times quickly
   const [fakeAppProps, setFakeAppProps] = useThrottledState<FakeIntegrationScreenProps>({}, 500);
+  // We'll use it to get 'next' example title (we use index instead of random to avoid showing the same title twice and have some control on order of showing titles)
   const fakeAppIndex = useChangesCount(fakeAppProps);
 
-  const title = getItemFromArrayByIndexWithLoop(sampleTitles, fakeAppIndex);
+  const title = getItemFromArrayByIndexWithLoop(sampleNotificationTitles, fakeAppIndex);
 
   function refreshFakeApp(props?: FakeIntegrationScreenProps) {
     setFakeAppProps(props ?? {});

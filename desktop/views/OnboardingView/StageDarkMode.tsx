@@ -25,6 +25,7 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
 
   return (
     <OnboardingStageContainer>
+      {/* TODO: nicely animate dark mode switch in this view */}
       {/* <ForceTransitions /> */}
       <OnboardingStageSections>
         <OnboardingSecondaryHero

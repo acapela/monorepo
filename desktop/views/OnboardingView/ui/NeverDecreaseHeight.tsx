@@ -6,6 +6,10 @@ interface Props {
   className?: string;
 }
 
+/**
+ * Component that will increase height if having new content, but never decrease it
+ * (even if becoming empty)
+ */
 export function NeverDecreaseHeight({ children, className }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
   const [minHeight, setMinHeight] = useState(0);

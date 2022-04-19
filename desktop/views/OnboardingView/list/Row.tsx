@@ -9,6 +9,10 @@ import { theme } from "@aca/ui/theme";
 
 import { OnboardingNotificationRowData } from "./types";
 
+/**
+ * Fake notification row
+ */
+
 interface Props {
   notification: OnboardingNotificationRowData;
   onSelectRequest: () => void;

@@ -54,6 +54,7 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
             onClick={onContinue}
             kind={canContinue ? "primary" : "disabled"}
           />
+          {/* TODO: Feedback button for missing integrations */}
           {/* <OnboardingAnimationItem>
             <Button kind="transparent">Missing integration?</Button>
           </OnboardingAnimationItem> */}

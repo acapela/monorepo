@@ -4,6 +4,11 @@ import styled from "styled-components";
 
 import { getRandomInt } from "@aca/shared/numbers";
 
+/**
+ * Set of utils for creating dummy, mock-like, fake app window
+ * eg. fake avatar, message, paragraph, menu, etc.
+ */
+
 const springTransition: Transition = {
   // duration: 1,
   type: "spring",
@@ -20,6 +25,9 @@ const STAGGER = 1 / 20;
 
 const Y_OFFSET = -10;
 
+/**
+ * All parts of fake app will have staggered animation so items appear from top to bottom
+ */
 const containerVariants: Variants = {
   initial: {
     transition: {

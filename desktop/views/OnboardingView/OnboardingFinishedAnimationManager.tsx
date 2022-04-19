@@ -7,6 +7,12 @@ import { wait } from "@aca/shared/time";
 import { theme } from "@aca/ui/theme";
 import { readThemeValueWithProps } from "@aca/ui/theme/utils/readThemeValueWithProps";
 
+/**
+ * When onboarding is finished, we show the app with nice animation. We need to attach styles of this animation
+ * This is done by rendering `<OnboardingFinishedAnimationManager />` somewhere in the app
+ * and then calling `startOnboardingFinishedAnimation` from anywhere.
+ */
+
 export function OnboardingFinishedAnimationManager() {
   return <Styles />;
 }

@@ -156,6 +156,10 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
   );
 });
 
+/**
+ * When you resolve notification, we dont want entire view to get shorter and flicker the layout.
+ * Let's use NeverDecreaseHeight so it'll keep the height, even if empty
+ */
 const UINotifications = styled(NeverDecreaseHeight)`
   width: 640px;
 `;

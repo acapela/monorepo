@@ -26,8 +26,12 @@ export const OnboardingView = observer(function OnboardingView() {
     setCurrentStage(nextStage);
   }
 
+  /**
+   * If user reached end of onboarding (no next step) - finish it and navigate home
+   */
   useEffect(() => {
     if (currentStage) return;
+    // Wait a moment to allow last stage to partially fade out to create a bit more smooth transition
     return createTimeout(() => {
       startOnboardingFinishedAnimation();
       desktopRouter.navigate("home");
@@ -69,6 +73,9 @@ const UIHolder = styled.div`
   ${theme.colors.layout.background.asBgWithReadableText}
 `;
 
+/**
+ * Show entire onboarding view with slight animation.
+ */
 export const welcomeAnimation = keyframes`
   0% {
     opacity: 0;

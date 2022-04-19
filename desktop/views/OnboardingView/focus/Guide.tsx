@@ -3,7 +3,7 @@ import { sortBy, throttle } from "lodash";
 import { action, autorun, computed, makeAutoObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import React, { PropsWithChildren, ReactNode, createContext, useContext, useEffect, useRef } from "react";
-import styled, { css, keyframes } from "styled-components";
+import styled from "styled-components";
 
 import { removeElementFromArray } from "@aca/shared/array";
 import { assert } from "@aca/shared/assert";
@@ -14,6 +14,10 @@ import { Popover } from "@aca/ui/popovers/Popover";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
+/**
+ * This module allows showing 'permanent' tooltips next to any item in proper order and allow the item
+ * to call 'complete' so next tooltip is shown
+ */
 interface Props {
   content: ReactNode;
   index: number;
@@ -32,7 +36,6 @@ function pickNextGuideItem(pendingItems: GuideItem[]) {
 }
 
 const springTransition: Transition = {
-  // duration: 1,
   type: "spring",
   stiffness: 250,
   damping: 20,
@@ -42,18 +45,21 @@ const springTransition: Transition = {
 export const GuideItem = observer(({ content, index, children, className, onCompleted, isDisabled }: Props) => {
   const store = useGuideStore();
   const holderRef = useRef<HTMLDivElement>(null);
+  // Reference to this item
   const selfItem = useConst<GuideItem>(() => {
     return { id: getUUID(), index };
   });
 
-  const currentItem = store.currentItem;
+  const currentlyDisplayedGuideItem = store.currentItem;
 
-  const isCurrentItem = computed(() => currentItem === selfItem).get();
+  const isCurrentGuideItem = computed(() => currentlyDisplayedGuideItem === selfItem).get();
 
   useEffect(() => {
     if (isDisabled) return;
+    // Register this item to list of pending items so store can pick it and decide which item should be next
     store.pendingItems.push(selfItem);
 
+    // When on-mounting (or disabled) - unregister
     return () => {
       if (store.currentItem === selfItem) {
         store.currentItem = null;
@@ -64,6 +70,7 @@ export const GuideItem = observer(({ content, index, children, className, onComp
   }, [isDisabled]);
 
   const complete = action(() => {
+    // Make sure complete is allowed when this is current item only.
     if (store.currentItem !== selfItem) return;
     removeElementFromArray(store.pendingItems, selfItem);
     store.currentItem = null;
@@ -72,10 +79,10 @@ export const GuideItem = observer(({ content, index, children, className, onComp
   });
 
   return (
-    <UIHolder ref={holderRef} className={className} $indicateCurrent={isCurrentItem}>
-      {children(complete, isCurrentItem)}
+    <UIHolder ref={holderRef} className={className}>
+      {children(complete, isCurrentGuideItem)}
       <AnimatePresence>
-        {isCurrentItem && (
+        {isCurrentGuideItem && (
           <NonClickablePopover anchorRef={holderRef} placement="bottom">
             <UIGuidePanel
               presenceStyles={{ y: [20, 0], opacity: [0, 1], scale: [0.9, 1] }}
@@ -90,16 +97,7 @@ export const GuideItem = observer(({ content, index, children, className, onComp
   );
 });
 
-const UIHolder = styled.div<{ $indicateCurrent: boolean }>`
-  ${(props) =>
-    props.$indicateCurrent &&
-    css`
-      /* ${wiggle} */
-
-      /* box-shadow: 0 0 10px ${theme.colors.primary.opacity(0.5).value}; */
-      /* border-radius: 6px; */
-    `};
-`;
+const UIHolder = styled.div``;
 
 interface GuideItem {
   id: string;
@@ -126,6 +124,8 @@ export function GuideContext({ children, startDelay }: PropsWithChildren<{ start
 
   useEffect(() => {
     function startOnboarding() {
+      // We delay showing next item in case multiple items are registering in short interval
+      // This way we're sure we show first of all of new items
       const scheduleShowNext = throttle(
         () => {
           const nextItem = pickNextGuideItem(store.pendingItems);
@@ -137,16 +137,20 @@ export function GuideContext({ children, startDelay }: PropsWithChildren<{ start
       );
 
       const stop = autorun(() => {
+        // If some item is active - never switch it
         if (store.currentItem) return;
 
+        // scheduleShowNext is throttled, so it'll not mobx-observe items instantly. Let's explicitly
+        // watch the list of pending items, so this autorun is called whenever anything changes in the list
         store.pendingItems.length;
 
         scheduleShowNext();
       });
 
       return () => {
-        store.currentItem = null; // for hot-reloading
+        store.currentItem = null; // for hot-reloading - otherwise non-existing item can be marked as current
         stop();
+        // It is possible we unmounts even before onboarding started
         scheduleShowNext.cancel();
       };
     }
@@ -180,26 +184,6 @@ function useGuideStore() {
   return store;
 }
 
-const WIGGLE_AMPLITUDE = 2;
-
-export const wiggleAnimation = keyframes`
-  0%, 70% {
-    transform: translate3d(0px, 0, 0);
-  }
-
-  25% {
-    transform: translate3d(${WIGGLE_AMPLITUDE}px, 0, 0);
-  }
-
-  50% {
-    transform: translate3d(-${WIGGLE_AMPLITUDE}px, 0, 0);
-  }
-`;
-
-export const wiggle = css`
-  animation: ${wiggleAnimation} 1s infinite;
-`;
-
 const NonClickablePopover = styled(Popover)`
   pointer-events: none;
 `;
@@ -227,8 +211,5 @@ const UIGuidePanel = styled(PresenceAnimator)`
     background-color: inherit;
     transform-origin: center;
     transform: translate(-50%, -50%) rotate(45deg);
-    /* transform: rotate(45deg) translate3d(-90%, 0%, 0); */
   }
-
-  /* ${wiggle} */
 `;
