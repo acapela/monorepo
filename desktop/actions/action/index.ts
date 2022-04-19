@@ -13,6 +13,7 @@ import { ActionGroupData } from "./group";
 type ChildActionsResult = {
   isContextual?: boolean;
   initialSearchValue?: string;
+  hideTarget?: boolean;
   searchPlaceholder?: string;
   getActions: (context: ActionContext) => ActionData[];
 };

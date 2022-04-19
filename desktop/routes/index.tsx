@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createAtom } from "mobx";
+import { useLayoutEffect } from "react";
 import { createRouter } from "react-chicane";
 import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
@@ -13,6 +15,9 @@ const routes = {
   notification: "/notifications/:notificationId",
   list: "/list/:listId?:isEditing",
   focus: "/focus/:listId/:notificationId",
+  onboarding: "/onboarding",
+  connect: "/connect",
+  login: "/login",
 } as const;
 
 export const allRouteNames = typedKeys(routes);
@@ -97,3 +102,35 @@ export const getExactIsRouteActive: <
 
   return routeUrl === currentRouteUrl;
 };
+
+type MaybeParams<T> = T extends [infer U] ? { params: U } : {};
+
+type RedirectProps<RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>> =
+  {
+    to: RouteName;
+  } & MaybeParams<
+    ParamsArg<
+      ExtractRoutesParams<
+        Omit<PrependBasePath<Routes, BasePath>, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
+      >[RouteName]
+    >
+  >;
+
+/**
+ * Type safe version of Redirect component
+ */
+export function Redirect<
+  RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
+>(props: RedirectProps<RouteName>) {
+  useLayoutEffect(() => {
+    // @ts-ignore
+    const isAlreadyActive = getExactIsRouteActive(props.to, props.params);
+
+    if (isAlreadyActive) return;
+
+    // @ts-ignore
+    desktopRouter.navigate(props.to, props.params);
+  }, [props.to]);
+
+  return null;
+}

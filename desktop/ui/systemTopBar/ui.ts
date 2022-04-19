@@ -15,3 +15,12 @@ export const TopBarDivider = styled.div`
 export const systemBarPlaceholder = css`
   height: ${SYSTEM_BAR_HEIGHT}px;
 `;
+
+export const UITopBarButtonsGroup = styled.div`
+  display: flex;
+  gap: 4px;
+  flex-grow: 1;
+  &:last-child {
+    justify-content: flex-end;
+  }
+`;

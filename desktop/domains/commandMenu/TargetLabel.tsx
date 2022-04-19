@@ -40,7 +40,6 @@ export const CommandMenuTargetLabel = styledObserver(function CommandMenuView({ 
 const UILabel = styled.div`
   ${theme.box.panel.hint.padding.radius}
   ${theme.colors.layout.actionPanel.hover.asBg};
-  ${theme.radius.badge};
-  ${theme.typo.label.medium.nowrap};
+  ${theme.typo.label.semibold.nowrap};
   ${theme.common.ellipsisText}
 `;

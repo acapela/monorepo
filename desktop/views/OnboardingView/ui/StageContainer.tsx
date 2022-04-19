@@ -5,11 +5,12 @@ export const OnboardingStageContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  padding: 20px;
 `;
 
 export const OnboardingStageSections = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: 40px;
 `;

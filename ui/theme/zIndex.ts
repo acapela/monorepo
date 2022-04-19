@@ -3,4 +3,5 @@ export enum zIndexValues {
   toast,
   popover,
   tooltip,
+  commandMenu,
 }

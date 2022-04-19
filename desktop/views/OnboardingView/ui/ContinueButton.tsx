@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import { Button } from "@aca/ui/buttons/Button";
 
+import { OnboardingAnimationItem } from "./enterAnimations";
+
 type OnboardingContinueButtonKind = "primary" | "indicate-not-complete" | "disabled";
 
 interface Props {
@@ -22,6 +24,6 @@ export function OnboardingContinueButton({ label, onClick, kind = "primary" }: P
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled(OnboardingAnimationItem)`
   width: min(100%, 260px);
 `;

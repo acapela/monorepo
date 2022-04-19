@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { getObjectKey } from "@aca/shared/object";
 import { theme } from "@aca/ui/theme";
@@ -17,18 +17,25 @@ export function BulletsBar<T>({ items, activeItem, onActivateRequest, allowMovin
     <UIHolder>
       {items.map((item, index) => {
         const isActive = item === activeItem;
-        const isAfterActive = index > activeItemIndex;
-        const isDisabled = !allowMovingForward && isAfterActive;
+        const wouldSkipNextStep = index > activeItemIndex + 1;
+        const isDisabled = !allowMovingForward && wouldSkipNextStep;
         return (
           <UIBulletClicker
             key={getObjectKey(item)}
             $isActive={isActive}
             $isDisabled={isDisabled}
             onClick={() => {
+              if (wouldSkipNextStep) return;
+
               onActivateRequest(item);
             }}
           >
-            <UIBullet></UIBullet>
+            <UIBulletHolder
+            //
+            //  data-tooltip={wouldSkipNextStep ? "Cannot skip previous step" : undefined}
+            >
+              <UIBullet />
+            </UIBulletHolder>
           </UIBulletClicker>
         );
       })}
@@ -39,28 +46,44 @@ export function BulletsBar<T>({ items, activeItem, onActivateRequest, allowMovin
 const UIHolder = styled.div`
   display: flex;
   justify-content: center;
-  height: 60px;
+  height: 50px;
   align-items: stretch;
 `;
 
-const BULLET_SIZE = 12;
+const BULLET_SIZE = 8;
 
 const UIBulletClicker = styled.div<{ $isActive: boolean; $isDisabled: boolean }>`
   display: flex;
   align-items: center;
-  padding: 8px;
+
   opacity: ${(props) => (props.$isActive ? 0.7 : 0.3)};
-  pointer-events: ${(props) => (props.$isDisabled ? "none" : "all")};
+  /* pointer-events: ${(props) => (props.$isDisabled ? "none" : "all")}; */
 
   ${theme.transitions.hover()}
 
-  &:hover {
-    opacity: ${(props) => (props.$isActive ? 0.7 : 0.5)};
-  }
+  ${(props) => {
+    const { $isActive, $isDisabled } = props;
 
-  &:active {
-    opacity: 0.7;
-  }
+    if ($isDisabled) return;
+
+    return css`
+      &:hover {
+        opacity: ${$isActive ? 0.7 : 0.5};
+
+        ${UIBullet} {
+          transform: scale(1.2);
+        }
+      }
+
+      &:active {
+        opacity: 0.7;
+      }
+    `;
+  }}
+`;
+
+const UIBulletHolder = styled.div`
+  padding: 12px;
 `;
 
 const UIBullet = styled.div`
@@ -68,4 +91,5 @@ const UIBullet = styled.div`
   height: ${BULLET_SIZE}px;
   border-radius: ${BULLET_SIZE}px;
   background-color: ${theme.colors.text.value};
+  transition: 0.2s all;
 `;

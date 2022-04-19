@@ -17,7 +17,7 @@ export const integrationClients = {
   github: githubIntegrationClient,
 };
 
-export type SupportedIntegration = keyof typeof integrationClients;
+export type SupportedIntegrationName = keyof typeof integrationClients;
 
 export const integrationClientList = Object.values(integrationClients);
 

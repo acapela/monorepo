@@ -34,6 +34,7 @@ actionResultChannel.subscribe(
         isContextual: actionResult.isContextual ?? currentSession?.actionContext.isContextual,
         searchPlaceholder: actionResult.searchPlaceholder,
         initialSearchValue: actionResult.initialSearchValue,
+        hideTarget: actionResult.hideTarget,
       }),
       getActions(context) {
         return actionResult.getActions(context);
@@ -46,19 +47,25 @@ actionResultChannel.subscribe(
   })
 );
 
+export const openCommandMenu = action((initialSearchKeyword?: string) => {
+  if (commandMenuStore.session) {
+    commandMenuStore.session = null;
+    return;
+  }
+  commandMenuStore.session = createDefaultCommandMenuSession();
+
+  if (initialSearchKeyword) {
+    commandMenuStore.session.actionContext.searchKeyword = initialSearchKeyword;
+  }
+});
+
 export const CommandMenuManager = observer(function CommandMenuManager() {
   const isLoggedIn = !!authStore.userTokenData;
   const currentSession = commandMenuStore.session;
 
-  const openCommandMenu = action(() => {
-    if (commandMenuStore.session) {
-      commandMenuStore.session = null;
-      return;
-    }
-    commandMenuStore.session = createDefaultCommandMenuSession();
+  useShortcut(["Mod", "K"], () => {
+    openCommandMenu();
   });
-
-  useShortcut(["Mod", "K"], openCommandMenu);
 
   useShortcut(
     "Esc",

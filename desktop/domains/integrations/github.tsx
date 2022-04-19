@@ -12,6 +12,7 @@ export const githubIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_github",
   name: "GitHub",
   description: "New issues, comments and mentions.",
+  getIsConnected: () => !!githubAuthTokenBridgeValue.get(),
   getCanConnect: () => true,
   getAccounts: () => {
     const db = getDb();
