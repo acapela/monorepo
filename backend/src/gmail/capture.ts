@@ -100,26 +100,30 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
     const from = findHeader(headers, "From");
     const subject = findHeader(headers, "Subject");
     const date = findHeader(headers, "Date");
-    if (from && subject) {
-      await db.notification_gmail.upsert({
-        where: { gmail_message_id: gmailMessageId },
-        create: {
-          notification: {
-            create: {
-              user_id: account.user_id,
-              // this assumes only one account being logged in
-              url: "https://mail.google.com/mail/u/0/#inbox/" + gmailMessageId,
-              from,
-              text_preview: subject,
-              created_at: date ? new Date(date).toISOString() : undefined,
-            },
-          },
-          gmail_account: { connect: { id: gmailAccount.id } },
-          gmail_message_id: gmailMessageId,
-        },
-        update: {},
-      });
+    if (!from || !subject) {
+      logger.error(
+        new Error(`Missing from or subject for message ${gmailMessageId} with headers ${JSON.stringify(headers)}`)
+      );
+      continue;
     }
+    await db.notification_gmail.upsert({
+      where: { gmail_message_id: gmailMessageId },
+      create: {
+        notification: {
+          create: {
+            user_id: account.user_id,
+            // this assumes only one account being logged in
+            url: "https://mail.google.com/mail/u/0/#inbox/" + gmailMessageId,
+            from,
+            text_preview: subject,
+            created_at: date ? new Date(date).toISOString() : undefined,
+          },
+        },
+        gmail_account: { connect: { id: gmailAccount.id } },
+        gmail_message_id: gmailMessageId,
+      },
+      update: {},
+    });
   }
 }
 
