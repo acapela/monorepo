@@ -14,23 +14,12 @@ import { Redirect } from "../routes";
 import { accountStore } from "../store/account";
 import { onboardingStore } from "../store/onboarding";
 import { Logo } from "../ui/Logo";
-import { FocusedActionView } from "./FocusedActionView";
 
 export const LoginView = observer(function LoginView() {
   const user = accountStore.user;
 
   if (!user) {
     return <LoginPanelView />;
-  }
-
-  if (!user) {
-    return (
-      <FocusedActionView title="Sign into Acapela">
-        <ActionButton action={loginToAcapelaWithGoogle} isWide />
-        &nbsp;
-        <ActionButton action={loginToAcapelaWithSlack} isWide />
-      </FocusedActionView>
-    );
   }
 
   if (user.isNew) {
