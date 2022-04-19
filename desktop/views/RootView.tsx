@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
+import { autorun } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
@@ -11,11 +12,12 @@ import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/auth";
 
 import { setAppVibrancyRequest } from "../bridge/system";
-import { Redirect } from "../routes";
+import { desktopRouter } from "../routes";
 import { LoadingScreen } from "./LoadingView";
 
 export const RootView = observer(function RootView() {
   const db = getNullableDb();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     attachActionsShortcutsHandler(allActions);
@@ -28,14 +30,26 @@ export const RootView = observer(function RootView() {
     setAppVibrancyRequest("sidebar");
   }, [user, db]);
 
-  if (!user) {
-    return <Redirect to="login" />;
-  }
+  useLayoutEffect(() => {
+    const stop = autorun(() => {
+      if (!authStore.userTokenData) {
+        desktopRouter.navigate("login");
+      }
+    });
+
+    setIsReady(true);
+
+    return () => {
+      stop();
+    };
+  }, []);
+
+  const shouldRenderApp = isReady && (!user || !!db);
 
   return (
-    <UsersnapProvider initParams={{ user: { userId: user.id, email: user.email } }}>
+    <UsersnapProvider initParams={user ? { user: { userId: user.id, email: user.email } } : undefined}>
       <AnimatePresence>
-        {!db && (
+        {!shouldRenderApp && (
           <LoadingScreen
             key="db-initializing"
             longLoadingFallback={{
@@ -45,7 +59,7 @@ export const RootView = observer(function RootView() {
             }}
           />
         )}
-        {db && <Router />}
+        {shouldRenderApp && <Router />}
       </AnimatePresence>
     </UsersnapProvider>
   );

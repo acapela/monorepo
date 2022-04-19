@@ -17,7 +17,7 @@ export function OnboardingContinueButton({ label, onClick, kind = "primary" }: P
   kind;
   return (
     <UIHolder>
-      <Button kind="primary" size="primary" onClick={onClick} isWide>
+      <Button kind="primary" size="primary" onClick={onClick} isWide isDisabled={kind === "disabled"}>
         {label}
       </Button>
     </UIHolder>

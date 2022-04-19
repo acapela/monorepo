@@ -2,8 +2,7 @@ import { differenceInSeconds } from "date-fns";
 import gql from "graphql-tag";
 import { observable } from "mobx";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
+import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -60,7 +59,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id });
     },
     get isNew() {
-      return Math.abs(differenceInSeconds(new Date(), new Date(user.created_at))) < 5;
+      const timeSinceUserCreatedInSeconds = Math.abs(differenceInSeconds(new Date(), new Date(user.created_at)));
+
+      return timeSinceUserCreatedInSeconds < 60;
     },
   };
 });

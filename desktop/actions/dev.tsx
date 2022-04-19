@@ -132,6 +132,15 @@ export const showOnboardingFinishedAnimation = defineAction({
   },
 });
 
+export const goToLoginView = defineAction({
+  icon: devIcon,
+  name: "Go to login view",
+  group: devActionsGroup,
+  handler() {
+    desktopRouter.navigate("login");
+  },
+});
+
 export const showConnectionsOnboarding = defineAction({
   icon: devIcon,
   name: "Show connections onboarding",

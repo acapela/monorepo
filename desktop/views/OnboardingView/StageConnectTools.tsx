@@ -3,6 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { integrationClientList } from "@aca/desktop/domains/integrations";
+import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { IconCheck } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -14,6 +15,7 @@ import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageCon
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageConnectTools = observer(({ onContinue, continueLabel = "Continue" }: OnboardingStageProps) => {
+  const canContinue = onboardingStore.hasLinkedApps;
   return (
     <OnboardingStageContainer>
       <OnboardingStageSections>
@@ -47,7 +49,11 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
           })}
         </UIIntegrationsButtons>
         <UIButtons>
-          <OnboardingContinueButton label={continueLabel} onClick={onContinue} />
+          <OnboardingContinueButton
+            label={continueLabel}
+            onClick={onContinue}
+            kind={canContinue ? "primary" : "disabled"}
+          />
           {/* <OnboardingAnimationItem>
             <Button kind="transparent">Missing integration?</Button>
           </OnboardingAnimationItem> */}
