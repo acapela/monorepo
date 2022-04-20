@@ -142,7 +142,13 @@ export function getNotificationGroupTarget(
   }
 
   if (targetNotification.__typename === "notification_gmail") {
-    return { id: targetNotification.id, name: "", integration: "gmail", integrationTitle: "Gmail message" };
+    return {
+      id: targetNotification.gmail_thread_id ?? targetNotification.id,
+      name: "",
+      integration: "gmail",
+      integrationTitle: "Gmail message",
+      isOnePreviewEnough: true,
+    };
   }
 
   return unknownTarget;

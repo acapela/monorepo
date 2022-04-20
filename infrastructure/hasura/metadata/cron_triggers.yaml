@@ -1,18 +1,18 @@
-- name: renew-gmail-watchers
-  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * 1 * *'
-  include_in_metadata: true
-  payload:
-    handler: renew-gmail-watchers
-  headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: mark-resolved-slack-conversations-as-read
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * * * *'
   include_in_metadata: true
   payload:
     handler: mark-slack-conversations-as-read
+  headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+- name: renew-gmail-watchers
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: '* * 1 * *'
+  include_in_metadata: true
+  payload:
+    handler: renew-gmail-watchers
   headers:
     - name: Authorization
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER

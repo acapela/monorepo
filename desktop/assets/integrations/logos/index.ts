@@ -5,7 +5,7 @@ import figma from "./figma.png";
 // @ts-ignore
 import github from "./github.svg";
 // @ts-ignore
-import gmail from "./gmail.png";
+import gmail from "./gmail.svg";
 // @ts-ignore
 import jira from "./jira.svg";
 // @ts-ignore

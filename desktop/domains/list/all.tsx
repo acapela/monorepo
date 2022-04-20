@@ -5,10 +5,10 @@ import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { githubIntegrationClient } from "@aca/desktop/domains/integrations/github";
+import { gmailIntegrationClient } from "@aca/desktop/domains/integrations/gmail";
 import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { typedKeys } from "@aca/shared/object";
 import { IconClock, IconListUnordered4 } from "@aca/ui/icons";
 
 import { figmaIntegrationClient } from "../integrations/figma";
@@ -65,14 +65,25 @@ export const githubList = defineNotificationsList({
   filter: { kind: "notification_github", isResolved: false, isSnoozed: false },
 });
 
-const integrationLists = {
-  slack: slackList,
-  notion: notionList,
-  figma: figmaList,
-  linear: linearList,
-  jira: jiraList,
-  github: githubList,
-};
+export const gmailList = defineNotificationsList({
+  id: "gmail",
+  name: "Gmail",
+  icon: gmailIntegrationClient.icon,
+  filter: { kind: "notification_gmail", isResolved: false, isSnoozed: false },
+});
+
+const getAvailableIntegrationLists = cachedComputed(() =>
+  Object.values(integrationClients)
+    .filter((client) => client.getAccounts().length > 0)
+    .map((client) =>
+      defineNotificationsList({
+        id: client.name,
+        name: client.name,
+        icon: client.icon,
+        filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
+      })
+    )
+);
 
 export const resolvedList = defineNotificationsList({
   id: "resolved",
@@ -104,15 +115,10 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
 });
 
 export const getInboxLists = cachedComputed(() => {
-  const availableIntegrationLists = typedKeys(integrationLists)
-    .filter((key) => integrationClients[key].getAccounts().length)
-    .map((key) => integrationLists[key]);
-
   const customLists = getDb().notificationList.all.map((listEntity) =>
     createNotificationsListFromListEntity(listEntity)
   );
-
-  return [allNotificationsList, ...customLists, ...availableIntegrationLists];
+  return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
 });
 
 export const outOfInboxLists = [snoozedList, resolvedList];

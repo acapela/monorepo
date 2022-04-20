@@ -9,11 +9,13 @@ select_permissions:
   - role: user
     permission:
       columns:
-        - id
         - created_at
-        - updated_at
-        - notification_id
         - gmail_account_id
+        - gmail_message_id
+        - gmail_thread_id
+        - id
+        - notification_id
+        - updated_at
       filter:
         notification:
           user_id:

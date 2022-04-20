@@ -83,6 +83,7 @@ export type AnalyticsEventsMap = {
   "Slack Integration Added": void;
   "Notion Integration Added": void;
   "Jira Integration Added": void;
+  "Gmail Integration Added": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

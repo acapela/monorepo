@@ -13,6 +13,7 @@ const notificationGmailFragment = gql`
     created_at
     updated_at
     gmail_account_id
+    gmail_thread_id
   }
 `;
 
