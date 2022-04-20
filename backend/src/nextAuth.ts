@@ -190,7 +190,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         authorization: `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams({
-          prompt: "select_account", // always ask which google user to use, instead of auto picking
+          prompt: "select_account consent", // always ask which google user to use, instead of auto picking
           access_type: "offline", // !!! Get new refresh token each time user gives content for our access scopes
           scope: GOOGLE_AUTH_SCOPES,
         })}`,
