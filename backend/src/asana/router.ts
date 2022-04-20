@@ -71,11 +71,9 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   // TODO: use pagination in the future (we only support max 100 workspaces/projects for now)
   const workspaces = await client.workspaces.findAll({ limit: 100 });
   let existingWebhooks: Asana.resources.Webhooks.Type[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   // load all projects and existing webhooks
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let projects: any[] = [];
+  let projects: Asana.resources.Projects.Type[] = [];
   for (const workspace of workspaces.data) {
     const [pjs, whs] = await Promise.all([
       client.projects.findAll({ workspace: workspace.gid, limit: 100 }),
@@ -87,7 +85,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
 
   // create webhooks for all projects
   const whEndpoint = await getWebhookEndpoint();
-  for (const project of projects) {
+  const createWebhookForProject = async (project: Asana.resources.Projects.Type) => {
     // check if the webhook is already configured
     const existingWebhook = existingWebhooks.find(
       (w) => w.resource.gid === project.gid && w.target.startsWith(whEndpoint)
@@ -101,17 +99,25 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     }
 
     // we cannot do this in parallel, as the db entry needs to exist before the webhook is created
+    // this is a long chain of promises, so it could make the on-boarding very slow for users with many projects
     const dbWebhook = await db.asana_webhook.create({
       data: {
-        asana_account_id: asanaAccount.id,
+        asana_account_id: asanaAccount!.id,
         project_id: project.gid,
         workspace_id: project.workspace.gid,
         project_name: project.name,
         workspace_name: project.workspace.name,
       },
     });
-    await client.webhooks.create(project.gid, `${whEndpoint}${dbWebhook.id}`, {});
-  }
+    const createdWebhook = await client.webhooks.create(project.gid, `${whEndpoint}${dbWebhook.id}`, {});
+    // update database entry again with webhook id
+    await db.asana_webhook.update({
+      where: { id: dbWebhook.id },
+      data: { webhook_id: createdWebhook.gid },
+    });
+  };
+  // TODO: might run here into asana API ratelimits
+  await Promise.all(projects.map((p) => createWebhookForProject(p)));
   res.status(HttpStatus.OK).end();
 });
 
@@ -140,6 +146,33 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   }
 
   await db.asana_account.deleteMany({ where: { user_id: userId } });
+
+  res.redirect("https://app.asana.com/");
+});
+
+router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+  const webhookId = req.params.webhook;
+  const [asanaAccount, webhook] = await Promise.all([
+    db.asana_account.findFirst({
+      where: { user_id: userId },
+      include: { asana_webhook: true },
+    }),
+    db.asana_webhook.findFirst({
+      where: { id: webhookId },
+    }),
+  ]);
+
+  if (!asanaAccount) throw new NotFoundError("asana account not found");
+  if (!webhook || !webhook.webhook_id) throw new NotFoundError("asana webhook not found");
+
+  const client = createClient();
+  client.useOauth({ credentials: asanaAccount });
+
+  await Promise.all([
+    client.webhooks.deleteById(webhook.webhook_id),
+    db.asana_webhook.deleteMany({ where: { id: webhookId } }),
+  ]);
 
   res.redirect("https://app.asana.com/");
 });
