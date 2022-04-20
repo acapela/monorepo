@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Application, Request, Response } from "express";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
@@ -11,8 +10,9 @@ import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
-import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES } from "@aca/shared/google";
+import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES, isInGmailPricingTier } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
+import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
 
 import { updateUserOnboardingStatus } from "./tracking/utils";
@@ -87,18 +87,15 @@ function nextAuthMiddleware(req: Request, res: Response) {
       },
 
       async signIn({ account, profile }) {
-        db.user
-          .findFirst({
-            where: {
-              account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
-            },
-          })
-          .then(async (user) => {
-            if (user) {
-              trackFirstBackendUserEvent(user, "Logged In");
-            }
-          })
-          .catch((error) => Sentry.captureException(error));
+        const user = await db.user.findFirst({
+          where: {
+            account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
+          },
+        });
+
+        if (user) {
+          trackFirstBackendUserEvent(user, "Logged In");
+        }
 
         try {
           // If our current account has no refresh token, try to update it if we have it now.
@@ -107,15 +104,18 @@ function nextAuthMiddleware(req: Request, res: Response) {
               where: { provider_account_id: account.providerAccountId, provider_id: account.provider },
               data: { access_token: account.access_token, refresh_token: account.refresh_token, email: profile.email },
             });
-            if (account.provider == "google" && account.scope?.includes(GMAIL_SCOPE)) {
+            if (
+              account.provider == "google" &&
+              account.scope?.includes(GMAIL_SCOPE) &&
+              isInGmailPricingTier(user?.pricing_tier)
+            ) {
               await setupGmailWatcher(account);
             }
           }
 
           return true;
         } catch (error) {
-          console.error(error);
-          Sentry.captureException(error);
+          logger.error(error);
           return false;
         }
       },
