@@ -11,7 +11,7 @@ type DbWebhook = AsanaWebhook & { asana_account: AsanaAccount & { user: User } }
 export async function processEvent(event: Webhook, webhook: DbWebhook) {
   // ignore event that was triggered by the user themselves
   // it is useful to comment this line if you want to test the webhooks
-  //if (webhook.asana_account.asana_user_id === event.user.gid) return;
+  if (webhook.asana_account.asana_user_id === event.user.gid) return;
 
   const client = createClient();
   // the oauth client also handles expired tokens internally and will refresh them
