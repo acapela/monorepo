@@ -16,7 +16,7 @@ export const asanaIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_asana",
   name: "Asana",
   description: "New issues, task assignments and comments.",
-  isReady: asanaAuthTokenBridgeValue.observables.isReady,
+  getIsConnected: () => !!asanaAuthTokenBridgeValue.get(),
   getCanConnect: () => true,
   getAccounts: () =>
     accountStore.user?.asanaWebhooks
