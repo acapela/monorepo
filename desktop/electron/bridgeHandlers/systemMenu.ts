@@ -5,7 +5,6 @@ import { SystemMenuItemData, addSystemMenuItem, systemMenuItemClicked } from "@a
 import { removeElementFromArray } from "@aca/shared/array";
 import { groupBy } from "@aca/shared/groupBy";
 
-import { getMainView } from "../windows/mainWindow";
 import { convertShortcutKeysToElectronShortcut } from "./utils/shortcuts";
 
 function getDefaultSystemMenuTemplate() {
@@ -65,7 +64,11 @@ function getDefaultSystemMenuTemplate() {
           label: "Toggle developer tools",
           accelerator: "CommandOrControl+Alt+I",
           click() {
-            getMainView().webContents.toggleDevTools();
+            for (const webContent of webContents.getAllWebContents()) {
+              if (webContent.isFocused()) {
+                webContent.toggleDevTools();
+              }
+            }
           },
         },
       ],
