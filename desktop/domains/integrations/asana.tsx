@@ -16,9 +16,9 @@ export const asanaIntegrationClient: IntegrationClient = {
   name: "Asana",
   description: "New issues, task assignments and comments.",
   isReady: asanaAuthTokenBridgeValue.observables.isReady,
-  getCanConnect: () => !accountStore.user?.asanaAccounts.hasItems,
+  getCanConnect: () => true,
   getAccounts: () =>
-    accountStore.user?.asanaAccounts.hasItems ? [{ kind: "account", id: "asana", name: "Asana" }] : [],
+    accountStore.user?.asanaWebhooks.map((w) => ({ kind: "account", id: "asana", name: w.project_name! })) || [],
   convertToLocalAppUrl: async ({ url }) => ({
     protocol: "asana",
     localUrl: url.replace(ROOT_URL, URL_SCHEME),

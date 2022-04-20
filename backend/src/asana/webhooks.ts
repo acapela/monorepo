@@ -54,6 +54,8 @@ export async function processEvent(event: Webhook, webhook: DbWebhook) {
       client.tasks.findById(event.resource.gid),
       client.sections.findById(event.parent.gid),
     ]);
+    // ignore sections that are not part of the project
+    if (get(section, "project.gid") !== webhook.project_id) return;
     await createStatusChangeNotification(webhook, actor, task, section.name);
     return;
   }
@@ -64,7 +66,7 @@ export async function processEvent(event: Webhook, webhook: DbWebhook) {
       client.users.findById(event.user.gid),
       client.tasks.findById(event.resource.gid),
     ]);
-    await createStatusChangeNotification(webhook, actor, task, task.completed ? "completed" : "uncompleted");
+    await createStatusChangeNotification(webhook, actor, task, task.completed ? "mark:completed" : "mark:uncompleted");
     return;
   }
   // TODO: add further events here

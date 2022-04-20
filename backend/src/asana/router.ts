@@ -81,7 +81,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
       client.projects.findAll({ workspace: workspace.gid, limit: 100 }),
       client.webhooks.getAll(workspace.gid, { limit: 100 }),
     ]);
-    projects = projects.concat(pjs.data.map((p) => ({ ...p, workspace: workspace.gid })));
+    projects = projects.concat(pjs.data.map((p) => ({ ...p, workspace })));
     existingWebhooks = existingWebhooks.concat(whs.data as Asana.resources.Webhooks.Type[]);
   }
 
@@ -105,7 +105,9 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
       data: {
         asana_account_id: asanaAccount.id,
         project_id: project.gid,
-        workspace_id: project.workspace,
+        workspace_id: project.workspace.gid,
+        project_name: project.name,
+        workspace_name: project.workspace.name,
       },
     });
     await client.webhooks.create(project.gid, `${whEndpoint}${dbWebhook.id}`, {});
