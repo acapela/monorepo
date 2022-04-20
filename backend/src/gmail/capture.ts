@@ -3,7 +3,10 @@ import * as Sentry from "@sentry/node";
 import { google } from "googleapis";
 import { Account as NextAuthAccount } from "next-auth";
 
+import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Account, GmailAccount, db } from "@aca/db";
+import { assertDefined } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Maybe } from "@aca/shared/types";
@@ -52,6 +55,7 @@ export async function setupGmailWatcher(authAccount: NextAuthAccount) {
   await db.gmail_account.upsert({ where: { account_id: account.id }, create: { account_id: account.id }, update: {} });
 
   await addGmailAccountsInboxToTopic(account);
+  trackBackendUserEvent(account.user_id, "Gmail Integration Added");
 }
 
 /**
@@ -68,6 +72,16 @@ export async function renewGmailWatchers() {
       logger.error(error, `Failed to maintain gmail watcher for account ${account.id}`);
     }
   }
+}
+
+export async function handleGmailAccountUpdates(event: HasuraEvent<GmailAccount>) {
+  if (event.type !== "delete") {
+    return;
+  }
+  const id = event.item.account_id;
+  const account = assertDefined(await db.account.findUnique({ where: { id } }), `Missing account for id ${id}`);
+  const gmail = createGmailClientForAccount(account);
+  await gmail.users.stop({ userId: account.provider_account_id });
 }
 
 const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
@@ -114,13 +128,14 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
             user_id: account.user_id,
             // this assumes only one account being logged in
             url: "https://mail.google.com/mail/u/0/#inbox/" + gmailMessageId,
-            from,
+            from: from.split("<")[0].trim(),
             text_preview: subject,
             created_at: date ? new Date(date).toISOString() : undefined,
           },
         },
         gmail_account: { connect: { id: gmailAccount.id } },
         gmail_message_id: gmailMessageId,
+        gmail_thread_id: data.threadId,
       },
       update: {},
     });

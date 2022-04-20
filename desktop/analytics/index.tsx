@@ -10,6 +10,7 @@ import {
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { applicationFocusStateBridge } from "@aca/desktop/bridge/system";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { SEGMENT_API_KEY } from "@aca/desktop/lib/env";
 import { desktopRouter } from "@aca/desktop/routes";
@@ -43,6 +44,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     jira_installed_at: (!!jiraAuthTokenBridgeValue.get() && jiraAuthTokenBridgeValue.lastUpdateDate) || undefined,
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
     github_installed_at: (githubAuthTokenBridgeValue.get() && githubAuthTokenBridgeValue.lastUpdateDate) || undefined,
+    gmail_installed_at: nullableDate(getNullableDb()?.gmailAccount.all[0].created_at) ?? undefined,
   };
 }
 

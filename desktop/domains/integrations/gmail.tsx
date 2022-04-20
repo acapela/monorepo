@@ -20,7 +20,9 @@ export const gmailIntegrationClient: IntegrationClient = {
     await loginGmailBridge();
   },
   async disconnect() {
-    void null;
+    for (const account of getDb().gmailAccount.all) {
+      account.remove();
+    }
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.gmail} />,
 };
