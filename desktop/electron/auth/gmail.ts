@@ -16,8 +16,11 @@ export function initializeGmailAuthHandler() {
     );
     return new Promise<void>((resolve) => {
       window.webContents.on("did-navigate-in-page", async () => {
-        if (window.webContents.getURL().includes("/auth/success")) {
-          window.close();
+        const isAuth = window.webContents.getURL().includes("/auth/success");
+        // eslint-disable-next-line no-console
+        console.log("current URL", window.webContents.getURL(), { isAuth });
+        if (isAuth) {
+          // window.close();
           resolve();
         }
       });
