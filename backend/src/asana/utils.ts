@@ -11,7 +11,7 @@ export function createClient() {
     defaultHeaders: {
       // this header is required to suppress deprecation warnings
       // https://forum.asana.com/t/update-on-our-planned-api-changes-to-user-task-lists-a-k-a-my-tasks/103828
-      "Asana-Enable": "new_user_task_lists",
+      "Asana-Enable": "new_user_task_lists,new_project_templates",
     },
   });
 }

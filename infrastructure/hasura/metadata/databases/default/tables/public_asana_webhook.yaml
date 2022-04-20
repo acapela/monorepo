@@ -1,3 +1,23 @@
 table:
   name: asana_webhook
   schema: public
+object_relationships:
+- name: asana_account
+  using:
+    foreign_key_constraint_on: asana_account_id
+select_permissions:
+- permission:
+    columns:
+    - asana_account_id
+    - created_at
+    - id
+    - project_id
+    - project_name
+    - updated_at
+    - workspace_id
+    - workspace_name
+    filter:
+      asana_account:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
