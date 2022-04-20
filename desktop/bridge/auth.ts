@@ -68,7 +68,7 @@ export const asanaAuthTokenBridgeValue = createBridgeValue<boolean>("asana-auth-
 });
 
 export const loginAsanaBridge = createInvokeBridge("login-asana");
-export const logoutAsanaBridge = createInvokeBridge("logout-asana");
+export const logoutAsanaBridge = createInvokeBridge<{ webhookId?: string }>("logout-asana");
 
 /*
   NEW SERVICE!?!?!?

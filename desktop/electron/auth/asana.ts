@@ -30,7 +30,7 @@ export async function loginAsana() {
   });
 }
 
-export async function logoutAsana() {
+export async function logoutAsana(webhookId?: string) {
   const window = new BrowserWindow({
     opacity: 0,
     transparent: false,
@@ -42,13 +42,15 @@ export async function logoutAsana() {
     y: 1,
   });
   window.setIgnoreMouseEvents(true);
-
-  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/asana/unlink", { userAgent });
+  await window.webContents.loadURL(`${FRONTEND_URL}/api/backend/v1/asana/unlink${webhookId ? "/" + webhookId : ""}`, {
+    userAgent,
+  });
 
   for (let i = 0; i < 30; i++) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     if (window.isDestroyed()) return;
     if (!window.webContents.getURL().startsWith("https://app.asana.com")) continue;
+    if (webhookId) break;
     const serviceCookies = await session.defaultSession.cookies.get({ url: "https://app.asana.com" });
     await Promise.all(
       serviceCookies.map((cookie) => session.defaultSession.cookies.remove("https://app.asana.com", cookie.name))
@@ -62,5 +64,5 @@ export async function logoutAsana() {
 
 export function initializeAsanaAuthHandler() {
   loginAsanaBridge.handle(() => loginAsana());
-  logoutAsanaBridge.handle(() => logoutAsana());
+  logoutAsanaBridge.handle((input) => logoutAsana(input?.webhookId));
 }
