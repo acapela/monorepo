@@ -107,7 +107,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
             if (
               account.provider == "google" &&
               account.scope?.includes(GMAIL_SCOPE) &&
-              isGmailIncludedInPlain(user?.pricing_tier)
+              isGmailIncludedInPlain(user?.subscription_plan)
             ) {
               await setupGmailWatcher(account);
             }
