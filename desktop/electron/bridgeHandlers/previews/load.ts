@@ -8,6 +8,10 @@ import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { markLoadRequestedTime } from "./instrumentation";
 import { loadURLWithFilters } from "./siteFilters";
 
+const RETRY_ATTEMPTS = 5;
+const NORMAL_RETRY_MS = 500;
+const ABORT_RETRY_MS = 50;
+
 const log = makeLogger("Preview Manager");
 
 async function ensureBrowserViewHasBackground(view: BrowserView) {
@@ -27,7 +31,7 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
   return await forceLoadPreview(browserView, url);
 }
 
-export async function forceLoadPreview(browserView: BrowserView, url: string) {
+export async function forceLoadPreview(browserView: BrowserView, url: string, attempt = 0): Promise<void> {
   try {
     markLoadRequestedTime(browserView, url);
     preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
@@ -42,12 +46,23 @@ export async function forceLoadPreview(browserView: BrowserView, url: string) {
       return;
     }
 
-    previewEventsBridge.send({ type: "load-error", url });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isAbortError = (error as any)?.message.includes("ERR_ABORTED");
 
-    preloadingNotificationsBridgeChannel.update({ [url]: "error" });
+    if (!isAbortError) {
+      previewEventsBridge.send({ type: "load-error", url });
 
-    log.error(error, `Failed to load preview`);
+      preloadingNotificationsBridgeChannel.update({ [url]: "error" });
+    }
 
-    throw error;
+    if (attempt < RETRY_ATTEMPTS) {
+      // We sometimes get ERR_ABORTED from Gmail and we want to retry quickly in that case
+      await new Promise((resolve) => setTimeout(resolve, isAbortError ? ABORT_RETRY_MS : NORMAL_RETRY_MS));
+
+      return forceLoadPreview(browserView, url, isAbortError ? attempt : attempt + 1);
+    } else {
+      log.error(error, `Failed to load preview`);
+      throw error;
+    }
   }
 }
