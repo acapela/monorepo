@@ -389,36 +389,48 @@ function getNotificationProperties(
   }
 
   if (notification.type === "commented") {
-    if (!activityValue) {
-      logMissingActivity();
-      return;
+    const activityResult = CommentedActivityValue.safeParse(activityValue);
+    if (activityResult.success) {
+      const activity = activityResult.data;
+      const discussion = recordMap.discussion?.[activity.discussion_id].value;
+
+      if (discussion) {
+        const parentDiscussionBlock = discussion.parent_id;
+        const url =
+          notionURL +
+          "/" +
+          stripDashes(pageId) +
+          "?d=" +
+          `${stripDashes(discussion.id)}` +
+          (parentDiscussionBlock ? `#${stripDashes(parentDiscussionBlock)}` : "");
+        return {
+          type: "notification_notion_commented",
+          url,
+          text_preview: extractNotionComment(activity, recordMap),
+          discussion_id: activity.discussion_id,
+        };
+      } else {
+        log.error(
+          new Error(
+            `Discussion with id ${activity.discussion_id} not found in recordMap: ${JSON.stringify(recordMap, null, 2)}`
+          )
+        );
+      }
     }
-    const activity = CommentedActivityValue.parse(activityValue);
 
-    const discussion = recordMap.discussion?.[activity.discussion_id].value;
-
-    if (!discussion) {
-      log.error(
-        `Discussion with id ${activity.discussion_id} not found in recordMap: `,
-        JSON.stringify(recordMap, null, 2)
-      );
-      return;
-    }
-
-    const parentDiscussionBlock = discussion.parent_id;
-    const url =
-      notionURL +
-      "/" +
-      stripDashes(pageId) +
-      "?d=" +
-      `${stripDashes(discussion.id)}` +
-      (parentDiscussionBlock ? `#${stripDashes(parentDiscussionBlock)}` : "");
+    log.error(
+      new Error(
+        `Could not extract comment text and link for notification ${JSON.stringify(
+          notification,
+          null,
+          2
+        )} with records ${JSON.stringify(recordMap, null, 2)}`
+      )
+    );
 
     return {
       type: "notification_notion_commented",
-      url,
-      text_preview: extractNotionComment(activity, recordMap),
-      discussion_id: activity.discussion_id,
+      url: notionURL + "/" + stripDashes(pageId),
     };
   }
 
