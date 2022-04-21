@@ -1,9 +1,9 @@
-import { shell } from "electron";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "@aca/desktop/analytics";
+import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { openCommandMenu } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconArrowBottom } from "@aca/ui/icons";
@@ -18,7 +18,7 @@ import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageCon
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 const handleFeedbackCallButtonClick = () => {
-  shell.openExternal("https://calendly.com/acapela/feedback");
+  openLinkRequest({ url: "https://calendly.com/acapela/feedback" });
   trackEvent("Onboarding Completed");
 };
 
