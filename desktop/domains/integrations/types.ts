@@ -13,6 +13,7 @@ export interface IntegrationClient {
   description: string;
   icon: ReactNode;
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
+  getIsDisabled?: () => boolean;
   getIsConnected: () => boolean;
   // Returns false if an account is already connected and this integration only supports a single account
   getCanConnect?(): boolean;

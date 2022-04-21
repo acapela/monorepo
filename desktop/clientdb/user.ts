@@ -20,6 +20,7 @@ const userFragment = gql`
     is_slack_auto_resolve_enabled
     onboarding_finished_at
     slack_included_channels
+    subscription_plan
     updated_at
     created_at
   }

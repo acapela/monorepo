@@ -40,6 +40,7 @@ select_permissions:
         - email
         - id
         - is_bot
+        - subscription_plan
         - is_slack_auto_resolve_enabled
         - name
         - onboarding_finished_at
