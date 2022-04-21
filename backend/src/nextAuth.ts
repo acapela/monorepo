@@ -98,13 +98,12 @@ function nextAuthMiddleware(req: Request, res: Response) {
         }
 
         try {
-          // If our current account has no refresh token, try to update it if we have it now.
-          if (
-            typeof account.refresh_token == "string" &&
-            account.provider == "google" &&
-            account.scope?.includes(GMAIL_SCOPE) &&
-            isGmailIncludedInPlain(user?.subscription_plan)
-          ) {
+          const isGoogleAccount = account.provider == "google";
+          const hasGmailScopes = account.scope?.includes(GMAIL_SCOPE);
+
+          // If there is a refresh token, try to update it
+          // For Google accounts we only want to update them when they also have the necessary gmail scopes
+          if (typeof account.refresh_token == "string" && (!isGoogleAccount || hasGmailScopes)) {
             await db.account.updateMany({
               where: { provider_account_id: account.providerAccountId, provider_id: account.provider },
               data: {
@@ -113,6 +112,9 @@ function nextAuthMiddleware(req: Request, res: Response) {
                 email: profile.email,
               },
             });
+          }
+
+          if (isGoogleAccount && hasGmailScopes && isGmailIncludedInPlain(user?.subscription_plan)) {
             await setupGmailWatcher(account);
           }
 
