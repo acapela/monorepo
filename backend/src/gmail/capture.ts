@@ -7,6 +7,7 @@ import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Account, GmailAccount, db } from "@aca/db";
 import { assertDefined } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Maybe } from "@aca/shared/types";
@@ -92,6 +93,7 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
   const historyResponse = await gmail.users.history.list({
     userId: account.provider_account_id,
     startHistoryId,
+    labelId: "INBOX",
   });
   const addedMessageIds = (historyResponse.data.history ?? [])
     .flatMap((h) => h.messagesAdded ?? [])
@@ -154,7 +156,12 @@ export function listenToGmailSubscription() {
       include: { account: true },
     });
     if (!gmailAccount) {
-      throw new Error("Missing gmail account for email " + eventData.emailAddress);
+      const message = "Missing gmail account for email " + eventData.emailAddress;
+      if (IS_DEV) {
+        console.warn(message);
+        return;
+      }
+      throw new Error(message);
     }
     const { account } = gmailAccount;
 
