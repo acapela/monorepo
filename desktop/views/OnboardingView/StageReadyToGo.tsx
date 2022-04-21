@@ -1,7 +1,9 @@
+import { shell } from "electron";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { openCommandMenu } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconArrowBottom } from "@aca/ui/icons";
@@ -15,20 +17,25 @@ import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
+const handleFeedbackCallButtonClick = () => {
+  shell.openExternal("https://calendly.com/acapela/feedback");
+  trackEvent("Onboarding Completed");
+};
+
 export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) => {
   return (
     <OnboardingStageContainer>
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Ready to go!"
-          description="You’re all set now. We hope your experience with your work notifications will be entirely different after this very moment."
+          description="You’re all set now. We hope your experience with your work notifications will be entirely different with Acapela."
         />
         <OnboardingAnimationItem>
           <UISummaryCard>
             <UISummaryItem>
               <UICopySection>
                 <UITitle>Feedback</UITitle>
-                <UIDescription>Let us know about any ideas, suggestions or problems!</UIDescription>
+                <UIDescription>Did we miss your favorite tool? Let us know!</UIDescription>
               </UICopySection>
               <UICopySection>
                 <div
@@ -46,10 +53,10 @@ export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) =>
 
             <UISummaryItem>
               <UICopySection>
-                <UITitle>Meet us!</UITitle>
-                <UIDescription>Schedule a call where we can directly talk about your experience.</UIDescription>
+                <UITitle>Give us feedback :)</UITitle>
+                <UIDescription>Book a call to ask any questions or request new features.</UIDescription>
               </UICopySection>
-              <Button kind="secondary" size="primary">
+              <Button kind="secondary" size="primary" onClick={handleFeedbackCallButtonClick}>
                 Schedule a call
               </Button>
             </UISummaryItem>
