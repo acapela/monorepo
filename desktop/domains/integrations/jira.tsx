@@ -14,7 +14,7 @@ function getAtlassianAccounts() {
 export const jiraIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_jira_issue",
-  name: "Atlassian Jira",
+  name: "Jira",
   description: "Jira issue updates and comments",
   icon: <IntegrationIcon imageUrl={integrationLogos.jira} />,
   getIsConnected: () => {

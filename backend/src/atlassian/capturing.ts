@@ -402,7 +402,7 @@ async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: str
 
   const watchers = response.data as GetWatchersResponse;
 
-  return watchers.watchers.map((w) => w.accountId);
+  return watchers?.watchers?.map((w) => w.accountId) ?? [];
 }
 
 async function getLeastRecentlyUsedAtlassianAccount(atlassianCloudUrl: string): Promise<JiraAccountWithAllDetails> {
