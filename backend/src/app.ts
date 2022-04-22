@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, json, urlencoded } from "express";
 import securityMiddleware from "helmet";
 
-import { listenToGmailSubscription } from "@aca/backend/src/gmail/capture";
+// import { listenToGmailSubscription } from "@aca/backend/src/gmail/capture";
 import { db } from "@aca/db";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
@@ -88,7 +88,7 @@ function setupRoutes(app: Application): void {
 
   nextAuth(app);
 
-  listenToGmailSubscription();
+  // listenToGmailSubscription();
 
   app.use(sentryTunnel);
 }
