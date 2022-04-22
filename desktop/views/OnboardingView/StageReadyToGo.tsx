@@ -19,7 +19,7 @@ import { OnboardingSecondaryHero } from "./ui/typo";
 
 const handleFeedbackCallButtonClick = () => {
   openLinkRequest({ url: "https://calendly.com/acapela/feedback" });
-  trackEvent("Onboarding Completed");
+  trackEvent("Feedback Call Booked");
 };
 
 export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) => {
@@ -28,14 +28,14 @@ export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) =>
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Ready to go!"
-          description="You’re all set now. We hope your experience with your work notifications will be entirely different with Acapela."
+          description="You’re all set. We hope Acapela will make your notifications delightful again."
         />
         <OnboardingAnimationItem>
           <UISummaryCard>
             <UISummaryItem>
               <UICopySection>
                 <UITitle>Feedback</UITitle>
-                <UIDescription>Did we miss your favorite tool? Let us know!</UIDescription>
+                <UIDescription>Do you have questions or suggestions? Let us know!</UIDescription>
               </UICopySection>
               <UICopySection>
                 <div
@@ -53,8 +53,8 @@ export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) =>
 
             <UISummaryItem>
               <UICopySection>
-                <UITitle>Give us feedback :)</UITitle>
-                <UIDescription>Book a call to ask any questions or request new features.</UIDescription>
+                <UITitle>Share your opinion</UITitle>
+                <UIDescription>Book a call with us to ask any questions or request new features.</UIDescription>
               </UICopySection>
               <Button kind="secondary" size="primary" onClick={handleFeedbackCallButtonClick}>
                 Schedule a call

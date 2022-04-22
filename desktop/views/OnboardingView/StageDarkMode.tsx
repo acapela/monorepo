@@ -30,7 +30,7 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="First things first"
-          description="Pick app theme. You can switch it in the settings later."
+          description="Pick your favorite theme. You can switch it in the settings later."
         />
         <UIModes>
           <UIModeCard
