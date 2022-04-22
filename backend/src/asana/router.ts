@@ -154,6 +154,7 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   res.redirect(doneEndpoint);
 });
 
+// unlink removes a single project from the user
 router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const webhookId = req.params.webhook;
