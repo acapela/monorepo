@@ -137,7 +137,16 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
 
   const insertApplicableCss = async () =>
     browserView.webContents.insertCSS(applicableSiteFilters.map((filter) => stylesToString(filter.css)).join("\n"));
-  await browserView.webContents.loadURL(filteredURL, { userAgent });
+  try {
+    await browserView.webContents.loadURL(filteredURL, { userAgent });
+  } catch (e) {
+    // Loading aborts when some SAP change the history before loading completes
+    // the error is harmless, but must be caught or else all execution stops
+    // https://github.com/electron/electron/issues/17526
+    if ((e as { code: string })?.code !== "ERR_ABORTED") {
+      throw e;
+    }
+  }
   await insertApplicableCss();
 
   browserView.webContents.on("did-navigate", insertApplicableCss);
