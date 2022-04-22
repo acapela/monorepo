@@ -47,16 +47,24 @@ async function addGmailAccountsInboxToTopic(account: Account) {
 }
 
 export async function setupGmailWatcher(authAccount: NextAuthAccount) {
-  const account = await db.account.findFirst({
-    where: { provider_id: "google", provider_account_id: authAccount.providerAccountId },
-  });
-  if (!account) {
-    return;
-  }
-  await db.gmail_account.upsert({ where: { account_id: account.id }, create: { account_id: account.id }, update: {} });
+  try {
+    const account = await db.account.findFirst({
+      where: { provider_id: "google", provider_account_id: authAccount.providerAccountId },
+    });
+    if (!account) {
+      return;
+    }
+    await db.gmail_account.upsert({
+      where: { account_id: account.id },
+      create: { account_id: account.id },
+      update: {},
+    });
 
-  await addGmailAccountsInboxToTopic(account);
-  trackBackendUserEvent(account.user_id, "Gmail Integration Added");
+    await addGmailAccountsInboxToTopic(account);
+    trackBackendUserEvent(account.user_id, "Gmail Integration Added");
+  } catch (error) {
+    logger.error(error, "Error setting up Gmail watcher");
+  }
 }
 
 /**
