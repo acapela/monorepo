@@ -98,11 +98,22 @@ const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], 
 
 async function createNotificationsForNewMessages(account: Account, gmailAccount: GmailAccount, startHistoryId: string) {
   const gmail = createGmailClientForAccount(account);
-  const historyResponse = await gmail.users.history.list({
-    userId: account.provider_account_id,
-    startHistoryId,
-    labelId: "INBOX",
-  });
+  const historyResponse = await gmail.users.history
+    .list({
+      userId: account.provider_account_id,
+      startHistoryId,
+      labelId: "INBOX",
+    })
+    .catch((error) => {
+      if (error.message.includes("Insufficient Permission")) {
+        return null;
+      }
+      throw error;
+    });
+  if (!historyResponse) {
+    // We ignore messages for users for whom we lost permission to access their inbox
+    return;
+  }
   const addedMessageIds = (historyResponse.data.history ?? [])
     .flatMap((h) => h.messagesAdded ?? [])
     .map(({ message }) => message?.id)
