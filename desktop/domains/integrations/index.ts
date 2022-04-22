@@ -1,3 +1,4 @@
+import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
 
 import { figmaIntegrationClient } from "./figma";
@@ -22,6 +23,9 @@ export const integrationClients = {
 export type SupportedIntegrationName = keyof typeof integrationClients;
 
 export const integrationClientList = Object.values(integrationClients);
+export const getEnabledIntegrationClientList = cachedComputed(() =>
+  Object.values(integrationClients).filter((integration) => !integration.getIsDisabled?.())
+);
 
 export function getIsIntegrationClient(item: unknown): item is IntegrationClient {
   unsafeAssertType<IntegrationClient>(item);

@@ -3,7 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
-import { integrationClientList } from "@aca/desktop/domains/integrations";
+import { getEnabledIntegrationClientList } from "@aca/desktop/domains/integrations";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
@@ -26,7 +26,7 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
           description="Acapela will import notifications from the tools you connect."
         />
         <UIIntegrationsButtons>
-          {integrationClientList.map((integration) => {
+          {getEnabledIntegrationClientList().map((integration) => {
             return (
               <UIIntegrationBox key={integration.name}>
                 <UIIntegrationButton

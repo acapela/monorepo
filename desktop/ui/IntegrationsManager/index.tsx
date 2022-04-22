@@ -2,17 +2,15 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { integrationClientList } from "@aca/desktop/domains/integrations";
+import { getEnabledIntegrationClientList } from "@aca/desktop/domains/integrations";
 
 import { IntegrationCard } from "./IntegrationCard";
 
 export const IntegrationsManager = observer(() => (
   <UIHolder>
-    {integrationClientList
-      .filter((integration) => !integration.getIsDisabled?.())
-      .map((integration) => (
-        <IntegrationCard key={integration.name} service={integration} />
-      ))}
+    {getEnabledIntegrationClientList().map((integration) => (
+      <IntegrationCard key={integration.name} service={integration} />
+    ))}
   </UIHolder>
 ));
 

@@ -10,7 +10,7 @@ import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
-import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlain } from "@aca/shared/google";
+import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlan } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
@@ -114,7 +114,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
             });
           }
 
-          if (isGoogleAccount && hasGmailScopes && isGmailIncludedInPlain(user?.subscription_plan)) {
+          if (isGoogleAccount && hasGmailScopes && isGmailIncludedInPlan(user?.subscription_plan)) {
             await setupGmailWatcher(account);
           }
 
