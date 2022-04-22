@@ -49,7 +49,8 @@ export async function logoutAsana(webhookId?: string) {
   for (let i = 0; i < 30; i++) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     if (window.isDestroyed()) return;
-    if (!window.webContents.getURL().startsWith("https://app.asana.com")) continue;
+    const url = new URL(window.webContents.getURL());
+    if (url.origin !== FRONTEND_URL || !url.pathname.endsWith("done")) continue;
     if (webhookId) break; // don't sign out, we just have unlinked a project
     const serviceCookies = await session.defaultSession.cookies.get({ url: "https://app.asana.com" });
     await Promise.all(

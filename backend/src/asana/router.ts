@@ -46,11 +46,12 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   const asanaAccountData = {
     access_token: asanaCredentials.access_token,
     refresh_token: asanaCredentials.refresh_token,
-    asana_user_id: asanaCredentials.data.gid,
     expires_at: expiresAt,
   };
   // create or update the asana account
-  let asanaAccount = await db.asana_account.findFirst({ where: { user_id: userId } });
+  let asanaAccount = await db.asana_account.findFirst({
+    where: { user_id: userId, asana_user_id: asanaCredentials.data.gid },
+  });
   if (asanaAccount) {
     await db.asana_account.update({
       where: { id: asanaAccount.id },
@@ -60,6 +61,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     asanaAccount = await db.asana_account.create({
       data: {
         user_id: userId,
+        asana_user_id: asanaCredentials.data.gid,
         ...asanaAccountData,
       },
     });
@@ -121,6 +123,8 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).end();
 });
 
+const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/asana/done`;
+
 // unlink removes the asana account and all webhooks
 router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
@@ -147,7 +151,7 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
 
   await db.asana_account.deleteMany({ where: { user_id: userId } });
 
-  res.redirect("https://app.asana.com/");
+  res.redirect(doneEndpoint);
 });
 
 router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
@@ -174,7 +178,11 @@ router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
     db.asana_webhook.deleteMany({ where: { id: webhookId } }),
   ]);
 
-  res.redirect("https://app.asana.com/");
+  res.redirect(doneEndpoint);
+});
+
+router.get("/v1/asana/done", async (req: Request, res: Response) => {
+  res.status(HttpStatus.OK).send("ok");
 });
 
 // webhook handler

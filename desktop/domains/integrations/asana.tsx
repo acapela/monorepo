@@ -8,14 +8,11 @@ import { accountStore } from "@aca/desktop/store/account";
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
-const URL_SCHEME = "asana:/";
-const ROOT_URL = "https://app.asana.com";
-
 export const asanaIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_asana",
   name: "Asana",
-  description: "New issues, task assignments and comments.",
+  description: "New tasks assignments, mentions, status updates and comments.",
   getIsConnected: () => !!asanaAuthTokenBridgeValue.get(),
   getCanConnect: () => true,
   getAccounts: () =>
@@ -27,8 +24,7 @@ export const asanaIntegrationClient: IntegrationClient = {
         name: `${w.project_name} (${w.workspace_name})`,
       })) || [],
   convertToLocalAppUrl: async ({ url }) => ({
-    protocol: "asana",
-    localUrl: url.replace(ROOT_URL, URL_SCHEME),
+    // TODO: asana app support
     fallback: url,
   }),
   async connect() {
