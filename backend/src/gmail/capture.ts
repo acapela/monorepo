@@ -12,6 +12,8 @@ import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Maybe } from "@aca/shared/types";
 
+import { createDriveNotification, isDriveEmail } from "./driveCapture";
+
 /**
  * This is how the Gmail integrations works at a high level:
  * - Within GCP's PubSub we have created a topic and a related subscription, with publishing rights for Gmail.
@@ -106,13 +108,14 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
   const newMessageIds = addedMessageIds.filter((id) => !existingMessageIds.has(id));
 
   for (const gmailMessageId of newMessageIds) {
-    const { data } = await gmail.users.messages
+    const { data: emailMetadata } = await gmail.users.messages
       .get({ id: gmailMessageId, userId: account.provider_account_id, format: "metadata" })
       .catch(() => ({ data: null }));
-    if (!data) {
+    if (!emailMetadata) {
       continue;
     }
-    const headers = data.payload?.headers ?? [];
+
+    const headers = emailMetadata.payload?.headers ?? [];
     const from = findHeader(headers, "From");
     const subject = findHeader(headers, "Subject");
     const date = findHeader(headers, "Date");
@@ -122,6 +125,20 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
       );
       continue;
     }
+
+    if (isDriveEmail(from)) {
+      const { data: fullEmailData } = await gmail.users.messages
+        .get({ id: gmailMessageId, userId: account.provider_account_id, format: "full" })
+        .catch(() => ({ data: null }));
+
+      if (fullEmailData) {
+        const result = createDriveNotification(fullEmailData);
+        if (result.isSuccessful) {
+          continue;
+        }
+      }
+    }
+
     await db.notification_gmail.upsert({
       where: { gmail_message_id: gmailMessageId },
       create: {
@@ -137,7 +154,7 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
         },
         gmail_account: { connect: { id: gmailAccount.id } },
         gmail_message_id: gmailMessageId,
-        gmail_thread_id: data.threadId,
+        gmail_thread_id: emailMetadata.threadId,
       },
       update: {},
     });
@@ -149,6 +166,7 @@ export function listenToGmailSubscription() {
   const pubsub = new PubSub({ projectId: PROJECT_ID });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
+
   subscription.on("message", async (event) => {
     const eventData = JSON.parse(event.data.toString());
     const gmailAccount = await db.gmail_account.findFirst({
@@ -179,6 +197,7 @@ export function listenToGmailSubscription() {
   });
 
   subscription.on("error", (error) => {
+    logger.error(error);
     Sentry.captureException(error);
   });
 }
