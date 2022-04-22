@@ -7,7 +7,6 @@ import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Account, GmailAccount, db } from "@aca/db";
 import { assertDefined } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
-import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Maybe } from "@aca/shared/types";
@@ -175,12 +174,8 @@ export function listenToGmailSubscription() {
       include: { account: true },
     });
     if (!gmailAccount) {
-      const message = "Missing gmail account for email " + eventData.emailAddress;
-      if (IS_DEV) {
-        console.warn(message);
-        return;
-      }
-      throw new Error(message);
+      console.warn("Missing gmail account for email " + eventData.emailAddress);
+      return;
     }
     const { account } = gmailAccount;
 
