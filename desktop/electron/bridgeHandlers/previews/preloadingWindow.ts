@@ -46,6 +46,7 @@ export const getPreloadingWindow = memoize(() => {
     height: mainWindowSize?.y ?? 900,
     x: 1,
     y: 1,
+    title: "",
 
     // if set to false, it prevents acapela from closing
     // closable: false,
