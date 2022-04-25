@@ -25,7 +25,11 @@ async function addRelatedSlackMessageToMarkAsReadQueue(notification_id: string) 
       },
     });
   } else {
-    await db.user_slack_conversation_read.create({ data: { ...keyFields, slack_last_message_ts: messageTs } });
+    await db.user_slack_conversation_read.upsert({
+      where: { user_slack_installation_id_slack_conversation_id: keyFields },
+      create: { ...keyFields, slack_last_message_ts: messageTs },
+      update: {},
+    });
   }
 }
 
