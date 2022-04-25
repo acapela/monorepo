@@ -1,9 +1,17 @@
 import { BrowserWindow, WebContents, session } from "electron";
 
-/**
- * We only allow notifications for app windows (but not for browser views)
- */
+import { getMainView } from "./windows/mainWindow";
+
 function shouldAllowNotifications(webContents: WebContents) {
+  // Allow main view to show notifications
+  if (getMainView().webContents === webContents) {
+    return true;
+  }
+
+  /**
+   * If this is direct web contents of some window - allow notifications
+   * If this is BrowserView that is not main view - don't allow it
+   */
   return BrowserWindow.getAllWindows().some((window) => {
     return window.webContents === webContents;
   });
