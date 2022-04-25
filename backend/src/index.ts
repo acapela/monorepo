@@ -2,6 +2,8 @@ process.env.APP = "backend";
 
 import "@aca/config/dotenv";
 
+import "./axios-trace";
+
 import * as Sentry from "@sentry/node";
 
 import { IS_DEV } from "@aca/shared/dev";
