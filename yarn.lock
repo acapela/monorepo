@@ -37,6 +37,7 @@ __metadata:
     "@types/uuid": ^8.3.4
     airtable: ^0.11.2
     asana: ^0.18.6
+    axios-better-stacktrace: ^2.1.2
     cookie-parser: ^1.4.6
     cors: ^2.8.5
     customerio-node: ^3.1.4
@@ -9620,6 +9621,15 @@ __metadata:
   version: 1.11.0
   resolution: "aws4@npm:1.11.0"
   checksum: 5a00d045fd0385926d20ebebcfba5ec79d4482fe706f63c27b324d489a04c68edb0db99ed991e19eda09cb8c97dc2452059a34d97545cebf591d7a2b5a10999f
+  languageName: node
+  linkType: hard
+
+"axios-better-stacktrace@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "axios-better-stacktrace@npm:2.1.2"
+  peerDependencies:
+    axios: "*"
+  checksum: c7c1162ebda174ef3367c2001a42280ab89699f2402c748ffb8c7f427e25d9ee02516b5c8e6a763170f02b9de961088701970fa4d37d12a4960cea03443ac491
   languageName: node
   linkType: hard
 
