@@ -1,42 +1,48 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useState } from "react";
-
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { USERSNAP_GLOBAL_API_KEY } from "@aca/desktop/lib/env";
-
-export const UsersnapContext = React.createContext<any>(null);
+import { authStore } from "@aca/desktop/store/auth";
+import { autorunEffect } from "@aca/shared/mobx/utils";
 
 interface UsersnapInitParams {
   user: { userId: string; email: string };
 }
 
-export const UsersnapProvider = ({ initParams, children }: { initParams?: UsersnapInitParams; children: any }) => {
-  const [usersnapApi, setUsersnapApi] = useState(null);
-  useEffect(() => {
-    if (!initParams) return;
+const log = makeLogger("Feedback");
 
-    let usersnapApi: any = null;
-    window.onUsersnapCXLoad = function (api) {
-      api.init(initParams);
-      usersnapApi = api;
-      setUsersnapApi(api);
-    };
-    const script = document.createElement("script");
-    script.defer = true;
-    script.src = `https://widget.usersnap.com/global/load/${USERSNAP_GLOBAL_API_KEY}?onload=onUsersnapCXLoad`;
-    document.head.appendChild(script);
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+let currentApi: any = null;
 
-    return () => {
-      if (usersnapApi) {
-        usersnapApi.destroy();
-        setUsersnapApi(null);
-      }
-      script.remove();
-    };
-  }, [initParams?.user.email, initParams?.user.userId]);
+autorunEffect(() => {
+  const user = authStore.userTokenData;
 
-  return <UsersnapContext.Provider value={usersnapApi}>{children}</UsersnapContext.Provider>;
-};
+  if (!USERSNAP_GLOBAL_API_KEY || !user) return;
 
-export function useUsersnapApi() {
-  return useContext(UsersnapContext);
+  window.onUsersnapCXLoad = function (api) {
+    const initParams: UsersnapInitParams = { user: { userId: user.id, email: user.email } };
+    api.init(initParams);
+    currentApi = api;
+    log("feedback widget ready");
+  };
+  const script = document.createElement("script");
+  script.defer = true;
+  script.src = `https://widget.usersnap.com/global/load/${USERSNAP_GLOBAL_API_KEY}?onload=onUsersnapCXLoad`;
+  document.head.appendChild(script);
+
+  return () => {
+    if (currentApi) {
+      currentApi.destroy();
+      currentApi = null;
+      log("feedback widget removed");
+    }
+    script.remove();
+  };
+});
+
+export function openFeedbackWidget() {
+  if (!currentApi) {
+    log.error("feedback widget used without user or api key");
+    throw new Error("Cannot share feedback without user");
+  }
+
+  currentApi.logEvent("feedback_button_clicked");
 }

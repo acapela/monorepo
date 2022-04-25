@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Application, Request, Response } from "express";
 import NextAuth, { DefaultUser, Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
@@ -11,8 +10,9 @@ import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
-import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES } from "@aca/shared/google";
+import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlan } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
+import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
 
 import { updateUserOnboardingStatus } from "./tracking/utils";
@@ -87,35 +87,40 @@ function nextAuthMiddleware(req: Request, res: Response) {
       },
 
       async signIn({ account, profile }) {
-        db.user
-          .findFirst({
-            where: {
-              account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
-            },
-          })
-          .then(async (user) => {
-            if (user) {
-              trackFirstBackendUserEvent(user, "Logged In");
-            }
-          })
-          .catch((error) => Sentry.captureException(error));
+        const user = await db.user.findFirst({
+          where: {
+            account: { some: { provider_account_id: account.providerAccountId, provider_id: account.provider } },
+          },
+        });
+
+        if (user) {
+          trackFirstBackendUserEvent(user, "Logged In");
+        }
 
         try {
-          // If our current account has no refresh token, try to update it if we have it now.
-          if (typeof account.refresh_token == "string") {
+          const isGoogleAccount = account.provider == "google";
+          const hasGmailScopes = account.scope?.includes(GMAIL_SCOPE);
+
+          // If there is a refresh token, try to update it
+          // For Google accounts we only want to update them when they also have the necessary gmail scopes
+          if (typeof account.refresh_token == "string" && (!isGoogleAccount || hasGmailScopes)) {
             await db.account.updateMany({
               where: { provider_account_id: account.providerAccountId, provider_id: account.provider },
-              data: { access_token: account.access_token, refresh_token: account.refresh_token, email: profile.email },
+              data: {
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                email: profile.email,
+              },
             });
-            if (account.provider == "google" && account.scope?.includes(GMAIL_SCOPE)) {
-              await setupGmailWatcher(account);
-            }
+          }
+
+          if (isGoogleAccount && hasGmailScopes && isGmailIncludedInPlan(user?.subscription_plan)) {
+            await setupGmailWatcher(account);
           }
 
           return true;
         } catch (error) {
-          console.error(error);
-          Sentry.captureException(error);
+          logger.error(error);
           return false;
         }
       },
@@ -190,7 +195,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         authorization: `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams({
-          prompt: "select_account", // always ask which google user to use, instead of auto picking
+          prompt: "select_account consent", // always ask which google user to use, instead of auto picking
           access_type: "offline", // !!! Get new refresh token each time user gives content for our access scopes
           scope: GOOGLE_AUTH_SCOPES,
         })}`,

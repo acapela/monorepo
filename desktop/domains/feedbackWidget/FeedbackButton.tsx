@@ -4,13 +4,12 @@ import { trackEvent } from "@aca/desktop/analytics";
 import { USERSNAP_GLOBAL_API_KEY } from "@aca/desktop/lib/env";
 import { Button } from "@aca/ui/buttons/Button";
 
-import { useUsersnapApi } from ".";
+import { openFeedbackWidget } from ".";
 
 export function FeedbackButton() {
   if (!USERSNAP_GLOBAL_API_KEY) {
     return null;
   }
-  const usersnapApi = useUsersnapApi();
 
   /**
    * This method takes into account other display rules,
@@ -18,13 +17,13 @@ export function FeedbackButton() {
    * It means that even you call this method but widget shouldn't
    * open - it will not open
    */
-  function handleOpenWidgetIfAllowed() {
-    usersnapApi.logEvent("feedback_button_clicked");
+  function handleFeedbackButtonClick() {
+    openFeedbackWidget();
     trackEvent("Feedback Button Clicked");
   }
 
   return (
-    <Button kind="transparent" onClick={handleOpenWidgetIfAllowed}>
+    <Button kind="transparent" onClick={handleFeedbackButtonClick}>
       Feedback
     </Button>
   );

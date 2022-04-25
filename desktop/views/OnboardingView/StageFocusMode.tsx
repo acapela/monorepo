@@ -71,7 +71,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
         <OnboardingStageSections>
           <OnboardingSecondaryHero
             title="Focus mode"
-            description="Opened notification it is loaded in fullscreen so you can interact with it. When resolved or snoozed - next notification will open."
+            description="You can engage with the conversation by clicking on the full-screen application. Resolving or snoozing will load the next notification."
           />
           <OnboardingAnimationItem>
             <UIFakeApp>
@@ -81,7 +81,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                     <UITopBarButtonsGroup>
                       <GuideItem
                         index={6}
-                        content="Go back to notifications list"
+                        content="Go back to list view"
                         onCompleted={async () => {
                           await wait(FAKE_APP_FADE_OUT_DURATION);
                           onContinue();
@@ -91,7 +91,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                           return (
                             <TopBarButton
                               icon={<IconArrowLeft />}
-                              tooltip="Go back to notifications list"
+                              tooltip="Go to list view"
                               onClick={() => {
                                 complete();
                               }}

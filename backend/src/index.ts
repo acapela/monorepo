@@ -2,6 +2,8 @@ process.env.APP = "backend";
 
 import "@aca/config/dotenv";
 
+import "./axios-trace";
+
 import * as Sentry from "@sentry/node";
 
 import { IS_DEV } from "@aca/shared/dev";
@@ -14,7 +16,7 @@ if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.STAGE,
-    maxValueLength: 1000,
+    maxValueLength: 10000,
   });
 }
 

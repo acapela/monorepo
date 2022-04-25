@@ -1,5 +1,7 @@
+import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
 
+import { asanaIntegrationClient } from "./asana";
 import { figmaIntegrationClient } from "./figma";
 import { githubIntegrationClient } from "./github";
 import { gmailIntegrationClient } from "./gmail";
@@ -17,11 +19,15 @@ export const integrationClients = {
   jira: jiraIntegrationClient,
   github: githubIntegrationClient,
   gmail: gmailIntegrationClient,
+  asana: asanaIntegrationClient,
 };
 
 export type SupportedIntegrationName = keyof typeof integrationClients;
 
 export const integrationClientList = Object.values(integrationClients);
+export const getEnabledIntegrationClientList = cachedComputed(() =>
+  Object.values(integrationClients).filter((integration) => !integration.getIsDisabled?.())
+);
 
 export function getIsIntegrationClient(item: unknown): item is IntegrationClient {
   unsafeAssertType<IntegrationClient>(item);

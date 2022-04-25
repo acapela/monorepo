@@ -9,6 +9,8 @@ import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
 import { accountEntity } from "./account";
+import { asanaAccountEntity } from "./asanaAccount";
+import { asanaWebhookEntity } from "./asanaWebhook";
 import { userSlackInstallationEntity } from "./userSlackInstallation";
 
 const userFragment = gql`
@@ -20,6 +22,7 @@ const userFragment = gql`
     is_slack_auto_resolve_enabled
     onboarding_finished_at
     slack_included_channels
+    subscription_plan
     updated_at
     created_at
   }
@@ -59,6 +62,12 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     },
     get slackInstallations() {
       return getEntity(userSlackInstallationEntity).query({ user_id: user.id });
+    },
+    get asanaAccounts() {
+      return getEntity(asanaAccountEntity).query({ user_id: user.id });
+    },
+    get asanaWebhooks() {
+      return getEntity(asanaWebhookEntity).all;
     },
     get isNew() {
       const timeSinceUserCreatedInSeconds = Math.abs(differenceInSeconds(new Date(), new Date(user.created_at)));

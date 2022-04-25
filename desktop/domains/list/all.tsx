@@ -4,17 +4,10 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
-import { githubIntegrationClient } from "@aca/desktop/domains/integrations/github";
-import { jiraIntegrationClient } from "@aca/desktop/domains/integrations/jira";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { typedKeys } from "@aca/shared/object";
 import { IconClock, IconListUnordered4 } from "@aca/ui/icons";
 
-import { figmaIntegrationClient } from "../integrations/figma";
-import { linearIntegrationClient } from "../integrations/linear";
-import { notionIntegrationClient } from "../integrations/notion";
-import { slackIntegrationClient } from "../integrations/slack";
 import { NotificationsList, defineNotificationsList } from "./defineList";
 
 export const allNotificationsList = defineNotificationsList({
@@ -23,56 +16,18 @@ export const allNotificationsList = defineNotificationsList({
   filter: { isResolved: false, isSnoozed: false },
 });
 
-export const slackList = defineNotificationsList({
-  id: "slack",
-  name: "Slack",
-  icon: slackIntegrationClient.icon,
-  filter: { kind: "notification_slack_message", isResolved: false, isSnoozed: false },
-});
-
-export const notionList = defineNotificationsList({
-  id: "notion",
-  name: "Notion",
-  icon: notionIntegrationClient.icon,
-  filter: { kind: "notification_notion", isResolved: false, isSnoozed: false },
-});
-
-export const figmaList = defineNotificationsList({
-  id: "figma",
-  name: "Figma",
-  icon: figmaIntegrationClient.icon,
-  filter: { kind: "notification_figma_comment", isResolved: false, isSnoozed: false },
-});
-
-export const linearList = defineNotificationsList({
-  id: "linear",
-  name: "Linear",
-  icon: linearIntegrationClient.icon,
-  filter: { kind: "notification_linear", isResolved: false, isSnoozed: false },
-});
-
-export const jiraList = defineNotificationsList({
-  id: "jira",
-  name: "Jira",
-  icon: jiraIntegrationClient.icon,
-  filter: { kind: "notification_jira_issue", isResolved: false, isSnoozed: false },
-});
-
-export const githubList = defineNotificationsList({
-  id: "github",
-  name: "GitHub",
-  icon: githubIntegrationClient.icon,
-  filter: { kind: "notification_github", isResolved: false, isSnoozed: false },
-});
-
-const integrationLists = {
-  slack: slackList,
-  notion: notionList,
-  figma: figmaList,
-  linear: linearList,
-  jira: jiraList,
-  github: githubList,
-};
+const getAvailableIntegrationLists = cachedComputed(() =>
+  Object.values(integrationClients)
+    .filter((client) => client.getAccounts().length > 0)
+    .map((client) =>
+      defineNotificationsList({
+        id: client.name,
+        name: client.name,
+        icon: client.icon,
+        filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
+      })
+    )
+);
 
 export const resolvedList = defineNotificationsList({
   id: "resolved",
@@ -104,15 +59,10 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
 });
 
 export const getInboxLists = cachedComputed(() => {
-  const availableIntegrationLists = typedKeys(integrationLists)
-    .filter((key) => integrationClients[key].getAccounts().length)
-    .map((key) => integrationLists[key]);
-
   const customLists = getDb().notificationList.all.map((listEntity) =>
     createNotificationsListFromListEntity(listEntity)
   );
-
-  return [allNotificationsList, ...customLists, ...availableIntegrationLists];
+  return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
 });
 
 export const outOfInboxLists = [snoozedList, resolvedList];

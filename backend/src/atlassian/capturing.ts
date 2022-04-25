@@ -8,14 +8,25 @@ import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookPayload } fr
 const EXTRACT_MENTIONED_ACCOUNT_REGEX = /\[~accountid:([a-zA-Z0-9\-:]+)\]/gim;
 
 export async function captureJiraWebhook(payload: JiraWebhookPayload) {
-  if (payload.webhookEvent === "comment_created") {
-    await handleNewJiraComment(payload);
-  }
-  if (payload.webhookEvent === "jira:issue_updated") {
-    await handleJiraIssueUpdate(payload);
-  }
-  if (payload.webhookEvent === "jira:issue_created") {
-    await handleJiraIssueCreated(payload);
+  try {
+    if (payload.webhookEvent === "comment_created") {
+      await handleNewJiraComment(payload);
+    }
+    if (payload.webhookEvent === "jira:issue_updated") {
+      await handleJiraIssueUpdate(payload);
+    }
+    if (payload.webhookEvent === "jira:issue_created") {
+      await handleJiraIssueCreated(payload);
+    }
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { response } = error as any;
+    logger.error(
+      error,
+      `Error while handling Jira webhook for event ${payload.webhookEvent}` + response
+        ? ` with status ${response.status} and body ${response.data}`
+        : ""
+    );
   }
 }
 
@@ -402,7 +413,7 @@ async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: str
 
   const watchers = response.data as GetWatchersResponse;
 
-  return watchers.watchers.map((w) => w.accountId);
+  return watchers?.watchers?.map((w) => w.accountId) ?? [];
 }
 
 async function getLeastRecentlyUsedAtlassianAccount(atlassianCloudUrl: string): Promise<JiraAccountWithAllDetails> {

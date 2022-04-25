@@ -1,98 +1,99 @@
 table:
-  schema: public
   name: user
+  schema: public
 object_relationships:
-  - name: current_team
-    using:
-      foreign_key_constraint_on: current_team_id
+- name: current_team
+  using:
+    foreign_key_constraint_on: current_team_id
 array_relationships:
-  - name: owned_teams
-    using:
-      foreign_key_constraint_on:
-        column: owner_id
-        table:
-          schema: public
-          name: team
-  - name: team_memberships
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: team_member
+- name: owned_teams
+  using:
+    foreign_key_constraint_on:
+      column: owner_id
+      table:
+        name: team
+        schema: public
+- name: team_memberships
+  using:
+    foreign_key_constraint_on:
+      column: user_id
+      table:
+        name: team_member
+        schema: public
 computed_fields:
-  - name: has_account
-    definition:
-      function:
-        schema: public
-        name: has_user_account
-  - name: has_slack_installation
-    definition:
-      function:
-        schema: public
-        name: has_slack_installation
+- definition:
+    function:
+      name: has_user_account
+      schema: public
+  name: has_account
+- definition:
+    function:
+      name: has_slack_installation
+      schema: public
+  name: has_slack_installation
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - avatar_url
-        - created_at
-        - email
-        - id
-        - is_bot
-        - is_slack_auto_resolve_enabled
-        - name
-        - onboarding_finished_at
-        - slack_included_channels
-        - updated_at
-      computed_fields:
-        - has_account
-        - has_slack_installation
-      filter:
-        _or:
-          - team_memberships:
-              team:
-                memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-          - id:
-              _eq: X-Hasura-User-Id
-update_permissions:
-  - role: user
-    permission:
-      columns:
-        - avatar_url
-        - current_team_id
-        - is_slack_auto_resolve_enabled
-        - name
-        - onboarding_finished_at
-        - slack_included_channels
-      filter:
-        id:
+- permission:
+    columns:
+    - avatar_url
+    - created_at
+    - email
+    - id
+    - is_bot
+    - is_slack_auto_resolve_enabled
+    - name
+    - onboarding_finished_at
+    - slack_included_channels
+    - subscription_plan
+    - updated_at
+    computed_fields:
+    - has_account
+    - has_slack_installation
+    filter:
+      _or:
+      - team_memberships:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+      - id:
           _eq: X-Hasura-User-Id
-      check: null
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - avatar_url
+    - current_team_id
+    - is_slack_auto_resolve_enabled
+    - name
+    - onboarding_finished_at
+    - slack_included_channels
+    filter:
+      id:
+        _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - name: user_updates
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-      update:
-        columns:
-          - avatar_url
-          - email
-          - name
-          - created_at
-          - email_verified
-          - updated_at
-          - current_team_id
-          - id
-          - onboarding_finished_at
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- definition:
+    enable_manual: false
+    insert:
+      columns: "*"
+    update:
+      columns:
+      - avatar_url
+      - email
+      - name
+      - created_at
+      - email_verified
+      - updated_at
+      - current_team_id
+      - id
+      - onboarding_finished_at
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: user_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

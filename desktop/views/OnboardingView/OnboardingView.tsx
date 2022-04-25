@@ -1,8 +1,9 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { desktopRouter } from "@aca/desktop/routes";
 import { accountStore } from "@aca/desktop/store/account";
@@ -36,6 +37,7 @@ export const OnboardingView = observer(function OnboardingView() {
 
   function finishOnboarding() {
     user?.update({ onboarding_finished_at: nowISO() });
+    trackEvent("Onboarding Completed");
 
     startOnboardingFinishedAnimation();
     desktopRouter.navigate("home");
@@ -53,7 +55,7 @@ export const OnboardingView = observer(function OnboardingView() {
   }, [currentStage]);
 
   return (
-    <UIHolder variants={{ funky: { initi } }}>
+    <UIHolder>
       <UIWindowDragger
         onDoubleClick={() => {
           toggleMaximizeRequest();
@@ -80,7 +82,7 @@ export const OnboardingView = observer(function OnboardingView() {
   );
 });
 
-const UIHolder = styled(motion.div)`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;

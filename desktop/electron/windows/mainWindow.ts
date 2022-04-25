@@ -19,7 +19,7 @@ if (!IS_DEV) {
     dsn: process.env.SENTRY_DSN,
     release: app.getVersion(),
     environment: process.env.STAGE,
-    maxValueLength: 1000,
+    maxValueLength: 10000,
   });
 }
 

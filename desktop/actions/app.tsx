@@ -7,11 +7,12 @@ import {
   toggleFullscreenRequest,
   toggleMaximizeRequest,
 } from "@aca/desktop/bridge/system";
-import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw } from "@aca/ui/icons";
+import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
+import { addToast } from "@aca/desktop/domains/toasts/store";
+import { getIsRouteActive } from "@aca/desktop/routes";
+import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw, IconSend2 } from "@aca/ui/icons";
 
 import { forceWorkerSyncRun } from "../bridge/apps";
-import { addToast } from "../domains/toasts/store";
-import { getIsRouteActive } from "../routes";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -87,5 +88,15 @@ export const forceNotificationsSync = defineAction({
     await forceWorkerSyncRun(["notion", "figma"]);
 
     addToast({ message: "Sent notifications sync request...", durationMs: 2000 });
+  },
+});
+
+export const sendFeedback = defineAction({
+  icon: <IconSend2 />,
+  name: "Send feedback",
+  shortcut: ["Mod", "Shift", "F"],
+  group: appActionsGroup,
+  async handler() {
+    openFeedbackWidget();
   },
 });

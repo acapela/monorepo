@@ -80,6 +80,22 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_gmail": {
       return "";
     }
+    case "notification_asana": {
+      if (inner.type.startsWith("status:")) {
+        const statusInfo = inner.type.split(":");
+        if (statusInfo[1] === "mark") return `Marked "${inner.title}" as ${statusInfo[2]}`;
+        return `Updated "${inner.title}" to "${statusInfo[1]}"`;
+      }
+      switch (inner.type) {
+        case "mention":
+          return `Mentioned you in "${inner.title}"`;
+        case "comment":
+          return `Commented in "${inner.title}"`;
+        case "assign":
+          return `Assigned you to "${inner.title}"`;
+      }
+      return `Unhandled Asana notification in "${inner.title}"`;
+    }
     default:
       return "Unhandled notification!!";
   }

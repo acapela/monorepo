@@ -3,7 +3,10 @@ import * as Sentry from "@sentry/node";
 import { google } from "googleapis";
 import { Account as NextAuthAccount } from "next-auth";
 
+import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Account, GmailAccount, db } from "@aca/db";
+import { assertDefined } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 import { Maybe } from "@aca/shared/types";
@@ -31,27 +34,86 @@ const createGmailClientForAccount = (account: Account) => {
  * Adds the given account's gmail inbox to the PubSub topic we are subscribed to, thus triggering a message event
  * when a new email is received for that account.
  */
-async function addGmailAccountsInboxToTopic(account: Account) {
+async function initializeGmailAccountWithInboxWatch(account: Account) {
   const gmail = createGmailClientForAccount(account);
-  await gmail.users.watch({
+  const { data } = await gmail.users.watch({
     userId: account.provider_account_id,
     requestBody: {
       topicName: GMAIL_TOPIC_NAME,
       labelIds: ["INBOX"],
     },
   });
+  const { historyId } = data;
+  return db.gmail_account.upsert({
+    where: { id: account.id },
+    create: { account_id: account.id, last_history_id: historyId ? Number(historyId) : null },
+    update: {},
+  });
+}
+
+const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
+  headers.find((h) => h.name === name)?.value;
+
+async function createNotificationFromMessage(gmailAccountId: string, account: Account, gmailMessageId: string) {
+  const gmail = createGmailClientForAccount(account);
+  const { data: message } = await gmail.users.messages
+    .get({ id: gmailMessageId, userId: account.provider_account_id, format: "metadata" })
+    .catch(() => ({ data: null }));
+  if (!message?.id) {
+    return;
+  }
+  const headers = message.payload?.headers ?? [];
+  const from = findHeader(headers, "From");
+  const subject = findHeader(headers, "Subject");
+  const date = findHeader(headers, "Date");
+  if (!from || !subject) {
+    logger.error(
+      new Error(`Missing from or subject for message ${message.id} with headers ${JSON.stringify(headers)}`)
+    );
+    return;
+  }
+  await db.notification_gmail.upsert({
+    where: { gmail_message_id: message.id },
+    create: {
+      notification: {
+        create: {
+          user_id: account.user_id,
+          // this assumes only one account being logged in
+          url: "https://mail.google.com/mail/u/0/#inbox/" + message.id,
+          from: from.split("<")[0].trim(),
+          text_preview: subject,
+          created_at: date ? new Date(date).toISOString() : undefined,
+        },
+      },
+      gmail_account: { connect: { id: gmailAccountId } },
+      gmail_message_id: message.id,
+      gmail_thread_id: message.threadId,
+    },
+    update: {},
+  });
 }
 
 export async function setupGmailWatcher(authAccount: NextAuthAccount) {
-  const account = await db.account.findFirst({
-    where: { provider_id: "google", provider_account_id: authAccount.providerAccountId },
-  });
-  if (!account) {
-    return;
-  }
-  await db.gmail_account.upsert({ where: { account_id: account.id }, create: { account_id: account.id }, update: {} });
+  try {
+    const account = await db.account.findFirst({
+      where: { provider_id: "google", provider_account_id: authAccount.providerAccountId },
+    });
+    if (!account) {
+      return;
+    }
 
-  await addGmailAccountsInboxToTopic(account);
+    const gmailAccount = await initializeGmailAccountWithInboxWatch(account);
+
+    const gmail = createGmailClientForAccount(account);
+    const { data } = await gmail.users.messages.list({ userId: account.provider_account_id, labelIds: ["INBOX"] });
+    for (const messageId of (data.messages ?? []).map((m) => m.id).filter(isNotNullish)) {
+      await createNotificationFromMessage(gmailAccount.id, account, messageId);
+    }
+
+    trackBackendUserEvent(account.user_id, "Gmail Integration Added");
+  } catch (error) {
+    logger.error(error, "Error setting up Gmail watcher");
+  }
 }
 
 /**
@@ -63,22 +125,44 @@ export async function renewGmailWatchers() {
   const gmailAccounts = await db.gmail_account.findMany({ include: { account: true } });
   for (const { account } of gmailAccounts) {
     try {
-      await addGmailAccountsInboxToTopic(account);
+      await initializeGmailAccountWithInboxWatch(account);
     } catch (error) {
       logger.error(error, `Failed to maintain gmail watcher for account ${account.id}`);
     }
   }
 }
 
-const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
-  headers.find((h) => h.name === name)?.value;
-
-async function createNotificationsForNewMessages(account: Account, gmailAccount: GmailAccount, startHistoryId: string) {
+export async function handleGmailAccountUpdates(event: HasuraEvent<GmailAccount>) {
+  if (event.type !== "delete") {
+    return;
+  }
+  const id = event.item.account_id;
+  const account = assertDefined(await db.account.findUnique({ where: { id } }), `Missing account for id ${id}`);
   const gmail = createGmailClientForAccount(account);
-  const historyResponse = await gmail.users.history.list({
-    userId: account.provider_account_id,
-    startHistoryId,
-  });
+  await gmail.users.stop({ userId: account.provider_account_id });
+}
+
+async function createNotificationsForNewMessages(
+  { id: gmailAccountId, account }: GmailAccount & { account: Account },
+  startHistoryId: string
+) {
+  const gmail = createGmailClientForAccount(account);
+  const historyResponse = await gmail.users.history
+    .list({
+      userId: account.provider_account_id,
+      startHistoryId,
+      labelId: "INBOX",
+    })
+    .catch((error) => {
+      if (error.message.includes("Insufficient Permission")) {
+        return null;
+      }
+      throw error;
+    });
+  if (!historyResponse) {
+    // We ignore messages for users for whom we lost permission to access their inbox
+    return;
+  }
   const addedMessageIds = (historyResponse.data.history ?? [])
     .flatMap((h) => h.messagesAdded ?? [])
     .map(({ message }) => message?.id)
@@ -90,40 +174,7 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
   const newMessageIds = addedMessageIds.filter((id) => !existingMessageIds.has(id));
 
   for (const gmailMessageId of newMessageIds) {
-    const { data } = await gmail.users.messages
-      .get({ id: gmailMessageId, userId: account.provider_account_id, format: "metadata" })
-      .catch(() => ({ data: null }));
-    if (!data) {
-      continue;
-    }
-    const headers = data.payload?.headers ?? [];
-    const from = findHeader(headers, "From");
-    const subject = findHeader(headers, "Subject");
-    const date = findHeader(headers, "Date");
-    if (!from || !subject) {
-      logger.error(
-        new Error(`Missing from or subject for message ${gmailMessageId} with headers ${JSON.stringify(headers)}`)
-      );
-      continue;
-    }
-    await db.notification_gmail.upsert({
-      where: { gmail_message_id: gmailMessageId },
-      create: {
-        notification: {
-          create: {
-            user_id: account.user_id,
-            // this assumes only one account being logged in
-            url: "https://mail.google.com/mail/u/0/#inbox/" + gmailMessageId,
-            from,
-            text_preview: subject,
-            created_at: date ? new Date(date).toISOString() : undefined,
-          },
-        },
-        gmail_account: { connect: { id: gmailAccount.id } },
-        gmail_message_id: gmailMessageId,
-      },
-      update: {},
-    });
+    await createNotificationFromMessage(gmailAccountId, account, gmailMessageId);
   }
 }
 
@@ -132,28 +183,27 @@ export function listenToGmailSubscription() {
   const pubsub = new PubSub({ projectId: PROJECT_ID });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
-  subscription.on("message", async (event) => {
-    const eventData = JSON.parse(event.data.toString());
+  subscription.on("message", async (message) => {
+    const eventData = JSON.parse(message.data.toString());
+
     const gmailAccount = await db.gmail_account.findFirst({
       where: { account: { provider_id: "google", email: eventData.emailAddress } },
       include: { account: true },
     });
-    if (!gmailAccount) {
-      throw new Error("Missing gmail account for email " + eventData.emailAddress);
+    if (gmailAccount) {
+      const lastHistoryId = gmailAccount.last_history_id;
+      if (lastHistoryId) {
+        await createNotificationsForNewMessages(gmailAccount, lastHistoryId.toString());
+      }
+      await db.gmail_account.update({
+        where: { id: gmailAccount.id },
+        data: { last_history_id: eventData.historyId },
+      });
+    } else {
+      console.warn("Missing gmail account for email " + eventData.emailAddress);
     }
-    const { account } = gmailAccount;
 
-    // We need to use historyId to fetch messages that came thereafter. Initially there is no last_history_id set, so we
-    // just save the current one and early-return. Since Gmail fires that event initially already after setting up the
-    // watch we should not be losing messages due to last_history_id not being set yet.
-    const lastHistoryId = gmailAccount.last_history_id;
-    if (lastHistoryId) {
-      await createNotificationsForNewMessages(account, gmailAccount, lastHistoryId.toString());
-    }
-    await db.gmail_account.update({
-      where: { id: gmailAccount.id },
-      data: { last_history_id: eventData.historyId },
-    });
+    message.ack();
   });
 
   subscription.on("error", (error) => {
