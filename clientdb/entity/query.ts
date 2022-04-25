@@ -11,7 +11,7 @@ import { EntityStore } from "./store";
 import { cachedComputed } from "./utils/cachedComputed";
 import { cachedComputedWithoutArgs } from "./utils/cachedComputedWithoutArgs";
 
-type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
+export type EntityFilterFunction<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
 export type EntityQuerySortFunction<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
 
@@ -92,6 +92,10 @@ export function createEntityQuery<Data, Connections>(
     name: queryName,
   } = config;
 
+  const {
+    config: { functionalFilterCheck },
+  } = definition;
+
   if (!filter && !sort) {
     throw new Error(
       `Either filter or sort is needed to be provided to query. If no sort or filter is needed, use .all property.`
@@ -140,6 +144,10 @@ export function createEntityQuery<Data, Connections>(
          * array is using 3 arguments (item, index, array), not one. In such case cache would be created for all of those arguments.
          */
         cachedComputed((item: Entity<Data, Connections>) => {
+          if (functionalFilterCheck) {
+            functionalFilterCheck(item, filter);
+          }
+
           return filter(item);
         })
       : null;

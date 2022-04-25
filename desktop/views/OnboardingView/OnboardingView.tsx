@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
@@ -53,7 +53,7 @@ export const OnboardingView = observer(function OnboardingView() {
   }, [currentStage]);
 
   return (
-    <UIHolder>
+    <UIHolder variants={{ funky: { initi } }}>
       <UIWindowDragger
         onDoubleClick={() => {
           toggleMaximizeRequest();
@@ -80,7 +80,7 @@ export const OnboardingView = observer(function OnboardingView() {
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled(motion.div)`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
