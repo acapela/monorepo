@@ -38,6 +38,7 @@ export const OnboardingView = observer(function OnboardingView() {
   function finishOnboarding() {
     user?.update({ onboarding_finished_at: nowISO() });
     trackEvent("Onboarding Completed");
+
     startOnboardingFinishedAnimation();
     desktopRouter.navigate("home");
   }

@@ -82,27 +82,27 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
   }),
 }).addConnections((list, { getEntity }) => {
   const cachedGetIsNotificationPassingFilters = cachedComputed((notification: NotificationEntity) => {
+    if (connections.typedFilters.length === 0) return false;
+
     return getIsNotificationPassingFilters(notification, connections.typedFilters);
   });
 
-  const passingNotifications = cachedComputed(() => {
-    if (connections.typedFilters.length === 0) {
-      return getEntity(notificationEntity).query({
-        // TODO: did it for type-safety. We should probably have .emptyQuery
-        // I used simpleQuery for speed (instead of () => false) query
-        id: "NO_EXISTING",
-      });
-    }
+  const notificationsDb = getEntity(notificationEntity);
 
-    return getEntity(notificationEntity).query(cachedGetIsNotificationPassingFilters);
-  });
+  const resolvedNotificationsQuery = notificationsDb
+    .query({ isResolved: true })
+    .query(cachedGetIsNotificationPassingFilters);
 
-  const inboxNotifications = cachedComputed(() => {
-    return passingNotifications().query({ isResolved: false, isSnoozed: false });
-  });
+  const snoozedNotificationsQuery = notificationsDb
+    .query({ isSnoozed: true, isResolved: false })
+    .query(cachedGetIsNotificationPassingFilters);
+
+  const inboxNotificationsQuery = notificationsDb
+    .query({ isResolved: false, isSnoozed: false })
+    .query(cachedGetIsNotificationPassingFilters);
 
   const inboxNotificationsSinceLastSeen = cachedComputed(() => {
-    return inboxNotifications().query((notification) => {
+    return inboxNotificationsQuery.query((notification) => {
       return new Date(notification.updated_at) > new Date(list.seen_at);
     });
   });
@@ -118,11 +118,14 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     get typedFilters(): NotificationFilter[] {
       return getFilters();
     },
-    get notifications() {
-      return passingNotifications();
+    get resolvedNotifications() {
+      return resolvedNotificationsQuery;
+    },
+    get snoozedNotifications() {
+      return snoozedNotificationsQuery;
     },
     get inboxNotifications() {
-      return inboxNotifications();
+      return inboxNotificationsQuery;
     },
     get inboxNotificationsSinceLastSeen() {
       return inboxNotificationsSinceLastSeen();

@@ -161,7 +161,7 @@ function getCallCodeForFunction<A extends unknown[]>(callback: (...args: A) => v
 
   /**
    * (function foo(a) {
-   *    console.log(a)
+   *    console.info(a)
    * })(1)
    *
    * (<BODY>)(1)
@@ -177,7 +177,7 @@ function getCallCodeForFunction<A extends unknown[]>(callback: (...args: A) => v
  *
  * The only option that seems to make sense is listening to console logs on electron side
  *
- * Convention is: execute console.log("electron", "anything-here") and callback with "anything-here" will be called
+ * Convention is: execute console.info("electron", "anything-here") and callback with "anything-here" will be called
  *
  * TODO: with a bit of effort we can send any JSON this way
  */
