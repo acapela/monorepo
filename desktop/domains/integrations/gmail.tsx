@@ -23,8 +23,12 @@ export const gmailIntegrationClient: IntegrationClient = {
     await loginGmailBridge();
   },
   async disconnect() {
-    for (const account of getDb().gmailAccount.all) {
+    const db = getDb();
+    for (const account of db.gmailAccount.all) {
       account.remove();
+    }
+    for (const gmailNotification of db.notificationGmail.all) {
+      gmailNotification.notification?.remove("sync");
     }
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.gmail} />,
