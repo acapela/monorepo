@@ -94,7 +94,7 @@ export const forceNotificationsSync = defineAction({
 export const sendFeedback = defineAction({
   icon: <IconSend2 />,
   name: "Send feedback",
-  shortcut: ["Mod", "H"],
+  shortcut: ["Mod", "Shift", "F"],
   group: appActionsGroup,
   async handler() {
     openFeedbackWidget();
