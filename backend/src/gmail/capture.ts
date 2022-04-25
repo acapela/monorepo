@@ -72,6 +72,11 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
     );
     return;
   }
+  const [fromName, emailWithClosingAngle] = from.split(" <");
+  const email = emailWithClosingAngle.slice(0, -1);
+  if (email.toLowerCase() == account.email?.toLowerCase()) {
+    return;
+  }
   await db.notification_gmail.upsert({
     where: { gmail_message_id: message.id },
     create: {
@@ -80,7 +85,7 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
           user_id: account.user_id,
           // this assumes only one account being logged in
           url: "https://mail.google.com/mail/u/0/#inbox/" + message.id,
-          from: from.split("<")[0].trim(),
+          from: fromName,
           text_preview: subject,
           created_at: date ? new Date(date).toISOString() : undefined,
         },
