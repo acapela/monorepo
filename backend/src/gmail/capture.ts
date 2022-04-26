@@ -10,9 +10,9 @@ import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
-import { Maybe } from "@aca/shared/types";
 
 import { createDriveNotification, isDriveEmail } from "./driveCapture";
+import { findHeader } from "./utils";
 
 /**
  * This is how the Gmail integrations works at a high level:
@@ -86,9 +86,6 @@ export async function handleGmailAccountUpdates(event: HasuraEvent<GmailAccount>
   const gmail = createGmailClientForAccount(account);
   await gmail.users.stop({ userId: account.provider_account_id });
 }
-
-const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
-  headers.find((h) => h.name === name)?.value;
 
 async function createNotificationsForNewMessages(account: Account, gmailAccount: GmailAccount, startHistoryId: string) {
   const gmail = createGmailClientForAccount(account);
