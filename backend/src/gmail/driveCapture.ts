@@ -3,6 +3,7 @@ import { filter, find, map, some } from "lodash";
 import { parse } from "node-html-parser";
 import HTMLElement from "node-html-parser/dist/nodes/html";
 
+import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 
@@ -48,23 +49,38 @@ interface ActivityContainer {
   activity: Activity;
 }
 
-const failureResponse = { isSuccessful: false };
-export function createDriveNotification(email: gmail_v1.Schema$Message): DriveNotificationCreationResult {
+const fileIdMatcher = /\/(d|folders)\/(?<fileId>[a-zA-Z0-9_-]+)/gm;
+
+const FAILURE_RESPONSE = { isSuccessful: false };
+
+interface Props {
+  email: gmail_v1.Schema$Message;
+  gmailMessageId: string;
+  gmailAccountId: string;
+  account: Account;
+}
+
+export async function createDriveNotification({
+  email,
+  gmailMessageId,
+  gmailAccountId,
+  account,
+}: Props): Promise<DriveNotificationCreationResult> {
   const { parts } = email.payload ?? {};
   const headers = email.payload?.headers ?? [];
   const from = findHeader(headers, "From");
-  const subject = findHeader(headers, "Subject");
+  const date = findHeader(headers, "Date");
 
-  if (!from || !subject) {
+  if (!from) {
     logger.error(new Error(`Missing from or subject for message ${email.id} with headers ${JSON.stringify(headers)}`));
-    return failureResponse;
+    return FAILURE_RESPONSE;
   }
 
   const bodyAsBase64 = parts?.find((p) => p.mimeType === "text/html")?.body?.data;
 
   if (!bodyAsBase64) {
     logger.error(new Error("[GoogleDrive] Retrieved email without body"));
-    return failureResponse;
+    return FAILURE_RESPONSE;
   }
 
   const bodyAsPlainText = Buffer.from(bodyAsBase64, "base64").toString("utf-8");
@@ -73,14 +89,61 @@ export function createDriveNotification(email: gmail_v1.Schema$Message): DriveNo
     const notifications = extractNotificationPayloadData(bodyAsPlainText, from);
     if (notifications.length === 0) {
       logger.error(new Error(`[GoogleDrive] Notifications not extracted > ${from} : ${bodyAsBase64}`));
-      return failureResponse;
+      return FAILURE_RESPONSE;
+    }
+
+    const { source, name, url: fileUrl } = notifications[0];
+
+    const fileId = fileIdMatcher.exec(fileUrl)?.groups?.["fileId"];
+    assert(fileId, "Unable to get file id from url" + fileUrl);
+
+    const googleDriveFile = await db.google_drive_file.upsert({
+      where: {
+        google_drive_original_file_id: fileId,
+      },
+      create: {
+        name,
+        source,
+        google_drive_original_file_id: fileId,
+      },
+      update: {},
+    });
+
+    for (const notification of notifications) {
+      await db.notification_drive.upsert({
+        where: {
+          gmail_message_id: gmailMessageId,
+        },
+        create: {
+          notification: {
+            create: {
+              from: notification.from!,
+              url: notification.url,
+              text_preview: notification.comment,
+              user_id: account.id,
+              created_at: date ? new Date(date).toISOString() : undefined,
+            },
+          },
+          google_drive_activity_type: { connect: { value: notification.type } },
+          google_drive_file: {
+            connect: {
+              id: googleDriveFile.id,
+            },
+          },
+          gmail_message_id: gmailMessageId,
+          gmail_thread_id: email.threadId,
+          gmail_account: { connect: { id: gmailAccountId } },
+        },
+
+        update: {},
+      });
+
+      return { isSuccessful: true };
     }
   } catch (e) {
     logger.error(new Error(`[GoogleDrive] ${e} >>\n ${from} : ${bodyAsBase64}`));
-    return failureResponse;
   }
-
-  return failureResponse;
+  return FAILURE_RESPONSE;
 }
 
 export function extractNotificationPayloadData(emailBody: string, from: string): NotificationPayload[] {

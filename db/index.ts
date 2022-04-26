@@ -22,6 +22,8 @@ export type {
   whitelist as Whitelist,
   github_account as GitHubAccount,
   github_installation as GitHubInstallation,
+  google_drive_file as GoogleDriveFile,
+  notification_drive as NotificationDrive,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

@@ -129,8 +129,13 @@ async function createNotificationsForNewMessages(account: Account, gmailAccount:
         .catch(() => ({ data: null }));
 
       if (fullEmailData) {
-        const result = createDriveNotification(fullEmailData);
-        if (result.isSuccessful) {
+        const driveNotificationCreationResult = await createDriveNotification({
+          email: fullEmailData,
+          gmailMessageId,
+          gmailAccountId: gmailAccount.id,
+          account,
+        });
+        if (driveNotificationCreationResult.isSuccessful) {
           continue;
         }
       }

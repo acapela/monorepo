@@ -2,6 +2,12 @@ table:
   name: notification_drive
   schema: public
 object_relationships:
+- name: gmail_account
+  using:
+    foreign_key_constraint_on: gmail_account_id
+- name: google_drive_activity_type
+  using:
+    foreign_key_constraint_on: type
 - name: google_drive_file
   using:
     foreign_key_constraint_on: google_drive_file_id
