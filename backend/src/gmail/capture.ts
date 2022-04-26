@@ -74,7 +74,10 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
   }
   const [fromName, emailWithClosingAngle] = from.split(" <");
   const email = emailWithClosingAngle ? emailWithClosingAngle.slice(0, -1) : null;
-  if (!email || email.toLowerCase() == account.email?.toLowerCase()) {
+  if (!email) {
+    throw new Error(`Invalid from field with value "${from}"`);
+  }
+  if (email.toLowerCase() == account.email?.toLowerCase()) {
     return;
   }
   await db.notification_gmail.upsert({
