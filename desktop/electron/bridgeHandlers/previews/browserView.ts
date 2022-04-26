@@ -1,6 +1,6 @@
 import { BrowserView, BrowserWindow, WebContents } from "electron";
 
-import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
+import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/windows/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -100,7 +100,7 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
   {
     keyGetter: (url) => url,
     cleanup(view, url) {
-      preloadingNotificationsBridgeChannel.update((stateMap) => {
+      preloadingPreviewsBridgeChannel.update((stateMap) => {
         delete stateMap[url];
       });
 

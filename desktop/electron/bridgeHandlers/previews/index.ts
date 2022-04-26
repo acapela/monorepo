@@ -1,8 +1,8 @@
 import {
   requestAttachPreview,
+  requestEmbedPreload,
   requestForceReloadPreview,
   requestPreviewFocus,
-  requestPreviewPreload,
   requestSetPreviewOnTopState,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
@@ -23,7 +23,7 @@ const log = makeLogger("BrowserView");
  * Here we initialize client bridge handlers for previews
  */
 export function initPreviewHandler() {
-  requestPreviewPreload.handle(async ({ url }) => {
+  requestEmbedPreload.handle(async ({ url }) => {
     const { cancel, item: browserView } = requestPreviewBrowserView(url);
 
     loadPreviewIfNeeded(browserView, url);

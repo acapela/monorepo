@@ -13,12 +13,12 @@ import {
   unresolveNotification,
   unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
-import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
+import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
+import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
@@ -76,13 +76,11 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
-      {isFocusedForAWhile && <PreloadNotificationPreview url={notification.url} />}
+      {isFocusedForAWhile && <PreloadEmbed url={notification.url} />}
       <UIHolder
         ref={elementRef}
         $isFocused={isFocused}
-        $preloadingState={
-          devSettingsStore.debugPreloading && preloadingNotificationsBridgeChannel.get()[notification.url]
-        }
+        $preloadingState={devSettingsStore.debugPreloading && preloadingPreviewsBridgeChannel.get()[notification.url]}
       >
         <UIUnreadIndicator $isUnread={notification.isUnread} />
         <NotificationAppIcon notification={notification} />

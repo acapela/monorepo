@@ -18,6 +18,10 @@ const SLACK_URL_SCHEME = "slack://";
 
 const log = makeLogger("SlackIntegrationClient");
 
+const getAccounts = () =>
+  accountStore.user?.slackInstallations.all.map(
+    (i) => ({ kind: "account", id: i.team_id!, name: i.team_name! } as const)
+  ) ?? [];
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_slack_message",
@@ -29,9 +33,12 @@ export const slackIntegrationClient: IntegrationClient = {
   getIsConnected: () => {
     return accountStore.user?.slackInstallations.hasItems ?? false;
   },
-  getAccounts: () =>
-    accountStore.user?.slackInstallations.all.map((i) => ({ kind: "account", id: i.team_id!, name: i.team_name! })) ??
-    [],
+  getAccounts,
+  getComposeURLs: () =>
+    getAccounts().map((team) => ({
+      accountId: team.id,
+      url: `https://app.slack.com/client/${team.id}/composer/draft-3c3e91a7-9a90-491b-99d3-9745d2b830c0`,
+    })),
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
     if (inner?.__typename !== "notification_slack_message") {

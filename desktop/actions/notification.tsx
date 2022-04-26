@@ -5,13 +5,13 @@ import { focusPageView } from "@aca/desktop/actions/views/focus";
 import { createAnalyticsEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
-import { requestPreviewPreload } from "@aca/desktop/bridge/preview";
+import { requestEmbedPreload } from "@aca/desktop/bridge/preview";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
@@ -263,13 +263,13 @@ export const openFocusMode = defineAction({
     const notification = context.getTarget("notification");
 
     if (notification) {
-      return requestPreviewPreload({ url: notification.url, priority: PreviewLoadingPriority.next });
+      return requestEmbedPreload({ url: notification.url, priority: PreviewLoadingPriority.next });
     }
 
     const group = context.getTarget("group");
 
     if (group) {
-      requestPreviewPreload({ url: group.notifications[0].url, priority: PreviewLoadingPriority.next });
+      requestEmbedPreload({ url: group.notifications[0].url, priority: PreviewLoadingPriority.next });
     }
   },
 });

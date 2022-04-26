@@ -1,6 +1,6 @@
 import { BrowserView, BrowserWindow } from "electron";
 
-import { PreviewPosition } from "@aca/desktop/domains/preview";
+import { PreviewPosition } from "@aca/desktop/domains/embed";
 
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { getWindowMainView } from "../../windows/mainView";

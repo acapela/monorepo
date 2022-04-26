@@ -1,7 +1,6 @@
 import { BrowserView } from "electron";
 
-import { preloadingNotificationsBridgeChannel } from "@aca/desktop/bridge/notification";
-import { previewEventsBridge } from "@aca/desktop/bridge/preview";
+import { preloadingPreviewsBridgeChannel, previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
@@ -20,7 +19,7 @@ async function ensureBrowserViewHasBackground(view: BrowserView) {
 }
 
 export async function loadPreviewIfNeeded(browserView: BrowserView, url: string) {
-  const currentLoadState = preloadingNotificationsBridgeChannel.get()[url];
+  const currentLoadState = preloadingPreviewsBridgeChannel.get()[url];
 
   if (currentLoadState === "loading" || currentLoadState === "ready") return;
 
@@ -30,13 +29,13 @@ export async function loadPreviewIfNeeded(browserView: BrowserView, url: string)
 export async function forceLoadPreview(browserView: BrowserView, url: string) {
   try {
     markLoadRequestedTime(browserView, url);
-    preloadingNotificationsBridgeChannel.update({ [url]: "loading" });
+    preloadingPreviewsBridgeChannel.update({ [url]: "loading" });
     await loadURLWithFilters(browserView, url);
     await ensureBrowserViewHasBackground(browserView);
-    preloadingNotificationsBridgeChannel.update({ [url]: "ready" });
+    preloadingPreviewsBridgeChannel.update({ [url]: "ready" });
   } catch (error) {
     if (browserView.webContents.isDestroyed()) {
-      preloadingNotificationsBridgeChannel.update((state) => {
+      preloadingPreviewsBridgeChannel.update((state) => {
         delete state[url];
       });
       return;
@@ -44,7 +43,7 @@ export async function forceLoadPreview(browserView: BrowserView, url: string) {
 
     previewEventsBridge.send({ type: "load-error", url });
 
-    preloadingNotificationsBridgeChannel.update({ [url]: "error" });
+    preloadingPreviewsBridgeChannel.update({ [url]: "error" });
 
     log.error(error, `Failed to load preview`);
 

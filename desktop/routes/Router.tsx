@@ -7,6 +7,7 @@ import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/SettingsView";
 
+import { ComposeView } from "../views/ComposeView";
 import { LoginView } from "../views/LoginView";
 import { ConnectToolsView } from "../views/OnboardingView/ConnectToolsView";
 import { OnboardingView } from "../views/OnboardingView/OnboardingView";
@@ -35,6 +36,8 @@ export function Router() {
       return <ConnectToolsView />;
     case "login":
       return <LoginView />;
+    case "compose":
+      return <ComposeView />;
   }
 
   return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;

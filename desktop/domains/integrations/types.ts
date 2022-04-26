@@ -19,6 +19,7 @@ export interface IntegrationClient {
   getCanConnect?(): boolean;
   getAccounts(): IntegrationAccount[];
   getWorkspaces?(): string[];
+  getComposeURLs?(): { accountId: string; url: string }[];
   connect(accountId?: string): Promise<void>;
   disconnect?(accountId: string): Promise<void>;
   additionalSettings?: ReactNode;

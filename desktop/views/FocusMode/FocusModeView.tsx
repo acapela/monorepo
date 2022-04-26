@@ -13,10 +13,10 @@ import {
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
+import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { NotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
@@ -72,7 +72,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
       <UIHeader>
         {list?.getNotificationsToPreload(notification).map((notificationToPreload) => {
           return (
-            <PreloadNotificationPreview
+            <PreloadEmbed
               priority={PreviewLoadingPriority.next}
               key={notificationToPreload.id}
               url={notificationToPreload.url}
