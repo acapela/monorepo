@@ -73,8 +73,8 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
     return;
   }
   const [fromName, emailWithClosingAngle] = from.split(" <");
-  const email = emailWithClosingAngle.slice(0, -1);
-  if (email.toLowerCase() == account.email?.toLowerCase()) {
+  const email = emailWithClosingAngle ? emailWithClosingAngle.slice(0, -1) : null;
+  if (!email || email.toLowerCase() == account.email?.toLowerCase()) {
     return;
   }
   await db.notification_gmail.upsert({
