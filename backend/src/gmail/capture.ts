@@ -73,10 +73,7 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
     return;
   }
   const [fromName, emailWithClosingAngle] = from.split(" <");
-  const email = emailWithClosingAngle ? emailWithClosingAngle.slice(0, -1) : null;
-  if (!email) {
-    throw new Error(`Invalid from field with value "${from}"`);
-  }
+  const email = emailWithClosingAngle ? emailWithClosingAngle.slice(0, -1) : fromName;
   if (email.toLowerCase() == account.email?.toLowerCase()) {
     return;
   }
