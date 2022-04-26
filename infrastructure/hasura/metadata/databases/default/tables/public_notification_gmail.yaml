@@ -1,22 +1,22 @@
 table:
-  schema: public
   name: notification_gmail
+  schema: public
 object_relationships:
-  - name: notification
-    using:
-      foreign_key_constraint_on: notification_id
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - created_at
-        - gmail_account_id
-        - gmail_message_id
-        - gmail_thread_id
-        - id
-        - notification_id
-        - updated_at
-      filter:
-        notification:
-          user_id:
-            _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - created_at
+    - gmail_account_id
+    - gmail_message_id
+    - gmail_thread_id
+    - id
+    - notification_id
+    - updated_at
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user

@@ -1,24 +1,24 @@
 table:
-  schema: public
   name: notification_linear
+  schema: public
 object_relationships:
-  - name: notification
-    using:
-      foreign_key_constraint_on: notification_id
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - created_at
-        - creator_id
-        - id
-        - issue_id
-        - issue_title
-        - notification_id
-        - origin
-        - type
-        - updated_at
-      filter:
-        notification:
-          user_id:
-            _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - created_at
+    - creator_id
+    - id
+    - issue_id
+    - issue_title
+    - notification_id
+    - origin
+    - type
+    - updated_at
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user

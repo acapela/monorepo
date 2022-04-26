@@ -1,134 +1,134 @@
 actions:
-  - name: get_slack_installation_url
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: get_team_slack_installation_url
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: get_upload_url
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: invite_user
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: join_topic
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: linear_users
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: slack_conversations
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: slack_user
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: slack_users
-    definition:
-      kind: ""
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: uninstall_slack
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: upgrade_current_user
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
+- name: get_slack_installation_url
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: get_team_slack_installation_url
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: get_upload_url
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: invite_user
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: join_topic
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: linear_users
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: slack_conversations
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: slack_user
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: slack_users
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: uninstall_slack
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: upgrade_current_user
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
 custom_types:
   enums: []
   input_objects:
-    - name: GetTeamSlackInstallationURLInput
-    - name: FindSlackUserInput
-    - name: InviteUserInput
-    - name: GetSlackInstallationURLInput
+  - name: GetTeamSlackInstallationURLInput
+  - name: FindSlackUserInput
+  - name: InviteUserInput
+  - name: GetSlackInstallationURLInput
   objects:
-    - name: UpgradeUserResponse
-      relationships:
-        - remote_table:
-            schema: public
-            name: user
-          name: user
-          source: default
-          type: object
-          field_mapping:
-            user_id: id
-    - name: UploadUrlResponse
-    - name: DownloadUrlResponse
-    - name: ResendInvitationResponse
-    - name: GetTeamSlackInstallationURLOutput
-    - name: FindSlackUserOutput
-    - name: AcceptInvitationsOutput
-    - name: InviteUserOutput
-    - name: SlackUserOutput
-    - name: UninstallSlackOutput
-    - name: JoinTopicOutput
-    - name: GetSlackInstallationURLOutput
-    - name: SlackUser
-    - name: ServiceUser
-    - name: SlackConversation
-    - name: GitHubInstallation
+  - name: UpgradeUserResponse
+    relationships:
+    - remote_table:
+        schema: public
+        name: user
+      name: user
+      source: default
+      type: object
+      field_mapping:
+        user_id: id
+  - name: UploadUrlResponse
+  - name: DownloadUrlResponse
+  - name: ResendInvitationResponse
+  - name: GetTeamSlackInstallationURLOutput
+  - name: FindSlackUserOutput
+  - name: AcceptInvitationsOutput
+  - name: InviteUserOutput
+  - name: SlackUserOutput
+  - name: UninstallSlackOutput
+  - name: JoinTopicOutput
+  - name: GetSlackInstallationURLOutput
+  - name: SlackUser
+  - name: ServiceUser
+  - name: SlackConversation
+  - name: GitHubInstallation
   scalars: []

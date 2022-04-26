@@ -48,6 +48,7 @@ interface ActivityContainer {
   activity: Activity;
 }
 
+const failureResponse = { isSuccessful: false };
 export function createDriveNotification(email: gmail_v1.Schema$Message): DriveNotificationCreationResult {
   const { parts } = email.payload ?? {};
   const headers = email.payload?.headers ?? [];
@@ -56,27 +57,30 @@ export function createDriveNotification(email: gmail_v1.Schema$Message): DriveNo
 
   if (!from || !subject) {
     logger.error(new Error(`Missing from or subject for message ${email.id} with headers ${JSON.stringify(headers)}`));
-    return { isSuccessful: false };
+    return failureResponse;
   }
 
   const bodyAsBase64 = parts?.find((p) => p.mimeType === "text/html")?.body?.data;
 
   if (!bodyAsBase64) {
     logger.error(new Error("[GoogleDrive] Retrieved email without body"));
-    return { isSuccessful: false };
+    return failureResponse;
   }
 
   const bodyAsPlainText = Buffer.from(bodyAsBase64, "base64").toString("utf-8");
 
   try {
     const notifications = extractNotificationPayloadData(bodyAsPlainText, from);
-    console.info({ notifications });
+    if (notifications.length === 0) {
+      logger.error(new Error(`[GoogleDrive] Notifications not extracted > ${from} : ${bodyAsBase64}`));
+      return failureResponse;
+    }
   } catch (e) {
     logger.error(new Error(`[GoogleDrive] ${e} >>\n ${from} : ${bodyAsBase64}`));
-    return { isSuccessful: false };
+    return failureResponse;
   }
 
-  return { isSuccessful: false };
+  return failureResponse;
 }
 
 export function extractNotificationPayloadData(emailBody: string, from: string): NotificationPayload[] {

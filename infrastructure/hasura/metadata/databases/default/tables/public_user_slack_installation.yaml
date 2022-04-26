@@ -1,64 +1,64 @@
 table:
-  schema: public
   name: user_slack_installation
+  schema: public
 object_relationships:
-  - name: user_slack_channels_by_team
-    using:
-      foreign_key_constraint_on:
-        column: user_slack_installation_id
-        table:
-          schema: public
-          name: user_slack_channels_by_team
+- name: user_slack_channels_by_team
+  using:
+    foreign_key_constraint_on:
+      column: user_slack_installation_id
+      table:
+        name: user_slack_channels_by_team
+        schema: public
 computed_fields:
-  - name: team_id
-    definition:
-      function:
-        schema: public
-        name: user_slack_installation_team_id
-  - name: team_name
-    definition:
-      function:
-        schema: public
-        name: user_slack_installation_team_name
-  - name: user_scopes
-    definition:
-      function:
-        schema: public
-        name: user_slack_installation_user_scopes
+- definition:
+    function:
+      name: user_slack_installation_team_id
+      schema: public
+  name: team_id
+- definition:
+    function:
+      name: user_slack_installation_team_name
+      schema: public
+  name: team_name
+- definition:
+    function:
+      name: user_slack_installation_user_scopes
+      schema: public
+  name: user_scopes
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - created_at
-        - id
-        - slack_team_id
-        - slack_user_id
-        - updated_at
-        - user_id
-      computed_fields:
-        - team_id
-        - team_name
-        - user_scopes
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - created_at
+    - id
+    - slack_team_id
+    - slack_user_id
+    - updated_at
+    - user_id
+    computed_fields:
+    - team_id
+    - team_name
+    - user_scopes
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 delete_permissions:
-  - role: user
-    permission:
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
+- permission:
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - name: user_slack_installation_updates
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- definition:
+    enable_manual: false
+    insert:
+      columns: "*"
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: user_slack_installation_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

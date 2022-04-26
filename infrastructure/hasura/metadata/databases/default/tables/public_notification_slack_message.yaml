@@ -1,41 +1,41 @@
 table:
-  schema: public
   name: notification_slack_message
+  schema: public
 object_relationships:
-  - name: notification
-    using:
-      foreign_key_constraint_on: notification_id
+- name: notification
+  using:
+    foreign_key_constraint_on: notification_id
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - conversation_name
-        - conversation_type
-        - created_at
-        - id
-        - is_mention
-        - notification_id
-        - slack_conversation_id
-        - slack_message_ts
-        - slack_thread_ts
-        - slack_user_id
-        - updated_at
-        - user_slack_installation_id
-      filter:
-        notification:
-          user_id:
-            _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - conversation_name
+    - conversation_type
+    - created_at
+    - id
+    - is_mention
+    - notification_id
+    - slack_conversation_id
+    - slack_message_ts
+    - slack_thread_ts
+    - slack_user_id
+    - updated_at
+    - user_slack_installation_id
+    filter:
+      notification:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - name: notification_slack_message_updates
-    definition:
-      enable_manual: false
-      delete:
-        columns: '*'
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: notification_slack_message_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

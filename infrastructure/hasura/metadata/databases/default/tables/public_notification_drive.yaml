@@ -1,7 +1,10 @@
 table:
-  name: notification_github
+  name: notification_drive
   schema: public
 object_relationships:
+- name: google_drive_file
+  using:
+    foreign_key_constraint_on: google_drive_file_id
 - name: notification
   using:
     foreign_key_constraint_on: notification_id
@@ -9,13 +12,12 @@ select_permissions:
 - permission:
     columns:
     - created_at
+    - gmail_account_id
+    - gmail_message_id
+    - gmail_thread_id
+    - google_drive_file_id
     - id
-    - issue_id
     - notification_id
-    - pr_id
-    - repository_full_name
-    - repository_id
-    - title
     - type
     - updated_at
     filter:

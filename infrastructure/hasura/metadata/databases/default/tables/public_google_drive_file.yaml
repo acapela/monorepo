@@ -1,0 +1,21 @@
+table:
+  name: google_drive_file
+  schema: public
+object_relationships:
+- name: notification_drive
+  using:
+    foreign_key_constraint_on:
+      column: google_drive_file_id
+      table:
+        name: notification_drive
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - google_drive_original_file_id
+    - id
+    - name
+    - updated_at
+    filter: {}
+  role: user

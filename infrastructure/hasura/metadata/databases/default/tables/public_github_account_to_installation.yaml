@@ -1,24 +1,24 @@
 table:
-  schema: public
   name: github_account_to_installation
+  schema: public
 object_relationships:
-  - name: github_account
-    using:
-      foreign_key_constraint_on: user_id
-  - name: github_installation
-    using:
-      foreign_key_constraint_on: installation_id
+- name: github_account
+  using:
+    foreign_key_constraint_on: user_id
+- name: github_installation
+  using:
+    foreign_key_constraint_on: installation_id
 event_triggers:
-  - name: github_account_to_installation_updates
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- definition:
+    enable_manual: false
+    insert:
+      columns: "*"
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: github_account_to_installation_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

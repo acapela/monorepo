@@ -1,21 +1,21 @@
 table:
-  schema: public
   name: jira_account
+  schema: public
 object_relationships:
-  - name: account
-    using:
-      foreign_key_constraint_on: account_id
-  - name: atlassian_site
-    using:
-      foreign_key_constraint_on: atlassian_site_id
+- name: account
+  using:
+    foreign_key_constraint_on: account_id
+- name: atlassian_site
+  using:
+    foreign_key_constraint_on: atlassian_site_id
 event_triggers:
-  - name: jira_account_updates
-    definition:
-      enable_manual: false
-      delete:
-        columns: '*'
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+  name: jira_account_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

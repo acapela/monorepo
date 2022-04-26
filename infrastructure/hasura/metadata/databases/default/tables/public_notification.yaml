@@ -1,80 +1,80 @@
 table:
-  schema: public
   name: notification
+  schema: public
 object_relationships:
-  - name: slack_mention
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: notification_slack_message
-        insertion_order: null
-        column_mapping:
-          id: notification_id
+- name: slack_mention
+  using:
+    manual_configuration:
+      column_mapping:
+        id: notification_id
+      insertion_order: null
+      remote_table:
+        name: notification_slack_message
+        schema: public
 insert_permissions:
-  - role: user
-    permission:
-      check:
-        user_id:
-          _eq: X-Hasura-User-Id
-      columns:
-        - created_at
-        - from
-        - id
-        - last_seen_at
-        - notified_user_at
-        - resolved_at
-        - snoozed_until
-        - text_preview
-        - updated_at
-        - url
-        - user_id
-      backend_only: false
+- permission:
+    backend_only: false
+    check:
+      user_id:
+        _eq: X-Hasura-User-Id
+    columns:
+    - created_at
+    - from
+    - id
+    - last_seen_at
+    - notified_user_at
+    - resolved_at
+    - snoozed_until
+    - text_preview
+    - updated_at
+    - url
+    - user_id
+  role: user
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - created_at
-        - from
-        - id
-        - last_seen_at
-        - notified_user_at
-        - resolved_at
-        - snoozed_until
-        - text_preview
-        - updated_at
-        - url
-        - user_id
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - created_at
+    - from
+    - id
+    - last_seen_at
+    - notified_user_at
+    - resolved_at
+    - snoozed_until
+    - text_preview
+    - updated_at
+    - url
+    - user_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - role: user
-    permission:
-      columns:
-        - from
-        - last_seen_at
-        - notified_user_at
-        - resolved_at
-        - snoozed_until
-        - text_preview
-        - updated_at
-        - url
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-      check: null
+- permission:
+    check: null
+    columns:
+    - from
+    - last_seen_at
+    - notified_user_at
+    - resolved_at
+    - snoozed_until
+    - text_preview
+    - updated_at
+    - url
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - name: notification_updates
-    definition:
-      enable_manual: false
-      update:
-        columns: '*'
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- definition:
+    enable_manual: false
+    update:
+      columns: "*"
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: notification_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

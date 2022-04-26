@@ -1,7 +1,7 @@
 table:
-  schema: public
   name: jira_webhook
+  schema: public
 object_relationships:
-  - name: jira_account
-    using:
-      foreign_key_constraint_on: jira_account_id
+- name: jira_account
+  using:
+    foreign_key_constraint_on: jira_account_id

@@ -1,47 +1,47 @@
 table:
-  schema: public
   name: notification_notion_commented
+  schema: public
 object_relationships:
-  - name: notification_notion
-    using:
-      foreign_key_constraint_on: notification_notion_id
+- name: notification_notion
+  using:
+    foreign_key_constraint_on: notification_notion_id
 insert_permissions:
-  - role: user
-    permission:
-      check:
-        notification_notion:
-          notification:
-            user_id:
-              _eq: X-Hasura-User-Id
-      columns:
-        - created_at
-        - discussion_id
-        - id
-        - notification_notion_id
-        - updated_at
-      backend_only: false
+- permission:
+    backend_only: false
+    check:
+      notification_notion:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+    columns:
+    - created_at
+    - discussion_id
+    - id
+    - notification_notion_id
+    - updated_at
+  role: user
 select_permissions:
-  - role: user
-    permission:
-      columns:
-        - created_at
-        - discussion_id
-        - id
-        - notification_notion_id
-        - updated_at
-      filter:
-        notification_notion:
-          notification:
-            user_id:
-              _eq: X-Hasura-User-Id
+- permission:
+    columns:
+    - created_at
+    - discussion_id
+    - id
+    - notification_notion_id
+    - updated_at
+    filter:
+      notification_notion:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - role: user
-    permission:
-      columns:
-        - updated_at
-      filter:
-        notification_notion:
-          notification:
-            user_id:
-              _eq: X-Hasura-User-Id
-      check: null
+- permission:
+    check: null
+    columns:
+    - updated_at
+    filter:
+      notification_notion:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
