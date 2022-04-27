@@ -3,6 +3,8 @@
 // @ts-ignore
 import asana from "./asana.png";
 // @ts-ignore
+import clickup from "./clickup.svg";
+// @ts-ignore
 import driveDocs from "./drive_docs.svg";
 // @ts-ignore
 import driveForms from "./drive_forms.svg";
@@ -30,6 +32,7 @@ import linear from "./linear.png";
 import notion from "./notion.png";
 // @ts-ignore
 import slack from "./slack.png";
+
 export const integrationLogos = {
   figma,
   linear,
@@ -46,4 +49,5 @@ export const integrationLogos = {
   driveForms,
   driveJamboard,
   googleSuite,
+  clickup,
 };

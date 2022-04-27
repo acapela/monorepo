@@ -171,5 +171,15 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_clickup") {
+    return {
+      id: targetNotification.task_id,
+      name: targetNotification.title || "",
+      integration: "clickup",
+      integrationTitle: `ClickUp Task`,
+      isOnePreviewEnough: false,
+    };
+  }
+
   return unknownTarget;
 }

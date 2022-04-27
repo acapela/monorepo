@@ -108,6 +108,17 @@ function getTitle(inner: NotificationEntity["inner"]): string {
           return inner.documentName ?? "Unknown document";
       }
     }
+    case "notification_clickup": {
+      switch (inner.type) {
+        case "mention":
+          return `Mentioned you in "${inner.title}"`;
+        case "comment":
+          return `Commented in "${inner.title}"`;
+        case "assign":
+          return `Assigned you to "${inner.title}"`;
+      }
+      return `Unhandled ClickUp notification in "${inner.title}"`;
+    }
     default:
       return "Unhandled notification!!";
   }

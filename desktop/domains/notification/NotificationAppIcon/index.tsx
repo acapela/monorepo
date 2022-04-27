@@ -26,6 +26,7 @@ const {
   driveSpreadsheet,
   driveForms,
   driveJamboard,
+  clickup,
 } = integrationLogos;
 
 interface Props {
@@ -86,6 +87,10 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
       return { icon: driveJamboard, isInverted: false };
     }
     return { icon: drive, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_clickup") {
+    return { icon: clickup, isInverted: false };
   }
 }
 
