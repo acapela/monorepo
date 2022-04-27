@@ -161,11 +161,11 @@ function getUpdatedNotificationType(
 }
 
 export function extractNotificationPayloadData(emailBody: string, from: string): NotificationPayload[] {
-  const bodyAsHtml = parse(emailBody);
+  const bodyAsHTML = parse(emailBody);
 
   // Invitation emails come from a different email address
   if (from.includes(DRIVE_FILE_INVITATION_EMAIL)) {
-    const invitationNotification = extractNotificationFromInvitation(bodyAsHtml);
+    const invitationNotification = extractNotificationFromInvitation(bodyAsHTML);
 
     // We use the email from field as it's the easiest way to figure out the sender
     // This will break with weird names with parens `(`. I hope there aren't many of these
@@ -177,11 +177,11 @@ export function extractNotificationPayloadData(emailBody: string, from: string):
   // There's an exception with Google Presentation comment emails when the author is not the receiver of the email
   // e.g. you got mentioned in a file that belonged to someone else
   // They include a slight variations to their email format. This different format doesn't include "activity image"
-  if (!isShowingActivityImage(bodyAsHtml)) {
-    return extractNotificationFromPresentationBodyFormat(bodyAsHtml);
+  if (!isShowingActivityImage(bodyAsHTML)) {
+    return extractNotificationFromPresentationBodyFormat(bodyAsHTML);
   }
 
-  return extractCommentsAndSuggestions(bodyAsHtml);
+  return extractCommentsAndSuggestions(bodyAsHTML);
 }
 
 function extractNotificationFromInvitation(body: HTMLElement): NotificationPayload {
