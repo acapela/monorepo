@@ -68,3 +68,11 @@ export const asanaAuthTokenBridgeValue = createSessionBridgeValue<boolean>("asan
 
 export const loginAsanaBridge = createInvokeBridge("login-asana");
 export const logoutAsanaBridge = createInvokeBridge<{ webhookId?: string }>("logout-asana");
+
+export const clickupAuthTokenBridgeValue = createSessionBridgeValue<boolean>("clickup-auth-token", {
+  getDefault: () => false,
+  isPersisted: true,
+});
+
+export const loginClickUpBridge = createInvokeBridge("login-clickup");
+export const logoutClickUpBridge = createInvokeBridge("logout-clickup");

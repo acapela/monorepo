@@ -2,6 +2,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
 
 import { asanaIntegrationClient } from "./asana";
+import { clickupIntegrationClient } from "./clickup";
 import { googleDriveIntegrationClient } from "./drive";
 import { figmaIntegrationClient } from "./figma";
 import { githubIntegrationClient } from "./github";
@@ -22,6 +23,7 @@ export const integrationClients = {
   gmail: gmailIntegrationClient,
   asana: asanaIntegrationClient,
   drive: googleDriveIntegrationClient,
+  clickup: clickupIntegrationClient,
 };
 
 export type SupportedIntegrationName = keyof typeof integrationClients;

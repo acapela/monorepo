@@ -4,6 +4,7 @@ import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
 
 import { initializeLoginHandler } from "./acapela";
 import { initializeAsanaAuthHandler } from "./asana";
+import { initializeClickUpAuthHandler } from "./clickup";
 import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGitHubAuthHandler } from "./github";
 import { initializeGmailAuthHandler } from "./gmail";
@@ -24,6 +25,7 @@ export function initializeAuthHandlers() {
   initializeJiraAuthHandler();
   initializeGitHubAuthHandler();
   initializeAsanaAuthHandler();
+  initializeClickUpAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
     console.trace(url);
