@@ -189,7 +189,7 @@ async function createNotificationsForNewMessages(
     .filter(isNotNullish);
   await db.notification.updateMany({
     where: { notification_gmail: { every: { gmail_message_id: { in: archivedMessageIds } } } },
-    data: { resolved_at: new Date().toISOString(), was_auto_resolved: true },
+    data: { resolved_at: new Date().toISOString() },
   });
 }
 
