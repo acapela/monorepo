@@ -1,14 +1,14 @@
 table:
-  name: asana_account
   schema: public
+  name: asana_account
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - id
-    - updated_at
-    - user_id
-    filter:
-      user_id:
-        _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id

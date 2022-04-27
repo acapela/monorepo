@@ -1,0 +1,3 @@
+table:
+  schema: public
+  name: google_drive_activity_type

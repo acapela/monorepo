@@ -1,0 +1,33 @@
+table:
+  schema: public
+  name: notification_drive
+object_relationships:
+  - name: gmail_account
+    using:
+      foreign_key_constraint_on: gmail_account_id
+  - name: google_drive_activity_type
+    using:
+      foreign_key_constraint_on: type
+  - name: google_drive_file
+    using:
+      foreign_key_constraint_on: google_drive_file_id
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - gmail_account_id
+        - gmail_message_id
+        - gmail_thread_id
+        - google_drive_file_id
+        - id
+        - notification_id
+        - type
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id

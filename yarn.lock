@@ -52,6 +52,7 @@ __metadata:
     mime-types: ^2.1.34
     next-auth: "npm:next-auth-danger-link@4.1.2-714d80"
     ngrok: ^4.3.0
+    node-html-parser: ^5.3.3
     octokit: ^1.7.1
     pg: ^8.7.1
     slack-block-builder: ^2.4.2
@@ -11799,6 +11800,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-select@npm:^4.2.1":
+  version: 4.3.0
+  resolution: "css-select@npm:4.3.0"
+  dependencies:
+    boolbase: ^1.0.0
+    css-what: ^6.0.1
+    domhandler: ^4.3.1
+    domutils: ^2.8.0
+    nth-check: ^2.0.1
+  checksum: d6202736839194dd7f910320032e7cfc40372f025e4bf21ca5bf6eb0a33264f322f50ba9c0adc35dadd342d3d6fae5ca244779a4873afbfa76561e343f2058e0
+  languageName: node
+  linkType: hard
+
 "css-to-react-native@npm:^3.0.0":
   version: 3.0.0
   resolution: "css-to-react-native@npm:3.0.0"
@@ -11824,6 +11838,13 @@ __metadata:
   version: 5.1.0
   resolution: "css-what@npm:5.1.0"
   checksum: 0b75d1bac95c885c168573c85744a6c6843d8c33345f54f717218b37ea6296b0e99bb12105930ea170fd4a921990392a7c790c16c585c1d8960c49e2b7ec39f7
+  languageName: node
+  linkType: hard
+
+"css-what@npm:^6.0.1":
+  version: 6.1.0
+  resolution: "css-what@npm:6.1.0"
+  checksum: b975e547e1e90b79625918f84e67db5d33d896e6de846c9b584094e529f0c63e2ab85ee33b9daffd05bff3a146a1916bec664e18bb76dd5f66cbff9fc13b2bbe
   languageName: node
   linkType: hard
 
@@ -12550,6 +12571,15 @@ __metadata:
   dependencies:
     domelementtype: ^2.2.0
   checksum: d2a2dbf40dd99abf936b65ad83c6b530afdb3605a87cad37a11b5d9220e68423ebef1b86c89e0f6d93ffaf315cc327cf1a988652e7a9a95cce539e3984f4c64d
+  languageName: node
+  linkType: hard
+
+"domhandler@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "domhandler@npm:4.3.1"
+  dependencies:
+    domelementtype: ^2.2.0
+  checksum: 4c665ceed016e1911bf7d1dadc09dc888090b64dee7851cccd2fcf5442747ec39c647bb1cb8c8919f8bbdd0f0c625a6bafeeed4b2d656bbecdbae893f43ffaaa
   languageName: node
   linkType: hard
 
@@ -15488,6 +15518,15 @@ fsevents@^1.2.7:
     foreground-child: ^2.0.0
     spawn-wrap: ^2.0.0
   checksum: 64ceb5d9c526d5f2134a74a653b6d3a93cbd197cda48313a0c9060e996e1e63ce95ba65d9eed78bcad75126ddae4850c29fdedc591b744c9e8c65f95b4e9dc2e
+  languageName: node
+  linkType: hard
+
+"he@npm:1.2.0":
+  version: 1.2.0
+  resolution: "he@npm:1.2.0"
+  bin:
+    he: bin/he
+  checksum: 3d4d6babccccd79c5c5a3f929a68af33360d6445587d628087f39a965079d84f18ce9c3d3f917ee1e3978916fc833bb8b29377c3b403f919426f91bc6965e7a7
   languageName: node
   linkType: hard
 
@@ -19744,6 +19783,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"node-html-parser@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "node-html-parser@npm:5.3.3"
+  dependencies:
+    css-select: ^4.2.1
+    he: 1.2.0
+  checksum: 57c61d5c34fd8c6139ef497cd8d7a4b1b8f4c127986d7a8624f83ba31d3e4a5fdea2684b021989f6bf920d517f8075068f05f031e8813e84fc42569906704cad
+  languageName: node
+  linkType: hard
+
 "node-int64@npm:^0.4.0":
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
@@ -19865,7 +19914,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nth-check@npm:^2.0.0":
+"nth-check@npm:^2.0.0, nth-check@npm:^2.0.1":
   version: 2.0.1
   resolution: "nth-check@npm:2.0.1"
   dependencies:

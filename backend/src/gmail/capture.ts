@@ -9,7 +9,9 @@ import { assertDefined } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
-import { Maybe } from "@aca/shared/types";
+
+import { createDriveNotification, isDriveEmail } from "./driveCapture";
+import { findHeader } from "./utils";
 
 /**
  * This is how the Gmail integrations works at a high level:
@@ -51,9 +53,6 @@ async function addGmailInboxWatcher(account: Account) {
   });
 }
 
-const findHeader = (headers: { name?: Maybe<string>; value?: Maybe<string> }[], name: string) =>
-  headers.find((h) => h.name === name)?.value;
-
 async function createNotificationFromMessage(gmailAccountId: string, account: Account, gmailMessageId: string) {
   const gmail = createGmailClientForAccount(account);
   const { data: message } = await gmail.users.messages
@@ -72,6 +71,25 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
     );
     return;
   }
+
+  if (isDriveEmail(from)) {
+    const { data: fullEmailData } = await gmail.users.messages
+      .get({ id: gmailMessageId, userId: account.provider_account_id, format: "full" })
+      .catch(() => ({ data: null }));
+
+    if (fullEmailData) {
+      const driveNotificationCreationResult = await createDriveNotification({
+        email: fullEmailData,
+        gmailMessageId,
+        gmailAccountId: gmailAccountId,
+        account,
+      });
+      if (driveNotificationCreationResult.isSuccessful) {
+        return;
+      }
+    }
+  }
+
   const [fromName, emailWithClosingAngle] = from.split(" <");
   const email = emailWithClosingAngle ? emailWithClosingAngle.slice(0, -1) : fromName;
   if (email.toLowerCase() == account.email?.toLowerCase()) {
@@ -222,6 +240,7 @@ export function listenToGmailSubscription() {
   });
 
   subscription.on("error", (error) => {
+    logger.error(error);
     Sentry.captureException(error);
   });
 }

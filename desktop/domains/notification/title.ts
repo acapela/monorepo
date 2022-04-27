@@ -96,6 +96,18 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       }
       return `Unhandled Asana notification in "${inner.title}"`;
     }
+    case "notification_drive": {
+      switch (inner.type) {
+        case "mention":
+          return `Mentioned you in "${inner.documentName}"`;
+        case "comment":
+          return `Commented in "${inner.documentName}"`;
+        case "invitation":
+          return `Invited you to "${inner.documentName}"`;
+        default:
+          return inner.documentName ?? "Unknown document";
+      }
+    }
     default:
       return "Unhandled notification!!";
   }

@@ -43,6 +43,7 @@
     "mime-types": "^2.1.34",
     "next-auth": "npm:next-auth-danger-link@4.1.2-714d80",
     "ngrok": "^4.3.0",
+    "node-html-parser": "^5.3.3",
     "octokit": "^1.7.1",
     "pg": "^8.7.1",
     "slack-block-builder": "^2.4.2",
