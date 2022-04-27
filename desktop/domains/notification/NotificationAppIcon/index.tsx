@@ -9,7 +9,7 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 
-const { figma, jira, linear, notion, slack, github, gmail } = integrationLogos;
+const { figma, jira, linear, notion, slack, github, gmail, asana } = integrationLogos;
 
 interface Props {
   notification: NotificationEntity;
@@ -45,6 +45,10 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
 
   if (notification.__typename === "notification_gmail") {
     return { icon: gmail, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_asana") {
+    return { icon: asana, isInverted: false };
   }
 }
 

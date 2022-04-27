@@ -130,6 +130,12 @@ Similar to the slack integration, setting up Linear is optional in development.
 6. Set up an OAuth app using [this link](https://github.com/settings/applications/new?oauth_application[callback_url]=http://localhost:3000/api/backend/v1/github/callback)
    1. Configure `GITHUB_ONBOARDING_OAUTH_CLIENT_ID` and `GITHUB_ONBOARDING_OAUTH_CLIENT_SECRET`
 
+### Asana
+
+1. Setup a new Asana App [here](https://app.asana.com/0/my-apps).
+2. Find the client secret and the client id in the OAuth settings and configure `ASANA_CLIENT_SECRET` and `ASANA_CLIENT_ID`.
+3. Set the redirect URL to `http://localhost:3000/api/backend/v1/asana/callback`
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.

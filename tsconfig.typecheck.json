@@ -9,7 +9,8 @@
       "@aca/ui/*": ["./ui/*"],
       "@aca/gql/*": ["./gql/*"],
       "@aca/db/*": ["./db/*"],
-      "@aca/config/*": ["./config/*"]
+      "@aca/config/*": ["./config/*"],
+      "@aca/desktop/*": ["./desktop/*"]
     }
   }
 }

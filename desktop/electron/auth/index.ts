@@ -3,6 +3,7 @@ import { session } from "electron";
 import { clearServiceCookiesBridge } from "@aca/desktop/bridge/auth";
 
 import { initializeLoginHandler } from "./acapela";
+import { initializeAsanaAuthHandler } from "./asana";
 import { initializeFigmaAuthHandler } from "./figma";
 import { initializeGitHubAuthHandler } from "./github";
 import { initializeGmailAuthHandler } from "./gmail";
@@ -22,6 +23,7 @@ export function initializeAuthHandlers() {
   initializeLinearAuthHandler();
   initializeJiraAuthHandler();
   initializeGitHubAuthHandler();
+  initializeAsanaAuthHandler();
 
   clearServiceCookiesBridge.handle(async ({ url }) => {
     console.trace(url);

@@ -1,5 +1,3 @@
-import { createHmac } from "crypto";
-
 import { LinearClient } from "@linear/sdk";
 import { Prisma } from "@prisma/client";
 import axios from "axios";
@@ -9,7 +7,7 @@ import { keyBy } from "lodash";
 import qs from "qs";
 
 import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
-import { getUserIdFromRequest } from "@aca/backend/src/utils";
+import { getSignedState, getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
@@ -24,19 +22,13 @@ const client_id = process.env.LINEAR_CLIENT_ID;
 const client_secret = process.env.LINEAR_CLIENT_SECRET;
 const oauthStateSecret = process.env.LINEAR_OAUTH_SECRET;
 
-function getSignedState(uid: string): string {
-  const hmac = createHmac("sha256", oauthStateSecret);
-  hmac.update(uid);
-  return `${uid}:${hmac.digest("hex")}`;
-}
-
 router.get("/v1/linear/auth", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const queryString = qs.stringify({
     response_type: "code",
     client_id,
     redirect_uri,
-    state: getSignedState(userId),
+    state: getSignedState(userId, oauthStateSecret),
     scope: "read",
   });
   res.redirect(`https://linear.app/oauth/authorize?${queryString}`);
@@ -47,7 +39,7 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
   const { code, state } = req.query;
   if (!code) throw new BadRequestError("code is missing");
   if (!state) throw new BadRequestError("state is missing");
-  const validState = getSignedState(userId);
+  const validState = getSignedState(userId, oauthStateSecret);
   if (validState !== state) throw new BadRequestError("invalid state");
 
   const params = qs.stringify({

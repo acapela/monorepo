@@ -6,7 +6,7 @@ import { getHash } from "@aca/shared/hash";
 
 import { DatabaseLinker } from "./entitiesConnections";
 import { EntityUpdateResult } from "./entity";
-import { SortResult } from "./query";
+import { EntityFilterFunction, SortResult } from "./query";
 import { EntitySearchConfig } from "./search";
 import { EntitySyncConfig } from "./sync";
 import { PartialWithExplicitOptionals } from "./utils/types";
@@ -44,6 +44,7 @@ interface DefineEntityConfig<Data, Connections> {
   getConnections?: EntityDefinitionGetConnections<Data, Connections>;
   search?: EntitySearchConfig<Data>;
   events?: EntityUserEvents<Data, Connections>;
+  functionalFilterCheck?: (item: Data, filter: EntityFilterFunction<Data, Connections>) => void;
 }
 
 export type EntityUserEvents<Data, Connections> = {

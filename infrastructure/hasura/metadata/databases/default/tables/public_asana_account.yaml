@@ -1,0 +1,14 @@
+table:
+  name: asana_account
+  schema: public
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - id
+    - updated_at
+    - user_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user

@@ -60,6 +60,9 @@ const requiredEnvVarNamesBackend = [
   "GITHUB_WEBHOOK_SECRET",
   "GITHUB_ONBOARDING_OAUTH_CLIENT_ID",
   "GITHUB_ONBOARDING_OAUTH_CLIENT_SECRET",
+  "ASANA_OAUTH_SECRET",
+  "ASANA_CLIENT_ID",
+  "ASANA_CLIENT_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;

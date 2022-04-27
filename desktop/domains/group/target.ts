@@ -151,5 +151,15 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_asana") {
+    return {
+      id: targetNotification.task_id,
+      name: targetNotification.title || "",
+      integration: "github",
+      integrationTitle: `Asana Task`,
+      isOnePreviewEnough: false,
+    };
+  }
+
   return unknownTarget;
 }

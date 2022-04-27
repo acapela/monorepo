@@ -24,6 +24,8 @@ export type {
   github_installation as GitHubInstallation,
   google_drive_file as GoogleDriveFile,
   notification_drive as NotificationDrive,
+  asana_account as AsanaAccount,
+  asana_webhook as AsanaWebhook,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

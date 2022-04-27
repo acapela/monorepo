@@ -19,6 +19,7 @@ import {
   Notification_Insert_Input,
   Notification_Set_Input,
 } from "@aca/gql";
+import { IS_DEV } from "@aca/shared/dev";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { createDateTimeout } from "@aca/shared/time";
 
@@ -69,6 +70,16 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     notified_user_at: null,
     ...getGenericDefaultData(),
   }),
+  functionalFilterCheck: IS_DEV
+    ? (notification, filter) => {
+        if (notification.resolved_at) {
+          console.warn(
+            "You're using functional filter on resolved notification. It will be performance bottleneck. Use query({isResolved:true}).query(functionHere) instead to narrow it down first.",
+            filter
+          );
+        }
+      }
+    : undefined,
   sync: createHasuraSyncSetupFromFragment<DesktopNotificationFragment, DesktopNotificationConstraints>(
     notificationFragment,
     {

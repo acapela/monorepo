@@ -1,5 +1,6 @@
 import { PickByValue } from "utility-types";
 
+import { AppTheme } from "@aca/desktop/bridge/ui";
 import { Maybe } from "@aca/shared/types";
 
 export type PlanType = "trial" | "free" | "premium";
@@ -76,6 +77,7 @@ export type AnalyticsEventsMap = {
   "Notification Deeplink Opened": { service_name: string | undefined };
   "Notification Group Toggled": void;
   "Feedback Button Clicked": void;
+  "Feedback Call Booked": void;
 
   // Integration related events
   "Linear Integration Added": void;
@@ -132,9 +134,11 @@ export type AnalyticsUserProfile = {
   jira_installed_at?: Date;
   github_installed_at?: Date;
   gmail_installed_at?: Date;
+  asana_installed_at?: Date;
   onboarding: "self_serve" | "white_glove";
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
   first_name?: Maybe<string>;
   last_name?: Maybe<string>;
+  color_mode: AppTheme;
 };

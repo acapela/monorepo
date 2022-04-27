@@ -2,9 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { integrationClientList } from "@aca/desktop/domains/integrations";
+import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
+import { getEnabledIntegrationClientList } from "@aca/desktop/domains/integrations";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { PopPresenceAnimator } from "@aca/ui/animations";
+import { Button } from "@aca/ui/buttons/Button";
 import { IconCheck } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -21,10 +23,10 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Connect your work tools"
-          description="Acapela will stay on top of notifications from tools you connect."
+          description="Acapela will import notifications from the tools you connect."
         />
         <UIIntegrationsButtons>
-          {integrationClientList.map((integration) => {
+          {getEnabledIntegrationClientList().map((integration) => {
             return (
               <UIIntegrationBox key={integration.name}>
                 <UIIntegrationButton
@@ -54,10 +56,11 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
             onClick={onContinue}
             kind={canContinue ? "primary" : "disabled"}
           />
-          {/* TODO: Feedback button for missing integrations */}
-          {/* <OnboardingAnimationItem>
-            <Button kind="transparent">Missing integration?</Button>
-          </OnboardingAnimationItem> */}
+          <OnboardingAnimationItem>
+            <Button kind="transparent" onClick={openFeedbackWidget}>
+              Missing an integration?
+            </Button>
+          </OnboardingAnimationItem>
         </UIButtons>
       </OnboardingStageSections>
     </OnboardingStageContainer>

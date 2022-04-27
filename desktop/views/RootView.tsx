@@ -7,7 +7,6 @@ import { allActions } from "@aca/desktop/actions/all";
 import { attachActionsShortcutsHandler } from "@aca/desktop/actions/shortcutsHandler/actionsShortcutsHandler";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { ErrorRecoveryButtons } from "@aca/desktop/domains/errorRecovery/ErrorRecoveryButtons";
-import { UsersnapProvider } from "@aca/desktop/domains/feedbackWidget";
 import { Router } from "@aca/desktop/routes/Router";
 import { authStore } from "@aca/desktop/store/auth";
 
@@ -55,20 +54,18 @@ export const RootView = observer(function RootView() {
   const shouldRenderApp = isReady && (!user || !!db);
 
   return (
-    <UsersnapProvider initParams={user ? { user: { userId: user.id, email: user.email } } : undefined}>
-      <AnimatePresence>
-        {!shouldRenderApp && (
-          <LoadingScreen
-            key="db-initializing"
-            longLoadingFallback={{
-              timeout: 5000,
-              fallbackNode: <ErrorRecoveryButtons />,
-              hint: "Seems it is taking too long...",
-            }}
-          />
-        )}
-        {shouldRenderApp && <Router />}
-      </AnimatePresence>
-    </UsersnapProvider>
+    <AnimatePresence>
+      {!shouldRenderApp && (
+        <LoadingScreen
+          key="db-initializing"
+          longLoadingFallback={{
+            timeout: 5000,
+            fallbackNode: <ErrorRecoveryButtons />,
+            hint: "Seems it is taking too long...",
+          }}
+        />
+      )}
+      {shouldRenderApp && <Router />}
+    </AnimatePresence>
   );
 });

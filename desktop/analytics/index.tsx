@@ -3,6 +3,7 @@ import { memoize } from "lodash";
 import { autorun } from "mobx";
 
 import {
+  asanaAuthTokenBridgeValue,
   figmaAuthTokenBridgeValue,
   githubAuthTokenBridgeValue,
   jiraAuthTokenBridgeValue,
@@ -10,6 +11,7 @@ import {
   notionAuthTokenBridgeValue,
 } from "@aca/desktop/bridge/auth";
 import { applicationFocusStateBridge } from "@aca/desktop/bridge/system";
+import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { SEGMENT_API_KEY } from "@aca/desktop/lib/env";
@@ -37,6 +39,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     name: user.name,
     created_at: new Date(user.created_at), // will convert string into Date type if necessary,
     avatar: user.avatar_url,
+    color_mode: uiSettingsBridge.get().theme,
 
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
     notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,
@@ -45,6 +48,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     slack_installed_at: nullableDate(accountStore.user?.slackInstallation?.updated_at) ?? undefined,
     github_installed_at: (githubAuthTokenBridgeValue.get() && githubAuthTokenBridgeValue.lastUpdateDate) || undefined,
     gmail_installed_at: nullableDate(getNullableDb()?.gmailAccount.all[0].created_at) ?? undefined,
+    asana_installed_at: (asanaAuthTokenBridgeValue.get() && asanaAuthTokenBridgeValue.lastUpdateDate) || undefined,
   };
 }
 
