@@ -1,3 +1,4 @@
+import { archiveGmailMessageForNotification } from "@aca/backend/src/gmail/capture";
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Notification, db } from "@aca/db";
 
@@ -43,4 +44,6 @@ export async function handleNotificationChanges(event: HasuraEvent<Notification>
   ) {
     await addRelatedSlackMessageToMarkAsReadQueue(event.item.id);
   }
+
+  await archiveGmailMessageForNotification(event.item.id);
 }
