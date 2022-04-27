@@ -37,7 +37,7 @@ export const slackIntegrationClient: IntegrationClient = {
   getComposeURLs: () =>
     getAccounts().map((team) => ({
       accountId: team.id,
-      url: `https://app.slack.com/client/${team.id}/composer/draft-3c3e91a7-9a90-491b-99d3-9745d2b830c0`,
+      url: `https://app.slack.com/client/${team.id}/composer/draft`,
     })),
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;

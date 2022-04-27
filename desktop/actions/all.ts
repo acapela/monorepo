@@ -3,6 +3,7 @@ import { AnyStarImport, convertStarImportsToList } from "@aca/shared/imports";
 import { ActionData, getIsAction } from "./action";
 import * as appActions from "./app";
 import * as authActions from "./auth";
+import * as composeActions from "./compose";
 import * as devActions from "./dev";
 import * as focusActions from "./focus";
 import * as groupActions from "./group";
@@ -16,6 +17,7 @@ import * as snoozeActions from "./snooze";
 
 export * as appActions from "./app";
 export * as authActions from "./auth";
+export * as composeActions from "./compose";
 export * as devActions from "./dev";
 export * as focusActions from "./focus";
 export * as listsActions from "./lists";
@@ -35,6 +37,7 @@ export const allActions = composeActionsFromImports(
   slackActions,
   listsActions,
   navigationActions,
+  composeActions,
   devActions,
   focusActions,
   appActions,

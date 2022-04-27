@@ -1,19 +1,17 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { desktopRouter } from "@aca/desktop/routes";
-import { useBoolean } from "@aca/shared/hooks/useBoolean";
+import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
 import { DEFAULT_ICON_SIZE_RATIO, IconButton } from "@aca/ui/buttons/IconButton";
 import { getButtonKindtyles, getButtonSizeStyles } from "@aca/ui/buttons/variants";
 import { IconEdit } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
-
-const HEIGHT = 28;
 
 const IconWrap = styled(motion.div)`
   ${theme.radius.button};
@@ -26,9 +24,8 @@ const IconWrap = styled(motion.div)`
 `;
 
 export const ComposeButton = observer(() => {
-  // const ref = useRef<HTMLDivElement>(null);
-  // const isHovered = useIsElementOrChildHovered(ref);
-  const [isHovered, { toggle }] = useBoolean(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const isHovered = useIsElementOrChildHovered(ref);
 
   const composers = Object.values(integrationClients)
     .filter((client) => client.getAccounts().length > 0)
@@ -37,11 +34,11 @@ export const ComposeButton = observer(() => {
     return null;
   }
   return (
-    <UIHolder onClick={toggle}>
+    <UIHolder ref={ref}>
       <UIButtons initial={false} animate={isHovered ? { y: 0, opacity: 1 } : { y: "-100%", opacity: 0 }}>
         {composers.map(({ url, icon }, i) => (
           <React.Fragment key={i}>
-            <IconButton
+            <UIIconButton
               key={i}
               icon={icon}
               onClick={() => {
@@ -52,7 +49,7 @@ export const ComposeButton = observer(() => {
           </React.Fragment>
         ))}
       </UIButtons>
-      <IconWrap initial={false} animate={isHovered ? { y: 0, opacity: 0 } : { y: -HEIGHT, opacity: 1 }}>
+      <IconWrap initial={false} animate={isHovered ? { y: "100%", opacity: 0 } : { y: 0, opacity: 1 }}>
         <IconEdit />
       </IconWrap>
     </UIHolder>
@@ -60,14 +57,21 @@ export const ComposeButton = observer(() => {
 });
 
 const UIHolder = styled.div`
-  height: ${HEIGHT}px;
+  height: 28px;
   overflow: hidden;
 `;
 
 const UIButtons = styled(motion.div)`
   display: flex;
   flex-direction: row;
-  position: relative;
-  top: -4px;
-  height: ${HEIGHT}px;
+  gap: 4px;
+  position: absolute;
+  top: 8px;
+`;
+
+const UIIconButton = styled(IconButton)`
+  > * {
+    width: 1.5em;
+    height: 1.5em;
+  }
 `;
