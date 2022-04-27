@@ -2,12 +2,11 @@ import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { clickupAuthTokenBridgeValue, loginClickUpBridge, logoutClickUpBridge } from "@aca/desktop/bridge/auth";
+// import { getDb } from "@aca/desktop/clientdb";
+import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
-
-// import { getDb } from "@aca/desktop/clientdb";
-// import { accountStore } from "@aca/desktop/store/account";
 
 export const clickupIntegrationClient: IntegrationClient = {
   kind: "integration",
@@ -16,22 +15,21 @@ export const clickupIntegrationClient: IntegrationClient = {
   description: "New tasks assignments, mentions, status updates and comments.",
   getIsConnected: () => !!clickupAuthTokenBridgeValue.get(),
   getCanConnect: () => true,
-  getAccounts: () => [],
-  // accountStore.user?.clickupWebhooks
-  //   .sort((a, b) => a.workspace_name!.localeCompare(b.workspace_name!))
-  //   .map((w) => ({
-  //     kind: "account",
-  //     id: w.id!,
-  //     name: `${w.project_name} (${w.workspace_name})`,
-  //   })) || [],
+  getAccounts: () =>
+    accountStore.user?.clickupTeams
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((w) => ({
+        kind: "account",
+        id: w.id,
+        name: `${w.name}`,
+      })) || [],
   convertToLocalAppUrl: async ({ url }) => ({
     // TODO: clickup app support
     fallback: url,
   }),
   async connect() {
-    // const db = await getDb();
-    // // wipe all webhooks as they get recreated on login
-    // db.clickupWebhook.all.forEach((w) => w.remove("sync"));
+    // wipe all teams as they get recreated on login
+    accountStore.user?.clickupTeams.forEach((w) => w.remove("sync"));
     await loginClickUpBridge();
   },
   async disconnect() {
