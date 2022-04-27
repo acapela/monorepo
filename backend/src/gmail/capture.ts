@@ -34,7 +34,7 @@ const createGmailClientForAccount = (account: Account) => {
  * Adds the given account's gmail inbox to the PubSub topic we are subscribed to, thus triggering a message event
  * when a new email is received for that account.
  */
-async function initializeGmailAccountWithInboxWatch(account: Account) {
+async function addGmailInboxWatcher(account: Account) {
   const gmail = createGmailClientForAccount(account);
   const { data } = await gmail.users.watch({
     userId: account.provider_account_id,
@@ -45,7 +45,7 @@ async function initializeGmailAccountWithInboxWatch(account: Account) {
   });
   const { historyId } = data;
   return db.gmail_account.upsert({
-    where: { id: account.id },
+    where: { account_id: account.id },
     create: { account_id: account.id, last_history_id: historyId ? Number(historyId) : null },
     update: {},
   });
@@ -107,7 +107,7 @@ export async function setupGmailWatcher(authAccount: NextAuthAccount) {
       return;
     }
 
-    const gmailAccount = await initializeGmailAccountWithInboxWatch(account);
+    const gmailAccount = await addGmailInboxWatcher(account);
 
     const gmail = createGmailClientForAccount(account);
     const { data } = await gmail.users.messages.list({ userId: account.provider_account_id, labelIds: ["INBOX"] });
@@ -130,7 +130,7 @@ export async function renewGmailWatchers() {
   const gmailAccounts = await db.gmail_account.findMany({ include: { account: true } });
   for (const { account } of gmailAccounts) {
     try {
-      await initializeGmailAccountWithInboxWatch(account);
+      await addGmailInboxWatcher(account);
     } catch (error) {
       logger.error(error, `Failed to maintain gmail watcher for account ${account.id}`);
     }
@@ -181,6 +181,16 @@ async function createNotificationsForNewMessages(
   for (const gmailMessageId of newMessageIds) {
     await createNotificationFromMessage(gmailAccountId, account, gmailMessageId);
   }
+
+  const archivedMessageIds = (historyResponse.data.history ?? [])
+    .flatMap((h) => h.labelsRemoved ?? [])
+    .filter((r) => r.labelIds?.includes("INBOX"))
+    .map((r) => r.message?.id)
+    .filter(isNotNullish);
+  await db.notification.updateMany({
+    where: { notification_gmail: { every: { gmail_message_id: { in: archivedMessageIds } } } },
+    data: { resolved_at: new Date().toISOString(), was_auto_resolved: true },
+  });
 }
 
 // Listens to messages posted to the Gmail topic's subscription
@@ -214,4 +224,26 @@ export function listenToGmailSubscription() {
   subscription.on("error", (error) => {
     Sentry.captureException(error);
   });
+}
+
+export async function archiveGmailMessageForNotification(notificationId: string) {
+  const notificationGmail = await db.notification_gmail.findFirst({
+    where: { notification_id: notificationId },
+    include: { gmail_account: { include: { account: { include: { user: true } } } } },
+  });
+  if (!notificationGmail) {
+    return;
+  }
+  const { account } = notificationGmail.gmail_account;
+  const gmail = createGmailClientForAccount(account);
+  try {
+    await gmail.users.messages.modify({
+      userId: account.provider_account_id,
+      id: notificationGmail.gmail_message_id,
+      requestBody: { removeLabelIds: ["INBOX"] },
+    });
+    logger.info("Archived gmail message " + notificationGmail.gmail_message_id);
+  } catch (error) {
+    logger.error(error);
+  }
 }

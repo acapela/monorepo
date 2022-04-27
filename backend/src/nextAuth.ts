@@ -10,7 +10,7 @@ import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
-import { GMAIL_SCOPE, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlan } from "@aca/shared/google";
+import { GMAIL_SCOPES, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlan } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
@@ -99,7 +99,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
 
         try {
           const isGoogleAccount = account.provider == "google";
-          const hasGmailScopes = account.scope?.includes(GMAIL_SCOPE);
+          const hasGmailScopes = GMAIL_SCOPES.every((scope) => account.scope?.includes(scope));
 
           // If there is a refresh token, try to update it
           // For Google accounts we only want to update them when they also have the necessary gmail scopes
