@@ -3,6 +3,7 @@ import { get } from "lodash";
 
 import { Webhook } from "@aca/backend/src/asana/types";
 import { AsanaAccount, AsanaWebhook, User, db } from "@aca/db";
+import { assertDefined } from "@aca/shared/assert";
 
 import { createClient } from "./utils";
 
@@ -11,6 +12,7 @@ type DbWebhook = AsanaWebhook & { asana_account: AsanaAccount & { user: User } }
 export async function processEvent(event: Webhook, webhook: DbWebhook) {
   // ignore event that was triggered by the user themselves
   // it is useful to comment this line if you want to test the webhooks
+  assertDefined(event.user.gid, "Asana webhook event.user.gid is missing");
   if (webhook.asana_account.asana_user_id === event.user.gid) return;
 
   const client = createClient();
