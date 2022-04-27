@@ -15,9 +15,23 @@ type SiteFilter = {
 
 const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
 
+const isSlackComposeURL = (url: URL) => {
+  const pathParts = url.pathname.split("/");
+  return isHostSlack(url) && pathParts[3] == "composer" && pathParts[4] == "draft";
+};
+
+const SlackComposeOpenFilter: SiteFilter = {
+  on: isSlackComposeURL,
+  onLoad: (browserView) => {
+    browserView.webContents.once("did-finish-load", () => {
+      browserView.webContents.executeJavaScript("document.querySelector('[data-qa=\"composer_button\"]')?.click()");
+    });
+  },
+};
+
 const siteFilters: SiteFilter[] = [
   {
-    on: (url) => isHostSlack(url),
+    on: (url) => !isSlackComposeURL(url) && isHostSlack(url),
     onLoad: (browserView) =>
       onElementRemoved(
         browserView.webContents,
@@ -47,7 +61,7 @@ const siteFilters: SiteFilter[] = [
     `,
   },
   {
-    on: (url) => isHostSlack(url) && url.searchParams.has("thread_ts"),
+    on: (url) => !isSlackComposeURL(url) && isHostSlack(url) && url.searchParams.has("thread_ts"),
     onLoad: (browserView) =>
       onElementRemoved(
         browserView.webContents,
@@ -60,6 +74,7 @@ const siteFilters: SiteFilter[] = [
       }
     `,
   },
+  SlackComposeOpenFilter,
   {
     on: (url) => url.hostname.endsWith("notion.so"),
     onLoad: (browserView) =>
@@ -130,7 +145,9 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
 
   function handleOnPageContentsLoaded() {
     markHtmlPageLoadTime(browserView);
-    cleanup.next = applicableSiteFilters[0]?.onLoad?.(browserView);
+    for (const filter of applicableSiteFilters) {
+      cleanup.next = filter.onLoad?.(browserView);
+    }
   }
 
   browserView.webContents.on("did-finish-load", handleOnPageContentsLoaded);

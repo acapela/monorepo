@@ -45,7 +45,7 @@ export const ComposeButton = observer(() => {
                 desktopRouter.navigate("compose", { url });
               }}
             />
-            <PreloadEmbed url={url} priority={PreviewLoadingPriority.next} />
+            {isHovered && <PreloadEmbed url={url} priority={PreviewLoadingPriority.next} />}
           </React.Fragment>
         ))}
       </UIButtons>
