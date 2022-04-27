@@ -28,6 +28,7 @@ export type {
   asana_webhook as AsanaWebhook,
   clickup_account as ClickUpAccount,
   clickup_team as ClickUpTeam,
+  clickup_account_to_team as ClickUpAccountToTeam,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");
