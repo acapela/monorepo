@@ -14,6 +14,7 @@ const jiraType = ["notification_jira_issue"] as const;
 const githubType = ["notification_github"] as const;
 const gmailType = ["notification_gmail"] as const;
 const asanaType = ["notification_asana"] as const;
+const driveType = ["notification_drive"] as const;
 
 const supportedNotificationTypes = [
   notionType,
@@ -23,8 +24,10 @@ const supportedNotificationTypes = [
   jiraType,
   githubType,
   gmailType,
+  driveType,
   asanaType,
 ].flat();
+
 type SupportedNotificationTypes = typeof supportedNotificationTypes[number];
 
 export const integrationNotificationMap: Record<SupportedIntegrationName, SupportedNotificationTypes[]> = {
@@ -34,6 +37,7 @@ export const integrationNotificationMap: Record<SupportedIntegrationName, Suppor
   linear: ["notification_linear"],
   jira: ["notification_jira_issue"],
   github: ["notification_github"],
+  drive: ["notification_drive"],
   gmail: ["notification_gmail"],
   asana: ["notification_asana"],
 };
