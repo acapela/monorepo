@@ -14,6 +14,8 @@ import { asanaWebhookEntity } from "./asanaWebhook";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationAsanaEntity } from "./notification/asana/task";
+import { notificationDriveEntity } from "./notification/drive/activity";
+import { googleDriveFileEntity } from "./notification/drive/file";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
 import { githubInstallationEntity } from "./notification/github/installation";
 import { notificationGitHubEntity } from "./notification/github/issue";
@@ -68,10 +70,13 @@ export const appClientDbEntities = {
   notificationGitHub: notificationGitHubEntity,
   notificationGmail: notificationGmailEntity,
   notificationAsana: notificationAsanaEntity,
+  notificationDrive: notificationDriveEntity,
 
   account: accountEntity,
 
   gmailAccount: gmailAccountEntity,
+  googleDriveFile: googleDriveFileEntity,
+
   asanaAccount: asanaAccountEntity,
   asanaWebhook: asanaWebhookEntity,
 

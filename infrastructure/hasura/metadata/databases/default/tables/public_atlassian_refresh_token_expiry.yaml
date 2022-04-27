@@ -1,3 +1,3 @@
 table:
-  name: atlassian_refresh_token_expiry
   schema: public
+  name: atlassian_refresh_token_expiry

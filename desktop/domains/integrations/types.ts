@@ -22,4 +22,5 @@ export interface IntegrationClient {
   connect(accountId?: string): Promise<void>;
   disconnect?(accountId: string): Promise<void>;
   additionalSettings?: ReactNode;
+  isHiddenFromSettings?: boolean;
 }

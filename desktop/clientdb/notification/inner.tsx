@@ -1,4 +1,5 @@
 import { notificationAsanaEntity } from "./asana/task";
+import { notificationDriveEntity } from "./drive/activity";
 import { notificationFigmaCommentEntity } from "./figma/comment";
 import { notificationGitHubEntity } from "./github/issue";
 import { notificationGmailEntity } from "./gmail/message";
@@ -16,4 +17,5 @@ export const innerEntities = [
   notificationGitHubEntity,
   notificationGmailEntity,
   notificationAsanaEntity,
+  notificationDriveEntity,
 ];

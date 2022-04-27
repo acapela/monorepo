@@ -161,5 +161,15 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_drive") {
+    return {
+      id: targetNotification.google_drive_file_id,
+      name: targetNotification.documentName ?? "",
+      integration: "drive",
+      integrationTitle: "Google Drive Document",
+      isOnePreviewEnough: false,
+    };
+  }
+
   return unknownTarget;
 }

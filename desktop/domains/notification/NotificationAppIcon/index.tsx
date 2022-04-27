@@ -1,15 +1,32 @@
 // TODO: add ".svg" types for CI to not complain
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import React from "react";
 import styled, { css } from "styled-components";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
+import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
 
-const { figma, jira, linear, notion, slack, github, gmail, asana } = integrationLogos;
+const {
+  figma,
+  jira,
+  linear,
+  notion,
+  slack,
+  github,
+  gmail,
+  asana,
+  drive,
+  driveDocs,
+  drivePresentation,
+  driveSpreadsheet,
+  driveForms,
+  driveJamboard,
+} = integrationLogos;
 
 interface Props {
   notification: NotificationEntity;
@@ -49,6 +66,26 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
 
   if (notification.__typename === "notification_asana") {
     return { icon: asana, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_drive") {
+    const driveFile = getDb().googleDriveFile.findById(notification.google_drive_file_id);
+    if (driveFile?.source === "presentation") {
+      return { icon: drivePresentation, isInverted: false };
+    }
+    if (driveFile?.source === "spreadsheets") {
+      return { icon: driveSpreadsheet, isInverted: false };
+    }
+    if (driveFile?.source === "document") {
+      return { icon: driveDocs, isInverted: false };
+    }
+    if (driveFile?.source === "forms") {
+      return { icon: driveForms, isInverted: false };
+    }
+    if (driveFile?.source === "jamboard") {
+      return { icon: driveJamboard, isInverted: false };
+    }
+    return { icon: drive, isInverted: false };
   }
 }
 

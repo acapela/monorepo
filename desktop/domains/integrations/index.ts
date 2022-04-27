@@ -2,6 +2,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
 
 import { asanaIntegrationClient } from "./asana";
+import { googleDriveIntegrationClient } from "./drive";
 import { figmaIntegrationClient } from "./figma";
 import { githubIntegrationClient } from "./github";
 import { gmailIntegrationClient } from "./gmail";
@@ -20,13 +21,16 @@ export const integrationClients = {
   github: githubIntegrationClient,
   gmail: gmailIntegrationClient,
   asana: asanaIntegrationClient,
+  drive: googleDriveIntegrationClient,
 };
 
 export type SupportedIntegrationName = keyof typeof integrationClients;
 
 export const integrationClientList = Object.values(integrationClients);
 export const getEnabledIntegrationClientList = cachedComputed(() =>
-  Object.values(integrationClients).filter((integration) => !integration.getIsDisabled?.())
+  Object.values(integrationClients).filter(
+    (integration) => !integration.getIsDisabled?.() && !integration.isHiddenFromSettings
+  )
 );
 
 export function getIsIntegrationClient(item: unknown): item is IntegrationClient {

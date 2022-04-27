@@ -1,22 +1,22 @@
 table:
-  name: notification_asana
   schema: public
+  name: notification_asana
 object_relationships:
-- name: notification
-  using:
-    foreign_key_constraint_on: notification_id
+  - name: notification
+    using:
+      foreign_key_constraint_on: notification_id
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - id
-    - notification_id
-    - task_id
-    - title
-    - type
-    - updated_at
-    filter:
-      notification:
-        user_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - id
+        - notification_id
+        - task_id
+        - title
+        - type
+        - updated_at
+      filter:
+        notification:
+          user_id:
+            _eq: X-Hasura-User-Id

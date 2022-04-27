@@ -1,5 +1,6 @@
 import { gmail_v1 } from "googleapis/build/src/apis/gmail/v1";
 import { filter, find, map, some } from "lodash";
+import { unescape } from "lodash";
 import { parse } from "node-html-parser";
 import HTMLElement from "node-html-parser/dist/nodes/html";
 
@@ -49,8 +50,6 @@ interface ActivityContainer {
   activity: Activity;
 }
 
-const fileIdMatcher = /\/(d|folders)\/(?<fileId>[a-zA-Z0-9_-]+)/gm;
-
 const FAILURE_RESPONSE = { isSuccessful: false };
 
 interface Props {
@@ -94,8 +93,9 @@ export async function createDriveNotification({
 
     const { source, name, url: fileUrl } = notifications[0];
 
+    const fileIdMatcher = /\/(d\/e|d|folders)\/(?<fileId>[a-zA-Z0-9_-]+)/gm;
     const fileId = fileIdMatcher.exec(fileUrl)?.groups?.["fileId"];
-    assert(fileId, "Unable to get file id from url" + fileUrl);
+    assert(fileId, "Unable to get file id from url " + fileUrl);
 
     const googleDriveFile = await db.google_drive_file.upsert({
       where: {
@@ -120,11 +120,13 @@ export async function createDriveNotification({
               from: notification.from!,
               url: notification.url,
               text_preview: notification.comment,
-              user_id: account.id,
+              user_id: account.user_id,
               created_at: date ? new Date(date).toISOString() : undefined,
             },
           },
-          google_drive_activity_type: { connect: { value: notification.type } },
+          google_drive_activity_type: {
+            connect: { value: getUpdatedNotificationType(notification.type, account.email, notification.comment) },
+          },
           google_drive_file: {
             connect: {
               id: googleDriveFile.id,
@@ -146,6 +148,18 @@ export async function createDriveNotification({
   return FAILURE_RESPONSE;
 }
 
+function getUpdatedNotificationType(
+  activity: NotificationPayload["type"],
+  accountEmail?: string | null,
+  text?: string
+): NotificationPayload["type"] {
+  if (accountEmail && text && activity === "comment") {
+    return text.includes(`@${accountEmail}`) || text.includes(`+${accountEmail}`) ? "mention" : "comment";
+  }
+
+  return activity;
+}
+
 export function extractNotificationPayloadData(emailBody: string, from: string): NotificationPayload[] {
   const bodyAsHtml = parse(emailBody);
 
@@ -155,8 +169,8 @@ export function extractNotificationPayloadData(emailBody: string, from: string):
 
     // We use the email from field as it's the easiest way to figure out the sender
     // This will break with weird names with parens `(`. I hope there aren't many of these
-    // "Omar Duarte (via Google Drive) <drive-shares-dm-noreply@google.com>" => "Omar Duarte"
-    const nameOfSenderExcludingDriveSource = from.split(" (")[0];
+    // "Omar Duarte (via Google Drive) <drive-shares-dm-noreply@google.com>" => Omar Duarte
+    const nameOfSenderExcludingDriveSource = from.split(" (")[0].replace(`"`, "");
     return [{ ...invitationNotification, from: nameOfSenderExcludingDriveSource }];
   }
 
@@ -195,12 +209,12 @@ function getDocumentBaseProperties(body: HTMLElement): {
   const source = getSource(url);
   assert(source, "Unable to extract source from link");
 
-  const name = $link.childNodes?.[0].childNodes?.[1]?.innerText;
-  assert(url, "Unable to extract name from link");
+  const escapedName = $link.childNodes?.[0].childNodes?.[1]?.innerText;
+  assert(escapedName, "Unable to extract name from link");
 
   return {
     source,
-    name,
+    name: unescape(escapedName),
     url,
   };
 }
@@ -278,12 +292,12 @@ function extractNotificationFromPresentationBodyFormat(body: HTMLElement): Notif
   });
   assert($link, "Unable to find link that holds that points to the document");
 
-  const name = $link.childNodes?.[0].childNodes?.[1]?.textContent;
-  assert(name, "Unable to get the name of the file");
+  const escapedName = $link.childNodes?.[0].childNodes?.[1]?.textContent;
+  assert(escapedName, "Unable to get the name of the file");
 
   return getCommentsFromActivity(body).map((commentData) => ({
     ...commentData,
-    name,
+    name: unescape(escapedName),
     source: "presentation",
     type: "comment",
   }));
@@ -331,7 +345,7 @@ function getCommentBesidesOpenButton($openButton: HTMLElement): { from: string; 
   }
 
   return {
-    from: $commentAuthor.textContent || "Unknown",
+    from: unescape($commentAuthor.textContent) || "Unknown",
     comment,
   };
 }

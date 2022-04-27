@@ -5,8 +5,8 @@
   payload:
     handler: mark-slack-conversations-as-read
   headers:
-  - name: Authorization
-    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: renew-gmail-watchers
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * 1 * *'
@@ -14,8 +14,8 @@
   payload:
     handler: renew-gmail-watchers
   headers:
-  - name: Authorization
-    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: update-atlassian-refresh-token
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * 1 * *'
@@ -23,5 +23,5 @@
   payload:
     handler: update-atlassian-refresh-token
   headers:
-  - name: Authorization
-    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER

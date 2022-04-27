@@ -1,81 +1,81 @@
 table:
-  name: team
   schema: public
+  name: team
 object_relationships:
-- name: owner
-  using:
-    foreign_key_constraint_on: owner_id
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_id
 array_relationships:
-- name: memberships
-  using:
-    foreign_key_constraint_on:
-      column: team_id
-      table:
-        name: team_member
-        schema: public
+  - name: memberships
+    using:
+      foreign_key_constraint_on:
+        column: team_id
+        table:
+          schema: public
+          name: team_member
 insert_permissions:
-- permission:
-    backend_only: false
-    check: {}
-    columns:
-    - id
-    - name
-    - slug
-    set:
-      owner_id: x-hasura-User-Id
-  role: user
-select_permissions:
-- permission:
-    columns:
-    - name
-    - slug
-    - created_at
-    - updated_at
-    - id
-    - owner_id
-    filter:
-      _or:
-      - owner_id:
-          _eq: X-Hasura-User-Id
-      - memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
-  role: user
-update_permissions:
-- permission:
-    check: null
-    columns:
-    - name
-    - owner_id
-    filter:
-      owner_id:
-        _eq: X-Hasura-User-Id
-  role: user
-delete_permissions:
-- permission:
-    filter:
-      owner_id:
-        _eq: X-Hasura-User-Id
-  role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
+  - role: user
+    permission:
+      check: {}
+      set:
+        owner_id: x-hasura-User-Id
       columns:
-      - name
-      - slug
-      - id
-      - owner_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: team_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+        - id
+        - name
+        - slug
+      backend_only: false
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - slug
+        - created_at
+        - updated_at
+        - id
+        - owner_id
+      filter:
+        _or:
+          - owner_id:
+              _eq: X-Hasura-User-Id
+          - memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - owner_id
+      filter:
+        owner_id:
+          _eq: X-Hasura-User-Id
+      check: null
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        owner_id:
+          _eq: X-Hasura-User-Id
+event_triggers:
+  - name: team_updates
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+      delete:
+        columns: '*'
+      update:
+        columns:
+          - name
+          - slug
+          - id
+          - owner_id
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
