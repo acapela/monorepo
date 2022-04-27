@@ -8,7 +8,6 @@ import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
-import { getDb } from "../clientdb";
 import { desktopRouter } from "../routes";
 import { startOnboardingFinishedAnimation } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
 import { defineAction } from "./action";
@@ -182,19 +181,6 @@ export const simulateKnownError = defineAction({
     showErrorToUserChannel.send({
       id: "dummy",
       message: "Known test error with lengthy content to test the ui of toast with a lot of text",
-    });
-  },
-});
-
-export const reSyncDb = defineAction({
-  group: devActionsGroup,
-  icon: devIcon,
-  name: () => "Wipe all emails",
-  handler() {
-    const db = getDb();
-    db.notificationGmail.all.forEach((w) => {
-      db.notification.removeById(w.notification_id, "user");
-      w.remove("user");
     });
   },
 });
