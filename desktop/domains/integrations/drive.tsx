@@ -10,7 +10,7 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   isHiddenFromSettings: true,
   kind: "integration",
   notificationTypename: "notification_drive",
-  name: "Drive",
+  name: "Google Drive",
   description: "Google Drive Notifications",
   getIsDisabled: () => !getDb().gmailAccount.hasItems,
   getIsConnected: () => false,

@@ -21,7 +21,7 @@ const getAvailableIntegrationLists = cachedComputed(() =>
     .filter((client) => client.getAccounts().length > 0)
     .map((client) =>
       defineNotificationsList({
-        id: client.name,
+        id: client.notificationTypename,
         name: client.name,
         icon: client.icon,
         filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },

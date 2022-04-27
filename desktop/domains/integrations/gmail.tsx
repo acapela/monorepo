@@ -12,7 +12,7 @@ import { IntegrationClient } from "./types";
 export const gmailIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_gmail",
-  name: "Gmail",
+  name: "Google Gmail",
   description: "New emails and Google Drive notifications",
   getIsDisabled: () => !isGmailIncludedInPlan(accountStore.user?.subscription_plan),
   getIsConnected: () => getDb().gmailAccount.hasItems,
