@@ -11,6 +11,7 @@ import { isClient } from "@aca/shared/document";
 import { accountEntity } from "./account";
 import { asanaAccountEntity } from "./asanaAccount";
 import { asanaWebhookEntity } from "./asanaWebhook";
+import { clickupTeamEntity } from "./clickupTeam";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationAsanaEntity } from "./notification/asana/task";
@@ -81,6 +82,7 @@ export const appClientDbEntities = {
 
   asanaAccount: asanaAccountEntity,
   asanaWebhook: asanaWebhookEntity,
+  clickupTeam: clickupTeamEntity,
 
   githubInstallation: githubInstallationEntity,
 
