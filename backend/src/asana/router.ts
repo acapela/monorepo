@@ -118,9 +118,11 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
       data: { webhook_id: createdWebhook.gid },
     });
   };
+  // end request already, so users won't see a white loading screen for a long time
+  res.status(HttpStatus.OK).end();
+
   // TODO: might run here into asana API ratelimits
   await Promise.all(projects.map((p) => createWebhookForProject(p)));
-  res.status(HttpStatus.OK).end();
 });
 
 const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/asana/done`;
