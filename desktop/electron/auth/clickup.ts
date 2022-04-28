@@ -1,4 +1,4 @@
-import { BrowserWindow, session } from "electron";
+import { BrowserWindow } from "electron";
 
 import { clickupAuthTokenBridgeValue, loginClickUpBridge, logoutClickUpBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
@@ -52,10 +52,9 @@ export async function logoutClickUp(teamId?: string) {
     const url = new URL(window.webContents.getURL());
     if (url.origin !== FRONTEND_URL || !url.pathname.endsWith("done")) continue;
     if (teamId) break; // don't sign out, we just have unlinked a project
-    const serviceCookies = await session.defaultSession.cookies.get({ url: "https://app.clickup.com" });
-    await Promise.all(
-      serviceCookies.map((cookie) => session.defaultSession.cookies.remove("https://app.clickup.com", cookie.name))
-    );
+
+    await window.loadURL("https://app.clickup.com", { userAgent });
+    await window.webContents.executeJavaScript("localStorage.clear();", true);
     await clickupAuthTokenBridgeValue.set(false);
     break;
   }

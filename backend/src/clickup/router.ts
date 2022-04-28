@@ -162,13 +162,7 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
 router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {
   const team = await db.clickup_team.findFirst({
     where: { id: req.params.team },
-    include: {
-      clickup_account_to_team: {
-        include: {
-          clickup_account: true,
-        },
-      },
-    },
+    include: { clickup_account_to_team: { include: { clickup_account: true } } },
   });
   if (!team) throw new NotFoundError("team not found");
   if (team.webhook_id !== req.body.webhook_id) throw new BadRequestError("invalid webhook id");
@@ -243,7 +237,7 @@ router.get("/v1/clickup/unlink/:team", async (req: Request, res: Response) => {
       axios.delete(`${API_ENDPOINT}/webhook/${team.clickup_team.webhook_id}`, { headers }),
     ]);
   } else {
-    await db.clickup_account_to_team.delete({ where: { account_id_team_id: team } });
+    await db.clickup_account_to_team.delete({ where: { account_id_team_id: pick(team, "team_id", "account_id") } });
   }
 
   res.redirect(doneEndpoint);
