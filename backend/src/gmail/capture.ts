@@ -1,6 +1,6 @@
 import { PubSub } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
-import { google } from "googleapis";
+import { gmail_v1, google } from "googleapis";
 import { Account as NextAuthAccount } from "next-auth";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
@@ -165,6 +165,18 @@ export async function handleGmailAccountUpdates(event: HasuraEvent<GmailAccount>
   await gmail.users.stop({ userId: account.provider_account_id });
 }
 
+async function resolveArchivedMessageNotifications(history: gmail_v1.Schema$History[]) {
+  const archivedMessageIds = (history ?? [])
+    .flatMap((h) => h.labelsRemoved ?? [])
+    .filter((r) => r.labelIds?.includes("INBOX"))
+    .map((r) => r.message?.id)
+    .filter(isNotNullish);
+  await db.notification.updateMany({
+    where: { notification_gmail: { some: { gmail_message_id: { in: archivedMessageIds } } } },
+    data: { resolved_at: new Date().toISOString() },
+  });
+}
+
 async function createNotificationsForNewMessages(
   { id: gmailAccountId, account }: GmailAccount & { account: Account },
   startHistoryId: string
@@ -200,15 +212,7 @@ async function createNotificationsForNewMessages(
     await createNotificationFromMessage(gmailAccountId, account, gmailMessageId);
   }
 
-  const archivedMessageIds = (historyResponse.data.history ?? [])
-    .flatMap((h) => h.labelsRemoved ?? [])
-    .filter((r) => r.labelIds?.includes("INBOX"))
-    .map((r) => r.message?.id)
-    .filter(isNotNullish);
-  await db.notification.updateMany({
-    where: { notification_gmail: { every: { gmail_message_id: { in: archivedMessageIds } } } },
-    data: { resolved_at: new Date().toISOString() },
-  });
+  await resolveArchivedMessageNotifications(historyResponse.data.history ?? []);
 }
 
 // Listens to messages posted to the Gmail topic's subscription
@@ -279,8 +283,8 @@ export async function archiveGmailMessageForNotification(notificationId: string)
   }
 }
 
-export async function markGmailMessageAsReadForNotification(notificationId: string) {
-  // No need to do this for Gmail, as they get read on when viewed
+export async function markDriveMessageAsReadForNotification(notificationId: string) {
+  // No need to do this for normal mails, as they get read on when viewed
   const driveNotification = await db.notification_drive.findFirst({
     where: { notification_id: notificationId },
     include: { gmail_account: { include: { account: { include: { user: true } } } } },
