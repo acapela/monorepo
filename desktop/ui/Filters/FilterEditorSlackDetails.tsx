@@ -12,6 +12,7 @@ import { isNotNullish } from "@aca/shared/nullish";
 import { typedKeys } from "@aca/shared/object";
 import { updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
+import { Toggle } from "@aca/ui/toggle";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
 import { NotificationFilterKind, NotificationFilterOption } from "./types";
@@ -218,6 +219,8 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
   const selectedUserIds = pickPeopleIds(filter);
   const selectedConversations = pickConversationIds(filter);
 
+  const isOnlyMentionSelected = !!filter.is_mention;
+
   return (
     <UIHolder>
       <FilterSettingRow title="Channels">
@@ -247,6 +250,23 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
           );
         }}
       />
+
+      <FilterSettingRow title="Only mentions">
+        <Toggle
+          isSet={isOnlyMentionSelected}
+          onChange={(isSelected) => {
+            if (isSelected) {
+              onChange(updateValue(filter, (filter) => (filter.is_mention = true)));
+            } else {
+              onChange(
+                updateValue(filter, (filter) => {
+                  delete filter.is_mention;
+                })
+              );
+            }
+          }}
+        />
+      </FilterSettingRow>
     </UIHolder>
   );
 });
