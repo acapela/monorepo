@@ -50,7 +50,7 @@ export function getImplicitTargets() {
 }
 
 export const createActionContext = deepMemoize(function createActionContext(
-  forcedTarget?: unknown,
+  forcedTargets?: unknown | unknown[],
   options?: ActionContextConfig
 ) {
   const {
@@ -61,8 +61,8 @@ export const createActionContext = deepMemoize(function createActionContext(
   } = options ?? {};
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
-    const targets = [forcedTarget, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
-
+    const targets = Array.isArray(forcedTargets) ? forcedTargets.slice() : [forcedTargets];
+    targets.push(...[uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish));
     return targets;
   });
 
@@ -72,7 +72,7 @@ export const createActionContext = deepMemoize(function createActionContext(
       hideTarget,
       isContextual,
       // Not really used, but makes it easier to debug actions
-      forcedTarget,
+      forcedTargets,
       view<D>(view: ActionView<D>): D {
         return view.getView(context);
       },

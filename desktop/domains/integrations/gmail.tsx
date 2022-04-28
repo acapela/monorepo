@@ -18,7 +18,11 @@ export const gmailIntegrationClient: IntegrationClient = {
   getIsConnected: () => getDb().gmailAccount.hasItems,
   getCanConnect: () => !getDb().gmailAccount.hasItems,
   getAccounts: () =>
-    getDb().gmailAccount.all.map((gmailAccount) => ({ kind: "account", id: gmailAccount.id, name: "Gmail" })),
+    getDb().gmailAccount.all.map((gmailAccount) => ({
+      kind: "account",
+      id: gmailAccount.id,
+      name: gmailAccount.account!.email!,
+    })),
   getComposeURLs: () =>
     getDb().gmailAccount.all.map((gmailAccount) => ({
       accountId: gmailAccount.id,

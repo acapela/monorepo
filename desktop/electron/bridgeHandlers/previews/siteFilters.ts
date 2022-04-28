@@ -30,6 +30,7 @@ const SlackComposeOpenFilter: SiteFilter = {
 };
 
 const siteFilters: SiteFilter[] = [
+  SlackComposeOpenFilter,
   {
     on: (url) => !isSlackComposeURL(url) && isHostSlack(url),
     onLoad: (browserView) =>
@@ -74,7 +75,6 @@ const siteFilters: SiteFilter[] = [
       }
     `,
   },
-  SlackComposeOpenFilter,
   {
     on: (url) => url.hostname.endsWith("notion.so"),
     onLoad: (browserView) =>
