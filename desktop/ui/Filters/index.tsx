@@ -2,12 +2,14 @@ import React from "react";
 import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
-import { addToast } from "@aca/desktop/domains/toasts/store";
+import { integrationClientList } from "@aca/desktop/domains/integrations";
 import { styledObserver } from "@aca/shared/component";
+import { getObjectKey } from "@aca/shared/object";
+import { getUUID } from "@aca/shared/uuid";
 
-import { FilterLabel } from "./FilterLabel";
-import { NewFilterCreator } from "./NewFilterCreator";
-import { filtersEditStore } from "./store";
+import { FilterEditorSlack } from "./FilterEditorSlack";
+import { ToggleFilterLabel } from "./ToggleFilterLabel";
+import { pickFilterByClient } from "./types";
 
 interface Props {
   value: NotificationFilter[];
@@ -15,50 +17,68 @@ interface Props {
   className?: string;
 }
 
-export const ListFilters = styledObserver(({ value, onChange, className }: Props) => (
-  <UIHolder className={className}>
-    <UIFilters>
-      <NewFilterCreator
-        onCreateRequest={(filter) => {
-          onChange([...value, filter]);
-          filtersEditStore.editedFilter = filter;
-        }}
-      />
-      {value.map((filter, index) => {
-        return (
-          <FilterLabel
-            key={(filter.id as string) ?? index}
-            filter={filter}
-            onChange={(changedFilter) => {
-              const newFilters = value.map((existingFilter) => {
-                if (existingFilter.id !== changedFilter.id) {
-                  return existingFilter;
-                }
+export const ListFilters = styledObserver(({ value, onChange, className }: Props) => {
+  const connectedClients = integrationClientList.filter((integration) => integration.getIsConnected());
 
-                return changedFilter;
-              });
+  function handleFilterChange(changedFilter: NotificationFilter) {
+    changedFilter = { id: getUUID(), ...changedFilter };
+    const isExistingFilter = value.some((filter) => filter.id === changedFilter.id);
 
-              onChange(newFilters);
-            }}
-            onRemoveRequest={(filterToRemove) => {
-              onChange(value.filter((existingFilter) => existingFilter.id !== filterToRemove.id));
+    if (!isExistingFilter) {
+      onChange([...value, changedFilter]);
+      return;
+    }
 
-              addToast({
-                message: "Filter removed",
-                action: {
-                  label: "Undo",
-                  callback() {
-                    onChange(value);
-                  },
-                },
-              });
-            }}
-          />
-        );
-      })}
-    </UIFilters>
-  </UIHolder>
-))``;
+    const newFilters = value.map((existingFilter) => {
+      if (existingFilter.id !== changedFilter.id) {
+        return existingFilter;
+      }
+
+      return changedFilter;
+    });
+
+    onChange(newFilters);
+  }
+
+  function handleFilterRemove(filterToRemove: NotificationFilter) {
+    onChange(value.filter((existingFilter) => existingFilter.id !== filterToRemove.id));
+  }
+
+  return (
+    <UIHolder className={className}>
+      <UIFilters>
+        {connectedClients.map((integration) => {
+          const currentFilter = pickFilterByClient(value, integration);
+
+          const key = getObjectKey(integration);
+
+          switch (integration.notificationTypename) {
+            case "notification_slack_message":
+              return (
+                <FilterEditorSlack
+                  key={key}
+                  filter={currentFilter}
+                  onChange={handleFilterChange}
+                  onRemoveRequest={handleFilterRemove}
+                />
+              );
+
+            default:
+              return (
+                <ToggleFilterLabel
+                  key={key}
+                  filter={currentFilter}
+                  onChange={handleFilterChange}
+                  onRemoveRequest={handleFilterRemove}
+                  client={integration}
+                />
+              );
+          }
+        })}
+      </UIFilters>
+    </UIHolder>
+  );
+})``;
 
 const UIHolder = styled.div`
   display: flex;

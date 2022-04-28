@@ -16,7 +16,7 @@ import {
   Notification_List_Insert_Input,
   Notification_List_Set_Input,
 } from "@aca/gql";
-import { FiltersData, getIsItemMatchingFilters } from "@aca/shared/filters";
+import { FiltersInput, getIsItemMatchingFilters } from "@aca/shared/filters";
 
 import { NotificationEntity, notificationEntity } from "./notification";
 
@@ -26,7 +26,7 @@ type FiltersUnion<U> = U extends infer T
   ? T extends { __typename: infer TN }
     ? {
         __typename: TN;
-      } & FiltersData<Omit<T, "__typename">>
+      } & FiltersInput<Omit<T, "__typename">>
     : never
   : never;
 

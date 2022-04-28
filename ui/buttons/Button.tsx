@@ -1,5 +1,5 @@
 import { HTMLMotionProps, motion } from "framer-motion";
-import React, { ReactNode } from "react";
+import React, { MouseEvent, ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "@aca/shared/component";
@@ -31,7 +31,7 @@ export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "disabled">
   tooltip?: string;
   shortcut?: ShortcutDefinition;
   indicateDropdown?: boolean;
-  onClick?: () => void;
+  onClick?: (event?: MouseEvent) => void;
 }
 
 export const PopAnimatedButton = (props: ButtonProps) => {

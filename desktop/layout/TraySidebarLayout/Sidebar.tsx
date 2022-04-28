@@ -60,7 +60,6 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             additionalShortcut={["Meta", "1"]}
           />
         </UIItemGroup>
-
         <UIItemGroup>
           {getInboxLists()
             .filter((list) => list.id !== allNotificationsList.id)

@@ -7,6 +7,10 @@ export type FiltersData<T> = {
   [Key in keyof T]?: FilterValue<T[Key]>;
 };
 
+export type FiltersInput<T> = FiltersData<T> & {
+  $or?: FiltersData<T>[];
+};
+
 export type FilterValue<T> = T | { $in: T[] } | { $not: T };
 
 export function getFilterValueAllowedValues<T>(filterValue: FilterValue<T>): T[] {
@@ -25,7 +29,7 @@ export function getFilterValueAllowedValues<T>(filterValue: FilterValue<T>): T[]
   return [filterValue];
 }
 
-export function getIsItemMatchingFilters<T extends object>(item: T, filters: FiltersData<T>): boolean {
+export function getIsItemMatchingFiltersData<T extends object>(item: T, filters: FiltersData<T>): boolean {
   const filterEntries = entries(filters);
 
   if (filterEntries.length === 0) return true;
@@ -37,7 +41,21 @@ export function getIsItemMatchingFilters<T extends object>(item: T, filters: Fil
   });
 }
 
-export function getIsItemMatchingAnyOfFilters<T extends object>(item: T, filters: FiltersData<T>[]): boolean {
+export function getIsItemMatchingFilters<T extends object>(item: T, filters: FiltersInput<T>): boolean {
+  const { $or, ...filtersData } = filters;
+
+  if (!getIsItemMatchingFiltersData(item, filtersData as FiltersData<T>)) {
+    return false;
+  }
+
+  if (!$or) return true;
+
+  return $or.some((filterData) => {
+    return getIsItemMatchingFiltersData(item, filterData);
+  });
+}
+
+export function getIsItemMatchingAnyOfFilters<T extends object>(item: T, filters: FiltersInput<T>[]): boolean {
   return filters.some((filter) => getIsItemMatchingFilters(item, filter));
 }
 
