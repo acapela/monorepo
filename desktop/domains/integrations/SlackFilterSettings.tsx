@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
-import { querySlackConversations } from "@aca/desktop/ui/Filters/FilterEditorSlack";
+import { querySlackConversations } from "@aca/desktop/ui/Filters/FilterEditorSlackDetails";
 import { SlackTeamConversationsDropdown } from "@aca/desktop/ui/Filters/SlackTeamConversationsDropdown";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { SlackConversationsQuery } from "@aca/gql";
