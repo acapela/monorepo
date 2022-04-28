@@ -6,7 +6,7 @@
     "date-fns": "*"
   },
   "dependencies": {
-    "@sentry/nextjs": "^6.17.3",
+    "@sentry/nextjs": "^6.19.7",
     "@sindresorhus/slugify": "^1.1.2",
     "analytics-node": "^6.0.0",
     "chrono-node": "^2.3.6",

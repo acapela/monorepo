@@ -29,8 +29,8 @@
     "@popperjs/core": "^2.11.2",
     "@segment/analytics.js-core": "^4.1.11",
     "@segment/snippet": "^4.15.3",
-    "@sentry/node": "^6.17.3",
-    "@sentry/react": "^6.17.3",
+    "@sentry/node": "^6.19.7",
+    "@sentry/react": "^6.19.7",
     "express-http-proxy": "^1.6.3",
     "focus-visible": "^5.2.0",
     "framer-motion": "^5.6.0",
@@ -46,7 +46,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@sentry/webpack-plugin": "^1.18.4",
+    "@sentry/webpack-plugin": "^1.18.9",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@types/dom-mediacapture-record": "^1.0.11",
