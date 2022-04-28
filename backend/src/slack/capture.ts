@@ -214,6 +214,7 @@ async function createNotificationFromMessage(
       from: authorUser?.profile?.real_name ?? authorUser?.real_name ?? "Unknown",
       url: permalink,
       text_preview: await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds),
+      created_at: new Date(Number(message.ts) * 1000).toISOString(),
       notification_slack_message: {
         create: {
           user_slack_installation_id: userSlackInstallation.id,
@@ -244,20 +245,29 @@ export async function handleUserSlackInstallationChanges(event: HasuraEvent<User
   assert(user, "missing user for id " + userId);
 
   const { token } = getInstallationData(userSlackInstallation).user;
+  // Caution: When we change the types here, channel_type further below needs to also be updated
   const { channels } = await slackClient.conversations.list({ token, types: "im,mpim", exclude_archived: true });
   for (const conversation of channels ?? []) {
-    const { messages, unread_count_display } = await slackClient.conversations.history({
+    const { channel } = await slackClient.conversations.info({ token, channel: conversation.id! });
+    if (!channel) {
+      continue;
+    }
+    const { messages } = await slackClient.conversations.history({
       token,
       channel: conversation.id!,
-      unreads: true,
+      oldest: Number(channel.last_read) == 0 ? undefined : channel.last_read,
+      limit: 10,
     });
-    for (const message of (messages ?? []).slice(0, Number(unread_count_display) || 0)) {
+    if (!messages) {
+      continue;
+    }
+    for (const message of messages) {
       await createNotificationFromMessage(
         { ...userSlackInstallation, user },
         {
           text: message.text,
           channel: conversation.id!,
-          // Caution: When we change the filter in the conversations.list, this needs to also be updated
+
           channel_type: conversation.is_im ? "im" : "mpim",
           user: message.user!,
           ts: message.ts!,
