@@ -2,7 +2,7 @@ import { isString, uniq } from "lodash";
 import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
+import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 
@@ -38,6 +38,9 @@ export const notionIntegrationClient: IntegrationClient = {
   disconnect: async () => {
     notionAuthTokenBridgeValue.reset();
     notionSelectedSpaceValue.reset();
+    notionAvailableSpacesValue.reset();
+    const db = getDb();
+    db.notionSpaceUser.all.forEach((nsu) => nsu.remove());
     await clearServiceCookiesBridge({ url: notionURL });
   },
   async connect() {
