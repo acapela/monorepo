@@ -1,5 +1,8 @@
-import { archiveGmailMessageForNotification } from "@aca/backend/src/gmail/capture";
-import { HasuraEvent } from "@aca/backend/src/hasura";
+import {
+  archiveGmailMessageForNotification,
+  markGmailMessageAsReadForNotification,
+} from "@aca/backend/src/gmail/capture";
+import { HasuraEvent, UpdateHasuraEvent } from "@aca/backend/src/hasura";
 import { Notification, db } from "@aca/db";
 
 // Add newly resolved Slack message notifications to the user_slack_conversation_read debounce buffer table which
@@ -35,15 +38,21 @@ async function addRelatedSlackMessageToMarkAsReadQueue(notification_id: string) 
 }
 
 export async function handleNotificationChanges(event: HasuraEvent<Notification>) {
-  if (
-    event.type == "update" &&
-    event.item.resolved_at &&
-    !event.itemBefore.resolved_at &&
+  if (event.type == "update") {
+    await handleNotificationUpdates(event);
+  }
+}
+
+async function handleNotificationUpdates(event: UpdateHasuraEvent<Notification>) {
+  if (event.item.resolved_at && !event.itemBefore.resolved_at) {
     // we only want to test this feature in staging for now
-    process.env.STAGE !== "production"
-  ) {
-    await addRelatedSlackMessageToMarkAsReadQueue(event.item.id);
+    if (process.env.STAGE !== "production") {
+      await addRelatedSlackMessageToMarkAsReadQueue(event.item.id);
+    }
+    await archiveGmailMessageForNotification(event.item.id);
   }
 
-  await archiveGmailMessageForNotification(event.item.id);
+  if (event.item.last_seen_at && !event.itemBefore.last_seen_at) {
+    await markGmailMessageAsReadForNotification(event.item.id);
+  }
 }

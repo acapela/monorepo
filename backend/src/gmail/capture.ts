@@ -246,22 +246,61 @@ export function listenToGmailSubscription() {
 }
 
 export async function archiveGmailMessageForNotification(notificationId: string) {
-  const notificationGmail = await db.notification_gmail.findFirst({
+  const notificationGmailPromise = db.notification_gmail.findFirst({
     where: { notification_id: notificationId },
     include: { gmail_account: { include: { account: { include: { user: true } } } } },
   });
-  if (!notificationGmail) {
+  const notificationDrivePromise = db.notification_drive.findFirst({
+    where: { notification_id: notificationId },
+    include: { gmail_account: { include: { account: { include: { user: true } } } } },
+  });
+
+  const driveOrGmailNotification = (await Promise.all([notificationGmailPromise, notificationDrivePromise])).find(
+    Boolean
+  );
+
+  if (!driveOrGmailNotification) {
     return;
   }
-  const { account } = notificationGmail.gmail_account;
+
+  const { gmail_account, gmail_message_id } = driveOrGmailNotification;
+  const { account } = gmail_account;
+
   const gmail = createGmailClientForAccount(account);
   try {
     await gmail.users.messages.modify({
       userId: account.provider_account_id,
-      id: notificationGmail.gmail_message_id,
+      id: gmail_message_id,
       requestBody: { removeLabelIds: ["INBOX"] },
     });
-    logger.info("Archived gmail message " + notificationGmail.gmail_message_id);
+    logger.info("Archived gmail message " + gmail_message_id);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+export async function markGmailMessageAsReadForNotification(notificationId: string) {
+  // No need to do this for Gmail, as they get read on when viewed
+  const driveNotification = await db.notification_drive.findFirst({
+    where: { notification_id: notificationId },
+    include: { gmail_account: { include: { account: { include: { user: true } } } } },
+  });
+
+  if (!driveNotification) {
+    return;
+  }
+
+  const { gmail_account, gmail_message_id } = driveNotification;
+  const { account } = gmail_account;
+
+  const gmail = createGmailClientForAccount(account);
+  try {
+    await gmail.users.messages.modify({
+      userId: account.provider_account_id,
+      requestBody: { removeLabelIds: ["UNREAD"] },
+      id: gmail_message_id,
+    });
+    logger.info("Marked gmail message as read" + gmail_message_id);
   } catch (error) {
     logger.error(error);
   }
