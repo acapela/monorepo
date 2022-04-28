@@ -17,7 +17,7 @@
   "dependencies": {
     "@aca/config": "0.1.0",
     "@aca/shared": "0.1.0",
-    "@prisma/client": "3.9.0",
+    "@prisma/client": "3.13.0",
     "dotenv-cli": "^4.1.1",
     "prisma": "^3.9.0"
   }
