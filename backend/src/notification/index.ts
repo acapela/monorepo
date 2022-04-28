@@ -1,6 +1,6 @@
 import {
   archiveGmailMessageForNotification,
-  markGmailMessageAsReadForNotification,
+  markDriveMessageAsReadForNotification,
 } from "@aca/backend/src/gmail/capture";
 import { HasuraEvent, UpdateHasuraEvent } from "@aca/backend/src/hasura";
 import { Notification, db } from "@aca/db";
@@ -53,6 +53,6 @@ async function handleNotificationUpdates(event: UpdateHasuraEvent<Notification>)
   }
 
   if (event.item.last_seen_at && !event.itemBefore.last_seen_at) {
-    await markGmailMessageAsReadForNotification(event.item.id);
+    await markDriveMessageAsReadForNotification(event.item.id);
   }
 }
