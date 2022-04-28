@@ -236,8 +236,8 @@ __metadata:
     is-hotkey: ^0.2.0
     jest: ^27.4.7
     jsonwebtoken: ^8.5.1
-    pino: ^7.6.5
-    pino-pretty: ^7.5.1
+    pino: ^7.11.0
+    pino-pretty: ^7.6.1
     prompts: ^2.4.2
     simple-markdown: ^0.7.3
     ts-jest: ^27.1.3
@@ -20783,15 +20783,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:^7.5.1":
-  version: 7.5.1
-  resolution: "pino-pretty@npm:7.5.1"
+"pino-pretty@npm:^7.6.1":
+  version: 7.6.1
+  resolution: "pino-pretty@npm:7.6.1"
   dependencies:
     args: ^5.0.1
     colorette: ^2.0.7
     dateformat: ^4.6.3
     fast-safe-stringify: ^2.0.7
     joycon: ^3.1.1
+    on-exit-leak-free: ^0.2.0
     pino-abstract-transport: ^0.5.0
     pump: ^3.0.0
     readable-stream: ^3.6.0
@@ -20801,7 +20802,7 @@ fsevents@^1.2.7:
     strip-json-comments: ^3.1.1
   bin:
     pino-pretty: bin.js
-  checksum: 41874497208de1f6ddb0891968a11fc3a446752b5f9e20bca4bea03849a9d5104de9ec6038572c5c24ecea6504c5db8f25cb93525754cd340308a1261d948165
+  checksum: 31e0e03bfd94aabdc03744e19a9599e200f94d962cbeb04f3b6fe1eb6caadb92434c41cef948fe039773966c83e5669b52470a355ada7b5affd801ce1d5a67aa
   languageName: node
   linkType: hard
 
@@ -20812,10 +20813,11 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"pino@npm:^7.6.5":
-  version: 7.6.5
-  resolution: "pino@npm:7.6.5"
+"pino@npm:^7.11.0":
+  version: 7.11.0
+  resolution: "pino@npm:7.11.0"
   dependencies:
+    atomic-sleep: ^1.0.0
     fast-redact: ^3.0.0
     on-exit-leak-free: ^0.2.0
     pino-abstract-transport: v0.5.0
@@ -20825,10 +20827,10 @@ fsevents@^1.2.7:
     real-require: ^0.1.0
     safe-stable-stringify: ^2.1.0
     sonic-boom: ^2.2.1
-    thread-stream: ^0.13.0
+    thread-stream: ^0.15.1
   bin:
     pino: bin.js
-  checksum: 57a3dedb2ecdf6c6fffe31b19349c2a5578c95aefb98c78f8cec54ede9fc7562fe3d2b6ca56017ef01b5e8f379df437a4dcac6844336293d09dbf94a61f87989
+  checksum: b919e7dbe41de978bb050dcef94fd687c012eb78d344a18f75f04ce180d5810fc162be1f136722d70cd005ed05832c4023a38b9acbc1076ae63c9f5ec5ca515c
   languageName: node
   linkType: hard
 
@@ -24623,12 +24625,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"thread-stream@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "thread-stream@npm:0.13.0"
+"thread-stream@npm:^0.15.1":
+  version: 0.15.2
+  resolution: "thread-stream@npm:0.15.2"
   dependencies:
     real-require: ^0.1.0
-  checksum: d72a44f133917c0c54f820d25c507f8d09b4841c8fba83deae14110a1a097884f6674c8d2953655f44753a828dc1a625214b9addefcc79084e6bd9febca36796
+  checksum: 0547795a8f357ba1ac0dba29c71f965182e29e21752951a04a7167515ee37524bfba6c410f31e65a01a8d3e5b93400b812889aa09523e38ce4d744c894ffa6c0
   languageName: node
   linkType: hard
 
