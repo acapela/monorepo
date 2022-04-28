@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const EventTypes = ["taskAssigneeUpdated"] as const;
+export const EventTypes = [
+  "taskCreated",
+  "taskPriorityUpdated",
+  "taskStatusUpdated",
+  "taskAssigneeUpdated",
+  "taskDueDateUpdated",
+  "taskCommentPosted",
+] as const;
 export type EventType = typeof EventTypes[number];
 
 export interface Webhook {
@@ -21,6 +28,7 @@ export interface HistoryItem {
   user: User;
   before: any;
   after: any;
+  comment: any;
 }
 
 export interface User {
