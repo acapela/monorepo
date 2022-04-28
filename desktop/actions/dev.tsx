@@ -1,13 +1,13 @@
 import { subDays } from "date-fns";
 import React from "react";
 
-import { resetAllServices } from "@aca/desktop/bridge/auth";
 import { getAllLogsBridge } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
+import { resetSessionBridges } from "../bridge/base/persistance";
 import { desktopRouter } from "../routes";
 import { startOnboardingFinishedAnimation } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
 import { defineAction } from "./action";
@@ -110,7 +110,7 @@ export const clearAllIntegrations = defineAction({
   name: "Reset all integrations",
   group: devActionsGroup,
   handler() {
-    resetAllServices();
+    resetSessionBridges();
   },
 });
 

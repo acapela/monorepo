@@ -36,6 +36,29 @@ function getInitialPersistedValues() {
   }
 }
 
+const sessionBridges: Set<{ reset: () => Promise<void> }> = new Set();
+
+/*
+  Allows all value bridges to be cleared by a single function call
+*/
+export function createSessionBridgeValue<T>(valueKey: string, bridgeValueConfig: BridgeValueConfig<T>) {
+  const newBridge = createBridgeValue(valueKey, bridgeValueConfig);
+
+  sessionBridges.add(newBridge);
+
+  return newBridge;
+}
+
+export async function resetSessionBridges(): Promise<void> {
+  const resetPromises = [];
+
+  for (const sessionBridge of sessionBridges) {
+    resetPromises.push(sessionBridge.reset());
+  }
+
+  await Promise.all(resetPromises);
+}
+
 export function createBridgeValue<T>(valueKey: string, { getDefault, isPersisted }: BridgeValueConfig<T>) {
   type ValueData = ValueWithUpdateDate<T>;
 
