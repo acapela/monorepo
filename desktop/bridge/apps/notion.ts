@@ -1,5 +1,5 @@
 import { createChannelBridge } from "@aca/desktop/bridge/base/channels";
-import { createBridgeValue } from "@aca/desktop/bridge/base/persistance";
+import { createSessionBridgeValue } from "@aca/desktop/bridge/base/persistance";
 import { Notification, Notification_Notion } from "@aca/gql";
 
 export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
@@ -27,12 +27,15 @@ export interface NotionSpace {
   name: string;
 }
 
-export const notionSelectedSpaceValue = createBridgeValue<{ selected: string[] }>("notion-selected-spaces", {
+export const notionSelectedSpaceValue = createSessionBridgeValue<{ selected: string[] }>("notion-selected-spaces", {
   getDefault: () => ({ selected: [] }),
   isPersisted: true,
 });
 
-export const notionAvailableSpacesValue = createBridgeValue<{ spaces: NotionSpace[] }>("notion-available-spaces", {
-  getDefault: () => ({ spaces: [] }),
-  isPersisted: true,
-});
+export const notionAvailableSpacesValue = createSessionBridgeValue<{ spaces: NotionSpace[] }>(
+  "notion-available-spaces",
+  {
+    getDefault: () => ({ spaces: [] }),
+    isPersisted: true,
+  }
+);

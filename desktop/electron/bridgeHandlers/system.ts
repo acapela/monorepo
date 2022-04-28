@@ -1,6 +1,7 @@
 import { BrowserWindow, app, session, shell } from "electron";
 
-import { authTokenBridgeValue, logoutBridge } from "@aca/desktop/bridge/auth";
+import { logoutBridge } from "@aca/desktop/bridge/auth";
+import { resetSessionBridges } from "@aca/desktop/bridge/base/persistance";
 import {
   clearAllDataRequest,
   focusMainViewRequest,
@@ -31,13 +32,18 @@ async function restartApp() {
   app.exit();
 }
 
+async function clearAllData() {
+  await clearPersistance();
+  await session.defaultSession.clearStorageData();
+  await session.defaultSession.clearCache();
+  await resetSessionBridges();
+}
+
 export function initializeSystemHandlers() {
   restartAppRequest.handle(restartApp);
 
   clearAllDataRequest.handle(async () => {
-    await clearPersistance();
-    await session.defaultSession.clearStorageData();
-    await session.defaultSession.clearCache();
+    await clearAllData();
     await restartApp();
   });
 
@@ -52,21 +58,6 @@ export function initializeSystemHandlers() {
   logoutBridge.handle(async () => {
     log("Logging out");
 
-    async function clearLocalAcapelaData() {
-      const cookies = await session.defaultSession.cookies.get({ url: FRONTEND_URL });
-
-      log.info(JSON.stringify(cookies));
-
-      const cookiesRemovals = cookies.map((cookie) => {
-        return session.defaultSession.cookies.remove(FRONTEND_URL, cookie.name);
-      });
-
-      await Promise.all(cookiesRemovals);
-
-      // Allow electron to persist before we restart the app
-      await authTokenBridgeValue.set(null);
-    }
-
     try {
       const logoutView = new BrowserWindow({ opacity: 0 });
 
@@ -79,7 +70,7 @@ export function initializeSystemHandlers() {
 
       logoutView.close();
 
-      await clearLocalAcapelaData();
+      await clearAllData();
 
       restartApp();
     } catch (error) {
