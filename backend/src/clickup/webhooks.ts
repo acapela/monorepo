@@ -27,6 +27,8 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     return acc;
   }, {} as { [key: string]: ClickUpAccount });
 
+  const randomToken = getRandomToken(Object.values(userByClickUpUserID));
+
   switch (webhook.event) {
     case "taskAssigneeUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "assignee_add");
@@ -50,7 +52,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
         .filter((c: { type: string; user: unknown }) => c.type === "tag" && c.user)
         .map((c: { user: { id: number } }) => userByClickUpUserID[c.user.id]?.user_id)
         .filter(Boolean) as string[];
-      const task = await getTask(getRandomToken(Object.values(userByClickUpUserID)), webhook.task_id);
+      const task = await getTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -69,15 +71,85 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       break;
     }
     case "taskCreated": {
+      const hist = webhook.history_items.find((h) => h.field === "task_creation");
+      if (!hist) return;
+      const task = await getTask(randomToken, webhook.task_id);
+      await Promise.all(
+        team.clickup_account_to_team
+          .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .map((at) => at.clickup_account.user_id)
+          .map((uid) =>
+            createTaskNotification({
+              userId: uid,
+              taskId: webhook.task_id,
+              taskName: task.name,
+              fromName: hist.user.username,
+            })
+          )
+      );
       break;
     }
     case "taskDueDateUpdated": {
+      const hist = webhook.history_items.find((h) => h.field === "due_date");
+      if (!hist) return;
+      const task = await getTask(randomToken, webhook.task_id);
+      await Promise.all(
+        team.clickup_account_to_team
+          .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .map((at) => at.clickup_account.user_id)
+          .map((uid) =>
+            createValueNotification({
+              type: "due",
+              userId: uid,
+              taskId: webhook.task_id,
+              taskName: task.name,
+              fromName: hist.user.username,
+              value: hist.after,
+            })
+          )
+      );
       break;
     }
     case "taskPriorityUpdated": {
+      const hist = webhook.history_items.find((h) => h.field === "priority");
+      if (!hist) return;
+      const task = await getTask(randomToken, webhook.task_id);
+      await Promise.all(
+        team.clickup_account_to_team
+          .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .map((at) => at.clickup_account.user_id)
+          .map((uid) =>
+            createValueNotification({
+              type: "priority",
+              userId: uid,
+              taskId: webhook.task_id,
+              taskName: task.name,
+              fromName: hist.user.username,
+              value: hist.after.priority,
+            })
+          )
+      );
       break;
     }
     case "taskStatusUpdated": {
+      const hist = webhook.history_items.find((h) => h.field === "status");
+      if (!hist) return;
+      const task = await getTask(randomToken, webhook.task_id);
+      await Promise.all(
+        team.clickup_account_to_team
+          .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .map((at) => at.clickup_account.user_id)
+          .map((uid) =>
+            createValueNotification({
+              type: "status",
+              userId: uid,
+              taskId: webhook.task_id,
+              taskName: task.name,
+              fromName: hist.user.username,
+              value: hist.after.status,
+            })
+          )
+      );
       break;
     }
   }
@@ -118,6 +190,47 @@ async function createCommentNotification(data: {
         },
       },
       type: data.isMention ? "mention" : "comment",
+      title: data.taskName,
+      task_id: data.taskId,
+    },
+  });
+}
+
+async function createTaskNotification(data: { userId: string; taskId: string; taskName: string; fromName: string }) {
+  return db.notification_clickup.create({
+    data: {
+      notification: {
+        create: {
+          user_id: data.userId,
+          url: `https://app.clickup.com/t/${data.taskId}`,
+          from: data.fromName,
+        },
+      },
+      type: "task",
+      title: data.taskName,
+      task_id: data.taskId,
+    },
+  });
+}
+
+async function createValueNotification(data: {
+  type: "due" | "priority" | "status";
+  userId: string;
+  taskId: string;
+  taskName: string;
+  fromName: string;
+  value: string;
+}) {
+  return db.notification_clickup.create({
+    data: {
+      notification: {
+        create: {
+          user_id: data.userId,
+          url: `https://app.clickup.com/t/${data.taskId}`,
+          from: data.fromName,
+        },
+      },
+      type: `${data.type}:${data.value}`,
       title: data.taskName,
       task_id: data.taskId,
     },
