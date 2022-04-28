@@ -179,3 +179,72 @@ router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => 
 
   await processEvent(req.body, team);
 });
+
+const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/clickup/done`;
+router.get("/v1/clickup/done", async (req: Request, res: Response) => {
+  res.status(HttpStatus.OK).send("ok");
+});
+
+router.get("/v1/clickup/unlink", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+  const clickupAccount = await db.clickup_account.findFirst({
+    where: { user_id: userId },
+    include: { clickup_account_to_team: { include: { clickup_team: true } } },
+  });
+  if (!clickupAccount) throw new NotFoundError("clickup account not found");
+
+  const headers = { Authorization: clickupAccount.access_token };
+
+  const teams = clickupAccount.clickup_account_to_team;
+  const teamMemberCount = await db.clickup_account_to_team.groupBy({
+    by: ["team_id"],
+    where: { team_id: { in: teams.map((t) => t.team_id) } },
+    _count: true,
+  });
+
+  // cleanup webhooks
+  for (const tmc of teamMemberCount) {
+    if (tmc._count > 1) continue;
+    const team = teams.find((t) => t.team_id === tmc.team_id);
+    if (!team) continue;
+    await Promise.all([
+      db.clickup_team.delete({ where: { id: team.team_id } }),
+      axios.delete(`${API_ENDPOINT}/webhook/${team.clickup_team.webhook_id}`, { headers }),
+    ]);
+  }
+
+  await db.clickup_account.deleteMany({ where: { user_id: userId } });
+
+  res.redirect(doneEndpoint);
+});
+
+router.get("/v1/clickup/unlink/:team", async (req: Request, res: Response) => {
+  const userId = getUserIdFromRequest(req);
+  const teamId = req.params.team;
+  const clickupAccount = await db.clickup_account.findFirst({
+    where: { user_id: userId },
+    include: { clickup_account_to_team: { include: { clickup_team: true } } },
+  });
+  if (!clickupAccount) throw new NotFoundError("clickup account not found");
+
+  const team = clickupAccount.clickup_account_to_team.find((t) => t.team_id === teamId);
+  if (!team) throw new NotFoundError("clickup team not found");
+
+  const teamMemberCount = await db.clickup_account_to_team.groupBy({
+    by: ["team_id"],
+    where: { team_id: teamId },
+    _count: true,
+  });
+
+  const headers = { Authorization: clickupAccount.access_token };
+  if (teamMemberCount.every((tmc) => tmc._count === 1)) {
+    await Promise.all([
+      db.clickup_team.delete({ where: { id: team.team_id } }),
+      axios.delete(`${API_ENDPOINT}/webhook/${team.clickup_team.webhook_id}`, { headers }),
+    ]);
+  } else {
+    await db.clickup_account_to_team.delete({ where: { account_id_team_id: team } });
+  }
+
+  res.redirect(doneEndpoint);
+});

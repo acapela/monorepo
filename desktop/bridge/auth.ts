@@ -75,4 +75,4 @@ export const clickupAuthTokenBridgeValue = createSessionBridgeValue<boolean>("cl
 });
 
 export const loginClickUpBridge = createInvokeBridge("login-clickup");
-export const logoutClickUpBridge = createInvokeBridge("logout-clickup");
+export const logoutClickUpBridge = createInvokeBridge<{ teamId?: string }>("logout-clickup");

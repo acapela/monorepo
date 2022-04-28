@@ -2,7 +2,7 @@ import React from "react";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { clickupAuthTokenBridgeValue, loginClickUpBridge, logoutClickUpBridge } from "@aca/desktop/bridge/auth";
-// import { getDb } from "@aca/desktop/clientdb";
+import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationIcon } from "./IntegrationIcon";
@@ -32,11 +32,10 @@ export const clickupIntegrationClient: IntegrationClient = {
     accountStore.user?.clickupTeams.forEach((w) => w.remove("sync"));
     await loginClickUpBridge();
   },
-  async disconnect() {
-    // const db = await getDb();
-    // await logoutClickUpBridge({ webhookId: db.clickupWebhook.all.length > 1 ? id : undefined });
-    // db.clickupWebhook.removeById(id, "sync");
-    await logoutClickUpBridge();
+  async disconnect(id) {
+    const db = await getDb();
+    await logoutClickUpBridge({ teamId: db.clickupTeam.all.length > 1 ? id : undefined });
+    db.clickupTeam.removeById(id, "sync");
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.clickup} />,
 };
