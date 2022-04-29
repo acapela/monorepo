@@ -95,6 +95,14 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
   if (email.toLowerCase() == account.email?.toLowerCase()) {
     return;
   }
+  let createdAt;
+  if (date) {
+    try {
+      createdAt = new Date(date).toISOString();
+    } catch (error) {
+      logger.error(error, `failed to parse date ${date}`);
+    }
+  }
   await db.notification_gmail.upsert({
     where: { gmail_message_id: message.id },
     create: {
@@ -105,7 +113,7 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
           url: "https://mail.google.com/mail/u/0/#inbox/" + message.id,
           from: fromName,
           text_preview: subject,
-          created_at: date ? new Date(date).toISOString() : undefined,
+          created_at: createdAt,
         },
       },
       gmail_account: { connect: { id: gmailAccountId } },
