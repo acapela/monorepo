@@ -13,6 +13,7 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
+import { ComposeButton } from "@aca/desktop/ui/systemTopBar/ComposeButton";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { TopBarDivider } from "@aca/desktop/ui/systemTopBar/ui";
 import { niceFormatDateTime, relativeShortFormatDate } from "@aca/shared/dates/format";
@@ -32,6 +33,8 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
           <TopBarDivider />
           <TopBarActionButton action={goToPreviousNotification} />
           <TopBarActionButton action={goToNextNotification} />
+          <TopBarDivider />
+          <ComposeButton />
         </>
       }
       targetActionItems={

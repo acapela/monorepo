@@ -1,4 +1,5 @@
-import { PreviewLoadingPriority, PreviewPosition } from "@aca/desktop/domains/preview";
+import { createBridgeValue } from "@aca/desktop/bridge/base/persistance";
+import { PreviewLoadingPriority, PreviewPosition } from "@aca/desktop/domains/embed";
 
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
@@ -6,7 +7,7 @@ import { createInvokeWithCleanupBridge } from "./base/invokeWithCleanup";
 
 type PreviewGenericData = { url: string };
 
-export const requestPreviewPreload = createInvokeWithCleanupBridge<
+export const requestEmbedPreload = createInvokeWithCleanupBridge<
   PreviewGenericData & { priority: PreviewLoadingPriority }
 >("preload-preview");
 
@@ -48,3 +49,9 @@ type PreviewEventData =
 type PreviewEvent = PreviewEventBase & PreviewEventData;
 
 export const previewEventsBridge = createChannelBridge<PreviewEvent>("preview-event");
+
+export const preloadingPreviewsBridgeChannel = createBridgeValue("preloadingPreviews", {
+  getDefault() {
+    return {} as Record<string, "loading" | "ready" | "error">;
+  },
+});

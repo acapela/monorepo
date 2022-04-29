@@ -8,6 +8,7 @@ import { AccountFragment } from "@aca/gql";
 const accountFragment = gql`
   fragment Account on account {
     id
+    email
     updated_at
     created_at
     provider_id

@@ -24,7 +24,7 @@ export interface IconButtonProps {
  * By default icon occupy 0.75 of circle size. It might 'look' good for various icons or use cases to modify this ratio.
  * eg. 0.5 means if circle has 32px size, icon will have 16px size.
  */
-const DEFAULT_ICON_SIZE_RATIO = 1.45;
+export const DEFAULT_ICON_SIZE_RATIO = 1.45;
 
 export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(function CircleIconButton(
   {

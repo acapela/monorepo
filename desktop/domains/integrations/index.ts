@@ -33,6 +33,15 @@ export const getEnabledIntegrationClientList = cachedComputed(() =>
   )
 );
 
+export const getIntegrationAccountComposers = cachedComputed(
+  (clients: IntegrationClient[] = getEnabledIntegrationClientList()) =>
+    clients.flatMap((client) => {
+      const accounts = new Map(client.getAccounts().map((account) => [account.id, account]));
+      const composeURLs = client.getComposeURLs?.() ?? [];
+      return composeURLs.map(({ accountId, url }) => ({ client, account: accounts.get(accountId)!, url }));
+    })
+);
+
 export function getIsIntegrationClient(item: unknown): item is IntegrationClient {
   unsafeAssertType<IntegrationClient>(item);
 

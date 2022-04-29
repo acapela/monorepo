@@ -1,7 +1,7 @@
 import { BrowserView, BrowserWindow } from "electron";
 import { memoize } from "lodash";
 
-import { PreviewPosition } from "@aca/desktop/domains/preview";
+import { PreviewPosition } from "@aca/desktop/domains/embed";
 import { Point } from "@aca/shared/point";
 
 import { appAndEnvReadyPromise } from "../../windows/env";

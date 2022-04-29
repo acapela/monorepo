@@ -10,6 +10,7 @@ select_permissions:
     permission:
       columns:
         - created_at
+        - email
         - id
         - provider_id
         - updated_at

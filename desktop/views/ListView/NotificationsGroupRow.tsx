@@ -14,11 +14,11 @@ import {
   unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
+import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
+import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
-import { PreloadNotificationPreview } from "@aca/desktop/domains/notification/PreloadNotificationPreview";
-import { PreviewLoadingPriority } from "@aca/desktop/domains/preview";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
@@ -115,7 +115,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
         {isFocusedForAWhile &&
           group.notifications.slice(0, 3).map((notificationToPreload, index) => {
             return (
-              <PreloadNotificationPreview
+              <PreloadEmbed
                 priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
                 key={notificationToPreload.id}
                 url={notificationToPreload.url}

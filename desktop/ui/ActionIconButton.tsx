@@ -10,27 +10,28 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 
 import { SharedActionButtonProps } from "./actionShared";
 
-interface Props extends SharedActionButtonProps {
+type Props = SharedActionButtonProps & {
   action: ActionData;
-  target?: unknown;
   hideShortcutTooltip?: boolean;
   showTitleInTooltip?: boolean;
   kind?: ButtonKind;
   size?: ButtonSize;
   className?: string;
-}
+} & ({ target?: unknown } | { targets?: unknown[] });
 
 export const ActionIconButton = styledObserver(function ActionIconButton({
   action,
-  target,
   hideShortcutTooltip = false,
   showTitleInTooltip = false,
   kind,
   size,
   className,
   notApplicableMode = "disable",
+  ...props
 }: Props) {
-  const context = createActionContext(target);
+  const context = createActionContext(
+    "target" in props ? props.target : "targets" in props ? props.targets : undefined
+  );
   const { icon, canApply, shortcut, name } = resolveActionData(action, context);
 
   const isApplicable = canApply(context);
