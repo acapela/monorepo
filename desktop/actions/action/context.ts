@@ -59,7 +59,6 @@ export const createActionContext = deepMemoize(function createActionContext(
     initialSearchValue = "",
     hideTarget = false,
   } = options ?? {};
-  // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
     const targets = Array.isArray(forcedTargets) ? forcedTargets.slice() : [forcedTargets];
     targets.push(...[uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish));
