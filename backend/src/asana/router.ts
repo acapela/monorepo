@@ -8,6 +8,7 @@ import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTyp
 import { HttpStatus } from "@aca/backend/src/http";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState } from "../utils";
@@ -120,7 +121,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   };
   // end request already, so users won't see a white loading screen for a long time
   res.status(HttpStatus.OK).end();
-
+  trackBackendUserEvent(userId, "Asana Integration Added");
   // TODO: might run here into asana API ratelimits
   await Promise.all(projects.map((p) => createWebhookForProject(p)));
 });

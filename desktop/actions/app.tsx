@@ -12,6 +12,7 @@ import { addToast } from "@aca/desktop/domains/toasts/store";
 import { getIsRouteActive } from "@aca/desktop/routes";
 import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw, IconSend2 } from "@aca/ui/icons";
 
+import { trackEvent } from "../analytics";
 import { forceWorkerSyncRun } from "../bridge/apps";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
@@ -44,6 +45,7 @@ export const installUpdate = defineAction({
   icon: <IconBox />,
   canApply: (context) => context.isContextual || applicationStateBridge.get().isUpdateReadyToInstall,
   handler() {
+    trackEvent("App Updated");
     appUpdateAndRestartRequest();
   },
 });

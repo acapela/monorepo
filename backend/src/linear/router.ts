@@ -9,6 +9,7 @@ import qs from "qs";
 import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
 import { getSignedState, getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
@@ -90,6 +91,7 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
       ...update,
     },
   });
+  trackBackendUserEvent(userId, "Linear Integration Added");
   res.status(HttpStatus.OK).end();
 });
 

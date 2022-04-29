@@ -1,6 +1,7 @@
 import React from "react";
 
 import { defineAction } from "@aca/desktop/actions/action";
+import { trackEvent } from "@aca/desktop/analytics";
 import { getIntegrationAccountComposers } from "@aca/desktop/domains/integrations";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconArrowLeft, IconEdit } from "@aca/ui/icons";
@@ -38,6 +39,7 @@ export const goToComposeView = defineAction({
       const url = composeURLs?.find(({ accountId }) => accountId == account?.id)?.url;
       if (url) {
         desktopRouter.navigate("compose", { url });
+        trackEvent("New Message Composed", { integration: integration.name });
         return;
       }
     }
@@ -51,6 +53,7 @@ export const goToComposeView = defineAction({
             icon: client.icon,
             handler() {
               desktopRouter.navigate("compose", { url });
+              trackEvent("New Message Composed", { integration: client.name });
             },
           })
         ),

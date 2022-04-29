@@ -6,6 +6,7 @@ import { BadRequestError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState } from "../utils";
@@ -124,6 +125,9 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
   });
 
   res.redirect(doneEndpoint);
+  if (userId) {
+    trackBackendUserEvent(userId, "GitHub Integration Added");
+  }
 });
 
 router.get("/v1/github/done", async (req: Request, res: Response) => {
