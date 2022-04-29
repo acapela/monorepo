@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { forceNotificationsSync } from "@aca/desktop/actions/app";
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
@@ -21,7 +20,6 @@ export const ListViewTopBar = observer(({ list }: Props) => {
     <SystemTopBar
       navigationItems={
         <>
-          <TopBarActionButton action={forceNotificationsSync} />
           <ComposeButton />
         </>
       }
