@@ -134,6 +134,8 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     case "taskStatusUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "status");
       if (!hist) return;
+      // task was just created
+      if (!hist.before?.status) return;
       const task = await getTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
