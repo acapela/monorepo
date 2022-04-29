@@ -136,6 +136,12 @@ Similar to the slack integration, setting up Linear is optional in development.
 2. Find the client secret and the client id in the OAuth settings and configure `ASANA_CLIENT_SECRET` and `ASANA_CLIENT_ID`.
 3. Set the redirect URL to `http://localhost:3000/api/backend/v1/asana/callback`
 
+### ClickUp
+
+1. Setup a new ClickUp API App [here](https://app.clickup.com/36710838/settings/team/36710838/integrations?integration=api).
+2. Set the app name and set the redirect URL to `localhost:3000`.
+3. Configure `CLICKUP_CLIENT_ID` and `CLICKUP_CLIENT_SECRET` with the provided client id and client secret.
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
