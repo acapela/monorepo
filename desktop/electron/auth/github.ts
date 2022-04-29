@@ -8,6 +8,8 @@ import { authWindowDefaultOptions } from "./utils";
 
 const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
+const RETRY_TIMES = 30;
+const RETRY_DELAY_MS = 500;
 
 function checkIfDone(url: URL): boolean {
   return url.origin === FRONTEND_URL && url.pathname.endsWith("done");
@@ -73,8 +75,8 @@ export async function logoutGitHub(installationId?: number) {
     { userAgent }
   );
 
-  for (let i = 0; i < 30; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+  for (let i = 0; i < RETRY_TIMES; i++) {
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
     if (window.isDestroyed()) return;
     const url = new URL(window.webContents.getURL());
     if (!checkIfDone(url)) continue;

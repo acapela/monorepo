@@ -7,6 +7,8 @@ import { authWindowDefaultOptions } from "./utils";
 
 const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
+const RETRY_TIMES = 30;
+const RETRY_DELAY_MS = 500;
 
 export async function loginLinear() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
@@ -45,12 +47,12 @@ export async function logoutLinear() {
 
   await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/linear/unlink", { userAgent });
 
-  for (let i = 0; i < 30; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+  for (let i = 0; i < RETRY_TIMES; i++) {
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
     if (window.isDestroyed()) return;
     if (!window.webContents.getURL().startsWith("https://linear.app")) continue;
     await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore");', true);
-    linearAuthTokenBridgeValue.set(false);
+    await linearAuthTokenBridgeValue.set(false);
     break;
   }
 
