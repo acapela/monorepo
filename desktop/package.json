@@ -36,7 +36,7 @@
     "@types/segment-analytics": "^0.0.34",
     "dotenv": "^15.0.0",
     "electron": "18.2.0",
-    "electron-builder": "^23.0.3",
+    "electron-builder": "23.0.4",
     "electron-context-menu": "^3.1.2",
     "electron-download": "^4.1.1",
     "electron-is-dev": "^2.0.0",
