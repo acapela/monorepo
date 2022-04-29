@@ -22,10 +22,16 @@ const isSlackComposeURL = (url: URL) => {
 
 const SlackComposeOpenFilter: SiteFilter = {
   on: isSlackComposeURL,
-  onLoad: (browserView) => {
-    browserView.webContents.once("did-finish-load", () => {
-      browserView.webContents.executeJavaScript("document.querySelector('[data-qa=\"composer_button\"]')?.click()");
-    });
+  onLoad: async (browserView) => {
+    for (let i = 0; i < 20; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const selectorCode = "document.querySelector('[data-qa=\"composer_button\"]')";
+      const hasComposeButton = await browserView.webContents.executeJavaScript(selectorCode + "? true : false");
+      if (hasComposeButton) {
+        await browserView.webContents.executeJavaScript(selectorCode + ".click()");
+        break;
+      }
+    }
   },
 };
 
