@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import styled from "styled-components";
 
 import { useId } from "@aca/shared/id";
@@ -43,7 +43,12 @@ interface Props {
 export const Toggle = ({ isSet = false, size = "small", isDisabled, onChange }: Props) => {
   const id = useId();
 
-  function onSwitch() {
+  function onSwitch(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    // As we use `htmlFor` label prop - click event will be called twice
+    if (target.matches("label")) return;
+
     onChange?.(!isSet);
   }
 
