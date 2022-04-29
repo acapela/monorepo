@@ -32,7 +32,7 @@ export const ComposeButton = observer(() => {
               size="compactWide"
               kind="transparent"
               action={goToComposeView}
-              targets={[account, client]}
+              target={{ integration: client, account }}
             />
             {isHovered && <PreloadEmbed url={url} priority={PreviewLoadingPriority.next} />}
           </React.Fragment>
