@@ -121,6 +121,18 @@ const siteFilters: SiteFilter[] = [
     on: (url) => url.hostname.endsWith("github.com"),
     onLoad: (browserView) => () => markFullPageLoadTime(browserView), // github is 95% ssr
   },
+  {
+    on: (url) => url.hostname.endsWith("mail.google.com"),
+    css: css`
+      header,
+      [role="navigation"],
+      [role="navigation"] + *,
+      [role="complementary"],
+      .G-Ni.G-aE.J-J5-Ji:first-child {
+        display: none !important;
+      }
+    `,
+  },
 ];
 
 function stylesToString(styles: StylesPart) {
