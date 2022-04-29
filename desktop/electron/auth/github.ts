@@ -4,12 +4,10 @@ import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/brid
 import { addToast } from "@aca/desktop/domains/toasts/store";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
-import { authWindowDefaultOptions } from "./utils";
+import { RETRY_DELAY_MS, RETRY_TIMES, authWindowDefaultOptions } from "./utils";
 
 const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
-const RETRY_TIMES = 30;
-const RETRY_DELAY_MS = 500;
 
 function checkIfDone(url: URL): boolean {
   return url.origin === FRONTEND_URL && url.pathname.endsWith("done");
