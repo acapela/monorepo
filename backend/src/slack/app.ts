@@ -5,6 +5,7 @@ import { noop } from "lodash";
 
 import { db } from "@aca/db";
 import { assert, assertDefined } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
@@ -87,6 +88,7 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
         },
       }),
     ]);
+    trackBackendUserEvent(userId, "Slack Integration Added");
   }
 }
 

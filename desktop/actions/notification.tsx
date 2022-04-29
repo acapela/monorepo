@@ -55,7 +55,7 @@ export const resolveNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => {
     if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Resolve all" : "Resolve all notifications in group";
+      return ctx.isContextual ? "Resolve group" : "Resolve all notifications in group";
     }
 
     return ctx.isContextual ? "Resolve" : "Resolve Notification";

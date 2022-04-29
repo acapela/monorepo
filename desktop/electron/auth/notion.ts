@@ -1,5 +1,6 @@
 import { BrowserWindow, session } from "electron";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
@@ -56,6 +57,7 @@ export function initializeNotionAuthHandler() {
     await loginNotion();
     await updateAvailableSpaces();
     tryInitializeServiceSync("notion");
+    trackEvent("Notion Integration Added");
   });
 
   getNotionAuthToken().then((token) => {
