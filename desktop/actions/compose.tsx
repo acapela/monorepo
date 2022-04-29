@@ -1,7 +1,7 @@
 import React from "react";
 
 import { defineAction } from "@aca/desktop/actions/action";
-import { getEnabledIntegrationClientList, getIntegrationAccountComposers } from "@aca/desktop/domains/integrations";
+import { getIntegrationAccountComposers } from "@aca/desktop/domains/integrations";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconArrowLeft, IconEdit } from "@aca/ui/icons";
 
@@ -18,39 +18,42 @@ export const exitComposeMode = defineAction({
 
 export const goToComposeView = defineAction({
   name: (ctx) => {
-    const integration = ctx.getTarget("integration", true);
-    if (!integration) {
+    const integrationWithAccount = ctx.getTarget("integrationWithAccount");
+    if (!integrationWithAccount) {
       return "Go to Compose";
     }
-    const account = ctx.getTarget("account");
-    return `Go to Compose in ${integration.name}${account ? " - " + account.name : ""}`;
+    const { integration, account } = integrationWithAccount;
+    return `Go to Compose in ${integration.name} - ${account.name}`;
   },
   icon(ctx) {
-    const integration = ctx.getTarget("integration", true);
-    return integration ? integration.icon : <IconEdit />;
+    const integrationWithAccount = ctx.getTarget("integrationWithAccount");
+    return integrationWithAccount ? integrationWithAccount.integration.icon : <IconEdit />;
   },
   handler(ctx) {
-    const account = ctx.getTarget("account");
-    const integration = ctx.getTarget("integration", true);
-    const composeURLs = integration?.getComposeURLs?.();
-    const url = composeURLs?.find(({ accountId }) => accountId == account?.id)?.url;
-    if (url) {
-      desktopRouter.navigate("compose", { url });
-    } else {
-      const clients = integration ? [integration] : getEnabledIntegrationClientList();
-      return {
-        getActions: () =>
-          getIntegrationAccountComposers(clients).map(({ client, account, url }) =>
-            defineAction({
-              name: client.name,
-              supplementaryLabel: account.name,
-              icon: client.icon,
-              handler() {
-                desktopRouter.navigate("compose", { url });
-              },
-            })
-          ),
-      };
+    const integrationWithAccount = ctx.getTarget("integrationWithAccount");
+
+    if (integrationWithAccount) {
+      const { integration, account } = integrationWithAccount;
+      const composeURLs = integration?.getComposeURLs?.();
+      const url = composeURLs?.find(({ accountId }) => accountId == account?.id)?.url;
+      if (url) {
+        desktopRouter.navigate("compose", { url });
+        return;
+      }
     }
+
+    return {
+      getActions: () =>
+        getIntegrationAccountComposers().map(({ client, account, url }) =>
+          defineAction({
+            name: client.name,
+            supplementaryLabel: account.name,
+            icon: client.icon,
+            handler() {
+              desktopRouter.navigate("compose", { url });
+            },
+          })
+        ),
+    };
   },
 });
