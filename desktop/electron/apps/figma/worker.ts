@@ -8,7 +8,7 @@ import { addToast } from "@aca/desktop/domains/toasts/store";
 import { FigmaSessionData, clearFigmaSessionData, figmaDomain, figmaURL } from "@aca/desktop/electron/auth/figma";
 import { timeDuration } from "@aca/shared/time";
 
-import { ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
+import { KnownSyncError, ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
 import {
   FigmaCommentMessageMeta,
   FigmaCommentNotification,
@@ -74,10 +74,14 @@ async function getInitialFigmaSync({ cookie, figmaUserId }: FigmaSessionData) {
   } catch (error: any) {
     const response = error.response as AxiosResponse | undefined;
     if (response) {
+      const msg = `user_notification -> ${response.status} ${response.statusText}`;
       if (response.status >= 400 && response.status < 500) {
-        handleFigmaNotAuthorized();
+        if (response.status === 401) {
+          handleFigmaNotAuthorized();
+          throw new KnownSyncError(msg);
+        }
       }
-      throw log.error(new Error(`user_notification -> ${response.status} ${response.statusText}`));
+      throw new Error(msg);
     }
 
     throw error;
