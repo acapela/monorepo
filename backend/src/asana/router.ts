@@ -10,8 +10,8 @@ import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-import { getSignedState } from "../utils";
-import { createClient, getWebhookEndpoint } from "./utils";
+import { getSignedState, getWebhookEndpoint } from "../utils";
+import { createClient } from "./utils";
 import { processEvent } from "./webhooks";
 
 export const router = Router();
@@ -86,7 +86,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   }
 
   // create webhooks for all projects
-  const whEndpoint = await getWebhookEndpoint();
+  const whEndpoint = await getWebhookEndpoint("asana");
   const createWebhookForProject = async (project: Asana.resources.Projects.Type) => {
     // check if the webhook is already configured
     const existingWebhook = existingWebhooks.find(
@@ -141,7 +141,7 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   const client = createClient();
   client.useOauth({ credentials: asanaAccount });
 
-  const whEndpoint = await getWebhookEndpoint();
+  const whEndpoint = await getWebhookEndpoint("asana");
   const workspaces = await client.workspaces.findAll({ limit: 100 });
   for (const workspace of workspaces.data) {
     const webhooks = (await client.webhooks.getAll(workspace.gid, { limit: 100 }))

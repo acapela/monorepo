@@ -7,13 +7,10 @@ import qs from "qs";
 
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
-import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
-import { getUserIdFromRequest } from "@aca/backend/src/utils";
 import { ClickUpAccount, ClickUpTeam, db } from "@aca/db";
-import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 
-import { getSignedState } from "../utils";
+import { getSignedState, getUserIdFromRequest, getWebhookEndpoint } from "../utils";
 import { API_ENDPOINT } from "./utils";
 import { processEvent } from "./webhooks";
 
@@ -70,17 +67,13 @@ async function createOrUpdateTeams(
   ]);
 }
 
-export async function getWebhookEndpoint(): Promise<string> {
-  return `${IS_DEV ? await getDevPublicTunnelURL(3000) : process.env.FRONTEND_URL}/api/backend/v1/clickup/webhook`;
-}
-
 // oauth callback endpoint
 router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const { code, state } = req.query;
   if (!code) throw new BadRequestError("code is missing");
   if (!state) throw new BadRequestError("state is missing");
-  if (getSignedState(userId, process.env.ASANA_OAUTH_SECRET) !== state) throw new BadRequestError("invalid state");
+  if (getSignedState(userId, process.env.CLICKUP_OAUTH_SECRET) !== state) throw new BadRequestError("invalid state");
 
   const params = qs.stringify({
     code,
@@ -122,7 +115,7 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
     }),
   ]);
 
-  const whEndpoint = await getWebhookEndpoint();
+  const whEndpoint = await getWebhookEndpoint("clickup");
 
   // fetch webhooks for created teams
   const webhooks = await Promise.all(

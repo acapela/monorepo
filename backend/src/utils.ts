@@ -79,3 +79,9 @@ export function getSignedState(uid: string, oauthStateSecret: string): string {
   hmac.update(uid);
   return `${uid}:${hmac.digest("hex")}`;
 }
+
+export async function getWebhookEndpoint(integration: "clickup" | "asana"): Promise<string> {
+  return `${
+    IS_DEV ? await getDevPublicTunnelURL(3000) : process.env.FRONTEND_URL
+  }/api/backend/v1/${integration}/webhook`;
+}
