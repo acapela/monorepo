@@ -179,7 +179,7 @@ export function createEntityQuery<Data, Connections>(
           return store.findAllByIndexValue(key, filter[key]);
         }
 
-        if (Object.keys(filter).length > 1) {
+        if (keys.length > 1) {
           const simpleQueryPassingItems = store.simpleQuery(filter);
 
           items = simpleQueryPassingItems.filter((item) => items.includes(item));
