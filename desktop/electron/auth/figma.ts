@@ -1,6 +1,5 @@
 import { BrowserWindow, WebContents, session } from "electron";
 
-import { trackEvent } from "@aca/desktop/analytics";
 import { clearServiceCookiesBridge, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
@@ -93,7 +92,6 @@ export function initializeFigmaAuthHandler() {
   loginFigmaBridge.handle(async () => {
     await loginFigma();
     tryInitializeServiceSync("figma");
-    trackEvent("Figma Integration Added");
   });
 
   // TODO: Delete after most people have gotten this update ~June 2022
