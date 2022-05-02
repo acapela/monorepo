@@ -176,7 +176,7 @@ export function createEntityQuery<Data, Connections>(
         if (keys.length === 1) {
           const key = keys[0];
 
-          store.findAllByIndexValue(key, filter[key]);
+          return store.findAllByIndexValue(key, filter[key]);
         }
 
         if (Object.keys(filter).length > 1) {
