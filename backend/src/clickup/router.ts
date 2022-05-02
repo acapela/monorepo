@@ -11,6 +11,7 @@ import { ClickUpAccount, ClickUpTeam, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState, getUserIdFromRequest, getWebhookEndpoint } from "../utils";
+import { EventTypes, Webhook } from "./types";
 import { API_ENDPOINT } from "./utils";
 import { processEvent } from "./webhooks";
 
@@ -87,7 +88,7 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
     accessToken = oauthRes.data.access_token;
   } catch (e) {
     logger.error("oauth error: " + e);
-    throw new BadRequestError("oauth error");
+    throw new BadRequestError("clickup oauth error");
   }
 
   const headers = { Authorization: accessToken };
@@ -153,18 +154,25 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
 });
 
 router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {
+  const webhook = req.body as Webhook;
+  // ignore events that are not handled
+  if (!EventTypes.includes(webhook.event)) return;
+
   const team = await db.clickup_team.findFirst({
     where: { id: req.params.team },
     include: { clickup_account_to_team: { include: { clickup_account: true } } },
   });
   if (!team) throw new NotFoundError("team not found");
-  if (team.webhook_id !== req.body.webhook_id) throw new BadRequestError("invalid webhook id");
-  const whSignature = createHmac("sha256", team.webhook_secret!).update(JSON.stringify(req.body)).digest("hex");
+  if (team.webhook_id !== webhook.webhook_id) throw new BadRequestError("invalid webhook id");
+
+  // validate webhook signature
+  const whSignature = createHmac("sha256", team.webhook_secret!).update(JSON.stringify(webhook)).digest("hex");
   if (req.headers["x-signature"] !== whSignature) throw new BadRequestError("invalid webhook signature");
 
+  // accept webhook
   res.status(HttpStatus.OK).end();
 
-  await processEvent(req.body, team);
+  await processEvent(webhook, team);
 });
 
 const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/clickup/done`;
@@ -224,7 +232,9 @@ router.get("/v1/clickup/unlink/:team", async (req: Request, res: Response) => {
   });
 
   const headers = { Authorization: clickupAccount.access_token };
-  if (teamMemberCount.every((tmc) => tmc._count === 1)) {
+  const teamOnlyHasOneMember = teamMemberCount.every((tmc) => tmc._count === 1);
+  if (teamOnlyHasOneMember) {
+    // team only has on member, we can delete the team + webhook
     await Promise.all([
       db.clickup_team.delete({ where: { id: team.team_id } }),
       axios.delete(`${API_ENDPOINT}/webhook/${team.clickup_team.webhook_id}`, { headers }),
