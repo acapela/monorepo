@@ -10,8 +10,8 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   isHiddenFromSettings: true,
   kind: "integration",
   notificationTypename: "notification_drive",
-  name: "Google Drive",
-  description: "Google Drive Notifications",
+  name: "Google Suite",
+  description: "Google Suite Notifications",
   getIsDisabled: () => !getDb().gmailAccount.hasItems,
   getIsConnected: () => false,
   getCanConnect: () => false,
@@ -20,5 +20,5 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   connect() {
     return Promise.resolve();
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.drive} />,
+  icon: <IntegrationIcon imageUrl={integrationLogos.googleSuite} />,
 };
