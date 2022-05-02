@@ -126,9 +126,8 @@ const siteFilters: SiteFilter[] = [
     css: css`
       header,
       [role="navigation"],
-      [role="navigation"] + *,
       [role="complementary"],
-      .G-Ni.G-aE.J-J5-Ji:first-child {
+      [act="19"] {
         display: none !important;
       }
     `,
