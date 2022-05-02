@@ -53,9 +53,6 @@ export function extractNotifications(payload: z.infer<typeof GetNotificationLogR
         continue;
       }
 
-      //
-
-      //
       const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
       const created_at = new Date(createdAtTimestampAsNumber).toISOString();

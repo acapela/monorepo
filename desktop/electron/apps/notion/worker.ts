@@ -95,7 +95,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
       {
         // Notion uses the space id for tracking within their help-desk
         spaceId,
-        size: 50,
+        size: 20,
         type: "mentions",
       },
       { headers: { cookie: sessionData.cookie } }
