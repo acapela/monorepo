@@ -3,10 +3,7 @@ import { BrowserWindow } from "electron";
 import { linearAuthTokenBridgeValue, loginLinearBridge } from "@aca/desktop/bridge/auth";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
-import { RETRY_DELAY_MS, RETRY_TIMES, authWindowDefaultOptions } from "./utils";
-
-const userAgent =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36";
+import { RETRY_DELAY_MS, RETRY_TIMES, authWindowDefaultOptions, userAgent } from "./utils";
 
 export async function loginLinear() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
