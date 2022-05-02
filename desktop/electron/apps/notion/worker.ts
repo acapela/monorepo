@@ -208,7 +208,7 @@ export async function updateAvailableSpaces() {
   }
 }
 
-function extractNotifications(
+export function extractNotifications(
   payload: NonNullable<Awaited<ReturnType<typeof fetchNotionNotificationLog>>>
 ): NotionWorkerSync {
   const { notificationIds, recordMap } = payload;
