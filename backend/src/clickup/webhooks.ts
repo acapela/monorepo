@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { ClickUpAccount, ClickUpAccountToTeam, ClickUpTeam, db } from "@aca/db";
 
-import { EventTypes, Webhook } from "./types";
+import { Webhook } from "./types";
 import { API_ENDPOINT } from "./utils";
 
 type DbTeam = ClickUpTeam & {
@@ -14,14 +14,12 @@ function getRandomToken(accounts: ClickUpAccount[]): string {
   return account.access_token;
 }
 
-async function getTask(token: string, taskId: string) {
+async function fetchTask(token: string, taskId: string) {
   const headers = { Authorization: token };
   return (await axios.get(`${API_ENDPOINT}/task/${taskId}`, { headers })).data;
 }
 
 export async function processEvent(webhook: Webhook, team: DbTeam) {
-  if (!EventTypes.includes(webhook.event)) return;
-
   const userByClickUpUserID = team.clickup_account_to_team.reduce((acc, cur) => {
     acc[cur.clickup_account.clickup_user_id] = cur.clickup_account;
     return acc;
@@ -36,7 +34,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       if (hist.after.id === hist.user.id) return;
       const assigneeUser = userByClickUpUserID[hist.after.id];
       if (!assigneeUser) return;
-      const task = await getTask(assigneeUser.access_token, webhook.task_id);
+      const task = await fetchTask(assigneeUser.access_token, webhook.task_id);
       await createAssignNotification({
         userId: assigneeUser.user_id,
         taskId: webhook.task_id,
@@ -52,7 +50,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
         .filter((c: { type: string; user: unknown }) => c.type === "tag" && c.user)
         .map((c: { user: { id: number } }) => userByClickUpUserID[c.user.id]?.user_id)
         .filter(Boolean) as string[];
-      const task = await getTask(randomToken, webhook.task_id);
+      const task = await fetchTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -73,7 +71,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     case "taskCreated": {
       const hist = webhook.history_items.find((h) => h.field === "task_creation");
       if (!hist) return;
-      const task = await getTask(randomToken, webhook.task_id);
+      const task = await fetchTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -92,7 +90,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     case "taskDueDateUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "due_date");
       if (!hist) return;
-      const task = await getTask(randomToken, webhook.task_id);
+      const task = await fetchTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -113,7 +111,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     case "taskPriorityUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "priority");
       if (!hist) return;
-      const task = await getTask(randomToken, webhook.task_id);
+      const task = await fetchTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -136,7 +134,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       if (!hist) return;
       // task was just created
       if (!hist.before?.status) return;
-      const task = await getTask(randomToken, webhook.task_id);
+      const task = await fetchTask(randomToken, webhook.task_id);
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
@@ -155,6 +153,8 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       break;
     }
   }
+
+  throw new Error("Unhandled webhook type");
 }
 
 async function createAssignNotification(data: { userId: string; taskId: string; taskName: string; fromName: string }) {
