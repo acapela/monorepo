@@ -1,9 +1,10 @@
-import { computed } from "mobx";
+import { autorun, computed } from "mobx";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { authStore } from "@aca/desktop/store/auth";
 import { assert } from "@aca/shared/assert";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 import { asyncComputedWithCleanup } from "@aca/shared/mobx/utils";
 import { wait } from "@aca/shared/time";
 
@@ -54,5 +55,11 @@ export function getDb() {
 }
 
 export function getNullableDb() {
-  return clientDbValue.value;
+  const db = clientDbValue.value;
+
+  return db;
 }
+
+autorun(() => {
+  devAssignWindowVariable("db", getNullableDb());
+});

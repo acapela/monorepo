@@ -201,7 +201,10 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
 
   function findResultsForIndexValue(indexValue: TargetValue) {
     const results = observableIndex.get(indexValue);
-    if (!results) return [];
+
+    if (!results) {
+      return [];
+    }
 
     return results;
   }
@@ -210,29 +213,26 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
    * In case of single value - eg "foo" will find all entities that have this exact value.
    * In case of array values eg. ["foo", "bar"] will find all entities that has either of those (aka. "or")
    */
-  function findResultsForSingleOrMultipleValues(indexValue: TargetValueInput) {
+  function find(indexValue: TargetValueInput) {
     const resolvedIndexValue = resolveThunk(indexValue);
+
     if (!Array.isArray(resolvedIndexValue)) {
       return findResultsForIndexValue(resolvedIndexValue);
     }
 
-    const results: TargetEntity[] = [];
-
-    for (const possibleValue of resolvedIndexValue) {
-      const possibleValueResults = findResultsForIndexValue(possibleValue);
-
-      for (const result of possibleValueResults) {
-        if (results.includes(result)) continue;
-        results.push(result);
-      }
-    }
-
-    return results;
-  }
-
-  function find(indexValue: TargetValueInput) {
     return computedArray(() => {
-      return findResultsForSingleOrMultipleValues(indexValue);
+      const results: TargetEntity[] = [];
+
+      for (const possibleValue of resolvedIndexValue) {
+        const possibleValueResults = findResultsForIndexValue(possibleValue);
+
+        for (const result of possibleValueResults) {
+          if (results.includes(result)) continue;
+          results.push(result);
+        }
+      }
+
+      return results;
     }).get();
   }
 

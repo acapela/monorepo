@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { assert } from "@aca/shared/assert";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 
 import { authStore } from "./auth";
 
@@ -38,3 +39,5 @@ export const accountStore = makeAutoObservable({
     return team;
   },
 });
+
+devAssignWindowVariable("accountStore", accountStore);

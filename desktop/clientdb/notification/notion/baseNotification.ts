@@ -40,7 +40,7 @@ type NotificationNotionConstraints = {
   where: Notification_Notion_Bool_Exp;
 };
 
-const innerEntities = [
+const notionInnerEntities = [
   notificationNotionUserMentionedEntity,
   notificationNotionCommentedEntity,
   notificationNotionUserInvitedEntity,
@@ -83,14 +83,22 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
 })
   .addConnections((notificationNotion, { getEntity }) => {
     const connections = {
-      get inner(): EntityByDefinition<typeof innerEntities[number]> {
-        return (
-          innerEntities
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((entity) => getEntity(entity as any).query({ notification_notion_id: notificationNotion.id }).first)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .find(Boolean) as any
-        );
+      get inner(): EntityByDefinition<typeof notionInnerEntities[number]> {
+        for (const entity of notionInnerEntities) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const client = getEntity(entity as any);
+
+          const foundInner = client.findByUniqueIndex(
+            "notification_notion_id" as never,
+            notificationNotion.id as never
+          );
+
+          if (foundInner) {
+            return foundInner as unknown as EntityByDefinition<typeof notionInnerEntities[number]>;
+          }
+        }
+
+        return undefined as unknown as EntityByDefinition<typeof notionInnerEntities[number]>;
       },
       get type() {
         return connections.inner.__typename;
@@ -111,9 +119,10 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
   .addAccessValidation((entity) => {
     if (!entity.inner) {
       console.warn(`No inner for entity`, entity);
+      return false;
     }
 
-    return !!entity.inner;
+    return true;
   });
 
 export type NotificationNotionEntity = EntityByDefinition<typeof notificationNotionEntity>;

@@ -1,7 +1,8 @@
 import { memoize } from "lodash";
-import { IObservableArray, computed, observable, runInAction } from "mobx";
+import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
 
 import { MessageOrError, assert } from "@aca/shared/assert";
+import { createCleanupObject } from "@aca/shared/cleanup";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
 import { mapGetOrCreate } from "@aca/shared/map";
@@ -31,6 +32,10 @@ export interface EntityStoreFindMethods<Data, Connections> {
     sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
   sort: (sort: EntityQuerySortInput<Data, Connections>) => EntityQuery<Data, Connections>;
+  findAllByIndexValue<K extends keyof IndexQueryInput<Data & Connections>>(
+    key: K,
+    value: IndexQueryInput<Data & Connections>[K]
+  ): Entity<Data, Connections>[];
   findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
     key: K,
     value: IndexQueryInput<Data & Connections>[K]
@@ -80,17 +85,18 @@ export function createEntityStore<Data, Connections>(
    */
   const items = observable.array<StoreEntity>([]);
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
+  // const notAccessableItems = observable.array<StoreEntity>([]);
 
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
   const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
-  // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
-  // Let's make sure we always filter such item out.
-  const existingItems = computedArray(() => {
-    return items.filter(getIsEntityAccessable);
-  });
+  function getEntityId(entity: Entity<Data, Connections>) {
+    const id = `${entity[config.keyField]}`;
+
+    return id;
+  }
 
   function getIsEntityAccessable(entity: Entity<Data, Connections>) {
     const { getIsDeleted, accessValidator } = definition.config;
@@ -102,25 +108,23 @@ export function createEntityStore<Data, Connections>(
     return true;
   }
 
-  function getExistingItemById(id: string) {
-    const item = itemsMap[id];
-
-    if (!item) {
-      return null;
-    }
-
-    if (!getIsEntityAccessable(item)) {
-      return null;
-    }
-
-    return item;
-  }
+  const cleanups = createCleanupObject();
 
   const getSimpleQuery = memoize((input: IndexQueryInput<Data & Connections>) => {
+    const queryKeys = typedKeys(input);
+
+    if (queryKeys.length === 1) {
+      const [requiredKey] = queryKeys;
+      const requiredValue = input[requiredKey]!;
+      const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
+
+      return computed(() => index.find(requiredValue));
+    }
+
     return computedArray(() => {
       let passingResults: Entity<Data, Connections>[] | null = null;
 
-      for (const requiredKey of typedKeys(input)) {
+      for (const requiredKey of queryKeys) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const requiredValue = input[requiredKey]!;
 
@@ -159,7 +163,7 @@ export function createEntityStore<Data, Connections>(
     const reusedFilter = reuseQueryFilter(filter);
     const reusedSort = reuseQuerySort(resolvedSort);
     const query = reuseQueriesMap.get([reusedFilter, reusedSort], () => {
-      const query = createEntityQuery(() => existingItems.get(), { filter: reusedFilter, sort: reusedSort }, store);
+      const query = createEntityQuery(() => items, { filter: reusedFilter, sort: reusedSort }, store);
 
       return query;
     });
@@ -169,24 +173,40 @@ export function createEntityStore<Data, Connections>(
 
   const reuseSimpleQueryInput = createReuseValueGroup();
 
+  function registerEntity(entity: Entity<Data, Connections>, source: EntityChangeSource) {
+    const id = getEntityId(entity);
+    events.emit("itemAdded", entity, source);
+    items.push(entity);
+    itemsMap[id] = entity;
+  }
+
   const store: EntityStore<Data, Connections> = {
     definition,
     events,
     items,
     add(entity, source = "user") {
-      const id = `${entity[config.keyField]}`;
+      const isAccessable = getIsEntityAccessable(entity);
 
-      runInAction(() => {
-        items.push(entity);
-        itemsMap[id] = entity;
-        events.emit("itemAdded", entity, source);
-      });
+      if (isAccessable) {
+        registerEntity(entity, source);
+      } else {
+        const accessCheckCleanup = autorun(() => {
+          if (getIsEntityAccessable(entity)) {
+            runInAction(() => {
+              registerEntity(entity, source);
+              cleanups.cleanOne(accessCheckCleanup);
+            });
+          }
+        });
+
+        cleanups.next = accessCheckCleanup;
+      }
 
       return entity;
     },
     findById(id) {
       return computed(() => {
-        return getExistingItemById(id);
+        return itemsMap[id];
       }).get();
     },
     assertFindById(id, error) {
@@ -200,22 +220,30 @@ export function createEntityStore<Data, Connections>(
       const reusedInput = reuseSimpleQueryInput(input);
       return getSimpleQuery(reusedInput as typeof input).get();
     },
+
+    findAllByIndexValue<K extends keyof IndexQueryInput<Data & Connections>>(
+      key: K,
+      value: IndexQueryInput<Data & Connections>[K]
+    ) {
+      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+
+      const results = index.find(value);
+
+      return results;
+    },
     findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,
       value: IndexQueryInput<Data & Connections>[K]
     ) {
-      const query: IndexQueryInput<Data & Connections> = {};
-      // TS was complaining about ^ {[key]: value} as it considered key as string in such case, not as keyof Data
-      query[key] = value;
+      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
 
-      return computed(() => {
-        const results = store.simpleQuery(query);
-        if (!results.length) return null;
+      const results = index.find(value);
 
-        if (results.length > 1) console.warn(`Store has multiple items for unique index value ${key}:${value}.`);
+      if (!results.length) return null;
 
-        return results[0];
-      }).get();
+      if (results.length > 1) console.warn(`Store has multiple items for unique index value ${key}:${value}.`);
+
+      return results[0];
     },
     assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,
@@ -251,6 +279,7 @@ export function createEntityStore<Data, Connections>(
       return createOrReuseQuery(undefined, sort);
     },
     destroy() {
+      cleanups.clean();
       queryIndexes.forEach((queryIndex) => {
         queryIndex.destroy();
       });

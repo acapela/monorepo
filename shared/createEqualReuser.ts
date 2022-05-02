@@ -1,4 +1,5 @@
 import { isPlainObjectEqual } from "./isPlainObjectEqual";
+import { isPrimitive } from "./primitive";
 
 /**
  * Useful if we want to re-use ref to equal value.
@@ -21,6 +22,10 @@ export function createReuseValueGroup() {
   const values = new Set<unknown>();
 
   function getOrReuse<T>(value: T): T {
+    if (isPrimitive(value)) {
+      return value;
+    }
+
     for (const existingValue of values) {
       if (isPlainObjectEqual(existingValue, value)) {
         return existingValue as T;
