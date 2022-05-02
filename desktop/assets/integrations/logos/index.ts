@@ -21,6 +21,8 @@ import github from "./github.svg";
 // @ts-ignore
 import gmail from "./gmail.svg";
 // @ts-ignore
+import googleSuite from "./google_suite.png";
+// @ts-ignore
 import jira from "./jira.svg";
 // @ts-ignore
 import linear from "./linear.png";
@@ -43,4 +45,5 @@ export const integrationLogos = {
   driveSpreadsheet,
   driveForms,
   driveJamboard,
+  googleSuite,
 };
