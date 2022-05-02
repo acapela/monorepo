@@ -1,11 +1,10 @@
 import { BrowserWindow, session } from "electron";
 
-import { trackEvent } from "@aca/desktop/analytics";
 import { notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { tryInitializeServiceSync } from "@aca/desktop/electron/apps";
+import { updateAvailableSpaces } from "@aca/desktop/electron/apps/notion/worker";
 
-import { updateAvailableSpaces } from "../apps/notion/worker";
 import { authWindowDefaultOptions } from "./utils";
 
 export const notionDomain = "www.notion.so";
@@ -57,7 +56,6 @@ export function initializeNotionAuthHandler() {
     await loginNotion();
     await updateAvailableSpaces();
     tryInitializeServiceSync("notion");
-    trackEvent("Notion Integration Added");
   });
 
   getNotionAuthToken().then((token) => {

@@ -1,6 +1,7 @@
 import { isString, uniq } from "lodash";
 import React from "react";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
@@ -45,6 +46,7 @@ export const notionIntegrationClient: IntegrationClient = {
   },
   async connect() {
     await loginNotionBridge();
+    trackEvent("Notion Integration Added");
   },
   icon: <IntegrationIcon imageUrl={integrationLogos.notion} />,
 
