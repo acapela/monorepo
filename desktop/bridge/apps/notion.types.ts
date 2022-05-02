@@ -1,4 +1,4 @@
-import { Notification_Notion } from "@aca/gql";
+import { Notification, Notification_Notion } from "@aca/gql";
 
 export type NotificationPartial = Omit<Notification, "id" | "resolved_at" | "user_id" | "__typename" | "slack_mention">;
 export type NotificationNotionPartial = Omit<

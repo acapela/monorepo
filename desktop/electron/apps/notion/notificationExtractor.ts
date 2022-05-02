@@ -9,6 +9,7 @@ import {
   CommentedActivityValue,
   GetNotificationLogResult,
   Notification,
+  PageBlockValue,
   RecordMap,
   SomeBlockValue,
   UserInvitedActivityValue,
@@ -52,23 +53,9 @@ export function extractNotifications(payload: z.infer<typeof GetNotificationLogR
         continue;
       }
 
-      const activityValue = recordMap.activity?.[notification.activity_id]?.value;
+      //
 
-      // Weird bug where activity is undefined for a user
-      // https://sentry.io/organizations/acapela/issues/3114653912/
-      if (!activityValue) {
-        log.error(
-          new Error(
-            `No activities found for notification ${JSON.stringify(notification)} with acitivities ${JSON.stringify(
-              recordMap.activity
-            )}`
-          )
-        );
-        continue;
-      }
-
-      const activity = ActivityValueCommon.parse(activityValue);
-
+      //
       const createdAtTimestampAsNumber = Number.parseInt(notification.end_time);
 
       const created_at = new Date(createdAtTimestampAsNumber).toISOString();
@@ -82,9 +69,26 @@ export function extractNotifications(payload: z.infer<typeof GetNotificationLogR
 
       const updated_at = created_at;
 
-      const authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
-      if (authorId === "Notion") {
-        log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+      const pageId = notification.navigable_block_id;
+
+      let authorId;
+      const activityResult = ActivityValueCommon.safeParse(recordMap.activity?.[notification.activity_id]?.value);
+      if (activityResult.success) {
+        const activity = activityResult.data;
+        authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
+        if (authorId === "Notion") {
+          log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
+        }
+      } else if (pageId) {
+        const pageBlockResult = PageBlockValue.safeParse(recordMap.block?.[pageId]?.value);
+        if (pageBlockResult.success) {
+          authorId = pageBlockResult.data.created_by_id;
+        }
+      }
+
+      if (!pageId) {
+        log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
+        continue;
       }
 
       if (!notification.navigable_block_id) {
@@ -98,12 +102,12 @@ export function extractNotifications(payload: z.infer<typeof GetNotificationLogR
           text_preview,
           created_at,
           updated_at,
-          from: recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion",
+          from: authorId ? recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion" : "Notion",
         },
         type,
         notionNotification: {
           notion_original_notification_id: id,
-          page_id: notification.navigable_block_id,
+          page_id: pageId,
           page_title,
           synced_spaced_id: notification.space_id,
           author_id: authorId,
@@ -148,21 +152,9 @@ function getNotificationProperties(
 
   const activityValue = recordMap.activity?.[notification.activity_id].value;
 
-  function logMissingActivity() {
-    log.error(
-      new Error(
-        "Missing activity value for notification " +
-          JSON.stringify({ notification, activities: recordMap.activity }, null, 2)
-      )
-    );
-  }
-
   if (notification.type === "user-mentioned") {
-    if (!activityValue) {
-      logMissingActivity();
-      return;
-    }
-    const activity = UserMentionedActivityValue.parse(activityValue);
+    const activityResult = UserMentionedActivityValue.safeParse(activityValue);
+    const activity = activityResult.success ? activityResult.data : null;
     const url =
       notionURL +
       "/" +
@@ -174,7 +166,7 @@ function getNotificationProperties(
     return {
       type: "notification_notion_user_mentioned",
       url,
-      text_preview: extractBlockMention(activity, recordMap),
+      text_preview: activity ? extractBlockMention(activity, recordMap) : undefined,
     };
   }
 
