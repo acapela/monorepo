@@ -1,16 +1,15 @@
 import axios from "axios";
 import { session } from "electron";
 import { z } from "zod";
+import { fs } from "zx";
 
 import {
-  NotionNotificationType,
-  NotionWorkerSync,
   notionAvailableSpacesValue,
   notionSelectedSpaceValue,
   notionSyncPayload,
 } from "@aca/desktop/bridge/apps/notion";
+import { NotionNotificationType, NotionWorkerSync } from "@aca/desktop/bridge/apps/notion.types";
 import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
 import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
@@ -31,8 +30,7 @@ import {
   UserInvitedActivityValue,
   UserMentionedActivityValue,
 } from "./schema";
-
-const log = makeLogger("Notion-Worker");
+import { workerLog as log } from "./utils";
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
 
@@ -114,7 +112,7 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
       {
         // Notion uses the space id for tracking within their help-desk
         spaceId,
-        size: 20,
+        size: 50,
         type: "mentions",
       },
       { headers: { cookie: sessionData.cookie } }
@@ -130,6 +128,8 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
   if (!response) {
     return;
   }
+
+  fs.writeFileSync(__dirname + "/yolo.json", JSON.stringify(response.data), "utf-8");
 
   return GetNotificationLogResult.parse(response.data);
 }
