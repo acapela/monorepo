@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.20.1"
+    "@playwright/test": "^1.21.1"
   },
   "scripts": {
     "test": "APP=e2e LOGGING_LEVEL=debug xvfb-maybe playwright test --workers 1",
@@ -11,7 +11,7 @@
     "dev": "ts-node --transpile-only ./cli/dev.ts"
   },
   "dependencies": {
-    "playwright": "^1.20.1",
+    "playwright": "^1.21.1",
     "xvfb-maybe": "^0.2.1"
   }
 }
