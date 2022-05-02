@@ -1,7 +1,8 @@
-import { createHmac } from "crypto";
+import { createHmac, randomBytes } from "crypto";
 
 import { Request, Response } from "express";
 import { get } from "lodash";
+import { base32 } from "rfc4648";
 
 import { getDevPublicTunnelURL } from "@aca/backend/src/localtunnel";
 import { IS_DEV } from "@aca/shared/dev";
@@ -84,4 +85,8 @@ export async function getWebhookEndpoint(integration: "clickup" | "asana"): Prom
   return `${
     IS_DEV ? await getDevPublicTunnelURL(3000) : process.env.FRONTEND_URL
   }/api/backend/v1/${integration}/webhook`;
+}
+
+export function createNewReferralCode(): string {
+  return base32.stringify(randomBytes(5), { pad: false });
 }

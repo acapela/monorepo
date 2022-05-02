@@ -16,6 +16,7 @@ import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
 
 import { updateUserOnboardingStatus } from "./tracking/utils";
+import { createNewReferralCode } from "./utils";
 
 // Fail quickly in case of missing env variables
 function assertEnvVariable(value: unknown, varName: string) {
@@ -148,7 +149,11 @@ function nextAuthMiddleware(req: Request, res: Response) {
 
         await db.user.update({
           where: { id: user.id },
-          data: { name: profile?.name ?? undefined, avatar_url: profile?.image ?? undefined },
+          data: {
+            name: profile?.name ?? undefined,
+            avatar_url: profile?.image ?? undefined,
+            referral_code: user.referral_code ? undefined : createNewReferralCode(),
+          },
         });
       },
       signOut({ token }) {
@@ -228,7 +233,14 @@ function nextAuthMiddleware(req: Request, res: Response) {
 
         assert(name && email, "must get name and email from auth adapter");
 
-        const user = await db.user.create({ data: { name, email, avatar_url: image } });
+        const user = await db.user.create({
+          data: {
+            name,
+            email,
+            avatar_url: image,
+            referral_code: createNewReferralCode(),
+          },
+        });
         trackFirstBackendUserEvent(user, "Signed Up");
         updateUserOnboardingStatus(user);
         return toAdapterUser(user);
