@@ -27,6 +27,7 @@ const userFragment = gql`
     updated_at
     created_at
     referral_code
+    count_referrals
   }
 `;
 
@@ -47,6 +48,7 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     avatar_url: null,
     slack_included_channels: [],
     referral_code: null,
+    count_referrals: 0,
     ...getGenericDefaultData(),
   }),
   customObservableAnnotations: {

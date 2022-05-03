@@ -21,6 +21,12 @@ array_relationships:
           schema: public
           name: team_member
 computed_fields:
+  - name: count_referrals
+    definition:
+      function:
+        schema: public
+        name: count_user_referrals
+    comment: ""
   - name: has_account
     definition:
       function:
@@ -48,6 +54,7 @@ select_permissions:
         - subscription_plan
         - updated_at
       computed_fields:
+        - count_referrals
         - has_account
         - has_slack_installation
       filter:
@@ -74,6 +81,19 @@ update_permissions:
           _eq: X-Hasura-User-Id
       check: null
 event_triggers:
+  - name: user_signup
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
   - name: user_updates
     definition:
       enable_manual: false

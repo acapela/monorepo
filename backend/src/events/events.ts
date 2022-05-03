@@ -6,6 +6,7 @@ import { handleGithubAccountToInstallationChanges } from "@aca/backend/src/githu
 import { handleGmailAccountUpdates } from "@aca/backend/src/gmail/capture";
 import { createHasuraEventsHandler } from "@aca/backend/src/hasura";
 import { handleNotificationChanges } from "@aca/backend/src/notification";
+import { handleSignup } from "@aca/backend/src/user/handleSignup";
 import {
   Account,
   GithubAccountToInstallation,
@@ -38,6 +39,7 @@ const hasuraEvents = createHasuraEventsHandler<{
   linear_oauth_token_updates: LinearOauthToken;
   user_slack_installation_updates: UserSlackInstallation;
   user_updates: User;
+  user_signup: User;
 }>();
 
 hasuraEvents.addHandler("account_updates", ["INSERT", "UPDATE", "DELETE"], handleAccountUpdates);
@@ -48,6 +50,7 @@ hasuraEvents.addHandler("linear_oauth_token_updates", ["INSERT"], handleLinearOa
 hasuraEvents.addHandler("notification_updates", ["UPDATE"], handleNotificationChanges);
 hasuraEvents.addHandler("notification_slack_message_updates", ["DELETE"], handleNotificationSlackMessageChanges);
 hasuraEvents.addHandler("user_slack_installation_updates", ["INSERT"], handleUserSlackInstallationChanges);
+hasuraEvents.addHandler("user_signup", ["INSERT"], handleSignup);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
