@@ -4,7 +4,7 @@ import { Router } from "@aca/frontend/src/router";
 
 export default function Home() {
   useEffect(() => {
-    Router.navigate("appDownload");
+    Router.push("appDownload");
   });
   return <></>;
 }

@@ -17,7 +17,7 @@ export default function ErrorPage() {
       <Button
         kind="primary"
         onClick={() => {
-          Router.navigate("appDownload");
+          Router.push("appDownload");
         }}
       >
         Go to the download page

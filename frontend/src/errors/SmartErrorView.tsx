@@ -1,4 +1,5 @@
-import { Router } from "@aca/frontend/src/router";
+import { getLocation } from "@swan-io/chicane";
+
 import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export function SmartErrorView({ error, resetError }: Props) {
-  const { path } = Router.getLocation();
+  const { path } = getLocation();
 
   useDependencyChangeEffect(() => {
     resetError();

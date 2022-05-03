@@ -1,8 +1,8 @@
+import { getLocation } from "@swan-io/chicane";
 import { noop } from "lodash";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { Router } from "@aca/frontend/src/router";
 import { ErrorView } from "@aca/frontend/src/views/ErrorView";
 import { Button } from "@aca/ui/buttons/Button";
 import { TextInput } from "@aca/ui/forms/TextInput";
@@ -64,7 +64,7 @@ const errors: { [error: string]: React.ComponentProps<typeof ErrorView> } = {
 };
 
 export default function ErrorPage() {
-  const { search } = Router.getLocation();
+  const { search } = getLocation();
   const errCode = `${search.error}`;
   const error = errors[errCode];
 
