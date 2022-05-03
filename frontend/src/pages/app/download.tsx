@@ -1,3 +1,4 @@
+import { getLocation } from "@swan-io/chicane";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
@@ -21,10 +22,10 @@ const defaultVideoHeightInPixels = 420;
 export default function DownloadPage(): JSX.Element {
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
-  const { search } = Router.getLocation();
+  const { search } = getLocation();
   if (search.referral) {
     document.cookie = `referral=${search.referral};path=/`;
-    Router.navigate("login", { redirect: "/app/download" });
+    Router.push("login", { redirect: "/app/download" });
     return <></>;
   }
 

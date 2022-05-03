@@ -1,4 +1,4 @@
-import { createRouter } from "react-chicane";
+import { createRouter } from "@swan-io/chicane";
 
 import { typedKeys } from "@aca/shared/object";
 

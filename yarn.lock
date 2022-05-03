@@ -171,6 +171,7 @@ __metadata:
     "@sentry/node": ^6.19.7
     "@sentry/react": ^6.19.7
     "@sentry/webpack-plugin": ^1.18.9
+    "@swan-io/chicane": ^1.0.4
     "@testing-library/jest-dom": ^5.16.1
     "@testing-library/react": ^12.1.2
     "@types/dom-mediacapture-record": ^1.0.11
@@ -191,7 +192,6 @@ __metadata:
     msw: ^0.36.8
     next-auth: "npm:next-auth-danger-link@4.1.2-714d80"
     parcel: ^2.3.2
-    react-chicane: ^0.7.0
     react-popper: ^2.2.5
     serve: ^13.0.2
     styled-normalize: ^8.0.7
@@ -2090,6 +2090,13 @@ __metadata:
     minimatch: ^3.0.4
     plist: ^3.0.4
   checksum: 9a7d98cf2b8414ff0274384fef1b72b5a545a0feb7ce03163d2e2ee1b13e4f7064dfe7147cdd652708a1314d1b5e68acdd907847a1747866ec8d2d3e757ec1f7
+  languageName: node
+  linkType: hard
+
+"@emotion/hash@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "@emotion/hash@npm:0.8.0"
+  checksum: 4b35d88a97e67275c1d990c96d3b0450451d089d1508619488fc0acb882cb1ac91e93246d471346ebd1b5402215941ef4162efe5b51534859b39d8b3a0e3ffaa
   languageName: node
   linkType: hard
 
@@ -7487,6 +7494,19 @@ __metadata:
   peerDependencies:
     "@svgr/core": ^6.0.0
   checksum: 74d3aedd0fcaafbfe4985924b4d40e63536a686988eff52a3411cf83851ce2afc1f5e84e203dae18ab896db48c0b824dcfb8c5dd5b071b4ea90d00fc08951254
+  languageName: node
+  linkType: hard
+
+"@swan-io/chicane@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@swan-io/chicane@npm:1.0.4"
+  dependencies:
+    "@emotion/hash": ^0.8.0
+    history: ^5.3.0
+    use-sync-external-store: ^1.1.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: a796c2b12cab45876edac5bdc732715add2d9dbd299c3a4bc3f2b5491bbb495c759ad8b46733a704b1d6d9788b45b44d1582c5228adbb7b94775ac5d67cd7385
   languageName: node
   linkType: hard
 
@@ -22146,18 +22166,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-chicane@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "react-chicane@npm:0.7.0"
-  dependencies:
-    history: ^5.3.0
-    use-sync-external-store: 1.0.0-rc.0 || ^1.0.0
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: d8300fd96e714f986d3a2bd4d79b4c61bc82bb8af31a2616bbb01a7294cb1a885d85d0a851ed44445cf46184068df54ac7a456fa26b24c7aa635dd16b0c18ed2
-  languageName: node
-  linkType: hard
-
 "react-devtools-core@npm:^4.19.1":
   version: 4.21.0
   resolution: "react-devtools-core@npm:4.21.0"
@@ -25642,12 +25650,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.0.0-rc.0 || ^1.0.0":
-  version: 1.0.0-rc.0
-  resolution: "use-sync-external-store@npm:1.0.0-rc.0"
+"use-sync-external-store@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "use-sync-external-store@npm:1.1.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0-rc
-  checksum: 02d065226538f471ad5924fe6adf486ee2d5ad7167da6ecf0844e2eaff44ee4855ba4fa1a2ef0132b1114bd40098452fc692f19d7a2fa0c52766147f0006ab24
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 8993a0b642f91d7fcdbb02b7b3ac984bd3af4769686f38291fe7fcfe73dfb73d6c64d20dfb7e5e7fbf5a6da8f5392d6f8e5b00c243a04975595946e82c02b883
   languageName: node
   linkType: hard
 
