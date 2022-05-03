@@ -1,6 +1,7 @@
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
 
+import { areArraysShallowEqual } from "@aca/shared/array";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
 
@@ -191,7 +192,7 @@ export function createEntityQuery<Data, Connections>(
 
       return items;
     },
-    { name: `${queryKeyBase}.passingItems` }
+    { name: `${queryKeyBase}.passingItems`, equals: areArraysShallowEqual }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(

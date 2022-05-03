@@ -1,5 +1,6 @@
 import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
 
+import { areArraysShallowEqual } from "@aca/shared/array";
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
@@ -110,47 +111,48 @@ export function createEntityStore<Data, Connections>(
     return true;
   }
 
-  const getSourceForQueryInput = cachedComputed(function getSourceForQueryInput(
-    filter: EntityFilterInput<Data, Connections>
-  ): Entity<Data, Connections>[] {
-    if (typeof filter === "function") {
-      return items.filter(filter);
-    }
-
-    const keys = typedKeys(filter);
-
-    if (keys.length === 1) {
-      const key = keys[0];
-      const value = filter[key];
-
-      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-      const results = index.find(value);
-
-      return results;
-    }
-
-    let results: Entity<Data, Connections>[] | undefined;
-
-    for (const key of keys) {
-      const value = filter[key];
-      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-      const keyResults = index.find(value);
-
-      if (!results) {
-        results = keyResults;
+  const getSourceForQueryInput = cachedComputed(
+    function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
+      if (typeof filter === "function") {
+        return items.filter(filter);
       }
 
-      if (results.length === 0) {
+      const keys = typedKeys(filter);
+
+      if (keys.length === 1) {
+        const key = keys[0];
+        const value = filter[key];
+
+        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+
+        const results = index.find(value);
+
         return results;
       }
 
-      results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
-    }
+      let results: Entity<Data, Connections>[] | undefined;
 
-    return results!;
-  });
+      for (const key of keys) {
+        const value = filter[key];
+        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+
+        const keyResults = index.find(value);
+
+        if (!results) {
+          results = keyResults;
+        }
+
+        if (results.length === 0) {
+          return results;
+        }
+
+        results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
+      }
+
+      return results!;
+    },
+    { equals: areArraysShallowEqual }
+  );
 
   const cleanups = createCleanupObject();
 
@@ -168,9 +170,11 @@ export function createEntityStore<Data, Connections>(
 
   function registerEntity(entity: Entity<Data, Connections>, source: EntityChangeSource) {
     const id = getEntityId(entity);
+    runInAction(() => {
+      items.push(entity);
+      itemsMap[id] = entity;
+    });
     events.emit("itemAdded", entity, source);
-    items.push(entity);
-    itemsMap[id] = entity;
   }
 
   const reuseEqual = createReuseValueGroup();
@@ -187,13 +191,10 @@ export function createEntityStore<Data, Connections>(
       } else {
         const accessCheckCleanup = autorun(() => {
           if (getIsEntityAccessable(entity)) {
-            runInAction(() => {
-              registerEntity(entity, source);
-              cleanups.cleanOne(accessCheckCleanup);
-            });
+            registerEntity(entity, source);
+            cleanups.cleanOne(accessCheckCleanup);
           }
         });
-
         cleanups.next = accessCheckCleanup;
       }
 
