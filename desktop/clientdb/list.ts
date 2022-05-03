@@ -84,7 +84,9 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
   const cachedGetIsNotificationPassingFilters = cachedComputed((notification: NotificationEntity) => {
     if (connections.typedFilters.length === 0) return false;
 
-    return getIsNotificationPassingFilters(notification, connections.typedFilters);
+    const isPassing = getIsNotificationPassingFilters(notification, connections.typedFilters);
+
+    return isPassing;
   });
 
   const notificationsDb = getEntity(notificationEntity);

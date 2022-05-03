@@ -176,7 +176,7 @@ export function createEntityQuery<Data, Connections>(
       if (filter && typeof filter !== "function") {
         const storeMatchingItems = store.find(filter);
 
-        items = items.filter((sourceItem) => storeMatchingItems.includes(sourceItem));
+        items = items.filter((passingItem) => storeMatchingItems.includes(passingItem));
       }
 
       if (sortConfig) {

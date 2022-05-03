@@ -2,7 +2,8 @@ import { IObservableArray, autorun, computed, observable, runInAction } from "mo
 
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { createDeepMap, deepMemoize } from "@aca/shared/deepMap";
+import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
+import { deepMemoize } from "@aca/shared/deepMap";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { typedKeys } from "@aca/shared/object";
 
@@ -16,14 +17,12 @@ import {
   EntityQuerySortInput,
   createEntityQuery,
   resolveSortInput,
-  reuseQueryFilter,
-  reuseQuerySort,
 } from "./query";
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
 import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
-import { computedArray } from "./utils/computedArray";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
+import { cachedComputed } from ".";
 
 export interface EntityStoreFindMethods<Data, Connections> {
   query: (
@@ -111,75 +110,61 @@ export function createEntityStore<Data, Connections>(
     return true;
   }
 
-  const getComputedArrayForMultiFieldSimpleQuery = deepMemoize((filter: IndexQueryInput<Data & Connections>) => {
+  const getSourceForQueryInput = cachedComputed(function getSourceForQueryInput(
+    filter: EntityFilterInput<Data, Connections>
+  ): Entity<Data, Connections>[] {
+    if (typeof filter === "function") {
+      return items.filter(filter);
+    }
+
     const keys = typedKeys(filter);
-    return computedArray(() => {
-      let results: Entity<Data, Connections>[] | undefined;
 
-      for (const key of keys) {
-        const value = filter[key];
-        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+    if (keys.length === 1) {
+      const key = keys[0];
+      const value = filter[key];
 
-        const keyResults = index.find(value);
+      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
 
-        if (!results) {
-          results = keyResults;
-        }
+      const results = index.find(value);
 
-        if (results.length === 0) {
-          return results;
-        }
+      return results;
+    }
 
-        results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
+    let results: Entity<Data, Connections>[] | undefined;
+
+    for (const key of keys) {
+      const value = filter[key];
+      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+
+      const keyResults = index.find(value);
+
+      if (!results) {
+        results = keyResults;
       }
 
-      return results!;
-    });
-  });
-
-  const getSourceForQueryInput = deepMemoize(
-    function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
-      if (typeof filter === "function") {
-        return items.filter(filter);
-      }
-
-      const keys = typedKeys(filter);
-
-      if (keys.length === 1) {
-        const key = keys[0];
-        const value = filter[key];
-
-        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-        const results = index.find(value);
-
+      if (results.length === 0) {
         return results;
       }
 
-      return getComputedArrayForMultiFieldSimpleQuery(filter).get();
-    },
-    { checkEquality: true }
-  );
+      results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
+    }
+
+    return results!;
+  });
 
   const cleanups = createCleanupObject();
 
-  const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>({ checkEquality: true });
+  const createOrReuseQuery = deepMemoize(
+    function createOrReuseQuery(
+      filter?: EntityFilterInput<Data, Connections>,
+      sort?: EntityQuerySortInput<Data, Connections>
+    ) {
+      const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-  function createOrReuseQuery(
-    filter?: EntityFilterInput<Data, Connections>,
-    sort?: EntityQuerySortInput<Data, Connections>
-  ) {
-    const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const reusedFilter = reuseQueryFilter(filter);
-    const reusedSort = reuseQuerySort(resolvedSort);
-    const query = reuseQueriesMap.get([reusedFilter, reusedSort], () => {
-      const query = createEntityQuery(() => items, { filter: reusedFilter, sort: reusedSort }, store);
-
-      return query;
-    });
-
-    return query;
-  }
+      return createEntityQuery(() => items, { filter: filter, sort: resolvedSort }, store);
+    },
+    { checkEquality: true }
+  );
 
   function registerEntity(entity: Entity<Data, Connections>, source: EntityChangeSource) {
     const id = getEntityId(entity);
@@ -187,6 +172,8 @@ export function createEntityStore<Data, Connections>(
     items.push(entity);
     itemsMap[id] = entity;
   }
+
+  const reuseEqual = createReuseValueGroup();
 
   const store: EntityStore<Data, Connections> = {
     definition,
@@ -225,7 +212,7 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     find(filter) {
-      return getSourceForQueryInput(filter);
+      return getSourceForQueryInput(reuseEqual(filter));
     },
     findFirst(filter) {
       const all = getSourceForQueryInput(filter);

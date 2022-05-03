@@ -92,7 +92,7 @@ export const resolveNotification = defineAction({
       // If the given notification is part of a group which can be previewed through a single notification, we treat
       // marking one of them as done as marking the whole group as done
       group =
-        groupNotifications(getDb().notification.query({ isResolved: false }).all)
+        groupNotifications(getDb().notification.find({ isResolved: false }))
           .filter(getIsNotificationsGroup)
           .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
         null;
