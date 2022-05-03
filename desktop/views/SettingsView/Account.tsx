@@ -15,7 +15,7 @@ export const AccountSettings = observer(function ThemeSelector() {
         Logged as <strong>{user.email}</strong>
       </UIInfo>
       <UIInfo>
-        Referral Code <strong>{user.referral_code}</strong>
+        Referral Code <strong>{user.referral_code}</strong> (used: <strong>{user.count_referrals}</strong> times)
         <ReferralCode type="text" value={`${process.env.FRONTEND_URL}/app/download?referral=${user.referral_code}`} />
       </UIInfo>
       <ActionButton kind="secondary" action={logOut} />
