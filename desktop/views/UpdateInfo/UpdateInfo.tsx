@@ -52,6 +52,7 @@ const UIFlyer = styled.div`
   bottom: 10px;
   left: 10px;
   width: 250px;
+  z-index: ${theme.zIndex.top};
 `;
 
 const UIUpdateInfoBox = styled(PopPresenceAnimator)`
