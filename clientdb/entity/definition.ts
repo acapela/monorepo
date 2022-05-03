@@ -19,7 +19,6 @@ interface DefineEntityConfig<Data, Connections> {
   keyField: keyof Data;
   updatedAtField: keyof Data;
   uniqueIndexes?: Array<keyof Data>;
-  getIsDeleted?: (item: Data) => boolean;
   /**
    * We require optional values (null and undefined) to be explicitly provided.
    *
