@@ -5,7 +5,7 @@ export async function handleSignup(event: HasuraEvent<User>) {
   const usedReferralCode = event.item.used_referral_code;
   if (!usedReferralCode) return;
 
-  // this ensures the computed field `count_referrals` is updated
+  // this ensures the computed field `count_referrals` is updated at the client
   await db.user.update({
     where: { referral_code: usedReferralCode },
     data: { updated_at: null },
