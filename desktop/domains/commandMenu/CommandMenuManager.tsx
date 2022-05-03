@@ -69,10 +69,10 @@ export const CommandMenuManager = observer(function CommandMenuManager() {
 
   useShortcut(
     "Esc",
-    () => {
+    action(() => {
       commandMenuStore.session = null;
       return true;
-    },
+    }),
     { isEnabled: !!currentSession, allowFocusedInput: true }
   );
 

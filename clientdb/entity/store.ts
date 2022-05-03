@@ -1,5 +1,5 @@
 import { sortBy } from "lodash";
-import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
+import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { areArraysShallowEqual } from "@aca/shared/array";
 import { MessageOrError, assert } from "@aca/shared/assert";
@@ -89,7 +89,25 @@ export function createEntityStore<Data, Connections>(
    */
   const items = observable.array<StoreEntity>([]);
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
-  // const notAccessableItems = observable.array<StoreEntity>([]);
+
+  function getIsEntityAccessable(entity: StoreEntity) {
+    if (!config.accessValidator) {
+      return true;
+    }
+
+    return config.accessValidator!(entity, linker);
+  }
+
+  const accessableItems = cachedComputed(
+    () => {
+      if (!config.accessValidator) {
+        return items;
+      }
+
+      return items.filter((item) => config.accessValidator!(item, linker));
+    },
+    { equals: areArraysShallowEqual }
+  );
 
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
@@ -100,16 +118,6 @@ export function createEntityStore<Data, Connections>(
     const id = `${entity[config.keyField]}`;
 
     return id;
-  }
-
-  function getIsEntityAccessable(entity: Entity<Data, Connections>) {
-    const { getIsDeleted, accessValidator } = definition.config;
-
-    if (getIsDeleted && !getIsDeleted(entity)) return false;
-
-    if (accessValidator && !accessValidator(entity, linker)) return false;
-
-    return true;
   }
 
   function sortWithDefaultSorter(entities: StoreEntity[]): StoreEntity[] {
@@ -123,7 +131,7 @@ export function createEntityStore<Data, Connections>(
   const getSourceForQueryInput = cachedComputed(
     function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
       if (typeof filter === "function") {
-        return items.filter(filter);
+        return accessableItems().filter(filter);
       }
 
       const keys = typedKeys(filter);
@@ -172,19 +180,10 @@ export function createEntityStore<Data, Connections>(
     ) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => items, { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(() => accessableItems(), { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
-
-  function registerEntity(entity: Entity<Data, Connections>, source: EntityChangeSource) {
-    const id = getEntityId(entity);
-    runInAction(() => {
-      items.push(entity);
-      itemsMap[id] = entity;
-    });
-    events.emit("itemAdded", entity, source);
-  }
 
   const reuseEqual = createReuseValueGroup();
 
@@ -193,25 +192,25 @@ export function createEntityStore<Data, Connections>(
     events,
     items,
     add(entity, source = "user") {
-      const isAccessable = getIsEntityAccessable(entity);
+      const id = getEntityId(entity);
+      runInAction(() => {
+        items.push(entity);
+        itemsMap[id] = entity;
+      });
 
-      if (isAccessable) {
-        registerEntity(entity, source);
-      } else {
-        const accessCheckCleanup = autorun(() => {
-          if (getIsEntityAccessable(entity)) {
-            registerEntity(entity, source);
-            cleanups.cleanOne(accessCheckCleanup);
-          }
-        });
-        cleanups.next = accessCheckCleanup;
-      }
+      events.emit("itemAdded", entity, source);
 
       return entity;
     },
     findById(id) {
       return computed(() => {
-        return itemsMap[id];
+        const entity = itemsMap[id];
+
+        if (!entity) return null;
+
+        if (!getIsEntityAccessable(entity)) return null;
+
+        return entity;
       }).get();
     },
     assertFindById(id, error) {
@@ -241,7 +240,11 @@ export function createEntityStore<Data, Connections>(
 
       if (results.length > 1) console.warn(`Store has multiple items for unique index value ${key}:${value}.`);
 
-      return results[0];
+      const result = results[0];
+
+      if (getIsEntityAccessable(result)) return result;
+
+      return null;
     },
     assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,
