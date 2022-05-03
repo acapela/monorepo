@@ -9,6 +9,7 @@ import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSyst
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
+import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
@@ -57,9 +58,11 @@ export const ListView = observer(({ listId }: Props) => {
       <ActionSystemMenuItem action={deleteNotificationList} path={["List"]} target={list} />
 
       {isInCelebrationMode && (
-        <UINotificationZeroHolder>
-          <ListViewZenOverlay />
-        </UINotificationZeroHolder>
+        <DarkModeThemeProvider>
+          <UINotificationZeroHolder>
+            <ListViewZenOverlay />
+          </UINotificationZeroHolder>
+        </DarkModeThemeProvider>
       )}
       <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>

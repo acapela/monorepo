@@ -41,7 +41,7 @@ const UINotificationZeroPanel = styled(PresenceAnimator)`
   text-align: center;
   display: inline-flex;
   padding: 30px 45px;
-  ${theme.colors.layout.background.opacity(0.7).asBg};
+  ${theme.colors.layout.background.opacity(0.7).asBgWithReadableText};
   ${theme.typo.secondaryTitle.semibold}
   backdrop-filter: blur(16px);
   ${theme.radius.primaryItem}

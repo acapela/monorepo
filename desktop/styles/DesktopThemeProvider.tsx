@@ -7,7 +7,7 @@ import { useDependencyChangeLayoutEffect } from "@aca/shared/hooks/useChangeEffe
 import { darkTheme, defaultTheme } from "@aca/ui/theme";
 
 export const DesktopThemeProvider = observer(function AppThemeProvider({ children }: PropsWithChildren<{}>) {
-  const selectedTheme = uiStore.isInDarkMode || uiStore.isDisplayingZenImage ? darkTheme : defaultTheme;
+  const selectedTheme = uiStore.isInDarkMode ? darkTheme : defaultTheme;
 
   useDependencyChangeLayoutEffect(() => {
     document.body.classList.add("no-transitions");
@@ -19,3 +19,7 @@ export const DesktopThemeProvider = observer(function AppThemeProvider({ childre
 
   return <ThemeProvider theme={selectedTheme}>{children}</ThemeProvider>;
 });
+
+export function DarkModeThemeProvider({ children }: PropsWithChildren<{}>) {
+  return <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>;
+}
