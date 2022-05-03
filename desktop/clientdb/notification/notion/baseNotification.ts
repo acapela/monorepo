@@ -15,6 +15,7 @@ import {
 
 import { notificationNotionCommentedEntity } from "./commented";
 import { notionSpaceEntity } from "./notionSpace";
+import { notificationNotionReminderEntity } from "./reminder";
 import { notificationNotionUserInvitedEntity } from "./userInvited";
 import { notificationNotionUserMentionedEntity } from "./userMentioned";
 
@@ -44,6 +45,7 @@ const notionInnerEntities = [
   notificationNotionUserMentionedEntity,
   notificationNotionCommentedEntity,
   notificationNotionUserInvitedEntity,
+  notificationNotionReminderEntity,
 ];
 
 export const notificationNotionEntity = defineEntity<NotificationNotionFragment>({

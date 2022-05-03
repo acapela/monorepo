@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
+import { extractPageTitleFromBlock } from "./notificationExtractor";
 import {
   BlockDataItem,
   CommentedActivityValue,
@@ -118,8 +119,14 @@ function extractTextFromBlockDataItem(
   if (notionDSLData[0] === NotionPageReferenceDataIndicator) {
     const pageId = notionDSLData[1];
 
-    const title = SomeBlockValue.parse(recordMap.block?.[pageId].value).properties?.title?.[0]?.[0];
-    return `📄${title}`;
+    const title = extractPageTitleFromBlock(recordMap.block?.[pageId].value, recordMap);
+
+    if (!title) {
+      log.error("Unknown page title found for page_id", pageId, recordMap);
+      return `📄"Notion Page"`;
+    }
+
+    return `📄"${title}"`;
   }
 
   if (notionDSLData[0] === NotionDateDataIndicator) {

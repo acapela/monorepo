@@ -40,6 +40,8 @@ To start all the required services, in the correct order you can **either** run:
 yarn dev
 ```
 
+**For the first run** you should run these commands separately to make sure every step works as expected.
+
 or run the commands separately, here are the most important ones and what they mean:
 
 | Command              | Description                                                                |

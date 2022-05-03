@@ -9,7 +9,8 @@ export type NotificationNotionPartial = Omit<
 export type NotionNotificationType =
   | "notification_notion_user_mentioned"
   | "notification_notion_user_invited"
-  | "notification_notion_commented";
+  | "notification_notion_commented"
+  | "notification_notion_reminder";
 
 export type NotionWorkerSync = {
   notification: NotificationPartial;
