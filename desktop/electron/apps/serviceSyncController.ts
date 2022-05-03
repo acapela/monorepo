@@ -52,7 +52,9 @@ export function makeServiceSyncController(serviceName: WorkerService, serviceDom
         log.info("Capturing complete");
         timeOfLastSync = new Date();
       } catch (e: unknown) {
-        log.error(e as Error);
+        if (!isKnownSyncError(e as Error)) {
+          log.error(e as Error);
+        }
       } finally {
         isSyncing = false;
       }
@@ -88,4 +90,17 @@ export function makeServiceSyncController(serviceName: WorkerService, serviceDom
     };
   }
   return serviceSyncBuilder();
+}
+
+export class KnownSyncError extends Error {
+  isExpected: boolean;
+
+  constructor(msg: string) {
+    super(msg);
+    this.isExpected = true;
+  }
+}
+
+function isKnownSyncError(e: Error | KnownSyncError): e is KnownSyncError {
+  return e && (e as KnownSyncError).isExpected;
 }

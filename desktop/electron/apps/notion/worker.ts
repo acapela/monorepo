@@ -8,7 +8,11 @@ import {
 } from "@aca/desktop/bridge/apps/notion";
 import { authTokenBridgeValue, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { addToast } from "@aca/desktop/domains/toasts/store";
-import { ServiceSyncController, makeServiceSyncController } from "@aca/desktop/electron/apps/serviceSyncController";
+import {
+  KnownSyncError,
+  ServiceSyncController,
+  makeServiceSyncController,
+} from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 import { timeDuration, wait } from "@aca/shared/time";
@@ -102,9 +106,13 @@ async function fetchNotionNotificationLog(sessionData: NotionSessionData, spaceI
     )
     .catch(({ response }) => {
       if (response?.status >= 400 && response?.status < 500) {
-        handleNotionNotAuthorized();
+        const msg = `getNotificationLog ${response.status} - ${response.statusText}`;
 
-        throw log.error(new Error("getNotificationLog"), `${response.status} - ${response.statusText}`);
+        if (response.status === 401) {
+          handleNotionNotAuthorized();
+          throw new KnownSyncError(msg);
+        }
+        throw new Error(msg);
       }
     });
 
@@ -122,9 +130,13 @@ export async function updateAvailableSpaces() {
     .post(notionURL + "/api/v3/getSpaces", {}, { headers: { cookie: sessionData.cookie } })
     .catch(({ response }) => {
       if (response?.status >= 400 && response?.status < 500) {
-        handleNotionNotAuthorized();
+        const msg = `getSpaces: ${response.status} - ${response.statusText}`;
 
-        throw new Error(`getSpaces: ${response.status} - ${response.statusText}`);
+        if (response.status === 401) {
+          handleNotionNotAuthorized();
+          throw new KnownSyncError(msg);
+        }
+        throw new Error(msg);
       }
     });
 
@@ -160,9 +172,12 @@ export async function updateAvailableSpaces() {
     )
     .catch(({ response }) => {
       if (response?.status >= 400 && response?.status < 500) {
-        handleNotionNotAuthorized();
-
-        throw new Error(`getPublicSpaceData: ${response.status} - ${response.statusText}`);
+        const msg = `getPublicSpaceData: ${response.status} - ${response.statusText}`;
+        if (response.status === 401) {
+          handleNotionNotAuthorized();
+          throw new KnownSyncError(msg);
+        }
+        throw new Error(msg);
       }
     });
 

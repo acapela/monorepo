@@ -25,6 +25,8 @@ function getTitle(inner: NotificationEntity["inner"]): string {
           return `Invited you to "${inner?.page_title}"`;
         case "notification_notion_user_mentioned":
           return `Mentioned you in "${inner?.page_title}"`;
+        case "notification_notion_reminder":
+          return `Reminder in "${inner?.page_title}"`;
         default:
           return "New Notion notification";
       }

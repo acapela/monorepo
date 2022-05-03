@@ -29,6 +29,7 @@ import { notificationNotionEntity } from "./notification/notion/baseNotification
 import { notificationNotionCommentedEntity } from "./notification/notion/commented";
 import { notionSpaceEntity } from "./notification/notion/notionSpace";
 import { notionSpaceUserEntity } from "./notification/notion/notionSpaceUser";
+import { notificationNotionReminderEntity } from "./notification/notion/reminder";
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
@@ -66,6 +67,7 @@ export const appClientDbEntities = {
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
   notificationNotionCommented: notificationNotionCommentedEntity,
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
+  notificationNotionReminder: notificationNotionReminderEntity,
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
   notificationJira: notificationJiraEntity,

@@ -174,6 +174,8 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
           db.notificationNotionUserMentioned.create({ notification_notion_id: createdNotionNotification.id });
         } else if (type === "notification_notion_user_invited") {
           db.notificationNotionUserInvited.create({ notification_notion_id: createdNotionNotification.id });
+        } else if (type === "notification_notion_reminder") {
+          db.notificationNotionReminder.create({ notification_notion_id: createdNotionNotification.id });
         }
       }
     });
