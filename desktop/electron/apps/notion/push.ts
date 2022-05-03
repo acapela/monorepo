@@ -1,25 +1,26 @@
 import axios from "axios";
 
-import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { notionNotificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { notionURL } from "@aca/desktop/electron/auth/notion";
 import { getUUID } from "@aca/shared/uuid";
 
 import { getNotionSessionData } from "./worker";
 
+const log = makeLogger("NotionResolver");
+
 export async function initializeNotionPush() {
-  console.info("[Notion] Starting push handling");
+  log.info("Starting push handling");
   const sessionData = await getNotionSessionData();
 
-  notificationResolvedChannel.subscribe(async (event) => {
-    if (event.inner.__typename !== "notification_notion") return;
+  notionNotificationResolvedChannel.subscribe(async (event) => {
+    log.info("Received resolved request for event 'notification_notion'");
 
-    console.info("[Notion] Received resolved request for event 'notification_notion'");
-
-    // TODO: Delete update ~3weeks after 1.Feb.2022
+    // TODO: Delete update ~3weeks after 1.Jul.2022
     // First version of notifications don't have space_id
     // This covers those cases.
-    if (!event.inner.space_id) {
-      console.info("[Notion] Not resolving notification as it doesn't have a space id");
+    if (!event.space_id) {
+      log.info("Not resolving notification as it doesn't have a space id");
       return;
     }
 
@@ -30,13 +31,13 @@ export async function initializeNotionPush() {
         transactions: [
           {
             id: getUUID(),
-            spaceId: event.inner.space_id,
+            spaceId: event.space_id,
             operations: [
               {
                 command: "update",
                 pointer: {
                   table: "notification",
-                  id: event.inner.notion_original_notification_id,
+                  id: event.notion_original_notification_id,
                 },
                 path: [],
                 args: {

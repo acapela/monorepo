@@ -58,7 +58,7 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
   }
 
   if (notification.__typename === "notification_github") {
-    return { icon: github, isInverted: false };
+    return { icon: github, isInverted: isOnDarkBackground };
   }
 
   if (notification.__typename === "notification_gmail") {

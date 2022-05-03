@@ -10,7 +10,7 @@ import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { trackEvent } from "@aca/desktop/analytics";
-import { notificationResolvedChannel } from "@aca/desktop/bridge/notification";
+import { notificationResolvedChannel, notionNotificationResolvedChannel } from "@aca/desktop/bridge/notification";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import {
   DesktopNotificationFragment,
@@ -24,6 +24,7 @@ import { autorunEffect } from "@aca/shared/mobx/utils";
 import { createDateTimeout } from "@aca/shared/time";
 
 import { innerEntities } from "./inner";
+import { NotificationNotionEntity } from "./notion/baseNotification";
 
 const notificationFragment = gql`
   fragment DesktopNotification on notification {
@@ -212,7 +213,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       const notificationInnerData = notification.inner.getData();
 
       log.info(`Resolving Notification ${notification.id} of type ${notificationInnerData.__typename}`);
-      notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
+      if (notificationInnerData.__typename === "notification_notion") {
+        notionNotificationResolvedChannel.send((notification.inner as NotificationNotionEntity).resolveData());
+      } else {
+        notificationResolvedChannel.send({ notification: notificationData, inner: notificationInnerData });
+      }
     },
   })
   .addAccessValidation((notification) => {
