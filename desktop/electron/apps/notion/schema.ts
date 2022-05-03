@@ -136,17 +136,19 @@ export const PageBlockValue = BlockValueCommon.extend({
 export const CollectionViewPageBlockValue = BlockValueCommon.extend({
   type: z.literal("collection_view_page"),
   alive: z.boolean(),
-  collection_id: z.string(),
+  collection_id: z.string().optional(),
   created_by_id: z.string(),
   created_by_table: z.string(),
   created_time: z.number(),
-  format: z.object({
-    collection_pointer: z.object({
-      id: z.string(),
-      spaceId: z.string(),
-      table: z.literal("collection"),
-    }),
-  }),
+  format: z
+    .object({
+      collection_pointer: z.object({
+        id: z.string(),
+        spaceId: z.string(),
+        table: z.literal("collection"),
+      }),
+    })
+    .optional(),
   view_ids: z.array(z.string()),
 });
 
