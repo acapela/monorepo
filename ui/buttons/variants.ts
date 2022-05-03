@@ -23,6 +23,12 @@ export const buttonKindMap = {
   backgroundAccent: css`
     ${theme.colors.layout.backgroundAccent.interactive};
   `,
+  danger: css`
+    ${theme.colors.status.danger.interactive};
+  `,
+  warning: css`
+    ${theme.colors.status.warning.interactive};
+  `,
 };
 
 export type ButtonKind = keyof typeof buttonKindMap;

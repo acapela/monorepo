@@ -14,16 +14,22 @@ const black = color("hsl(0, 0%, 0%)", {
 
 const darkGrey = color("hsl(213, 15%, 13%)");
 
-const primary = color("hsl(310, 100%, 67%)", {
-  hover: color("hsl(310, 79%, 57%)"),
-  active: color("hsl(310, 79%, 40%)"),
+const primary = color("hsl(330, 100%, 55%)", {
+  hover: color("hsla(330, 100%, 60%, 0.9)"),
+  active: color("hsla(330, 100%, 65%, 0.8)"),
   readableText: white,
 });
 
-const secondary = color("hsl(34, 100%, 68%)", {
-  hover: color("hsl(34, 100%, 63%)"),
-  active: color("hsl(34, 100%, 46 %)"),
+const secondary = color("hsl(200, 100%, 60%)", {
+  hover: color("hsl(200, 100%, 55%)"),
+  active: color("hsl(200, 100%, 50%)"),
   readableText: black,
+});
+
+const danger = color("hsl(350, 80%, 55%)", {
+  hover: color("hsl(350, 80%, 50%)"),
+  active: color("hsl(350, 80%, 45%)"),
+  readableText: white,
 });
 
 const lightGray = color("hsl(220, 33%, 98%)", {
@@ -31,16 +37,31 @@ const lightGray = color("hsl(220, 33%, 98%)", {
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
+const transparent = color("hsla(0, 0%, 100%, 0.0)", {
+  hover: color("hsla(0, 0%, 0%, 0.05)"),
+  active: color("hsla(0, 0%, 0%, 0.075)"),
+});
+
+const icon = color("hsla(0, 0%, 0%, 0.4)", {
+  hover: color("hsla(0, 0%, 0%, 0.5)"),
+  active: color("hsla(0, 0%, 0%, 0.6)"),
+});
+
 const blue = color("hsl(204, 100%, 50%)");
 
-const green = color("hsl(169,100%,37%)");
-const success = color("hsl(147,81%,46%)");
+const success = color("hsl(163, 73%, 47%)");
 
-const divider = color("#8882");
+const warning = color("hsl(25, 100%, 45%)", {
+  readableText: white,
+});
 
-const selectedTab = color("#f3f4f6");
+const divider = color("hsla(0, 0%, 53%, 0.13)");
 
-const inverted = color("#111827");
+const selectedTab = color("hsl(220, 14%, 96%)");
+
+const inverted = color("hsl(221, 39%, 11%)");
+
+const darkBgBase = color("hsl(0, 0%, 11%)");
 
 export const defaultColors = {
   primary,
@@ -51,18 +72,12 @@ export const defaultColors = {
   action: {
     // Used for buttons
     primary,
-    transparent: color("hsla(0, 0%, 100%, 0.0)", {
-      hover: color("hsla(0, 0%, 0%, 0.05)"),
-      active: color("hsla(0, 0%, 0%, 0.075)"),
-    }),
+    transparent,
     link: primary,
     // Used for secondary buttons
     secondary: white,
     // Used eg. for icon buttons in composer
-    icon: color("hsla(0, 0%, 0%, 0.4)", {
-      hover: color("hsla(0, 0%, 0%, 0.5)"),
-      active: color("hsla(0, 0%, 0%, 0.6)"),
-    }),
+    icon,
   },
   layout: {
     actionPanel: inverted,
@@ -81,25 +96,21 @@ export const defaultColors = {
     selectedTab,
   },
   status: {
-    // TODO: Adjust
-    danger: primary,
-    warning: primary,
-    success: primary,
+    danger,
+    warning,
+    success,
   },
   tags: {
     primary,
     action: primary,
     feedback: secondary,
     read: blue,
-    decision: green,
     observe: black.opacity(0.5),
   },
   functional: {
     userAvatar: blue,
   },
 } as const;
-
-const darkBgBase = color("hsl(0, 0%, 11%)");
 
 export const darkThemeColors = deepMerge(defaultColors, {
   text: white,

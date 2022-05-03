@@ -15,7 +15,7 @@ export const AccountSettings = observer(function ThemeSelector() {
         Logged as <strong>{user.email}</strong>
       </UIInfo>
       <ActionButton kind="secondary" action={logOut} />
-      <ActionButton kind="primarySubtle" action={restartAndClearElectronData} />
+      <ActionButton kind="secondary" action={restartAndClearElectronData} />
     </UIHolder>
   );
 });

@@ -50,8 +50,8 @@ if (arg === "reset") {
   }
   console.info(`updated main to ${pkgJson.main} [files: ${pkgJson.build.files[1]}]`);
 
-  if (isStaging) copyFileSync("./build/icon-staging.png", "./build/icon.png");
-  else copyFileSync("./build/icon-production.png", "./build/icon.png");
+  if (isStaging) copyFileSync("./build/icon_staging.png", "./build/icon.png");
+  else copyFileSync("./build/icon_production.png", "./build/icon.png");
   console.info("updated icon");
 }
 
