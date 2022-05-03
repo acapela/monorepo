@@ -6,11 +6,8 @@ import { createAnalyticsEvent } from "@aca/desktop/analytics";
 import { OpenAppUrl, openAppUrl } from "@aca/desktop/bridge/apps";
 import { getIntegration } from "@aca/desktop/bridge/apps/shared";
 import { requestEmbedPreload } from "@aca/desktop/bridge/preview";
-import { getDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
-import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -91,11 +88,12 @@ export const resolveNotification = defineAction({
     if (!group && notification) {
       // If the given notification is part of a group which can be previewed through a single notification, we treat
       // marking one of them as done as marking the whole group as done
-      group =
-        groupNotifications(getDb().notification.find({ isResolved: false }))
-          .filter(getIsNotificationsGroup)
-          .find((group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)) ??
-        null;
+      const list = context.assertTarget("list", true);
+      const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
+
+      if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
+        group = groupThatNotificationBelongsTo;
+      }
     }
 
     cancel.next = notification?.resolve()?.undo;
