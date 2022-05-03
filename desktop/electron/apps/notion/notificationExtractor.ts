@@ -14,7 +14,7 @@ import {
   UserInvitedActivityValue,
   UserMentionedActivityValue,
 } from "./schema";
-import { workerLog as log, notionURL } from "./utils";
+import { workerLog as log, notionURL, prepareLogAttachment } from "./utils";
 
 const stripDashes = (str: string) => str.replaceAll("-", "");
 
@@ -47,8 +47,10 @@ export function extractNotifications(
       const notificationProperties = getNotificationProperties(notification, recordMap);
       if (!notificationProperties) {
         if (!isKnownAndUnsupported(notification, recordMap)) {
-          // log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
-          log.error(`Unable to handle notification ${id} of type ${notification.type}:`);
+          log.error(
+            `Unable to handle notification ${id} of type ${notification.type}:`,
+            prepareLogAttachment(recordMap)
+          );
         }
         continue;
       }
@@ -69,7 +71,7 @@ export function extractNotifications(
       const page_title = getPageTitle(notification, recordMap);
 
       if (!page_title) {
-        log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
+        log.error(`Page title not found for notification_id ${notification.id}`, prepareLogAttachment(recordMap));
         continue;
       }
 
@@ -78,7 +80,7 @@ export function extractNotifications(
       const pageId = notification.navigable_block_id;
 
       if (!pageId) {
-        log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
+        log.error(`no navigable_block_id in notification_id ${id}`, prepareLogAttachment(recordMap));
         continue;
       }
 
@@ -181,21 +183,15 @@ function getNotificationProperties(
         };
       } else {
         log.error(
-          new Error(
-            `Discussion with id ${activity.discussion_id} not found in recordMap: ${JSON.stringify(recordMap, null, 2)}`
-          )
+          `Discussion with id ${activity.discussion_id} not for notification_id: ${notification.id}`,
+          prepareLogAttachment(recordMap)
         );
       }
     }
 
     log.error(
-      new Error(
-        `Could not extract comment text and link for notification ${JSON.stringify(
-          notification,
-          null,
-          2
-        )} with records ${JSON.stringify(recordMap, null, 2)}`
-      )
+      `Could not extract comment text and link for notification_id ${notification.id}`,
+      prepareLogAttachment(recordMap)
     );
 
     return {

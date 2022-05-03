@@ -3,7 +3,10 @@ import { isError } from "lodash";
 
 import type { LogEntry, Severity } from "@aca/desktop/bridge/logger";
 import { IS_DEV } from "@aca/shared/dev";
+import { groupByFilter } from "@aca/shared/groupByFilter";
 import { getUUID } from "@aca/shared/uuid";
+
+import { LogAttachment, isLogAttachment } from "./attachment.types";
 
 /*
  This function adds additional parameters to an input string or error
@@ -43,7 +46,7 @@ function formatLogItem(input: unknown) {
   return `${input}`;
 }
 
-type ErrorReporter = (body: unknown[]) => void;
+type ErrorReporter = (body: unknown[], files: LogAttachment[]) => void;
 
 let errorReporter: ErrorReporter | null = null;
 
@@ -92,7 +95,8 @@ export function makeLogger(prefix: string, isEnabled = true) {
   const now = () => new Date().toISOString();
 
   function performLog(severity: Severity, body: unknown[]) {
-    const preparedBody = body.map(formatLogItem);
+    const [logAttachments, logMessages] = groupByFilter(body, isLogAttachment);
+    const preparedBody = logMessages.map(formatLogItem);
 
     const timestamp = now();
     const logEntry: LogEntry = {
@@ -106,7 +110,7 @@ export function makeLogger(prefix: string, isEnabled = true) {
     logEntryHandler?.(logEntry);
 
     if (severity === "Error") {
-      errorReporter?.(body);
+      errorReporter?.(logMessages, logAttachments as LogAttachment[]);
     }
 
     const [firstItem, ...restItems] = preparedBody;

@@ -309,6 +309,7 @@ __metadata:
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/common-tags": ^1.8.1
     "@types/express": ^4.17.13
+    "@types/form-data": ^2.5.0
     "@types/glob": ^7.2.0
     "@types/glob-watcher": ^5.0.2
     "@types/inquirer": ^8.2.0
@@ -332,6 +333,7 @@ __metadata:
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
     express: ^4.17.2
+    form-data: ^4.0.0
     glob: ^7.2.0
     glob-watcher: ^5.0.5
     husky: ^7.0.4
@@ -7869,6 +7871,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/form-data@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@types/form-data@npm:2.5.0"
+  dependencies:
+    form-data: "*"
+  checksum: c3f6c8932726970d49d67a23410d5eef0e1ad0be418163ccc3d73a4cbaa0dcd71e0e29acbe2779aab85ed8f47cb0e8f6b67028480da3b0f7d074c5a3416b2400
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.11":
   version: 9.0.13
   resolution: "@types/fs-extra@npm:9.0.13"
@@ -14363,7 +14374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:4.0.0, form-data@npm:^4.0.0":
+"form-data@npm:*, form-data@npm:4.0.0, form-data@npm:^4.0.0":
   version: 4.0.0
   resolution: "form-data@npm:4.0.0"
   dependencies:

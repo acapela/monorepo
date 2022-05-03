@@ -11,6 +11,7 @@ import { register, setLogger } from "trace-unhandled";
 import { makeLogger, registerLogEntryHandler, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
 import { logStorage } from "../bridge/logger";
+import { addLogAttachment } from "../domains/dev/postAttachment";
 import { initializeServiceSync } from "./apps";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
@@ -34,13 +35,15 @@ setLogger((msg) => {
   console.info("from unhandled", msg);
 });
 
-registerLoggerErrorReporter((body) => {
+registerLoggerErrorReporter((body, files) => {
   try {
     if (body.length === 1) {
-      Sentry.captureException(body[0]);
+      const eventId = Sentry.captureException(body[0]);
+      addLogAttachment(eventId, files);
       return;
     }
-    Sentry.captureException(JSON.stringify(body));
+    const eventId = Sentry.captureException(JSON.stringify(body));
+    addLogAttachment(eventId, files);
   } catch (error) {
     // We're doomed!
   }

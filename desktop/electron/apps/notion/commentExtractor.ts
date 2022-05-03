@@ -14,6 +14,7 @@ import {
   SomeBlockValue,
   UserMentionedActivityValue,
 } from "./schema";
+import { prepareLogAttachment } from "./utils";
 
 const log = makeLogger("Notion-Worker");
 
@@ -109,7 +110,10 @@ function extractTextFromBlockDataItem(
     const name = recordMap.notion_user?.[mentionedUserId]?.value?.name;
 
     if (!name) {
-      log.error("unable to extract mentioned user from item" + JSON.stringify(item, null, 2));
+      log.error(
+        "unable to extract mentioned user from item" + JSON.stringify(item, null, 2),
+        prepareLogAttachment(recordMap)
+      );
       return "@...";
     }
 
@@ -122,7 +126,7 @@ function extractTextFromBlockDataItem(
     const title = extractPageTitleFromBlock(recordMap.block?.[pageId].value, recordMap);
 
     if (!title) {
-      log.error("Unknown page title found for page_id", pageId, recordMap);
+      log.error(`Unknown page title found for page_id ${pageId}`, prepareLogAttachment(recordMap));
       return `📄"Notion Page"`;
     }
 
