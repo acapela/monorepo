@@ -34,7 +34,6 @@
     "@sentry/electron": "^3.0.7",
     "@sentry/react": "^6.19.7",
     "@types/electron-json-storage": "^4.5.0",
-    "@types/form-data": "^2.5.0",
     "@types/jest": "^27.4.1",
     "@types/node-cleanup": "^2.1.2",
     "@types/segment-analytics": "^0.0.34",
@@ -82,8 +81,5 @@
       "releaseType": "release"
     },
     "npmRebuild": false
-  },
-  "dependencies": {
-    "form-data": "^4.0.0"
   }
 }

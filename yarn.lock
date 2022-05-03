@@ -110,7 +110,6 @@ __metadata:
     "@sentry/electron": ^3.0.7
     "@sentry/react": ^6.19.7
     "@types/electron-json-storage": ^4.5.0
-    "@types/form-data": ^2.5.0
     "@types/jest": ^27.4.1
     "@types/node-cleanup": ^2.1.2
     "@types/segment-analytics": ^0.0.34
@@ -124,7 +123,6 @@ __metadata:
     electron-log: ^4.4.5
     electron-notarize: ^1.1.1
     electron-updater: ^5.0.3
-    form-data: ^4.0.0
     glob: ^7.2.0
     glob-promise: ^4.2.2
     jest: 27.4.7
@@ -311,6 +309,7 @@ __metadata:
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/common-tags": ^1.8.1
     "@types/express": ^4.17.13
+    "@types/form-data": ^2.5.0
     "@types/glob": ^7.2.0
     "@types/glob-watcher": ^5.0.2
     "@types/inquirer": ^8.2.0
@@ -334,6 +333,7 @@ __metadata:
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
     express: ^4.17.2
+    form-data: ^4.0.0
     glob: ^7.2.0
     glob-watcher: ^5.0.5
     husky: ^7.0.4
