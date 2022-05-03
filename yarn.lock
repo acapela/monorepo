@@ -110,6 +110,7 @@ __metadata:
     "@sentry/electron": ^3.0.7
     "@sentry/react": ^6.19.7
     "@types/electron-json-storage": ^4.5.0
+    "@types/form-data": ^2.5.0
     "@types/jest": ^27.4.1
     "@types/node-cleanup": ^2.1.2
     "@types/segment-analytics": ^0.0.34
@@ -123,6 +124,7 @@ __metadata:
     electron-log: ^4.4.5
     electron-notarize: ^1.1.1
     electron-updater: ^5.0.3
+    form-data: ^4.0.0
     glob: ^7.2.0
     glob-promise: ^4.2.2
     jest: 27.4.7
@@ -7869,6 +7871,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/form-data@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@types/form-data@npm:2.5.0"
+  dependencies:
+    form-data: "*"
+  checksum: c3f6c8932726970d49d67a23410d5eef0e1ad0be418163ccc3d73a4cbaa0dcd71e0e29acbe2779aab85ed8f47cb0e8f6b67028480da3b0f7d074c5a3416b2400
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.11":
   version: 9.0.13
   resolution: "@types/fs-extra@npm:9.0.13"
@@ -14363,7 +14374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:4.0.0, form-data@npm:^4.0.0":
+"form-data@npm:*, form-data@npm:4.0.0, form-data@npm:^4.0.0":
   version: 4.0.0
   resolution: "form-data@npm:4.0.0"
   dependencies:
