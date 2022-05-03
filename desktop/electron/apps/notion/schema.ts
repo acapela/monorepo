@@ -114,7 +114,7 @@ export const BlockDataItem = z.union([
   z.array(z.unknown()),
 ]);
 
-const BlockValueCommon = z.object({
+export const BlockValueCommon = z.object({
   id: z.string(),
   version: z.number(),
   space_id: z.string(),
@@ -241,6 +241,11 @@ export const UserMentionedActivityValue = ActivityValueCommon.extend({
   mentioned_block_id: z.string(),
   mentioned_property: z.string(),
   mentioned_user_id: z.string(),
+});
+
+export const ReminderActivityValue = ActivityValueCommon.extend({
+  type: z.literal("reminder"),
+  reminder_block_id: z.string(),
 });
 
 export const ActivityPayload = z.object({

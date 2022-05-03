@@ -2,14 +2,13 @@ import { z } from "zod";
 
 import type { NotionNotificationType, NotionWorkerSync } from "@aca/desktop/bridge/apps/notion.types";
 
+import { extractAuthor } from "./authorExtractor";
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
-  ActivityValueCommon,
   CollectionViewPageBlockValue,
   CommentedActivityValue,
   GetNotificationLogResult,
   Notification,
-  PageBlockValue,
   RecordMap,
   SomeBlockValue,
   UserInvitedActivityValue,
@@ -51,7 +50,6 @@ export function extractNotifications(
           // log.error(`Unable to handle notification ${id} of type ${notification.type}:`, recordMap);
           log.error(`Unable to handle notification ${id} of type ${notification.type}:`);
         }
-
         continue;
       }
 
@@ -71,8 +69,7 @@ export function extractNotifications(
       const page_title = getPageTitle(notification, recordMap);
 
       if (!page_title) {
-        // log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
-        log.error(`Page title not found for notification_id ${notification.id}`);
+        log.error(`Page title not found for notification_id ${notification.id}`, recordMap);
         continue;
       }
 
@@ -80,30 +77,12 @@ export function extractNotifications(
 
       const pageId = notification.navigable_block_id;
 
-      let authorId;
-      const activityResult = ActivityValueCommon.safeParse(recordMap.activity?.[notification.activity_id]?.value);
-      if (activityResult.success) {
-        const activity = activityResult.data;
-        authorId = activity.edits?.[0]?.authors?.[0]?.id ?? "Notion";
-        if (authorId === "Notion") {
-          log.error("unable to extract authorId from activity" + JSON.stringify(activity, null, 2));
-        }
-      } else if (pageId) {
-        const pageBlockResult = PageBlockValue.safeParse(recordMap.block?.[pageId]?.value);
-        if (pageBlockResult.success) {
-          authorId = pageBlockResult.data.created_by_id;
-        }
-      }
-
       if (!pageId) {
         log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
         continue;
       }
 
-      if (!notification.navigable_block_id) {
-        log.error("no navigable_block_id in notification " + JSON.stringify(notification, null, 2));
-        continue;
-      }
+      const author = extractAuthor(notification, recordMap);
 
       result.push({
         notification: {
@@ -111,7 +90,7 @@ export function extractNotifications(
           text_preview,
           created_at,
           updated_at,
-          from: authorId ? recordMap?.notion_user?.[authorId]?.value?.name ?? "Notion" : "Notion",
+          from: author.name,
         },
         type,
         notionNotification: {
@@ -119,7 +98,7 @@ export function extractNotifications(
           page_id: pageId,
           page_title,
           synced_spaced_id: notification.space_id,
-          author_id: authorId,
+          author_id: author.id,
         },
         discussion_id: notificationProperties.discussion_id,
       });
@@ -144,7 +123,7 @@ function isKnownAndUnsupported(
     }
   }
 
-  return notification.type === "reminder";
+  return false;
 }
 
 function getNotificationProperties(
@@ -231,6 +210,13 @@ function getNotificationProperties(
     return {
       type: "notification_notion_user_invited",
       url,
+    };
+  }
+
+  if (notification.type === "reminder") {
+    return {
+      type: "notification_notion_reminder",
+      url: notionURL + "/" + stripDashes(pageId),
     };
   }
 }
