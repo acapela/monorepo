@@ -1,10 +1,8 @@
-import { memoize } from "lodash";
 import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
 
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
-import { createDeepMap } from "@aca/shared/deepMap";
+import { createDeepMap, deepMemoize } from "@aca/shared/deepMap";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { typedKeys } from "@aca/shared/object";
 
@@ -31,11 +29,12 @@ export interface EntityStoreFindMethods<Data, Connections> {
     filter: EntityFilterInput<Data, Connections>,
     sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
+
   sort: (sort: EntityQuerySortInput<Data, Connections>) => EntityQuery<Data, Connections>;
-  findAllByIndexValue<K extends keyof IndexQueryInput<Data & Connections>>(
-    key: K,
-    value: IndexQueryInput<Data & Connections>[K]
-  ): Entity<Data, Connections>[];
+  // findAllByIndexValue<K extends keyof IndexQueryInput<Data & Connections>>(
+  //   key: K,
+  //   value: IndexQueryInput<Data & Connections>[K]
+  // ): IObservableArray<Entity<Data, Connections>>;
   findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
     key: K,
     value: IndexQueryInput<Data & Connections>[K]
@@ -48,6 +47,9 @@ export interface EntityStoreFindMethods<Data, Connections> {
   findById(id: string): Entity<Data, Connections> | null;
   assertFindById(id: string, error?: MessageOrError): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
+
+  find(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[];
+  findFirst(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections> | null;
 }
 
 export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
@@ -56,7 +58,6 @@ export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<D
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
   destroy: () => void;
-  simpleQuery(simpleQuery: IndexQueryInput<Data | Connections>): Entity<Data, Connections>[];
 }
 
 export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknown, unknown>> =
@@ -79,6 +80,7 @@ export function createEntityStore<Data, Connections>(
   linker: DatabaseLinker
 ): EntityStore<Data, Connections> {
   type StoreEntity = Entity<Data, Connections>;
+
   const { config } = definition;
   /**
    * Keep 2 'versions' of items list. Array and id<>item map for quick 'by id' access.
@@ -108,50 +110,57 @@ export function createEntityStore<Data, Connections>(
     return true;
   }
 
-  const cleanups = createCleanupObject();
-
-  const getSimpleQuery = memoize((input: IndexQueryInput<Data & Connections>) => {
-    const queryKeys = typedKeys(input);
-
-    if (queryKeys.length === 1) {
-      const [requiredKey] = queryKeys;
-      const requiredValue = input[requiredKey]!;
-      const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
-
-      return computed(() => index.find(requiredValue));
-    }
-
+  const getComputedArrayForMultiFieldSimpleQuery = deepMemoize((filter: IndexQueryInput<Data & Connections>) => {
+    const keys = typedKeys(filter);
     return computedArray(() => {
-      let passingResults: Entity<Data, Connections>[] | null = null;
+      let results: Entity<Data, Connections>[] | undefined;
 
-      for (const requiredKey of queryKeys) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const requiredValue = input[requiredKey]!;
+      for (const key of keys) {
+        const value = filter[key];
+        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
 
-        const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
+        const keyResults = index.find(value);
 
-        const keyResults = index.find(requiredValue);
-
-        // Nothing passed previous results. We can instantly return as there is no point to 'narrow down' empty result.
-        if (!keyResults.length) {
-          return [];
+        if (!results) {
+          results = keyResults;
         }
 
-        if (passingResults === null) {
-          passingResults = keyResults;
-          continue;
+        if (results.length === 0) {
+          return results;
         }
 
-        if (!passingResults.length) {
-          return passingResults;
-        }
-
-        passingResults = passingResults.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
+        results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
       }
 
-      return passingResults ?? [];
+      return results!;
     });
   });
+
+  const getSourceForQueryInput = deepMemoize(
+    function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
+      if (typeof filter === "function") {
+        return items.filter(filter);
+      }
+
+      const keys = typedKeys(filter);
+
+      if (keys.length === 1) {
+        const key = keys[0];
+        const value = filter[key];
+
+        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
+
+        const results = index.find(value);
+
+        return results;
+      }
+
+      return getComputedArrayForMultiFieldSimpleQuery(filter).get();
+    },
+    { checkEquality: true }
+  );
+
+  const cleanups = createCleanupObject();
 
   const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>({ checkEquality: true });
 
@@ -170,8 +179,6 @@ export function createEntityStore<Data, Connections>(
 
     return query;
   }
-
-  const reuseSimpleQueryInput = createReuseValueGroup();
 
   function registerEntity(entity: Entity<Data, Connections>, source: EntityChangeSource) {
     const id = getEntityId(entity);
@@ -216,20 +223,13 @@ export function createEntityStore<Data, Connections>(
 
       return item;
     },
-    simpleQuery(input: IndexQueryInput<Data & Connections>): Entity<Data, Connections>[] {
-      const reusedInput = reuseSimpleQueryInput(input);
-      return getSimpleQuery(reusedInput as typeof input).get();
+    find(filter) {
+      return getSourceForQueryInput(filter);
     },
+    findFirst(filter) {
+      const all = getSourceForQueryInput(filter);
 
-    findAllByIndexValue<K extends keyof IndexQueryInput<Data & Connections>>(
-      key: K,
-      value: IndexQueryInput<Data & Connections>[K]
-    ) {
-      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-      const results = index.find(value);
-
-      return results;
+      return all[0] ?? null;
     },
     findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,

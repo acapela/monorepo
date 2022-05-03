@@ -3,7 +3,6 @@ import { IObservableArray } from "mobx";
 
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
-import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
@@ -159,6 +158,10 @@ export function createEntityQuery<Data, Connections>(
     () => {
       let items = getSource();
 
+      if (!items.length) {
+        return items;
+      }
+
       /**
        * Important!
        *
@@ -171,19 +174,9 @@ export function createEntityQuery<Data, Connections>(
       }
 
       if (filter && typeof filter !== "function") {
-        const keys = typedKeys(filter);
+        const storeMatchingItems = store.find(filter);
 
-        if (keys.length === 1) {
-          const key = keys[0];
-
-          return store.findAllByIndexValue(key, filter[key]);
-        }
-
-        if (keys.length > 1) {
-          const simpleQueryPassingItems = store.simpleQuery(filter);
-
-          items = simpleQueryPassingItems.filter((item) => items.includes(item));
-        }
+        items = items.filter((sourceItem) => storeMatchingItems.includes(sourceItem));
       }
 
       if (sortConfig) {

@@ -113,7 +113,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = getEntity(entity as any).findByUniqueIndex("notification_id" as never, notification.id as never);
+        const result = getEntity(entity as any).findFirst({ notification_id: notification.id });
 
         if (result) {
           return result as unknown as EntityByDefinition<typeof innerEntities[number]>;

@@ -43,9 +43,9 @@ export const owner = defineEntity<TestOwnerEntity>({
     },
   },
   getDefaultValues: getDefaultCommonData,
-}).addConnections((owner, { getEntity }) => {
+}).addConnections((ownerData, { getEntity }) => {
   return {
-    dogs: getEntity(dog).query({ owner_id: owner.id }),
+    dogs: getEntity(dog).query({ owner_id: ownerData.id }),
   };
 });
 
@@ -56,10 +56,10 @@ export const dog = defineEntity<TestDogEntity>({
   name: "dog",
   sync: getSyncConfig<TestDogEntity>(),
   getDefaultValues: getDefaultCommonData,
-}).addConnections((dog, { getEntity }) => {
+}).addConnections((dogData, { getEntity }) => {
   return {
     get owner() {
-      return getEntity(owner).assertFindById(dog.owner_id);
+      return getEntity(owner).assertFindById(dogData.owner_id);
     },
   };
 });

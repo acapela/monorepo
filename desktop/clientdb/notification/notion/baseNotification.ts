@@ -88,10 +88,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const client = getEntity(entity as any);
 
-          const foundInner = client.findByUniqueIndex(
-            "notification_notion_id" as never,
-            notificationNotion.id as never
-          );
+          const foundInner = client.findFirst({ notification_notion_id: notificationNotion.id });
 
           if (foundInner) {
             return foundInner as unknown as EntityByDefinition<typeof notionInnerEntities[number]>;

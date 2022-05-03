@@ -84,7 +84,8 @@ export function createEntityClient<Data, Connections>(
     removeById,
     assertFindByUniqueIndex,
     sort,
-    findAllByIndexValue,
+    find,
+    findFirst,
   } = store;
 
   const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
@@ -172,7 +173,8 @@ export function createEntityClient<Data, Connections>(
     assertFindById,
     removeById,
     assertFindByUniqueIndex,
-    findAllByIndexValue,
+    find,
+    findFirst,
     sort,
     search(term) {
       assert(searchEngine, `No search configuration is provided for entity ${definition.config.name}`);
