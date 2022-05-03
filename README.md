@@ -78,7 +78,7 @@ Add the authtoken from the Ngrok dashboard into your `.env` as `NGROK_AUTH_TOKEN
 Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
 1. Run `yarn shared clone-slack-manifest`
-    1. Make sure to use the `NGROK_SUBDOMAIN` defined above
+   1. Make sure to use the `NGROK_SUBDOMAIN` defined above
 2. Go to https://api.slack.com/apps?new_app=1 and choose the second option to use the manifest to create a new app
 3. Make sure to give it a unique name and command name (which also should be unique within our workspace)
 4. Head to "Basic Information" and find the "App-Level Tokens", where you will want to click "Generate token", give it a name of your choosing and add the `authorizations:read` scope. You will need the token in the next step.
