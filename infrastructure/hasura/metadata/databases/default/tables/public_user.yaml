@@ -43,6 +43,7 @@ select_permissions:
         - is_slack_auto_resolve_enabled
         - name
         - onboarding_finished_at
+        - referral_code
         - slack_included_channels
         - subscription_plan
         - updated_at
