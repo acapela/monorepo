@@ -31,7 +31,7 @@ export function findUserForSlackInstallation(slackUserId: string) {
 }
 
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): [string[], boolean] {
-  const channelMention = false;
+  let channelMention = false;
 
   return [
     nodes.flatMap((node) => {
