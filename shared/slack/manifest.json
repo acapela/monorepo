@@ -29,7 +29,9 @@
         "im:write",
 
         "users:read",
-        "reactions:read"
+        "reactions:read",
+
+        "team:read"
       ]
     }
   },

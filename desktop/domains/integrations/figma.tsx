@@ -1,10 +1,7 @@
-import React from "react";
-
 import { trackEvent } from "@aca/desktop/analytics";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { clearServiceCookiesBridge, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 const FIGMA_URL_SCHEME = "figma:/";
@@ -33,5 +30,5 @@ export const figmaIntegrationClient: IntegrationClient = {
     await loginFigmaBridge();
     trackEvent("Figma Integration Added");
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.figma} />,
+  imageURL: integrationLogos.figma,
 };

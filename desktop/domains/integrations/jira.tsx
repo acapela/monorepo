@@ -1,10 +1,7 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { loginJiraBridge } from "@aca/desktop/bridge/auth";
 import { accountStore } from "@aca/desktop/store/account";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 function getAtlassianAccounts() {
@@ -16,7 +13,7 @@ export const jiraIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_jira_issue",
   name: "Jira",
   description: "Jira issue updates and comments",
-  icon: <IntegrationIcon imageUrl={integrationLogos.jira} />,
+  imageURL: integrationLogos.jira,
   getIsConnected: () => {
     return !!accountStore.user && getAtlassianAccounts().length > 0;
   },

@@ -63,9 +63,9 @@ const requiredEnvVarNamesBackend = [
   "ASANA_OAUTH_SECRET",
   "ASANA_CLIENT_ID",
   "ASANA_CLIENT_SECRET",
-  "CLICKUP_OAUTH_SECRET",
-  "CLICKUP_CLIENT_ID",
-  "CLICKUP_CLIENT_SECRET",
+  // "CLICKUP_OAUTH_SECRET",
+  // "CLICKUP_CLIENT_ID",
+  // "CLICKUP_CLIENT_SECRET",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;

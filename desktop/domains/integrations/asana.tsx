@@ -1,11 +1,8 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { asanaAuthTokenBridgeValue, loginAsanaBridge, logoutAsanaBridge } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 export const asanaIntegrationClient: IntegrationClient = {
@@ -38,5 +35,5 @@ export const asanaIntegrationClient: IntegrationClient = {
     await logoutAsanaBridge({ webhookId: db.asanaWebhook.all.length > 1 ? id : undefined });
     db.asanaWebhook.removeById(id, "sync");
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.asana} />,
+  imageURL: integrationLogos.asana,
 };

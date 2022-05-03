@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 
 import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
 import { getEnabledIntegrationClientList } from "@aca/desktop/domains/integrations";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
@@ -37,7 +38,9 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
                   }}
                   $forceHighlight={integration.getIsConnected()}
                 >
-                  <UIIntegrationIcon>{integration.icon}</UIIntegrationIcon>
+                  <UIIntegrationIcon>
+                    <IntegrationIcon integrationClient={integration} />
+                  </UIIntegrationIcon>
                 </UIIntegrationButton>
                 <UICheckPlaceholder>
                   {integration.getIsConnected() && (

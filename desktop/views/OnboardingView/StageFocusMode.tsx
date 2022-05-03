@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { pickSnoozeTime } from "@aca/desktop/actions/snoozeUtils";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { TopBarButton } from "@aca/desktop/ui/systemTopBar/TopBarButton";
 import { TopBarDivider, UITopBarButtonsGroup } from "@aca/desktop/ui/systemTopBar/ui";
@@ -132,7 +133,9 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                     </UITopBarButtonsGroup>
                     <AnimatePresence exitBeforeEnter>
                       <UITopbarTitle key={title}>
-                        <UITitleIcon>{slackIntegrationClient.icon}</UITitleIcon>
+                        <UITitleIcon>
+                          <IntegrationIcon integrationClient={slackIntegrationClient} />
+                        </UITitleIcon>
                         {title}
                       </UITopbarTitle>
                     </AnimatePresence>
