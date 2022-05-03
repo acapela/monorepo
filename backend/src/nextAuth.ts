@@ -42,6 +42,7 @@ const ACCOUNTS_WITHOUT_USER_UPDATES = ["atlassian"];
 const nextAuthMountPath = "/api/auth";
 
 function nextAuthMiddleware(req: Request, res: Response) {
+  const referralCode = req.cookies.referral as string | undefined;
   req.query.nextauth = req.path.slice(1).split("/");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return NextAuth(req as any, res as any, {
@@ -239,6 +240,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
             email,
             avatar_url: image,
             referral_code: createNewReferralCode(),
+            used_referral_code: referralCode?.toUpperCase(),
           },
         });
         trackFirstBackendUserEvent(user, "Signed Up");
