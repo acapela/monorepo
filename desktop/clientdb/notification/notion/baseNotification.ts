@@ -99,6 +99,15 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
 
         return undefined as unknown as EntityByDefinition<typeof notionInnerEntities[number]>;
       },
+      resolveData() {
+        return {
+          space_id:
+            notificationNotion.space_id ||
+            (notificationNotion.notion_space_id &&
+              getEntity(notionSpaceEntity).findById(notificationNotion.notion_space_id)?.space_id),
+          notion_original_notification_id: notificationNotion.notion_original_notification_id,
+        };
+      },
       get type() {
         return connections.inner.__typename;
       },

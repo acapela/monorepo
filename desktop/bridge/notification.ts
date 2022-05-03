@@ -9,3 +9,8 @@ interface NotificationResolvedEventData {
 }
 
 export const notificationResolvedChannel = createChannelBridge<NotificationResolvedEventData>("notification-resolved");
+
+export const notionNotificationResolvedChannel =
+  createChannelBridge<{ space_id?: string | null; notion_original_notification_id: string }>(
+    "notion-notification-resolved"
+  );
