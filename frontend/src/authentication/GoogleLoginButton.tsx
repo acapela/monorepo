@@ -9,15 +9,21 @@ export const GoogleLoginButton = ({
   className,
   children,
   signupEmail,
+  callbackUrl,
 }: {
   className?: string;
   children?: ReactNode;
   signupEmail: Maybe<string>;
+  callbackUrl?: string;
 }): JSX.Element => {
   function handleLogin() {
-    signIn("google", undefined, {
-      login_hint: signupEmail ?? "",
-    });
+    signIn(
+      "google",
+      { callbackUrl },
+      {
+        login_hint: signupEmail ?? "",
+      }
+    );
   }
 
   return (

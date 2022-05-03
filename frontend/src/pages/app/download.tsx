@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
+import { Router } from "@aca/frontend/src/router";
 import { openInNewTab } from "@aca/frontend/src/utils/openInNewTab";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
@@ -20,6 +21,14 @@ const defaultVideoHeightInPixels = 420;
 export default function DownloadPage(): JSX.Element {
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
+  const { search } = Router.getLocation();
+  if (search.referral) {
+    document.cookie = `referral=${search.referral};path=/`;
+    Router.navigate("login", { redirect: "/app/download" });
+    return <></>;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     axios.get(`https://api.github.com/repos/weareacapela/releases/releases/latest`).then((response) => {
       const assets = response.data.assets as GitHubAsset[];
@@ -27,7 +36,7 @@ export default function DownloadPage(): JSX.Element {
       if (!dmgAsset) return;
       setDownloadURL(dmgAsset.browser_download_url);
     });
-  });
+  }, []);
 
   function handleDownload() {
     if (!downloadURL) return;
