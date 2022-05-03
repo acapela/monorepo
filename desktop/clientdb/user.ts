@@ -56,7 +56,7 @@ export const userEntity = defineEntity<DesktopUserFragment>({
 }).addConnections((user, { getEntity }) => {
   return {
     get slackInstallation() {
-      return getEntity(userSlackInstallationEntity).query({ user_id: user.id }).first ?? null;
+      return getEntity(userSlackInstallationEntity).findFirst({ user_id: user.id });
     },
     get accounts() {
       return getEntity(accountEntity).all;

@@ -17,6 +17,7 @@ export const asanaIntegrationClient: IntegrationClient = {
   getCanConnect: () => true,
   getAccounts: () =>
     accountStore.user?.asanaWebhooks
+      .slice()
       .sort((a, b) => a.workspace_name!.localeCompare(b.workspace_name!))
       .map((w) => ({
         kind: "account",

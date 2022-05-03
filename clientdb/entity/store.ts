@@ -21,6 +21,7 @@ import {
 } from "./query";
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
+import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
 import { computedArray } from "./utils/computedArray";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
@@ -229,7 +230,7 @@ export function createEntityStore<Data, Connections>(
     findFirst(filter) {
       const all = getSourceForQueryInput(filter);
 
-      return all[0] ?? null;
+      return createArrayFirstComputed(all).get();
     },
     findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
       key: K,

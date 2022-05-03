@@ -16,5 +16,5 @@ export const getNotificationSearchTerms = cachedComputed(function getNotificatio
 export function notificationsFuzzySearch(keyword: string) {
   if (!keyword.length) return [];
 
-  return fuzzySearch(getDb().notification.query({ isResolved: false }).all, getNotificationSearchTerms, keyword, 0.1);
+  return fuzzySearch(getDb().notification.find({ isResolved: false }), getNotificationSearchTerms, keyword, 0.1);
 }

@@ -69,7 +69,7 @@ export const notionSpaceUserEntity = defineEntity<NotionSpaceUserFragment>({
     itemAdded(dataNow, { getEntity }) {
       if (dataNow.is_sync_enabled) {
         const selected = getEntity(notionSpaceUserEntity)
-          .all.filter((spaceUser) => spaceUser.is_sync_enabled)
+          .find({ is_sync_enabled: true })
           .map((spaceUser) => spaceUser.notionSpace.space_id);
         notionSelectedSpaceValue.set({ selected });
       }
@@ -78,7 +78,7 @@ export const notionSpaceUserEntity = defineEntity<NotionSpaceUserFragment>({
     itemUpdated(dataNow, dataBefore, { getEntity }) {
       if (dataNow.is_sync_enabled !== dataBefore.is_sync_enabled) {
         const selected = getEntity(notionSpaceUserEntity)
-          .all.filter((spaceUser) => spaceUser.is_sync_enabled)
+          .find({ is_sync_enabled: true })
           .map((spaceUser) => spaceUser.notionSpace.space_id);
         notionSelectedSpaceValue.set({ selected });
       }
