@@ -119,7 +119,7 @@ const UINotifications = styled.div`
   min-height: 0;
   overflow-y: auto;
 
-  padding-bottom: 48px;
+  padding-bottom: 192px;
 
   padding-top: 10px;
 `;
