@@ -14,6 +14,10 @@ export const AccountSettings = observer(function ThemeSelector() {
       <UIInfo>
         Logged as <strong>{user.email}</strong>
       </UIInfo>
+      <UIInfo>
+        Referral Code <strong>{user.referral_code}</strong>
+        <ReferralCode type="text" value={`${process.env.FRONTEND_URL}/app/download?referral=${user.referral_code}`} />
+      </UIInfo>
       <ActionButton kind="secondary" action={logOut} />
       <ActionButton kind="secondary" action={restartAndClearElectronData} />
     </UIHolder>
@@ -31,4 +35,12 @@ const UIInfo = styled.div`
   strong {
     font-weight: 600;
   }
+`;
+
+const ReferralCode = styled.input`
+  font-size: 15px;
+  font-weight: 600;
+  width: 100%;
+  height: 30px;
+}
 `;
