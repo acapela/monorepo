@@ -4,7 +4,7 @@ import { typedKeys } from "@aca/shared/object";
 
 const routes = {
   root: "/",
-  login: "/login",
+  login: "/login?:redirect",
   logout: "/logout",
   appDownload: "/app/download",
   appLogin: "/app/login",

@@ -7,12 +7,14 @@ import { SlackLogo } from "@aca/ui/icons/logos/SlackLogo";
 export const SlackLoginButton = ({
   className,
   children,
+  callbackUrl,
 }: {
   className?: string;
   children?: ReactNode;
+  callbackUrl?: string;
 }): JSX.Element => {
   function handleLogin() {
-    signIn("slack");
+    signIn("slack", { callbackUrl });
   }
 
   return (
