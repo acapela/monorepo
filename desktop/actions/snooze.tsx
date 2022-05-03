@@ -7,9 +7,6 @@ import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconClock } from "@aca/ui/icons";
 
-import { getDb } from "../clientdb";
-import { getIsNotificationsGroup } from "../domains/group/group";
-import { groupNotifications } from "../domains/group/groupNotifications";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -98,12 +95,12 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
       if (!group && notification) {
         // If the given notification is part of a group which can be previewed through a single notification, we treat
         // marking one of them as snoozed, as marking the whole group as snoozed
-        group =
-          groupNotifications(getDb().notification.find({ isSnoozed: false, isResolved: false }))
-            .filter(getIsNotificationsGroup)
-            .find(
-              (group) => group.isOnePreviewEnough && group.notifications.some(({ id }) => notification.id === id)
-            ) ?? null;
+        const list = context.assertTarget("list", true);
+        const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
+
+        if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
+          group = groupThatNotificationBelongsTo;
+        }
       }
 
       if (notification) {
