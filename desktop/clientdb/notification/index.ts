@@ -111,13 +111,14 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 })
   .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
-      return (
-        innerEntities
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((entity) => getEntity(entity as any).query({ notification_id: notification.id }).first)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .find(Boolean) as any
-      );
+      for (const entity of innerEntities) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = getEntity(entity as any).findFirst({ notification_id: notification.id });
+
+        if (result) {
+          return result as unknown as EntityByDefinition<typeof innerEntities[number]>;
+        }
+      }
     });
 
     const snoozePassedAtom = createAtom("Snooze change");

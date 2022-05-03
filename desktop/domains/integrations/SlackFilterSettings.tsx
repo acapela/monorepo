@@ -81,7 +81,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
           return;
         }
 
-        const storedSlackChannelsForTeam = userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).first;
+        const storedSlackChannelsForTeam = userSlackChannelsByTeam.findFirst({ slack_workspace_id: teamId });
 
         if (!storedSlackChannelsForTeam) {
           // We expect this to be filled in later;
@@ -138,7 +138,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
   }
 
   function updateSelectedChannels(teamId: string, conversations: SlackConversationsQuery["slack_conversations"]) {
-    const filter = userSlackChannelsByTeam.query({ slack_workspace_id: teamId }).first;
+    const filter = userSlackChannelsByTeam.findFirst({ slack_workspace_id: teamId });
 
     assert(filter, "filter should have been created");
 
@@ -150,7 +150,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
   }
 
   function handlePickAllChannelsForTeam(teamId: string, setIncludeAllChannels: boolean) {
-    const teamChannelFilter = db.userSlackChannelsByTeam.query({ user_id: user.id, slack_workspace_id: teamId }).first;
+    const teamChannelFilter = db.userSlackChannelsByTeam.findFirst({ user_id: user.id, slack_workspace_id: teamId });
 
     assert(teamChannelFilter, "team channel filter must be created");
 
@@ -189,7 +189,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
 
         const areAllConversationsAllowed = allConversationsSelectedForTeamMap[team_id] ?? false;
         const availableConversations = availableSlackConversationsByTeam[team_id] ?? [];
-        const channelFilter = userSlackChannelsByTeam.query({ user_slack_installation_id }).first;
+        const channelFilter = userSlackChannelsByTeam.findFirst({ user_slack_installation_id });
         const areBotsEnabled = !!channelFilter?.are_bots_enabled;
 
         return (

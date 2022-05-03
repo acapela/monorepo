@@ -42,7 +42,7 @@ export function migrateToNewUserSlackChannelsFiltersByTeam(
       return;
     }
 
-    const createdFiltersForTeam = db.userSlackChannelsByTeam.query({ slack_workspace_id }).all;
+    const createdFiltersForTeam = db.userSlackChannelsByTeam.find({ slack_workspace_id });
 
     if (createdFiltersForTeam.length === 0) {
       const included_channels = previouslyExistingSelected[slack_workspace_id] ?? [

@@ -25,7 +25,7 @@ async function start(): Promise<void> {
   const server = setupServer();
   const port = process.env.BACKEND_PORT;
   server.listen(port, () =>
-    logger.info("Server started", {
+    logger.info(`Server started on port ${port}`, {
       port,
       production: process.env.NODE_ENV === "production",
     })

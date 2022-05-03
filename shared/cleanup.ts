@@ -32,6 +32,13 @@ export function createCleanupObject(defaultCleanupOrder: CleanupOrder = "from-fi
         cleanup();
       });
     },
+    cleanOne(cleanup: Cleanup) {
+      if (!cleanups.has(cleanup)) return false;
+
+      cleanups.delete(cleanup);
+
+      cleanup();
+    },
     enqueue(...cleanupsToAdd: Array<Cleanup>) {
       cleanupsToAdd.forEach((cleanupToAdd) => {
         cleanups.add(cleanupToAdd);

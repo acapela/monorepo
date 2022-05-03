@@ -25,7 +25,7 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
 
   const notionAuthBridge = notionAuthTokenBridgeValue.use();
 
-  const selectedUserSpaces = db.notionSpaceUser.query({ is_sync_enabled: true }).all;
+  const selectedUserSpaces = db.notionSpaceUser.find({ is_sync_enabled: true });
   const selectedSpaces = selectedUserSpaces.map((spaceUser) => spaceUser.notionSpace);
   const allAvailableSpaces = db.notionSpaceUser.all.map((spaceUser) => spaceUser.notionSpace);
 

@@ -10,10 +10,10 @@ function getOpenNotifications() {
   const listIdsToShowBadge = applicationWideSettingsBridge.get().notificationsCountBadgeListIds;
 
   if (!listIdsToShowBadge?.length) {
-    return getNullableDb()?.notification.query({ isResolved: false, isSnoozed: false }).all;
+    return getNullableDb()?.notification.find({ isResolved: false, isSnoozed: false });
   }
 
-  const lists = getNullableDb()?.notificationList.query({ id: listIdsToShowBadge }).all ?? [];
+  const lists = getNullableDb()?.notificationList.find({ id: listIdsToShowBadge }) ?? [];
 
   return uniq(lists.map((l) => l.inboxNotifications.all).flat());
 }

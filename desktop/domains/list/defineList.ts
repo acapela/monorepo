@@ -43,7 +43,7 @@ export function defineNotificationsList({
   const getRawNotificationsQuery = cachedComputed(function getRawNotificationsQuery() {
     const db = getDb();
 
-    let notifications = "filter" in config ? db.notification.query(config.filter).all : config.getNotifications();
+    let notifications = "filter" in config ? db.notification.find(config.filter) : config.getNotifications();
 
     // Retains the active notification in the active list, to enable navigating to the next/previous notification
     const activeNotification = getActiveNotification();

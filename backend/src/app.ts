@@ -21,6 +21,7 @@ import { router as atlassianRoutes } from "./atlassian";
 import { router as authenticationRoutes } from "./authentication";
 import { router as clickupRoutes } from "./clickup/router";
 import { router as cronRoutes } from "./cron/cron";
+import { setupFakeDataRoute } from "./dev/fakeData";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
 import { router as githubRoutes } from "./github/router";
@@ -95,6 +96,11 @@ function setupRoutes(app: Application): void {
   listenToGmailSubscription();
 
   app.use(sentryTunnel);
+
+  if (IS_DEV) {
+    logger.info("Setting up dev fake data route");
+    setupFakeDataRoute(app);
+  }
 }
 
 function addErrorHandlersToApp(app: Application): void {

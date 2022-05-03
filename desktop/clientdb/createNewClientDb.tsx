@@ -51,6 +51,13 @@ devAssignWindowVariable("reloadClientDb", () => {
   window.location.reload();
 });
 
+/**
+ * Important notice!
+ *
+ * Order in this object is important.
+ *
+ * Entities that depend on other entities should be listed lower
+ */
 export const appClientDbEntities = {
   user: userEntity,
 
@@ -60,14 +67,16 @@ export const appClientDbEntities = {
   notionSpace: notionSpaceEntity,
   notionSpaceUser: notionSpaceUserEntity,
 
-  notification: notificationEntity,
   notificationList: notificationListEntity,
-  notificationNotion: notificationNotionEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
+
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
   notificationNotionCommented: notificationNotionCommentedEntity,
   notificationNotionUserInvited: notificationNotionUserInvitedEntity,
   notificationNotionReminder: notificationNotionReminderEntity,
+
+  notificationNotion: notificationNotionEntity,
+
   notificationFigmaComment: notificationFigmaCommentEntity,
   notificationLinear: notificationLinearEntity,
   notificationJira: notificationJiraEntity,
@@ -76,6 +85,8 @@ export const appClientDbEntities = {
   notificationAsana: notificationAsanaEntity,
   notificationDrive: notificationDriveEntity,
   notificationClickUp: notificationClickUpEntity,
+
+  notification: notificationEntity,
 
   account: accountEntity,
 

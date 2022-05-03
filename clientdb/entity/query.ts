@@ -1,6 +1,7 @@
 import { sortBy } from "lodash";
 import { IObservableArray } from "mobx";
 
+import { areArraysShallowEqual } from "@aca/shared/array";
 import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { createDeepMap } from "@aca/shared/deepMap";
 
@@ -158,6 +159,10 @@ export function createEntityQuery<Data, Connections>(
     () => {
       let items = getSource();
 
+      if (!items.length) {
+        return items;
+      }
+
       /**
        * Important!
        *
@@ -170,11 +175,9 @@ export function createEntityQuery<Data, Connections>(
       }
 
       if (filter && typeof filter !== "function") {
-        if (Object.keys(filter).length > 0) {
-          const simpleQueryPassingItems = store.simpleQuery(filter);
+        const storeMatchingItems = store.find(filter);
 
-          items = simpleQueryPassingItems.filter((item) => items.includes(item));
-        }
+        items = items.filter((passingItem) => storeMatchingItems.includes(passingItem));
       }
 
       if (sortConfig) {
@@ -189,7 +192,7 @@ export function createEntityQuery<Data, Connections>(
 
       return items;
     },
-    { name: `${queryKeyBase}.passingItems` }
+    { name: `${queryKeyBase}.passingItems`, equals: areArraysShallowEqual }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(
