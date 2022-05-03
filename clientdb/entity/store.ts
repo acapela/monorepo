@@ -1,3 +1,4 @@
+import { sortBy } from "lodash";
 import { IObservableArray, autorun, computed, observable, runInAction } from "mobx";
 
 import { areArraysShallowEqual } from "@aca/shared/array";
@@ -111,6 +112,14 @@ export function createEntityStore<Data, Connections>(
     return true;
   }
 
+  function sortWithDefaultSorter(entities: StoreEntity[]): StoreEntity[] {
+    if (!config.defaultSort) {
+      return entities;
+    }
+
+    return sortBy(entities, config.defaultSort);
+  }
+
   const getSourceForQueryInput = cachedComputed(
     function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
       if (typeof filter === "function") {
@@ -127,7 +136,7 @@ export function createEntityStore<Data, Connections>(
 
         const results = index.find(value);
 
-        return results;
+        return sortWithDefaultSorter(results);
       }
 
       let results: Entity<Data, Connections>[] | undefined;
@@ -149,7 +158,7 @@ export function createEntityStore<Data, Connections>(
         results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
       }
 
-      return results!;
+      return sortWithDefaultSorter(results!);
     },
     { equals: areArraysShallowEqual }
   );
