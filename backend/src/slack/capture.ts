@@ -30,14 +30,24 @@ export function findUserForSlackInstallation(slackUserId: string) {
   }
 }
 
-function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
-  return nodes.flatMap((node) => {
-    if (Array.isArray(node.content)) {
-      return extractMentionedSlackUserIds(node.content);
-    } else {
-      return node.type == "slackUser" ? [node.id] : [];
-    }
-  });
+function extractMentionedSlackUserIds(nodes: SingleASTNode[]): [string[], boolean] {
+  const channelMention = false;
+
+  return [
+    nodes.flatMap((node) => {
+      if (Array.isArray(node.content)) {
+        return extractMentionedSlackUserIds(node.content);
+      } else {
+        if (node.type === "slackAtHere" || node.type === "slackAtChannel") {
+          channelMention = true;
+          return [];
+        }
+
+        return node.type == "slackUser" ? [node.id] : [];
+      }
+    }),
+    channelMention,
+  ];
 }
 
 const extractMentionedSlackUserIdsFromMd = (text?: string) =>
@@ -178,8 +188,8 @@ async function createNotificationFromMessage(
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
-  const mentionedSlackUserIds = extractMentionedSlackUserIdsFromMd(message.text);
-  const isMentioned = mentionedSlackUserIds.includes(slackUserId);
+  const [mentionedSlackUserIds, channelMention] = extractMentionedSlackUserIdsFromMd(message.text);
+  const isMentioned = channelMention || mentionedSlackUserIds.includes(slackUserId);
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
