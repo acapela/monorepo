@@ -7,11 +7,12 @@ import { installUpdate } from "@aca/desktop/actions/app";
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { PopPresenceAnimator } from "@aca/ui/animations";
+import { BodyPortal } from "@aca/ui/BodyPortal";
 import { theme } from "@aca/ui/theme";
 
 import { ProgressBar } from "./ProgressBar";
 
-export const SidebarUpdateInfo = observer(() => {
+export const UpdateInfo = observer(() => {
   const { isUpdateReadyToInstall, updateDownloadingPercent } = applicationStateBridge.get();
 
   function renderUpdateInfo() {
@@ -37,8 +38,21 @@ export const SidebarUpdateInfo = observer(() => {
     return null;
   }
 
-  return <AnimatePresence>{renderUpdateInfo()}</AnimatePresence>;
+  return (
+    <BodyPortal>
+      <UIFlyer>
+        <AnimatePresence>{renderUpdateInfo()}</AnimatePresence>
+      </UIFlyer>
+    </BodyPortal>
+  );
 });
+
+const UIFlyer = styled.div`
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 250px;
+`;
 
 const UIUpdateInfoBox = styled(PopPresenceAnimator)`
   ${theme.box.panel.pageCart.padding.radius.vertical};

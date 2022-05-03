@@ -20,7 +20,6 @@ import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
 import { SidebarItem } from "./SidebarItem";
-import { SidebarUpdateInfo } from "./UpdateInfo";
 
 export const SIDEBAR_WIDTH = 270;
 
@@ -109,16 +108,9 @@ export const Sidebar = observer(({ isOpened }: Props) => {
       <UIFixedButton>
         <FeedbackButton />
       </UIFixedButton>
-      <UIUpdatePart>
-        <SidebarUpdateInfo />
-      </UIUpdatePart>
     </UIHolder>
   );
 });
-
-const UIUpdatePart = styled.div`
-  padding: 16px;
-`;
 
 const UIHolder = styled.div<{ $isOpened: boolean }>`
   width: ${SIDEBAR_WIDTH}px;
