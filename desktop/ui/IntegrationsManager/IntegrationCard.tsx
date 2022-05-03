@@ -15,7 +15,7 @@ interface Props {
 }
 
 const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
-  <Button kind="primarySubtle" icon={<IconCross />} onClick={onClick}>
+  <Button kind="secondary" icon={<IconCross />} onClick={onClick}>
     Disconnect
   </Button>
 );

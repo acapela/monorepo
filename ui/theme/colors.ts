@@ -26,6 +26,12 @@ const secondary = color("hsl(200, 100%, 60%)", {
   readableText: black,
 });
 
+const danger = color("hsl(350, 80%, 55%)", {
+  hover: color("hsl(350, 80%, 50%)"),
+  active: color("hsl(350, 80%, 45%)"),
+  readableText: white,
+});
+
 const lightGray = color("hsl(220, 33%, 98%)", {
   hover: color("hsla(0, 0%, 0%, 0.05)"),
   active: color("hsla(0, 0%, 0%, 0.075)"),
@@ -43,8 +49,11 @@ const icon = color("hsla(0, 0%, 0%, 0.4)", {
 
 const blue = color("hsl(204, 100%, 50%)");
 
-const green = color("hsl(169, 100%, 37%)");
-const success = color("hsl(147, 81%, 46%)");
+const success = color("hsl(163, 73%, 47%)");
+
+const warning = color("hsl(25, 100%, 45%)", {
+  readableText: white,
+});
 
 const divider = color("hsla(0, 0%, 53%, 0.13)");
 
@@ -87,17 +96,15 @@ export const defaultColors = {
     selectedTab,
   },
   status: {
-    // TODO: Adjust
-    danger: primary,
-    warning: primary,
-    success: primary,
+    danger,
+    warning,
+    success,
   },
   tags: {
     primary,
     action: primary,
     feedback: secondary,
     read: blue,
-    decision: green,
     observe: black.opacity(0.5),
   },
   functional: {
