@@ -17,6 +17,7 @@ export const clickupIntegrationClient: IntegrationClient = {
   getCanConnect: () => true,
   getAccounts: () =>
     accountStore.user?.clickupTeams
+      .slice()
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((w) => ({
         kind: "account",
