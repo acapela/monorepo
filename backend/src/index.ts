@@ -11,6 +11,7 @@ import { logger } from "@aca/shared/logger";
 
 import { setupServer } from "./app";
 import { getDevPublicTunnelURL } from "./localtunnel";
+import { ensureReferralCode } from "./user/ensureReferralCode";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -30,6 +31,9 @@ async function start(): Promise<void> {
       production: process.env.NODE_ENV === "production",
     })
   );
+
+  // TODO: remove once all accounts have referral codes
+  await ensureReferralCode();
 
   if (!IS_DEV) return;
 
