@@ -3,6 +3,7 @@ import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getIsIntegrationClient } from "@aca/desktop/domains/integrations";
 import { IntegrationAccount, IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { getIsNotificationsList } from "@aca/desktop/domains/list/defineList";
+import { unsafeAssertType } from "@aca/shared/assert";
 
 import { createPredicates } from "./predicates";
 
@@ -28,9 +29,13 @@ export const targetPredicates = {
   group: getIsNotificationsGroup,
   integration: getIsIntegrationClient,
   account: getIsAccount,
-  integrationWithAccount: (input: unknown): input is IntegrationWithAccount =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Boolean(getIsIntegrationClient((input as any).integration) && getIsAccount((input as any).account)),
+  integrationWithAccount: (input: unknown): input is IntegrationWithAccount => {
+    if (!input) return false;
+
+    unsafeAssertType<IntegrationWithAccount>(input);
+
+    return Boolean(getIsIntegrationClient(input.integration) && getIsAccount(input.account));
+  },
 };
 
 export function createActionTargetPredicates(targets: () => unknown[]) {
