@@ -6,6 +6,7 @@ import { Router } from "express";
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { captureJiraWebhook } from "./capturing";
@@ -59,6 +60,7 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
 
   if (account?.provider_id === "atlassian" && event.type === "create") {
     handleCreateAtlassianAccount(account);
+    trackBackendUserEvent(account.user_id, "Jira Integration Added");
     return;
   }
 

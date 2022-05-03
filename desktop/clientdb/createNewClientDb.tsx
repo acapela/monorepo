@@ -11,9 +11,11 @@ import { isClient } from "@aca/shared/document";
 import { accountEntity } from "./account";
 import { asanaAccountEntity } from "./asanaAccount";
 import { asanaWebhookEntity } from "./asanaWebhook";
+import { clickupTeamEntity } from "./clickupTeam";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
 import { notificationAsanaEntity } from "./notification/asana/task";
+import { notificationClickUpEntity } from "./notification/clickup/task";
 import { notificationDriveEntity } from "./notification/drive/activity";
 import { googleDriveFileEntity } from "./notification/drive/file";
 import { notificationFigmaCommentEntity } from "./notification/figma/comment";
@@ -79,6 +81,7 @@ export const appClientDbEntities = {
   notificationGmail: notificationGmailEntity,
   notificationAsana: notificationAsanaEntity,
   notificationDrive: notificationDriveEntity,
+  notificationClickUp: notificationClickUpEntity,
 
   notification: notificationEntity,
 
@@ -89,6 +92,7 @@ export const appClientDbEntities = {
 
   asanaAccount: asanaAccountEntity,
   asanaWebhook: asanaWebhookEntity,
+  clickupTeam: clickupTeamEntity,
 
   githubInstallation: githubInstallationEntity,
 

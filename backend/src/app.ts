@@ -19,6 +19,7 @@ import { router as actionRoutes } from "./actions/actions";
 import { router as asanaRoutes } from "./asana/router";
 import { router as atlassianRoutes } from "./atlassian";
 import { router as authenticationRoutes } from "./authentication";
+import { router as clickupRoutes } from "./clickup/router";
 import { router as cronRoutes } from "./cron/cron";
 import { setupFakeDataRoute } from "./dev/fakeData";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
@@ -86,7 +87,8 @@ function setupRoutes(app: Application): void {
     linearRoutes,
     atlassianRoutes,
     githubRoutes,
-    asanaRoutes
+    asanaRoutes,
+    clickupRoutes
   );
 
   nextAuth(app);

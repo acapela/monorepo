@@ -1,0 +1,7 @@
+table:
+  schema: public
+  name: clickup_account_to_team
+object_relationships:
+  - name: clickup_account
+    using:
+      foreign_key_constraint_on: account_id

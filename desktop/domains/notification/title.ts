@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
@@ -107,6 +109,27 @@ function getTitle(inner: NotificationEntity["inner"]): string {
         default:
           return inner.documentName ?? "Unknown document";
       }
+    }
+    case "notification_clickup": {
+      if (inner.type.startsWith("due:")) {
+        const statusInfo = inner.type.split(":");
+        return `Set due date in "${inner.title}" to ${format(new Date(parseInt(statusInfo[1], 10)), "dd/MM/yyyy")}`;
+      }
+      if (inner.type.includes(":")) {
+        const statusInfo = inner.type.split(":");
+        return `Set ${statusInfo[0]} in "${inner.title}" to ${statusInfo[1]}`;
+      }
+      switch (inner.type) {
+        case "mention":
+          return `Mentioned you in "${inner.title}"`;
+        case "comment":
+          return `Commented in "${inner.title}"`;
+        case "assign":
+          return `Assigned you to "${inner.title}"`;
+        case "task":
+          return `Task "${inner.title}" was created`;
+      }
+      return `Unhandled ClickUp notification in "${inner.title}"`;
     }
     default:
       return "Unhandled notification!!";

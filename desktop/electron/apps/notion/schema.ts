@@ -43,7 +43,6 @@ const SpacePayload = z.object({
     version: z.number(),
     name: z.string(),
     icon: z.string().optional(),
-    pages: z.array(z.string()),
     created_time: z.number(),
     last_edited_time: z.number(),
     created_by_table: z.string(), //e.g. notion_user
@@ -127,6 +126,12 @@ const BlockValueCommon = z.object({
 });
 
 export const SomeBlockValue = z.object({ properties: z.record(z.array(BlockDataItem)) });
+
+export const PageBlockValue = BlockValueCommon.extend({
+  type: z.literal("page"),
+  created_by_id: z.string(),
+  created_by_table: z.string(),
+});
 
 export const CollectionViewPageBlockValue = BlockValueCommon.extend({
   type: z.literal("collection_view_page"),

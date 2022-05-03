@@ -6,6 +6,7 @@ import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
+import { clickupTeamEntity } from "@aca/desktop/clientdb/clickupTeam";
 import { DesktopUserFragment, User_Bool_Exp, User_Set_Input } from "@aca/gql";
 
 import { accountEntity } from "./account";
@@ -68,6 +69,9 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     },
     get asanaWebhooks() {
       return getEntity(asanaWebhookEntity).all;
+    },
+    get clickupTeams() {
+      return getEntity(clickupTeamEntity).all;
     },
     get isNew() {
       const timeSinceUserCreatedInSeconds = Math.abs(differenceInSeconds(new Date(), new Date(user.created_at)));

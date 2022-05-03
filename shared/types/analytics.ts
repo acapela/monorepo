@@ -5,20 +5,6 @@ import { Maybe } from "@aca/shared/types";
 
 export type PlanType = "trial" | "free" | "premium";
 
-export type Origin =
-  | "slack-modal-slash-command"
-  | "slack-quick-slash-command"
-  | "slack-global-shortcut"
-  | "slack-live-message"
-  | "slack-quick-message-action"
-  | "slack-modal-message-action"
-  | "slack-home-tab"
-  | "slack-view-request-modal"
-  | "web-app"
-  | "landing-page"
-  | "desktop-app"
-  | "unknown";
-
 /**
  * Map of tracking event types with their required parameters.
  * Use past tense and Title Case event names for new types.
@@ -66,11 +52,13 @@ export type AnalyticsEventsMap = {
   "Notification Unresolved": void;
   "Custom List Created": void;
   "Custom List Deleted": void;
+  "New Message Composed": { integration: string };
 
   // Navigation related events
 
   "App Opened": { app_version: string | undefined };
   "App Restarted": void;
+  "App Updated": void;
   "Settings Opened": void;
   "Snoozed Notifications Opened": void;
   "Resolved Notifications Opened": void;
@@ -86,6 +74,9 @@ export type AnalyticsEventsMap = {
   "Notion Integration Added": void;
   "Jira Integration Added": void;
   "Gmail Integration Added": void;
+  "Asana Integration Added": void;
+  "GitHub Integration Added": void;
+  "ClickUp Integration Added": void;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
@@ -135,6 +126,7 @@ export type AnalyticsUserProfile = {
   github_installed_at?: Date;
   gmail_installed_at?: Date;
   asana_installed_at?: Date;
+  clickup_installed_at?: Date;
   onboarding: "self_serve" | "white_glove";
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
