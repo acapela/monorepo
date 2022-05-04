@@ -95,7 +95,7 @@ const createTextPreviewFromSlackMessage = async (
 };
 
 async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
-  const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user).filter(isNotNullish);
+  const userIds = extractMentionedSlackUserIdsFromMd(message.text)[0].concat(message.user).filter(isNotNullish);
   if (userIds.length > 0) {
     await db.slack_thread_involed_user.createMany({
       data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
