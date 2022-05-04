@@ -28,5 +28,10 @@ COMMENT ON TRIGGER "set_public_slack_team_updated_at" ON "public"."slack_team"
     IS 'trigger to set value of column "updated_at" to current timestamp on row update';
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+insert into slack_team (slack_team_id, team_info_data)
+select distinct slack_team_id, '{}'::jsonb
+from user_slack_installation;
+
 alter table user_slack_installation
-    add constraint user_slack_installation_team_id_fk foreign key (slack_team_id) references slack_team (slack_team_id);
+    add constraint user_slack_installation_team_id_fk
+        foreign key (slack_team_id) references slack_team (slack_team_id);
