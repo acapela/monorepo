@@ -76,6 +76,8 @@ export function Toast({
     };
   }
 
+  const hasActions = !!action || !!actionObject;
+
   return (
     <UIAnimator
       layoutId={disablePositionalAnimations ? undefined : id}
@@ -87,6 +89,7 @@ export function Toast({
         onClick={() => {
           onCloseRequest?.();
         }}
+        $isVertical={hasActions}
       >
         <UIIcon>
           <IconInfo />
@@ -97,21 +100,23 @@ export function Toast({
             {title && <UITitle>{title}</UITitle>}
             {message && <UIDescription>{message}</UIDescription>}
           </UIHead>
-          <UIActions>
-            {action && (
-              <Button
-                kind="secondary"
-                onClick={() => {
-                  action.callback?.();
-                }}
-              >
-                {action.label}
-              </Button>
-            )}
-            {actionObject && (
-              <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />
-            )}
-          </UIActions>
+          {hasActions && (
+            <UIActions>
+              {action && (
+                <Button
+                  kind="secondary"
+                  onClick={() => {
+                    action.callback?.();
+                  }}
+                >
+                  {action.label}
+                </Button>
+              )}
+              {actionObject && (
+                <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />
+              )}
+            </UIActions>
+          )}
         </UIBody>
       </UIToast>
     </UIAnimator>
@@ -122,7 +127,7 @@ const UIAnimator = styled(PresenceAnimator)`
   will-change: transform, filter;
 `;
 
-const UIToast = styled.div`
+const UIToast = styled.div<{ $isVertical: boolean }>`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   ${theme.box.panel.toast.padding.radius}
   ${theme.shadow.modal};
@@ -130,7 +135,7 @@ const UIToast = styled.div`
   margin: 5px 0;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: ${(props) => (props.$isVertical ? "column" : "row")};
   align-items: flex-start;
   gap: 16px;
 `;
@@ -170,4 +175,5 @@ const UIActions = styled.div`
   display: flex;
   align-self: stretch;
   align-items: center;
+  justify-content: flex-end;
 `;
