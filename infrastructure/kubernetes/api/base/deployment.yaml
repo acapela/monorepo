@@ -26,6 +26,9 @@ spec:
         - name: backend
           image: eu.gcr.io/meetnomoreapp/monorepo:4.187.10
           command: ["./scripts/start.sh"]
+          resources:
+            requests:
+              cpu: 250m
           ports:
             - containerPort: 8080
           envFrom:
