@@ -10,7 +10,6 @@ import { useMethod } from "@aca/shared/hooks/useMethod";
 import { usePausableTimeout } from "@aca/shared/hooks/usePausableTimeout";
 import { DAY } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
-import { IconInfo } from "@aca/ui/icons";
 import { PresenceAnimator, PresenceStyles } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
@@ -89,11 +88,10 @@ export function Toast({
         onClick={() => {
           onCloseRequest?.();
         }}
-        $isVertical={hasActions}
       >
-        <UIIcon>
+        {/* <UIIcon>
           <IconInfo />
-        </UIIcon>
+        </UIIcon> */}
 
         <UIBody>
           <UIHead>
@@ -104,7 +102,7 @@ export function Toast({
             <UIActions>
               {action && (
                 <Button
-                  kind="secondary"
+                  kind="tertiary"
                   onClick={() => {
                     action.callback?.();
                   }}
@@ -113,7 +111,7 @@ export function Toast({
                 </Button>
               )}
               {actionObject && (
-                <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />
+                <ActionButton action={actionObject.action} target={actionObject.target} kind="tertiary" />
               )}
             </UIActions>
           )}
@@ -127,7 +125,7 @@ const UIAnimator = styled(PresenceAnimator)`
   will-change: transform, filter;
 `;
 
-const UIToast = styled.div<{ $isVertical: boolean }>`
+const UIToast = styled.div`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   ${theme.box.panel.toast.padding.radius}
   ${theme.shadow.modal};
@@ -135,20 +133,14 @@ const UIToast = styled.div<{ $isVertical: boolean }>`
   margin: 5px 0;
 
   display: flex;
-  flex-direction: ${(props) => (props.$isVertical ? "column" : "row")};
   align-items: flex-start;
   gap: 16px;
 `;
 
-const UIIcon = styled.div`
-  font-size: 20px;
-  margin-top: 4px;
-`;
-
 const UIBody = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: flex-end;
   gap: 16px;
   flex-grow: 1;
 `;
@@ -164,8 +156,8 @@ const UITitle = styled.div`
   ${theme.typo.content.medium}
 `;
 const UIDescription = styled.div`
-  ${theme.typo.content.secondary};
-  -webkit-line-clamp: 2;
+  ${theme.typo.content.size(12).secondary};
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   display: -webkit-box;
