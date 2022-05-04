@@ -19,6 +19,9 @@ spec:
       containers:
         - name: caddy
           image: eu.gcr.io/meetnomoreapp/caddy:4.187.10
+          resources:
+            requests:
+              cpu: 50m
           ports:
             - containerPort: 3000
           envFrom:
