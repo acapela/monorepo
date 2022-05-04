@@ -32,22 +32,26 @@ export function findUserForSlackInstallation(slackUserId: string) {
 }
 
 function extractMentionedSlackUserIds(nodes: SingleASTNode[]): [string[], boolean] {
-  let channelMention = false;
+  let isChannelMention = false;
 
   return [
     nodes.flatMap((node) => {
       if (Array.isArray(node.content)) {
-        return extractMentionedSlackUserIds(node.content);
+        const [userIds, isChildChannelMention] = extractMentionedSlackUserIds(node.content);
+        if (isChildChannelMention) {
+          isChannelMention = true;
+        }
+        return userIds;
       } else {
         if (node.type === "slackAtHere" || node.type === "slackAtChannel") {
-          channelMention = true;
+          isChannelMention = true;
           return [];
         }
 
         return node.type == "slackUser" ? [node.id] : [];
       }
     }),
-    channelMention,
+    isChannelMention,
   ];
 }
 
@@ -96,7 +100,8 @@ const createTextPreviewFromSlackMessage = async (
 };
 
 async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
-  const userIds = extractMentionedSlackUserIdsFromMd(message.text)[0].concat(message.user).filter(isNotNullish);
+  const [mentionedUserIds] = extractMentionedSlackUserIdsFromMd(message.text);
+  const userIds = mentionedUserIds.concat(message.user).filter(isNotNullish);
   if (userIds.length > 0) {
     await db.slack_thread_involed_user.createMany({
       data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
