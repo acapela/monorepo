@@ -191,15 +191,16 @@ async function createNotificationFromMessage(
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
-  const [mentionedSlackUserIds, channelMention] = extractMentionedSlackUserIdsFromMd(message.text);
-  const isMentioned = channelMention || mentionedSlackUserIds.includes(slackUserId);
+  const [mentionedSlackUserIds, isChannelMention] = extractMentionedSlackUserIdsFromMd(message.text);
+  const isUserMentioned = mentionedSlackUserIds.includes(slackUserId);
+  const isMentioned = isChannelMention || isUserMentioned;
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
 
   if (
     !userToken ||
-    (isAuthor && !isMentioned) ||
+    (isAuthor && !isUserMentioned) ||
     (threadTs && !(await checkIsInvolvedInThread(userToken, channel, threadTs, slackUserId))) ||
     (!is_IM_or_MPIM && !isMentioned && !(await isMessageAllowedByTeamFilters(userSlackInstallation.user, message)))
   ) {
