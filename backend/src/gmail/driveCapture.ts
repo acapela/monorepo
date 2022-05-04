@@ -284,10 +284,11 @@ function isShowingActivityImage(body: HTMLElement): boolean {
 }
 
 function getActivityTypeFromImage($activityImage: HTMLElement): Activity | undefined {
-  if ($activityImage.getAttribute("src")?.includes("/comment/")) {
+  const imgSource = $activityImage.getAttribute("src");
+  if (imgSource?.includes("/comment/") || imgSource?.includes("/priority_high/") || imgSource?.includes("/done/")) {
     return "comment";
   }
-  if ($activityImage.getAttribute("src")?.includes("/rate_review/")) {
+  if (imgSource?.includes("/rate_review/")) {
     return "suggestion";
   }
 }
@@ -344,7 +345,10 @@ function getCommentBesidesOpenButton($openButton: HTMLElement): { from: string; 
   const $commentAuthor = $lastCommentRow.querySelector("h3");
   assert($commentAuthor, "Unable to get the comment author");
 
-  const $commentTextContainer = (<HTMLElement>$lastCommentRow).querySelector("div.notranslate");
+  const $closestParentToComment = $commentAuthor.closest("td");
+  assert($closestParentToComment, "Unable to get the closest parent to comment");
+
+  const $commentTextContainer = ($closestParentToComment as HTMLElement).lastChild;
   assert($commentTextContainer, "Unable to get the comment section");
 
   let comment = "";
