@@ -342,7 +342,7 @@ __metadata:
     inquirer: ^8.2.0
     jest: ^27.4.7
     js-base64: ^3.7.2
-    kustomize: ^4.4.1
+    kustomize: 4.5.4
     lint-staged: ^12.3.3
     mobx: ^6.3.13
     ntl: ^5.1.0
@@ -3170,51 +3170,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-darwin-arm64@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-darwin-arm64@npm:4.4.1"
+"@install-binary/kustomize-darwin-arm64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-darwin-arm64@npm:4.5.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-darwin-x64@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-darwin-x64@npm:4.4.1"
+"@install-binary/kustomize-darwin-x64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-darwin-x64@npm:4.5.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-linux-arm64@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-linux-arm64@npm:4.4.1"
+"@install-binary/kustomize-linux-arm64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-linux-arm64@npm:4.5.4"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-linux-ppc64le@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-linux-ppc64le@npm:4.4.1"
+"@install-binary/kustomize-linux-ppc64le@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-linux-ppc64le@npm:4.5.4"
   conditions: os=linux & cpu=ppc64le
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-linux-s390x@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-linux-s390x@npm:4.4.1"
+"@install-binary/kustomize-linux-s390x@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-linux-s390x@npm:4.5.4"
   conditions: os=linux & cpu=s390x
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-linux-x64@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-linux-x64@npm:4.4.1"
+"@install-binary/kustomize-linux-x64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-linux-x64@npm:4.5.4"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@install-binary/kustomize-win32-x64@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@install-binary/kustomize-win32-x64@npm:4.4.1"
+"@install-binary/kustomize-win32-arm64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-win32-arm64@npm:4.5.4"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@install-binary/kustomize-win32-x64@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@install-binary/kustomize-win32-x64@npm:4.5.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -18285,17 +18292,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"kustomize@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "kustomize@npm:4.4.1"
+"kustomize@npm:4.5.4":
+  version: 4.5.4
+  resolution: "kustomize@npm:4.5.4"
   dependencies:
-    "@install-binary/kustomize-darwin-arm64": 4.4.1
-    "@install-binary/kustomize-darwin-x64": 4.4.1
-    "@install-binary/kustomize-linux-arm64": 4.4.1
-    "@install-binary/kustomize-linux-ppc64le": 4.4.1
-    "@install-binary/kustomize-linux-s390x": 4.4.1
-    "@install-binary/kustomize-linux-x64": 4.4.1
-    "@install-binary/kustomize-win32-x64": 4.4.1
+    "@install-binary/kustomize-darwin-arm64": 4.5.4
+    "@install-binary/kustomize-darwin-x64": 4.5.4
+    "@install-binary/kustomize-linux-arm64": 4.5.4
+    "@install-binary/kustomize-linux-ppc64le": 4.5.4
+    "@install-binary/kustomize-linux-s390x": 4.5.4
+    "@install-binary/kustomize-linux-x64": 4.5.4
+    "@install-binary/kustomize-win32-arm64": 4.5.4
+    "@install-binary/kustomize-win32-x64": 4.5.4
   dependenciesMeta:
     "@install-binary/kustomize-darwin-arm64":
       optional: true
@@ -18309,11 +18317,13 @@ fsevents@^1.2.7:
       optional: true
     "@install-binary/kustomize-linux-x64":
       optional: true
+    "@install-binary/kustomize-win32-arm64":
+      optional: true
     "@install-binary/kustomize-win32-x64":
       optional: true
   bin:
     kustomize: run.js
-  checksum: 3d2d05954f201260e90486d4ae4542dd22cb471a792eb3716bc146e8fc2b027ea73dc604f7648730373022856f5ab45887d616f9bd7b16084fcbf8a3df1d16e1
+  checksum: 5eb3df36d267ee99a775c70a3969db76786afae5d608b8de13f0f0c4f20eb6019bd1a9777e5f7831f44bec2c8f5c7068fa326f098b69e8ac39f600d10f431cc1
   languageName: node
   linkType: hard
 
