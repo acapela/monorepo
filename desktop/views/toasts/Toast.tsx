@@ -10,7 +10,6 @@ import { useMethod } from "@aca/shared/hooks/useMethod";
 import { usePausableTimeout } from "@aca/shared/hooks/usePausableTimeout";
 import { DAY } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
-import { IconInfo } from "@aca/ui/icons";
 import { PresenceAnimator, PresenceStyles } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
@@ -76,6 +75,8 @@ export function Toast({
     };
   }
 
+  const hasActions = !!action || !!actionObject;
+
   return (
     <UIAnimator
       layoutId={disablePositionalAnimations ? undefined : id}
@@ -88,30 +89,32 @@ export function Toast({
           onCloseRequest?.();
         }}
       >
-        <UIIcon>
+        {/* <UIIcon>
           <IconInfo />
-        </UIIcon>
+        </UIIcon> */}
 
         <UIBody>
           <UIHead>
             {title && <UITitle>{title}</UITitle>}
             {message && <UIDescription>{message}</UIDescription>}
           </UIHead>
-          <UIActions>
-            {action && (
-              <Button
-                kind="secondary"
-                onClick={() => {
-                  action.callback?.();
-                }}
-              >
-                {action.label}
-              </Button>
-            )}
-            {actionObject && (
-              <ActionButton action={actionObject.action} target={actionObject.target} kind="secondary" />
-            )}
-          </UIActions>
+          {hasActions && (
+            <UIActions>
+              {action && (
+                <Button
+                  kind="tertiary"
+                  onClick={() => {
+                    action.callback?.();
+                  }}
+                >
+                  {action.label}
+                </Button>
+              )}
+              {actionObject && (
+                <ActionButton action={actionObject.action} target={actionObject.target} kind="tertiary" />
+              )}
+            </UIActions>
+          )}
         </UIBody>
       </UIToast>
     </UIAnimator>
@@ -130,20 +133,14 @@ const UIToast = styled.div`
   margin: 5px 0;
 
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
   gap: 16px;
 `;
 
-const UIIcon = styled.div`
-  font-size: 20px;
-  margin-top: 4px;
-`;
-
 const UIBody = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: flex-end;
   gap: 16px;
   flex-grow: 1;
 `;
@@ -159,8 +156,8 @@ const UITitle = styled.div`
   ${theme.typo.content.medium}
 `;
 const UIDescription = styled.div`
-  ${theme.typo.content.secondary};
-  -webkit-line-clamp: 2;
+  ${theme.typo.content.size(12).secondary};
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   display: -webkit-box;
@@ -170,4 +167,5 @@ const UIActions = styled.div`
   display: flex;
   align-self: stretch;
   align-items: center;
+  justify-content: flex-end;
 `;

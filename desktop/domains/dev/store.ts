@@ -5,4 +5,5 @@ export const devSettingsStore = createMobxPersistedStore("dev-settings", {
   showLogsWindow: false,
   debugPreloading: false,
   hidePreviews: false,
+  devMode: false,
 });

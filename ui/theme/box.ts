@@ -15,7 +15,7 @@ export const box = {
     heroItem: createBox({ x: 12, y: 12, gap: 10, radius: 8 }),
   },
   panel: {
-    toast: createBox({ x: 20, y: 15, radius: 8 }),
+    toast: createBox({ x: 15, y: 10, radius: 8 }),
     primaryPopover: createBox({ x: 20, y: 20, radius: 8 }),
     pageCart: createBox({ x: 20, y: 20, radius: 8, gap: 8 }),
     tooltip: createBox({ x: 12, y: 10, gap: 10, radius: 4 }),
