@@ -7,6 +7,7 @@ import { useActionContext } from "@aca/desktop/actions/action/context";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
+import { Thunk, resolveThunk } from "@aca/shared/thunk";
 import { IconFolder } from "@aca/ui/icons";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
@@ -17,7 +18,7 @@ interface Props {
   target?: unknown;
   className?: string;
   isActive?: boolean;
-  badgeCount?: number;
+  badgeCount?: Thunk<number>;
   additionalShortcut?: ShortcutDefinition;
   contextMenuActions?: ActionData[];
 }
@@ -37,6 +38,8 @@ export const SidebarItem = observer(function SidebarItem({
 
   useActionsContextMenu(elementRef, contextMenuActions, target);
 
+  const resolvedBadgeCount = resolveThunk(badgeCount);
+
   return (
     <UIHolder ref={elementRef} action={action} target={target} className={className} $isActive={isActive}>
       <UILabelBody>
@@ -44,7 +47,7 @@ export const SidebarItem = observer(function SidebarItem({
         <UIName>{name}</UIName>
       </UILabelBody>
 
-      {!!badgeCount && <UICount>{badgeCount}</UICount>}
+      {!!resolvedBadgeCount && <UICount>{resolvedBadgeCount}</UICount>}
       {additionalShortcut && (
         <Shortcut
           shortcut={additionalShortcut}

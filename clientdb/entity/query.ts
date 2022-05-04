@@ -87,11 +87,7 @@ export function createEntityQuery<Data, Connections>(
   store: EntityStore<Data, Connections>
 ): EntityQuery<Data, Connections> {
   const { definition } = store;
-  const {
-    filter,
-    sort = definition.config.defaultSort as EntityQuerySortFunction<Data, Connections>,
-    name: queryName,
-  } = config;
+  const { filter, sort, name: queryName } = config;
 
   const {
     config: { functionalFilterCheck },

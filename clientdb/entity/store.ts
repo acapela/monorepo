@@ -90,13 +90,13 @@ export function createEntityStore<Data, Connections>(
   const items = observable.array<StoreEntity>([]);
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
-  function getIsEntityAccessable(entity: StoreEntity) {
+  const getIsEntityAccessable = cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
     if (!config.accessValidator) {
       return true;
     }
 
     return config.accessValidator!(entity, linker);
-  }
+  });
 
   const accessableItems = cachedComputed(
     () => {
@@ -120,18 +120,22 @@ export function createEntityStore<Data, Connections>(
     return id;
   }
 
-  function sortWithDefaultSorter(entities: StoreEntity[]): StoreEntity[] {
+  function prepareResults(entities: StoreEntity[]): StoreEntity[] {
+    const accessableEntities = entities.filter((entity) => {
+      return getIsEntityAccessable(entity);
+    });
+
     if (!config.defaultSort) {
-      return entities;
+      return accessableEntities;
     }
 
-    return sortBy(entities, config.defaultSort);
+    return sortBy(accessableEntities, config.defaultSort);
   }
 
   const getSourceForQueryInput = cachedComputed(
     function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
       if (typeof filter === "function") {
-        return accessableItems().filter(filter);
+        return prepareResults(accessableItems().filter(filter));
       }
 
       const keys = typedKeys(filter);
@@ -144,7 +148,7 @@ export function createEntityStore<Data, Connections>(
 
         const results = index.find(value);
 
-        return sortWithDefaultSorter(results);
+        return prepareResults(results);
       }
 
       let results: Entity<Data, Connections>[] | undefined;
@@ -166,7 +170,7 @@ export function createEntityStore<Data, Connections>(
         results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
       }
 
-      return sortWithDefaultSorter(results!);
+      return prepareResults(results!);
     },
     { equals: areArraysShallowEqual }
   );
@@ -180,7 +184,7 @@ export function createEntityStore<Data, Connections>(
     ) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => accessableItems(), { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(() => prepareResults(accessableItems()), { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
@@ -193,6 +197,7 @@ export function createEntityStore<Data, Connections>(
     items,
     add(entity, source = "user") {
       const id = getEntityId(entity);
+
       runInAction(() => {
         items.push(entity);
         itemsMap[id] = entity;

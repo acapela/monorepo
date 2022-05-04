@@ -48,6 +48,7 @@ export type AnalyticsEventsMap = {
   // Feature related events
 
   "Notification Resolved": { notification_id: string };
+  "All Notifications Resolved": { list_id: string };
   "Notification Snoozed": { notification_id: string };
   "Notification Unresolved": void;
   "Custom List Created": void;

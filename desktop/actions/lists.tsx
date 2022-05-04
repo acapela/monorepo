@@ -1,16 +1,30 @@
+import { defer } from "lodash";
+import { runInAction } from "mobx";
 import React from "react";
 
 import { getDb } from "@aca/desktop/clientdb";
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
-import { IconArrowBottom, IconArrowTop, IconEdit2, IconPlus, IconSlidersHoriz, IconTrash } from "@aca/ui/icons";
+import { createCleanupObject } from "@aca/shared/cleanup";
+import { pluralize } from "@aca/shared/text/pluralize";
+import {
+  IconArrowBottom,
+  IconArrowTop,
+  IconEdit2,
+  IconListUnordered4,
+  IconPlus,
+  IconSlidersHoriz,
+  IconTrash,
+} from "@aca/ui/icons";
 
+import { createAnalyticsEvent } from "../analytics";
 import { showConfirmDialogRequest } from "../bridge/dialogs";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { defineGroup } from "./action/group";
+import { displayZenModeIfFinished } from "./views/common";
 import { listPageView } from "./views/list";
 
 export const currentListActionsGroup = defineGroup({
@@ -23,33 +37,31 @@ export const currentListActionsGroup = defineGroup({
   },
 });
 
-const canApplyCustomListAction = (ctx: ActionContext) => !!ctx.getTarget("list")?.isCustom;
+const canApplyCustomListAction = (ctx: ActionContext) => !!ctx.getTarget("list", true)?.isCustom;
 
 export const renameNotificationList = defineAction({
   icon: <IconEdit2 />,
   name: "Rename list",
   keywords: ["change", "name", "title"],
   group: currentListActionsGroup,
-  supplementaryLabel: (ctx) => ctx.getTarget("list")?.name,
+  supplementaryLabel: (ctx) => ctx.getTarget("list", true)?.name,
 
   canApply: canApplyCustomListAction,
   handler: (ctx) => {
-    const list = ctx.assertTarget("list");
+    const list = ctx.assertTarget("list", true);
     return {
       searchPlaceholder: "List name...",
       initialSearchValue: list.name,
       getActions: () => [
         defineAction({
-          name: (ctx) =>
-            `Rename list "${ctx.assertTarget("list").name}"` + (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
+          name: (ctx) => `Rename list "${list.name}"` + (ctx.searchKeyword ? ` to "${ctx.searchKeyword}"` : ""),
           handler(ctx) {
-            const list = ctx.assertTarget("list");
             const title = ctx.searchKeyword.trim();
             if (!title) {
               return;
             }
 
-            const undo = getDb().notificationList.findById(list.id)?.update({ title }).undo;
+            const undo = list.listEntity!.update({ title }).undo;
 
             addToast({
               message: `List renamed`,
@@ -62,6 +74,57 @@ export const renameNotificationList = defineAction({
         }),
       ],
     };
+  },
+});
+
+export const resolveAllNotifications = defineAction({
+  icon: <IconListUnordered4 />,
+  group: currentListActionsGroup,
+  name: (ctx) => {
+    return ctx.isContextual ? "Resolve all" : "Resolve all notifications in list";
+  },
+  analyticsEvent: (ctx) => {
+    const list = ctx.getTarget("list", true);
+
+    if (list) {
+      return createAnalyticsEvent("All Notifications Resolved", { list_id: list.id });
+    }
+  },
+  keywords: ["done", "next", "mark", "complete", "every", "clean"],
+  supplementaryLabel: (ctx) => ctx.getTarget("list", true)?.name ?? undefined,
+  canApply: (ctx) => {
+    return !!ctx.getTarget("list", true)?.getAllNotifications().length;
+  },
+  handler(context) {
+    const list = context.assertTarget("list");
+
+    const allNotifications = list.getAllNotifications();
+
+    const cancel = createCleanupObject();
+
+    runInAction(() => {
+      for (const nextNotification of allNotifications) {
+        if (nextNotification.isResolved) continue;
+        cancel.next = nextNotification.resolve()?.undo;
+      }
+    });
+
+    if (!cancel.size) return;
+
+    // Waiting for lists to get updated
+    defer(() => {
+      displayZenModeIfFinished(context);
+    });
+
+    addToast({
+      message: pluralize`${cancel.size} ${["notification"]} resolved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
   },
 });
 

@@ -55,7 +55,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             action={goToList}
             target={allNotificationsList}
             isActive={getExactIsRouteActive("list", { listId: "allNotifications" })}
-            badgeCount={allNotificationsList.getAllNotifications().length}
+            badgeCount={() => allNotificationsList.getCountIndicator()}
             additionalShortcut={["Meta", "1"]}
           />
         </UIItemGroup>
@@ -64,7 +64,6 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             .filter((list) => list.id !== allNotificationsList.id)
             .map((list, index) => {
               const isActive = getExactIsRouteActive("list", { listId: list.id });
-              const count = list.getAllNotifications().length;
               // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
               const additionalShortcut: ShortcutDefinition | undefined =
                 index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
@@ -82,7 +81,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
                     action={goToList}
                     target={list}
                     isActive={isActive}
-                    badgeCount={count}
+                    badgeCount={() => list.getCountIndicator()}
                     additionalShortcut={additionalShortcut}
                     contextMenuActions={list.isCustom ? [renameNotificationList, deleteNotificationList] : []}
                   />

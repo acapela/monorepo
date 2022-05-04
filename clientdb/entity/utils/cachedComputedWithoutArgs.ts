@@ -116,6 +116,8 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
     }
   }
 
+  let currentComputingError: null | unknown = null;
+
   const recomputeValueIfNeeded = () => {
     // No dependencies did change since we last computed.
     if (!needsRecomputing) {
@@ -128,7 +130,12 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
     getOrCreateReaction().track(() => {
       log?.("computing");
       // Assign new value so it can be reused. Also we're tracking getting it so reaction knows if dependencies got outdated
-      newValue = getter();
+      try {
+        newValue = getter();
+        currentComputingError = null;
+      } catch (error) {
+        currentComputingError = error;
+      }
     });
 
     // Inform value is up to date
@@ -165,6 +172,11 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
       }
 
       recomputeValueIfNeeded();
+
+      if (currentComputingError !== null) {
+        throw currentComputingError;
+      }
+
       return latestValue;
     },
   };
