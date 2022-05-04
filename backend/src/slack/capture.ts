@@ -166,10 +166,11 @@ async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMess
     if (isMessageFromBot && !are_bots_enabled) {
       return false;
     }
-    return (
-      jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
-      jsonIncludesChannel(included_channels, message.channel)
-    );
+
+    const areAllChannelsSelected = jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER);
+    const isChannelInList = jsonIncludesChannel(included_channels, message.channel);
+
+    return (!areAllChannelsSelected && isChannelInList) || (areAllChannelsSelected && !isChannelInList);
   }
 
   // In some cases we may not get the team from the slack event, this is the other least efficient way of finding things

@@ -137,12 +137,20 @@ export const SlackChannelsByTeamFilters = observer(() => {
     }
   }
 
-  function updateSelectedChannels(teamId: string, conversations: SlackConversationsQuery["slack_conversations"]) {
+  function updateSelectedChannels(
+    teamId: string,
+    isExcludeFilter: boolean,
+    conversations: SlackConversationsQuery["slack_conversations"]
+  ) {
     const filter = userSlackChannelsByTeam.findFirst({ slack_workspace_id: teamId });
 
     assert(filter, "filter should have been created");
 
     const included_channels = conversations.map((c) => c.id);
+
+    if (isExcludeFilter) {
+      included_channels.push(USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER);
+    }
 
     filter.update({
       included_channels,
@@ -225,17 +233,18 @@ export const SlackChannelsByTeamFilters = observer(() => {
 
             <VStack gap={8}>
               <SettingRow
-                title="Include Specific channels"
-                description="Messages in these channels will turn into notifications."
+                title={`${areAllConversationsAllowed ? "Exclude" : "Include"} Specific channels`}
+                description={`Messages in these channels ${
+                  areAllConversationsAllowed ? "won't" : "will"
+                } turn into notifications.`}
               >
                 <UISlackTeamConversationsDropdown
-                  placeholder={areAllConversationsAllowed ? "All channels selected" : "Select specific channels"}
-                  isDisabled={areAllConversationsAllowed}
+                  placeholder="Select specific channels"
                   handleDropdownOpen={handleDropdownOpen}
-                  conversations={areAllConversationsAllowed ? [] : availableConversations}
+                  conversations={availableConversations}
                   checkSelected={(id) => selectedChannels.includes(id)}
                   onChange={(channels) => {
-                    updateSelectedChannels(team_id, channels);
+                    updateSelectedChannels(team_id, areAllConversationsAllowed, channels);
                   }}
                 />
               </SettingRow>
