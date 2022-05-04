@@ -18,7 +18,7 @@ spec:
       serviceAccountName: gsm
       containers:
         - name: caddy
-          image: eu.gcr.io/meetnomoreapp/caddy:4.187.10
+          image: eu.gcr.io/meetnomoreapp/caddy:4.188.0
           resources:
             requests:
               cpu: 50m

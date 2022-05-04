@@ -24,11 +24,11 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: backend
-          image: eu.gcr.io/meetnomoreapp/monorepo:4.187.10
+          image: eu.gcr.io/meetnomoreapp/monorepo:4.188.0
           command: ["./scripts/start.sh"]
           resources:
             requests:
-              cpu: 250m
+              cpu: 400m
           ports:
             - containerPort: 8080
           envFrom:
