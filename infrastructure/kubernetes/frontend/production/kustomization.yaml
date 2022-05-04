@@ -4,9 +4,6 @@ commonLabels:
   env: production
 resources:
   - ../base
-replicas:
-  - name: frontend
-    count: 2
 configMapGenerator:
   - name: frontend-default
     envs:
