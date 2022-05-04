@@ -18,7 +18,7 @@ spec:
       serviceAccountName: gsm
       containers:
         - name: caddy
-          image: eu.gcr.io/meetnomoreapp/caddy:3.187.0
+          image: eu.gcr.io/meetnomoreapp/caddy:4.187.10
           ports:
             - containerPort: 3000
           envFrom:
