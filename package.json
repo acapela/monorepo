@@ -177,7 +177,7 @@
     "import-sort-style-module-and-prefix": "^0.1.3",
     "inquirer": "^8.2.0",
     "jest": "^27.4.7",
-    "kustomize": "^4.4.1",
+    "kustomize": "4.5.4",
     "lint-staged": "^12.3.3",
     "ntl": "^5.1.0",
     "prettier": "^2.5.1",
