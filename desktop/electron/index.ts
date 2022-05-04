@@ -11,7 +11,7 @@ import { register, setLogger } from "trace-unhandled";
 import { makeLogger, registerLogEntryHandler, registerLoggerErrorReporter } from "@aca/desktop/domains/dev/makeLogger";
 
 import { logStorage } from "../bridge/logger";
-import { addLogAttachment } from "../domains/dev/postAttachment";
+import { addElectronLogAttachment } from "../domains/dev/postAttachment";
 import { initializeServiceSync } from "./apps";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
@@ -39,11 +39,11 @@ registerLoggerErrorReporter((body, files) => {
   try {
     if (body.length === 1) {
       const eventId = Sentry.captureException(body[0]);
-      addLogAttachment(eventId, files);
+      addElectronLogAttachment(eventId, files);
       return;
     }
     const eventId = Sentry.captureException(JSON.stringify(body));
-    addLogAttachment(eventId, files);
+    addElectronLogAttachment(eventId, files);
   } catch (error) {
     // We're doomed!
   }

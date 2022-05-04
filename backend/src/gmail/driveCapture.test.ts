@@ -271,4 +271,29 @@ describe("Google drive capture", () => {
       },
     ]);
   });
+
+  describe("bugs", () => {
+    it("bug.spreadsheetComment", () => {
+      const bugSpreadsheetComment = fs.readFileSync(
+        path.resolve(__dirname + "/testFixtures/bug.spreadsheetComment"),
+        "utf8"
+      );
+      const result = extractNotificationPayloadData(
+        bugSpreadsheetComment,
+        "Jannick Stein (Google Sheets) <comments-noreply@docs.google.com>"
+      );
+
+      expect(result).toStrictEqual([
+        {
+          from: "Jannick Stein",
+          url: "https://docs.google.com/spreadsheets/d/1VxaBnko48oGR9PwxWXMIsS4KI5zKM9zp_vPfi8qKffA/edit?disco=AAAAY_lxEl4&usp=comment_email_discussion&ts=6272409a&usp_dm=false",
+          name: "Strategic List",
+          source: "spreadsheets",
+          type: "comment",
+          comment:
+            "Idea: One of the partners at Connect Ventures (Graham) is board member at Typeform; maybe this could be a way to intro? @heiki@acape.la",
+        },
+      ]);
+    });
+  });
 });

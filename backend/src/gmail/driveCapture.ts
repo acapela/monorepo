@@ -6,6 +6,7 @@ import HTMLElement from "node-html-parser/dist/nodes/html";
 
 import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 import { logger } from "@aca/shared/logger";
 
 import { findHeader } from "./utils";
@@ -87,7 +88,11 @@ export async function createDriveNotification({
   try {
     const notifications = extractNotificationPayloadData(bodyAsPlainText, from);
     if (notifications.length === 0) {
-      logger.error(new Error(`[GoogleDrive] Notifications not extracted > ${from} : ${bodyAsBase64}`));
+      logger.error(new Error(`[GoogleDrive] Notifications not extracted > ${from}`), "", {
+        fileName: "sourceFile.txt",
+        body: bodyAsPlainText,
+        type: "plain/text",
+      } as LogAttachment);
       return FAILURE_RESPONSE;
     }
 
@@ -143,7 +148,11 @@ export async function createDriveNotification({
       return { isSuccessful: true };
     }
   } catch (e) {
-    logger.error(new Error(`[GoogleDrive] ${e} >>\n ${from} : ${bodyAsBase64}`));
+    logger.error(new Error(`[GoogleDrive] ${e} >>\n ${from}`), "", {
+      fileName: "sourceFile.txt",
+      body: bodyAsPlainText,
+      type: "plain/text",
+    } as LogAttachment);
   }
   return FAILURE_RESPONSE;
 }
