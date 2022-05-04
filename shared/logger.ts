@@ -3,8 +3,12 @@ import "@aca/config/dotenv";
 import * as Sentry from "@sentry/node";
 import pino from "pino";
 
+import { addBackendLogAttachment } from "@aca/backend/src/debug/postAttachment";
 import { assertDefined } from "@aca/shared/assert";
 import { IS_DEV } from "@aca/shared/dev";
+
+import { isLogAttachment } from "./debug/logAttachment.types";
+import { groupByFilter } from "./groupByFilter";
 
 const loggingLevel = assertDefined(
   process.env.LOGGING_LEVEL,
@@ -58,8 +62,10 @@ export const logger = pino({
 const pinoLogError = logger.error;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 logger.error = (obj: any, ...args: any[]) => {
-  if (obj instanceof Error) {
-    Sentry.captureException(obj);
-  }
-  pinoLogError.apply(logger, [obj, ...args]);
+  const [logAttachments, logMessages] = groupByFilter(args, isLogAttachment);
+
+  const eventId = Sentry.captureException(obj, ...logMessages);
+  addBackendLogAttachment(eventId, logAttachments);
+
+  pinoLogError.apply(logger, [obj, ...logMessages]);
 };

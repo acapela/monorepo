@@ -1,9 +1,9 @@
-import * as Sentry from "@sentry/electron";
+import * as Sentry from "@sentry/node";
 
 import { postSentryLogAttachment } from "@aca/shared/debug/addSentryAttachment";
 import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 
-export async function addElectronLogAttachment(eventId: string, attachments: LogAttachment[]) {
+export async function addBackendLogAttachment(eventId: string, attachments: LogAttachment[]) {
   if (!attachments || attachments.length === 0) {
     return;
   }

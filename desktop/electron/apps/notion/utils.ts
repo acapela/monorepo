@@ -1,5 +1,5 @@
-import { LogAttachment } from "@aca/desktop/domains/dev/attachment.types";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 
 export const workerLog = makeLogger("Notion-Worker");
 

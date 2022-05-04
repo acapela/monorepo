@@ -2,11 +2,10 @@ import chalk from "chalk";
 import { isError } from "lodash";
 
 import type { LogEntry, Severity } from "@aca/desktop/bridge/logger";
+import { LogAttachment, isLogAttachment } from "@aca/shared/debug/logAttachment.types";
 import { IS_DEV } from "@aca/shared/dev";
 import { groupByFilter } from "@aca/shared/groupByFilter";
 import { getUUID } from "@aca/shared/uuid";
-
-import { LogAttachment, isLogAttachment } from "./attachment.types";
 
 /*
  This function adds additional parameters to an input string or error
