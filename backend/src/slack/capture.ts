@@ -31,14 +31,24 @@ export function findUserForSlackInstallation(slackUserId: string) {
   }
 }
 
-function extractMentionedSlackUserIds(nodes: SingleASTNode[]): string[] {
-  return nodes.flatMap((node) => {
-    if (Array.isArray(node.content)) {
-      return extractMentionedSlackUserIds(node.content);
-    } else {
-      return node.type == "slackUser" ? [node.id] : [];
-    }
-  });
+function extractMentionedSlackUserIds(nodes: SingleASTNode[]): [string[], boolean] {
+  let channelMention = false;
+
+  return [
+    nodes.flatMap((node) => {
+      if (Array.isArray(node.content)) {
+        return extractMentionedSlackUserIds(node.content);
+      } else {
+        if (node.type === "slackAtHere" || node.type === "slackAtChannel") {
+          channelMention = true;
+          return [];
+        }
+
+        return node.type == "slackUser" ? [node.id] : [];
+      }
+    }),
+    channelMention,
+  ];
 }
 
 const extractMentionedSlackUserIdsFromMd = (text?: string) =>
@@ -86,7 +96,7 @@ const createTextPreviewFromSlackMessage = async (
 };
 
 async function recordInvolvedThreadUsers(message: GenericMessageEvent) {
-  const userIds = extractMentionedSlackUserIdsFromMd(message.text).concat(message.user).filter(isNotNullish);
+  const userIds = extractMentionedSlackUserIdsFromMd(message.text)[0].concat(message.user).filter(isNotNullish);
   if (userIds.length > 0) {
     await db.slack_thread_involed_user.createMany({
       data: userIds.map((userId) => ({ user_id: userId, thread_ts: message.thread_ts ?? message.ts })),
@@ -176,8 +186,8 @@ async function createNotificationFromMessage(
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
-  const mentionedSlackUserIds = extractMentionedSlackUserIdsFromMd(message.text);
-  const isMentioned = mentionedSlackUserIds.includes(slackUserId);
+  const [mentionedSlackUserIds, channelMention] = extractMentionedSlackUserIdsFromMd(message.text);
+  const isMentioned = channelMention || mentionedSlackUserIds.includes(slackUserId);
 
   const is_IM_or_MPIM = message.channel_type == "im" || message.channel_type == "mpim";
   const isAuthor = authorSlackUserId === slackUserId;
