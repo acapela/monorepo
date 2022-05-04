@@ -17,5 +17,5 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   connect() {
     return Promise.resolve();
   },
-  imageURL: integrationLogos.clickup,
+  imageURL: integrationLogos.googleSuite,
 };
