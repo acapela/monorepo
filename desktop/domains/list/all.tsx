@@ -4,6 +4,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
 import { IconClock, IconListUnordered4 } from "@aca/ui/icons";
@@ -23,7 +24,7 @@ const getAvailableIntegrationLists = cachedComputed(() =>
       defineNotificationsList({
         id: client.notificationTypename,
         name: client.name,
-        icon: client.icon,
+        icon: <IntegrationIcon integrationClient={client} />,
         filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
       })
     )

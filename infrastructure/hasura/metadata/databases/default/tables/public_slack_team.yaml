@@ -1,0 +1,24 @@
+table:
+  schema: public
+  name: slack_team
+array_relationships:
+  - name: user_slack_installations
+    using:
+      foreign_key_constraint_on:
+        column: slack_team_id
+        table:
+          schema: public
+          name: user_slack_installation
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - created_at
+        - updated_at
+        - slack_team_id
+        - team_info_data
+      filter:
+        user_slack_installations:
+          user_id:
+            _eq: X-Hasura-User-Id

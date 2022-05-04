@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { OpenAppUrl } from "@aca/desktop/bridge/apps";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
 
-export type IntegrationAccount = { kind: "account"; id: string; name: string };
+export type IntegrationAccount = { kind: "account"; id: string; name: string; imageURL?: string };
 
 export interface IntegrationClient {
   kind: "integration";
@@ -11,7 +11,7 @@ export interface IntegrationClient {
   notificationTypename: NotificationInner["__typename"];
   name: string;
   description: string;
-  icon: ReactNode;
+  imageURL: string;
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
   getIsDisabled?: () => boolean;
   getIsConnected: () => boolean;

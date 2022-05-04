@@ -60,21 +60,26 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
       data: { data },
     });
   } else {
-    const slack_workspace_id = data?.["team"]?.["id"];
-    assert(slack_workspace_id, "Unable to extract team id from slack installation data");
+    const slackTeamId = installation.team!.id;
+    assert(slackTeamId, "Unable to extract team id from slack installation data");
 
     await db.$transaction([
       db.user_slack_installation.create({
         data: {
-          user_id: userId,
-          slack_team_id: installation.team!.id,
+          user: { connect: { id: userId } },
+          slack_team: {
+            connectOrCreate: {
+              where: { slack_team_id: slackTeamId },
+              create: { slack_team_id: slackTeamId, team_info_data: {} },
+            },
+          },
           slack_user_id: installation.user.id,
           data,
           user_slack_channels_by_team: {
             create: {
               user_id: userId,
               included_channels: [USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER],
-              slack_workspace_id,
+              slack_workspace_id: slackTeamId,
             },
           },
         },

@@ -7,7 +7,6 @@ import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/deskt
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { NotionSettings } from "./NotionSettings";
 import { IntegrationClient } from "./types";
 
@@ -48,7 +47,7 @@ export const notionIntegrationClient: IntegrationClient = {
     await loginNotionBridge();
     trackEvent("Notion Integration Added");
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.notion} />,
+  imageURL: integrationLogos.notion,
 
   additionalSettings: <NotionSettings />,
 };

@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { typedKeys } from "@aca/shared/object";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
@@ -43,7 +44,7 @@ export const FilterEditorSlack = observer(({ filter, onChange, onRemoveRequest }
     <UIHolder ref={anchorRef}>
       <FilterLabel
         label="Slack"
-        icon={slackIntegrationClient.icon}
+        icon={<IntegrationIcon integrationClient={slackIntegrationClient} />}
         isFilled={!!filter}
         onClick={toggleOpened}
         onClearRequest={() => {

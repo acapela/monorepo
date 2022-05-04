@@ -2,8 +2,21 @@ import { subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
-import { NotificationSlackMessage, db } from "@aca/db";
+import { captureInitialMessages } from "@aca/backend/src/slack/capture";
+import { syncUserSlackInstallationTeam } from "@aca/backend/src/slack/sync";
+import { NotificationSlackMessage, UserSlackInstallation, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
+
+export async function handleUserSlackInstallationChanges(event: HasuraEvent<UserSlackInstallation>) {
+  if (event.type !== "create") {
+    return;
+  }
+  const userSlackInstallation = event.item;
+  await Promise.all([
+    captureInitialMessages(userSlackInstallation),
+    syncUserSlackInstallationTeam(userSlackInstallation),
+  ]);
+}
 
 export async function handleNotificationSlackMessageChanges(event: HasuraEvent<NotificationSlackMessage>) {
   if (event.type == "delete") {

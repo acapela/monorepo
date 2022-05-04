@@ -33,6 +33,7 @@ import { notificationNotionReminderEntity } from "./notification/notion/reminder
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
+import { slackTeamEntity } from "./slackTeam";
 import { teamEntity } from "./team";
 import { teamMemberEntity } from "./teamMember";
 import { userEntity } from "./user";
@@ -101,6 +102,7 @@ export const appClientDbEntities = {
 
   userSlackInstallation: userSlackInstallationEntity,
   userSlackChannelsByTeam: userSlackChannelsByTeamEntity,
+  slackTeam: slackTeamEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {

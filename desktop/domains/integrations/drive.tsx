@@ -1,9 +1,6 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { getDb } from "@aca/desktop/clientdb";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 export const googleDriveIntegrationClient: IntegrationClient = {
@@ -20,5 +17,5 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   connect() {
     return Promise.resolve();
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.googleSuite} />,
+  imageURL: integrationLogos.clickup,
 };

@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { connectIntegration } from "@aca/desktop/actions/auth";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { Button, ButtonProps } from "@aca/ui/buttons/Button";
@@ -21,13 +22,15 @@ const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
 );
 
 export const IntegrationCard = observer(({ service }: Props) => {
-  const { name, description, icon, additionalSettings } = service;
+  const { name, description, additionalSettings } = service;
   const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
 
   return (
     <UIHolder>
-      <UILogo>{icon}</UILogo>
+      <UILogo>
+        <IntegrationIcon integrationClient={service} />
+      </UILogo>
       <UIBody>
         <UIHead>
           <UIInfoAboutIntegration>

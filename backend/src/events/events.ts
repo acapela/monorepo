@@ -21,8 +21,7 @@ import { logger } from "@aca/shared/logger";
 
 import { handleAccountUpdates } from "../atlassian";
 import { handleLinearIssueChanges, handleLinearOauthTokenCreated } from "../linear/events";
-import { handleUserSlackInstallationChanges } from "../slack/capture";
-import { handleNotificationSlackMessageChanges } from "../slack/events";
+import { handleNotificationSlackMessageChanges, handleUserSlackInstallationChanges } from "../slack/events";
 import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
 export const router = Router();

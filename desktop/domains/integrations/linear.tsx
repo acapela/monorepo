@@ -1,9 +1,6 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { linearAuthTokenBridgeValue, loginLinearBridge } from "@aca/desktop/bridge/auth";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 const LINEAR_URL_SCHEME = "linear:/";
@@ -30,5 +27,5 @@ export const linearIntegrationClient: IntegrationClient = {
   async disconnect() {
     await loginLinearBridge({ logout: true });
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.linear} />,
+  imageURL: integrationLogos.linear,
 };

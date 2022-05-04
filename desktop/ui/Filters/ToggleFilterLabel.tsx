@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { NotificationFilter } from "@aca/desktop/clientdb/list";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 
 import { FilterLabel } from "./FilterLabel";
@@ -27,7 +28,7 @@ export const ToggleFilterLabel = observer(({ client, onChange, onRemoveRequest, 
     <UIHolder>
       <FilterLabel
         label={client.name}
-        icon={client.icon}
+        icon={<IntegrationIcon integrationClient={client} />}
         isFilled={!!filter}
         onClick={toggle}
         onClearRequest={toggle}

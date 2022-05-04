@@ -3,8 +3,7 @@ import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 import { SingleASTNode } from "simple-markdown";
 
-import { HasuraEvent } from "@aca/backend/src/hasura";
-import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
+import { slackClient } from "@aca/backend/src/slack/app";
 import {
   convertMessageContentToPlainText,
   parseAndTransformToTipTapJSON,
@@ -18,6 +17,8 @@ import {
   USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
   USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
 } from "@aca/shared/slack";
+
+import { getSlackInstallationData } from "./utils";
 
 export function findUserForSlackInstallation(slackUserId: string) {
   try {
@@ -162,9 +163,6 @@ async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMess
   });
 }
 
-const getInstallationData = (userSlackInstallation: UserSlackInstallation) =>
-  userSlackInstallation.data as unknown as SlackInstallation;
-
 /**
  * Creates notification for the given user who are in the Slack conversation in which the message was posted. If the
  * conversation is a Slack channel we only create a notification if it was a mention or within a thread.
@@ -174,7 +172,7 @@ async function createNotificationFromMessage(
   message: Pick<GenericMessageEvent, "channel" | "thread_ts" | "ts" | "text" | "user" | "channel_type"> &
     TeamFilterMessage
 ) {
-  const installationData = getInstallationData(userSlackInstallation);
+  const installationData = getSlackInstallationData(userSlackInstallation);
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
@@ -235,46 +233,49 @@ async function createNotificationFromMessage(
   });
 }
 
-export async function handleUserSlackInstallationChanges(event: HasuraEvent<UserSlackInstallation>) {
-  if (event.type !== "create") {
-    return;
-  }
-  const userSlackInstallation = event.item;
-  const userId = userSlackInstallation.user_id;
-  const user = await db.user.findUnique({ where: { id: userId } });
-  assert(user, "missing user for id " + userId);
+export async function captureInitialMessages(userSlackInstallation: UserSlackInstallation) {
+  try {
+    const userId = userSlackInstallation.user_id;
+    const user = await db.user.findUnique({ where: { id: userId } });
+    assert(user, "missing user for id " + userId);
 
-  const { token } = getInstallationData(userSlackInstallation).user;
-  // Caution: When we change the types here, channel_type further below needs to also be updated
-  const { channels } = await slackClient.conversations.list({ token, types: "im,mpim", exclude_archived: true });
-  for (const conversation of channels ?? []) {
-    const { channel } = await slackClient.conversations.info({ token, channel: conversation.id! });
-    if (!channel) {
-      continue;
-    }
-    const { messages } = await slackClient.conversations.history({
-      token,
-      channel: conversation.id!,
-      oldest: Number(channel.last_read) == 0 ? undefined : channel.last_read,
-      limit: 10,
-    });
-    if (!messages) {
-      continue;
-    }
-    for (const message of messages) {
-      await createNotificationFromMessage(
-        { ...userSlackInstallation, user },
-        {
-          text: message.text,
-          channel: conversation.id!,
+    const { token } = getSlackInstallationData(userSlackInstallation).user;
+    // Caution: When we change the types here, channel_type further below needs to also be updated
+    const { channels } = await slackClient.conversations.list({ token, types: "im,mpim", exclude_archived: true });
+    for (const conversation of channels ?? []) {
+      const { channel } = await slackClient.conversations.info({ token, channel: conversation.id! });
+      if (!channel) {
+        continue;
+      }
+      const { messages } = await slackClient.conversations.history({
+        token,
+        channel: conversation.id!,
+        oldest: Number(channel.last_read) == 0 ? undefined : channel.last_read,
+        limit: 10,
+      });
+      if (!messages) {
+        continue;
+      }
+      for (const message of messages) {
+        await createNotificationFromMessage(
+          { ...userSlackInstallation, user },
+          {
+            text: message.text,
+            channel: conversation.id!,
 
-          channel_type: conversation.is_im ? "im" : "mpim",
-          user: message.user!,
-          ts: message.ts!,
-          ...message,
-        }
-      );
+            channel_type: conversation.is_im ? "im" : "mpim",
+            user: message.user!,
+            ts: message.ts!,
+            ...message,
+          }
+        );
+      }
     }
+  } catch (error) {
+    logger.error(
+      error,
+      `Error while capturing initial messages for user_slack_installation ${userSlackInstallation.id}`
+    );
   }
 }
 

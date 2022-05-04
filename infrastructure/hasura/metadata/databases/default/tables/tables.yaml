@@ -36,6 +36,7 @@
 - "!include public_notion_space.yaml"
 - "!include public_notion_space_user.yaml"
 - "!include public_slack_conversation_type.yaml"
+- "!include public_slack_team.yaml"
 - "!include public_subscription_plan.yaml"
 - "!include public_sync_request.yaml"
 - "!include public_team.yaml"

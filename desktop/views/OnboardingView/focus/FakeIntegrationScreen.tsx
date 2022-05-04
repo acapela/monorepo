@@ -1,6 +1,7 @@
 import React from "react";
 import styled, { css, keyframes } from "styled-components";
 
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconSend } from "@aca/ui/icons";
@@ -24,7 +25,9 @@ export function FakeIntegrationScreen({ onSent }: FakeIntegrationScreenProps) {
   return (
     <UIHolder>
       <UISidebar>
-        <UILogo>{slackIntegrationClient.icon}</UILogo>
+        <UILogo>
+          <IntegrationIcon integrationClient={slackIntegrationClient} />
+        </UILogo>
         <FakeMenu count={3} />
         <FakeUserList count={2} />
       </UISidebar>

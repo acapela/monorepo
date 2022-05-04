@@ -1,12 +1,9 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { loginGmailBridge } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 import { isGmailIncludedInPlan } from "@aca/shared/google";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 export const gmailIntegrationClient: IntegrationClient = {
@@ -40,5 +37,5 @@ export const gmailIntegrationClient: IntegrationClient = {
       gmailNotification.notification?.remove("sync");
     }
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.gmail} />,
+  imageURL: integrationLogos.gmail,
 };

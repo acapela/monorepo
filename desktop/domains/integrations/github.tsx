@@ -1,10 +1,7 @@
-import React from "react";
-
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 
-import { IntegrationIcon } from "./IntegrationIcon";
 import { IntegrationClient } from "./types";
 
 export const githubIntegrationClient: IntegrationClient = {
@@ -36,5 +33,5 @@ export const githubIntegrationClient: IntegrationClient = {
     });
     db.githubInstallation.removeById(id, "sync");
   },
-  icon: <IntegrationIcon imageUrl={integrationLogos.github} />,
+  imageURL: integrationLogos.github,
 };

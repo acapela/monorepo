@@ -5,12 +5,12 @@ import React from "react";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
 
 import { makeLogger } from "../dev/makeLogger";
-import { IntegrationIcon } from "./IntegrationIcon";
 import { SlackSettings } from "./SlackSettings";
 import { IntegrationClient } from "./types";
 
@@ -18,17 +18,28 @@ const SLACK_URL_SCHEME = "slack://";
 
 const log = makeLogger("SlackIntegrationClient");
 
-const getAccounts = () =>
-  accountStore.user?.slackInstallations.all.map(
-    (i) => ({ kind: "account", id: i.team_id!, name: i.team_name! } as const)
-  ) ?? [];
+function getAccounts() {
+  const slackTeamsById = new Map((getNullableDb()?.slackTeam.all ?? []).map((team) => [team.slack_team_id, team]));
+  return (
+    accountStore.user?.slackInstallations.all.map(
+      (i) =>
+        ({
+          kind: "account",
+          id: i.team_id!,
+          name: i.team_name!,
+          imageURL: slackTeamsById.get(i.team_id!)?.team_info_data.icon?.image_34,
+        } as const)
+    ) ?? []
+  );
+}
+
 export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_slack_message",
   name: "Slack",
   description: "Important or urgent conversations.",
-  icon: <IntegrationIcon imageUrl={integrationLogos.slack} />,
   additionalSettings: <SlackSettings />,
+  imageURL: integrationLogos.slack,
   getCanConnect: () => !!accountStore.user,
   getIsConnected: () => {
     return accountStore.user?.slackInstallations.hasItems ?? false;

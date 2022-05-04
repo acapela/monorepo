@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { openFocusMode, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
+import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconCheck, IconTime } from "@aca/ui/icons";
@@ -45,7 +46,9 @@ export function OnboardingNotificationRow({ notification, onSelectRequest, onDes
         onOpen?.(notification);
       }}
     >
-      <UIIcon>{integration.icon}</UIIcon>
+      <UIIcon>
+        <IntegrationIcon integrationClient={integration} />
+      </UIIcon>
       <UIAuthor>{author}</UIAuthor>
       <UITarget>{target}</UITarget>
       <UIContent>{content}</UIContent>
