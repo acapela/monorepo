@@ -9,6 +9,11 @@ spec:
     name: api
   minReplicas: 6
   maxReplicas: 30
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 90
+    scaleDown:
+      stabilizationWindowSeconds: 300
   metrics:
     - type: Resource
       resource:
