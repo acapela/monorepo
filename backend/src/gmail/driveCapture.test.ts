@@ -295,5 +295,44 @@ describe("Google drive capture", () => {
         },
       ]);
     });
+
+    it("bug.spreadsheetMultipleComments", () => {
+      const bugSpreadsheetComment = fs.readFileSync(
+        path.resolve(__dirname + "/testFixtures/bug.spreadsheetMultipleComments"),
+        "utf8"
+      );
+      const result = extractNotificationPayloadData(
+        bugSpreadsheetComment,
+        "Jannick Stein (Google Sheets) <comments-noreply@docs.google.com>"
+      );
+
+      expect(result).toStrictEqual([
+        {
+          from: "Jannick Stein",
+          url: "https://docs.google.com/spreadsheets/d/1VxaBnko48oGR9PwxWXMIsS4KI5zKM9zp_vPfi8qKffA/edit?disco=AAAAY_lxEl4&usp=comment_email_discussion&ts=62724706&usp_dm=false",
+          name: "Strategic List",
+          source: "spreadsheets",
+          type: "comment",
+          comment: "@roland@acape.la any insights?",
+        },
+        {
+          comment:
+            "Common connections to founder/CEO:@heiki@acape.la: Skander Garroum (founder airy), Susanne Knoll (freelance?)@roland@acape.la: Jan Oberhauser (n8n founder)anyone relevant here?",
+          from: "Jannick Stein",
+          name: "Strategic List",
+          source: "spreadsheets",
+          type: "comment",
+          url: "https://docs.google.com/spreadsheets/d/1VxaBnko48oGR9PwxWXMIsS4KI5zKM9zp_vPfi8qKffA/edit?disco=AAAAY_lxEmQ&usp=comment_email_discussion&ts=62724706&usp_dm=false",
+        },
+        {
+          comment: "Marked as resolved",
+          from: "Jannick Stein",
+          name: "Strategic List",
+          source: "spreadsheets",
+          type: "comment",
+          url: "https://docs.google.com/spreadsheets/d/1VxaBnko48oGR9PwxWXMIsS4KI5zKM9zp_vPfi8qKffA/edit?disco=AAAAY-ej47Y&usp=comment_email_discussion&ts=62724706&usp_dm=false",
+        },
+      ]);
+    });
   });
 });
