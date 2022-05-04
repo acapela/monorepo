@@ -1,7 +1,6 @@
-import React, { MouseEvent } from "react";
+import React from "react";
 import styled from "styled-components";
 
-import { useId } from "@aca/shared/id";
 import { theme } from "@aca/ui/theme";
 
 /**
@@ -41,21 +40,14 @@ interface Props {
 }
 
 export const Toggle = ({ isSet = false, size = "small", isDisabled, onChange }: Props) => {
-  const id = useId();
-
-  function onSwitch(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-
-    // As we use `htmlFor` label prop - click event will be called twice
-    if (target.matches("label")) return;
-
+  function onSwitch() {
     onChange?.(!isSet);
   }
 
   return (
     <UIToggle dimensions={getDimensions(size)} onClick={onSwitch}>
-      <input type="checkbox" checked={isSet} id={id} disabled={isDisabled} />
-      <label htmlFor={id} />
+      <input type="checkbox" checked={isSet} disabled={isDisabled} />
+      <label />
     </UIToggle>
   );
 };

@@ -24,7 +24,9 @@ export const NotificationsSettings = observer(function ThemeSelector() {
           size="small"
           isDisabled
           isSet={settings.enableDesktopNotifications}
-          onChange={(isEnabled) => applicationWideSettingsBridge.update({ enableDesktopNotifications: isEnabled })}
+          onChange={(isEnabled) => {
+            applicationWideSettingsBridge.update({ enableDesktopNotifications: isEnabled });
+          }}
         />
       </SettingRow>
       <SettingRow

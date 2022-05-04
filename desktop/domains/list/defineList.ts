@@ -166,6 +166,20 @@ export function defineNotificationsList({
     return notificationsToPreload;
   });
 
+  const getCountIndicator = cachedComputed(() => {
+    return getAllGroupedNotifications().reduce((count, groupOrNotification) => {
+      if (getIsNotificationsGroup(groupOrNotification)) {
+        if (groupOrNotification.isOnePreviewEnough) {
+          return count + 1;
+        }
+
+        return count + groupOrNotification.notifications.length;
+      }
+
+      return count + 1;
+    }, 0);
+  });
+
   const getNotificationGroup = (notification: NotificationEntity) => {
     const groups = getAllGroupedNotifications();
 
@@ -190,6 +204,7 @@ export function defineNotificationsList({
     getNotificationIndex,
     getNextNotification,
     getPreviousNotification,
+    getCountIndicator,
     getNotificationsToPreload,
     listEntity,
     icon,
