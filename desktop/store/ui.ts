@@ -95,6 +95,14 @@ autorun(() => {
   }
 });
 
+autorun(() => {
+  if (uiStore.isAnyPreviewFocused) {
+    document.body.classList.add("embed-focused");
+  } else {
+    document.body.classList.remove("embed-focused");
+  }
+});
+
 // Updates the uiStore dark mode settings depending on the stored value in the settings bridge
 const preferDarkMediaQuery = "(prefers-color-scheme: dark)";
 const isSystemDarkBox = observable.box(window.matchMedia(preferDarkMediaQuery).matches);

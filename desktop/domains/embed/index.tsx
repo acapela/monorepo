@@ -7,10 +7,15 @@ import {
   preloadingPreviewsBridgeChannel,
   previewEventsBridge,
   requestAttachPreview,
+  requestPreviewFocus,
+  requestSetPreviewOnTopState,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
+import { focusMainViewRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
+import { createLazyChangeCallback } from "@aca/shared/callbacks/lazyChangeCallback";
+import { createDocumentEvent } from "@aca/shared/domEvents";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -22,7 +27,27 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
-import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
+function orMess(url: string, previewElement: HTMLElement) {
+  const handleIsInsidePreviewChange = createLazyChangeCallback((shouldShowPreviewOnTop: boolean) => {
+    if (shouldShowPreviewOnTop) {
+      requestPreviewFocus({ url });
+      requestSetPreviewOnTopState({ url, state: "preview-on-top" });
+    } else {
+      focusMainViewRequest();
+      requestSetPreviewOnTopState({ url, state: "app-on-top" });
+    }
+  });
+
+  return createDocumentEvent("mousemove", (e) => {
+    // console.log(e);
+
+    const target = e.target as HTMLElement;
+
+    const isEventInsidePreview = target === previewElement || previewElement.contains(target);
+
+    handleIsInsidePreviewChange(isEventInsidePreview);
+  });
+}
 
 /**
  * For preview views and keeping it in sync with main window, we need to somehow inform electron
@@ -114,10 +139,13 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     if (hasError) return;
 
     const stopAttaching = requestAttachPreview({ url, position });
-    const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
+    // const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
+
+    const cleanMess = orMess(url, previewElement);
 
     return () => {
-      stopMouseManagement();
+      // stopMouseManagement();
+      cleanMess();
       stopAttaching?.();
     };
   }, [
