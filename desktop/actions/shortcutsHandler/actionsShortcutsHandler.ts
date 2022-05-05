@@ -1,5 +1,3 @@
-import { action } from "mobx";
-
 import { ActionData } from "@aca/desktop/actions/action";
 import { createActionContext } from "@aca/desktop/actions/action/context";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
@@ -14,7 +12,7 @@ import { getIsShortcutDefinitionMatchingEvent } from "@aca/ui/keyboard/shortcutB
 export function attachActionsShortcutsHandler(actions: ActionData[]) {
   document.body.addEventListener(
     "keydown",
-    action((event) => {
+    (event) => {
       if (commandMenuStore.session) return;
 
       // TODO: Do not run actions if any input is focused
@@ -66,7 +64,7 @@ export function attachActionsShortcutsHandler(actions: ActionData[]) {
       event.stopPropagation();
 
       runAction(targetAction, actionContext);
-    }),
+    },
     { capture: true }
   );
 }

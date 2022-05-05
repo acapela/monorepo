@@ -56,7 +56,7 @@ export function useActionsContextMenu(
   actions: ActionData[] | ActionData[][],
   target?: unknown
 ) {
-  const context = useActionContext(target);
+  const context = useActionContext(target, { isContextual: true });
 
   const equalActions = useEqualRef(actions);
 

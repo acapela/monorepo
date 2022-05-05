@@ -4,6 +4,7 @@ import { useLayoutEffect } from "react";
 import { createRouter } from "react-chicane";
 import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
+import { cachedComputed } from "@aca/clientdb";
 import { assert } from "@aca/shared/assert";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 import { typedKeys } from "@aca/shared/object";
@@ -55,7 +56,9 @@ export function getObservedRouter() {
 type Routes = typeof routes;
 type BasePath = string;
 
-export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathArguments<Routes[R]> | null {
+export const getRouteParamsIfActive = cachedComputed(function getRouteParamsIfActive<R extends keyof Routes>(
+  route: R
+): PathArguments<Routes[R]> | null {
   const router = getObservedRouter();
   const currentRouteURL = router.getLocation().url;
   // queries are treated as optional, thus their presence should not affect equality
@@ -65,7 +68,7 @@ export function getRouteParamsIfActive<R extends keyof Routes>(route: R): PathAr
   const [patternWithoutQuery] = pattern.split("?");
 
   return parseUrlWithPattern(patternWithoutQuery as typeof pattern, currentRouteURLWithoutQuery);
-}
+});
 
 export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): PathArguments<Routes[R]> {
   const params = getRouteParamsIfActive(route);
@@ -75,9 +78,9 @@ export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): Pa
   return params;
 }
 
-export function getIsRouteActive(route: keyof Routes): boolean {
+export const getIsRouteActive = cachedComputed(function getIsRouteActive(route: keyof Routes): boolean {
   return getRouteParamsIfActive(route) !== null;
-}
+});
 
 /**
  * Returns true if given route is currently active.
@@ -86,7 +89,7 @@ export function getIsRouteActive(route: keyof Routes): boolean {
  *
  * Note: type signature is copy-pasted from `createURL` types.
  */
-export const getExactIsRouteActive: <
+const _getExactIsRouteActive: <
   RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
 >(
   routeName: RouteName,
@@ -103,6 +106,8 @@ export const getExactIsRouteActive: <
 
   return routeUrl === currentRouteUrl;
 };
+
+export const getExactIsRouteActive = cachedComputed(_getExactIsRouteActive);
 
 type MaybeParams<T> = T extends [infer U] ? { params: U } : {};
 

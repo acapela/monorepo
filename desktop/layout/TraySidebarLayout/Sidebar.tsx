@@ -7,6 +7,7 @@ import {
   deleteNotificationList,
   goToList,
   renameNotificationList,
+  resolveAllNotifications,
 } from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButton";
@@ -60,6 +61,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             isActive={getExactIsRouteActive("list", { listId: "allNotifications" })}
             badgeCount={() => allNotificationsList.getCountIndicator()}
             additionalShortcut={["Meta", "1"]}
+            contextMenuActions={[resolveAllNotifications]}
           />
         </UIItemGroup>
         <UIItemGroup>
@@ -86,7 +88,11 @@ export const Sidebar = observer(({ isOpened }: Props) => {
                     isActive={isActive}
                     badgeCount={() => list.getCountIndicator()}
                     additionalShortcut={additionalShortcut}
-                    contextMenuActions={list.isCustom ? [renameNotificationList, deleteNotificationList] : []}
+                    contextMenuActions={
+                      list.isCustom
+                        ? [renameNotificationList, deleteNotificationList, resolveAllNotifications]
+                        : [resolveAllNotifications]
+                    }
                   />
                 </Fragment>
               );

@@ -1,6 +1,8 @@
+import { autorun } from "mobx";
+
 import { createMobxPersistedStore } from "@aca/shared/mobx/persistedStore";
 
-import { desktopRouter, getRouteParamsIfActive } from "../routes";
+import { getRouteParamsIfActive } from "../routes";
 
 export const historyStore = createMobxPersistedStore("history", {
   lastOpenedListId: null as string | null,
@@ -8,12 +10,13 @@ export const historyStore = createMobxPersistedStore("history", {
 
 let isFirstRouteChange = true;
 
-desktopRouter.subscribe(() => {
+autorun(() => {
+  const listId = getRouteParamsIfActive("list")?.listId;
+
   if (isFirstRouteChange) {
     isFirstRouteChange = false;
     return;
   }
-  const listId = getRouteParamsIfActive("list")?.listId;
 
   historyStore.lastOpenedListId = listId ?? null;
 });
