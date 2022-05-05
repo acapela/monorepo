@@ -88,6 +88,7 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
       log?.("needs recomputing");
       // Set flag so on next value request we'll do full re-compute
       needsRecomputing = true;
+      latestValue = undefined;
       // Make observers re-run
       updateSignal.reportChanged();
     });

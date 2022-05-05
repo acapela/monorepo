@@ -1,3 +1,4 @@
+import { cachedComputed } from "@aca/clientdb";
 import { assert } from "@aca/shared/assert";
 
 /**
@@ -49,8 +50,10 @@ export function createPredicates<P extends PredicatesMap>(predicates: P, targets
     return predicates[name](item);
   }
 
+  const getCachedTargets = cachedComputed(targetsGetter);
+
   function getTarget<N extends TargetName>(name: N, canBeSecondary = false): TargetsMap[N] | null {
-    const targets = targetsGetter();
+    const targets = getCachedTargets();
 
     if (!canBeSecondary) {
       const [primaryTarget] = targets;
@@ -82,7 +85,7 @@ export function createPredicates<P extends PredicatesMap>(predicates: P, targets
   }
 
   function getTargets<N extends TargetName>(name: N): TargetsMap[N][] {
-    return targetsGetter().filter((target) => isMatching(name, target)) as TargetsMap[N][];
+    return getCachedTargets().filter((target) => isMatching(name, target)) as TargetsMap[N][];
   }
 
   function hasTargets<N extends TargetName>(name: N) {
