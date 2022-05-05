@@ -8,7 +8,7 @@ import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { IconArrowLeft, IconEdit } from "@aca/ui/icons";
 
 export const exitComposeMode = defineAction({
-  name: "Back",
+  name: "Exit compose",
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",

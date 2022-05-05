@@ -24,7 +24,7 @@ export const ComposeButton = observer(() => {
   }
   return (
     <UIHolder ref={ref}>
-      <UIButtons initial={false} animate={isHovered ? { y: 0, opacity: 1 } : { y: "-100%", opacity: 0 }}>
+      <UIButtons initial={false} animate={isHovered ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}>
         {composers.map(({ client, account, url }, i) => (
           <React.Fragment key={i}>
             <UIActionIconButton
@@ -38,7 +38,7 @@ export const ComposeButton = observer(() => {
           </React.Fragment>
         ))}
       </UIButtons>
-      <UIIconWrap initial={false} animate={isHovered ? { y: "100%", opacity: 0 } : { y: 0, opacity: 1 }}>
+      <UIIconWrap initial={false} animate={isHovered ? { y: 20, opacity: 0 } : { y: 0, opacity: 1 }}>
         <IconEdit />
       </UIIconWrap>
     </UIHolder>
@@ -60,6 +60,7 @@ const UIButtons = styled(motion.div)`
 
 const UIIconWrap = styled(motion.div)`
   position: absolute;
+  pointer-events: none;
   top: 0;
 
   ${theme.radius.button};

@@ -10,7 +10,8 @@ import { useMethod } from "@aca/shared/hooks/useMethod";
 import { usePausableTimeout } from "@aca/shared/hooks/usePausableTimeout";
 import { DAY } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
-import { IconInfo } from "@aca/ui/icons";
+import { IconButton } from "@aca/ui/buttons/IconButton";
+import { IconCross, IconInfo } from "@aca/ui/icons";
 import { PresenceAnimator, PresenceStyles } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
@@ -21,7 +22,7 @@ export interface MetaToastProps {
 }
 
 export interface ToastProps extends MetaToastProps {
-  title?: string;
+  title: string;
   message: string;
   durationMs?: number;
   id: string;
@@ -50,6 +51,8 @@ export function Toast({
   function onCloseRequest() {
     removeToast(id);
   }
+
+  // title = undefined;
 
   const toastRef = useRef<HTMLDivElement>(null);
   const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
@@ -93,6 +96,7 @@ export function Toast({
         </UIIcon>
 
         <UIBody>
+          <UICloseFlyer size="compact" kind="transparent" icon={<IconCross />}></UICloseFlyer>
           <UIHead>
             {title && <UITitle>{title}</UITitle>}
             {message && <UIDescription>{message}</UIDescription>}
@@ -132,6 +136,7 @@ const UIToast = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding-right: 28px;
   gap: 16px;
 `;
 
@@ -153,6 +158,7 @@ const UIHead = styled.div`
   flex-direction: column;
   gap: 4px;
   word-break: break-word;
+  flex-grow: 1;
 `;
 
 const UITitle = styled.div`
@@ -170,4 +176,10 @@ const UIActions = styled.div`
   display: flex;
   align-self: stretch;
   align-items: center;
+`;
+
+const UICloseFlyer = styled(IconButton)`
+  position: absolute;
+  top: 5px;
+  right: 0;
 `;

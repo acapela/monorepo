@@ -101,6 +101,7 @@ export function setupAutoUpdater() {
 
       if (!checkResult.downloadPromise) {
         addToast({
+          title: "App status",
           message: "App is up to date",
           durationMs: 8 * 1000,
         });

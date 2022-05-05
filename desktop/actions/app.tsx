@@ -55,7 +55,7 @@ export const checkForUpdates = defineAction({
   group: appActionsGroup,
   icon: <IconBox />,
   async handler() {
-    const removeToast = addToast({ message: "Checking for update..." });
+    const removeToast = addToast({ title: "App updater", message: "Checking for update..." });
     try {
       await checkForUpdatesRequest();
     } finally {
@@ -89,7 +89,7 @@ export const forceNotificationsSync = defineAction({
   async handler() {
     await forceWorkerSyncRun(["notion", "figma"]);
 
-    addToast({ message: "Sent notifications sync request...", durationMs: 2000 });
+    addToast({ title: "Integrations", message: "Sent notifications sync request...", durationMs: 2000 });
   },
 });
 

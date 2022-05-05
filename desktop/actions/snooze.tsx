@@ -116,6 +116,7 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
       displayZenModeIfFinished(context);
 
       addToast({
+        title: "Info",
         message: pluralize`${cancel.size} ${["notification"]} snoozed`,
         action: {
           label: "Undo",

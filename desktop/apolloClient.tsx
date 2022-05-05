@@ -103,11 +103,11 @@ if (isClient) {
     for (const graphqlError of graphQLErrors) {
       const message = formatGraphqlErrorMessage(graphqlError);
 
-      addToast({ message: message, durationMs: 4000 });
+      addToast({ title: "Error", message: message, durationMs: 4000 });
     }
 
     if (networkError) {
-      addToast({ message: "Network error", durationMs: 4000 });
+      addToast({ title: "Error", message: "Network error", durationMs: 4000 });
     }
   });
 }

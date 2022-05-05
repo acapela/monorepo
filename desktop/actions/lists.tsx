@@ -64,7 +64,8 @@ export const renameNotificationList = defineAction({
             const undo = list.listEntity!.update({ title }).undo;
 
             addToast({
-              message: `List renamed`,
+              title: "List renamed",
+              message: list.listEntity!.title,
               action: {
                 label: `Undo`,
                 callback: () => undo?.(),
@@ -117,7 +118,8 @@ export const resolveAllNotifications = defineAction({
     });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} resolved`,
+      title: "Notifications resolved",
+      message: pluralize`${cancel.size} ${["notification"]} was resolved`,
       action: {
         label: "Undo",
         callback() {
@@ -161,13 +163,16 @@ export const deleteNotificationList = defineAction({
       confirmLabel: "Remove",
     });
 
-    if (!didConfirm) return;
+    const listEntity = list.listEntity;
+
+    if (!didConfirm || !listEntity) return;
 
     desktopRouter.navigate("list", { listId: allNotificationsList.id });
-    getDb().notificationList.removeById(list.id);
+    listEntity.remove();
 
     addToast({
-      message: `List removed`,
+      title: "List removed",
+      message: listEntity.title,
     });
   },
 });
@@ -284,7 +289,8 @@ export const createNotificationList = defineAction({
           desktopRouter.navigate("list", { listId: notificationFilter.id, isEditing: "true" });
 
           addToast({
-            message: `List created`,
+            title: `List created`,
+            message: title,
           });
         },
       }),

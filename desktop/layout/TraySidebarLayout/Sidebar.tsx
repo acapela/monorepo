@@ -13,6 +13,7 @@ import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButt
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { getExactIsRouteActive } from "@aca/desktop/routes";
+import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
 import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
 import { ShortcutKey } from "@aca/ui/keyboard/codes";
@@ -41,7 +42,9 @@ export const Sidebar = observer(({ isOpened }: Props) => {
 
   return (
     <UIHolder ref={sideBarRef} $isOpened={isOpened}>
-      <UIWindowDragger ref={draggerRef} />
+      <UIWindowDragger ref={draggerRef}>
+        <TopBarActionButton action={createNotificationList} />
+      </UIWindowDragger>
       <UIItems>
         <UIItemGroup>
           <ActionSystemMenuItem
@@ -100,9 +103,6 @@ export const Sidebar = observer(({ isOpened }: Props) => {
             );
           })}
         </UIItemGroup>
-        <UIItemGroup>
-          <UISidebarItem action={createNotificationList} />
-        </UIItemGroup>
       </UIItems>
       <UIFixedButton>
         <FeedbackButton />
@@ -135,6 +135,7 @@ const UIItems = styled.div`
   flex-direction: column;
   padding-left: 12px;
   padding-right: 12px;
+  padding-top: 16px;
   row-gap: 16px;
   flex-grow: 1;
 `;
@@ -144,6 +145,10 @@ const UISidebarItem = styled(SidebarItem)``;
 const UIWindowDragger = styled.div`
   ${systemBarPlaceholder};
   ${theme.common.dragWindow};
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 16px;
 `;
 
 const UIFixedButton = styled.div`

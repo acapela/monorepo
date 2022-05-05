@@ -8,7 +8,7 @@ import { getUUID } from "@aca/shared/uuid";
 
 export interface ToastInput {
   key?: string;
-  title?: string;
+  title: string;
   message: string;
   action?: {
     label: string;

@@ -38,6 +38,7 @@ export const toggleShowShortcutsBar = defineAction({
     toggle();
 
     addToast({
+      title: "Settings",
       message: "Shortcuts bar toggled",
       action: {
         label: "Undo",

@@ -37,10 +37,6 @@ export function renderErrorToasts(
         id={error.id}
         message={error.message}
         title="Error"
-        action={{
-          label: "Close",
-          callback: handleClose,
-        }}
         onCloseRequest={handleClose}
         {...metaProps}
       />
