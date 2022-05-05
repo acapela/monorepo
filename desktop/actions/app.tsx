@@ -89,7 +89,7 @@ export const forceNotificationsSync = defineAction({
   async handler() {
     await forceWorkerSyncRun(["notion", "figma"]);
 
-    addToast({ title: "Integrations", message: "Sent notifications sync request...", durationMs: 2000 });
+    addToast({ message: "Sent notifications sync request...", durationMs: 2000 });
   },
 });
 

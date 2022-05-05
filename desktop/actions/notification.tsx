@@ -110,7 +110,6 @@ export const resolveNotification = defineAction({
 
     addToast({
       message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
-      title: "Notification",
       action: {
         label: "Undo",
         callback() {
@@ -149,7 +148,6 @@ export const unresolveNotification = defineAction({
     });
 
     addToast({
-      title: "Info",
       message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} unresolved`,
       action: {
         label: "Undo",
@@ -216,7 +214,6 @@ export const unsnoozeNotification = defineAction({
     });
 
     addToast({
-      title: "Info",
       message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
       action: {
         label: "Undo",

@@ -44,7 +44,6 @@ export const refreshNotificationPreview = defineAction({
     await requestForceReloadPreview({ url: notification.url });
 
     addToast({
-      title: "Notification",
       message: `Refreshing notification preview...`,
       durationMs: 2000,
     });

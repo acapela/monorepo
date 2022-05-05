@@ -14,7 +14,6 @@ import { MaybeCleanup } from "@aca/shared/types";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 
 import { BridgeToast } from "./BridgeToast";
-import { renderErrorToasts, useKnownErrors } from "./ErrorToasts";
 import { renderSlackToasts } from "./SlackToasts";
 
 function controlledDebounce<T>(
@@ -55,7 +54,6 @@ export const ToastsOverlayView = observer(() => {
   const { toasts } = toastsStateBridge.get();
   const measurerRef = useRef<HTMLDivElement>(null);
   const holderRef = useRef<HTMLDivElement>(null);
-  const { errors, removeError } = useKnownErrors();
 
   const [isFocused, setIsFocused] = useState(false);
 
@@ -118,7 +116,6 @@ export const ToastsOverlayView = observer(() => {
             return <BridgeToast key={toast.key} toast={toast} animationsDelay={0.1} pauseAutoHide={isFocused} />;
           })}
           {renderSlackToasts({ animationsDelay: 0.1, pauseAutoHide: isFocused })}
-          {renderErrorToasts(errors, { animationsDelay: 0.1, pauseAutoHide: isFocused }, removeError)}
         </AnimatePresence>
       </UIHolder>
       <BodyPortal>
@@ -128,7 +125,6 @@ export const ToastsOverlayView = observer(() => {
               return <BridgeToast key={toast.key} toast={toast} disablePositionalAnimations pauseAutoHide />;
             })}
             {renderSlackToasts({ disablePositionalAnimations: true, pauseAutoHide: true })}
-            {renderErrorToasts(errors, { disablePositionalAnimations: true, pauseAutoHide: true })}
           </UISizeMeasurer>
         </UISizeMeasurerSpacer>
       </BodyPortal>

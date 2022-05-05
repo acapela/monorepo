@@ -12,6 +12,7 @@ const textTitle = content.medium;
 
 export const typo = {
   content: readable.size(14),
+  secondaryContent: readable.size(12),
   pageTitle: header.size(24, 18),
   secondaryTitle: header.size(18),
   input: {

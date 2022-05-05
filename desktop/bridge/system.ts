@@ -1,7 +1,5 @@
-import { PublicErrorData } from "@aca/desktop/domains/errors/types";
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
-import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 import { createBridgeValue } from "./base/persistance";
 
@@ -13,7 +11,6 @@ export const toggleDevtoolsRequest = createInvokeBridge<boolean>("toggle-devtool
 export const appUpdateAndRestartRequest = createInvokeBridge("update-and-restart");
 export const checkForUpdatesRequest = createInvokeBridge("check-for-updates");
 export const setBadgeCountRequest = createInvokeBridge<number | string>("set-badge-count");
-export const showErrorToUserChannel = createChannelBridge<PublicErrorData>("show-error-to-user");
 export const showMainWindowRequest = createInvokeBridge("show-main-window");
 export const waitForDoNotDisturbToFinish = createInvokeBridge("wait-for-do-not-disturb-to-finish");
 export const focusMainViewRequest = createInvokeBridge("focusMainViewRequest");

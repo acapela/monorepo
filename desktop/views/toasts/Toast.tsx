@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { removeToast } from "@aca/desktop/domains/toasts/store";
@@ -22,7 +22,7 @@ export interface MetaToastProps {
 }
 
 export interface ToastProps extends MetaToastProps {
-  title: string;
+  title?: string;
   message: string;
   durationMs?: number;
   id: string;
@@ -87,40 +87,38 @@ export function Toast({
       presenceStyles={getAnimationStyles()}
       transition={{ duration: 0.25, delay: animationsDelay }}
     >
-      <UIToast
-        ref={toastRef}
-        onClick={() => {
-          onCloseRequest?.();
-        }}
-      >
-        {/* <UIIcon>
-          <IconInfo />
-        </UIIcon> */}
-
-        <UIBody>
-          <UICloseFlyer size="compact" kind="transparent" icon={<IconCross />}></UICloseFlyer>
-          <UIHead>
-            {title && <UITitle>{title}</UITitle>}
-            {message && <UIDescription>{message}</UIDescription>}
-          </UIHead>
-          {hasActions && (
-            <UIActions>
-              {action && (
-                <Button
-                  kind="tertiary"
-                  onClick={() => {
-                    action.callback?.();
-                  }}
-                >
-                  {action.label}
-                </Button>
-              )}
-              {actionObject && (
-                <ActionButton action={actionObject.action} target={actionObject.target} kind="tertiary" />
-              )}
-            </UIActions>
+      <UIToast ref={toastRef} $makeSpacingForCloseButton={!title}>
+        <FlyingCloseButton
+          onClick={() => {
+            onCloseRequest();
+          }}
+          size="compact"
+          kind="transparent"
+          icon={<IconCross />}
+        ></FlyingCloseButton>
+        <UICopy>
+          {title && <UITitle>{title}</UITitle>}
+          {message && (
+            <UIDescriptionHolder>
+              <UIDescription $isOnlyContent={!title}>{message}</UIDescription>
+            </UIDescriptionHolder>
           )}
-        </UIBody>
+        </UICopy>
+        {hasActions && (
+          <UIActions>
+            {action && (
+              <Button
+                kind="tertiary"
+                onClick={() => {
+                  action.callback?.();
+                }}
+              >
+                {action.label}
+              </Button>
+            )}
+            {actionObject && <ActionButton action={actionObject.action} target={actionObject.target} kind="tertiary" />}
+          </UIActions>
+        )}
       </UIToast>
     </UIAnimator>
   );
@@ -130,7 +128,7 @@ const UIAnimator = styled(PresenceAnimator)`
   will-change: transform, filter;
 `;
 
-const UIToast = styled.div`
+const UIToast = styled.div<{ $makeSpacingForCloseButton: boolean }>`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   ${theme.box.panel.toast.padding.radius}
   ${theme.shadow.modal};
@@ -138,20 +136,17 @@ const UIToast = styled.div`
   margin: 5px 0;
 
   display: flex;
-  align-items: flex-start;
-  padding-right: 28px;
+  align-items: stretch;
+
+  ${(props) =>
+    props.$makeSpacingForCloseButton &&
+    css`
+      padding-right: 24px;
+    `}
   gap: 16px;
 `;
 
-const UIBody = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 16px;
-  flex-grow: 1;
-`;
-
-const UIHead = styled.div`
+const UICopy = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -160,24 +155,30 @@ const UIHead = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.medium}
+  ${theme.typo.content.medium};
+  /* spacing for close button */
+  padding-right: 10px;
 `;
-const UIDescription = styled.div`
-  ${theme.typo.content.size(12).secondary};
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  display: -webkit-box;
+
+const UIDescriptionHolder = styled.div`
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+`;
+
+const UIDescription = styled.div<{ $isOnlyContent: boolean }>`
+  ${theme.typo.secondaryContent.secondary};
+  ${theme.common.capLines(3)}
+  flex-grow: 1;
+
+  ${(props) => props.$isOnlyContent && theme.typo.content};
 `;
 
 const UIActions = styled.div`
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-  justify-content: flex-end;
+  align-self: flex-end;
 `;
 
-const UICloseFlyer = styled(IconButton)`
+const FlyingCloseButton = styled(IconButton)`
   position: absolute;
   top: 5px;
   right: 0;

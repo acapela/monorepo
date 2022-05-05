@@ -47,7 +47,6 @@ export const ComposeButton = observer(() => {
 
 const UIHolder = styled.div`
   position: relative;
-  overflow: hidden;
   // With drag enabled, hover does not properly work
   -webkit-app-region: no-drag;
 `;
