@@ -166,7 +166,7 @@ const UIDescriptionHolder = styled.div`
 
 const UIDescription = styled.div<{ $isOnlyContent: boolean }>`
   ${theme.typo.secondaryContent.secondary};
-  ${theme.common.capLines(3)}
+  ${theme.common.capLines(5)}
   flex-grow: 1;
 
   ${(props) => props.$isOnlyContent && theme.typo.content};
