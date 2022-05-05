@@ -13,7 +13,7 @@ import {
   ServiceSyncController,
   makeServiceSyncController,
 } from "@aca/desktop/electron/apps/serviceSyncController";
-import { clearNotionSessionData, notionDomain, notionURL } from "@aca/desktop/electron/auth/notion";
+import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
 import { timeDuration, wait } from "@aca/shared/time";
 
@@ -66,7 +66,7 @@ export async function getNotionSessionData(): Promise<NotionSessionData> {
 }
 
 export function startNotionSync(): ServiceSyncController {
-  return makeServiceSyncController("notion", notionDomain, runSync);
+  return makeServiceSyncController("notion", notionURL, runSync);
 }
 
 async function runSync() {
