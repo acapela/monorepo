@@ -30,7 +30,7 @@ import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
 import { RowQuickActions } from "./RowQuickActions";
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel } from "./shared";
+import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel, useStoreRowVisibility } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -71,6 +71,8 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
       }
     })
   );
+
+  useStoreRowVisibility(elementRef, notification.id);
 
   const title = getNotificationTitle(notification);
   return (

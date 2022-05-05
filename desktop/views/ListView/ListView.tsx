@@ -11,10 +11,10 @@ import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySid
 import { uiStore } from "@aca/desktop/store/ui";
 import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFilters } from "@aca/desktop/ui/Filters";
+import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
 
-import { ListViewFirstItemsPreloader } from "./ListViewFirstItemsPreloader";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
@@ -77,27 +77,25 @@ export const ListView = observer(({ listId }: Props) => {
           </UIListTools>
         )}
 
+        {list && <ListViewPreloader list={list} />}
+
         <UIListsScroller>
           {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
             <ZeroNotifications key={listId} />
           )}
 
           {list && notificationGroups && notificationGroups.length > 0 && (
-            <>
-              <ListViewFirstItemsPreloader list={list} />
+            <UINotifications>
+              <LazyChildrenRender initialCount={50} addBatchSize={50} batchInterval={100}>
+                {notificationGroups?.map((notificationOrGroup) => {
+                  if (getIsNotificationsGroup(notificationOrGroup)) {
+                    return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
+                  }
 
-              <UINotifications key={list.id}>
-                <LazyChildrenRender initialCount={50} addBatchSize={50} batchInterval={100}>
-                  {notificationGroups?.map((notificationOrGroup) => {
-                    if (getIsNotificationsGroup(notificationOrGroup)) {
-                      return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
-                    }
-
-                    return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
-                  })}
-                </LazyChildrenRender>
-              </UINotifications>
-            </>
+                  return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
+                })}
+              </LazyChildrenRender>
+            </UINotifications>
           )}
         </UIListsScroller>
       </UIHolder>

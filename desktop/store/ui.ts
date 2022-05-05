@@ -45,6 +45,7 @@ export const uiStore = makeAutoObservable({
   isInDarkMode: false,
   isDisplayingZenImage: false,
   isShowingPeekView: false,
+  visibleRowIds: new Set<string>(),
   getTypedFocusedTarget<T>() {
     return uiStore.focusedTarget as T | null;
   },
