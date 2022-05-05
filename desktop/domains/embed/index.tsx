@@ -24,17 +24,6 @@ import { theme } from "@aca/ui/theme";
 
 import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
-/**
- * For preview views and keeping it in sync with main window, we need to somehow inform electron
- * about preview size.
- *
- * However!
- * Instead of measuring exact size of view, we measure distance to edges (exactly the same way as position: absolute works).
- *
- * Those values change way less frequently (usually never), even if element resizes,
- * yet, it still allows electron to calculate correct size on its own.
- * This way resizing happens on electron side, avoiding dropped frames or delays, providing very smooth experience.
- */
 export interface PreviewPosition {
   top: number;
   bottom: number;
@@ -114,10 +103,10 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     if (hasError) return;
 
     const stopAttaching = requestAttachPreview({ url, position });
-    const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
+    const cleanMouseManagement = handlePreviewMouseManagement(url, previewElement);
 
     return () => {
-      stopMouseManagement();
+      cleanMouseManagement();
       stopAttaching?.();
     };
   }, [

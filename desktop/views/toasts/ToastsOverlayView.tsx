@@ -74,9 +74,9 @@ export const ToastsOverlayView = observer(() => {
   }, [toasts.length]);
 
   useEffect(() => {
-    const holder = measurerRef.current;
+    const measurer = measurerRef.current;
 
-    if (!holder) return;
+    if (!measurer) return;
 
     const requestNewHeight = controlledDebounce(
       (height: number) => {
@@ -92,9 +92,9 @@ export const ToastsOverlayView = observer(() => {
     );
 
     const stopWatchingSize = watchElementSize(
-      holder,
+      measurer,
       () => {
-        const height = holder.getBoundingClientRect().height;
+        const height = measurer.getBoundingClientRect().height;
         requestNewHeight(height);
       },
       0
@@ -165,8 +165,10 @@ const UISizeMeasurerSpacer = styled.div`
 `;
 
 const UISizeMeasurer = styled.div`
-  ${spacingStyles};
-  /* background-color: red; */
+  &:not(:empty) {
+    ${spacingStyles};
+  }
+
   display: flex;
   flex-direction: column;
   position: fixed;

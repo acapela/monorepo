@@ -28,6 +28,13 @@ createWindowEvent(
 );
 
 createWindowEvent(
+  "mousemove",
+  action(() => {
+    hasDirectFocus.set(true);
+  })
+);
+
+createWindowEvent(
   "blur",
   action(() => {
     hasDirectFocus.set(false);
@@ -92,6 +99,14 @@ autorun(() => {
     document.body.classList.add("fullscreen");
   } else {
     document.body.classList.remove("fullscreen");
+  }
+});
+
+autorun(() => {
+  if (uiStore.isAnyPreviewFocused) {
+    document.body.classList.add("embed-focused");
+  } else {
+    document.body.classList.remove("embed-focused");
   }
 });
 

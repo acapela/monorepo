@@ -33,7 +33,10 @@ export const common = {
     outline: none;
   `,
   dragWindow: css`
-    -webkit-app-region: drag;
+    /* 'drag' mode prevents some mouse events to occur making it impossible to detect mouse being out of embed view */
+    body:not(.embed-focused) & {
+      -webkit-app-region: drag;
+    }
   `,
   selectable: css`
     user-select: auto;
