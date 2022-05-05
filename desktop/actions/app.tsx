@@ -55,7 +55,7 @@ export const checkForUpdates = defineAction({
   group: appActionsGroup,
   icon: <IconBox />,
   async handler() {
-    const removeToast = addToast({ message: "Checking for update..." });
+    const removeToast = addToast({ title: "App updater", message: "Checking for update..." });
     try {
       await checkForUpdatesRequest();
     } finally {

@@ -36,7 +36,7 @@ export const FilterLabel = observer(function FilterLabel({ icon, label, isFilled
           onClick={action(() => {
             onClick?.();
           })}
-          kind={isFilled ? "primary" : "secondary"}
+          kind={isFilled ? "primarySubtle" : "secondary"}
         >
           <UILabelParts ref={labelNameRef}>
             <span>{label}</span>

@@ -38,4 +38,12 @@ export const common = {
   selectable: css`
     user-select: auto;
   `,
+  capLines(lines: number) {
+    return css`
+      -webkit-line-clamp: ${lines};
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      display: -webkit-box;
+    `;
+  },
 };

@@ -79,6 +79,7 @@ const UITitle = styled.div`
   display: flex;
   justify-content: center;
   padding: 0 16px;
+  font-weight: 500;
   ${theme.common.ellipsisText}
 `;
 

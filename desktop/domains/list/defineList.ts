@@ -50,6 +50,7 @@ export function defineNotificationsList({
     if (activeNotification && !notifications.some((n) => n == activeNotification)) {
       notifications = orderBy([...notifications, activeNotification], (n) => getReverseTime(n.created_at));
     }
+
     return notifications;
   });
 

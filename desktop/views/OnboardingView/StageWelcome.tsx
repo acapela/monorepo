@@ -44,7 +44,7 @@ const UILogo = styled(Logo)`
 const waveAnimation = keyframes`
   0% {
     opacity: 0;
-    box-shadow: 0 0 ${LOGO_SIZE / 2}px ${LOGO_SIZE / 2}px #cb7e9488;
+    box-shadow: 0 0 ${LOGO_SIZE / 2}px ${LOGO_SIZE / 2}px #E3419088;
   }
 
   80% {

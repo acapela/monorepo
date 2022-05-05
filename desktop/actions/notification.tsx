@@ -23,6 +23,7 @@ import {
   IconTarget,
 } from "@aca/ui/icons";
 
+import { getNotificationTitle } from "../domains/notification/title";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
@@ -287,7 +288,11 @@ export const openNotificationInApp = defineAction({
   async handler(context) {
     const notification = context.assertTarget("notification");
 
-    addToast({ message: `Opening notification in app...`, durationMs: 2000 });
+    addToast({
+      title: `Opening notification in app...`,
+      message: getNotificationTitle(notification),
+      durationMs: 2000,
+    });
 
     const url = await convertToLocalAppUrlIfAny(notification);
 
@@ -324,10 +329,12 @@ export const markNotificationUnread = defineAction({
   keywords: ["snooze", "remind"],
   canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
-    const { undo } = context.assertTarget("notification").update({ last_seen_at: null });
+    const notification = context.assertTarget("notification");
+    const { undo } = notification.update({ last_seen_at: null });
 
     addToast({
-      message: `Marked as unread`,
+      title: `Marked as unread`,
+      message: getNotificationTitle(notification),
       action: {
         label: "Undo",
         callback() {
@@ -352,10 +359,12 @@ export const markNotificationRead = defineAction({
     return !notification.last_seen_at;
   },
   handler(context) {
-    const { undo } = context.assertTarget("notification").update({ last_seen_at: new Date().toISOString() });
+    const notification = context.assertTarget("notification");
+    const { undo } = notification.update({ last_seen_at: new Date().toISOString() });
 
     addToast({
-      message: `Marked as read`,
+      title: `Marked as read`,
+      message: getNotificationTitle(notification),
       action: {
         label: "Undo",
         callback() {

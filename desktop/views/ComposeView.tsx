@@ -17,7 +17,7 @@ export const ComposeView = observer(() => {
   const { url } = params;
   return (
     <AppLayout transparent>
-      <SystemTopBar isFullWidth navigationItems={<TopBarActionButton action={exitComposeMode} />} />
+      <SystemTopBar isFullWidth titleNode="Compose" navigationItems={<TopBarActionButton action={exitComposeMode} />} />
       <Embed url={decodeURIComponent(url)} />
     </AppLayout>
   );

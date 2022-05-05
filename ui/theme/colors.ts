@@ -15,20 +15,20 @@ const black = color("hsl(0, 0%, 0%)", {
 const darkGrey = color("hsl(213, 15%, 13%)");
 
 const primary = color("hsl(330, 100%, 55%)", {
-  hover: color("hsla(330, 100%, 60%, 0.9)"),
-  active: color("hsla(330, 100%, 65%, 0.8)"),
+  hover: color("hsl(330, 100%, 45%)"),
+  active: color("hsl(330, 100%, 40%)"),
   readableText: white,
 });
 
 const secondary = color("hsl(200, 100%, 60%)", {
-  hover: color("hsl(200, 100%, 55%)"),
-  active: color("hsl(200, 100%, 50%)"),
+  hover: color("hsl(200, 100%, 50%)"),
+  active: color("hsl(200, 100%, 45%)"),
   readableText: black,
 });
 
 const danger = color("hsl(350, 80%, 55%)", {
-  hover: color("hsl(350, 80%, 50%)"),
-  active: color("hsl(350, 80%, 45%)"),
+  hover: color("hsl(350, 80%, 45%)"),
+  active: color("hsl(350, 80%, 40%)"),
   readableText: white,
 });
 
@@ -37,9 +37,14 @@ const lightGray = color("hsl(220, 33%, 98%)", {
   active: color("hsla(0, 0%, 0%, 0.075)"),
 });
 
-const transparent = color("hsla(0, 0%, 100%, 0.0)", {
+const transparent = color("hsla(0, 0%, 0%, .0)", {
   hover: color("hsla(0, 0%, 0%, 0.05)"),
   active: color("hsla(0, 0%, 0%, 0.075)"),
+});
+
+const darkModeTransparent = color("hsla(0, 0%, 100%, 0.0)", {
+  hover: color("hsla(0, 0%, 100%, 0.05)"),
+  active: color("hsla(0, 0%, 100%, 0.075)"),
 });
 
 const icon = color("hsla(0, 0%, 0%, 0.4)", {
@@ -130,7 +135,7 @@ export const darkThemeColors = deepMerge(defaultColors, {
     selectedTab: darkBgBase.hover,
   },
   action: {
-    transparent: darkBgBase,
+    transparent: darkModeTransparent,
     secondary: darkBgBase.hover,
   },
 });

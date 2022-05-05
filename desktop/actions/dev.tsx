@@ -2,7 +2,7 @@ import { subDays } from "date-fns";
 import React from "react";
 
 import { getAllLogsBridge } from "@aca/desktop/bridge/logger";
-import { restartAppRequest, showErrorToUserChannel, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
+import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { uiStore } from "@aca/desktop/store/ui";
 import { HOUR } from "@aca/shared/time";
@@ -193,7 +193,7 @@ export const simulateListWasNotSeen = defineAction({
   icon: <IconClock />,
   group: devActionsGroup,
 
-  name: () => "Simulate list was not seen",
+  name: "Simulate list was not seen",
 
   supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
 
@@ -204,29 +204,89 @@ export const simulateListWasNotSeen = defineAction({
   },
 });
 
-export const simulateKnownError = defineAction({
-  icon: devIcon,
-  group: devActionsGroup,
-  name: () => "Simulate known error",
-  canApply: getIsDevModeEnabled,
-  handler() {
-    showErrorToUserChannel.send({
-      id: "dummy",
-      message: "Known test error with lengthy content to test the ui of toast with a lot of text",
-    });
-  },
-});
-
 export const simulateToast = defineAction({
   icon: devIcon,
   group: devActionsGroup,
-  name: () => "Simulate toast",
+  name: "Simulate toast",
   canApply: getIsDevModeEnabled,
   handler() {
     addToast({
       message: "Some lengthy content to test the ui of toast with a lot of text",
       title: "Test toast",
       durationMs: HOUR,
+    });
+  },
+});
+
+export const simulateFullToast = defineAction({
+  icon: devIcon,
+  group: devActionsGroup,
+  name: "Simulate full toast",
+  canApply: getIsDevModeEnabled,
+  handler() {
+    addToast({
+      message: "Some lengthy content to test the ui of toast with a lot of text",
+      title: "Test toast",
+      durationMs: HOUR,
+      action: {
+        label: "Click me",
+        callback() {
+          alert("Clicked");
+        },
+      },
+    });
+  },
+});
+
+export const simulateSimpleToast = defineAction({
+  icon: devIcon,
+  group: devActionsGroup,
+  name: "Simulate simple toast",
+  canApply: getIsDevModeEnabled,
+  handler() {
+    addToast({
+      message: "Some lengthy content to test the ui of toast with a lot of text",
+      durationMs: HOUR,
+    });
+  },
+});
+
+export const simulateSimpleToastWithAction = defineAction({
+  icon: devIcon,
+  group: devActionsGroup,
+  name: "Simulate simple toast with action",
+  canApply: getIsDevModeEnabled,
+  handler() {
+    //
+    addToast({
+      message: "Short content",
+      durationMs: HOUR,
+      action: {
+        label: "Click me",
+        callback() {
+          //
+        },
+      },
+    });
+  },
+});
+
+export const simulateWithActionToast = defineAction({
+  icon: devIcon,
+  group: devActionsGroup,
+  name: "Simulate toast with action",
+  canApply: getIsDevModeEnabled,
+  handler() {
+    addToast({
+      message: "Some lengthy content to test the ui of toast with a lot of text",
+      title: "Test toast",
+      durationMs: HOUR,
+      action: {
+        label: "Click me",
+        callback() {
+          //
+        },
+      },
     });
   },
 });
