@@ -16,6 +16,9 @@ export const buttonKindMap = {
   secondary: css`
     ${theme.colors.action.secondary.withBorder.interactive}
   `,
+  tertiary: css`
+    ${theme.colors.layout.background.withBorder.interactive}
+  `,
   transparent: css`
     ${theme.colors.action.transparent.interactive};
     color: inherit;

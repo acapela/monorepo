@@ -70,4 +70,12 @@ describe("notion worker extraction tests", () => {
 
     expect(result).toHaveLength(3);
   });
+
+  // We need to figure out how to get the discussion_id still
+  it("creates comment notifications regardless if the activity is not present", () => {
+    const stuartBugJSON = fs.readFileSync(path.resolve(__dirname + "/testFixtures/recordWrongTextBug.json"), "utf8");
+    const stuartBugRecord = JSON.parse(stuartBugJSON);
+    const result = extractNotifications(stuartBugRecord);
+    expect(result).toHaveLength(20);
+  });
 });
