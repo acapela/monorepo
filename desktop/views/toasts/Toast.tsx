@@ -52,8 +52,6 @@ export function Toast({
     removeToast(id);
   }
 
-  // title = undefined;
-
   const toastRef = useRef<HTMLDivElement>(null);
   const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
