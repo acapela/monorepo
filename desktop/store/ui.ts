@@ -28,6 +28,13 @@ createWindowEvent(
 );
 
 createWindowEvent(
+  "mousemove",
+  action(() => {
+    hasDirectFocus.set(true);
+  })
+);
+
+createWindowEvent(
   "blur",
   action(() => {
     hasDirectFocus.set(false);

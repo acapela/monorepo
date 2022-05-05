@@ -56,9 +56,7 @@ const UIBar = styled.div<{ $isFullwidth: boolean }>`
     padding-left: 16px;
   }
 
-  body:not(.embed-focused) & {
-    -webkit-app-region: drag;
-  }
+  ${theme.common.dragWindow};
 
   border-bottom: 1px solid ${theme.colors.layout.divider.value};
   display: flex;

@@ -7,15 +7,10 @@ import {
   preloadingPreviewsBridgeChannel,
   previewEventsBridge,
   requestAttachPreview,
-  requestPreviewFocus,
-  requestSetPreviewOnTopState,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
-import { focusMainViewRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { SYSTEM_BAR_HEIGHT } from "@aca/desktop/ui/systemTopBar/ui";
-import { createLazyChangeCallback } from "@aca/shared/callbacks/lazyChangeCallback";
-import { createDocumentEvent } from "@aca/shared/domEvents";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { useEqualState } from "@aca/shared/hooks/useEqualState";
 import { useResizeCallback } from "@aca/shared/hooks/useResizeCallback";
@@ -27,39 +22,8 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
-function orMess(url: string, previewElement: HTMLElement) {
-  const handleIsInsidePreviewChange = createLazyChangeCallback((shouldShowPreviewOnTop: boolean) => {
-    if (shouldShowPreviewOnTop) {
-      requestPreviewFocus({ url });
-      requestSetPreviewOnTopState({ url, state: "preview-on-top" });
-    } else {
-      focusMainViewRequest();
-      requestSetPreviewOnTopState({ url, state: "app-on-top" });
-    }
-  });
+import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
-  return createDocumentEvent("mousemove", (e) => {
-    // console.log(e);
-
-    const target = e.target as HTMLElement;
-
-    const isEventInsidePreview = target === previewElement || previewElement.contains(target);
-
-    handleIsInsidePreviewChange(isEventInsidePreview);
-  });
-}
-
-/**
- * For preview views and keeping it in sync with main window, we need to somehow inform electron
- * about preview size.
- *
- * However!
- * Instead of measuring exact size of view, we measure distance to edges (exactly the same way as position: absolute works).
- *
- * Those values change way less frequently (usually never), even if element resizes,
- * yet, it still allows electron to calculate correct size on its own.
- * This way resizing happens on electron side, avoiding dropped frames or delays, providing very smooth experience.
- */
 export interface PreviewPosition {
   top: number;
   bottom: number;
@@ -139,13 +103,10 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     if (hasError) return;
 
     const stopAttaching = requestAttachPreview({ url, position });
-    // const stopMouseManagement = handlePreviewMouseManagement(url, previewElement);
-
-    const cleanMess = orMess(url, previewElement);
+    const cleanMouseManagement = handlePreviewMouseManagement(url, previewElement);
 
     return () => {
-      // stopMouseManagement();
-      cleanMess();
+      cleanMouseManagement();
       stopAttaching?.();
     };
   }, [
