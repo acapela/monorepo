@@ -29,6 +29,20 @@ type DefineListConfig = {
 // For grouped notifications the index is a number tuple, containing both the group's index and the within group index
 type GroupedNotificationsIndex = number | [number, number];
 
+function iterateAndCollect<T>(start: T, iterator: (notification: T) => T | null, count: number) {
+  const collection = [];
+  let current = start;
+  for (let i = 0; i < count; i++) {
+    const next = iterator(current);
+    if (!next) {
+      break;
+    }
+    collection.push(next);
+    current = next;
+  }
+  return collection;
+}
+
 export function defineNotificationsList({
   id,
   name,
@@ -128,7 +142,6 @@ export function defineNotificationsList({
     return getAdjacentNotification(notification, -1);
   });
 
-  const NOTIFICATIONS_TO_PRELOAD_COUNT = 4;
   const getNotificationsToPreload = cachedComputed(function getNotificationsToPreload(
     focusedNotification?: NotificationEntity
   ) {
@@ -143,26 +156,21 @@ export function defineNotificationsList({
     const firstNotification = getIsNotificationsGroup(firstNotificationOrGroup)
       ? firstNotificationOrGroup.notifications[0]
       : firstNotificationOrGroup;
-    // We limit the amount of notifications to preload to the previous one and the next 3
 
-    if (focusedNotification) {
-      const previous = getPreviousNotification(focusedNotification);
+    const currentNotification = focusedNotification ?? firstNotification;
 
-      if (previous) {
-        notificationsToPreload.push(previous);
-      }
-    }
-
-    let currentNotification = focusedNotification ?? firstNotification;
-
-    for (let i = 0; i < NOTIFICATIONS_TO_PRELOAD_COUNT - notificationsToPreload.length; i++) {
-      const nextNotification = getNextNotification(currentNotification);
-      if (!nextNotification) {
-        break;
-      }
-      notificationsToPreload.push(nextNotification);
-      currentNotification = nextNotification;
-    }
+    notificationsToPreload.push(
+      ...iterateAndCollect(
+        currentNotification,
+        (notification) => getPreviousNotification(notification),
+        uiStore.isAppFocused ? 3 : 0
+      ),
+      ...iterateAndCollect(
+        currentNotification,
+        (notification) => getNextNotification(notification),
+        uiStore.isAppFocused ? 5 : 1
+      )
+    );
 
     return notificationsToPreload;
   });
