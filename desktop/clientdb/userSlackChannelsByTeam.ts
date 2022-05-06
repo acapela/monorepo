@@ -24,6 +24,8 @@ const userSlackChannelsByTeamFragment = gql`
     included_channels
     user_slack_installation_id
     are_bots_enabled
+    excluded_channels
+    are_all_channels_included
   }
 `;
 
@@ -43,6 +45,8 @@ export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTea
     user_id: getContextValue(userIdContext) ?? undefined,
     included_channels: [],
     are_bots_enabled: true,
+    are_all_channels_included: true,
+    excluded_channels: [],
     ...getGenericDefaultData(),
   }),
   customObservableAnnotations: {
@@ -61,8 +65,16 @@ export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTea
         "updated_at",
         "user_slack_installation_id",
         "are_bots_enabled",
+        "are_all_channels_included",
+        "excluded_channels",
       ],
-      updateColumns: ["included_channels", "updated_at", "are_bots_enabled"],
+      updateColumns: [
+        "included_channels",
+        "updated_at",
+        "are_bots_enabled",
+        "are_all_channels_included",
+        "excluded_channels",
+      ],
       upsertConstraint: "user_slack_channels_by_team_pkey",
     }
   ),
