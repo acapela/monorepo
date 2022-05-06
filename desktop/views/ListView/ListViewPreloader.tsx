@@ -10,6 +10,7 @@ import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { uiStore } from "@aca/desktop/store/ui";
+import { useLeadingDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 
 // Determines how many notifications around the focused one should be loaded
 const PRELOAD_NEIGHBOR_COUNT = 3;
@@ -20,19 +21,23 @@ const extractNotifications = (elements: NotificationOrGroup[]) =>
     .map((element) => (getIsNotificationsGroup(element) ? element.notifications[0] : element));
 
 export const ListViewPreloader = observer(({ list }: { list: NotificationsList }) => {
+  const focusedTarget = useLeadingDebouncedValue(uiStore.focusedTarget, 50);
+
   const visibleFocusedNotificationNeighbors = computed<NotificationEntity[]>(() => {
     if (!uiStore.isAppFocused) {
       return [];
     }
 
-    const target = uiStore.focusedTarget;
     const groupedElements = getCollapsedGroupedElementsInList(list);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const targetIndex = groupedElements.findIndex((element) => target && element.id === (target as any).id);
+    const targetIndex = groupedElements.findIndex(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (element) => focusedTarget && element.id === (focusedTarget as any).id
+    );
 
-    if (targetIndex == -1) {
-      const firstVisibleIndex = groupedElements.findIndex((element) => uiStore.visibleRowIds.has(element.id));
-      return extractNotifications(groupedElements.slice(firstVisibleIndex, PRELOAD_NEIGHBOR_COUNT));
+    const isAnyNotificationRowFocused = targetIndex != -1;
+    if (!isAnyNotificationRowFocused) {
+      const firstVisibleRowIndex = groupedElements.findIndex((element) => uiStore.visibleRowIds.has(element.id));
+      return extractNotifications(groupedElements.slice(firstVisibleRowIndex, PRELOAD_NEIGHBOR_COUNT));
     }
 
     return extractNotifications(
