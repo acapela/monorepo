@@ -33,7 +33,7 @@ import { NotificationDate } from "./NotificationDate";
 import { UIUnreadIndicator } from "./NotificationRow";
 import { NotificationsRows } from "./NotificationsRows";
 import { RowQuickActions } from "./RowQuickActions";
-import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel } from "./shared";
+import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel, useStoreRowVisibility } from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -104,6 +104,8 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
     return group.notifications.some((n) => !n.last_seen_at);
   }, [group]);
 
+  useStoreRowVisibility(elementRef, group.id);
+
   return (
     <>
       <ActionTrigger
@@ -113,7 +115,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
       >
         {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
         {isFocusedForAWhile &&
-          group.notifications.slice(0, 3).map((notificationToPreload, index) => {
+          group.notifications.slice(0, 10).map((notificationToPreload, index) => {
             return (
               <PreloadEmbed
                 priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}

@@ -1,8 +1,28 @@
+import { action, runInAction } from "mobx";
+import { RefObject, useEffect } from "react";
+import { useIntersection } from "react-use";
 import styled from "styled-components";
 
+import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
 const SENDERS_WIDTH = 150;
+
+export function useStoreRowVisibility(ref: RefObject<HTMLElement>, id: string) {
+  const intersection = useIntersection(ref, { threshold: 0.2 });
+  const isVisible = Boolean(intersection?.isIntersecting);
+  useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+    runInAction(() => {
+      uiStore.visibleRowIds.add(id);
+    });
+    return action(() => {
+      uiStore.visibleRowIds.delete(id);
+    });
+  }, [id, isVisible]);
+}
 
 export const UISendersLabel = styled.div`
   ${theme.typo.content.medium};

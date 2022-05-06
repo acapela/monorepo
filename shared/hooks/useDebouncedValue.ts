@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useState } from "react";
 
 import { createTimeout } from "@aca/shared/time";
 
@@ -37,4 +38,19 @@ export function useDebouncedValue<T>(value: T, time: DebouncedValueTimeInput<T>)
   }, [value, time]);
 
   return resolvedValue;
+}
+
+export function useLeadingDebouncedValue<T>(value: T, timeMs: number) {
+  const [currentValue, setCurrentValue] = useState(value);
+
+  const setCurrentValueDebounced = useCallback(
+    debounce((newValue: T) => setCurrentValue(newValue), timeMs, { leading: true }),
+    [timeMs]
+  );
+
+  useEffect(() => {
+    setCurrentValueDebounced(value);
+  }, [currentValue, value]);
+
+  return currentValue;
 }

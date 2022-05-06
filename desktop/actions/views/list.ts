@@ -83,7 +83,7 @@ export const listPageView = createActionView((context) => {
   return view;
 });
 
-function getVisibleGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
+export function getCollapsedGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
   const groupedList = list.getAllGroupedNotifications();
 
   const result: NotificationOrGroup[] = [];
@@ -103,7 +103,7 @@ function getVisibleGroupedElementsInList(list: NotificationsList): NotificationO
 }
 
 function getNextVisibleItemInList(list: NotificationsList, currentItem?: NotificationOrGroup) {
-  const visibleElements = getVisibleGroupedElementsInList(list);
+  const visibleElements = getCollapsedGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[0];
 
@@ -113,7 +113,7 @@ function getNextVisibleItemInList(list: NotificationsList, currentItem?: Notific
 }
 
 function getPreviousVisibleItemInList(list: NotificationsList, currentItem?: NotificationOrGroup) {
-  const visibleElements = getVisibleGroupedElementsInList(list);
+  const visibleElements = getCollapsedGroupedElementsInList(list);
 
   if (!currentItem) return visibleElements[visibleElements.length - 1];
 
