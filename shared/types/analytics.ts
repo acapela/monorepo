@@ -3,6 +3,8 @@ import { PickByValue } from "utility-types";
 import { AppTheme } from "@aca/desktop/bridge/ui";
 import { Maybe } from "@aca/shared/types";
 
+import { PreloadInstrumentationReportResult, PreloadURLLoadState } from "../debug/electronInstrumentation.types";
+
 export type PlanType = "trial" | "free" | "premium";
 
 /**
@@ -78,6 +80,11 @@ export type AnalyticsEventsMap = {
   "Asana Integration Added": void;
   "GitHub Integration Added": void;
   "ClickUp Integration Added": void;
+
+  // Preview Loading instrumentation
+  "BrowserView Loaded after Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
+  "BrowserView Attached after Loaded": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
+  "BrowserView never used": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

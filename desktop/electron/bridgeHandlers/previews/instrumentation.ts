@@ -1,23 +1,25 @@
 import { differenceInMilliseconds } from "date-fns";
 import { BrowserView } from "electron";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+import {
+  PreloadInstrumentationReportResult,
+  PreloadURLLoadState,
+} from "@aca/shared/debug/electronInstrumentation.types";
+import { AnalyticsEventName } from "@aca/shared/types/analytics";
 
-interface URLLoadState {
-  url: string;
-  loadRequested: Date;
-  htmlPageLoad?: Date;
-  fullPageLoad?: Date;
-  browserViewAttached?: Date;
-  browserViewDisposed?: Date;
-}
-
-const allStates: WeakMap<BrowserView, URLLoadState> = new WeakMap();
+const allStates: WeakMap<BrowserView, PreloadURLLoadState> = new WeakMap();
 
 const log = makeLogger("BrowserViewLoadInstrumentation");
 
 export function markLoadRequestedTime(browserView: BrowserView, url: string) {
   allStates.set(browserView, { url, loadRequested: new Date() });
+}
+
+function track(event: AnalyticsEventName, payload: PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>) {
+  trackEvent(event, payload);
+  log.debug(event, payload);
 }
 
 export function markHtmlPageLoadTime(browserView: BrowserView) {
@@ -40,7 +42,7 @@ export function markFullPageLoadTime(browserView: BrowserView) {
   urlLoadState.fullPageLoad = new Date();
 
   if (urlLoadState.browserViewAttached) {
-    log.info("Loaded after BrowserView Attached", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
+    track("BrowserView Loaded after Attached", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
     return;
   }
 }
@@ -54,7 +56,7 @@ export function markViewAttachedTime(browserView: BrowserView) {
 
   urlLoadState.browserViewAttached = new Date();
   if (urlLoadState.fullPageLoad) {
-    log.debug("BrowserView Attached after loaded", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
+    track("BrowserView Attached after Loaded", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
   }
 }
 
@@ -68,15 +70,21 @@ export function markViewDisposedTime(browserView: BrowserView) {
   urlLoadState.browserViewDisposed = new Date();
 
   if (!urlLoadState.browserViewAttached) {
-    log.debug("BrowserView never used", { ...urlLoadState, ...instrumentDisposalResult(urlLoadState) });
+    track("BrowserView never used", { ...urlLoadState, ...instrumentDisposalResult(urlLoadState) });
   }
 }
 
-function isUrlStatePreviouslyRequested(urlLoadState: URLLoadState | undefined): urlLoadState is URLLoadState {
+function isUrlStatePreviouslyRequested(
+  urlLoadState: PreloadURLLoadState | undefined
+): urlLoadState is PreloadURLLoadState {
   return !!urlLoadState && !!urlLoadState.loadRequested;
 }
 
-function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAttached }: URLLoadState) {
+function instrumentAttachmentResult({
+  loadRequested,
+  fullPageLoad,
+  browserViewAttached,
+}: PreloadURLLoadState): Partial<PreloadInstrumentationReportResult> {
   if (fullPageLoad && browserViewAttached) {
     const wasFullyLoadedBeforePreview = fullPageLoad.getTime() < browserViewAttached.getTime();
     const deltaBetweenFullyLoadedAndAttached = Math.abs(fullPageLoad.getTime() - browserViewAttached.getTime());
@@ -92,7 +100,11 @@ function instrumentAttachmentResult({ loadRequested, fullPageLoad, browserViewAt
   return {};
 }
 
-function instrumentDisposalResult({ loadRequested, fullPageLoad, browserViewDisposed }: URLLoadState) {
+function instrumentDisposalResult({
+  loadRequested,
+  fullPageLoad,
+  browserViewDisposed,
+}: PreloadURLLoadState): Partial<PreloadInstrumentationReportResult> {
   if (fullPageLoad && browserViewDisposed) {
     const wasFullyLoadedBeforeDisposed = fullPageLoad.getTime() < browserViewDisposed.getTime();
     return {
