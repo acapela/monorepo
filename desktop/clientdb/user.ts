@@ -1,6 +1,5 @@
 import { differenceInSeconds } from "date-fns";
 import gql from "graphql-tag";
-import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
@@ -45,16 +44,12 @@ export const userEntity = defineEntity<DesktopUserFragment>({
     has_slack_installation: null,
     onboarding_finished_at: null,
     avatar_url: null,
-    slack_included_channels: [],
     referral_code: null,
     count_referrals: 0,
     ...getGenericDefaultData(),
   }),
-  customObservableAnnotations: {
-    slack_included_channels: observable.ref,
-  },
   sync: createHasuraSyncSetupFromFragment<DesktopUserFragment, UserConstraints>(userFragment, {
-    updateColumns: ["is_slack_auto_resolve_enabled", "slack_included_channels", "onboarding_finished_at"],
+    updateColumns: ["is_slack_auto_resolve_enabled", "onboarding_finished_at"],
   }),
 }).addConnections((user, { getEntity }) => {
   return {

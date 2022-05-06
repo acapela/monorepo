@@ -50,7 +50,6 @@ select_permissions:
         - name
         - onboarding_finished_at
         - referral_code
-        - slack_included_channels
         - subscription_plan
         - updated_at
       computed_fields:
@@ -75,7 +74,6 @@ update_permissions:
         - is_slack_auto_resolve_enabled
         - name
         - onboarding_finished_at
-        - slack_included_channels
       filter:
         id:
           _eq: X-Hasura-User-Id
