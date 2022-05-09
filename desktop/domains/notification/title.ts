@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { jiraIssueFieldAlias } from "@aca/shared/attlassian";
 
 function getTitle(inner: NotificationEntity["inner"]): string {
   if (!inner) {
@@ -67,6 +68,25 @@ function getTitle(inner: NotificationEntity["inner"]): string {
       }
       if (inner.type === "issue_assigned") {
         return `Assigned you to "${inner.issue_title}"`;
+      }
+      if (inner.type === "issue_field_updated") {
+        const field = jiraIssueFieldAlias[inner.updated_issue_field ?? ""] ?? inner.updated_issue_field;
+
+        if (!field) {
+          return `Updated ${inner.issue_title}`;
+        }
+
+        if (!!inner.from && !inner.to) {
+          return `Removed '${field}' from ${inner.issue_title}`;
+        }
+
+        if (!inner.from && !!inner.to) {
+          return `Added "${inner.to}" as '${field}' in ${inner.issue_title}`;
+        }
+
+        if (!!inner.from && !!inner.to) {
+          return `Updated '${field}' to "${inner.to}" in ${inner.issue_title}`;
+        }
       }
       return "Unhandled Jira Notification";
     }

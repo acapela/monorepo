@@ -21,6 +21,7 @@ select_permissions:
         - to
         - type
         - updated_at
+        - updated_issue_field
       filter:
         notification:
           user_id:
