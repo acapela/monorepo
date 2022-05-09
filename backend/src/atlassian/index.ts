@@ -9,7 +9,7 @@ import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
-import { captureJiraWebhook } from "./capturing";
+import { captureJiraWebhook } from "./capturing/capturing";
 import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
 import { GetResourcesResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
 import { getRefreshTokenExpiresAt } from "./utils";

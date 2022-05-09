@@ -1,4 +1,5 @@
 export const SUPPORTED_FIELDS = [
+  "assignee",
   "summary",
   "attachment",
   "description",
@@ -10,6 +11,7 @@ export const SUPPORTED_FIELDS = [
 ];
 
 export const jiraIssueFieldAlias: Record<typeof SUPPORTED_FIELDS[number], string> = {
+  assignee: "Assignee",
   summary: "Title",
   description: "Description",
   attachment: "Attachment",
