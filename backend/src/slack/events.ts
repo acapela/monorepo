@@ -1,4 +1,4 @@
-import { subSeconds } from "date-fns";
+import { addSeconds, subHours, subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
@@ -25,6 +25,9 @@ export async function handleNotificationSlackMessageChanges(event: HasuraEvent<N
 }
 
 export async function markSlackConversationsAsRead() {
+  // In case of downtime or bugs in the queue-clearing mechanism we do not want to be overburdened by old messages
+  await db.user_slack_conversation_read.deleteMany({ where: { updated_at: { lt: subHours(new Date(), 1) } } });
+
   const oldReadConversations = await db.user_slack_conversation_read.findMany({
     where: { updated_at: { lt: subSeconds(new Date(), 30).toISOString() } },
     include: { user_slack_installation: true },
@@ -46,7 +49,13 @@ export async function markSlackConversationsAsRead() {
     }
   }
   await db.user_slack_conversation_read.deleteMany({
-    // Do not delete conversations that have been updated in the meanwhile
-    where: { OR: oldReadConversations.map((c) => ({ id: c.id, updated_at: c.updated_at })) },
+    where: {
+      OR: oldReadConversations.map((c) => ({
+        id: c.id,
+        // Do not delete conversations that have been updated in the meanwhile, we need to add a buffer second
+        // since we can lose precision in the float-conversion of timestamps from pg to js
+        updated_at: { lte: addSeconds(c.updated_at, 1) },
+      })),
+    },
   });
 }
