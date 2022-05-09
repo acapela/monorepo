@@ -112,7 +112,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
         workspace_name: project.workspace.name,
       },
     });
-    const createdWebhook = await client.webhooks.create(project.gid, `${whEndpoint}${dbWebhook.id}`, {});
+    const createdWebhook = await client.webhooks.create(project.gid, `${whEndpoint}/${dbWebhook.id}`, {});
     // update database entry again with webhook id
     await db.asana_webhook.update({
       where: { id: dbWebhook.id },
