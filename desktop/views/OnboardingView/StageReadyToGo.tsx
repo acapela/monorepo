@@ -28,7 +28,7 @@ export const StageReadyToGo = observer(({ onContinue }: OnboardingStageProps) =>
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Ready to go!"
-          description="You’re all set. We hope Acapela will make your notifications delightful again."
+          description="Open your Acapela inbox and watch distracting notifications turn into an oasis of calm."
         />
         <OnboardingAnimationItem>
           <UISummaryCard>

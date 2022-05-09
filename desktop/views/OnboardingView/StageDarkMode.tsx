@@ -2,7 +2,9 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
+import { Button } from "@aca/ui/buttons/Button";
 import { useShortcuts } from "@aca/ui/keyboard/useShortcut";
 
 import { darkTheme, lightTheme } from "./assets";
@@ -17,6 +19,13 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
   const currentTheme = uiSettingsBridge.get().theme;
   function toggleMode() {
     uiSettingsBridge.update({ theme: currentTheme === "dark" ? "light" : "dark" });
+    trackEvent("App Theme Changed", { theme: currentTheme === "dark" ? "light" : "dark" });
+  }
+
+  function handleAuthThemeSelection() {
+    uiSettingsBridge.update({ theme: "auto" });
+    trackEvent("App Theme Changed", { theme: "auto" });
+    onContinue();
   }
 
   useShortcuts(["Left", "Right"], () => {
@@ -30,13 +39,14 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="First things first"
-          description="Pick your favorite theme. You can switch it in the settings later."
+          description="Pick your app theme. You can change it later in your settings."
         />
         <UIModes>
           <UIModeCard
             $isActive={currentTheme === "light"}
             onClick={() => {
               uiSettingsBridge.update({ theme: "light" });
+              trackEvent("App Theme Changed", { theme: "light" });
             }}
           >
             <UIModeIllustration src={lightTheme} />
@@ -46,12 +56,18 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
             $isActive={currentTheme === "dark"}
             onClick={() => {
               uiSettingsBridge.update({ theme: "dark" });
+              trackEvent("App Theme Changed", { theme: "dark" });
             }}
           >
             <UIModeIllustration src={darkTheme} />
             <UIModeLabel>Dark</UIModeLabel>
           </UIModeCard>
         </UIModes>
+        <OnboardingAnimationItem>
+          <Button kind="transparent" onClick={handleAuthThemeSelection}>
+            Sync theme with system settings
+          </Button>
+        </OnboardingAnimationItem>
         <OnboardingContinueButton label="Continue" onClick={onContinue} />
       </OnboardingStageSections>
     </OnboardingStageContainer>

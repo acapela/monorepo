@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function OnboardingNotificationRow({ notification, onSelectRequest, onDeselectRequest, isSelected }: Props) {
-  const { integration, author, target, content, onOpen, onResolve, onSnooze } = notification;
+  const { integration, author, target, content, timeAgoSent, onOpen, onResolve, onSnooze } = notification;
   const holderRef = useRef<HTMLDivElement>(null);
   useUserFocusedOnElement(holderRef, onSelectRequest, onDeselectRequest);
 
@@ -52,7 +52,7 @@ export function OnboardingNotificationRow({ notification, onSelectRequest, onDes
       <UIAuthor>{author}</UIAuthor>
       <UITarget>{target}</UITarget>
       <UIContent>{content}</UIContent>
-      <UITime>1m</UITime>
+      <UITime>{timeAgoSent}</UITime>
       {isSelected && (
         <UIActions>
           <IconButton

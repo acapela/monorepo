@@ -62,6 +62,7 @@ export type AnalyticsEventsMap = {
   "App Opened": { app_version: string | undefined };
   "App Restarted": void;
   "App Updated": void;
+  "App Theme Changed": { theme: AppTheme };
   "Settings Opened": void;
   "Snoozed Notifications Opened": void;
   "Resolved Notifications Opened": void;

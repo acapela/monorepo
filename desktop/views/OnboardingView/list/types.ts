@@ -6,6 +6,7 @@ export interface OnboardingNotificationRowData {
   integration: IntegrationClient;
   author: string;
   target: string;
+  timeAgoSent: string;
   content: ReactNode;
   onResolve?: (notification: OnboardingNotificationRowData) => void;
   onSnooze?: (notification: OnboardingNotificationRowData) => void;
