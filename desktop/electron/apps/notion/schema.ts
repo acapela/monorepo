@@ -133,8 +133,7 @@ export const PageBlockValue = BlockValueCommon.extend({
   created_by_table: z.string(),
 });
 
-export const CollectionViewPageBlockValue = BlockValueCommon.extend({
-  type: z.literal("collection_view_page"),
+export const CollectionViewCommonBlockValue = BlockValueCommon.extend({
   alive: z.boolean(),
   collection_id: z.string().optional(),
   created_by_id: z.string(),
@@ -150,6 +149,14 @@ export const CollectionViewPageBlockValue = BlockValueCommon.extend({
     })
     .optional(),
   view_ids: z.array(z.string()),
+});
+
+export const CollectionViewPageBlockValue = CollectionViewCommonBlockValue.extend({
+  type: z.literal("collection_view_page"),
+});
+
+export const CollectionViewBlockValue = CollectionViewCommonBlockValue.extend({
+  type: z.literal("collection_view"),
 });
 
 const BlockPayload = <T>(type: z.ZodType<T>) => z.object({ role: z.string(), value: type.optional() });

@@ -78,4 +78,14 @@ describe("notion worker extraction tests", () => {
     const result = extractNotifications(stuartBugRecord);
     expect(result).toHaveLength(20);
   });
+
+  it("adds the name of the page when its a collection", () => {
+    const recordCollectionNameBugJSON = fs.readFileSync(
+      path.resolve(__dirname + "/testFixtures/recordCollectionNameBug.json"),
+      "utf8"
+    );
+    const recordCollectionNameBugRecord = JSON.parse(recordCollectionNameBugJSON);
+    const result = extractNotifications(recordCollectionNameBugRecord);
+    expect(result).toHaveLength(1);
+  });
 });
