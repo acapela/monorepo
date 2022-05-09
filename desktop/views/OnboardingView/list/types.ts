@@ -12,3 +12,8 @@ export interface OnboardingNotificationRowData {
   onSnooze?: (notification: OnboardingNotificationRowData) => void;
   onOpen?: (notification: OnboardingNotificationRowData) => void;
 }
+
+export interface FakeNotificationData {
+  title: string;
+  integrationClient: IntegrationClient;
+}
