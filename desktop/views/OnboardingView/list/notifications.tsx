@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
+import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { IconCheck, IconTime } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
@@ -11,33 +13,36 @@ const UIShortcut = styled(ShortcutDescriptor)``;
 
 export const onboardingNotificationRows: OnboardingNotificationRowData[] = [
   {
-    integration: slackIntegrationClient,
-    author: "Heiki",
-    target: "#welcome",
+    integration: notionIntegrationClient,
+    author: "Adam",
+    target: "Q3 Goals",
     content: (
       <>
-        Click <IconCheck /> or press <UIShortcut shortcut={"E"} /> to resolve notification
+        Click <IconCheck /> or press <UIShortcut shortcut={"E"} /> to resolve the notification
       </>
     ),
+    timeAgoSent: "10m",
+  },
+  {
+    integration: figmaIntegrationClient,
+    author: "Nico",
+    target: "New Landing",
+    content: (
+      <>
+        Click <IconTime /> or press <UIShortcut shortcut={"H"} /> to snooze the notification
+      </>
+    ),
+    timeAgoSent: "40m",
   },
   {
     integration: slackIntegrationClient,
     author: "Heiki",
-    target: "#welcome",
+    target: "#general",
     content: (
       <>
-        Click <IconTime /> or press <UIShortcut shortcut={"H"} /> to snooze notification
+        Click notification or press <UIShortcut shortcut={"Enter"} /> to open the notification
       </>
     ),
-  },
-  {
-    integration: slackIntegrationClient,
-    author: "Heiki",
-    target: "#welcome",
-    content: (
-      <>
-        Click notification or press <UIShortcut shortcut={"Enter"} /> to open notification
-      </>
-    ),
+    timeAgoSent: "1hr",
   },
 ];
