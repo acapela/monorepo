@@ -12,6 +12,7 @@ const routes = {
   authSignIn: "/auth/sign-in",
   authError: "/auth/error",
   authSuccess: "/auth/success",
+  recorder: "/recorder",
 } as const;
 
 export const allRouteNames = typedKeys(routes);
