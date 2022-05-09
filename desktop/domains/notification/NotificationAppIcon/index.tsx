@@ -144,6 +144,10 @@ const UIIcon = styled.img<{ $invert?: boolean }>`
   &.notification_notion {
     background-color: #fff;
   }
+
+  &.notification_github {
+    background-color: #fff;
+  }
 `;
 
 const UIUnknown = styled.div`
