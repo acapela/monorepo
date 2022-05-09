@@ -7,6 +7,11 @@ import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
 const log = makeLogger("ApplicationsFolder");
 
+function quitApp() {
+  allowWindowClosing();
+  app.quit();
+}
+
 export async function ensureAppInApplicationsFolder() {
   if (IS_DEV) {
     return true;
@@ -28,8 +33,7 @@ export async function ensureAppInApplicationsFolder() {
   });
 
   if (dialogResponse.response !== MOVE_ACTION_INDEX) {
-    allowWindowClosing();
-    app.quit();
+    quitApp();
     return false;
   }
 
@@ -47,5 +51,5 @@ export async function ensureAppInApplicationsFolder() {
     );
   }
 
-  app.quit();
+  quitApp();
 }
