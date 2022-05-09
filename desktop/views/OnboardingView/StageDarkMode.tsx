@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "@aca/desktop/analytics";
-import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
+import { AppTheme, uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { Button } from "@aca/ui/buttons/Button";
 import { useShortcuts } from "@aca/ui/keyboard/useShortcut";
 
@@ -17,19 +17,19 @@ import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => {
   const currentTheme = uiSettingsBridge.get().theme;
-  function toggleMode() {
-    uiSettingsBridge.update({ theme: currentTheme === "dark" ? "light" : "dark" });
-    trackEvent("App Theme Changed", { theme: currentTheme === "dark" ? "light" : "dark" });
+
+  function handleThemeSelection(theme: AppTheme) {
+    trackEvent("App Theme Changed", { theme });
+    uiSettingsBridge.update({ theme });
   }
 
-  function handleAuthThemeSelection() {
-    uiSettingsBridge.update({ theme: "auto" });
-    trackEvent("App Theme Changed", { theme: "auto" });
+  function handleAutoThemeSelection() {
+    handleThemeSelection("auto");
     onContinue();
   }
 
   useShortcuts(["Left", "Right"], () => {
-    toggleMode();
+    handleThemeSelection(currentTheme === "dark" ? "light" : "dark");
   });
 
   return (
@@ -45,8 +45,7 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
           <UIModeCard
             $isActive={currentTheme === "light"}
             onClick={() => {
-              uiSettingsBridge.update({ theme: "light" });
-              trackEvent("App Theme Changed", { theme: "light" });
+              handleThemeSelection("light");
             }}
           >
             <UIModeIllustration src={lightTheme} />
@@ -55,8 +54,7 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
           <UIModeCard
             $isActive={currentTheme === "dark"}
             onClick={() => {
-              uiSettingsBridge.update({ theme: "dark" });
-              trackEvent("App Theme Changed", { theme: "dark" });
+              handleThemeSelection("dark");
             }}
           >
             <UIModeIllustration src={darkTheme} />
@@ -64,7 +62,7 @@ export const StageDarkMode = observer(({ onContinue }: OnboardingStageProps) => 
           </UIModeCard>
         </UIModes>
         <OnboardingAnimationItem>
-          <Button kind="transparent" onClick={handleAuthThemeSelection}>
+          <Button kind="transparent" onClick={handleAutoThemeSelection}>
             Sync theme with system settings
           </Button>
         </OnboardingAnimationItem>

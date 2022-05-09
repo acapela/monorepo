@@ -22,13 +22,14 @@ import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconCheck, IconTime } fro
 import { FakeIntegrationScreen, FakeIntegrationScreenProps } from "./focus/FakeIntegrationScreen";
 import { FakeWindow } from "./focus/FakeWindow";
 import { GuideContext, GuideItem } from "./focus/Guide";
+import { FakeNotificationData } from "./list/types";
 import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
-const sampleNotificationContent = [
+const sampleNotificationContent: FakeNotificationData[] = [
   { title: "Heiki mentioned you in #welcome", integrationClient: slackIntegrationClient },
   { title: "3 new comments in New Settings Page", integrationClient: figmaIntegrationClient },
   { title: "1 new comment in Q3 Product Roadmap", integrationClient: notionIntegrationClient },
