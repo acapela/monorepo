@@ -1,3 +1,5 @@
+import type { Rectangle } from "electron";
+
 import { ShortcutKeys } from "@aca/ui/keyboard/shortcutBase";
 
 import { createInvokeBridge } from "./base/invoke";
@@ -47,5 +49,17 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
     showUnreadNotificationsCountBadge: false,
     notificationsCountBadgeListIds: [] as string[],
     showShortcutsBar: true,
+  }),
+});
+
+export interface MainWindowLastBounds {
+  bounds: Rectangle;
+  isMaximized: boolean;
+}
+
+export const electronSettingsBridge = createBridgeValue("electronSettingsBridge", {
+  isPersisted: true,
+  getDefault: () => ({
+    lastMainWindowBounds: null as MainWindowLastBounds | null,
   }),
 });

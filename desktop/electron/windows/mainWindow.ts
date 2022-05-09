@@ -10,6 +10,7 @@ import { initializeChildWindowHandlers } from "./childWindows";
 import { appEnvData } from "./env";
 import { initializeMainView } from "./mainView";
 import { initializeOverlayView } from "./overlayView";
+import { initializeMainWindowRememberBounds, restoreLastMainWindowBounds } from "./rememberBounds";
 import { createBrowserWindowMobxBinding } from "./utils/browserWindowMobxBinding";
 import { handleHideWindowOnClose } from "./utils/hideWindowOnClose";
 import { makeLinksOpenInDefaultBrowser } from "./utils/openLinks";
@@ -53,11 +54,17 @@ function initializeMainWindow() {
     },
   });
 
+  // If window had previous bounds (size, position) - restore it
+  restoreLastMainWindowBounds(mainWindow);
+  // After we restored previous bounds - start watching it to save it for next app opening
+  initializeMainWindowRememberBounds(mainWindow);
+
   const mainView = initializeMainView(mainWindow, appEnvData.get());
 
   const overlayView = initializeOverlayView(mainWindow, mainView, appEnvData.get());
 
   const mainWindowWebContents = mainWindow.webContents;
+  mainWindow.getBounds;
 
   Reflect.set(mainWindow, "webContents", {
     get() {
