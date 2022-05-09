@@ -167,11 +167,14 @@ function getTitle(inner: NotificationEntity["inner"], isGroupItem: boolean): str
   }
 }
 
-export const getNotificationTitle = cachedComputed((notification: NotificationEntity, isGroupItem: boolean): string => {
-  const { inner } = notification;
-  const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
-  const hasMultipleWorkspaces = (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
-  const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
-  const title = getTitle(inner, isGroupItem);
-  return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
-});
+export const getNotificationTitle = cachedComputed(
+  (notification: NotificationEntity, isGroupItem?: boolean): string => {
+    const { inner } = notification;
+    const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
+    const hasMultipleWorkspaces =
+      (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
+    const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
+    const title = getTitle(inner, !!isGroupItem);
+    return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
+  }
+);
