@@ -1,5 +1,6 @@
 import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { SUPPORTED_FIELDS } from "@aca/shared/attlassian";
 import { logger } from "@aca/shared/logger";
 
 import { getIssueWatchers, jiraRequest } from "./rest";
@@ -301,6 +302,62 @@ async function handleJiraIssueUpdate(payload: JiraWebhookPayload) {
               notification_jira_issue_type: {
                 connect: {
                   value: "issue_status_updated",
+                },
+              },
+            },
+          })
+      );
+
+      notifiedUsers.push(...watchersToNotify.map(({ id }) => id));
+    }
+
+    if (changeLogItem.fieldtype === "custom" || SUPPORTED_FIELDS.includes(changeLogItem.fieldId)) {
+      // We're attempting to do a round-robin of access_token usage based on "least recently used access token"
+      // The point is that we would like to distribute api rate limit "cost" of making an api call between
+      // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
+      // where it could reach rate limits really fast
+      const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
+
+      // Mention notifications are more important than watcher notifications
+      // We're excluding mentions from watcher to prevent double notifications
+      const watchersExceptUserThatUpdatedIssue = (await getWatchers(jiraAccount, payload.issue.key)).filter(
+        (watcherAccountId) => watcherAccountId !== accountThatUpdatedIssue?.accountId
+      );
+
+      const watchersToNotify = (
+        await db.user.findMany({
+          where: {
+            account: {
+              some: {
+                AND: [
+                  { provider_id: "atlassian" },
+                  { provider_account_id: { in: watchersExceptUserThatUpdatedIssue } },
+                ],
+              },
+            },
+          },
+        })
+      ).filter((u) => !notifiedUsers.includes(u.id));
+
+      watchersToNotify.map(
+        async (user) =>
+          await db.notification_jira_issue.create({
+            data: {
+              notification: {
+                create: {
+                  user_id: user.id,
+                  url: issueUrl,
+                  from: payload.user?.displayName ?? "Jira",
+                },
+              },
+              from: changeLogItem.fromString,
+              to: changeLogItem.toString,
+              issue_id: payload.issue.id,
+              issue_title: payload.issue.fields.summary,
+              updated_issue_field: changeLogItem.fieldtype === "custom" ? changeLogItem.field : changeLogItem.fieldId,
+              notification_jira_issue_type: {
+                connect: {
+                  value: "issue_field_updated",
                 },
               },
             },
