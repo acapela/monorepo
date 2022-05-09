@@ -17,6 +17,8 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
 import { AppThemeProvider } from "@aca/ui/theme";
 
+import AssetsRecorder from "./pages/recorder";
+
 const routeToComponent = {
   root: Index,
   login: Login,
@@ -27,6 +29,7 @@ const routeToComponent = {
   authSignIn: AuthSignIn,
   authError: AuthError,
   authSuccess: AuthSuccess,
+  recorder: AssetsRecorder,
 };
 
 export const BuiltInStyles = createGlobalStyle`
