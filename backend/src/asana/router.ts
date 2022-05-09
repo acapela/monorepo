@@ -97,7 +97,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
     if (existingWebhook) {
       await Promise.all([
         client.webhooks.deleteById(existingWebhook.gid),
-        db.asana_webhook.deleteMany({ where: { id: existingWebhook.target.split(whEndpoint)[1] } }),
+        db.asana_webhook.deleteMany({ where: { id: existingWebhook.target.split(whEndpoint + "/")[1] } }),
       ]);
     }
 

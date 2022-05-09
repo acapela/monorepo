@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { ClickUpAccount, ClickUpAccountToTeam, ClickUpTeam, db } from "@aca/db";
 
-import { Webhook } from "./types";
+import { User, Webhook } from "./types";
 import { API_ENDPOINT } from "./utils";
 
 type DbTeam = ClickUpTeam & {
@@ -17,6 +17,10 @@ function getRandomToken(accounts: ClickUpAccount[]): string {
 async function fetchTask(token: string, taskId: string) {
   const headers = { Authorization: token };
   return (await axios.get(`${API_ENDPOINT}/task/${taskId}`, { headers })).data;
+}
+
+function isWatchedByUser(watchers: User[], userId: string): boolean {
+  return watchers.some((watcher) => `${watcher.id}` === userId);
 }
 
 export async function processEvent(webhook: Webhook, team: DbTeam) {
@@ -54,6 +58,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .filter((at) => isWatchedByUser(task.watchers, at.clickup_account.clickup_user_id))
           .map((at) => at.clickup_account.user_id)
           .map((uid) =>
             createCommentNotification({
@@ -94,6 +99,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .filter((at) => isWatchedByUser(task.watchers, at.clickup_account.clickup_user_id))
           .map((at) => at.clickup_account.user_id)
           .map((uid) =>
             createValueNotification({
@@ -115,6 +121,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .filter((at) => isWatchedByUser(task.watchers, at.clickup_account.clickup_user_id))
           .map((at) => at.clickup_account.user_id)
           .map((uid) =>
             createValueNotification({
@@ -138,6 +145,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
       await Promise.all(
         team.clickup_account_to_team
           .filter((at) => at.clickup_account.clickup_user_id !== `${hist.user.id}`)
+          .filter((at) => isWatchedByUser(task.watchers, at.clickup_account.clickup_user_id))
           .map((at) => at.clickup_account.user_id)
           .map((uid) =>
             createValueNotification({
