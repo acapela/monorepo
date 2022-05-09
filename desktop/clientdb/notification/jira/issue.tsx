@@ -15,6 +15,7 @@ const notificationJiraFragment = gql`
     type
     issue_id
     issue_title
+    updated_issue_field
     from
     to
   }
