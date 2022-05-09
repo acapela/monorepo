@@ -20,7 +20,5 @@ select_permissions:
         - team_id
         - user_id
       filter:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+        user_id:
+          _eq: X-Hasura-User-Id
