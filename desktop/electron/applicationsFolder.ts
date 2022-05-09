@@ -26,7 +26,7 @@ export async function ensureAppInApplicationsFolder() {
 
   const dialogResponse = await dialog.showMessageBox({
     title: `Move Acapela to "Applications" folder`,
-    message: `In order for Acapela to work properly it must be in your  - Acapela needs to be in your Applications folder`,
+    message: `In order for Acapela to work properly it must be in Applications folder`,
     buttons: ["Quit", `Move to "Applications" folder`],
     cancelId: QUIT_ACTION_INDEX,
     defaultId: MOVE_ACTION_INDEX,
