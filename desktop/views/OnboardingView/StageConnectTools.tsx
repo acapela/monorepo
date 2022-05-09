@@ -24,7 +24,7 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Connect your work tools"
-          description="Acapela will import notifications from the tools you connect."
+          description="Collect all your notifications in one place, without checking multiple apps or dealing with email spam."
         />
         <UIIntegrationsButtons>
           {getEnabledIntegrationClientList().map((integration) => {

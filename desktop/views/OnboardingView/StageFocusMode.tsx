@@ -4,7 +4,12 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { pickSnoozeTime } from "@aca/desktop/actions/snoozeUtils";
+import { asanaIntegrationClient } from "@aca/desktop/domains/integrations/asana";
+import { googleDriveIntegrationClient } from "@aca/desktop/domains/integrations/drive";
+import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
+import { linearIntegrationClient } from "@aca/desktop/domains/integrations/linear";
+import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { TopBarButton } from "@aca/desktop/ui/systemTopBar/TopBarButton";
 import { TopBarDivider, UITopBarButtonsGroup } from "@aca/desktop/ui/systemTopBar/ui";
@@ -23,13 +28,13 @@ import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
-const sampleNotificationTitles = [
-  "Heiki mentioned you in #welcome",
-  "New message in #bugs",
-  "New private message from @Roland",
-  "3 new messages in #marketing",
-  "2 new mentions in #standup",
-  "Adam mentioned you in #product",
+const sampleNotificationContent = [
+  { title: "Heiki mentioned you in #welcome", integrationClient: slackIntegrationClient },
+  { title: "3 new comments in New Settings Page", integrationClient: figmaIntegrationClient },
+  { title: "1 new comment in Q3 Product Roadmap", integrationClient: notionIntegrationClient },
+  { title: "2 new updates in Onboarding Felix", integrationClient: asanaIntegrationClient },
+  { title: "4 new comments in New Onboarding Flow", integrationClient: linearIntegrationClient },
+  { title: "Jannick commented in Q3 budget", integrationClient: googleDriveIntegrationClient },
 ];
 
 const FAKE_APP_FADE_OUT_DURATION = 350;
@@ -60,7 +65,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
   // We'll use it to get 'next' example title (we use index instead of random to avoid showing the same title twice and have some control on order of showing titles)
   const fakeAppIndex = useChangesCount(fakeAppProps);
 
-  const title = getItemFromArrayByIndexWithLoop(sampleNotificationTitles, fakeAppIndex);
+  const { title, integrationClient } = getItemFromArrayByIndexWithLoop(sampleNotificationContent, fakeAppIndex);
 
   function refreshFakeApp(props?: FakeIntegrationScreenProps) {
     setFakeAppProps(props ?? {});
@@ -71,8 +76,8 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
       <OnboardingStageContainer>
         <OnboardingStageSections>
           <OnboardingSecondaryHero
-            title="Focus mode"
-            description="You can engage with the conversation by clicking on the full-screen application. Resolving or snoozing will load the next notification."
+            title="Action your notifications"
+            description="When you open a notification, that app gets loaded full screen in Acapela. You can use Focus Mode to reply directly, or snooze and resolve it to move onto the next one. Try it out!"
           />
           <OnboardingAnimationItem>
             <UIFakeApp>
@@ -82,7 +87,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                     <UITopBarButtonsGroup>
                       <GuideItem
                         index={6}
-                        content="Go back to list view"
+                        content="Go back to your inbox"
                         onCompleted={async () => {
                           await wait(FAKE_APP_FADE_OUT_DURATION);
                           onContinue();
@@ -92,7 +97,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                           return (
                             <TopBarButton
                               icon={<IconArrowLeft />}
-                              tooltip="Go to list view"
+                              tooltip="Go back to list view"
                               onClick={() => {
                                 complete();
                               }}
@@ -102,7 +107,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                       </GuideItem>
 
                       <TopBarDivider />
-                      <GuideItem index={4} content="Go to next notification without resolving it">
+                      <GuideItem index={4} content="Jump to the next notification">
                         {(complete) => {
                           return (
                             <TopBarButton
@@ -116,7 +121,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                           );
                         }}
                       </GuideItem>
-                      <GuideItem index={5} content="Go back to previous notification">
+                      <GuideItem index={5} content="Go back to the previous notification">
                         {(complete) => {
                           return (
                             <TopBarButton
@@ -134,14 +139,14 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                     <AnimatePresence exitBeforeEnter>
                       <UITopbarTitle key={title}>
                         <UITitleIcon>
-                          <IntegrationIcon integrationClient={slackIntegrationClient} />
+                          <IntegrationIcon integrationClient={integrationClient} />
                         </UITitleIcon>
                         {title}
                       </UITopbarTitle>
                     </AnimatePresence>
 
                     <UITopBarButtonsGroup>
-                      <GuideItem index={1} content="Click to resolve notification">
+                      <GuideItem index={1} content="Click to resolve the notification">
                         {(complete) => {
                           return (
                             <TopBarButton
@@ -155,7 +160,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                           );
                         }}
                       </GuideItem>
-                      <GuideItem index={2} content="Click to snooze notification">
+                      <GuideItem index={2} content="Click to snooze it">
                         {(complete) => {
                           return (
                             <TopBarButton
@@ -179,7 +184,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                 }
               >
                 <AnimatePresence exitBeforeEnter>
-                  <FakeIntegrationScreen {...fakeAppProps} key={getObjectKey(fakeAppProps)} />
+                  <FakeIntegrationScreen {...{ integrationClient }} key={getObjectKey(fakeAppProps)} />
                 </AnimatePresence>
               </FakeWindow>
             </UIFakeApp>

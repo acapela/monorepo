@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { pickSnoozeTime } from "@aca/desktop/actions/snoozeUtils";
+import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
+import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { useMethod } from "@aca/shared/hooks/useMethod";
@@ -37,41 +39,44 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
   const [notifications, setNotifications] = useState<OnboardingNotificationRowData[]>(() => {
     return [
       {
-        integration: slackIntegrationClient,
-        author: "Heiki",
-        target: "#welcome",
+        integration: notionIntegrationClient,
+        author: "Adam",
+        target: "Q3 Goals",
         content: (
           <>
             Click <IconCheck /> or press <UIShortcut shortcut={"E"} /> to mark as done
           </>
         ),
+        timeAgoSent: "10m",
         onResolve: removeNotification,
         onSnooze: handleSnoozeNotification,
       },
       {
-        integration: slackIntegrationClient,
-        author: "Heiki",
-        target: "#welcome",
+        integration: figmaIntegrationClient,
+        author: "Nico",
+        target: "New Landing",
         content: (
           <>
             Click <IconTime /> or press <UIShortcut shortcut={"H"} /> to snooze
           </>
         ),
+        onOpen: () => {
+          onContinue();
+        },
+        timeAgoSent: "40m",
         onResolve: removeNotification,
         onSnooze: handleSnoozeNotification,
       },
       {
         integration: slackIntegrationClient,
         author: "Heiki",
-        target: "#welcome",
+        target: "#general",
         content: (
           <>
             Click notification or press <UIShortcut shortcut={"Enter"} /> to open
           </>
         ),
-        onOpen: () => {
-          onContinue();
-        },
+        timeAgoSent: "1hr",
         onResolve: removeNotification,
         onSnooze: handleSnoozeNotification,
       },
@@ -120,8 +125,8 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
     <OnboardingStageContainer>
       <OnboardingStageSections>
         <OnboardingSecondaryHero
-          title="Notifications list"
-          description="This is how synced notifications are presented to you. You can quickly snooze, resolve or open them."
+          title="Your Inbox"
+          description="All your notifications get captured in your Acapela inbox. You can quickly snooze, resolve, or open them from here. Try it out!"
         />
         <OnboardingAnimationItem>
           <UIOnboardingCard>

@@ -3,6 +3,7 @@ import styled, { css, keyframes } from "styled-components";
 
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
+import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconSend } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -19,14 +20,15 @@ import { GuideItem } from "./Guide";
 
 export interface FakeIntegrationScreenProps {
   onSent?: () => void;
+  integrationClient?: IntegrationClient;
 }
 
-export function FakeIntegrationScreen({ onSent }: FakeIntegrationScreenProps) {
+export function FakeIntegrationScreen({ onSent, integrationClient }: FakeIntegrationScreenProps) {
   return (
     <UIHolder>
       <UISidebar>
         <UILogo>
-          <IntegrationIcon integrationClient={slackIntegrationClient} />
+          <IntegrationIcon integrationClient={integrationClient ?? slackIntegrationClient} />
         </UILogo>
         <FakeMenu count={3} />
         <FakeUserList count={2} />
