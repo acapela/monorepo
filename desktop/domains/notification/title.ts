@@ -5,7 +5,7 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { jiraIssueFieldAlias } from "@aca/shared/attlassian";
 
-function getTitle(inner: NotificationEntity["inner"]): string {
+function getTitle(inner: NotificationEntity["inner"], isGroupItem: boolean): string {
   if (!inner) {
     return `Unknown notification`;
   }
@@ -21,71 +21,75 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_notion": {
       switch (inner.type) {
         case "notification_notion_commented":
-          return `Commented in "${inner?.page_title}"`;
+          return isGroupItem ? "Commented" : `Commented in "${inner?.page_title}"`;
         case "notification_notion_user_invited":
-          return `Invited you to "${inner?.page_title}"`;
+          return isGroupItem ? "Invited you" : `Invited you to "${inner?.page_title}"`;
         case "notification_notion_user_mentioned":
-          return `Mentioned you in "${inner?.page_title}"`;
+          return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner?.page_title}"`;
         case "notification_notion_reminder":
-          return `Reminder in "${inner?.page_title}"`;
+          return isGroupItem ? "Reminder" : `Reminder in "${inner?.page_title}"`;
         default:
-          return "New Notion notification";
+          return "New notification";
       }
     }
     case "notification_figma_comment": {
-      return `${inner.is_mention ? "Mentioned you" : "Comment"} in "${inner?.file_name}"`;
+      return `${inner.is_mention ? "Mentioned you" : "Comment"}${isGroupItem ? "" : ` in "${inner?.file_name}"`}`;
     }
     case "notification_linear": {
       if (inner.type === "Comment") {
         switch (inner.origin) {
           case "mention":
-            return `Mentioned you in "${inner.issue_title}"`;
+            return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner.issue_title}"`;
           default:
-            return `Commented in "${inner.issue_title}"`;
+            return isGroupItem ? "Commented" : `Commented in "${inner.issue_title}"`;
         }
       }
       switch (inner.origin) {
         case "assign":
-          return `Assigned you to "${inner.issue_title}"`;
+          return isGroupItem ? "Assigned you" : `Assigned you to "${inner.issue_title}"`;
         case "cancel":
         case "state:cancel":
-          return `Cancelled issue "${inner.issue_title}"`;
+          return isGroupItem ? "Cancelled issue" : `Cancelled issue "${inner.issue_title}"`;
         case "state:complete":
-          return `Completed issue "${inner.issue_title}"`;
+          return isGroupItem ? "Completed issue" : `Completed issue "${inner.issue_title}"`;
         default:
-          return `Created issue "${inner.issue_title}"`;
+          return isGroupItem ? "Created issue" : `Created issue "${inner.issue_title}"`;
       }
     }
     case "notification_jira_issue": {
       if (inner.type === "comment_created") {
-        return `Commented in "${inner.issue_title}"`;
+        return isGroupItem ? "Commented" : `Commented in "${inner.issue_title}"`;
       }
       if (inner.type === "user_mentioned") {
-        return `Mentioned you in "${inner.issue_title}"`;
+        return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner.issue_title}"`;
       }
       if (inner.type === "issue_status_updated") {
-        return `Updated "${inner.issue_title}" to "${inner.to}"`;
+        return isGroupItem ? `Updated to "${inner.to}"` : `Updated "${inner.issue_title}" to "${inner.to}"`;
       }
       if (inner.type === "issue_assigned") {
-        return `Assigned you to "${inner.issue_title}"`;
+        return isGroupItem ? `Assigned you` : `Assigned you to "${inner.issue_title}"`;
       }
       if (inner.type === "issue_field_updated") {
         const field = jiraIssueFieldAlias[inner.updated_issue_field ?? ""] ?? inner.updated_issue_field;
 
         if (!field) {
-          return `Updated ${inner.issue_title}`;
+          return isGroupItem ? `New Update` : `Updated ${inner.issue_title}`;
         }
 
         if (!!inner.from && !inner.to) {
-          return `Removed '${field}' from ${inner.issue_title}`;
+          return isGroupItem ? `Removed '${field}'` : `Removed '${field}' from ${inner.issue_title}`;
         }
 
         if (!inner.from && !!inner.to) {
-          return `Added "${inner.to}" as '${field}' in ${inner.issue_title}`;
+          return isGroupItem
+            ? `Added "${inner.to}" as '${field}'`
+            : `Added "${inner.to}" as '${field}' in ${inner.issue_title}`;
         }
 
         if (!!inner.from && !!inner.to) {
-          return `Updated '${field}' to "${inner.to}" in ${inner.issue_title}`;
+          return isGroupItem
+            ? `Updated '${field}' to "${inner.to}"`
+            : `Updated '${field}' to "${inner.to}" in ${inner.issue_title}`;
         }
       }
       return "Unhandled Jira Notification";
@@ -93,11 +97,11 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_github": {
       switch (inner.type) {
         case "mention":
-          return `Mentioned you in "${inner.title}"`;
+          return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner.title}"`;
         case "assign":
-          return `Assigned you to "${inner.title}"`;
+          return isGroupItem ? "Assigned you" : `Assigned you to "${inner.title}"`;
         case "review":
-          return `Review requested for "${inner.title}"`;
+          return isGroupItem ? "Review requested" : `Review requested for "${inner.title}"`;
       }
       return `Unhandled notification in "${inner.title}"`;
     }
@@ -107,27 +111,29 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_asana": {
       if (inner.type.startsWith("status:")) {
         const statusInfo = inner.type.split(":");
-        if (statusInfo[1] === "mark") return `Marked "${inner.title}" as ${statusInfo[2]}`;
-        return `Updated "${inner.title}" to "${statusInfo[1]}"`;
+        if (statusInfo[1] === "mark") {
+          return isGroupItem ? `Marked as ${statusInfo[2]}` : `Marked "${inner.title}" as ${statusInfo[2]}`;
+        }
+        return isGroupItem ? `Updated to "${statusInfo[1]}"` : `Updated "${inner.title}" to "${statusInfo[1]}"`;
       }
       switch (inner.type) {
         case "mention":
-          return `Mentioned you in "${inner.title}"`;
+          return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner.title}"`;
         case "comment":
-          return `Commented in "${inner.title}"`;
+          return isGroupItem ? "Commented" : `Commented in "${inner.title}"`;
         case "assign":
-          return `Assigned you to "${inner.title}"`;
+          return isGroupItem ? "Assigned you" : `Assigned you to "${inner.title}"`;
       }
       return `Unhandled Asana notification in "${inner.title}"`;
     }
     case "notification_drive": {
       switch (inner.type) {
         case "mention":
-          return `Mentioned you in "${inner.documentName}"`;
+          return isGroupItem ? "Mentioned you" : `Mentioned you in "${inner.documentName}"`;
         case "comment":
-          return `Commented in "${inner.documentName}"`;
+          return isGroupItem ? "Commented" : `Commented in "${inner.documentName}"`;
         case "invitation":
-          return `Invited you to "${inner.documentName}"`;
+          return isGroupItem ? "Invited you" : `Invited you to "${inner.documentName}"`;
         default:
           return inner.documentName ?? "Unknown document";
       }
@@ -135,21 +141,24 @@ function getTitle(inner: NotificationEntity["inner"]): string {
     case "notification_clickup": {
       if (inner.type.startsWith("due:")) {
         const statusInfo = inner.type.split(":");
-        return `Set due date in "${inner.title}" to ${format(new Date(parseInt(statusInfo[1], 10)), "dd/MM/yyyy")}`;
+        return `Set due date${isGroupItem ? "" : ` in "${inner.title}"`} to ${format(
+          new Date(parseInt(statusInfo[1], 10)),
+          "dd/MM/yyyy"
+        )}`;
       }
       if (inner.type.includes(":")) {
         const statusInfo = inner.type.split(":");
-        return `Set ${statusInfo[0]} in "${inner.title}" to ${statusInfo[1]}`;
+        return `Set ${statusInfo[0]}${isGroupItem ? "" : ` in "${inner.title}"`} to ${statusInfo[1]}`;
       }
       switch (inner.type) {
         case "mention":
-          return `Mentioned you in "${inner.title}"`;
+          return `Mentioned you${isGroupItem ? "" : ` in "${inner.title}"`}`;
         case "comment":
-          return `Commented in "${inner.title}"`;
+          return `Commented${isGroupItem ? "" : ` in "${inner.title}"`}`;
         case "assign":
-          return `Assigned you to "${inner.title}"`;
+          return `Assigned you${isGroupItem ? "" : ` to "${inner.title}"`}`;
         case "task":
-          return `Task "${inner.title}" was created`;
+          return `Created "${inner.title}" task`;
       }
       return `Unhandled ClickUp notification in "${inner.title}"`;
     }
@@ -158,11 +167,14 @@ function getTitle(inner: NotificationEntity["inner"]): string {
   }
 }
 
-export const getNotificationTitle = cachedComputed((notification: NotificationEntity): string => {
-  const { inner } = notification;
-  const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
-  const hasMultipleWorkspaces = (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
-  const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
-  const title = getTitle(inner);
-  return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
-});
+export const getNotificationTitle = cachedComputed(
+  (notification: NotificationEntity, isGroupItem?: boolean): string => {
+    const { inner } = notification;
+    const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
+    const hasMultipleWorkspaces =
+      (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
+    const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
+    const title = getTitle(inner, !!isGroupItem);
+    return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
+  }
+);

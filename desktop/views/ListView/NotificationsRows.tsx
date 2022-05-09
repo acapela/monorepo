@@ -8,13 +8,16 @@ import { NotificationRow } from "./NotificationRow";
 
 interface Props {
   notifications: NotificationEntity[];
+  isBundledInGroup?: boolean;
 }
 
-export const NotificationsRows = observer(({ notifications }: Props) => {
+export const NotificationsRows = observer(({ notifications, isBundledInGroup }: Props) => {
   return (
     <UINotifications>
       {notifications.map((notification) => {
-        return <NotificationRow key={notification.id} notification={notification} />;
+        return (
+          <NotificationRow key={notification.id} notification={notification} isBundledInGroup={isBundledInGroup} />
+        );
       })}
     </UINotifications>
   );
