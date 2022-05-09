@@ -139,10 +139,10 @@ const UIHolder = styled.div`
 
 const UIIcon = styled.img<{ $invert?: boolean }>`
   ${iconStyles};
+  border-radius: 4px;
 
   &.notification_notion {
     background-color: #fff;
-    border-radius: 4px;
   }
 `;
 
