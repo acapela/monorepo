@@ -41,7 +41,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
         taskName: task.name,
         fromName: hist.user.username,
       });
-      break;
+      return;
     }
     case "taskCommentPosted": {
       const hist = webhook.history_items.find((h) => h.field === "comment");
@@ -66,7 +66,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
             })
           )
       );
-      break;
+      return;
     }
     case "taskCreated": {
       const hist = webhook.history_items.find((h) => h.field === "task_creation");
@@ -85,7 +85,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
             })
           )
       );
-      break;
+      return;
     }
     case "taskDueDateUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "due_date");
@@ -106,7 +106,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
             })
           )
       );
-      break;
+      return;
     }
     case "taskPriorityUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "priority");
@@ -127,7 +127,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
             })
           )
       );
-      break;
+      return;
     }
     case "taskStatusUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "status");
@@ -150,7 +150,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
             })
           )
       );
-      break;
+      return;
     }
   }
 
