@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import { ThemeProvider } from "styled-components";
 
+import { animations } from "./animations";
 import { radius } from "./borderRadius";
 import { box } from "./box";
 import { darkThemeColors, defaultColors } from "./colors";
@@ -22,6 +23,7 @@ export const defaultTheme = {
   spacing,
   colors: defaultColors,
   transitions,
+  animations,
   shadow,
   radius,
   zIndex: zIndexValues,

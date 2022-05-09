@@ -9,7 +9,6 @@ import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSyst
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
-import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
@@ -19,7 +18,7 @@ import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
 import { ListViewTopBar } from "./Topbar";
-import { ListViewZenOverlay } from "./ZenMode";
+import { NewListViewZenOverlay } from "./ZenMode/new";
 import { ZeroNotifications } from "./ZeroNotifications";
 
 interface Props {
@@ -58,11 +57,9 @@ export const ListView = observer(({ listId }: Props) => {
       <ActionSystemMenuItem action={deleteNotificationList} path={["List"]} target={list} />
 
       {isInCelebrationMode && (
-        <DarkModeThemeProvider>
-          <UINotificationZeroHolder>
-            <ListViewZenOverlay />
-          </UINotificationZeroHolder>
-        </DarkModeThemeProvider>
+        <UINotificationZeroHolder>
+          <NewListViewZenOverlay />
+        </UINotificationZeroHolder>
       )}
       <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
@@ -109,7 +106,7 @@ const UIHolder = styled.div<{}>`
   flex-direction: column;
   min-height: 0;
   position: relative;
-  ${theme.colors.layout.background.asBgWithReadableText}
+  ${theme.colors.layout.background.asBgWithReadableText};
 `;
 
 const UINotifications = styled.div`
