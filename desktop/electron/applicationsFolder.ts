@@ -23,8 +23,8 @@ export async function ensureAppInApplicationsFolder() {
     title: `Move Acapela to "Applications" folder`,
     message: `In order for Acapela to work properly it must be in your  - Acapela needs to be in your Applications folder`,
     buttons: ["Quit", `Move to "Applications" folder`],
-    cancelId: 0,
-    defaultId: 1,
+    cancelId: QUIT_ACTION_INDEX,
+    defaultId: MOVE_ACTION_INDEX,
   });
 
   if (dialogResponse.response !== MOVE_ACTION_INDEX) {
