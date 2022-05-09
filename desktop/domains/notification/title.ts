@@ -175,6 +175,9 @@ export const getNotificationTitle = cachedComputed(
       (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
     const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
     const title = getTitle(inner, !!isGroupItem);
+    if (isGroupItem) {
+      return title;
+    }
     return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
   }
 );
