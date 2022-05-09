@@ -35,9 +35,10 @@ import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   notification: NotificationEntity;
+  isBundledInGroup?: boolean;
 }
 
-export const NotificationRow = styledObserver(({ notification }: Props) => {
+export const NotificationRow = styledObserver(({ notification, isBundledInGroup = false }: Props) => {
   const isFocused = uiStore.useFocus(notification);
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -74,7 +75,7 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
 
   useStoreRowVisibility(elementRef, notification.id);
 
-  const title = getNotificationTitle(notification);
+  const title = getNotificationTitle(notification, isBundledInGroup);
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}

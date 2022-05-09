@@ -159,7 +159,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
-            <NotificationsRows notifications={group.notifications} />
+            <NotificationsRows notifications={group.notifications} isBundledInGroup />
           </UINotifications>
         )}
       </ActionTrigger>
