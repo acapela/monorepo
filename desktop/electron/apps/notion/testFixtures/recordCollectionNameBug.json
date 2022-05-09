@@ -1,0 +1,647 @@
+{
+  "notificationIds": ["ab9b355e-0eb7-496f-ad0f-72f97f6f322e"],
+  "recordMap": {
+    "notification": {
+      "ab9b355e-0eb7-496f-ad0f-72f97f6f322e": {
+        "role": "editor",
+        "value": {
+          "id": "ab9b355e-0eb7-496f-ad0f-72f97f6f322e",
+          "version": 2,
+          "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "activity_id": "0e614798-4e03-4997-82ed-650099561462",
+          "received": true,
+          "read": true,
+          "emailed": false,
+          "invalid": false,
+          "visited": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "5d275a59-ec21-4a64-af6f-08d310c5523f",
+          "end_time": "1644939141024",
+          "type": "user-invited"
+        }
+      },
+      "85a0f9cc-7569-40a9-b3cc-707c593a6927": {
+        "role": "editor",
+        "value": {
+          "id": "85a0f9cc-7569-40a9-b3cc-707c593a6927",
+          "version": 2,
+          "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "activity_id": "c03f1d5d-5505-4323-8532-c2c6488fa1b4",
+          "received": true,
+          "read": true,
+          "emailed": false,
+          "invalid": false,
+          "visited": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1",
+          "end_time": "1644247516363",
+          "type": "user-invited"
+        }
+      },
+      "0279f73b-b066-4eb1-b73c-d74e2a433280": {
+        "role": "editor",
+        "value": {
+          "id": "0279f73b-b066-4eb1-b73c-d74e2a433280",
+          "version": 2,
+          "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "activity_id": "319ebf3f-3e8c-4694-92f7-8d9e587ca6b0",
+          "received": true,
+          "read": true,
+          "emailed": false,
+          "invalid": false,
+          "visited": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438",
+          "end_time": "1644247366129",
+          "type": "user-invited"
+        }
+      },
+      "7c3f4b3b-7b01-417b-87e0-05318c14266a": {
+        "role": "editor",
+        "value": {
+          "id": "7c3f4b3b-7b01-417b-87e0-05318c14266a",
+          "version": 2,
+          "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "activity_id": "fe88cc02-4f69-4d74-a20c-2da471738d83",
+          "received": true,
+          "read": true,
+          "emailed": false,
+          "invalid": false,
+          "visited": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "7cdced38-8df2-48a8-8238-ef0e54d134e3",
+          "end_time": "1644247346065",
+          "type": "user-invited"
+        }
+      }
+    },
+    "block": {
+      "5d275a59-ec21-4a64-af6f-08d310c5523f": {
+        "role": "read_and_write",
+        "value": {
+          "id": "5d275a59-ec21-4a64-af6f-08d310c5523f",
+          "version": 154,
+          "type": "collection_view",
+          "view_ids": ["6dce7643-c818-4978-a782-c05363f7afa0", "8b66006c-2f51-4d5f-94bb-c20c5d23748c"],
+          "collection_id": "11ff1167-7a73-404c-818e-8e73930934a5",
+          "format": {
+            "collection_pointer": {
+              "id": "11ff1167-7a73-404c-818e-8e73930934a5",
+              "table": "collection",
+              "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+            }
+          },
+          "permissions": [
+            { "role": "read_and_write", "type": "user_permission", "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12" }
+          ],
+          "created_time": 1644227835077,
+          "last_edited_by": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_time": 1645779211252,
+          "parent_id": "c27ca557-e8bc-42dd-af91-5a5ffb542f22",
+          "parent_table": "block",
+          "alive": true,
+          "created_by_table": "notion_user",
+          "created_by_id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_by_table": "notion_user",
+          "last_edited_by_id": "1178fda3-5695-42ef-bfff-3c03f6df30db",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "889a76ee-015b-4cf2-a260-b7ffc18d08b1": {
+        "role": "read_and_write",
+        "value": {
+          "id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1",
+          "version": 49,
+          "type": "collection_view",
+          "view_ids": ["a802f1e5-4853-48b1-8062-7b2d420f93e6"],
+          "collection_id": "f28b8b0b-8d5b-4887-8220-4aacebbb8e29",
+          "format": {
+            "collection_pointer": {
+              "id": "f28b8b0b-8d5b-4887-8220-4aacebbb8e29",
+              "table": "collection",
+              "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+            }
+          },
+          "permissions": [
+            { "role": "read_and_write", "type": "user_permission", "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12" }
+          ],
+          "created_time": 1644182670968,
+          "last_edited_by": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_time": 1645715917827,
+          "parent_id": "c27ca557-e8bc-42dd-af91-5a5ffb542f22",
+          "parent_table": "block",
+          "alive": true,
+          "created_by_table": "notion_user",
+          "created_by_id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_by_table": "notion_user",
+          "last_edited_by_id": "1178fda3-5695-42ef-bfff-3c03f6df30db",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "e46491ac-2a39-404d-8c7f-df5ddf0c1438": {
+        "role": "read_and_write",
+        "value": {
+          "id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438",
+          "version": 44,
+          "type": "collection_view",
+          "view_ids": ["f983b5b5-b6d8-4100-9312-867391708746"],
+          "collection_id": "75646260-9266-43da-9038-20b3a83e063a",
+          "format": {
+            "collection_pointer": {
+              "id": "75646260-9266-43da-9038-20b3a83e063a",
+              "table": "collection",
+              "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+            }
+          },
+          "permissions": [
+            { "role": "read_and_write", "type": "user_permission", "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12" },
+            { "role": "comment_only", "type": "user_permission", "user_id": "675ae197-991f-4ed5-8a8e-8ceddd6a405d" },
+            { "role": "comment_only", "type": "user_permission", "user_id": "daeaa2f8-7a2e-4c8b-8f22-43ef5fe1fa2b" }
+          ],
+          "created_time": 1644088634766,
+          "last_edited_by": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_time": 1644249180000,
+          "parent_id": "c27ca557-e8bc-42dd-af91-5a5ffb542f22",
+          "parent_table": "block",
+          "alive": true,
+          "created_by_table": "notion_user",
+          "created_by_id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_by_table": "notion_user",
+          "last_edited_by_id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "7cdced38-8df2-48a8-8238-ef0e54d134e3": {
+        "role": "read_and_write",
+        "value": {
+          "id": "7cdced38-8df2-48a8-8238-ef0e54d134e3",
+          "version": 123,
+          "type": "collection_view",
+          "view_ids": ["aa9230e7-24aa-48da-b4d6-6316a66ead4b"],
+          "collection_id": "ef217c2b-f3b4-4771-9136-e10768aa056b",
+          "format": {
+            "collection_pointer": {
+              "id": "ef217c2b-f3b4-4771-9136-e10768aa056b",
+              "table": "collection",
+              "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+            }
+          },
+          "permissions": [
+            { "role": "read_and_write", "type": "user_permission", "user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12" },
+            { "role": "comment_only", "type": "user_permission", "user_id": "675ae197-991f-4ed5-8a8e-8ceddd6a405d" },
+            { "role": "comment_only", "type": "user_permission", "user_id": "daeaa2f8-7a2e-4c8b-8f22-43ef5fe1fa2b" }
+          ],
+          "created_time": 1643383012724,
+          "last_edited_by": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_time": 1645780478640,
+          "parent_id": "c27ca557-e8bc-42dd-af91-5a5ffb542f22",
+          "parent_table": "block",
+          "alive": true,
+          "created_by_table": "notion_user",
+          "created_by_id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "last_edited_by_table": "notion_user",
+          "last_edited_by_id": "1178fda3-5695-42ef-bfff-3c03f6df30db",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "c27ca557-e8bc-42dd-af91-5a5ffb542f22": { "role": "none" },
+      "755e0d37-72f9-4cd3-b676-3f1a39690d71": { "role": "none" }
+    },
+    "activity": {
+      "0e614798-4e03-4997-82ed-650099561462": {
+        "role": "reader",
+        "value": {
+          "id": "0e614798-4e03-4997-82ed-650099561462",
+          "version": 1,
+          "index": 0,
+          "type": "user-invited",
+          "parent_table": "block",
+          "parent_id": "5d275a59-ec21-4a64-af6f-08d310c5523f",
+          "start_time": "1644939141024",
+          "end_time": "1644939141024",
+          "invalid": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "5d275a59-ec21-4a64-af6f-08d310c5523f",
+          "edits": [
+            {
+              "type": "user-invited",
+              "authors": [{ "id": "21fb8270-0bdc-4d79-909b-cc30ce40671d", "table": "notion_user" }],
+              "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+              "timestamp": 1644939141024,
+              "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+              "navigable_block_id": "5d275a59-ec21-4a64-af6f-08d310c5523f"
+            }
+          ],
+          "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "shard_id": 1021742,
+          "context_id": "ac980cf9-a6f7-4fa0-aa0f-461e184bd66f",
+          "in_log": false
+        }
+      },
+      "c03f1d5d-5505-4323-8532-c2c6488fa1b4": {
+        "role": "reader",
+        "value": {
+          "id": "c03f1d5d-5505-4323-8532-c2c6488fa1b4",
+          "version": 1,
+          "index": 0,
+          "type": "user-invited",
+          "parent_table": "block",
+          "parent_id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1",
+          "start_time": "1644247516363",
+          "end_time": "1644247516363",
+          "invalid": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1",
+          "edits": [
+            {
+              "type": "user-invited",
+              "authors": [{ "id": "21fb8270-0bdc-4d79-909b-cc30ce40671d", "table": "notion_user" }],
+              "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+              "timestamp": 1644247516363,
+              "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+              "navigable_block_id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1"
+            }
+          ],
+          "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "shard_id": 1021742,
+          "context_id": "0b876407-5bb4-4d52-bf95-04167321b48d",
+          "in_log": false
+        }
+      },
+      "319ebf3f-3e8c-4694-92f7-8d9e587ca6b0": {
+        "role": "reader",
+        "value": {
+          "id": "319ebf3f-3e8c-4694-92f7-8d9e587ca6b0",
+          "version": 1,
+          "index": 0,
+          "type": "user-invited",
+          "parent_table": "block",
+          "parent_id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438",
+          "start_time": "1644247366129",
+          "end_time": "1644247366129",
+          "invalid": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438",
+          "edits": [
+            {
+              "type": "user-invited",
+              "authors": [{ "id": "21fb8270-0bdc-4d79-909b-cc30ce40671d", "table": "notion_user" }],
+              "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+              "timestamp": 1644247366129,
+              "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+              "navigable_block_id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438"
+            }
+          ],
+          "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "shard_id": 1021742,
+          "context_id": "899abc4e-f85a-459d-a51b-acdb359b71fa",
+          "in_log": false
+        }
+      },
+      "fe88cc02-4f69-4d74-a20c-2da471738d83": {
+        "role": "reader",
+        "value": {
+          "id": "fe88cc02-4f69-4d74-a20c-2da471738d83",
+          "version": 1,
+          "index": 0,
+          "type": "user-invited",
+          "parent_table": "block",
+          "parent_id": "7cdced38-8df2-48a8-8238-ef0e54d134e3",
+          "start_time": "1644247346065",
+          "end_time": "1644247346065",
+          "invalid": false,
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+          "navigable_block_id": "7cdced38-8df2-48a8-8238-ef0e54d134e3",
+          "edits": [
+            {
+              "type": "user-invited",
+              "authors": [{ "id": "21fb8270-0bdc-4d79-909b-cc30ce40671d", "table": "notion_user" }],
+              "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e",
+              "timestamp": 1644247346065,
+              "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+              "navigable_block_id": "7cdced38-8df2-48a8-8238-ef0e54d134e3"
+            }
+          ],
+          "invited_user_id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "shard_id": 1021742,
+          "context_id": "52112b3d-aae1-4c66-923e-87ae524975a1",
+          "in_log": false
+        }
+      }
+    },
+    "notion_user": {
+      "21fb8270-0bdc-4d79-909b-cc30ce40671d": {
+        "role": "reader",
+        "value": {
+          "email": "victoria.hauzeneder@googlemail.com",
+          "id": "21fb8270-0bdc-4d79-909b-cc30ce40671d",
+          "name": "Victoria Hauzeneder",
+          "profile_photo": "https://lh6.googleusercontent.com/-EDA1jj_yP9Y/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclJ3n5ClCOrkVNWFzwRGCuusHdNOw/photo.jpg",
+          "version": 6
+        }
+      },
+      "a08e4375-95c2-4aac-b3ef-2545e59e5d12": {
+        "role": "editor",
+        "value": {
+          "email": "matthias@fl4sh.vc",
+          "id": "a08e4375-95c2-4aac-b3ef-2545e59e5d12",
+          "name": "Matthias Heinrich Morales",
+          "version": 8
+        }
+      }
+    },
+    "collection": {
+      "11ff1167-7a73-404c-818e-8e73930934a5": {
+        "role": "read_and_write",
+        "value": {
+          "id": "11ff1167-7a73-404c-818e-8e73930934a5",
+          "version": 84,
+          "name": [["Expert Interviews"]],
+          "schema": {
+            ";?Vb": {
+              "name": "Status",
+              "type": "select",
+              "options": [
+                { "id": "1f77de3c-7cb7-4590-b41d-4601c34939a5", "color": "yellow", "value": "Interview Conducted" },
+                { "id": "9a16999b-49fc-41ed-8347-b88714bfaf90", "color": "blue", "value": "Ghosting" },
+                { "id": "1fc29d95-2c67-4d66-8355-bdd457766590", "color": "red", "value": "Intro Required" },
+                { "id": "5de060ae-b0ca-4f64-83a5-0dbd398e3360", "color": "green", "value": "Interview Scheduled" },
+                {
+                  "id": "20342b49-e7e5-4653-85ba-8a650727314d",
+                  "color": "gray",
+                  "value": "Connection Request LinkedIn"
+                },
+                { "id": "c2d40d26-4398-4c10-b807-b597e5db1e96", "color": "default", "value": "Intro" },
+                { "id": "a5cdb2c7-49f4-4df3-b327-3095c54eeaf1", "color": "pink", "value": "Get back to later" }
+              ]
+            },
+            "XymZ": { "name": "E-mail", "type": "email" },
+            "YXw=": {
+              "name": "Notes",
+              "type": "relation",
+              "property": "cqbm",
+              "collection_id": "f28b8b0b-8d5b-4887-8220-4aacebbb8e29",
+              "collection_pointer": {
+                "id": "f28b8b0b-8d5b-4887-8220-4aacebbb8e29",
+                "table": "collection",
+                "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+              }
+            },
+            "Y{R~": { "name": "Interview Date", "type": "date" },
+            "aFFV": { "name": "Company", "type": "text" },
+            "b=H_": {
+              "name": "Conn. Victoria",
+              "type": "select",
+              "options": [
+                { "id": "b3a028c3-0cdf-491e-800b-39c64ec167c4", "color": "pink", "value": "None" },
+                { "id": "1b4d6e36-6fd9-464a-91c2-204b81cc4a00", "color": "brown", "value": "Cold Outreach" },
+                { "id": "4ae16727-9b35-4e58-aa18-0e4a5b3ed393", "color": "orange", "value": "Warm Intro" }
+              ]
+            },
+            "bTNJ": {
+              "name": "Conn. Manuel",
+              "type": "multi_select",
+              "options": [
+                { "id": "3f788ff0-cb22-46a1-8b34-ff80eff04c67", "color": "default", "value": "Warm intro started" },
+                { "id": "4989859b-08c3-49eb-b234-1f9b3d321ab2", "color": "brown", "value": "Unused connection" }
+              ]
+            },
+            "eXmI": { "name": "Comment", "type": "text" },
+            "k;zc": {
+              "name": "Expertise",
+              "type": "multi_select",
+              "options": [
+                { "id": "178eaffc-613f-4f36-b712-c4f7a5fabd94", "color": "brown", "value": "GRC" },
+                { "id": "b8c2cb14-ff62-4d27-b6b2-04b61fde9dcf", "color": "orange", "value": "IT Compliance" },
+                { "id": "835a97eb-cdbc-4de5-b773-b2039d27e3ea", "color": "green", "value": "GDPR" },
+                { "id": "14788b6f-11f9-4ecc-8f8a-ec13cd838f5f", "color": "pink", "value": "Product Security" }
+              ]
+            },
+            "m|XI": { "name": "Later", "type": "date" },
+            "t\\Xn": { "name": "Message", "type": "text" },
+            "~LzO": { "name": "LinkedIn Profil", "type": "url" },
+            "title": { "name": "Name", "type": "title" }
+          },
+          "parent_id": "5d275a59-ec21-4a64-af6f-08d310c5523f",
+          "parent_table": "block",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "f28b8b0b-8d5b-4887-8220-4aacebbb8e29": {
+        "role": "read_and_write",
+        "value": {
+          "id": "f28b8b0b-8d5b-4887-8220-4aacebbb8e29",
+          "version": 39,
+          "name": [["Interview Notes"]],
+          "schema": {
+            ";bic": { "name": "Company", "type": "text" },
+            "<AIJ": { "name": "Title", "type": "text" },
+            "Ja[i": { "name": "Company Size", "type": "number" },
+            "SOOo": { "name": "LinkedInProfil", "type": "url" },
+            "cqbm": {
+              "name": "Related to Expert Interviews (Notes)",
+              "type": "relation",
+              "property": "YXw=",
+              "collection_id": "11ff1167-7a73-404c-818e-8e73930934a5",
+              "collection_pointer": {
+                "id": "11ff1167-7a73-404c-818e-8e73930934a5",
+                "table": "collection",
+                "spaceId": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+              }
+            },
+            "s|V;": {
+              "name": "Reason for Compliance",
+              "type": "multi_select",
+              "options": [
+                { "id": "05dabd7b-6719-4e19-af3f-067318c63bc6", "color": "default", "value": "IPO" },
+                { "id": "1ca8b0f6-b5fa-417e-985e-7a79274db1bb", "color": "brown", "value": "Customer Requirements" },
+                { "id": "ecaa0142-581d-46cf-aff2-9124b32679c5", "color": "gray", "value": "Competitive Edge" }
+              ]
+            },
+            "uHej": { "name": "How to continue?", "type": "text" },
+            "title": { "name": "Name", "type": "title" }
+          },
+          "parent_id": "889a76ee-015b-4cf2-a260-b7ffc18d08b1",
+          "parent_table": "block",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "75646260-9266-43da-9038-20b3a83e063a": {
+        "role": "read_and_write",
+        "value": {
+          "id": "75646260-9266-43da-9038-20b3a83e063a",
+          "version": 17,
+          "name": [["Core hypothesis"]],
+          "schema": {
+            "<}f@": {
+              "name": "Importance",
+              "type": "select",
+              "options": [
+                { "id": "e1fa919c-1065-40a7-91cd-5a67b851dc01", "color": "purple", "value": "high" },
+                { "id": "ef82ffe5-c6d6-4cca-9f46-22833486db7c", "color": "blue", "value": "low" },
+                { "id": "e53c95a3-74c7-429e-975d-54d8ebb10bf0", "color": "red", "value": "medium" }
+              ]
+            },
+            ">Q`J": { "name": "Datapoint", "type": "text" },
+            "zALU": { "name": "Confidence /10", "type": "number" },
+            "~TgL": { "name": "Test", "type": "text" },
+            "title": { "name": "Hypothesis", "type": "title" }
+          },
+          "parent_id": "e46491ac-2a39-404d-8c7f-df5ddf0c1438",
+          "parent_table": "block",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      },
+      "ef217c2b-f3b4-4771-9136-e10768aa056b": {
+        "role": "read_and_write",
+        "value": {
+          "id": "ef217c2b-f3b4-4771-9136-e10768aa056b",
+          "version": 170,
+          "name": [["Competitor Landscape GRC Tools & Support"]],
+          "schema": {
+            "IVfx": {
+              "name": "Type",
+              "type": "select",
+              "options": [
+                { "id": "5a8d4abd-8786-46ba-bfe7-d08c7f0097b2", "color": "brown", "value": "Service" },
+                { "id": "4d7fffe2-4c41-4f4c-b23f-d4760d7d43d4", "color": "purple", "value": "Product" },
+                { "id": "e59d3bbe-5327-437f-8b71-cdeb05935fee", "color": "yellow", "value": "Consulting" },
+                { "id": "3bf239a9-3ff2-4822-9c7b-bf904735effd", "color": "orange", "value": "Certification Body" }
+              ]
+            },
+            "MHFD": { "name": "Column", "type": "created_time" },
+            "SVZf": {
+              "name": "Market",
+              "type": "multi_select",
+              "options": [
+                { "id": "744084ae-1a9d-4472-b109-747bf51fa955", "color": "gray", "value": "Startups" },
+                { "id": "e3917ea1-ec9f-4c4f-884c-e5e768e06036", "color": "orange", "value": "SMB" },
+                { "id": "a2d07899-4b37-448e-9e1f-084d3c5614a5", "color": "brown", "value": "Germany" },
+                { "id": "9b67f9b5-24d1-4fb2-813c-f208e15bbbac", "color": "red", "value": "Euope" },
+                { "id": "844a925a-8663-460d-b163-fa4bca2a5354", "color": "green", "value": "Europe" },
+                { "id": "491dd29d-502e-42df-8b83-db854cb95939", "color": "blue", "value": "Tech Companies" },
+                { "id": "5adafda9-bcc5-4bb5-90f5-22eb0a06da41", "color": "default", "value": "US" },
+                { "id": "caa8cc91-7a73-4a04-912a-b345ccf59fb4", "color": "pink", "value": "GDPR" },
+                { "id": "b352c897-74b0-4d6f-a584-8612ff7633a2", "color": "purple", "value": "Enterprice" },
+                { "id": "ec2c8cf3-b633-48a7-b45b-89496b0f9567", "color": "purple", "value": "Enterprise" },
+                { "id": "98fbd424-a0c3-4aa3-90a7-0a6efd4621d4", "color": "yellow", "value": "SME" },
+                { "id": "c04d139e-caaa-421b-afc7-66ddd7b7f5e0", "color": "green", "value": "Banks" },
+                { "id": "c0920761-5cc8-4ea4-99e1-9587ff8f8325", "color": "orange", "value": "Credit Unions" },
+                { "id": "fcb0a3e6-25b8-4159-ad88-4cadf6b024ab", "color": "yellow", "value": "Non-Profit" },
+                { "id": "dc25a5aa-ac9d-4dee-8601-45707d802f1e", "color": "pink", "value": "QSR" },
+                { "id": "86d2f5f7-47fc-46fe-aba7-70de2751d3c7", "color": "red", "value": "Government" },
+                { "id": "ddde19a1-f1a6-4c83-8246-3a951790606b", "color": "orange", "value": "Higher Education" },
+                { "id": "86571e82-0cc2-4c6c-8c04-5a9dbc7a6a42", "color": "default", "value": "India" },
+                { "id": "6367edf1-2e9a-490d-b56f-9cced4000729", "color": "purple", "value": "Insurance" },
+                { "id": "d04a5792-c206-411f-b433-3e1dc46ffe63", "color": "default", "value": "Canada" },
+                { "id": "ca7acef1-0c4c-491c-93fd-7d0cc7169425", "color": "blue", "value": "Accounting" },
+                { "id": "61f7d8b5-7e39-43e1-a84a-9dc9de7583fa", "color": "gray", "value": "Accounting Services" },
+                { "id": "2518a99d-dd4e-4a94-ad44-ad1c5f618612", "color": "yellow", "value": "Industy" },
+                { "id": "30cb9b0d-a305-44f1-968f-d61b33fb7c9a", "color": "blue", "value": "Israel" },
+                { "id": "d10a8976-31b8-4277-808e-7f5a1f5c0988", "color": "yellow", "value": "UK" },
+                { "id": "25ba178e-154b-4d12-b6ca-f57b329e0e4b", "color": "red", "value": "Lifesience" },
+                { "id": "1cc875ad-cb57-4e0b-a977-d60b8ebde7d4", "color": "default", "value": "Global" }
+              ]
+            },
+            "VgFw": { "name": "Description", "type": "text" },
+            "\\?pJ": {
+              "name": "Area",
+              "type": "multi_select",
+              "options": [
+                { "id": "4410a71b-d10c-49ff-880a-cdb58054a1df", "color": "pink", "value": "ISO27001" },
+                { "id": "9aba6c6d-0d59-4f8f-9df0-0a6ecc960bab", "color": "purple", "value": "ISMS" },
+                { "id": "bc5cc8d5-93a6-4f3a-9a60-46ff4ab76dcc", "color": "red", "value": "SOC 2" },
+                { "id": "1fdd82fc-d3fc-4a5a-b4ff-cbb9f272f9f1", "color": "orange", "value": "PCI DSS & HIPPAA" },
+                { "id": "5739089a-e6bb-4ae7-9b9b-4539b9b4e760", "color": "yellow", "value": "GRC" },
+                { "id": "cc74b398-c4c5-4729-bff8-2ecc580cae92", "color": "green", "value": "Riskmanagement" },
+                { "id": "b29072b5-8e57-4c92-880c-09f20381caac", "color": "brown", "value": "GDPR" },
+                { "id": "909d9d10-d166-4fbf-8b56-f04cb436c69d", "color": "blue", "value": "SOC 1" },
+                { "id": "ea3d8d10-d08b-46f0-a459-d79c3d51dead", "color": "default", "value": "ISO9001" },
+                { "id": "19857761-cb4d-41b9-9005-e525732d50a0", "color": "gray", "value": "TISAX" },
+                { "id": "49089d00-e4a3-4583-99ec-b4f8c8298308", "color": "gray", "value": "ISO14001" },
+                { "id": "16686a43-f5e2-46c6-b4dd-4abd8d35524c", "color": "pink", "value": "EMAS" },
+                { "id": "957ba53f-2a42-466f-bf8b-37dd9c007f6d", "color": "yellow", "value": "Compliance" },
+                { "id": "bb80a11c-24d9-430c-86f0-2880bcd9cf81", "color": "gray", "value": "Policy Management" },
+                { "id": "7e258507-8b3c-424c-a236-b32f57e10582", "color": "purple", "value": "PCI DSS" },
+                { "id": "45f944de-61ed-4b6c-9b47-73da48f6aa32", "color": "brown", "value": "SOCX" },
+                { "id": "482cbe6d-33c8-459e-90c5-b8df0e95fb4b", "color": "pink", "value": "ISO45001" },
+                { "id": "355d3d0a-cdb5-4a54-8d47-89e84d919541", "color": "orange", "value": "QMS Software" },
+                { "id": "4e4b4ee3-0501-4269-b250-ff4c1cc8f1cd", "color": "blue", "value": "HSE Software" },
+                { "id": "f47cff50-5d1d-4b12-85b7-41c2683bbb91", "color": "red", "value": "HACCP Software" },
+                { "id": "83aed8c8-9e71-4677-8175-676885a05913", "color": "brown", "value": "HSEQ" },
+                { "id": "e3d95de3-65b7-42a7-9696-dc78ee5ddc17", "color": "orange", "value": "ESG" },
+                { "id": "9868a899-903f-45fd-96e1-dcb4cad7b9f4", "color": "blue", "value": "Compliance Management" },
+                { "id": "9d80c953-442c-4f24-bcd2-94585eb12a1c", "color": "orange", "value": "Training" },
+                { "id": "c41852a0-79ba-4796-bee4-f2743ce1699b", "color": "purple", "value": "Anticorruption" },
+                {
+                  "id": "30c499ba-3dac-469b-b7b4-680b0707b82c",
+                  "color": "green",
+                  "value": "Whistleblowing & Investigation"
+                },
+                { "id": "b82ed563-ae75-4711-84ca-a50a2106f390", "color": "gray", "value": "Ethics" },
+                { "id": "f163892e-a0c0-4904-8f31-3295e616f697", "color": "green", "value": "IT Risk Management" },
+                {
+                  "id": "e77cb07e-e055-4afc-bbfb-3ceae0598824",
+                  "color": "purple",
+                  "value": "Qualitäts- und Wissensmanagement"
+                },
+                {
+                  "id": "691720c7-a763-4593-b1e2-1d9a81482962",
+                  "color": "yellow",
+                  "value": "Quality and Knowledgemanagement"
+                },
+                { "id": "5dc6a4c3-48a5-4cad-988d-60764cb8f2f6", "color": "brown", "value": "Innovationmanagement" },
+                { "id": "15cf965a-f036-45db-a916-dd0e92092e66", "color": "purple", "value": "Supplychain-datat" },
+                { "id": "42033ee4-180c-4584-8ab4-8d8a510c8bf7", "color": "red", "value": "SupplyChain Compliance" },
+                { "id": "773c20fe-bf54-4b77-8a7f-14750e9201a8", "color": "blue", "value": "Vendormanagement" },
+                { "id": "bacd2101-2306-48a4-a427-6d16d5ee6b4f", "color": "orange", "value": "ESEF-Mandat" },
+                { "id": "30d74847-20c9-4037-9fc8-e5fe9a3a2aff", "color": "green", "value": "Finanzberichterstattung" },
+                { "id": "9c7d0bdf-4cd9-4448-b980-776b01579fe4", "color": "brown", "value": "GRC Management" },
+                {
+                  "id": "e183c98e-331a-490a-9d67-1fdcea363ab5",
+                  "color": "brown",
+                  "value": "Supply Chain Risk Management"
+                },
+                { "id": "243cde5c-23bc-41bc-bfe5-55d94e852111", "color": "brown", "value": "3rd Party Security" },
+                { "id": "1aaac666-ce04-4650-b4e3-55e457b25454", "color": "default", "value": "AML" },
+                {
+                  "id": "416e22ab-bf7b-4cf4-b3c7-6b073cf07cd6",
+                  "color": "brown",
+                  "value": "Business Process Modelling"
+                },
+                { "id": "5df3a582-bab9-41a5-9a6b-da3c1845b45b", "color": "pink", "value": "KYC" },
+                { "id": "0caf3ff9-0b72-4f95-ab04-9639a402cc77", "color": "default", "value": "GAMP5" },
+                { "id": "ec337f9a-8528-49f5-8088-914247220b31", "color": "purple", "value": "HCCP" },
+                { "id": "71733e7e-98ab-4ae5-b421-6d6bf06b78a8", "color": "red", "value": "REACH" },
+                { "id": "dcfa3655-14e7-47e1-80d3-5789c603ae2b", "color": "yellow", "value": "ISO 13485" },
+                { "id": "81348d92-de12-49e2-98ca-59582c60bc42", "color": "red", "value": "ISO 9001" },
+                { "id": "dc3beed4-8746-45b5-ac16-b349d9f07122", "color": "default", "value": "ISO 22301" },
+                { "id": "132f3502-d340-4890-90ab-58f4160aa8b6", "color": "blue", "value": "ISO 27031" },
+                { "id": "1234c531-de55-4639-8eb9-e82fbe10cb8f", "color": "red", "value": "ISO 27001" },
+                { "id": "03691eb7-0ff4-45bb-b3ad-95027c660ffb", "color": "orange", "value": "ISO 17025" },
+                { "id": "e20dfeec-7eeb-4b99-acdc-602ef924035a", "color": "green", "value": "ISO 15189" },
+                { "id": "2b4e52ff-330f-4f76-872f-1a7173727156", "color": "yellow", "value": "NEN 75109" }
+              ]
+            },
+            "]}cm": {
+              "name": "focus",
+              "type": "select",
+              "options": [
+                { "id": "a63c8495-bd6c-4dc1-8a04-10fafeeb579d", "color": "default", "value": "yes" },
+                { "id": "33c0545e-97eb-4efd-8652-6988bae0eec9", "color": "orange", "value": "no" }
+              ]
+            },
+            "e]`G": { "name": "#Employees", "type": "number" },
+            "s{<c": { "name": "Webstite", "type": "url" },
+            "t{uB": { "name": "Founded Date", "type": "date" },
+            "~]^p": { "name": "Total Funding (M $)", "type": "number" },
+            "title": { "name": "Name", "type": "title" }
+          },
+          "parent_id": "7cdced38-8df2-48a8-8238-ef0e54d134e3",
+          "parent_table": "block",
+          "space_id": "d99e70eb-2954-4405-b05f-9daa6bcf972e"
+        }
+      }
+    }
+  }
+}

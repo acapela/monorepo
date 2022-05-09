@@ -5,7 +5,7 @@ import type { NotionNotificationType, NotionWorkerSync } from "@aca/desktop/brid
 import { extractAuthor } from "./authorExtractor";
 import { extractBlockMention, extractNotionComment } from "./commentExtractor";
 import {
-  CollectionViewPageBlockValue,
+  CollectionViewCommonBlockValue,
   CommentedActivityValue,
   GetNotificationLogResult,
   Notification,
@@ -245,7 +245,7 @@ export function extractPageTitleFromBlock(
     return Array.isArray(titleElement) && typeof titleElement[0] == "string" ? titleElement[0] : "Untitled";
   }
 
-  const collectionPageBlockResult = CollectionViewPageBlockValue.safeParse(blockValue);
+  const collectionPageBlockResult = CollectionViewCommonBlockValue.safeParse(blockValue);
   if (collectionPageBlockResult.success) {
     const block = collectionPageBlockResult.data;
     const collection_id = block.collection_id || block.format?.collection_pointer.id;
