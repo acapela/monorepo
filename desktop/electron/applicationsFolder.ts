@@ -1,0 +1,56 @@
+import { app, dialog } from "electron";
+import IS_DEV from "electron-is-dev";
+
+import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
+
+import { getMainWindow } from "./windows/mainWindow";
+import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
+
+const log = makeLogger("ApplicationsFolder");
+
+export async function ensureAppInApplicationsFolder() {
+  if (IS_DEV) {
+    return true;
+  }
+
+  if (app.isInApplicationsFolder()) {
+    return true;
+  }
+
+  const mainWindow = getMainWindow();
+
+  if (!mainWindow) return false;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [QUIT_ACTION_INDEX, MOVE_ACTION_INDEX] = [0, 1];
+
+  const dialogResponse = await dialog.showMessageBox({
+    title: `Move Acapela to "Applications" folder`,
+    message: `In order for Acapela to work properly it must be in your  - Acapela needs to be in your Applications folder`,
+    buttons: ["Quit", `Move to "Applications" folder`],
+    cancelId: 0,
+    defaultId: 1,
+  });
+
+  if (dialogResponse.response !== MOVE_ACTION_INDEX) {
+    allowWindowClosing();
+    app.quit();
+    return false;
+  }
+
+  try {
+    const didMove = app.moveToApplicationsFolder();
+
+    if (didMove) {
+      return true;
+    }
+  } catch (error) {
+    log.error(error);
+    await dialog.showErrorBox(
+      `Failed to move Acapela to "Applications" folder`,
+      `In order for Acapela to work properly it must be in your  - Acapela needs to be in your Applications folder`
+    );
+  }
+
+  app.quit();
+}
