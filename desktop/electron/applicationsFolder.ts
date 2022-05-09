@@ -12,44 +12,45 @@ function quitApp() {
   app.quit();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const [QUIT_ACTION_INDEX, MOVE_ACTION_INDEX] = [0, 1];
+
 export async function ensureAppInApplicationsFolder() {
   if (IS_DEV) {
-    return true;
+    return;
   }
 
   if (app.isInApplicationsFolder()) {
-    return true;
+    return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [QUIT_ACTION_INDEX, MOVE_ACTION_INDEX] = [0, 1];
-
+  app.focus();
   const dialogResponse = await dialog.showMessageBox({
-    title: `Move Acapela to "Applications" folder`,
-    message: `In order for Acapela to work properly it must be in Applications folder`,
-    buttons: ["Quit", `Move to "Applications" folder`],
+    title: `Move to Applications folder`,
+    message: `Acapela needs to be moved to your Applications folder in order to work properly.`,
+    buttons: ["Exit", `Move to Applications folder`],
     cancelId: QUIT_ACTION_INDEX,
     defaultId: MOVE_ACTION_INDEX,
   });
 
-  if (dialogResponse.response !== MOVE_ACTION_INDEX) {
-    quitApp();
-    return false;
+  if (dialogResponse.response === QUIT_ACTION_INDEX) {
+    return quitApp();
   }
 
   try {
-    const didMove = app.moveToApplicationsFolder();
+    // This will quit the app
+    app.moveToApplicationsFolder();
 
-    if (didMove) {
-      return true;
-    }
+    // will not be reached, but adding for readibility
+    return;
   } catch (error) {
     log.error(error);
     await dialog.showErrorBox(
-      `Failed to move Acapela to "Applications" folder`,
-      `In order for Acapela to work properly it must be in your  - Acapela needs to be in your Applications folder`
+      `Failed to move Acapela to Applications folder`,
+      `Please try dragging Acapela app into your Applications folder and try again.`
     );
+    return quitApp();
   }
 
-  quitApp();
+  // This should never be reached
 }
