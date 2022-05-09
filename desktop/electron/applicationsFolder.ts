@@ -3,7 +3,6 @@ import IS_DEV from "electron-is-dev";
 
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 
-import { getMainWindow } from "./windows/mainWindow";
 import { allowWindowClosing } from "./windows/utils/hideWindowOnClose";
 
 const log = makeLogger("ApplicationsFolder");
@@ -16,10 +15,6 @@ export async function ensureAppInApplicationsFolder() {
   if (app.isInApplicationsFolder()) {
     return true;
   }
-
-  const mainWindow = getMainWindow();
-
-  if (!mainWindow) return false;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [QUIT_ACTION_INDEX, MOVE_ACTION_INDEX] = [0, 1];
