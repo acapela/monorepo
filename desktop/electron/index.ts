@@ -12,6 +12,7 @@ import { makeLogger, registerLogEntryHandler, registerLoggerErrorReporter } from
 
 import { logStorage } from "../bridge/logger";
 import { addElectronLogAttachment } from "../domains/dev/postAttachment";
+import { ensureAppInApplicationsFolder } from "./applicationsFolder";
 import { initializeServiceSync } from "./apps";
 import { setupAutoUpdater } from "./autoUpdater";
 import { initializeBridgeHandlers } from "./bridgeHandlers";
@@ -52,6 +53,8 @@ registerLoggerErrorReporter((body, files) => {
 const log = makeLogger("Electron-Boot-Sequence");
 
 async function initializeApp() {
+  await ensureAppInApplicationsFolder();
+
   await appEnvData.promise;
 
   initializeDarkModeHandling();
