@@ -1,5 +1,5 @@
 import { parseDate } from "chrono-node";
-import { isPast, isSameDay, startOfDay } from "date-fns";
+import { isPast, isSameMinute } from "date-fns";
 import { range as _range, sortBy, uniqBy, upperFirst } from "lodash";
 
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
@@ -26,10 +26,10 @@ const months = [
 
 export type Month = typeof months[number];
 
-const longUnit = ["Week", "Month", "Weekend", "Year"];
+const longUnit = ["week", "month", "weekend", "year"];
 
-function range(start: number, end: number) {
-  return _range(start, end + 1);
+function range(start: number, end: number, step = 1) {
+  return _range(start, end + 1, step);
 }
 
 const chronoParsed = ["today", "tomorrow", "after tomorrow", "weekend"];
@@ -42,9 +42,12 @@ export const suggestedDates = [
   // in a week
   ...permutation`next ${weekdays}`.getAll(),
 
-  ...permutation`in ${["a", "1"]} ${["Week", "Month", "Year"]}`.getAll(),
+  ...permutation`in 1 ${["minute", "hour", "day", "week", "month", "year"]}`.getAll(),
   // in 3 days
-  ...permutation`in ${range(2, 100)} ${["Days", "Months", "Years", "Weeks"]}`.getAll(),
+  ...permutation`in ${range(2, 30)} ${["days", "months", "years", "weeks"]}`.getAll(),
+  ...permutation`in ${range(2, 4)} minutes`.getAll(),
+  ...permutation`in ${range(5, 60, 5)} minutes`.getAll(),
+  ...permutation`in ${range(2, 12)} hours`.getAll(),
   // end of next week
   ...permutation`${["end of", ""]} ${["", "next", " this"]} ${longUnit}`.getAll(),
   // start of next week
@@ -57,7 +60,7 @@ export const suggestedDates = [
 
   ...months,
   // Last day of December
-  ...permutation`${["last day of"]} ${["", "next"]} ${["Week", "Month", "Year", ...months]}`.getAll(),
+  ...permutation`${["last day of"]} ${["", "next"]} ${["week", "month", "year", ...months]}`.getAll(),
   // January next year
   ...permutation`${months} next year`.getAll(),
   // 12th of January [next year]
@@ -123,14 +126,14 @@ export function autosuggestDate(
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           if (!result) return null!;
 
-          return startOfDay(result);
+          return result;
         },
       };
     })
     .filter((result) => result.date);
 
   if (exactMatch) {
-    const isAlreadyListed = results.some((suggestion) => isSameDay(suggestion.date, exactMatch));
+    const isAlreadyListed = results.some((suggestion) => isSameMinute(suggestion.date, exactMatch));
     !isAlreadyListed && results.push({ text: input, date: exactMatch, isExact: true });
   }
 
