@@ -31,6 +31,7 @@ export type AnalyticsEventsMap = {
   // to be implemented on the settings page soon
   "Invite Sent": { invitee_email: string };
   "Referral Code Copied": void;
+  "Invite Friend Button Clicked": void;
   // to be implemented later
   "Account Added User": { role: "owner" | "admin" | "member" };
   // delete a team member from team management space
