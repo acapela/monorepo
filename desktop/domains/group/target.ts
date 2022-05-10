@@ -157,7 +157,7 @@ export function getNotificationGroupTarget(
       name: targetNotification.title || "",
       integration: "github",
       integrationTitle: `Asana Task`,
-      isOnePreviewEnough: false,
+      isOnePreviewEnough: true,
     };
   }
 
