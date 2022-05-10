@@ -12,6 +12,7 @@ import { theme } from "@aca/ui/theme";
 import { AccountSettings } from "./Account";
 import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
+import { ReferralsView } from "./Referrals";
 import { SettingsLayout } from "./shared";
 
 interface SettingsSection {
@@ -35,6 +36,10 @@ export const settingsSections: SettingsSection[] = [
   {
     id: "notifications",
     label: "Notifications",
+  },
+  {
+    id: "referrals",
+    label: "Referrals",
   },
 ];
 
@@ -79,6 +84,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
           {sectionId === "general" && <GeneralSettings />}
           {sectionId === "notifications" && <NotificationsSettings />}
           {sectionId === "account" && <AccountSettings />}
+          {sectionId === "referrals" && <ReferralsView />}
         </>
       }
     />
@@ -88,6 +94,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
 const UIVersionInfo = styled.div`
   ${theme.typo.label};
   opacity: 0.3;
-  margin-top: 16px;
-  padding-left: 12px;
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
 `;

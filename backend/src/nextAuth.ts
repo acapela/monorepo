@@ -243,7 +243,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
             used_referral_code: referralCode?.toUpperCase(),
           },
         });
-        trackFirstBackendUserEvent(user, "Signed Up");
+        trackFirstBackendUserEvent(user, "Signed Up", { email, name, origin: referralCode ? "referred" : "organic" });
         updateUserOnboardingStatus(user);
         return toAdapterUser(user);
       },

@@ -25,7 +25,7 @@ export default function DownloadPage(): JSX.Element {
   const { search } = getLocation();
   if (search.referral) {
     document.cookie = `referral=${search.referral};path=/`;
-    Router.push("login", { redirect: "/app/download" });
+    Router.push("login", { redirect: "https://acapela.com/download" });
     return <></>;
   }
 
