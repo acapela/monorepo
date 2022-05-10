@@ -4,9 +4,6 @@ commonLabels:
   env: production
 resources:
   - ../base
-replicas:
-  - name: hasura
-    count: 2
 configMapGenerator:
   - name: hasura-config
     envs:

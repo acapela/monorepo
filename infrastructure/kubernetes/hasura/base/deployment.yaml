@@ -6,7 +6,6 @@ metadata:
   labels:
     app: hasura
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: hasura
@@ -19,6 +18,9 @@ spec:
       containers:
         - name: graphql-engine
           image: eu.gcr.io/meetnomoreapp/graphql-engine:2.1.1
+          resources:
+            requests:
+              cpu: 500m
           ports:
             - containerPort: 8080
           envFrom:
