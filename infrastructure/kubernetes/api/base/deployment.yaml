@@ -6,7 +6,6 @@ metadata:
   labels:
     app: api
 spec:
-  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: backend
-          image: eu.gcr.io/meetnomoreapp/monorepo:4.188.0
+          image: eu.gcr.io/meetnomoreapp/monorepo:4.201.0
           command: ["./scripts/start.sh"]
           resources:
             requests:
