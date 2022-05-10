@@ -1,4 +1,5 @@
-import { nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
+import { isSameDay, nextMonday, setDay, setHours, startOfTomorrow } from "date-fns";
+import { addHours } from "date-fns/esm";
 import React from "react";
 
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -29,29 +30,42 @@ export function getSnoozeOptionsForSearch(context: ActionContext) {
 const DEFAULT_WORK_START_HOUR = 9;
 const DEFAULT_WORK_END_HOUR = 17;
 
+function setHoursAndResetMinutes(date: Date, hours: number) {
+  const hourDate = setHours(date, hours);
+  hourDate.setMinutes(0, 0, 0);
+
+  return hourDate;
+}
+
 const defaultSuggestions: DateSuggestion[] = [
+  {
+    text: "In 2 hours",
+    get date() {
+      return addHours(new Date(), 2);
+    },
+  },
   {
     text: "End of day",
     get date() {
-      return setHours(new Date(), DEFAULT_WORK_END_HOUR);
+      return setHoursAndResetMinutes(new Date(), DEFAULT_WORK_END_HOUR);
     },
   },
   {
     text: "Tomorrow",
     get date() {
-      return setHours(startOfTomorrow(), DEFAULT_WORK_START_HOUR);
+      return setHoursAndResetMinutes(startOfTomorrow(), DEFAULT_WORK_START_HOUR);
     },
   },
   {
     text: "End of week",
     get date() {
-      return setHours(setDay(new Date(), 5), DEFAULT_WORK_START_HOUR);
+      return setHoursAndResetMinutes(setDay(new Date(), 5), DEFAULT_WORK_START_HOUR);
     },
   },
   {
     text: "Next week",
     get date() {
-      return setHours(nextMonday(new Date()), DEFAULT_WORK_START_HOUR);
+      return setHoursAndResetMinutes(nextMonday(new Date()), DEFAULT_WORK_START_HOUR);
     },
   },
 ];
@@ -64,14 +78,30 @@ export function getSnoozeSuggestionActions(context: ActionContext) {
   return snoozeActions;
 }
 
+function convertDateToStartOfDay(date: Date) {
+  const clonedDate = new Date(date);
+  clonedDate.setHours(DEFAULT_WORK_START_HOUR, 0, 0, 0);
+  return clonedDate;
+}
+
+function prepareSuggestionTime(date: Date, now = new Date()) {
+  if (isSameDay(date, now)) {
+    return date;
+  }
+
+  return convertDateToStartOfDay(date);
+}
+
 function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
   if (!searchKeyword.trim()) return defaultSuggestions;
+
+  const now = new Date();
 
   return autosuggestDate(searchKeyword, { maxResults: isContextual ? 5 : 2 }).map((suggestion) => {
     if (suggestion.isExact) return suggestion;
     return {
       ...suggestion,
-      date: setHours(suggestion.date, DEFAULT_WORK_START_HOUR),
+      date: prepareSuggestionTime(suggestion.date, now),
     };
   });
 }
