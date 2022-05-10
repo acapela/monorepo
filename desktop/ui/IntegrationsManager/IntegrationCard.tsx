@@ -44,6 +44,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
               notApplicableLabel="Connected"
               notApplicableMode={service.disconnect && "hide"}
               aria-label={`Connect ${name}`}
+              kind="primarySubtle"
             />
             {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
           </UIConnectAction>

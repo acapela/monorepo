@@ -20,10 +20,10 @@ export type AnalyticsEventsMap = {
   // team deleted - unused for now
   "Account Deleted": { account_name: string };
   "Signed Up": {
-    type: "organic" | "invited";
+    origin: "organic" | "referred";
     email: string;
-    first_name: Maybe<string>;
-    last_name: Maybe<string>;
+    first_name?: Maybe<string>;
+    last_name?: Maybe<string>;
     name: string; // Full name of a user
   };
   // unused for now?
@@ -32,6 +32,8 @@ export type AnalyticsEventsMap = {
   "Logged Out": void;
   // to be implemented on the settings page soon
   "Invite Sent": { invitee_email: string };
+  "Referral Code Copied": void;
+  "Invite Friend Button Clicked": void;
   // to be implemented later
   "Account Added User": { role: "owner" | "admin" | "member" };
   // delete a team member from team management space
