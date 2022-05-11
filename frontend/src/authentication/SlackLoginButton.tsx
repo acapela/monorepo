@@ -18,8 +18,16 @@ export const SlackLoginButton = ({
   }
 
   return (
-    <Button kind="secondary" className={className} onClick={() => handleLogin()} isLoading={false} icon={<SlackLogo />}>
-      {children || "Log in with Slack"}
+    <Button
+      kind="secondary"
+      size="primary"
+      isWide
+      className={className}
+      onClick={() => handleLogin()}
+      isLoading={false}
+      icon={<SlackLogo />}
+    >
+      {children || "Continue with Slack"}
     </Button>
   );
 };

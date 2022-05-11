@@ -40,19 +40,17 @@ const UIHolder = styled.div<{}>`
   justify-content: center;
   min-height: 100vh;
   flex-direction: column;
-  ${theme.gradients.actionPageBg.asBg};
+  ${theme.colors.layout.background.asBgWithReadableText};
   padding: 20px;
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.shadow.modal};
-  ${theme.box.panel.pageCart.padding.radius};
   display: flex;
   flex-direction: column;
   justify-content: center;
   flex-wrap: wrap;
   max-width: 700px;
+  gap: 48px;
 
   min-width: 420px;
 
@@ -67,7 +65,6 @@ const UIHead = styled.div`
   flex-direction: column;
   align-items: center;
   ${theme.spacing.actionsSection.asGap};
-  margin-bottom: 50px;
 `;
 
 const UITypo = styled.div`
@@ -79,7 +76,7 @@ const UITypo = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.item.title};
+  ${theme.typo.hero};
 `;
 
 const UIDescription = styled.div`
@@ -88,5 +85,5 @@ const UIDescription = styled.div`
 `;
 
 const UILogo = styled(Logo)<{}>`
-  font-size: 40px;
+  font-size: 64px;
 `;

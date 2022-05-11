@@ -11,6 +11,7 @@ const content = readable.size(14);
 const textTitle = content.medium;
 
 export const typo = {
+  hero: header.size(36).bold,
   content: readable.size(14),
   secondaryContent: readable.size(12),
   pageTitle: header.size(24, 18),
