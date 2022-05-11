@@ -163,12 +163,12 @@ export function defineNotificationsList({
       ...iterateAndCollect(
         currentNotification,
         (notification) => getPreviousNotification(notification),
-        uiStore.isAppFocused ? 3 : 0
+        uiStore.isAppFocused ? 2 : 0
       ),
       ...iterateAndCollect(
         currentNotification,
         (notification) => getNextNotification(notification),
-        uiStore.isAppFocused ? 5 : 1
+        uiStore.isAppFocused ? 4 : 1
       )
     );
 

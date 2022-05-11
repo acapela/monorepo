@@ -13,7 +13,7 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { useLeadingDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
 
 // Determines how many notifications around the focused one should be loaded
-const PRELOAD_NEIGHBOR_COUNT = 3;
+const PRELOAD_NEIGHBOR_COUNT = 2;
 
 const extractNotifications = (elements: NotificationOrGroup[]) =>
   elements
