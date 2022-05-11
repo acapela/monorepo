@@ -43,7 +43,7 @@ export async function handleChannelFilterMigrationSync(event: HasuraEvent<UserSl
       ? [...event.item.included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER]
       : event.item.included_channels.filter((c) => c !== USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER);
 
-    db.user_slack_channels_by_team.update({
+    await db.user_slack_channels_by_team.update({
       where: { id: event.item.id },
       data: { included_channels },
     });
@@ -70,7 +70,7 @@ export async function handleChannelFilterMigrationSync(event: HasuraEvent<UserSl
     }
 
     // Presence of placeholder changed, set new column accordingly
-    db.user_slack_channels_by_team.update({
+    await db.user_slack_channels_by_team.update({
       where: { id: event.item.id },
       data: { are_all_channels_included: doesContainPlaceholder },
     });
