@@ -29,12 +29,14 @@ export const GoogleLoginButton = ({
   return (
     <Button
       kind="secondary"
+      size="primary"
       className={className}
       onClick={() => handleLogin()}
       isLoading={false}
       icon={<GoogleGLogoIcon />}
+      isWide
     >
-      {children || "Log in with Google"}
+      {children || "Continue with Google"}
     </Button>
   );
 };

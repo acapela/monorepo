@@ -15,9 +15,9 @@ import { Router, allRouteNames } from "@aca/frontend/src/router";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 import { globalStyles } from "@aca/ui/styles/global";
-import { AppThemeProvider } from "@aca/ui/theme";
 
 import AssetsRecorder from "./pages/recorder";
+import { BrowserThemeProvider } from "./theme/BrowserThemeProvider";
 
 const routeToComponent = {
   root: Index,
@@ -44,12 +44,12 @@ export const App = () => {
 
   return (
     <>
-      <AppThemeProvider>
+      <BrowserThemeProvider>
         <BuiltInStyles />
         <PromiseUIRenderer />
         <TooltipsRenderer />
         <Component />
-      </AppThemeProvider>
+      </BrowserThemeProvider>
     </>
   );
 };

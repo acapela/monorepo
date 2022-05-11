@@ -56,7 +56,7 @@ export default function DownloadPage(): JSX.Element {
               <UIDescription>Acapela helps you manage all your notifications</UIDescription>
             </UITypo>
           </UIHead>
-          <Button kind="primary" onClick={handleDownload} isDisabled={downloadURL === null}>
+          <Button kind="primary" size="primary" onClick={handleDownload} isDisabled={downloadURL === null}>
             Download (MacOS)
           </Button>
         </UIWindow>
@@ -80,13 +80,10 @@ const UIWrapper = styled.div<{}>`
   justify-content: center;
   min-height: 100vh;
   flex-direction: column;
-  ${theme.gradients.actionPageBg.asBg};
+  ${theme.colors.layout.background.asBgWithReadableText};
 `;
 
 const UIWindow = styled(PopPresenceAnimator)<{}>`
-  ${theme.colors.layout.background.withBorder.asBg};
-  ${theme.shadow.modal};
-  ${theme.box.panel.pageCart.padding.radius};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -118,7 +115,7 @@ const UITypo = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.item.title};
+  ${theme.typo.hero};
 `;
 
 const UIDescription = styled.div`
@@ -127,7 +124,7 @@ const UIDescription = styled.div`
 `;
 
 const UILogo = styled(Logo)<{}>`
-  font-size: 40px;
+  font-size: 64px;
 `;
 
 const UIIFrameHolder = styled.div<{}>`

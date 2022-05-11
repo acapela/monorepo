@@ -31,7 +31,7 @@ export default function LoginPage(): JSX.Element {
   return (
     <>
       <FocusedActionLayout
-        title={user ? `Almost done` : "Log into Acapela app"}
+        title={user ? `Almost done` : "Log in to Acapela"}
         description={user ? `Open Acapela app to finish logging in.` : undefined}
       >
         {!user && <LoginOptionsView />}
