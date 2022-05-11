@@ -27,8 +27,15 @@ export const ActionSystemMenuItem = observer(function ActionSystemMenuItem({
 }: Props) {
   const { isApplicable, name, shortcut, group: actionDataGroup } = resolveActionDataWithTarget(action, target);
 
-  const groupNameFromAction = actionDataGroup ? resolveGroupDataWithTarget(actionDataGroup, target).name : undefined;
-  const groupLabel = group ?? groupNameFromAction;
+  let groupLabel = group;
+
+  if (!groupLabel) {
+    const groupNameFromAction = actionDataGroup ? resolveGroupDataWithTarget(actionDataGroup, target).name : undefined;
+
+    if (groupNameFromAction) {
+      groupLabel = groupNameFromAction;
+    }
+  }
 
   return (
     <SystemMenuItem

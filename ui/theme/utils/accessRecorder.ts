@@ -10,7 +10,23 @@ export type AccessAction =
       args: unknown[];
     };
 
+// Replay access is considered pure - it will cache the same result for the same path to replay
+const replayAccessCache = new WeakMap<object, WeakMap<AccessAction[], unknown>>();
+
 export function replayAccess(newTarget: object, records: AccessAction[]) {
+  let targetCache = replayAccessCache.get(newTarget);
+
+  if (!targetCache) {
+    targetCache = new WeakMap();
+    replayAccessCache.set(newTarget, targetCache);
+  }
+
+  const cachedResult = targetCache.get(records);
+
+  if (cachedResult !== undefined) {
+    return cachedResult;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentResult: any = newTarget;
 
@@ -27,6 +43,8 @@ export function replayAccess(newTarget: object, records: AccessAction[]) {
 
     throw new Error("Incorrect recording");
   }
+
+  targetCache.set(records, currentResult);
 
   return currentResult;
 }

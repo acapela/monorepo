@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { useDocument } from "@aca/shared/context/window";
 
-import { describeShortcut } from "./describeShortcut";
 import {
   ShortcutCallback,
   ShortcutDefinition,
@@ -51,8 +50,6 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
 
     return createShortcutListener(keys, { callback, options });
   }, [keys, callback, options, isPresent]);
-
-  return describeShortcut(shortcut);
 }
 
 export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: ShortcutCallback, options?: ShortcutOptions) {

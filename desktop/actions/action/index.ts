@@ -51,12 +51,25 @@ export interface ActionData extends ActionCreateInput {
  */
 export const resolveActionData = cachedComputed(function resolveActionData(action: ActionData, context: ActionContext) {
   return {
-    ...action,
-    name: resolveActionDataThunk(action.name, context),
-    icon: resolveActionDataThunk(action.icon, context),
-    keywords: resolveActionDataThunk(action.keywords, context),
-    group: resolveActionDataThunk(action.group, context),
-    supplementaryLabel: resolveActionDataThunk(action.supplementaryLabel, context),
+    canApply: cachedComputed(action.canApply),
+    get name() {
+      return resolveActionDataThunk(action.name, context);
+    },
+    get icon() {
+      return resolveActionDataThunk(action.icon, context);
+    },
+    get shortcut() {
+      return action.shortcut;
+    },
+    get keywords() {
+      return resolveActionDataThunk(action.keywords, context);
+    },
+    get group() {
+      return resolveActionDataThunk(action.group, context);
+    },
+    get supplementaryLabel() {
+      return resolveActionDataThunk(action.supplementaryLabel, context);
+    },
     get isApplicable() {
       return action.canApply(context);
     },

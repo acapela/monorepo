@@ -1,9 +1,10 @@
 export function createBiddableTimeout(time: number, endCallback: () => void) {
-  let currentBidTimeout: ReturnType<typeof setTimeout>;
+  let currentBidTimeout: ReturnType<typeof setTimeout> | undefined;
 
   function stopCurrentBid() {
     if (currentBidTimeout) {
       clearTimeout(currentBidTimeout);
+      currentBidTimeout = undefined;
     }
   }
 

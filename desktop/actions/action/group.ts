@@ -14,10 +14,11 @@ export interface ActionGroupData extends GroupCreateInput {
 /**
  * Some action fields might be functions that depend on context - this will resolve final data providing some specific context.
  */
-export function resolveGroupData(action: ActionGroupData, context: ActionContext = createActionContext()) {
+export function resolveGroupData(groupData: ActionGroupData, context: ActionContext = createActionContext()) {
   return {
-    ...action,
-    name: resolveActionDataThunk(action.name, context),
+    get name() {
+      return resolveActionDataThunk(groupData.name, context);
+    },
   };
 }
 

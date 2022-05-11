@@ -56,6 +56,7 @@ export function buildStyledTheme<T extends object>(theme: T) {
       if (!props?.theme) {
         return null;
       }
+
       try {
         const valueFromTheme = replayAccess(props.theme, accessRecord);
 
@@ -90,6 +91,9 @@ export function buildStyledTheme<T extends object>(theme: T) {
     return nextTrap;
   }
 
+  const nestedPropCache = new WeakMap<T, Map<PropertyKey, unknown>>();
+  const themeApplyCache = new WeakMap<T, WeakMap<object, unknown>>();
+
   const themeProxy = createDeepProxy<T, AccessContext>(
     theme,
     {
@@ -99,6 +103,35 @@ export function buildStyledTheme<T extends object>(theme: T) {
        * eg. theme.foo.bar or theme.foo(5).bar.baz(10) etc
        */
       apply(target, thisArg, args) {
+        // If this is final apply (props) => props.theme call - let's cache the result
+        const themeFromArgsIfPresent = args.length === 1 && args[0].theme;
+
+        // It is not final call (eg. theme.opacity(0.5)) call - potentially could be cached, but would require map of arguments maybe making it actually slower
+        if (!themeFromArgsIfPresent) {
+          const result = Reflect.apply(target as Function, thisArg, args);
+
+          // No part of the theme should return undefined at any point.
+          if (result === undefined) {
+            return result;
+          }
+
+          return convertProxyValueToThemeGetterOrNestedProxy(this, result, { type: "apply", args });
+        }
+
+        // It is props.theme call - use cache
+        let thisTargetThemeApplyCache = themeApplyCache.get(target);
+
+        if (!thisTargetThemeApplyCache) {
+          thisTargetThemeApplyCache = new WeakMap();
+          themeApplyCache.set(target, thisTargetThemeApplyCache);
+        }
+
+        const cachedResult = thisTargetThemeApplyCache.get(themeFromArgsIfPresent);
+
+        if (cachedResult) {
+          return cachedResult;
+        }
+
         const result = Reflect.apply(target as Function, thisArg, args);
 
         // No part of the theme should return undefined at any point.
@@ -106,7 +139,11 @@ export function buildStyledTheme<T extends object>(theme: T) {
           return result;
         }
 
-        return convertProxyValueToThemeGetterOrNestedProxy(this, result, { type: "apply", args });
+        const nestedValue = convertProxyValueToThemeGetterOrNestedProxy(this, result, { type: "apply", args });
+
+        thisTargetThemeApplyCache.set(themeFromArgsIfPresent, nestedValue);
+
+        return nestedValue;
       },
       get(target, propertyName, receiver) {
         if (!Reflect.getOwnPropertyDescriptor(target, propertyName)) {
@@ -124,7 +161,33 @@ export function buildStyledTheme<T extends object>(theme: T) {
           return result;
         }
 
-        return convertProxyValueToThemeGetterOrNestedProxy(this, result, { type: "get", property: propertyName });
+        /**
+         * For case like: css`${props => props.isFoo && .theme.foo.bar}`
+         *
+         * here function props => is called on every render - let's cache computing theme value
+         */
+
+        let propsCache = nestedPropCache.get(target);
+
+        if (!propsCache) {
+          propsCache = new Map();
+          nestedPropCache.set(target, propsCache);
+        }
+
+        const cachedValue = propsCache.get(propertyName);
+
+        if (cachedValue !== undefined) {
+          return cachedValue;
+        }
+
+        const nestedValue = convertProxyValueToThemeGetterOrNestedProxy(this, result, {
+          type: "get",
+          property: propertyName,
+        });
+
+        propsCache.set(propertyName, nestedValue);
+
+        return nestedValue;
       },
     },
     // It is root of the theme, so start with empty 'access record'

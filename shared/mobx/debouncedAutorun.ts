@@ -1,9 +1,13 @@
-import { debounce } from "lodash";
+import { DebounceSettings, debounce } from "lodash";
 import { Reaction } from "mobx";
 
 import { MaybeCleanup } from "../types";
 
-export function debouncedAutorunEffect(callback: () => MaybeCleanup, time: number) {
+export function debouncedAutorunEffect(
+  callback: () => MaybeCleanup,
+  time: number,
+  debounceSettings?: DebounceSettings
+) {
   const reaction = new Reaction("debouncedAutorun", () => {
     scheduleRun();
   });
@@ -15,12 +19,16 @@ export function debouncedAutorunEffect(callback: () => MaybeCleanup, time: numbe
     previousCleanup = undefined;
   }
 
-  const scheduleRun = debounce(() => {
-    cleanPrevious();
-    reaction.track(() => {
-      previousCleanup = callback();
-    });
-  }, time);
+  const scheduleRun = debounce(
+    () => {
+      cleanPrevious();
+      reaction.track(() => {
+        previousCleanup = callback();
+      });
+    },
+    time,
+    debounceSettings
+  );
 
   scheduleRun();
 

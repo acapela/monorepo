@@ -12,8 +12,6 @@ export const actionResultChannel = createChannel<ActionResult>();
 const log = makeLogger("RunAction");
 
 export async function runAction(action: ActionData, context: ActionContext = createActionContext()) {
-  const { analyticsEvent } = resolveActionData(action, context);
-
   if (!action.canApply(context)) {
     return false;
   }
@@ -23,6 +21,8 @@ export async function runAction(action: ActionData, context: ActionContext = cre
     const actionResult = await runInAction(() => {
       return action.handler(context);
     });
+
+    const { analyticsEvent } = resolveActionData(action, context);
 
     if (analyticsEvent) {
       trackEvent(analyticsEvent.type, Reflect.get(analyticsEvent, "payload"));

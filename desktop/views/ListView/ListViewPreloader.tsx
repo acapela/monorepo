@@ -1,9 +1,8 @@
-import { computed } from "mobx";
 import { observer } from "mobx-react";
-import * as React from "react";
+import React from "react";
 
+import { cachedComputed } from "@aca/clientdb";
 import { getCollapsedGroupedElementsInList } from "@aca/desktop/actions/views/list";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -20,30 +19,29 @@ const extractNotifications = (elements: NotificationOrGroup[]) =>
     .filter(({ id }) => uiStore.visibleRowIds.has(id))
     .map((element) => (getIsNotificationsGroup(element) ? element.notifications[0] : element));
 
+const getNotificationsToPreload = cachedComputed((list: NotificationsList, target: unknown) => {
+  const { visibleRowIds } = uiStore;
+
+  const groupedElements = getCollapsedGroupedElementsInList(list);
+  const targetIndex = groupedElements.indexOf(target as NotificationOrGroup);
+
+  const isAnyNotificationRowFocused = targetIndex != -1;
+  if (!isAnyNotificationRowFocused) {
+    const firstVisibleRowIndex = groupedElements.findIndex((element) => visibleRowIds.has(element.id));
+    return extractNotifications(groupedElements.slice(firstVisibleRowIndex, PRELOAD_NEIGHBOR_COUNT));
+  }
+
+  return extractNotifications(
+    groupedElements.slice(targetIndex - PRELOAD_NEIGHBOR_COUNT, targetIndex + PRELOAD_NEIGHBOR_COUNT)
+  );
+});
+
 export const ListViewPreloader = observer(({ list }: { list: NotificationsList }) => {
-  const focusedTarget = useLeadingDebouncedValue(uiStore.focusedTarget, 50);
+  const debouncedFocusedTarget = useLeadingDebouncedValue(uiStore.focusedTarget, 50);
 
-  const visibleFocusedNotificationNeighbors = computed<NotificationEntity[]>(() => {
-    if (!uiStore.isAppFocused) {
-      return [];
-    }
+  if (!debouncedFocusedTarget) return null;
 
-    const groupedElements = getCollapsedGroupedElementsInList(list);
-    const targetIndex = groupedElements.findIndex(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (element) => focusedTarget && element.id === (focusedTarget as any).id
-    );
-
-    const isAnyNotificationRowFocused = targetIndex != -1;
-    if (!isAnyNotificationRowFocused) {
-      const firstVisibleRowIndex = groupedElements.findIndex((element) => uiStore.visibleRowIds.has(element.id));
-      return extractNotifications(groupedElements.slice(firstVisibleRowIndex, PRELOAD_NEIGHBOR_COUNT));
-    }
-
-    return extractNotifications(
-      groupedElements.slice(targetIndex - PRELOAD_NEIGHBOR_COUNT, targetIndex + PRELOAD_NEIGHBOR_COUNT)
-    );
-  }).get();
+  const visibleFocusedNotificationNeighbors = getNotificationsToPreload(list, debouncedFocusedTarget);
 
   return (
     <>
