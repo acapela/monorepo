@@ -54,6 +54,10 @@ hasuraEvents.addHandler("notification_updates", ["UPDATE"], handleNotificationCh
 hasuraEvents.addHandler("notification_slack_message_updates", ["DELETE"], handleNotificationSlackMessageChanges);
 hasuraEvents.addHandler("user_slack_installation_updates", ["INSERT"], handleUserSlackInstallationChanges);
 hasuraEvents.addHandler("user_signup", ["INSERT"], handleSignup);
+
+// TODO: Temporary Migration! This event should be removed once all users upgraded their App to use the new
+// "are_all_channels_included" column in "user_slack_channels_by_team". Migration should probably be done by July 2022.
+// Remember to remove it from Hasura as well!
 hasuraEvents.addHandler("channel_filter_migration", ["INSERT", "UPDATE"], handleChannelFilterMigrationSync);
 
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);

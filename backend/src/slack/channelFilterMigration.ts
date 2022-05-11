@@ -1,3 +1,7 @@
+// TODO: Temporary Migration! This event should be removed once all users upgraded their App to use the new
+// "are_all_channels_included" column in "user_slack_channels_by_team". Migration should probably be done by July 2022.
+// Remember to remove it from Hasura as well!
+
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { UserSlackChannelsByTeam, db } from "@aca/db";
 import { Prisma } from "@aca/db";
