@@ -1,13 +1,13 @@
 -- Remove old slack_included_channels column, this should be migrated 
 -- by now, so don't worry about the data
 ALTER TABLE
-    "public"."user" DROP COLUMN "slack_included_channels";
+    "public"."user" DROP COLUMN IF EXISTS "slack_included_channels";
 
 -- Add new column to indicate if all channels are included by default
 ALTER TABLE
     "public"."user_slack_channels_by_team"
 ADD
-    COLUMN "are_all_channels_included" boolean NULL DEFAULT 'false';
+    COLUMN "are_all_channels_included" boolean NOT NULL DEFAULT 'false';
 
 -- Add new column for excluded channels
 ALTER TABLE
@@ -21,13 +21,5 @@ UPDATE
     "public"."user_slack_channels_by_team"
 SET
     "are_all_channels_included" = 'true'
-WHERE
-    "included_channels" :: jsonb ? '*****';
-
--- Remove the all-channels-included placeholder
-UPDATE
-    "public"."user_slack_channels_by_team"
-SET
-    "included_channels" = "included_channels" - '*****'
 WHERE
     "included_channels" :: jsonb ? '*****';
