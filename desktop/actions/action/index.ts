@@ -52,6 +52,7 @@ export interface ActionData extends ActionCreateInput {
 export const resolveActionData = cachedComputed(function resolveActionData(action: ActionData, context: ActionContext) {
   return {
     canApply: cachedComputed(action.canApply),
+    id: action.id,
     get name() {
       return resolveActionDataThunk(action.name, context);
     },
