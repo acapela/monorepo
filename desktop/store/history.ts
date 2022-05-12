@@ -1,4 +1,4 @@
-import { autorun } from "mobx";
+import { autorun, runInAction } from "mobx";
 
 import { createMobxPersistedStore } from "@aca/shared/mobx/persistedStore";
 
@@ -18,5 +18,7 @@ autorun(() => {
     return;
   }
 
-  historyStore.lastOpenedListId = listId ?? null;
+  runInAction(() => {
+    historyStore.lastOpenedListId = listId ?? null;
+  });
 });

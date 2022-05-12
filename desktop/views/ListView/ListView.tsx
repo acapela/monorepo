@@ -12,6 +12,7 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
+import { Button } from "@aca/ui/buttons/Button";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
 
@@ -77,7 +78,7 @@ export const ListView = observer(({ listId }: Props) => {
           </UIListTools>
         )}
 
-        {list && <ListViewPreloader list={list} />}
+        {list && !list.dontPreload && <ListViewPreloader list={list} />}
 
         <UIListsScroller>
           {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
@@ -86,7 +87,18 @@ export const ListView = observer(({ listId }: Props) => {
 
           {list && notificationGroups && notificationGroups.length > 0 && (
             <UINotifications>
-              <LazyChildrenRender initialCount={50} addBatchSize={50} batchInterval={100}>
+              <LazyChildrenRender
+                initialCount={300}
+                addBatchSize={300}
+                batchInterval={100}
+                manualNextBatchTrigger={(loadMore) => {
+                  return (
+                    <UILoadMoreHolder>
+                      <Button onClick={loadMore}>Show more</Button>
+                    </UILoadMoreHolder>
+                  );
+                }}
+              >
                 {notificationGroups?.map((notificationOrGroup) => {
                   if (getIsNotificationsGroup(notificationOrGroup)) {
                     return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
@@ -155,4 +167,10 @@ const UIListsScroller = styled.div`
   flex-direction: column;
   flex-grow: 1;
   min-height: 0;
+`;
+
+const UILoadMoreHolder = styled.div`
+  display: flex;
+  padding: 20px;
+  justify-content: center;
 `;

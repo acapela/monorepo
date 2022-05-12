@@ -48,8 +48,10 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
     });
     return () => {
       if (uiStore.activeNotification === activeNotification && uiStore.activeListId === activeListId) {
-        uiStore.activeListId = null;
-        uiStore.activeNotification = null;
+        runInAction(() => {
+          uiStore.activeListId = null;
+          uiStore.activeNotification = null;
+        });
       } else {
         Sentry.captureException(new Error("Tried to reset values set by another component"));
       }

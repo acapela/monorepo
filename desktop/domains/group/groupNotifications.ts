@@ -1,9 +1,23 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { unsafeAssertType } from "@aca/shared/assert";
 
 import { NotificationsGroup, getIsNotificationsGroup } from "./group";
 import { getNotificationGroupTarget } from "./target";
 
 export type NotificationOrGroup = NotificationEntity | NotificationsGroup;
+
+export function getIsNotificationOrGroup(input: unknown): input is NotificationOrGroup {
+  if (!input) return false;
+  unsafeAssertType<NotificationOrGroup>(input);
+
+  if (input.kind === "group") return true;
+
+  unsafeAssertType<NotificationEntity>(input);
+
+  if (input.__typename === "notification") return true;
+
+  return false;
+}
 
 /**
  * Will group notification so if 2+ are related to the same 'target', they'll be bundled together

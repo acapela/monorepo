@@ -5,7 +5,7 @@ import { createLogger } from "@aca/shared/log";
 import { mapGetOrCreate } from "@aca/shared/map";
 import { SECOND } from "@aca/shared/time";
 
-import { createBiddableTimeout } from "./biddableTimeout";
+import { createSharedInterval, sharedDefer } from "./sharedDefer";
 
 export type LazyComputed<T> = {
   get(): T;
@@ -28,7 +28,10 @@ export interface CachedComputedOptions<T> extends IComputedValueOptions<T> {
   debugId?: string;
 }
 
+const sharedDisopseInterval = createSharedInterval(KEEP_ALIVE_TIME_AFTER_UNOBSERVED);
+
 const namesMap = new Map<string, number>();
+
 /**
  * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
  *
@@ -52,13 +55,10 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
   let needsRecomputing = true;
   let currentReaction: Reaction | null;
 
-  // This works like a 'bid' - after KEEP_ALIVE_TIME_AFTER_UNOBSERVED timeout since last time this is called - we'll dispose
-  const [scheduleDisposal, cancelScheduledDisposal] = createBiddableTimeout(KEEP_ALIVE_TIME_AFTER_UNOBSERVED, dispose);
-
   const updateSignal = createAtom(
     name,
     () => {
-      cancelScheduledDisposal();
+      sharedDisopseInterval.remove(dispose);
       aliveLazyReactions++;
     },
     handleBecameUnobserved
@@ -70,11 +70,11 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
     if (isDisposalCascadeRunning) {
       // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
 
-      setTimeout(dispose, 0);
+      sharedDefer(dispose);
       return;
     }
 
-    scheduleDisposal();
+    sharedDisopseInterval.add(dispose);
   }
 
   // Will initialize reaction to watch that dependencies changed or re-use previous reaction if the same computed used multiple times
@@ -98,6 +98,7 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
   function dispose() {
     log?.("disposing");
     try {
+      sharedDisopseInterval.remove(dispose);
       // If other computed values become unobserved as result of this one being disposed - let them know so they instantly dispose in cascade
       isDisposalCascadeRunning = true;
 

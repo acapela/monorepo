@@ -36,6 +36,7 @@ export const resolvedList = defineNotificationsList({
   icon: <IconListUnordered4 />,
   dontShowCount: true,
   filter: { isResolved: true },
+  dontPreload: true,
 });
 
 export const snoozedList = defineNotificationsList({

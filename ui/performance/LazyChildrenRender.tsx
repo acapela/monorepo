@@ -7,16 +7,29 @@ interface Props {
   initialCount?: number;
   addBatchSize?: number;
   batchInterval?: number;
+  manualNextBatchTrigger?: (loadNext: () => void) => ReactNode;
 }
 
 /**
  * Requires children to be array (usually result of [].map) and will not render all of them initially,
  * but will gradually increase
  */
-export function LazyChildrenRender({ children, initialCount = 10, addBatchSize = 20, batchInterval = 200 }: Props) {
+export function LazyChildrenRender({
+  children,
+  initialCount = 10,
+  addBatchSize = 20,
+  batchInterval = 200,
+  manualNextBatchTrigger,
+}: Props) {
   const [renderCount, setRenderCount] = useState(initialCount);
 
   const totalCount = children.length;
+
+  const hasMore = totalCount > renderCount;
+
+  function loadMore() {
+    setRenderCount((oldCount) => oldCount + addBatchSize);
+  }
 
   useEffect(() => {
     if (renderCount >= totalCount) {
@@ -26,10 +39,16 @@ export function LazyChildrenRender({ children, initialCount = 10, addBatchSize =
       return;
     }
 
-    return createTimeout(() => {
-      setRenderCount((oldCount) => oldCount + addBatchSize);
-    }, batchInterval);
-  }, [renderCount, totalCount, addBatchSize, batchInterval]);
+    if (manualNextBatchTrigger) return;
 
-  return <>{children.slice(0, renderCount)}</>;
+    return createTimeout(loadMore, batchInterval);
+  }, [renderCount, totalCount, addBatchSize, batchInterval, manualNextBatchTrigger]);
+
+  return (
+    <>
+      {children.slice(0, renderCount)}
+
+      {hasMore && manualNextBatchTrigger && manualNextBatchTrigger(loadMore)}
+    </>
+  );
 }

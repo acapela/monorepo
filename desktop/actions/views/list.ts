@@ -1,3 +1,4 @@
+import { cachedComputed } from "@aca/clientdb";
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -83,7 +84,9 @@ export const listPageView = createActionView((context) => {
   return view;
 });
 
-export function getCollapsedGroupedElementsInList(list: NotificationsList): NotificationOrGroup[] {
+export const getCollapsedGroupedElementsInList = cachedComputed(function getCollapsedGroupedElementsInList(
+  list: NotificationsList
+): NotificationOrGroup[] {
   const groupedList = list.getAllGroupedNotifications();
 
   const result: NotificationOrGroup[] = [];
@@ -100,7 +103,7 @@ export function getCollapsedGroupedElementsInList(list: NotificationsList): Noti
   });
 
   return result;
-}
+});
 
 function getNextVisibleItemInList(list: NotificationsList, currentItem?: NotificationOrGroup) {
   const visibleElements = getCollapsedGroupedElementsInList(list);
