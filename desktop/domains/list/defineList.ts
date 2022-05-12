@@ -20,6 +20,7 @@ type DefineListConfig = {
   isCustom?: boolean;
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
+  dontPreload?: boolean;
 } & (
   | { getNotifications: () => NotificationEntity[] }
   | { filter: EntityFilterInputByDefinition<typeof notificationEntity> }
@@ -50,6 +51,7 @@ export function defineNotificationsList({
   listEntity,
   icon,
   dontShowCount = false,
+  dontPreload = false,
   ...config
 }: DefineListConfig) {
   const getActiveNotification = cachedComputed(() => (uiStore.activeListId === id ? uiStore.activeNotification : null));
@@ -207,6 +209,7 @@ export function defineNotificationsList({
       return listEntity?.title ?? name;
     },
     isCustom,
+    dontPreload,
     getNotificationGroup,
     getAllGroupedNotifications,
     getAllNotifications: getFlattenedNotifications,

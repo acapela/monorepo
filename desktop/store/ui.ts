@@ -92,8 +92,11 @@ export const uiStore = makeAutoObservable({
  */
 autorun(() => {
   routeChangeAtom.reportObserved();
-  uiStore.focusedTarget = null;
-  uiStore.isDisplayingZenImage = false;
+
+  runInAction(() => {
+    uiStore.focusedTarget = null;
+    uiStore.isDisplayingZenImage = false;
+  });
 });
 
 autorun(() => {

@@ -46,7 +46,7 @@ export const Toggle = ({ isSet = false, size = "small", isDisabled, onChange }: 
 
   return (
     <UIToggle dimensions={getDimensions(size)} onClick={onSwitch}>
-      <input type="checkbox" checked={isSet} disabled={isDisabled} />
+      <input type="checkbox" checked={isSet ?? false} disabled={isDisabled} />
       <label />
     </UIToggle>
   );
