@@ -6,30 +6,27 @@ import { authStore } from "@aca/desktop/store/auth";
 import { assert } from "@aca/shared/assert";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 import { asyncComputedWithCleanup } from "@aca/shared/mobx/utils";
-import { wait } from "@aca/shared/time";
 
+import { reloadAppView } from "../bridge/system";
 import { ClientDb, createNewClientDb } from "./createNewClientDb";
 
-const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid, setSelf }) => {
+const clientDbValue = asyncComputedWithCleanup<ClientDb | null>(async ({ assertStillValid }) => {
   const userId = computed(() => authStore.userTokenData?.id).get();
-  const teamId = computed(() => authStore.teamId).get();
-
-  // Let's avoid re-creating clientdb in case data is rapidly changing
-  await wait(50);
 
   assertStillValid();
 
   if (!userId) return { value: null };
-  if (teamId === false) return { value: null };
+
+  async function handleDestroyRequest() {
+    log.error("clientdb terminated - reloading the app");
+    await reloadAppView();
+  }
 
   const newDb = await createNewClientDb({
     userId,
-    teamId: teamId,
+    teamId: null,
     apolloClient: apolloClient,
-    onDestroyRequest: () => {
-      setSelf(null);
-      newDb.destroy();
-    },
+    onDestroyRequest: handleDestroyRequest,
   });
 
   assertStillValid(() => {
