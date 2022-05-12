@@ -1,5 +1,6 @@
 import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
+import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 import { logger } from "@aca/shared/logger";
 
 import { JiraWebhookPayload } from "../types";
@@ -23,14 +24,11 @@ export async function captureJiraWebhook(payload: JiraWebhookPayload) {
       await handleJiraIssueCreated(payload);
     }
   } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { response } = error as any;
-    logger.error(
-      error,
-      `Error while handling Jira webhook for event ${payload.webhookEvent}` + response
-        ? ` with status ${response.status} and body ${response.data}`
-        : ""
-    );
+    logger.error(error, `Error while handling Jira webhook for event ${payload.webhookEvent}`, {
+      body: JSON.stringify(payload),
+      type: "application/json",
+      fileName: "webhook.json",
+    } as LogAttachment);
   }
 }
 
