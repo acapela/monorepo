@@ -5,7 +5,7 @@ import { trackEvent } from "@aca/desktop/analytics";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
-import { getDb } from "@aca/desktop/clientdb";
+import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 
 import { NotionSettings } from "./NotionSettings";
 import { IntegrationClient } from "./types";
@@ -24,7 +24,10 @@ export const notionIntegrationClient: IntegrationClient = {
   getCanConnect: () => !notionAuthTokenBridgeValue.get(),
   getAccounts: () => (notionAuthTokenBridgeValue.get() ? [{ kind: "account", id: "notion", name: "Notion" }] : []),
   getWorkspaces: () => {
-    const db = getDb();
+    const db = getNullableDb();
+
+    if (!db) return [];
+
     const notificationWithWorkspaces = db.notificationNotion.all.map((n) => n.workspaceName).filter(isString);
     return uniq(notificationWithWorkspaces);
   },

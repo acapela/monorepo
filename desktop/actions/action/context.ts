@@ -4,7 +4,7 @@ import { makeObservable, observable } from "mobx";
 import { useMemo } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
-import { getDb } from "@aca/desktop/clientdb";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { getRouteParamsIfActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -22,9 +22,12 @@ export type ActionDataThunk<T> = T | ActionContextCallback<T>;
 const routeTargets = cachedComputed(function routeTargets(): unknown[] {
   const focusRoute = getRouteParamsIfActive("focus");
 
+  const db = getNullableDb();
+
   if (focusRoute) {
+    if (!db) return [];
     const { notificationId, listId } = focusRoute;
-    return [getDb().notification.findById(notificationId), getInboxListsById(listId)];
+    return [db.notification.findById(notificationId), getInboxListsById(listId)];
   }
 
   const listRoute = getRouteParamsIfActive("list");

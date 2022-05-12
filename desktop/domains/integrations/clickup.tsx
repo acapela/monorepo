@@ -31,7 +31,7 @@ export const clickupIntegrationClient: IntegrationClient = {
     await loginClickUpBridge();
   },
   async disconnect(id) {
-    const db = await getDb();
+    const db = getDb();
     await logoutClickUpBridge({ teamId: db.clickupTeam.all.length > 1 ? id : undefined });
     db.clickupTeam.removeById(id, "sync");
   },
