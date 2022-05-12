@@ -19,8 +19,8 @@ export const UpdateInfo = observer(() => {
     if (updateDownloadingPercent !== null) {
       return (
         <UIUpdateInfoBox key="downloading">
-          <UITitle>Update available</UITitle>
-          <UIDescription>Downloading version of Acapela...</UIDescription>
+          <UITitle>Acapela Update</UITitle>
+          <UIDescription>Downloading a new version of Acapela</UIDescription>
           <ProgressBar progressPercent={updateDownloadingPercent} />
         </UIUpdateInfoBox>
       );
