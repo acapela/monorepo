@@ -26,13 +26,13 @@ export const asanaIntegrationClient: IntegrationClient = {
     fallback: url,
   }),
   async connect() {
-    const db = await getDb();
+    const db = getDb();
     // wipe all webhooks as they get recreated on login
     db.asanaWebhook.all.forEach((w) => w.remove("sync"));
     await loginAsanaBridge();
   },
   async disconnect(id) {
-    const db = await getDb();
+    const db = getDb();
     await logoutAsanaBridge({ webhookId: db.asanaWebhook.all.length > 1 ? id : undefined });
     db.asanaWebhook.removeById(id, "sync");
   },

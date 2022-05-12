@@ -1,5 +1,5 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
-import { getDb } from "@aca/desktop/clientdb";
+import { getNullableDb } from "@aca/desktop/clientdb";
 
 import { IntegrationClient } from "./types";
 
@@ -9,11 +9,18 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_drive",
   name: "Google Suite",
   description: "Google Suite Notifications",
-  getIsDisabled: () => !getDb().gmailAccount.hasItems,
+  getIsDisabled: () => !getNullableDb()?.gmailAccount.hasItems,
   getIsConnected: () => false,
   getCanConnect: () => false,
-  getAccounts: () =>
-    getDb().gmailAccount.all.map((gmailAccount) => ({ kind: "account", id: gmailAccount.id, name: "Drive" })),
+  getAccounts: () => {
+    return (
+      getNullableDb()?.gmailAccount.all.map((gmailAccount) => ({
+        kind: "account",
+        id: gmailAccount.id,
+        name: "Drive",
+      })) ?? []
+    );
+  },
   connect() {
     return Promise.resolve();
   },

@@ -1,6 +1,6 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { githubAuthTokenBridgeValue, loginGitHubBridge } from "@aca/desktop/bridge/auth";
-import { getDb } from "@aca/desktop/clientdb";
+import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 
 import { IntegrationClient } from "./types";
 
@@ -12,7 +12,10 @@ export const githubIntegrationClient: IntegrationClient = {
   getIsConnected: () => !!githubAuthTokenBridgeValue.get(),
   getCanConnect: () => true,
   getAccounts: () => {
-    const db = getDb();
+    const db = getNullableDb();
+
+    if (!db) return [];
+
     return githubAuthTokenBridgeValue.get()
       ? db.githubInstallation.all.map((i) => ({
           kind: "account",

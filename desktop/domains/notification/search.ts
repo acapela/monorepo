@@ -1,5 +1,5 @@
 import { cachedComputed } from "@aca/clientdb";
-import { getDb } from "@aca/desktop/clientdb";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 
@@ -16,5 +16,9 @@ export const getNotificationSearchTerms = cachedComputed(function getNotificatio
 export function notificationsFuzzySearch(keyword: string) {
   if (!keyword.length) return [];
 
-  return fuzzySearch(getDb().notification.find({ isResolved: false }), getNotificationSearchTerms, keyword, 0.1);
+  const db = getNullableDb();
+
+  if (!db) return [];
+
+  return fuzzySearch(db.notification.find({ isResolved: false }), getNotificationSearchTerms, keyword, 0.1);
 }
