@@ -13,10 +13,6 @@ import { User, UserSlackInstallation, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
-import {
-  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
-  USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER,
-} from "@aca/shared/slack";
 
 import { getSlackInstallationData } from "./utils";
 
@@ -125,29 +121,7 @@ const jsonIncludesChannel = (jsonB: Prisma.JsonValue, channel: string) =>
 
 type TeamFilterMessage = Pick<GenericMessageEvent, "bot_id" | "team" | "channel">;
 
-/*
-  ## Migrating from `user.slack_selected_channels` and `user_slack_channels_by_team`
-
-  We're currently migrating data from both places.
-
-  Migration starts right after the SlackSettings component is booted for the first time.
-  After we migrate, user.slack_included_channels contents are replaced by `USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER`
-  We use this placeholder here to understand where to look for the corresponding filter.
-
-  Note: I believe that `user.slack_included_channels` should be removed by June 2022.
-  If you still find the migration code here and are reading this after the fact... you're it!  
-  */
 async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMessage) {
-  const deprecatedIncludedChannels = user.slack_included_channels;
-
-  const isMigrationComplete = jsonIncludesChannel(
-    deprecatedIncludedChannels,
-    USER_SLACK_CONVERSATIONS_MIGRATED_PLACEHOLDER
-  );
-  if (!isMigrationComplete) {
-    return jsonIncludesChannel(deprecatedIncludedChannels, message.channel);
-  }
-
   const channelsByTeam = await db.user_slack_channels_by_team.findMany({
     where: {
       user_id: user.id,
@@ -162,13 +136,14 @@ async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMess
     if (!teamChannelsHolder) {
       return false;
     }
-    const { included_channels, are_bots_enabled } = teamChannelsHolder;
+    const { included_channels, excluded_channels, are_all_channels_included, are_bots_enabled } = teamChannelsHolder;
     if (isMessageFromBot && !are_bots_enabled) {
       return false;
     }
+
     return (
-      jsonIncludesChannel(included_channels, USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER) ||
-      jsonIncludesChannel(included_channels, message.channel)
+      (!are_all_channels_included && jsonIncludesChannel(included_channels, message.channel)) ||
+      (are_all_channels_included && !jsonIncludesChannel(excluded_channels, message.channel))
     );
   }
 

@@ -15,8 +15,10 @@ insert_permissions:
         user_id:
           _eq: X-Hasura-User-Id
       columns:
+        - are_all_channels_included
         - are_bots_enabled
         - created_at
+        - excluded_channels
         - id
         - included_channels
         - slack_workspace_id
@@ -28,8 +30,10 @@ select_permissions:
   - role: user
     permission:
       columns:
+        - are_all_channels_included
         - are_bots_enabled
         - created_at
+        - excluded_channels
         - id
         - included_channels
         - slack_workspace_id
@@ -43,7 +47,9 @@ update_permissions:
   - role: user
     permission:
       columns:
+        - are_all_channels_included
         - are_bots_enabled
+        - excluded_channels
         - included_channels
         - updated_at
       filter:
@@ -56,3 +62,21 @@ delete_permissions:
       filter:
         user_id:
           _eq: X-Hasura-User-Id
+event_triggers:
+  - name: channel_filter_migration
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+      update:
+        columns:
+          - are_all_channels_included
+          - included_channels
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
