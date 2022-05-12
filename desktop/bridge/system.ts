@@ -42,7 +42,7 @@ export const applicationFocusStateBridge = createBridgeValue("application-focus-
 export const applicationWideSettingsBridge = createBridgeValue("app-wide-settings", {
   isPersisted: true,
   getDefault: () => ({
-    globalShowAppShortcut: ["Meta", "Shift", "A"] as ShortcutKeys | null,
+    globalShowAppShortcut: null as ShortcutKeys | null,
     globalPeekShortcut: null as ShortcutKeys | null,
     enableDesktopNotifications: true,
     showNotificationsCountBadge: true,
