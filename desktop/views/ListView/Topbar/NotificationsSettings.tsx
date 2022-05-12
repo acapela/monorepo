@@ -1,3 +1,4 @@
+import { isNil } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
@@ -44,7 +45,7 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
           list.update({ notifications_interval_ms: intervalOption.intervalMs });
         }}
       >
-        <TopBarButton icon={<IconBell />} indicateNotification={!!list.notifications_interval_ms} />
+        <TopBarButton icon={<IconBell />} indicateNotification={!isNil(list.notifications_interval_ms)} />
       </SingleOptionDropdown>
     </UIHolder>
   );
