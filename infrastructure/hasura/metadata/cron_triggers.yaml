@@ -9,7 +9,7 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: renew-gmail-watchers
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * 1 * *'
+  schedule: '0 * 5 * *'
   include_in_metadata: true
   payload:
     handler: renew-gmail-watchers
@@ -18,7 +18,7 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: sync-slack-teams
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * 1 * *'
+  schedule: '0 * 10 * *'
   include_in_metadata: true
   payload:
     handler: sync-slack-teams
@@ -27,7 +27,7 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: update-atlassian-refresh-token
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * 1 * *'
+  schedule: '0 * 15 * *'
   include_in_metadata: true
   payload:
     handler: update-atlassian-refresh-token
