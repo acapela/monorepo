@@ -41,9 +41,12 @@ export const SlackChannelsByTeamFilters = observer(() => {
   const [timeOfLastUpdate, setTimeOfLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
-    runInAction(async () => {
-      await updateAvailableChannels();
-    });
+    async function startup() {
+      runInAction(async () => {
+        await updateAvailableChannels();
+      });
+    }
+    startup();
   }, []);
 
   async function updateAvailableChannels() {
