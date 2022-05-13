@@ -1,5 +1,6 @@
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 import { Team, User } from "@octokit/webhooks-types";
+import * as Sentry from "@sentry/node";
 
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
@@ -13,6 +14,11 @@ export function addWebhookHandlers(webhooks: Webhooks) {
 
   webhooks.on("pull_request.assigned", issueOrPrAssigned);
   webhooks.on("pull_request.review_requested", reviewRequested);
+
+  webhooks.onError((error) => {
+    logger.error(error, "GitHub webhook error");
+    Sentry.captureException(error);
+  });
 }
 
 async function installationDeleted(event: EmitterWebhookEvent<"installation.deleted">) {
