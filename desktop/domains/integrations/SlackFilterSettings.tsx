@@ -1,6 +1,7 @@
 import { subMinutes } from "date-fns";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
@@ -38,6 +39,12 @@ export const SlackChannelsByTeamFilters = observer(() => {
     {}
   );
   const [timeOfLastUpdate, setTimeOfLastUpdate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    runInAction(async () => {
+      await updateAvailableChannels();
+    });
+  }, []);
 
   async function updateAvailableChannels() {
     const conversations = await querySlackConversations();
