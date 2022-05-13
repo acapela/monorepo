@@ -1,5 +1,5 @@
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
-import { User } from "@octokit/webhooks-types";
+import { Team, User } from "@octokit/webhooks-types";
 
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
@@ -132,10 +132,18 @@ async function issueOrPrAssigned(
 async function reviewRequested(event: EmitterWebhookEvent<"pull_request.review_requested">) {
   const installationId = event.payload.installation?.id;
   if (!installationId) throw new Error("installation id is missing");
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const requestedReviewer: User = event.payload.requested_reviewer;
-  if (!requestedReviewer) throw new Error("requested_reviewer is missing");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const requestedReviewer: User = (event.payload as any).requested_reviewer;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const requestedTeam: Team = (event.payload as any).requested_team;
+  if (!requestedReviewer && !requestedTeam) throw new Error("requested_reviewer and requested_team are missing");
+
+  if (!requestedReviewer && requestedTeam) {
+    // TODO: handle team review requests (requested_team)
+    logger.warn(`requested_reviewer is missing but requested_team is ${JSON.stringify(requestedTeam)}`);
+    return;
+  }
 
   const senderId = event.payload.sender.id;
   const requestedReviewerId = requestedReviewer.id;
