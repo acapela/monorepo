@@ -9,6 +9,7 @@ insert_permissions:
           _eq: X-Hasura-User-Id
       columns:
         - created_at
+        - emoji
         - filters
         - id
         - notifications_interval_ms
@@ -22,6 +23,7 @@ select_permissions:
     permission:
       columns:
         - created_at
+        - emoji
         - filters
         - id
         - notifications_interval_ms
@@ -37,6 +39,7 @@ update_permissions:
     permission:
       columns:
         - created_at
+        - emoji
         - filters
         - id
         - notifications_interval_ms
