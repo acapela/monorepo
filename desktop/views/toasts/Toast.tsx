@@ -26,6 +26,7 @@ export interface ToastProps extends MetaToastProps {
   message: string;
   durationMs?: number;
   id: string;
+  isInfinite?: boolean;
   onCloseRequest?: () => void;
   action?: {
     label: string;
@@ -41,6 +42,7 @@ export function Toast({
   title,
   message,
   durationMs,
+  isInfinite = false,
   id,
   disablePositionalAnimations,
   animationsDelay = 0,
@@ -56,7 +58,7 @@ export function Toast({
   const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
 
-  const shouldPlayAutoHide = !pauseAutoHide && !isHovered && !!durationMs;
+  const shouldPlayAutoHide = !isInfinite && !pauseAutoHide && !isHovered && !!durationMs;
 
   usePausableTimeout(durationMs ?? DAY, shouldPlayAutoHide, () => {
     onCloseRequestRef();

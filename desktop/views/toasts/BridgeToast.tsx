@@ -15,7 +15,7 @@ interface Props extends MetaToastProps {
 }
 
 export function BridgeToast({ toast, pauseAutoHide, disablePositionalAnimations, animationsDelay }: Props) {
-  const { key, message, action, durationMs = 3 * SECOND, title } = toast;
+  const { key, message, action, durationMs = 3 * SECOND, title, isInfinite = false } = toast;
 
   function onCloseRequest() {
     removeToast(key);
@@ -25,7 +25,7 @@ export function BridgeToast({ toast, pauseAutoHide, disablePositionalAnimations,
   const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
 
-  const shouldPlayAutoHide = !pauseAutoHide && !isHovered && !!durationMs;
+  const shouldPlayAutoHide = !isInfinite && !pauseAutoHide && !isHovered;
 
   usePausableTimeout(durationMs ?? DAY, shouldPlayAutoHide, () => {
     onCloseRequestRef();
@@ -54,6 +54,7 @@ export function BridgeToast({ toast, pauseAutoHide, disablePositionalAnimations,
       disablePositionalAnimations={disablePositionalAnimations}
       durationMs={durationMs}
       pauseAutoHide={pauseAutoHide}
+      isInfinite={isInfinite}
     />
   );
 }

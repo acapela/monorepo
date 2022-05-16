@@ -8,6 +8,7 @@ export interface ToastBridgeData {
   action?: {
     label: string;
   };
+  isInfinite?: boolean;
   durationMs?: number;
 }
 

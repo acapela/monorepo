@@ -14,21 +14,25 @@ export interface ToastInput {
     label: string;
     callback: () => void;
   };
+  isInfinite?: boolean;
   durationMs?: number;
+  onDismiss?: () => void;
 }
 
 function createToastData({
   key = getUUID(),
   message,
   action,
-  durationMs = 3 * SECOND,
+  durationMs = 9 * SECOND,
   title,
+  isInfinite,
 }: ToastInput): ToastBridgeData {
   return {
     key,
     message,
     durationMs,
     title,
+    isInfinite,
     action: action ? { label: action.label } : undefined,
   };
 }
