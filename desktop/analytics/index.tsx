@@ -21,6 +21,7 @@ import { accountStore } from "@aca/desktop/store/account";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { nullableDate } from "@aca/shared/dates/utils";
 import { onDocumentReady } from "@aca/shared/document";
+import { MINUTE } from "@aca/shared/time";
 import { VoidableArgument } from "@aca/shared/types";
 import {
   AnalyticsEvent,
@@ -89,6 +90,13 @@ onDocumentReady(async () => {
   }
 });
 
+/**
+ * Time for app being inactive to consider 'App Opened' when being activated again.
+ *
+ * eg. if user is rapidly switching between Acapela and other apps, we should not consider each 'focus' event as App Opened
+ */
+const TIME_BLURRED_TO_CONSIDER_APP_OPENED = MINUTE * 3;
+
 function initializeAnalytics(analytics: Analytics) {
   const cleanup = createCleanupObject();
 
@@ -96,6 +104,14 @@ function initializeAnalytics(analytics: Analytics) {
 
   cleanup.next = autorun(() => {
     const { lastAppFocusDateTs, lastAppBlurredDateTs } = applicationFocusStateBridge.get();
+
+    const timeSinceLastActive = lastAppFocusDateTs - lastAppBlurredDateTs;
+
+    // User is probably quickly switching between Acapela and other apps - don't consider this 'app opened'
+    if (timeSinceLastActive < TIME_BLURRED_TO_CONSIDER_APP_OPENED) {
+      return;
+    }
+
     if (lastAppFocusDateTs > lastAppBlurredDateTs) {
       analytics.track("App Opened", { app_version: window.electronBridge.env.version });
     }
