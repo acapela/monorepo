@@ -1,0 +1,29 @@
+table:
+  schema: public
+  name: alerts
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - app_version_range
+        - body
+        - connected_integrations
+        - content_type
+        - created_at
+        - expires_at
+        - id
+        - kind
+        - link
+        - title
+        - updated_at
+        - user_id
+      filter:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - user_id:
+              _is_null: true
