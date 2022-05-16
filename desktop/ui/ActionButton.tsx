@@ -14,6 +14,7 @@ interface Props extends Omit<ButtonProps, "icon">, SharedActionButtonProps {
   target?: unknown;
   size?: ButtonSize;
   notApplicableLabel?: string;
+  hideIcon?: boolean;
 }
 
 export const ActionButton = styledObserver(function ActionButton({
@@ -22,6 +23,8 @@ export const ActionButton = styledObserver(function ActionButton({
   target,
   notApplicableMode,
   notApplicableLabel,
+  hideIcon,
+  children,
   ...buttonProps
 }: Props) {
   const context = useActionContext(target, { isContextual: true });
@@ -46,14 +49,15 @@ export const ActionButton = styledObserver(function ActionButton({
   return (
     <Button
       size={size}
-      icon={icon}
+      icon={hideIcon ? undefined : icon}
       isDisabled={!canApply}
+      tooltip={children ? getLabel() : undefined}
       onClick={() => {
         runAction(action, context);
       }}
       {...buttonProps}
     >
-      {getLabel()}
+      {children ?? getLabel()}
     </Button>
   );
 })``;

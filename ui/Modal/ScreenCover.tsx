@@ -28,6 +28,8 @@ export const ScreenCover = styled(function ScreenCover({
   function handleBodyCoverClick(event: MouseEvent) {
     if (event.target !== bodyCoverRef.current) return;
 
+    event.stopPropagation();
+
     onCloseRequest?.();
   }
 

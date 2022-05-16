@@ -4,13 +4,14 @@ import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList, resolveAllNotifications } from "@aca/desktop/actions/lists";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
-import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
 import { ComposeButton } from "@aca/desktop/ui/systemTopBar/ComposeButton";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { TopBarDivider } from "@aca/desktop/ui/systemTopBar/ui";
 import { theme } from "@aca/ui/theme";
 
+import { ListEmojiPicker } from "./ListEmojiPicker";
 import { ListNotificationsSettings } from "./NotificationsSettings";
 
 interface Props {
@@ -26,8 +27,11 @@ export const ListViewTopBar = observer(({ list }: Props) => {
         </>
       }
       titleNode={
-        <UITitle action={renameNotificationList} target={list}>
-          {list?.name}
+        <UITitle>
+          {list?.listEntity && <ListEmojiPicker list={list.listEntity} />}
+          <ActionButton size="compact" kind="transparent" action={renameNotificationList} target={list} hideIcon>
+            {list?.name}
+          </ActionButton>
         </UITitle>
       }
       targetActionItems={
@@ -49,8 +53,9 @@ export const ListViewTopBar = observer(({ list }: Props) => {
   );
 });
 
-const UITitle = styled(ActionTrigger)`
+const UITitle = styled.div`
   ${theme.typo.content.medium};
-  /* This is to increase clickable area for renaming */
-  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 `;

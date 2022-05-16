@@ -41,6 +41,7 @@ const notificationFragment = gql`
     filters
     notifications_interval_ms
     seen_at
+    emoji
   }
 `;
 
@@ -60,6 +61,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     __typename: "notification_list",
     user_id: getContextValue(userIdContext) ?? null,
     notifications_interval_ms: null,
+    emoji: null,
     filters: [],
     ...getGenericDefaultData(),
   }),
@@ -76,8 +78,9 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
       "filters",
       "notifications_interval_ms",
       "seen_at",
+      "emoji",
     ],
-    updateColumns: ["updated_at", "title", "filters", "notifications_interval_ms", "seen_at"],
+    updateColumns: ["updated_at", "title", "filters", "notifications_interval_ms", "seen_at", "emoji"],
     upsertConstraint: "notification_filter_pkey",
   }),
 }).addConnections((list, { getEntity }) => {

@@ -141,8 +141,10 @@ export const UIButton = styled(motion.button)<{
 }>`
   ${baseButtonStyles};
 
-  ${(props) => getButtonKindtyles(props.$kind)}
-  ${(props) => getButtonSizeStyles(props.$size)}
+  ${(props) => getButtonKindtyles(props.$kind)};
+  ${(props) => getButtonSizeStyles(props.$size)};
+
+  ${theme.common.clickable}
 
   ${(props) => (props.$isDisabled || props.$isLoading) && disabledCss};
   ${(props) =>

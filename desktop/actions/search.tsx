@@ -90,7 +90,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
       name: list.name,
       supplementaryLabel: () => pluralize`${list.getAllNotifications().length} ${["notification"]}`,
       group: searchListActionsGroup,
-      icon: <IconFolder />,
+      icon: () => list.icon ?? <IconFolder />,
       handler() {
         runActionWithTarget(goToList, list);
       },

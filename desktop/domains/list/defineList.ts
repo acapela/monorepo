@@ -219,7 +219,9 @@ export function defineNotificationsList({
     getCountIndicator,
     getNotificationsToPreload,
     listEntity,
-    icon,
+    get icon() {
+      return listEntity?.emoji ?? icon;
+    },
     dontShowCount,
   };
 }
