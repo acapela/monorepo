@@ -6,7 +6,6 @@ import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } fro
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
 import { FigmaSessionData, clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
-import { timeDuration } from "@aca/shared/time";
 
 import { KnownSyncError, ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
 import {
@@ -26,7 +25,7 @@ function handleFigmaNotAuthorized() {
   addToast({
     title: "Figma Sync Stopped",
     message: "Please reconnect to restart sync",
-    durationMs: 2 * timeDuration.day,
+    isInfinite: true,
     action: {
       label: "Reconnect",
       callback: () => loginFigmaBridge(),

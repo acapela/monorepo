@@ -15,7 +15,7 @@ import {
 } from "@aca/desktop/electron/apps/serviceSyncController";
 import { clearNotionSessionData, notionURL } from "@aca/desktop/electron/auth/notion";
 import { assert } from "@aca/shared/assert";
-import { timeDuration, wait } from "@aca/shared/time";
+import { wait } from "@aca/shared/time";
 
 import { extractNotifications } from "./notificationExtractor";
 import { GetNotificationLogResult, GetPublicSpaceDataResult, GetSpacesResult } from "./schema";
@@ -36,7 +36,7 @@ function handleNotionNotAuthorized() {
   addToast({
     title: "Notion Sync Stopped",
     message: "Please reconnect to restart sync",
-    durationMs: 2 * timeDuration.day,
+    isInfinite: true,
     action: {
       label: "Reconnect",
       callback: () => loginNotionBridge(),

@@ -1,4 +1,6 @@
 - "!include public_account.yaml"
+- "!include public_alert.yaml"
+- "!include public_alert_read_receipt.yaml"
 - "!include public_asana_account.yaml"
 - "!include public_asana_webhook.yaml"
 - "!include public_atlassian_refresh_token_expiry.yaml"

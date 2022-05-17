@@ -26,6 +26,7 @@ export interface ToastProps extends MetaToastProps {
   message: string;
   durationMs?: number;
   id: string;
+  isInfinite?: boolean;
   onCloseRequest?: () => void;
   action?: {
     label: string;
@@ -41,22 +42,25 @@ export function Toast({
   title,
   message,
   durationMs,
+  isInfinite = false,
   id,
   disablePositionalAnimations,
   animationsDelay = 0,
   action,
   actionObject,
   pauseAutoHide,
+  onCloseRequest,
 }: ToastProps) {
-  function onCloseRequest() {
+  function handleCloseRequest() {
+    onCloseRequest?.();
     removeToast(id);
   }
 
   const toastRef = useRef<HTMLDivElement>(null);
-  const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
+  const onCloseRequestRef = useMethod(handleCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
 
-  const shouldPlayAutoHide = !pauseAutoHide && !isHovered && !!durationMs;
+  const shouldPlayAutoHide = !isInfinite && !pauseAutoHide && !isHovered && !!durationMs;
 
   usePausableTimeout(durationMs ?? DAY, shouldPlayAutoHide, () => {
     onCloseRequestRef();
@@ -88,7 +92,7 @@ export function Toast({
       <UIToast ref={toastRef} $makeSpacingForCloseButton={!title}>
         <FlyingCloseButton
           onClick={() => {
-            onCloseRequest();
+            handleCloseRequest();
           }}
           size="compact"
           kind="transparent"

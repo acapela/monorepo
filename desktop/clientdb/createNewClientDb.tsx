@@ -9,6 +9,8 @@ import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
 
 import { accountEntity } from "./account";
+import { alertEntity } from "./alert";
+import { alertReadReceiptEntity } from "./alert/readReceipt";
 import { asanaAccountEntity } from "./asanaAccount";
 import { asanaWebhookEntity } from "./asanaWebhook";
 import { clickupTeamEntity } from "./clickupTeam";
@@ -103,6 +105,9 @@ export const appClientDbEntities = {
   userSlackInstallation: userSlackInstallationEntity,
   userSlackChannelsByTeam: userSlackChannelsByTeamEntity,
   slackTeam: slackTeamEntity,
+
+  alert: alertEntity,
+  alertReadReceipt: alertReadReceiptEntity,
 };
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
