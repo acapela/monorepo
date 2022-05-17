@@ -30,7 +30,6 @@ export const BackendAlerts = observer(function BackendAlerts() {
   const { user } = accountStore;
 
   if (!db || !user) {
-    console.error("not loaded");
     return <></>;
   }
 
