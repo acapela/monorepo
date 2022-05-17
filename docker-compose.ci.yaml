@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
   hasura:
-    image: hasura/graphql-engine:v2.1.1
+    image: hasura/graphql-engine:v2.6.2
 
     ports:
       - "8080:8080"
