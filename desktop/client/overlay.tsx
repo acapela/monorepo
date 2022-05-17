@@ -5,6 +5,7 @@ import { logStorage } from "../bridge/logger";
 import { registerLogEntryHandler } from "../domains/dev/makeLogger";
 import { ToastsOverlayView } from "../views/toasts/ToastsOverlayView";
 import { AppStyleProvider } from "./AppStyleProvider";
+import { BackendAlerts } from "./BackendAlerts";
 
 const rootElement = document.getElementById("root");
 
@@ -16,6 +17,7 @@ function App() {
   return (
     <>
       <AppStyleProvider>
+        <BackendAlerts />
         <ToastsOverlayView />
       </AppStyleProvider>
     </>

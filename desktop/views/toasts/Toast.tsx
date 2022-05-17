@@ -49,13 +49,15 @@ export function Toast({
   action,
   actionObject,
   pauseAutoHide,
+  onCloseRequest,
 }: ToastProps) {
-  function onCloseRequest() {
+  function handleCloseRequest() {
+    onCloseRequest?.();
     removeToast(id);
   }
 
   const toastRef = useRef<HTMLDivElement>(null);
-  const onCloseRequestRef = useMethod(onCloseRequest ?? emptyFunction);
+  const onCloseRequestRef = useMethod(handleCloseRequest ?? emptyFunction);
   const isHovered = useIsElementOrChildHovered(toastRef);
 
   const shouldPlayAutoHide = !isInfinite && !pauseAutoHide && !isHovered && !!durationMs;
@@ -90,7 +92,7 @@ export function Toast({
       <UIToast ref={toastRef} $makeSpacingForCloseButton={!title}>
         <FlyingCloseButton
           onClick={() => {
-            onCloseRequest();
+            handleCloseRequest();
           }}
           size="compact"
           kind="transparent"
