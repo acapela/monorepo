@@ -9,9 +9,19 @@ type DbTeam = ClickUpTeam & {
   clickup_account_to_team: (ClickUpAccountToTeam & { clickup_account: ClickUpAccount })[];
 };
 
-function getRandomToken(accounts: ClickUpAccount[]): string {
-  const account = accounts[Math.floor(Math.random() * accounts.length)];
-  return account.access_token;
+async function getRandomToken(accounts: ClickUpAccount[]): Promise<string> {
+  for (let i = 0; i < 3; i++) {
+    const account = accounts[Math.floor(Math.random() * accounts.length)];
+    const token = account.access_token;
+    const headers = { Authorization: token };
+    try {
+      await axios.get(`${API_ENDPOINT}/user`, { headers });
+      return token;
+    } catch (e) {
+      // token failed, let's retry
+    }
+  }
+  throw new Error("Could not get a valid clickup token");
 }
 
 async function fetchTask(token: string, taskId: string) {
@@ -29,8 +39,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
     return acc;
   }, {} as { [key: string]: ClickUpAccount });
 
-  const randomToken = getRandomToken(Object.values(userByClickUpUserID));
-
+  const randomToken = await getRandomToken(Object.values(userByClickUpUserID));
   switch (webhook.event) {
     case "taskAssigneeUpdated": {
       const hist = webhook.history_items.find((h) => h.field === "assignee_add");
