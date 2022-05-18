@@ -5,7 +5,9 @@ import styled from "styled-components";
 import { connectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
+import { accountStore } from "@aca/desktop/store/account";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { switchSubscription } from "@aca/desktop/views/SettingsView/Subscription";
 import { Button, ButtonProps } from "@aca/ui/buttons/Button";
 import { IconCross } from "@aca/ui/icons";
 import { HStack } from "@aca/ui/Stack";
@@ -26,6 +28,13 @@ export const IntegrationCard = observer(({ service }: Props) => {
   const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
 
+  const showUpsellButton = Boolean(accountStore.user?.subscription_plan !== "business" && service.isForBusinessUsers);
+
+  if (showUpsellButton && process.env.STAGE == "production") {
+    // TODO For now we hide the business-upsell in production
+    return null;
+  }
+
   return (
     <UIHolder>
       <UILogo>
@@ -37,17 +46,28 @@ export const IntegrationCard = observer(({ service }: Props) => {
             <UIName>{name}</UIName>
             <UIDescription>{description}</UIDescription>
           </UIInfoAboutIntegration>
-          <UIConnectAction>
-            <ActionButton
-              action={connectIntegration}
-              target={service}
-              notApplicableLabel="Connected"
-              notApplicableMode={service.disconnect && "hide"}
-              aria-label={`Connect ${name}`}
+          {showUpsellButton ? (
+            <Button
               kind="primarySubtle"
-            />
-            {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
-          </UIConnectAction>
+              onClick={async () => {
+                await switchSubscription("BUSINESS");
+              }}
+            >
+              Upgrade to our business plan
+            </Button>
+          ) : (
+            <UIConnectAction>
+              <ActionButton
+                action={connectIntegration}
+                target={service}
+                notApplicableLabel="Connected"
+                notApplicableMode={service.disconnect && "hide"}
+                aria-label={`Connect ${name}`}
+                kind="primarySubtle"
+              />
+              {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
+            </UIConnectAction>
+          )}
         </UIHead>
         {!isSingularConnection &&
           workspaces.map(({ id, name }) => (

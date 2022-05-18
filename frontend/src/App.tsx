@@ -11,6 +11,7 @@ import Index from "@aca/frontend/src/pages/index";
 import Login from "@aca/frontend/src/pages/login";
 import Logout from "@aca/frontend/src/pages/logout";
 import ObscureErrorTestPage from "@aca/frontend/src/pages/obscure-error-test-page";
+import { StripeCheckedOut } from "@aca/frontend/src/pages/StripeCheckedOut";
 import { Router, allRouteNames } from "@aca/frontend/src/router";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
@@ -30,6 +31,7 @@ const routeToComponent = {
   authError: AuthError,
   authSuccess: AuthSuccess,
   recorder: AssetsRecorder,
+  stripeCheckedOut: StripeCheckedOut,
 };
 
 export const BuiltInStyles = createGlobalStyle`

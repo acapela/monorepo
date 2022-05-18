@@ -13,6 +13,7 @@ const routes = {
   authError: "/auth/error",
   authSuccess: "/auth/success",
   recorder: "/recorder",
+  stripeCheckedOut: "/stripe/checked-out",
 } as const;
 
 export const allRouteNames = typedKeys(routes);

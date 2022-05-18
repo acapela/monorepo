@@ -1,8 +1,6 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { loginGmailBridge } from "@aca/desktop/bridge/auth";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
-import { accountStore } from "@aca/desktop/store/account";
-import { isGmailIncludedInPlan } from "@aca/shared/google";
 
 import { IntegrationClient } from "./types";
 
@@ -11,7 +9,6 @@ export const gmailIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_gmail",
   name: "Google Gmail",
   description: "New emails and Google Suite notifications",
-  getIsDisabled: () => !isGmailIncludedInPlan(accountStore.user?.subscription_plan),
   getIsConnected: () => getNullableDb()?.gmailAccount.hasItems ?? false,
   getCanConnect: () => !getNullableDb()?.gmailAccount.hasItems ?? false,
   getAccounts: () =>
@@ -38,4 +35,5 @@ export const gmailIntegrationClient: IntegrationClient = {
     }
   },
   imageURL: integrationLogos.gmail,
+  isForBusinessUsers: true,
 };

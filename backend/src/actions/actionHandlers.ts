@@ -4,6 +4,7 @@ import {
   slackConversations,
   slackUsers,
 } from "@aca/backend/src/slack/hasuraActions";
+import { switchSubscriptionPlanAction } from "@aca/backend/src/subscription";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;
@@ -16,4 +17,5 @@ export const handlers: ActionHandler<any, any>[] = [
   linearUsers,
   slackUsers,
   slackConversations,
+  switchSubscriptionPlanAction,
 ];

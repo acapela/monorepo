@@ -30,9 +30,7 @@ export type SupportedIntegrationName = keyof typeof integrationClients;
 
 export const integrationClientList = Object.values(integrationClients);
 export const getEnabledIntegrationClientList = cachedComputed(() =>
-  Object.values(integrationClients).filter(
-    (integration) => !integration.getIsDisabled?.() && !integration.isHiddenFromSettings
-  )
+  Object.values(integrationClients).filter((integration) => !integration.isHiddenFromSettings)
 );
 
 export const getIntegrationAccountComposers = cachedComputed(

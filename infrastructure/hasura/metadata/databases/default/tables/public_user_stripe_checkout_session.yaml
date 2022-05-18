@@ -1,0 +1,3 @@
+table:
+  schema: public
+  name: user_stripe_checkout_session

@@ -14,34 +14,41 @@ import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
 import { ReferralsView } from "./Referrals";
 import { SettingsLayout } from "./shared";
+import { SubscriptionView } from "./Subscription";
 
 interface SettingsSection {
-  id: string;
   label: string;
+  component: React.ComponentType;
+  isHidden?: boolean;
 }
 
-export const settingsSections: SettingsSection[] = [
-  {
-    id: "integrations",
+export const settingsSections: Record<string, SettingsSection> = {
+  integrations: {
     label: "Integrations",
+    component: IntegrationsManager,
   },
-  {
-    id: "general",
+  subscription: {
+    label: "Subscription",
+    component: SubscriptionView,
+    isHidden: process.env.STAGE === "production",
+  },
+  general: {
     label: "General",
+    component: GeneralSettings,
   },
-  {
-    id: "account",
+  account: {
     label: "Account",
+    component: AccountSettings,
   },
-  {
-    id: "notifications",
+  notifications: {
     label: "Notifications",
+    component: NotificationsSettings,
   },
-  {
-    id: "referrals",
+  referrals: {
     label: "Referrals",
+    component: ReferralsView,
   },
-];
+};
 
 interface Props {
   sectionId: string;
@@ -52,6 +59,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
     desktopRouter.navigate("settings", { section: sectionId });
   }
 
+  const SettingsComponent = sectionId in settingsSections ? settingsSections[sectionId].component : React.Fragment;
   return (
     <SettingsLayout
       topBarNavigationItems={<TopBarActionButton action={exitSettings} />}
@@ -59,34 +67,28 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
       headerTitle="Settings"
       navItems={
         <>
-          {settingsSections.map((section) => {
-            return (
-              <UINavItem
-                key={section.id}
-                $isActive={section.id === sectionId}
-                onClick={() => {
-                  goToSection(section.id);
-                }}
-              >
-                {section.label}
-              </UINavItem>
-            );
-          })}
+          {Object.entries(settingsSections)
+            .filter(([, { isHidden }]) => !isHidden)
+            .map(([id, { label }]) => {
+              return (
+                <UINavItem
+                  key={id}
+                  $isActive={id === sectionId}
+                  onClick={() => {
+                    goToSection(id);
+                  }}
+                >
+                  {label}
+                </UINavItem>
+              );
+            })}
           <UIVersionInfo>
             v{window.electronBridge.env.version}
             {process.env.STAGE !== "production" ? ` (${process.env.STAGE})` : ""}
           </UIVersionInfo>
         </>
       }
-      body={
-        <>
-          {sectionId === "integrations" && <IntegrationsManager />}
-          {sectionId === "general" && <GeneralSettings />}
-          {sectionId === "notifications" && <NotificationsSettings />}
-          {sectionId === "account" && <AccountSettings />}
-          {sectionId === "referrals" && <ReferralsView />}
-        </>
-      }
+      body={<SettingsComponent />}
     />
   );
 });

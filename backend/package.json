@@ -48,6 +48,7 @@
     "pg": "^8.7.1",
     "rfc4648": "^1.5.1",
     "slack-block-builder": "^2.4.2",
+    "stripe": "^9.1.0",
     "ts-node": "^10.4.0"
   },
   "devDependencies": {
