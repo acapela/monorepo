@@ -1,4 +1,4 @@
-import { action, computed } from "mobx";
+import { computed } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import semver from "semver";
@@ -58,11 +58,9 @@ export const BackendAlerts = observer(function BackendAlerts() {
     });
 
     // TODO: Make this work with toast.onDismiss
-    action(() => {
-      db.alertReadReceipt.create({
-        alert_id: alert.id,
-        user_id: user.id,
-      });
+    db.alertReadReceipt.create({
+      alert_id: alert.id,
+      user_id: user.id,
     });
   }
 
