@@ -70,6 +70,8 @@ const requiredEnvVarNamesBackend = [
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
 
+const requiredEnvVarNamesHooks = ["HOOKS_PORT"] as const;
+
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",
   "AIRTABLE_API_KEY",
@@ -159,3 +161,4 @@ assertEnvVarsLoaded(requiredEnvVarNames);
 
 if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
 if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
+if (appType === "hooks") assertEnvVarsLoaded(requiredEnvVarNamesHooks);

@@ -1,0 +1,25 @@
+{
+  "name": "@aca/hooks",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
+    "start": "./scripts/start.sh",
+    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --sourcemap",
+    "upload:sourcemaps": "sentry-cli releases files ${VERSION} upload-sourcemaps ./dist --url-prefix /app/dist"
+  },
+  "peerDependencies": {
+    "typescript": "*"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^2.19.0",
+    "@sentry/node": "^6.19.7",
+    "koa": "^2.13.4"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "esbuild": "^0.14.39",
+    "ts-node-dev": "^1.1.8"
+  }
+}

@@ -18,7 +18,8 @@
       "gql",
       "e2e",
       "clientdb",
-      "desktop"
+      "desktop",
+      "hooks"
     ]
   },
   "scripts": {
