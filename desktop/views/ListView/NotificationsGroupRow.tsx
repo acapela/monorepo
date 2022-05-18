@@ -29,11 +29,18 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
-import { NotificationDate } from "./NotificationDate";
 import { UIUnreadIndicator } from "./NotificationRow";
 import { NotificationsRows } from "./NotificationsRows";
-import { RowQuickActions } from "./RowQuickActions";
-import { UINotificationGroupTitle, UINotificationPreviewText, UISendersLabel, useStoreRowVisibility } from "./shared";
+import {
+  UIAnimatedHighlight,
+  UINotificationAppIcon,
+  UINotificationDate,
+  UINotificationGroupTitle,
+  UINotificationPreviewText,
+  UIRowQuickActions,
+  UISendersLabel,
+  useStoreRowVisibility,
+} from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -125,8 +132,10 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
             );
           })}
         <UIHolder ref={elementRef} $isFocused={isFocused}>
+          {isFocused && <UIAnimatedHighlight />}
+
           <UIUnreadIndicator $isUnread={isUnread} />
-          <NotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
+          <UINotificationAppIcon notification={firstNotification} displayUnreadNotification={isUnread} />
           <UISendersLabel data-tooltip={allPeople.length > 1 ? allPeople.join(", ") : undefined}>
             {allPeople.length === 1 && allPeople[0]}
             {allPeople.length > 1 && (
@@ -154,8 +163,10 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
             </UINotificationPreviewText>
           </UITitle>
           {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
-          <NotificationDate notification={firstNotification} />
-          {isFocused && <RowQuickActions target={group} />}
+
+          <UINotificationDate notification={firstNotification} key={firstNotification.id} />
+
+          {isFocused && <UIRowQuickActions target={group} />}
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
@@ -175,9 +186,8 @@ const UISendersPerson = styled.span`
 const UISendersMore = styled.span``;
 
 const UIHolder = styled.div<{ $isFocused: boolean }>`
+  position: relative;
   ${theme.box.items.listRow.size.padding};
-
-  ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
 
   ${NotificationAppIcon} {
     font-size: 24px;

@@ -28,9 +28,16 @@ import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnEleme
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
 
-import { NotificationDate } from "./NotificationDate";
-import { RowQuickActions } from "./RowQuickActions";
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel, useStoreRowVisibility } from "./shared";
+import {
+  UIAnimatedHighlight,
+  UINotificationAppIcon,
+  UINotificationDate,
+  UINotificationPreviewText,
+  UINotificationRowTitle,
+  UIRowQuickActions,
+  UISendersLabel,
+  useStoreRowVisibility,
+} from "./shared";
 import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
@@ -85,8 +92,10 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         $isFocused={isFocused}
         $preloadingState={devSettingsStore.debugPreloading && preloadingPreviewsBridgeChannel.get()[notification.url]}
       >
+        {isFocused && <UIAnimatedHighlight />}
+
         <UIUnreadIndicator $isUnread={notification.isUnread} />
-        <NotificationAppIcon notification={notification} />
+        <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
@@ -94,9 +103,8 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
 
         {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
 
-        <NotificationDate notification={notification} />
-
-        {isFocused && <RowQuickActions target={notification} />}
+        <UINotificationDate notification={notification} key={notification.id} />
+        {isFocused && <UIRowQuickActions target={notification} />}
       </UIHolder>
     </ActionTrigger>
   );
@@ -105,8 +113,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
 const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
   ${theme.box.items.listRow.size.padding}
   min-width: 0;
-
-  ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
+  position: relative;
 
   ${(props) => {
     const status = props.$preloadingState;
@@ -129,7 +136,6 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" 
     font-size: 24px;
   }
 `;
-
 export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
   height: 4px;
   width: 4px;
@@ -142,4 +148,5 @@ export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
     `}
 
   ${theme.radius.circle}
+  z-index: 1;
 `;

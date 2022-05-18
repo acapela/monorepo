@@ -118,7 +118,7 @@ export const NotificationAppIcon = styledObserver(function NotificationAppIcon({
   }
 
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       <UIIcon
         className={[className, notification.inner?.__typename].join(" ")}
         src={iconProps.icon}
