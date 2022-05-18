@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
-import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
@@ -16,9 +15,9 @@ import { Button } from "@aca/ui/buttons/Button";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
 
+import { BoardMode } from "./BoardMode/BoardMode";
 import { ListViewFooter } from "./ListViewFooter";
-import { NotificationRow } from "./NotificationRow";
-import { NotificationsGroupRow } from "./NotificationsGroupRow";
+import { NotificationOrGroupRow } from "./NotificationOrGroupRow";
 import { ListViewTopBar } from "./Topbar";
 import { ListViewZenOverlay } from "./ZenMode";
 import { ZeroNotifications } from "./ZeroNotifications";
@@ -85,7 +84,9 @@ export const ListView = observer(({ listId }: Props) => {
             <ZeroNotifications key={listId} />
           )}
 
-          {list && notificationGroups && notificationGroups.length > 0 && (
+          {list && <BoardMode list={list} />}
+
+          {false && list && notificationGroups && notificationGroups.length > 0 && (
             <UINotifications>
               <LazyChildrenRender
                 initialCount={300}
@@ -100,11 +101,9 @@ export const ListView = observer(({ listId }: Props) => {
                 }}
               >
                 {notificationGroups?.map((notificationOrGroup) => {
-                  if (getIsNotificationsGroup(notificationOrGroup)) {
-                    return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
-                  }
-
-                  return <NotificationRow key={notificationOrGroup.id} notification={notificationOrGroup} />;
+                  return (
+                    <NotificationOrGroupRow key={notificationOrGroup.id} notificationOrGroup={notificationOrGroup} />
+                  );
                 })}
               </LazyChildrenRender>
             </UINotifications>

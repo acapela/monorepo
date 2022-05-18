@@ -103,6 +103,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aca/desktop@workspace:desktop"
   dependencies:
+    "@dnd-kit/core": ^5.0.3
+    "@dnd-kit/sortable": ^6.0.1
     "@install-binary/ghr": ^0.14.0
     "@parcel/config-default": ^2.2.1
     "@parcel/core": ^2.2.1
@@ -2055,6 +2057,55 @@ __metadata:
     ajv: ^6.12.0
     ajv-keywords: ^3.4.1
   checksum: e1c3771af7fb934a0a985c31b901ece41a3015ef352b58e8e1c4bce691fe5792ebb65712e43ec70fa91a8fa0c929ccacf6b52c8f8de0fd83681db2cbeb62d143
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/accessibility@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@dnd-kit/accessibility@npm:3.0.0"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: feac6afea07ece1568df38973d7a1a1b994782a6df119983250c3849ca2a3818a7bcc67fe4c5d22b0a1cfde866081644d677d2188abed507b3eccc255da79320
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/core@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "@dnd-kit/core@npm:5.0.3"
+  dependencies:
+    "@dnd-kit/accessibility": ^3.0.0
+    "@dnd-kit/utilities": ^3.1.0
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 4ace7c45057ed0a7257ab16b8b0ebf76b135e8d5675d6dd285138b99a17b0edf7f57e02f251b1b17efb055bad32d7c90b96616b6c77b4e775afbfbaddea401c5
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/sortable@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@dnd-kit/sortable@npm:6.0.1"
+  dependencies:
+    "@dnd-kit/utilities": ^3.1.0
+    tslib: ^2.0.0
+  peerDependencies:
+    "@dnd-kit/core": ^5.0.2
+    react: ">=16.8.0"
+  checksum: beb80a229a50885a654ff15ee98af3b34b02826cadd6bc2f94b79dd103a140f70c35d0a3bf422adf87327573ff15dc3e26e9e5769e0f67b68943d8eaa9560183
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/utilities@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@dnd-kit/utilities@npm:3.1.0"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: b9cb87dd4a26389aeb667d6b11e3854e00479e4f2842f36d9abc4dfee67fd06e0f75525ab9475462d57b055094a7723169c95362affdd84b0e656b96424c0f8c
   languageName: node
   linkType: hard
 

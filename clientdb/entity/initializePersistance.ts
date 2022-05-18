@@ -110,6 +110,7 @@ export async function initializePersistance(
   const databaseName = getStorageDatabaseName(databaseHash);
 
   const allDatabasesInfoSystemTable = await openLocalDatabasesInfoTable(adapter, onTerminated);
+
   const existingDatabases = await allDatabasesInfoSystemTable.fetchAllItems();
 
   const existingDatabaseInfo = existingDatabases.find((dbInfo) => dbInfo.name === databaseName) ?? null;

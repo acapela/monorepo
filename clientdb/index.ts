@@ -49,6 +49,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
     db,
     onDestroyRequest
   );
+
   const persistedCacheManager = await initializePersistedKeyValueCache(cacheTable);
 
   const entityPersistedCacheManager = createEntitiesPersistedCache(persistedCacheManager);

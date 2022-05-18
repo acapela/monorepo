@@ -9,6 +9,7 @@ import {
   toJS,
   untracked,
 } from "mobx";
+import { unstable_batchedUpdates } from "react-dom";
 
 import { getUUID } from "@aca/shared/uuid";
 
@@ -277,4 +278,12 @@ export function lazyBox<T>(getter: () => T, options?: CreateObservableOptions) {
   };
 
   return lazyBox;
+}
+
+export function runInBatchedAction(callback: () => void) {
+  unstable_batchedUpdates(() => {
+    runInAction(() => {
+      callback();
+    });
+  });
 }
