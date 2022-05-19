@@ -40,6 +40,7 @@ services:
     environment:
       BACKEND_HOST: http://host.docker.internal:1337
       HASURA_HOST: http://host.docker.internal:8080
+      HOOKS_HOST: http://host.docker.internal:1338
     ports:
       - "3000:3000"
     volumes:
