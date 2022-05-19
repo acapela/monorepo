@@ -37,6 +37,11 @@ handle @return-to-app {
 	redir "acapela://authorize/{re.login.1}"
 }
 
+handle_path /api/backend/v1/linear/webhook {
+	rewrite * /linear
+	reverse_proxy {$HOOKS_HOST}
+}
+
 handle {
 	root * /var/www/frontend
 	file_server

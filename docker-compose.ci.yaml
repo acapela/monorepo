@@ -38,6 +38,7 @@ services:
     environment:
       BACKEND_HOST: http://172.17.0.1:1337
       HASURA_HOST: http://172.17.0.1:8080
+      HOOKS_HOST: http://172.17.0.1:1338
     ports:
       - "3000:3000"
     volumes:

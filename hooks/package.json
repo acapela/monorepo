@@ -5,20 +5,25 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
-    "start": "./scripts/start.sh",
-    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --sourcemap",
+    "start": "node ./dist/hooks/index.js",
+    "build": "esbuild ./src/index.ts --outdir=dist/hooks --target=node16 --bundle --platform=node --sourcemap",
     "upload:sourcemaps": "sentry-cli releases files ${VERSION} upload-sourcemaps ./dist --url-prefix /app/dist"
   },
   "peerDependencies": {
     "typescript": "*"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^2.19.0",
+    "@godaddy/terminus": "^4.10.2",
+    "@google-cloud/pubsub": "^2.19.4",
+    "@koa/router": "^10.1.1",
     "@sentry/node": "^6.19.7",
-    "koa": "^2.13.4"
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0"
   },
   "devDependencies": {
     "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^4.3.7",
+    "@types/koa__router": "^8.0.11",
     "esbuild": "^0.14.39",
     "ts-node-dev": "^1.1.8"
   }
