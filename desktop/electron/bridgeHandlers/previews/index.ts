@@ -16,7 +16,7 @@ import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
 import { markViewAttachedTime } from "./instrumentation";
 import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
-import { animatePreviewSwipe, setViewPosition } from "./position";
+import { animateHorizontalPreviewSwipe, animateVerticalPreviewSwipe, setViewPosition } from "./position";
 
 const log = makeLogger("BrowserView");
 
@@ -79,7 +79,16 @@ export function initPreviewHandler() {
           ? { topView: startView, bottomView: endView }
           : { topView: endView, bottomView: startView };
 
-      await animatePreviewSwipe({ ...viewProps, position: end.position, direction: animation });
+      await animateVerticalPreviewSwipe({ ...viewProps, position: end.position, direction: animation });
+    }
+
+    if (animation === "swipe-left" || animation === "swipe-right") {
+      const viewProps =
+        animation === "swipe-left"
+          ? { leftView: startView, rightView: endView }
+          : { leftView: endView, rightView: startView };
+
+      await animateHorizontalPreviewSwipe({ ...viewProps, position: end.position, direction: animation });
     }
   });
 

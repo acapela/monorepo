@@ -1,13 +1,13 @@
 import { makeAutoObservable } from "mobx";
 
-type Animations = "swipe-up" | "swipe-down" | "instant";
+export type HorizontalAnimations = "swipe-left" | "swipe-right";
+export type VerticalAnimations = "swipe-up" | "swipe-down";
+
+export type MovementAnimations = HorizontalAnimations | VerticalAnimations;
+export type Animations = "instant" | MovementAnimations;
 
 export const animationStore = makeAutoObservable<{
-  animation: Animations;
-  currentNotification: string | null;
-  targetNotification: string | null;
+  upcomingEmbedAnimation: Animations;
 }>({
-  currentNotification: null,
-  targetNotification: null,
-  animation: "instant",
+  upcomingEmbedAnimation: "instant",
 });

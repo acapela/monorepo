@@ -1,10 +1,8 @@
-import { autorun } from "mobx";
-
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { animationStore } from "@aca/desktop/domains/embed/animationStore";
 import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
-import { desktopRouter, getIsRouteActive, routeChangeAtom } from "@aca/desktop/routes";
+import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 
 export const focusPageView = createActionView((context) => {
@@ -63,9 +61,7 @@ export const focusPageView = createActionView((context) => {
         return null;
       }
 
-      animationStore.targetNotification = prevNotification?.url ?? null;
-      animationStore.currentNotification = view.notification.url;
-      animationStore.animation = "swipe-down";
+      animationStore.upcomingEmbedAnimation = "swipe-down";
 
       navigateToNotification(prevNotification);
 
@@ -74,15 +70,12 @@ export const focusPageView = createActionView((context) => {
     goToNextNotification() {
       const { nextNotification } = view;
 
-      animationStore.targetNotification = nextNotification?.url ?? null;
-      animationStore.currentNotification = view.notification.url;
-
       if (!nextNotification) {
-        animationStore.animation = "swipe-down";
+        animationStore.upcomingEmbedAnimation = "swipe-down";
         return view.goToPreviousNotification();
       }
 
-      animationStore.animation = "swipe-up";
+      animationStore.upcomingEmbedAnimation = "swipe-up";
       navigateToNotification(nextNotification);
 
       return nextNotification;
@@ -90,14 +83,4 @@ export const focusPageView = createActionView((context) => {
   };
 
   return view;
-});
-
-autorun(() => {
-  routeChangeAtom.reportObserved();
-
-  if (!getIsRouteActive("focus")) {
-    animationStore.targetNotification = null;
-    animationStore.currentNotification = null;
-    animationStore.animation = "instant";
-  }
 });

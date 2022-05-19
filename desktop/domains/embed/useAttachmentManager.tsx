@@ -4,6 +4,7 @@ import { useLayoutEffect } from "react";
 import { requestAttachPreview, startPreviewAnimation } from "@aca/desktop/bridge/preview";
 import { getIsRouteActive, routeChangeAtom } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
+import { MaybeCleanup } from "@aca/shared/types";
 
 import { animationStore } from "./animationStore";
 import { PreviewPosition } from ".";
@@ -13,51 +14,55 @@ interface Props {
   position: PreviewPosition | null;
 }
 
-let previousAttachedPreviewCleanup: ReturnType<typeof createCleanupObject>;
+let previousAttachedPreview: { url: string; cleanup: MaybeCleanup } | null | undefined;
 
 export function useAttachmentManager({ url, position }: Props) {
-  const { animation, currentNotification, targetNotification } = animationStore;
+  const { upcomingEmbedAnimation: animation } = animationStore;
 
   useLayoutEffect(() => {
     if (!position) return;
 
-    const cleanup = createCleanupObject();
+    const toCleanUp = createCleanupObject();
 
-    const isSameNotifications = !!currentNotification && currentNotification == targetNotification;
+    const isSameNotificationAsPrevious = url === previousAttachedPreview?.url;
 
     let animationPromise: Promise<void> | undefined;
 
-    if (animation === "instant" || !targetNotification) {
-      cleanup.next = requestAttachPreview({ url, position });
+    if (animation === "instant" || !previousAttachedPreview) {
+      toCleanUp.next = requestAttachPreview({ url, position });
     }
 
-    if (animation !== "instant" && targetNotification && currentNotification && !isSameNotifications) {
+    if (animation !== "instant" && !isSameNotificationAsPrevious && previousAttachedPreview) {
+      toCleanUp.next = requestAttachPreview({ url, position, skipPositionUpdate: true });
+
       animationPromise = startPreviewAnimation({
-        start: { url: currentNotification, position },
-        end: { url: targetNotification, position },
+        start: { url: previousAttachedPreview.url, position },
+        end: { url, position },
         animation,
       });
-
-      cleanup.next = requestAttachPreview({ url: targetNotification, position, skipPositionUpdate: true });
     }
 
-    // When the notifications
-    if (!isSameNotifications) {
-      (animationPromise ?? Promise.resolve()).then(() => previousAttachedPreviewCleanup?.clean());
-    }
+    // We should only detach previous view when notifications
+    if (!isSameNotificationAsPrevious) {
+      // We only try to cleanup the previous attached preview when all the animations are done
+      (animationPromise ?? Promise.resolve()).then(() => {
+        previousAttachedPreview?.cleanup?.();
 
-    return () => {
-      if (!isSameNotifications) {
-        previousAttachedPreviewCleanup = cleanup;
-      }
-    };
-  }, [url, animation, currentNotification, targetNotification, !!position]);
+        previousAttachedPreview = {
+          url,
+          cleanup: () => toCleanUp.clean(),
+        };
+      });
+    }
+  }, [url, animation, !!position]);
 }
 
 autorun(() => {
   routeChangeAtom.reportObserved();
 
-  if (!getIsRouteActive("focus")) {
-    previousAttachedPreviewCleanup?.clean();
+  if (!getIsRouteActive("focus") && !getIsRouteActive("compose")) {
+    previousAttachedPreview?.cleanup?.();
+    previousAttachedPreview = null;
+    animationStore.upcomingEmbedAnimation = "instant";
   }
 });

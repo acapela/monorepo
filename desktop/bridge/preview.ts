@@ -1,6 +1,7 @@
 import { createBridgeValue } from "@aca/desktop/bridge/base/persistance";
 import { PreviewLoadingPriority, PreviewPosition } from "@aca/desktop/domains/embed";
 
+import type { MovementAnimations } from "../domains/embed/animationStore";
 import { createChannelBridge } from "./base/channels";
 import { createInvokeBridge } from "./base/invoke";
 import { createInvokeWithCleanupBridge } from "./base/invokeWithCleanup";
@@ -34,7 +35,7 @@ export const updatePreviewPosition = createInvokeWithCleanupBridge<PreviewPositi
 export const startPreviewAnimation = createInvokeBridge<{
   start: PreviewPositionalData;
   end: PreviewPositionalData;
-  animation: "swipe-up" | "swipe-down";
+  animation: MovementAnimations;
 }>("start-preview-animation");
 
 interface PreviewEventBase {

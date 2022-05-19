@@ -61,7 +61,6 @@ export function getPreviewPositionFromElement(element: HTMLElement): PreviewPosi
 }
 
 interface Props {
-  notificationId: string;
   url: string;
 }
 
