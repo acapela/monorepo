@@ -58,20 +58,17 @@ export function initPreviewHandler() {
     };
   });
 
-  startPreviewAnimation.handle(async ({ start, end, animation }) => {
-    if (start.url === end.url) {
-      const endView = requestPreviewBrowserView.getExistingOnly(end.url);
-      if (!endView) return;
-      setViewPosition(endView, end.position);
+  startPreviewAnimation.handle(async ({ startUrl, endUrl, position, animation }) => {
+    if (startUrl === endUrl) {
+      // No animation needed if animations don't change
       return;
     }
 
-    const startView = requestPreviewBrowserView.getExistingOnly(start.url);
-    const endView = requestPreviewBrowserView.getExistingOnly(end.url);
+    const startView = requestPreviewBrowserView.getExistingOnly(startUrl);
+    const endView = requestPreviewBrowserView.getExistingOnly(endUrl);
 
-    if (!startView || !endView) {
-      return;
-    }
+    assert(startView, "start view not found to for animation");
+    assert(endView, "end view not found to for animation");
 
     if (animation === "swipe-up" || animation === "swipe-down") {
       const viewProps =
@@ -79,7 +76,7 @@ export function initPreviewHandler() {
           ? { topView: startView, bottomView: endView }
           : { topView: endView, bottomView: startView };
 
-      await animateVerticalPreviewSwipe({ ...viewProps, position: end.position, direction: animation });
+      await animateVerticalPreviewSwipe({ ...viewProps, position, direction: animation });
     }
 
     if (animation === "swipe-left" || animation === "swipe-right") {
@@ -88,7 +85,7 @@ export function initPreviewHandler() {
           ? { leftView: startView, rightView: endView }
           : { leftView: endView, rightView: startView };
 
-      await animateHorizontalPreviewSwipe({ ...viewProps, position: end.position, direction: animation });
+      await animateHorizontalPreviewSwipe({ ...viewProps, position, direction: animation });
     }
   });
 

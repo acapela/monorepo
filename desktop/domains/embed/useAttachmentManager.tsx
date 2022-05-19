@@ -36,8 +36,9 @@ export function useAttachmentManager({ url, position }: Props) {
       toCleanUp.next = requestAttachPreview({ url, position, skipPositionUpdate: true });
 
       animationPromise = startPreviewAnimation({
-        start: { url: previousAttachedPreview.url, position },
-        end: { url, position },
+        startUrl: previousAttachedPreview.url,
+        endUrl: url,
+        position,
         animation,
       });
     }

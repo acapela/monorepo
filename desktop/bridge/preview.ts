@@ -33,8 +33,9 @@ export const requestForceReloadPreview = createInvokeBridge<PreviewGenericData>(
 export const updatePreviewPosition = createInvokeWithCleanupBridge<PreviewPositionalData>("update-preview-position");
 
 export const startPreviewAnimation = createInvokeBridge<{
-  start: PreviewPositionalData;
-  end: PreviewPositionalData;
+  startUrl: string;
+  endUrl: string;
+  position: PreviewPosition;
   animation: MovementAnimations;
 }>("start-preview-animation");
 
