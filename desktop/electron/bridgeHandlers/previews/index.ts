@@ -4,6 +4,7 @@ import {
   requestForceReloadPreview,
   requestPreviewFocus,
   requestSetPreviewOnTopState,
+  startPreviewAnimation,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
@@ -15,7 +16,7 @@ import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
 import { markViewAttachedTime } from "./instrumentation";
 import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
-import { setViewPosition } from "./position";
+import { animatePreviewSwipe, setViewPosition } from "./position";
 
 const log = makeLogger("BrowserView");
 
@@ -31,7 +32,7 @@ export function initPreviewHandler() {
     return cancel;
   });
 
-  requestAttachPreview.handle(async ({ url, position }, event) => {
+  requestAttachPreview.handle(async ({ url, position, skipPositionUpdate }, event) => {
     assert(event, "Show browser view can only be called from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
@@ -46,13 +47,40 @@ export function initPreviewHandler() {
     markViewAttachedTime(browserView);
     const detach = attachPreview(browserView, targetWindow);
 
-    setViewPosition(browserView, position);
+    if (!skipPositionUpdate) {
+      setViewPosition(browserView, position);
+    }
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw
       detach();
       cancelPreloadingRequest();
     };
+  });
+
+  startPreviewAnimation.handle(async ({ start, end, animation }) => {
+    if (start.url === end.url) {
+      const endView = requestPreviewBrowserView.getExistingOnly(end.url);
+      if (!endView) return;
+      setViewPosition(endView, end.position);
+      return;
+    }
+
+    const startView = requestPreviewBrowserView.getExistingOnly(start.url);
+    const endView = requestPreviewBrowserView.getExistingOnly(end.url);
+
+    if (!startView || !endView) {
+      return;
+    }
+
+    if (animation === "swipe-up" || animation === "swipe-down") {
+      const viewProps =
+        animation === "swipe-up"
+          ? { topView: startView, bottomView: endView }
+          : { topView: endView, bottomView: startView };
+
+      await animatePreviewSwipe({ ...viewProps, position: end.position, direction: animation });
+    }
   });
 
   updatePreviewPosition.handle(async ({ position, url }) => {

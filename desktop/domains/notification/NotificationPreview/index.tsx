@@ -34,5 +34,5 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
     });
   }, [notification]);
 
-  return <Embed key={notification.id} url={url} />;
+  return <Embed key={notification.id} url={url} notificationId={notification.id} />;
 });

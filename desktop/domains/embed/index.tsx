@@ -6,7 +6,6 @@ import styled from "styled-components";
 import {
   preloadingPreviewsBridgeChannel,
   previewEventsBridge,
-  requestAttachPreview,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
@@ -22,6 +21,7 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
+import { useAttachmentManager } from "./useAttachmentManager";
 import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
 export interface PreviewPosition {
@@ -60,7 +60,12 @@ export function getPreviewPositionFromElement(element: HTMLElement): PreviewPosi
   };
 }
 
-export const Embed = observer(function Preview({ url }: { url: string }) {
+interface Props {
+  notificationId: string;
+  url: string;
+}
+
+export const Embed = observer(function Preview({ url }: Props) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -89,6 +94,8 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     });
   }, []);
 
+  useAttachmentManager({ url, position });
+
   useDependencyChangeEffect(() => {
     if (!position) return;
     return updatePreviewPosition({ position, url });
@@ -102,12 +109,10 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     if (!position) return;
     if (hasError) return;
 
-    const stopAttaching = requestAttachPreview({ url, position });
     const cleanMouseManagement = handlePreviewMouseManagement(url, previewElement);
 
     return () => {
       cleanMouseManagement();
-      stopAttaching?.();
     };
   }, [
     url,

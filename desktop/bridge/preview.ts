@@ -11,9 +11,11 @@ export const requestEmbedPreload = createInvokeWithCleanupBridge<
   PreviewGenericData & { priority: PreviewLoadingPriority }
 >("preload-preview");
 
-export const requestAttachPreview = createInvokeWithCleanupBridge<PreviewGenericData & { position: PreviewPosition }>(
-  "attach-preview"
-);
+type PreviewPositionalData = PreviewGenericData & { position: PreviewPosition };
+
+export const requestAttachPreview = createInvokeWithCleanupBridge<
+  PreviewPositionalData & { skipPositionUpdate?: boolean }
+>("attach-preview");
 
 export const requestPreviewFocus = createInvokeWithCleanupBridge<PreviewGenericData>("preview-focus");
 
@@ -27,8 +29,13 @@ export const requestSetPreviewOnTopState =
 
 export const requestForceReloadPreview = createInvokeBridge<PreviewGenericData>("requestForceReloadPreview");
 
-export const updatePreviewPosition =
-  createInvokeWithCleanupBridge<{ url: string; position: PreviewPosition }>("update-preview-position");
+export const updatePreviewPosition = createInvokeWithCleanupBridge<PreviewPositionalData>("update-preview-position");
+
+export const startPreviewAnimation = createInvokeBridge<{
+  start: PreviewPositionalData;
+  end: PreviewPositionalData;
+  animation: "swipe-up" | "swipe-down";
+}>("start-preview-animation");
 
 interface PreviewEventBase {
   url: string;

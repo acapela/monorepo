@@ -1,6 +1,8 @@
 import { BrowserView, BrowserWindow } from "electron";
+import { range, rangeRight } from "lodash";
 
 import { PreviewPosition } from "@aca/desktop/domains/embed";
+import { wait } from "@aca/shared/time";
 
 import { evaluateFunctionInWebContents } from "../../utils/webContentsLink";
 import { getWindowMainView } from "../../windows/mainView";
@@ -37,14 +39,129 @@ export function updateWindowViewsPosition(window: BrowserWindow) {
   });
 }
 
-export function setViewPosition(view: BrowserView, position: PreviewPosition) {
+export function setViewPosition(view: BrowserView, position: PreviewPosition, offsetLeft?: number) {
   viewPositionMap.set(view, position);
 
   const window = getBrowserViewParentWindow(view);
 
   if (!window) return;
 
-  updateBrowserViewSize(view, window, position);
+  updateBrowserViewSize(view, window, position, offsetLeft);
+}
+
+export async function shiftVerticalViewPosition(view: BrowserView, position: PreviewPosition, isScrollingUp?: boolean) {
+  viewPositionMap.set(view, position);
+
+  const window = getBrowserViewParentWindow(view);
+
+  if (!window) return;
+
+  assertViewIsAttachedToWindow(view, window);
+
+  // Get desired distance to all the edges. Then get window size and calculate needed size rect.
+  const { top, right, bottom, left } = position;
+
+  const { width, height } = await getWindowClientBounds(window);
+
+  const ANIMATION_DURATION_IN_MS = 160;
+  const ANIMATION_STEP_DURATION_IN_MS = 8;
+
+  const AMOUNT_OF_STEPS = Math.round(ANIMATION_DURATION_IN_MS / ANIMATION_STEP_DURATION_IN_MS);
+
+  const previewHeight = height - top - bottom;
+
+  const offsetPerStep = previewHeight / AMOUNT_OF_STEPS;
+
+  const offsets = !isScrollingUp
+    ? rangeRight(0, offsetPerStep * AMOUNT_OF_STEPS, offsetPerStep)
+    : range(0, offsetPerStep * AMOUNT_OF_STEPS, offsetPerStep);
+  const promises: Promise<void>[] = [];
+  for (const offset of offsets) {
+    const electronRect = {
+      x: left,
+      y: top - (isScrollingUp ? -1 : 1) * Math.round(offset),
+      width: width - left - right,
+      height: height - top - bottom,
+    };
+
+    view.setBounds(electronRect);
+
+    const waitPromise = wait(ANIMATION_STEP_DURATION_IN_MS);
+    promises.push(waitPromise);
+    await waitPromise;
+  }
+
+  return await Promise.all(promises);
+}
+
+export async function animatePreviewSwipe({
+  topView,
+  bottomView,
+  position,
+  direction,
+}: {
+  topView: BrowserView;
+  bottomView: BrowserView;
+  position: PreviewPosition;
+  direction: "swipe-up" | "swipe-down";
+}) {
+  viewPositionMap.set(topView, position);
+  viewPositionMap.set(bottomView, position);
+
+  const window = getBrowserViewParentWindow(topView);
+
+  if (!window) return;
+
+  // assertViewIsAttachedToWindow(topView, window);
+  // assertViewIsAttachedToWindow(bottomView, window);
+
+  // Get desired distance to all the edges. Then get window size and calculate needed size rect.
+  const { top, right, bottom, left } = position;
+
+  const { width, height } = await getWindowClientBounds(window);
+
+  const ANIMATION_DURATION_IN_MS = 200;
+  const ANIMATION_STEP_DURATION_IN_MS = 8;
+
+  const AMOUNT_OF_STEPS = Math.round(ANIMATION_DURATION_IN_MS / ANIMATION_STEP_DURATION_IN_MS);
+
+  const previewHeight = height - top - bottom;
+
+  const offsetPerStep = previewHeight / AMOUNT_OF_STEPS;
+
+  const offsets = [...range(0, offsetPerStep * AMOUNT_OF_STEPS, offsetPerStep), width];
+
+  const promises: Promise<void>[] = [];
+
+  for (let i = 0; i < offsets.length; i++) {
+    const inverseIndex = offsets.length - 1 - i;
+    const topOffset = Math.round(direction === "swipe-up" ? -1 * offsets[i] : -1 * offsets[inverseIndex]);
+    const bottomOffset = Math.round(direction === "swipe-up" ? offsets[inverseIndex] : offsets[i]);
+
+    const topElectronRect = {
+      x: left,
+      y: top + topOffset,
+      width: width - left - right,
+      height: height - top - bottom,
+    };
+
+    const bottomElectronRect = {
+      x: left,
+      y: top + bottomOffset,
+      width: width - left - right,
+      height: height - top - bottom,
+    };
+
+    topView.setBounds(topElectronRect);
+    bottomView.setBounds(bottomElectronRect);
+
+    const waitPromise = wait(ANIMATION_STEP_DURATION_IN_MS);
+    promises.push(waitPromise);
+
+    await waitPromise;
+  }
+
+  return await Promise.all(promises);
 }
 
 export function handleWindowViewsPositioning(browserWindow: BrowserWindow) {
@@ -85,7 +202,12 @@ async function getWindowClientBounds(browserWindow: BrowserWindow): Promise<{ wi
   return { width, height };
 }
 
-async function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
+async function updateBrowserViewSize(
+  view: BrowserView,
+  window: BrowserWindow,
+  position: PreviewPosition,
+  leftOffset?: number
+) {
   assertViewIsAttachedToWindow(view, window);
 
   // Get desired distance to all the edges. Then get window size and calculate needed size rect.
@@ -94,7 +216,7 @@ async function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, p
   const { width, height } = await getWindowClientBounds(window);
 
   const electronRect = {
-    x: left,
+    x: left - (leftOffset ?? 0),
     y: top,
     width: width - left - right,
     height: height - top - bottom,

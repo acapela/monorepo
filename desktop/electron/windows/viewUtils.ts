@@ -13,7 +13,7 @@ export function assertViewIsNotAttachedToWindow(view: BrowserView, window: Brows
 }
 
 export function assertViewIsAttachedToWindow(view: BrowserView, window: BrowserWindow) {
-  log.assert(getIsViewAttachedToWindow(view, window), "Requested view is already attached to the window");
+  log.assert(getIsViewAttachedToWindow(view, window), "Requested view is not attached to the window");
 }
 
 export function getBrowserViewParentWindow(view: BrowserView) {
