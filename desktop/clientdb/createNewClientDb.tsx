@@ -33,6 +33,8 @@ import { notificationNotionReminderEntity } from "./notification/notion/reminder
 import { notificationNotionUserInvitedEntity } from "./notification/notion/userInvited";
 import { notificationNotionUserMentionedEntity } from "./notification/notion/userMentioned";
 import { notificationSlackMessageEntity } from "./notification/slack/message";
+import { notificationStatusEntity } from "./notificationStatus";
+import { notificationStatusLabelEntity } from "./notificationStatusLabel";
 import { slackTeamEntity } from "./slackTeam";
 import { teamEntity } from "./team";
 import { teamMemberEntity } from "./teamMember";
@@ -88,6 +90,9 @@ export const appClientDbEntities = {
   notificationClickUp: notificationClickUpEntity,
 
   notification: notificationEntity,
+
+  notificationStatus: notificationStatusEntity,
+  notificationStatusLabel: notificationStatusLabelEntity,
 
   account: accountEntity,
 

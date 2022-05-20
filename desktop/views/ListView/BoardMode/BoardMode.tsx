@@ -2,7 +2,11 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+import { getDb } from "@aca/desktop/clientdb";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
+import { accountStore } from "@aca/desktop/store/account";
+import { authStore } from "@aca/desktop/store/auth";
+import { Button } from "@aca/ui/buttons/Button";
 
 import { BoardSortableContext } from "./BoardSortableContext";
 import { BoardColumn } from "./Column";
@@ -17,9 +21,7 @@ interface Props {
 export const BoardMode = observer(function BoardMode({ list }: Props) {
   const notificationGroups = list.getAllGroupedNotifications();
 
-  const first = notificationGroups.slice(0, 10);
-  const last = notificationGroups.slice(11, 15);
-  const next = notificationGroups.slice(16);
+  const labels = getDb().notificationStatusLabel.all;
 
   const holderRef = useRef<HTMLDivElement>(null);
 
@@ -31,10 +33,20 @@ export const BoardMode = observer(function BoardMode({ list }: Props) {
   return (
     <BoardSortableContext items={notificationGroups}>
       <UIHolder ref={holderRef}>
-        <BoardColumn id="Inbox" items={first} />
-        <BoardColumn id="Next" items={last} />
-        <BoardColumn id="Free moment" items={next} />
-        <BoardColumn id="Add column +" items={[]} />
+        <BoardColumn allNotifications={notificationGroups} label={null} />
+        {labels.map((label) => {
+          return <BoardColumn allNotifications={notificationGroups} label={label} />;
+        })}
+        <Button
+          onClick={() => {
+            getDb().notificationStatusLabel.create({
+              name: `Label - ${Math.random()}`,
+              order: "A",
+            });
+          }}
+        >
+          Add Label
+        </Button>
       </UIHolder>
     </BoardSortableContext>
   );

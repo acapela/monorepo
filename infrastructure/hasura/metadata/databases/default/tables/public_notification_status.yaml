@@ -1,0 +1,48 @@
+table:
+  schema: public
+  name: notification_status
+insert_permissions:
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-User-Id
+      columns:
+        - id
+        - notification_id
+        - order
+        - status_label_id
+        - user_id
+      backend_only: false
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - id
+        - notification_id
+        - order
+        - status_label_id
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - order
+        - status_label_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id

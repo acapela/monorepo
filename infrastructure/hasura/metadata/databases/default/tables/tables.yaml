@@ -33,6 +33,8 @@
 - "!include public_notification_notion_user_invited.yaml"
 - "!include public_notification_notion_user_mentioned.yaml"
 - "!include public_notification_slack_message.yaml"
+- "!include public_notification_status.yaml"
+- "!include public_notification_status_label.yaml"
 - "!include public_notion_space.yaml"
 - "!include public_notion_space_user.yaml"
 - "!include public_slack_conversation_type.yaml"

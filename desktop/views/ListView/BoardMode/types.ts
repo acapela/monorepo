@@ -1,10 +1,11 @@
 import { Active, Over } from "@dnd-kit/core";
 
+import { NotificationStatusLabelEntity } from "@aca/desktop/clientdb/notificationStatusLabel";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 
 export interface SortableItemData {
   item: NotificationOrGroup;
-  sortable?: SortableInfo;
+  label: NotificationStatusLabelEntity | null;
 }
 
 interface SortableInfo {
@@ -16,9 +17,10 @@ export function convertEventInfo(info: Active | Over) {
   const data = info.data.current!;
   const id = info.id;
   const item = data.item as NotificationOrGroup;
+  const label = data.label as NotificationStatusLabelEntity | null;
   const sortable = data.sortable as SortableInfo;
 
-  return { id, item, sortable, listId: sortable.containerId, index: sortable.index };
+  return { id, item, sortable, label, index: sortable?.index ?? 0 };
 }
 
 export function hasItemInActive(info: Active) {

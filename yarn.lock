@@ -235,6 +235,7 @@ __metadata:
     "@types/jsonwebtoken": ^8.5.8
     "@types/prompts": ^2.4.0
     analytics-node: ^6.0.0
+    any-base: ^1.1.0
     chrono-node: ^2.3.6
     clipboardy: 2.3.0
     color: ^4.2.0
@@ -9158,6 +9159,13 @@ __metadata:
   version: 6.1.0
   resolution: "ansi-styles@npm:6.1.0"
   checksum: 7a7f8528c07a9d20c3a92bccd2b6bc3bb4d26e5cb775c02826921477377bd495d615d61f710d56216344b6238d1d11ef2b0348e146c5b128715578bfb3217229
+  languageName: node
+  linkType: hard
+
+"any-base@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "any-base@npm:1.1.0"
+  checksum: c1fd040de52e710e2de7d9ae4df52bac589f35622adb24686c98ce21c7b824859a8db9614bc119ed8614f42fd08918b2612e6a6c385480462b3100a1af59289d
   languageName: node
   linkType: hard
 

@@ -23,6 +23,7 @@ import { IS_DEV } from "@aca/shared/dev";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { createDateTimeout } from "@aca/shared/time";
 
+import { notificationStatusEntity } from "../notificationStatus";
 import { innerEntities } from "./inner";
 import { NotificationNotionEntity } from "./notion/baseNotification";
 
@@ -124,6 +125,8 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
     const snoozePassedAtom = createAtom("Snooze change");
 
+    const notificationStatus = getEntity(notificationStatusEntity);
+
     cleanup.next = autorunEffect(function handleSettingUpSnoozePassedSignal() {
       // Note: Not sure about this one
       if (notification.resolved_at) return;
@@ -155,6 +158,15 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
           return false;
         }
         return !notification.last_seen_at;
+      },
+
+      get status() {
+        const status = notificationStatus.findFirst({ notification_id: notification.id });
+
+        return status;
+      },
+      get statusLabel() {
+        return connections.status?.label ?? null;
       },
       resolve() {
         if (notification.resolved_at) return;

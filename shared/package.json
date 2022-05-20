@@ -9,6 +9,7 @@
     "@sentry/nextjs": "^6.19.7",
     "@sindresorhus/slugify": "^1.1.2",
     "analytics-node": "^6.0.0",
+    "any-base": "^1.1.0",
     "chrono-node": "^2.3.6",
     "color": "^4.2.0",
     "customerio-node": "^3.1.4",

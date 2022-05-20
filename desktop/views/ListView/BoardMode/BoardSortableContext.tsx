@@ -1,7 +1,12 @@
 import { DndContext, MeasuringStrategy, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
+import { action, runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode } from "react";
 
+import { getDb } from "@aca/desktop/clientdb";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationStatusLabelEntity } from "@aca/desktop/clientdb/notificationStatusLabel";
+import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { runInBatchedAction } from "@aca/shared/mobx/utils";
 
@@ -12,6 +17,46 @@ import { convertEventInfo, hasItemInActive } from "./types";
 interface Props {
   items: NotificationOrGroup[];
   children: ReactNode;
+}
+
+function updateNotificationLabel(notification: NotificationEntity, label: NotificationStatusLabelEntity | null) {
+  const currentStatus = notification.status;
+
+  if (!currentStatus && !label) return;
+
+  if (!label && currentStatus) {
+    currentStatus.remove();
+    return;
+  }
+
+  if (label && !currentStatus) {
+    getDb().notificationStatus.create({ notification_id: notification.id, status_label_id: label.id });
+  }
+
+  if (label && currentStatus) {
+    currentStatus.update({ status_label_id: label.id });
+  }
+}
+
+function flattenNotificationOrGroup(notificationOrGroup: NotificationOrGroup) {
+  if (getIsNotificationsGroup(notificationOrGroup)) {
+    return notificationOrGroup.notifications;
+  }
+
+  return [notificationOrGroup];
+}
+
+function updateNotificationsOrGroupLabel(
+  notificationOrGroup: NotificationOrGroup,
+  label: NotificationStatusLabelEntity | null
+) {
+  const notifications = flattenNotificationOrGroup(notificationOrGroup);
+
+  runInAction(() => {
+    for (const notification of notifications) {
+      updateNotificationLabel(notification, label);
+    }
+  });
 }
 
 export const BoardSortableContext = observer(function BoardSortableContext({ children }: Props) {
@@ -28,20 +73,29 @@ export const BoardSortableContext = observer(function BoardSortableContext({ chi
           // measure: cachedMeasureRect,
         },
       }}
-      onDragEnd={({ over }) => {
+      onDragEnd={action(({ over, active }) => {
         if (!over) {
           boardModeStore.dragPosition = null;
           return;
         }
 
+        const { label: overLabel } = convertEventInfo(over);
+        const { item: activeItem } = convertEventInfo(active);
+
+        if (!activeItem) {
+          console.warn("no item");
+        }
+
+        updateNotificationsOrGroupLabel(activeItem, overLabel);
+
         // boardModeStore.dragPosition = { item: activeInfo.item, index: overInfo.index, listId: overInfo.listId };
         boardModeStore.dragPosition = null;
-      }}
+      })}
       onDragStart={(event) => {
-        const { item, listId, index } = convertEventInfo(event.active);
+        const { item, label, index } = convertEventInfo(event.active);
 
         runInBatchedAction(() => {
-          boardModeStore.dragPosition = { item, index: index, listId };
+          boardModeStore.dragPosition = { item, index: index, label };
         });
       }}
       onDragOver={(event) => {
@@ -66,11 +120,11 @@ export const BoardSortableContext = observer(function BoardSortableContext({ chi
 
         const overInfo = convertEventInfo(over);
 
-        if (boardModeStore.dragPosition?.listId === overInfo.listId) {
+        if (boardModeStore.dragPosition?.label === overInfo.label) {
           return;
         }
 
-        boardModeStore.dragPosition = { item: activeInfo.item, index: overInfo.index, listId: overInfo.listId };
+        boardModeStore.dragPosition = { item: activeInfo.item, index: overInfo.index, label: overInfo.label };
       }}
     >
       <BoardDragOverlay />

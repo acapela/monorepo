@@ -1,5 +1,6 @@
 import { makeAutoObservable, observable } from "mobx";
 
+import { NotificationStatusLabelEntity } from "@aca/desktop/clientdb/notificationStatusLabel";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 
 export interface DragReplacePreview {
@@ -24,20 +25,16 @@ export interface DraggedItemInfo {
 
 export const boardModeStore = makeAutoObservable(
   {
-    draggedItem: null as DraggedItemInfo | null,
-    dragReplacePreview: null as DragReplacePreview | null,
     dragPosition: null as TempPosition | null,
   },
   {
-    draggedItem: observable.ref,
-    dragReplacePreview: observable.ref,
     dragPosition: observable.ref,
   }
 );
 
 export interface TempPosition {
   item: NotificationOrGroup;
-  listId: string;
+  label: NotificationStatusLabelEntity | null;
   index: number;
 }
 
