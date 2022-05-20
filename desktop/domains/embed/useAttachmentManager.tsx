@@ -1,7 +1,8 @@
 import { autorun } from "mobx";
 import { useLayoutEffect } from "react";
 
-import { requestAttachPreview, startPreviewAnimation } from "@aca/desktop/bridge/preview";
+import { requestAttachPreview, requestSetPreviewOnTopState, startPreviewAnimation } from "@aca/desktop/bridge/preview";
+import { focusMainViewRequest } from "@aca/desktop/bridge/system";
 import { getIsRouteActive, routeChangeAtom } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { MaybeCleanup } from "@aca/shared/types";
@@ -33,7 +34,9 @@ export function useAttachmentManager({ url, position }: Props) {
     }
 
     if (animation !== "instant" && !isSameNotificationAsPrevious && previousAttachedPreview) {
-      const offScreenPosition: PreviewPosition = { top: 5000, bottom: 0, left: 5000, right: 0 };
+      // Prevents outgoing embed animation from appearing over to top bar
+      focusMainViewRequest();
+      requestSetPreviewOnTopState({ url: previousAttachedPreview.url, state: "app-on-top" });
 
       animationPromise = startPreviewAnimation({
         startUrl: previousAttachedPreview.url,
@@ -42,7 +45,7 @@ export function useAttachmentManager({ url, position }: Props) {
         animation,
       });
 
-      toCleanUp.next = requestAttachPreview({ url, position: offScreenPosition });
+      toCleanUp.next = requestAttachPreview({ url, position });
     }
 
     // We should only detach previous view when notifications
