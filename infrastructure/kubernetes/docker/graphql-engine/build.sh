@@ -18,3 +18,5 @@ echo "image: $image_name_version"
 
 docker buildx build --platform linux/amd64 -t $image_name_version .
 docker tag $image_name_version $image_name
+docker push $image_name_version
+docker push $image_name
