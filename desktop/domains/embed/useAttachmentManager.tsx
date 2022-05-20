@@ -33,7 +33,7 @@ export function useAttachmentManager({ url, position }: Props) {
     }
 
     if (animation !== "instant" && !isSameNotificationAsPrevious && previousAttachedPreview) {
-      toCleanUp.next = requestAttachPreview({ url, position, skipPositionUpdate: true });
+      const offScreenPosition: PreviewPosition = { top: 5000, bottom: 0, left: 5000, right: 0 };
 
       animationPromise = startPreviewAnimation({
         startUrl: previousAttachedPreview.url,
@@ -41,6 +41,8 @@ export function useAttachmentManager({ url, position }: Props) {
         position,
         animation,
       });
+
+      toCleanUp.next = requestAttachPreview({ url, position: offScreenPosition });
     }
 
     // We should only detach previous view when notifications

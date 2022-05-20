@@ -28,6 +28,13 @@ import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "../../
  */
 export const DEFAULT_EXPECTED_PREVIEW_POSITION: PreviewPosition = { top: 52, left: 0, bottom: 38, right: 0 };
 
+export const OFFSCREEN_PREVIEW_POSITION: PreviewPosition = {
+  top: 50_000,
+  left: 0,
+  bottom: 38,
+  right: 0,
+};
+
 const viewPositionMap = new WeakMap<BrowserView, PreviewPosition>();
 
 export function updateWindowViewsPosition(window: BrowserWindow) {
@@ -40,14 +47,14 @@ export function updateWindowViewsPosition(window: BrowserWindow) {
   });
 }
 
-export function setViewPosition(view: BrowserView, position: PreviewPosition, offsetLeft?: number) {
+export function setViewPosition(view: BrowserView, position: PreviewPosition) {
   viewPositionMap.set(view, position);
 
   const window = getBrowserViewParentWindow(view);
 
   if (!window) return;
 
-  updateBrowserViewSize(view, window, position, offsetLeft);
+  updateBrowserViewSize(view, window, position);
 }
 
 const ANIMATION_DURATION_IN_MS = 200;
@@ -207,12 +214,7 @@ async function getWindowClientBounds(browserWindow: BrowserWindow): Promise<{ wi
   return { width, height };
 }
 
-async function updateBrowserViewSize(
-  view: BrowserView,
-  window: BrowserWindow,
-  position: PreviewPosition,
-  leftOffset?: number
-) {
+async function updateBrowserViewSize(view: BrowserView, window: BrowserWindow, position: PreviewPosition) {
   assertViewIsAttachedToWindow(view, window);
 
   // Get desired distance to all the edges. Then get window size and calculate needed size rect.
@@ -221,7 +223,7 @@ async function updateBrowserViewSize(
   const { width, height } = await getWindowClientBounds(window);
 
   const electronRect = {
-    x: left - (leftOffset ?? 0),
+    x: left,
     y: top,
     width: width - left - right,
     height: height - top - bottom,

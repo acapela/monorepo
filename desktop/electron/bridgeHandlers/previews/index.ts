@@ -32,7 +32,7 @@ export function initPreviewHandler() {
     return cancel;
   });
 
-  requestAttachPreview.handle(async ({ url, position, skipPositionUpdate }, event) => {
+  requestAttachPreview.handle(async ({ url, position }, event) => {
     assert(event, "Show browser view can only be called from client side", log.error);
 
     const targetWindow = getSourceWindowFromIPCEvent(event);
@@ -42,14 +42,28 @@ export function initPreviewHandler() {
 
     const { cancel: cancelPreloadingRequest, item: browserView } = requestPreviewBrowserView(url);
 
+    // console.log("*********************** requestPreviewBrowserView DONE");
+    // await wait(10 * timeDuration.second);
+
+    setViewPosition(browserView, position);
+
+    // console.log("*********************** setViewPosition DONE");
+    // await wait(10 * timeDuration.second);
+
     loadPreviewIfNeeded(browserView, url);
 
+    // console.log("*********************** loadPreviewIfNeeded DONE");
+    // await wait(10 * timeDuration.second);
+
     markViewAttachedTime(browserView);
+
+    // console.log("*********************** markViewAttachedTime DONE");
+    // await wait(10 * timeDuration.second);
+
     const detach = attachPreview(browserView, targetWindow);
 
-    if (!skipPositionUpdate) {
-      setViewPosition(browserView, position);
-    }
+    // console.log("*********************** attachPreview DONE");
+    // await wait(10 * timeDuration.second);
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw

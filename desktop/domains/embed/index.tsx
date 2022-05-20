@@ -1,4 +1,5 @@
 import { AnimatePresence } from "framer-motion";
+import { isEqual } from "lodash";
 import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -64,6 +65,8 @@ interface Props {
   url: string;
 }
 
+let previousPosition: PreviewPosition | null = null;
+
 export const Embed = observer(function Preview({ url }: Props) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -97,6 +100,9 @@ export const Embed = observer(function Preview({ url }: Props) {
 
   useDependencyChangeEffect(() => {
     if (!position) return;
+    if (isEqual(position, previousPosition)) return;
+    previousPosition = position;
+    console.error("******* UPDATE VIEW POSITION", url, position);
     return updatePreviewPosition({ position, url });
   }, [position]);
 
