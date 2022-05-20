@@ -3,7 +3,7 @@ import Redlock from "redlock";
 
 import { db } from "@aca/db";
 
-const redisClient = new Client({ host: "localhost" });
+const redisClient = new Client({ host: process.env.REDIS_HOST });
 const redlock = new Redlock([redisClient], {
   retryCount: 100,
 });

@@ -66,6 +66,7 @@ const requiredEnvVarNamesBackend = [
   "CLICKUP_OAUTH_SECRET",
   "CLICKUP_CLIENT_ID",
   "CLICKUP_CLIENT_SECRET",
+  "REDIS_HOST",
 ] as const;
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
