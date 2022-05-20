@@ -1,5 +1,5 @@
 import { BrowserView, BrowserWindow } from "electron";
-import { range } from "lodash";
+import { GenerateSpringFrames } from "spring-easing";
 
 import { PreviewPosition } from "@aca/desktop/domains/embed";
 import type { HorizontalAnimations, VerticalAnimations } from "@aca/desktop/domains/embed/animationStore";
@@ -28,13 +28,6 @@ import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "../../
  */
 export const DEFAULT_EXPECTED_PREVIEW_POSITION: PreviewPosition = { top: 52, left: 0, bottom: 38, right: 0 };
 
-export const OFFSCREEN_PREVIEW_POSITION: PreviewPosition = {
-  top: 50_000,
-  left: 0,
-  bottom: 38,
-  right: 0,
-};
-
 const viewPositionMap = new WeakMap<BrowserView, PreviewPosition>();
 
 export function updateWindowViewsPosition(window: BrowserWindow) {
@@ -57,10 +50,15 @@ export function setViewPosition(view: BrowserView, position: PreviewPosition) {
   updateBrowserViewSize(view, window, position);
 }
 
-const ANIMATION_DURATION_IN_MS = 200;
-const ANIMATION_STEP_DURATION_IN_MS = 8;
+const AMOUNT_OF_ANIMATION_STEPS = 120;
 
-const AMOUNT_OF_ANIMATION_STEPS = Math.round(ANIMATION_DURATION_IN_MS / ANIMATION_STEP_DURATION_IN_MS);
+const [springAnimationFrames] = GenerateSpringFrames({
+  numPoints: AMOUNT_OF_ANIMATION_STEPS,
+  easing: "spring(1, 80, 20, 0)",
+});
+
+const ANIMATION_DURATION_IN_MS = 350;
+const ANIMATION_STEP_DURATION_IN_MS = Math.round(ANIMATION_DURATION_IN_MS / springAnimationFrames.length);
 
 export async function animateVerticalPreviewSwipe({
   topView,
@@ -82,25 +80,22 @@ export async function animateVerticalPreviewSwipe({
 
   // Get desired distance to all the edges. Then get window size and calculate needed size rect.
   const { top, right, bottom, left } = position;
-
   const { width, height } = await getWindowClientBounds(window);
-
   const previewHeight = height - top - bottom;
-
-  const offsetPerStep = previewHeight / AMOUNT_OF_ANIMATION_STEPS;
-
-  const offsets = [...range(0, previewHeight, offsetPerStep), previewHeight];
-
   const basePositionProps = {
     x: left,
     width: width - left - right,
     height: height - top - bottom,
   };
 
-  for (let i = 0; i < offsets.length; i++) {
-    const inverseIndex = offsets.length - 1 - i;
-    const topOffset = Math.round(direction === "swipe-up" ? -1 * offsets[i] : -1 * offsets[inverseIndex]);
-    const bottomOffset = Math.round(direction === "swipe-up" ? offsets[inverseIndex] : offsets[i]);
+  const offsetTuples = springAnimationFrames.map((f) => [
+    Math.round(f * previewHeight),
+    previewHeight - Math.round(f * previewHeight),
+  ]);
+
+  for (const [downDirectionHeightOffset, upDirectionHeightOffset] of offsetTuples) {
+    const topOffset = direction === "swipe-up" ? -1 * downDirectionHeightOffset : -1 * upDirectionHeightOffset;
+    const bottomOffset = direction === "swipe-up" ? upDirectionHeightOffset : downDirectionHeightOffset;
 
     const topElectronRect = {
       y: top + topOffset,
@@ -144,20 +139,20 @@ export async function animateHorizontalPreviewSwipe({
 
   const previewWidth = width - left - right;
 
-  const offsetPerStep = previewWidth / AMOUNT_OF_ANIMATION_STEPS;
-
-  const offsets = [...range(0, previewWidth, offsetPerStep), previewWidth];
-
   const basePositionProps = {
     y: top,
     width: previewWidth,
     height: height - top - bottom,
   };
 
-  for (let i = 0; i < offsets.length; i++) {
-    const inverseIndex = offsets.length - 1 - i;
-    const leftOffset = Math.round(direction === "swipe-left" ? -1 * offsets[i] : -1 * offsets[inverseIndex]);
-    const rightOffset = Math.round(direction === "swipe-left" ? offsets[inverseIndex] : offsets[i]);
+  const offsetTuples = springAnimationFrames.map((f) => [
+    Math.round(f * previewWidth),
+    previewWidth - Math.round(f * previewWidth),
+  ]);
+
+  for (const [rightDirectionWidthOffset, leftDirectionWidthOffset] of offsetTuples) {
+    const leftOffset = direction === "swipe-left" ? -1 * rightDirectionWidthOffset : -1 * leftDirectionWidthOffset;
+    const rightOffset = direction === "swipe-left" ? leftDirectionWidthOffset : rightDirectionWidthOffset;
 
     const topElectronRect = {
       x: left + leftOffset,
