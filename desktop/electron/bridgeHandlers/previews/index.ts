@@ -12,11 +12,12 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
 
 import { setBrowserViewZIndex } from "../../windows/viewZIndex";
+import { animateHorizontalPreviewSwipe, animateVerticalPreviewSwipe } from "./animation";
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
 import { markViewAttachedTime } from "./instrumentation";
 import { forceLoadPreview, loadPreviewIfNeeded } from "./load";
-import { animateHorizontalPreviewSwipe, animateVerticalPreviewSwipe, setViewPosition } from "./position";
+import { setViewPosition } from "./position";
 
 const log = makeLogger("BrowserView");
 
@@ -42,28 +43,13 @@ export function initPreviewHandler() {
 
     const { cancel: cancelPreloadingRequest, item: browserView } = requestPreviewBrowserView(url);
 
-    // console.log("*********************** requestPreviewBrowserView DONE");
-    // await wait(10 * timeDuration.second);
-
     setViewPosition(browserView, position);
-
-    // console.log("*********************** setViewPosition DONE");
-    // await wait(10 * timeDuration.second);
 
     loadPreviewIfNeeded(browserView, url);
 
-    // console.log("*********************** loadPreviewIfNeeded DONE");
-    // await wait(10 * timeDuration.second);
-
     markViewAttachedTime(browserView);
 
-    // console.log("*********************** markViewAttachedTime DONE");
-    // await wait(10 * timeDuration.second);
-
     const detach = attachPreview(browserView, targetWindow);
-
-    // console.log("*********************** attachPreview DONE");
-    // await wait(10 * timeDuration.second);
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw
