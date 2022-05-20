@@ -149,7 +149,7 @@ export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
 
 const springTransition: Transition = {
   type: "spring",
-  duration: 0.3,
+  duration: 0.23,
 };
 
 export const UIAnimatedHighlight = () => (
