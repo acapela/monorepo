@@ -116,6 +116,7 @@ export const UIDate = styled.div`
 
 export const UIHighlight = styled(motion.div)`
   position: absolute;
+  will-change: transform;
   ${theme.colors.layout.backgroundAccent.asBg}
   left: 0px;
   width: 100%;
@@ -130,8 +131,8 @@ export const UINotificationAppIcon = styled(NotificationAppIcon)`
 // const springTransition = getSpringTransitionWithDuration(0.2);
 
 const springTransition: Transition = {
-  ease: "linear",
-  duration: 0.2,
+  type: "spring",
+  duration: 0.3,
 };
 
 export const UIAnimatedHighlight = () => (
@@ -146,7 +147,7 @@ export const UIAnimatedHighlight = () => (
 );
 
 export const UIRowQuickActions = (props: RowQuickActionsProps) => (
-  <motion.div
+  <UIAnimated
     transition={{
       layout: {
         ...springTransition,
@@ -155,11 +156,11 @@ export const UIRowQuickActions = (props: RowQuickActionsProps) => (
     layoutId="row-actions"
   >
     <RowQuickActions {...props} />
-  </motion.div>
+  </UIAnimated>
 );
 
 export const UINotificationDate = (props: NotificationDateProps) => (
-  <motion.div
+  <UIAnimated
     transition={{
       layout: {
         ...springTransition,
@@ -168,5 +169,9 @@ export const UINotificationDate = (props: NotificationDateProps) => (
     layout="position"
   >
     <NotificationDate {...props} />
-  </motion.div>
+  </UIAnimated>
 );
+
+const UIAnimated = styled(motion.div)`
+  will-change: transform;
+`;
