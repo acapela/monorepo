@@ -15,7 +15,7 @@ import { publishWebhook } from "@aca/hooks/src/pubsub";
 import { logger } from "@aca/shared/logger";
 import { wait } from "@aca/shared/time";
 
-import { services } from "./services";
+import { Service, allServices } from "./service";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -60,16 +60,10 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 router.post("/:service/:id?", async (ctx) => {
-  const service = services.get(ctx.params.service);
-  if (!service) throw new APIError(404, "service not found");
+  const serviceName = ctx.params.service as Service;
+  if (!allServices.includes(serviceName)) throw new APIError(404, "service not found");
 
-  let body = ctx.request.body;
-  if (service.verifyBody) await service.verifyBody(ctx.request.rawBody, body, ctx.request.headers);
-
-  if (service.processBody) body = await service.processBody(body);
-  if (!body) throw new APIError(400, "webhook was ignored");
-
-  await publishWebhook(service.name, body, ctx.params);
+  await publishWebhook(serviceName, ctx.request.rawBody, ctx.params, ctx.request.headers);
   ctx.body = "ok";
 });
 

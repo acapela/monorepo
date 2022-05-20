@@ -195,7 +195,9 @@ async function addIssueToDatabase(payload: IssueWebhook) {
   });
 }
 
-listenForWebhooks("linear", async (payload: Webhook) => {
+listenForWebhooks("linear", async (rawBody) => {
+  const payload = JSON.parse(rawBody) as Webhook;
+
   if (payload.type === "Issue") await addIssueToDatabase(payload);
 
   // comment updates are not handled

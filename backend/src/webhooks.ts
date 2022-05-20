@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/node";
 import { logger } from "@aca/shared/logger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ProcessFunc = (payload: any, params: any) => Promise<void>;
+export type ProcessFunc = (rawBody: string, params: any, headers: any) => Promise<void>;
 
 export function listenForWebhooks(service: string, processFn: ProcessFunc) {
   const pubsub = new PubSub();
@@ -13,7 +13,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
   subscription.on("message", async (message) => {
     try {
       const data = JSON.parse(message.data.toString());
-      await processFn(data.payload, data.params);
+      await processFn(data.rawBody, data.params, data.headers);
       message.ack();
     } catch (err) {
       logger.error(err);
