@@ -28,17 +28,17 @@ import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnEleme
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
 
+import { NotificationDate } from "./NotificationDate";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,
-  UINotificationDate,
   UINotificationPreviewText,
   UINotificationRowTitle,
   UIRowQuickActions,
   UISendersLabel,
+  UISnoozeLabel,
   useStoreRowVisibility,
 } from "./shared";
-import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   notification: NotificationEntity;
@@ -101,10 +101,11 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
-        {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
+        {!notification.isResolved && !isFocused && <UISnoozeLabel notificationOrGroup={notification} />}
 
-        <UINotificationDate notification={notification} key={notification.id} />
         {isFocused && <UIRowQuickActions target={notification} />}
+
+        <NotificationDate notification={notification} key={notification.id} />
       </UIHolder>
     </ActionTrigger>
   );

@@ -29,19 +29,19 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
+import { NotificationDate } from "./NotificationDate";
 import { UIUnreadIndicator } from "./NotificationRow";
 import { NotificationsRows } from "./NotificationsRows";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,
-  UINotificationDate,
   UINotificationGroupTitle,
   UINotificationPreviewText,
   UIRowQuickActions,
   UISendersLabel,
+  UISnoozeLabel,
   useStoreRowVisibility,
 } from "./shared";
-import { SnoozeLabel } from "./SnoozeLabel";
 
 interface Props {
   group: NotificationsGroup;
@@ -162,11 +162,13 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
               {group.notifications.find((n) => !!n.text_preview)?.text_preview}
             </UINotificationPreviewText>
           </UITitle>
-          {group.notifications.some((n) => !n.isResolved) && <SnoozeLabel notificationOrGroup={group} />}
-
-          <UINotificationDate notification={firstNotification} key={firstNotification.id} />
+          {!isFocused && group.notifications.some((n) => !n.isResolved) && (
+            <UISnoozeLabel notificationOrGroup={group} />
+          )}
 
           {isFocused && <UIRowQuickActions target={group} />}
+
+          <NotificationDate notification={firstNotification} key={firstNotification.id} />
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>

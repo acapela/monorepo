@@ -8,8 +8,8 @@ import { NotificationAppIcon } from "@aca/desktop/domains/notification/Notificat
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
-import { NotificationDate, NotificationDateProps } from "./NotificationDate";
 import { RowQuickActions, RowQuickActionsProps } from "./RowQuickActions";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 const SENDERS_WIDTH = 150;
 
@@ -124,11 +124,13 @@ export const UIHighlight = styled(motion.div)`
   z-index: ${NotificationRowZIndex.highlight};
 `;
 
-export const UINotificationAppIcon = styled(NotificationAppIcon)`
+export const UISnoozeLabel = styled(SnoozeLabel)`
   z-index: ${NotificationRowZIndex.rowItem};
 `;
 
-// const springTransition = getSpringTransitionWithDuration(0.2);
+export const UINotificationAppIcon = styled(NotificationAppIcon)`
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
 
 const springTransition: Transition = {
   type: "spring",
@@ -142,6 +144,7 @@ export const UIAnimatedHighlight = () => (
         ...springTransition,
       },
     }}
+    layout="position"
     layoutId="row-highlight"
   />
 );
@@ -153,22 +156,10 @@ export const UIRowQuickActions = (props: RowQuickActionsProps) => (
         ...springTransition,
       },
     }}
+    layout="position"
     layoutId="row-actions"
   >
     <RowQuickActions {...props} />
-  </UIAnimated>
-);
-
-export const UINotificationDate = (props: NotificationDateProps) => (
-  <UIAnimated
-    transition={{
-      layout: {
-        ...springTransition,
-      },
-    }}
-    layout="position"
-  >
-    <NotificationDate {...props} />
   </UIAnimated>
 );
 
