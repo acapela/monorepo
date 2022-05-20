@@ -47,6 +47,10 @@ services:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
       - $PWD/frontend/dist:/var/www/frontend
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
-
+  redis:
+    image: redis:6.2.7
+    restart: always
+    ports:
+      - "6379:6379"
 volumes:
   db_data:
