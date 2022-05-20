@@ -102,7 +102,6 @@ export const Embed = observer(function Preview({ url }: Props) {
     if (!position) return;
     if (isEqual(position, previousPosition)) return;
     previousPosition = position;
-    console.error("******* UPDATE VIEW POSITION", url, position);
     return updatePreviewPosition({ position, url });
   }, [position]);
 

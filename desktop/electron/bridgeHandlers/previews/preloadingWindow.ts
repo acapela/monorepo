@@ -6,7 +6,7 @@ import { Point } from "@aca/shared/point";
 
 import { appAndEnvReadyPromise } from "../../windows/env";
 import { getMainWindow } from "../../windows/mainWindow";
-import { OFFSCREEN_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
+import { DEFAULT_EXPECTED_PREVIEW_POSITION, handleWindowViewsPositioning, setViewPosition } from "./position";
 import { mirrorWindowSize } from "./utils/mirrorWindowSize";
 
 /**
@@ -65,7 +65,7 @@ export const getPreloadingWindow = memoize(() => {
 
 export function attachViewToPreloadingWindow(
   view: BrowserView,
-  position: PreviewPosition = OFFSCREEN_PREVIEW_POSITION
+  position: PreviewPosition = DEFAULT_EXPECTED_PREVIEW_POSITION
 ) {
   const preloadingWindow = getPreloadingWindow();
 
