@@ -62,7 +62,6 @@ export const focusPageView = createActionView((context) => {
       }
 
       animationStore.upcomingEmbedAnimation = "swipe-down";
-
       navigateToNotification(prevNotification);
 
       return prevNotification;
@@ -71,7 +70,6 @@ export const focusPageView = createActionView((context) => {
       const { nextNotification } = view;
 
       if (!nextNotification) {
-        animationStore.upcomingEmbedAnimation = "swipe-down";
         return view.goToPreviousNotification();
       }
 

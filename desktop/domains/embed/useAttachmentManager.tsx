@@ -29,11 +29,15 @@ export function useAttachmentManager({ url, position }: Props) {
 
     let animationPromise: Promise<void> | undefined;
 
+    if (isSameNotificationAsPrevious) {
+      return;
+    }
+
     if (animation === "instant" || !previousAttachedPreview) {
       toCleanUp.next = requestAttachPreview({ url, position });
     }
 
-    if (animation !== "instant" && !isSameNotificationAsPrevious && previousAttachedPreview) {
+    if (animation !== "instant" && previousAttachedPreview) {
       // Prevents outgoing embed animation from appearing over to top bar
       focusMainViewRequest();
       requestSetPreviewOnTopState({ url: previousAttachedPreview.url, state: "app-on-top" });
@@ -48,18 +52,15 @@ export function useAttachmentManager({ url, position }: Props) {
       toCleanUp.next = requestAttachPreview({ url, position });
     }
 
-    // We should only detach previous view when notifications
-    if (!isSameNotificationAsPrevious) {
-      // We only try to cleanup the previous attached preview when all the animations are done
-      (animationPromise ?? Promise.resolve()).then(() => {
-        previousAttachedPreview?.cleanup?.();
+    // We only try to cleanup the previous attached preview when all the animations are done
+    (animationPromise ?? Promise.resolve()).then(() => {
+      previousAttachedPreview?.cleanup?.();
 
-        previousAttachedPreview = {
-          url,
-          cleanup: () => toCleanUp.clean(),
-        };
-      });
-    }
+      previousAttachedPreview = {
+        url,
+        cleanup: () => toCleanUp.clean(),
+      };
+    });
   }, [url, animation, !!position]);
 }
 
