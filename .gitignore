@@ -140,3 +140,4 @@ frontend/Caddyfile
 backend/.prisma/
 backend/hasura/
 desktop/.electron-symbols/
+infrastructure/terraform/.terraform
