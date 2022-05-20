@@ -17,7 +17,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
     try {
       lock = await acquireLock(service, message.id);
       if (!(await markAsProcessed(service, message.id))) {
-        logger.warn(message.id, "was already processed");
+        logger.info(`message ${message.id} was already processed`);
         await lock.unlock();
         return;
       }
