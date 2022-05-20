@@ -6,3 +6,4 @@ desktop/dist/*
 desktop/dist-staging/*
 desktop/dist-production/*
 desktop/lib/env/generated.js
+hooks/dist
