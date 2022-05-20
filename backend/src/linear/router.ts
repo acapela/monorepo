@@ -6,14 +6,15 @@ import { Request, Response, Router } from "express";
 import { keyBy } from "lodash";
 import qs from "qs";
 
-import { CommentWebhook, IssueWebhook, Webhook } from "@aca/backend/src/linear/types";
-import { getSignedState, getUserIdFromRequest } from "@aca/backend/src/utils";
 import { db } from "@aca/db";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";
+import { getSignedState, getUserIdFromRequest } from "../utils";
+import { listenForWebhooks } from "../webhooks";
+import { CommentWebhook, IssueWebhook, Webhook } from "./types";
 import { fetchSubscribersAndUsers, fetchViewer, getRandomLinearClient, getUsersForOrganizationId } from "./utils";
 
 export const router = Router();
@@ -194,12 +195,7 @@ async function addIssueToDatabase(payload: IssueWebhook) {
   });
 }
 
-router.post("/v1/linear/webhook", async (req: Request, res: Response) => {
-  // accept webhook
-  res.status(HttpStatus.NO_CONTENT).end();
-
-  const payload = req.body as Webhook;
-
+listenForWebhooks("linear", async (payload: Webhook) => {
   if (payload.type === "Issue") await addIssueToDatabase(payload);
 
   // comment updates are not handled

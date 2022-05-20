@@ -15,3 +15,5 @@ infrastructure/hasura/metadata/**/*.yaml
 desktop/dist/**/*.*
 desktop/dist-staging/**/*.*
 desktop/dist-production/**/*.*
+
+hooks/dist
