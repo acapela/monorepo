@@ -2,7 +2,7 @@ import { Transition, motion } from "framer-motion";
 import { debounce } from "lodash";
 import { action } from "mobx";
 import React, { RefObject, useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -129,6 +129,21 @@ export const UISnoozeLabel = styled(SnoozeLabel)`
 `;
 
 export const UINotificationAppIcon = styled(NotificationAppIcon)`
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
+
+export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
+  height: 4px;
+  width: 4px;
+
+  ${(props) =>
+    props.$isUnread &&
+    css`
+      ${theme.colors.text.asBg};
+      border: 1px solid ${theme.colors.text};
+    `}
+
+  ${theme.radius.circle}
   z-index: ${NotificationRowZIndex.rowItem};
 `;
 

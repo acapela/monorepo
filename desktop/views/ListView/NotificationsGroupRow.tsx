@@ -30,8 +30,8 @@ import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
-import { UIUnreadIndicator } from "./NotificationRow";
 import { NotificationsRows } from "./NotificationsRows";
+import { UIUnreadIndicator } from "./shared";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,

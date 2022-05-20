@@ -37,6 +37,7 @@ import {
   UIRowQuickActions,
   UISendersLabel,
   UISnoozeLabel,
+  UIUnreadIndicator,
   useStoreRowVisibility,
 } from "./shared";
 
@@ -136,18 +137,4 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" 
   ${NotificationAppIcon} {
     font-size: 24px;
   }
-`;
-export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
-  height: 4px;
-  width: 4px;
-
-  ${(props) =>
-    props.$isUnread &&
-    css`
-      ${theme.colors.text.asBg};
-      border: 1px solid ${theme.colors.text};
-    `}
-
-  ${theme.radius.circle}
-  z-index: 1;
 `;
