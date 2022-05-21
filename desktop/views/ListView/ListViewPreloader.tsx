@@ -36,7 +36,7 @@ const getNotificationsToPreload = cachedComputed((list: NotificationsList, focus
 });
 
 export const ListViewPreloader = observer(({ list }: { list: NotificationsList }) => {
-  const debouncedFocusedTarget = useLeadingDebouncedValue(uiStore.focusedTarget, 50);
+  const debouncedFocusedTarget = useLeadingDebouncedValue(uiStore.focusedTarget, 75);
 
   if (!debouncedFocusedTarget) return null;
 
