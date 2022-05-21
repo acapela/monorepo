@@ -22,9 +22,11 @@ const extractVisibleNotifications = (elements: NotificationOrGroup[]) =>
 const getNotificationsToPreload = cachedComputed(
   (list: NotificationsList, focusedTarget?: NotificationOrGroup | null) => {
     const groupedElements = getCollapsedGroupedElementsInList(list);
-    const targetIndex = groupedElements.indexOf(focusedTarget as NotificationOrGroup);
-
-    const isAnyNotificationRowFocused = targetIndex != -1;
+    const targetIndex =
+      (focusedTarget &&
+        groupedElements.findIndex((ge) => ge.id === focusedTarget.id && ge.kind === focusedTarget.kind)) ??
+      -1;
+    const isAnyNotificationRowFocused = targetIndex !== -1;
     if (!isAnyNotificationRowFocused) {
       const { visibleRowIds } = uiStore;
       const firstVisibleRowIndex = groupedElements.findIndex((element) => visibleRowIds.has(element.id));

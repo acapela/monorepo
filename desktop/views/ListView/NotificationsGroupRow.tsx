@@ -13,7 +13,9 @@ import {
   unresolveNotification,
   unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
+import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -120,18 +122,21 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
           ? { action: openFocusMode, target: group }
           : { action: toggleNotificationsGroup, target: group })}
       >
-        {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
-        {isFocusedForAWhile &&
-          group.notifications.slice(0, 10).map((notificationToPreload, index) => {
-            return (
-              <PreloadEmbed
-                priority={index === 0 ? PreviewLoadingPriority.next : PreviewLoadingPriority.following}
-                key={notificationToPreload.id}
-                url={notificationToPreload.url}
-              />
-            );
-          })}
-        <UIHolder ref={elementRef} $isFocused={isFocused}>
+        {isFocusedForAWhile && (
+          <PreloadEmbed
+            priority={PreviewLoadingPriority.next}
+            key={group.notifications[0].id}
+            url={group.notifications[0].url}
+          />
+        )}
+
+        <UIHolder
+          ref={elementRef}
+          $isFocused={isFocused}
+          $preloadingState={
+            devSettingsStore.debugPreloading && preloadingPreviewsBridgeChannel.get()[group.notifications[0].url]
+          }
+        >
           {isFocused && <UIAnimatedHighlight />}
 
           <UIUnreadIndicator $isUnread={isUnread} />
@@ -187,13 +192,30 @@ const UISendersPerson = styled.span`
 
 const UISendersMore = styled.span``;
 
-const UIHolder = styled.div<{ $isFocused: boolean }>`
+const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
   position: relative;
   ${theme.box.items.listRow.size.padding};
 
   ${NotificationAppIcon} {
     font-size: 24px;
   }
+
+  ${(props) => {
+    const status = props.$preloadingState;
+
+    if (!status) return null;
+
+    function getColor() {
+      if (status === "loading") return "orange";
+      if (status === "error") return "red";
+      return "green";
+    }
+
+    return css`
+      outline: 1px solid ${getColor()};
+      outline-offset: -1px;
+    `;
+  }}
 `;
 
 const UITitle = styled(UINotificationGroupTitle)`
