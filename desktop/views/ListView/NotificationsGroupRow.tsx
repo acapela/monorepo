@@ -64,7 +64,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
 
   const isFocused = uiStore.useFocus(group, (group) => group?.id);
 
-  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 200, offDelay: 0 });
+  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 75, offDelay: 0 });
 
   useEffect(() => {
     if (!isFocused) return;
