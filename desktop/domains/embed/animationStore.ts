@@ -8,6 +8,8 @@ export type Animations = "instant" | MovementAnimations;
 
 export const animationStore = makeAutoObservable<{
   upcomingEmbedAnimation: Animations;
+  isAnimating: boolean;
 }>({
   upcomingEmbedAnimation: "instant",
+  isAnimating: false,
 });

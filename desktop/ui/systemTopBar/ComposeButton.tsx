@@ -10,7 +10,7 @@ import { getIntegrationAccountComposers } from "@aca/desktop/domains/integration
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
 import { DEFAULT_ICON_SIZE_RATIO } from "@aca/ui/buttons/IconButton";
-import { getButtonKindtyles, getButtonSizeStyles } from "@aca/ui/buttons/variants";
+import { getButtonKindStyles, getButtonSizeStyles } from "@aca/ui/buttons/variants";
 import { IconEdit } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -63,7 +63,7 @@ const UIIconWrap = styled(motion.div)`
   top: 0;
 
   ${theme.radius.button};
-  ${getButtonKindtyles("transparent")};
+  ${getButtonKindStyles("transparent")};
   ${getButtonSizeStyles("compactWide").square};
 
   svg {
