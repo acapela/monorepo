@@ -34,7 +34,7 @@ export const ComposeButton = observer(() => {
               action={goToComposeView}
               target={{ integration: client, account }}
             />
-            {isHovered && <PreloadEmbed url={url} priority={PreviewLoadingPriority.next} />}
+            <PreloadEmbed url={url} priority={PreviewLoadingPriority.next} />
           </React.Fragment>
         ))}
       </UIButtons>

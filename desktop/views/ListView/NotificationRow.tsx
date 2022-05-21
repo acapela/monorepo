@@ -62,7 +62,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
     notification
   );
 
-  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 150, offDelay: 0 });
+  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 75, offDelay: 0 });
 
   useEffect(() => {
     if (!isFocused) return;
