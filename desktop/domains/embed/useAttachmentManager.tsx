@@ -42,18 +42,20 @@ export function useAttachmentManager({ url, position }: Props) {
       focusMainViewRequest();
       requestSetPreviewOnTopState({ url: previousAttachedPreview.url, state: "app-on-top" });
 
+      toCleanUp.next = requestAttachPreview({ url, position });
+
       animationPromise = startPreviewAnimation({
         startUrl: previousAttachedPreview.url,
         endUrl: url,
         position,
         animation,
       });
-
-      toCleanUp.next = requestAttachPreview({ url, position });
+      animationStore.isAnimating = true;
     }
 
     // We only try to cleanup the previous attached preview when all the animations are done
     (animationPromise ?? Promise.resolve()).then(() => {
+      animationStore.isAnimating = false;
       previousAttachedPreview?.cleanup?.();
 
       previousAttachedPreview = {
@@ -71,5 +73,6 @@ autorun(() => {
     previousAttachedPreview?.cleanup?.();
     previousAttachedPreview = null;
     animationStore.upcomingEmbedAnimation = "instant";
+    animationStore.isAnimating = false;
   }
 });

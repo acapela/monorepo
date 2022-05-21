@@ -36,7 +36,7 @@ export const buttonKindMap = {
 
 export type ButtonKind = keyof typeof buttonKindMap;
 
-export function getButtonKindtyles(variant: ButtonKind) {
+export function getButtonKindStyles(variant: ButtonKind) {
   return buttonKindMap[variant];
 }
 

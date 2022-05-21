@@ -15,7 +15,7 @@ const [springAnimationFrames] = GenerateSpringFrames({
   easing: "spring(1, 80, 20, 0)",
 });
 
-const ANIMATION_DURATION_IN_MS = 350;
+const ANIMATION_DURATION_IN_MS = 310;
 const ANIMATION_STEP_DURATION_IN_MS = Math.round(ANIMATION_DURATION_IN_MS / springAnimationFrames.length);
 
 export async function animateVerticalPreviewSwipe({

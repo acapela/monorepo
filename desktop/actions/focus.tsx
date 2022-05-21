@@ -5,6 +5,7 @@ import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@ac
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
+import { animationStore } from "../domains/embed/animationStore";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
@@ -69,7 +70,7 @@ export const goToNextNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Next" : "Go to next notification"),
   shortcut: "ArrowDown",
-  canApply: (context) => !!context.view(focusPageView)?.nextNotification,
+  canApply: (context) => !!context.view(focusPageView)?.nextNotification && !animationStore.isAnimating,
   handler(context) {
     const focusView = context.view(focusPageView);
     focusView?.goToNextNotification();
@@ -81,7 +82,7 @@ export const goToPreviousNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Previous" : "Go to previous notification"),
   shortcut: "ArrowUp",
-  canApply: (context) => !!context.view(focusPageView)?.prevNotification,
+  canApply: (context) => !!context.view(focusPageView)?.prevNotification && !animationStore.isAnimating,
   handler(context) {
     const focusView = context.view(focusPageView);
     focusView?.goToPreviousNotification();
