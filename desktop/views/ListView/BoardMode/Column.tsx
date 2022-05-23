@@ -1,7 +1,5 @@
-import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { AnimatePresence } from "framer-motion";
-import { uniq } from "lodash";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
@@ -9,10 +7,8 @@ import { AutoSizer, List } from "react-virtualized";
 import styled from "styled-components";
 
 import { NotificationStatusLabelEntity } from "@aca/desktop/clientdb/notificationStatusLabel";
-import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { areArraysShallowEqual } from "@aca/shared/array";
-import { isNotNullish } from "@aca/shared/nullish";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconTrash } from "@aca/ui/icons";
@@ -21,50 +17,17 @@ import { theme } from "@aca/ui/theme";
 import { BoardSortableRow } from "./BoardSortableRow";
 import { ColumnDropPlaceholder } from "./ColumnDropPlaceholder";
 import { boardModeStore } from "./store";
+import { insertItemAtIndex } from "./utils";
+import { getNotificationsMatchingLabel } from "./utils/labelFilter";
 
 interface Props {
   label: NotificationStatusLabelEntity | null;
   allNotifications: NotificationOrGroup[];
 }
 
-function insertItemAtIndex<T>(items: T[], item: T, index: number) {
-  return [...items.slice(0, index), item, ...items.slice(index)];
-}
-
-function getAcceptedLabels(notificationOrGroup: NotificationOrGroup) {
-  if (getIsNotificationsGroup(notificationOrGroup)) {
-    const allLabels = notificationOrGroup.notifications
-      .map((notification) => notification.statusLabel)
-      .filter(isNotNullish);
-    if (allLabels.length === 0) return null;
-
-    return uniq(allLabels);
-  }
-
-  const label = notificationOrGroup.statusLabel;
-
-  if (!label) return null;
-
-  return [label];
-}
-
-function getIsItemMatchingLabel(notificationOrGroup: NotificationOrGroup, label: NotificationStatusLabelEntity | null) {
-  const acceptedLabels = getAcceptedLabels(notificationOrGroup);
-
-  if (!acceptedLabels) {
-    return !label;
-  }
-
-  if (!label) return false;
-
-  return acceptedLabels.includes(label);
-}
-
 export const BoardColumn = observer(function BoardMode({ allNotifications, label = null }: Props) {
   function getItemsForLabel() {
-    return allNotifications.filter((notificationOrGroup) => {
-      return getIsItemMatchingLabel(notificationOrGroup, label);
-    });
+    return getNotificationsMatchingLabel(allNotifications, label);
   }
 
   const itemsForLabel = getItemsForLabel();

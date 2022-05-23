@@ -240,6 +240,7 @@ __metadata:
     clipboardy: 2.3.0
     color: ^4.2.0
     customerio-node: ^3.1.4
+    fractional-indexing: ^3.0.1
     is-hotkey: ^0.2.0
     jest: ^27.4.7
     jsonwebtoken: ^8.5.1
@@ -14591,6 +14592,13 @@ __metadata:
   version: 4.1.2
   resolution: "fraction.js@npm:4.1.2"
   checksum: a67eff2b599cb6546b77ce9c913bd0cccd646e1a525c793ba4e0bf5a399fc403f379227fca83423a6ea79d01e35c2f2b0f141ffa1d09e41377041268a53fb150
+  languageName: node
+  linkType: hard
+
+"fractional-indexing@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "fractional-indexing@npm:3.0.1"
+  checksum: 9ad4985cbff0ac7b5ab12a1a6d78d3a9c55af086969ddb5dd9cbbb4777b39551f242b5d381907c53912a2f1729f965afd8dd6f978a4f450785ecce9df37220da
   languageName: node
   linkType: hard
 

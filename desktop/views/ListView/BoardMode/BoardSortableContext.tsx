@@ -48,7 +48,9 @@ function flattenNotificationOrGroup(notificationOrGroup: NotificationOrGroup) {
 
 function updateNotificationsOrGroupLabel(
   notificationOrGroup: NotificationOrGroup,
-  label: NotificationStatusLabelEntity | null
+  label: NotificationStatusLabelEntity | null,
+  all: NotificationOrGroup[],
+  index: number
 ) {
   const notifications = flattenNotificationOrGroup(notificationOrGroup);
 
@@ -59,7 +61,7 @@ function updateNotificationsOrGroupLabel(
   });
 }
 
-export const BoardSortableContext = observer(function BoardSortableContext({ children }: Props) {
+export const BoardSortableContext = observer(function BoardSortableContext({ children, items }: Props) {
   const sensors = useSensors(useSensor(PointerSensor));
 
   return (
@@ -79,14 +81,14 @@ export const BoardSortableContext = observer(function BoardSortableContext({ chi
           return;
         }
 
-        const { label: overLabel } = convertEventInfo(over);
+        const { label: overLabel, index: newIndex } = convertEventInfo(over);
         const { item: activeItem } = convertEventInfo(active);
 
         if (!activeItem) {
           console.warn("no item");
         }
 
-        updateNotificationsOrGroupLabel(activeItem, overLabel);
+        updateNotificationsOrGroupLabel(activeItem, overLabel, items, newIndex);
 
         // boardModeStore.dragPosition = { item: activeInfo.item, index: overInfo.index, listId: overInfo.listId };
         boardModeStore.dragPosition = null;
