@@ -3,7 +3,7 @@ import { useLayoutEffect } from "react";
 
 import { requestAttachPreview, requestSetPreviewOnTopState, startPreviewAnimation } from "@aca/desktop/bridge/preview";
 import { focusMainViewRequest } from "@aca/desktop/bridge/system";
-import { getIsRouteActive, routeChangeAtom } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { MaybeCleanup } from "@aca/shared/types";
 
@@ -67,9 +67,9 @@ export function useAttachmentManager({ url, position }: Props) {
 }
 
 autorun(() => {
-  routeChangeAtom.reportObserved();
+  const { activeRoute } = desktopRouter;
 
-  if (!getIsRouteActive("focus") && !getIsRouteActive("compose")) {
+  if (activeRoute?.name !== "focus" && activeRoute?.name !== "compose") {
     previousAttachedPreview?.cleanup?.();
     previousAttachedPreview = null;
     animationStore.upcomingEmbedAnimation = "instant";
