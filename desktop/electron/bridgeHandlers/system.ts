@@ -7,6 +7,7 @@ import {
   focusMainViewRequest,
   focusSenderViewRequest,
   openLinkRequest,
+  reloadAppView,
   restartAppRequest,
   setAppVibrancyRequest,
   setBadgeCountRequest,
@@ -21,7 +22,8 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 import { wait } from "@aca/shared/time";
 
-import { focusMainView, getMainWindow } from "../windows/mainWindow";
+import { loadAppInView } from "../windows/mainView";
+import { focusMainView, getMainView, getMainWindow } from "../windows/mainWindow";
 import { clearPersistance } from "./persistance";
 import { waitForDoNotDisturbToEnd } from "./utils/doNotDisturb";
 
@@ -53,6 +55,10 @@ export function initializeSystemHandlers() {
 
   waitForDoNotDisturbToFinish.handle(async () => {
     await waitForDoNotDisturbToEnd();
+  });
+
+  reloadAppView.handle(async () => {
+    loadAppInView(getMainView());
   });
 
   logoutBridge.handle(async () => {

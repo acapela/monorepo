@@ -77,8 +77,8 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
               db.close();
             },
             terminated() {
+              console.error("IndexedDb abnormally terminated");
               onTerminated?.();
-              console.error("Creating db terminated");
             },
           })
         );
