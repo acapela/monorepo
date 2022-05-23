@@ -9,7 +9,7 @@ import {
 } from "@aca/desktop/bridge/system";
 import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
 import { addToast } from "@aca/desktop/domains/toasts/store";
-import { getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw, IconSend2 } from "@aca/ui/icons";
 
 import { trackEvent } from "../analytics";
@@ -84,7 +84,7 @@ export const forceNotificationsSync = defineAction({
   icon: <IconRefreshCcw />,
   name: "Sync notifications",
   shortcut: ["Mod", "R"],
-  canApply: () => getIsRouteActive("list"),
+  canApply: () => desktopRouter.getIsRouteActive("list"),
   group: appActionsGroup,
   async handler() {
     await forceWorkerSyncRun(["notion", "figma"]);

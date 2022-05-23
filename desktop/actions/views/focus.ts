@@ -2,11 +2,11 @@ import { createActionView } from "@aca/desktop/actions/action/view";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { animationStore } from "@aca/desktop/domains/embed/animationStore";
 import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
-import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 
 export const focusPageView = createActionView((context) => {
-  if (!getIsRouteActive("focus")) return null;
+  if (!desktopRouter.getIsRouteActive("focus")) return null;
 
   const list = context.assertTarget("list", true);
   const notification = context.assertTarget("notification");

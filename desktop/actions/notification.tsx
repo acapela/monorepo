@@ -9,7 +9,7 @@ import { requestEmbedPreload } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
-import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
 import {
@@ -231,7 +231,7 @@ export const openFocusMode = defineAction({
   name: (ctx) => (ctx.isContextual ? "Open" : "Open notification"),
   shortcut: "Enter",
   canApply: ({ hasTarget }) => {
-    if (getIsRouteActive("focus") || !hasTarget("list", true)) return false;
+    if (desktopRouter.getIsRouteActive("focus") || !hasTarget("list", true)) return false;
     if (!hasTarget("notification") && !hasTarget("group")) return false;
 
     return true;
