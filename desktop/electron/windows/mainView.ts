@@ -6,7 +6,7 @@ import { PRELOAD_SCRIPT_PATH, getEntryHTMLFilePath } from "./paths";
 import { handleMainViewPosition } from "./utils/mainViewPosition";
 import { setBrowserViewZIndex } from "./viewZIndex";
 
-async function loadAppInView(view: BrowserView) {
+export async function loadAppInView(view: BrowserView) {
   await view.webContents.loadURL(getEntryHTMLFilePath("index.html"));
 }
 

@@ -29,9 +29,17 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
-import { RowQuickActions } from "./RowQuickActions";
-import { UINotificationPreviewText, UINotificationRowTitle, UISendersLabel, useStoreRowVisibility } from "./shared";
-import { SnoozeLabel } from "./SnoozeLabel";
+import {
+  UIAnimatedHighlight,
+  UINotificationAppIcon,
+  UINotificationPreviewText,
+  UINotificationRowTitle,
+  UIRowQuickActions,
+  UISendersLabel,
+  UISnoozeLabel,
+  UIUnreadIndicator,
+  useStoreRowVisibility,
+} from "./shared";
 
 interface Props {
   notification: NotificationEntity;
@@ -54,7 +62,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
     notification
   );
 
-  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 150, offDelay: 0 });
+  const isFocusedForAWhile = useDebouncedBoolean(isFocused, { onDelay: 75, offDelay: 0 });
 
   useEffect(() => {
     if (!isFocused) return;
@@ -85,18 +93,20 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         $isFocused={isFocused}
         $preloadingState={devSettingsStore.debugPreloading && preloadingPreviewsBridgeChannel.get()[notification.url]}
       >
+        {isFocused && <UIAnimatedHighlight />}
+
         <UIUnreadIndicator $isUnread={notification.isUnread} />
-        <NotificationAppIcon notification={notification} />
+        <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
 
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
 
-        {!notification.isResolved && <SnoozeLabel notificationOrGroup={notification} />}
+        {!notification.isResolved && !isFocused && <UISnoozeLabel notificationOrGroup={notification} />}
 
-        <NotificationDate notification={notification} />
+        {isFocused && <UIRowQuickActions target={notification} />}
 
-        {isFocused && <RowQuickActions target={notification} />}
+        <NotificationDate notification={notification} key={notification.id} />
       </UIHolder>
     </ActionTrigger>
   );
@@ -105,8 +115,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
 const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
   ${theme.box.items.listRow.size.padding}
   min-width: 0;
-
-  ${(props) => props.$isFocused && theme.colors.layout.backgroundAccent.asBg};
+  position: relative;
 
   ${(props) => {
     const status = props.$preloadingState;
@@ -128,18 +137,4 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" 
   ${NotificationAppIcon} {
     font-size: 24px;
   }
-`;
-
-export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
-  height: 4px;
-  width: 4px;
-
-  ${(props) =>
-    props.$isUnread &&
-    css`
-      ${theme.colors.text.asBg};
-      border: 1px solid ${theme.colors.text};
-    `}
-
-  ${theme.radius.circle}
 `;

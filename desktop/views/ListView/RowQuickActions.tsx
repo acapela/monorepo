@@ -12,11 +12,11 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { ActionIconButton } from "@aca/desktop/ui/ActionIconButton";
 
-interface Props {
+export interface RowQuickActionsProps {
   target: NotificationEntity | NotificationsGroup;
 }
 
-export const RowQuickActions = observer(({ target }: Props) => {
+export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
   return (
     <UIHolder>
       <ActionIconButton

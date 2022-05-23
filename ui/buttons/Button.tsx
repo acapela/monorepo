@@ -11,7 +11,7 @@ import { useOptionalShortcut } from "@aca/ui/keyboard/useShortcut";
 import { getTooltipProps } from "@aca/ui/popovers/tooltipProps";
 import { theme } from "@aca/ui/theme";
 
-import { ButtonKind, ButtonSize, getButtonKindtyles, getButtonSizeStyles } from "./variants";
+import { ButtonKind, ButtonSize, getButtonKindStyles, getButtonSizeStyles } from "./variants";
 
 export interface ButtonDisabledInfo {
   reason: string;
@@ -141,7 +141,7 @@ export const UIButton = styled(motion.button)<{
 }>`
   ${baseButtonStyles};
 
-  ${(props) => getButtonKindtyles(props.$kind)};
+  ${(props) => getButtonKindStyles(props.$kind)};
   ${(props) => getButtonSizeStyles(props.$size)};
 
   ${theme.common.clickable}

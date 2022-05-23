@@ -1,5 +1,6 @@
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { animationStore } from "@aca/desktop/domains/embed/animationStore";
 import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
 import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -60,6 +61,7 @@ export const focusPageView = createActionView((context) => {
         return null;
       }
 
+      animationStore.upcomingEmbedAnimation = "swipe-down";
       navigateToNotification(prevNotification);
 
       return prevNotification;
@@ -71,6 +73,7 @@ export const focusPageView = createActionView((context) => {
         return view.goToPreviousNotification();
       }
 
+      animationStore.upcomingEmbedAnimation = "swipe-up";
       navigateToNotification(nextNotification);
 
       return nextNotification;

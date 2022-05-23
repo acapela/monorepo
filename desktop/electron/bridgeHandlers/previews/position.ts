@@ -25,7 +25,7 @@ import { assertViewIsAttachedToWindow, getBrowserViewParentWindow } from "../../
  */
 export const DEFAULT_EXPECTED_PREVIEW_POSITION: PreviewPosition = { top: 52, left: 0, bottom: 38, right: 0 };
 
-const viewPositionMap = new WeakMap<BrowserView, PreviewPosition>();
+export const viewPositionMap = new WeakMap<BrowserView, PreviewPosition>();
 
 export function updateWindowViewsPosition(window: BrowserWindow) {
   window.getBrowserViews().forEach((view) => {
@@ -66,7 +66,7 @@ export function handleWindowViewsPositioning(browserWindow: BrowserWindow) {
   };
 }
 
-async function getWindowClientBounds(browserWindow: BrowserWindow): Promise<{ width: number; height: number }> {
+export async function getWindowClientBounds(browserWindow: BrowserWindow): Promise<{ width: number; height: number }> {
   const mainViewWebContents = getWindowMainView(browserWindow)?.webContents;
 
   const webContents = mainViewWebContents ?? browserWindow.webContents;

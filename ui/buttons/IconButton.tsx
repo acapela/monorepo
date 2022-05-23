@@ -5,7 +5,7 @@ import { styledForwardRef } from "@aca/shared/component";
 import { handleWithStopPropagationAndPreventDefault } from "@aca/shared/events";
 import { theme } from "@aca/ui/theme";
 
-import { ButtonKind, ButtonSize, getButtonKindtyles, getButtonSizeStyles } from "./variants";
+import { ButtonKind, ButtonSize, getButtonKindStyles, getButtonSizeStyles } from "./variants";
 
 export interface IconButtonProps {
   icon: ReactNode;
@@ -90,7 +90,7 @@ export const UIButton = styled.button<{
   ${theme.radius.button};
   ${theme.transitions.hover()};
 
-  ${(props) => getButtonKindtyles(props.$kind)}
+  ${(props) => getButtonKindStyles(props.$kind)}
   ${(props) => getButtonSizeStyles(props.$size).square}
 
   svg {

@@ -16,7 +16,6 @@ export function LoginOptionsView({ signupEmail }: LoginOptionsViewProps) {
   return (
     <UIHolder>
       <GoogleLoginButton signupEmail={signupEmail} callbackUrl={callbackUrl} />
-
       <SlackLoginButton callbackUrl={callbackUrl} />
     </UIHolder>
   );

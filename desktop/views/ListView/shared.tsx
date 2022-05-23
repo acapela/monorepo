@@ -1,10 +1,15 @@
+import { Transition, motion } from "framer-motion";
 import { debounce } from "lodash";
 import { action } from "mobx";
-import { RefObject, useEffect } from "react";
-import styled from "styled-components";
+import React, { RefObject, useEffect } from "react";
+import styled, { css } from "styled-components";
 
+import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
+
+import { RowQuickActions, RowQuickActionsProps } from "./RowQuickActions";
+import { SnoozeLabel } from "./SnoozeLabel";
 
 const SENDERS_WIDTH = 150;
 
@@ -20,6 +25,11 @@ const scheduleVisibleIdsUpdate = debounce(
   }),
   50
 );
+
+const NotificationRowZIndex = {
+  highlight: 0,
+  rowItem: 1,
+};
 
 /**
  * Very often multiple rows at once will change their visibility status. Let's use shared observer
@@ -73,17 +83,20 @@ export const UISendersLabel = styled.div`
   max-width: ${SENDERS_WIDTH}px;
   display: flex;
   align-items: center;
+  z-index: ${NotificationRowZIndex.rowItem};
 `;
 
 export const UINotificationRowTitle = styled.div`
   ${theme.typo.content.medium};
   ${theme.common.ellipsisText};
+  z-index: ${NotificationRowZIndex.rowItem};
 `;
 
 export const UINotificationGroupTitle = styled(UINotificationRowTitle)`
   min-width: 0;
   flex-grow: 1;
   flex-basis: 0;
+  z-index: ${NotificationRowZIndex.rowItem};
 `;
 
 export const UINotificationPreviewText = styled.div`
@@ -91,10 +104,80 @@ export const UINotificationPreviewText = styled.div`
   ${theme.common.ellipsisText};
   flex-grow: 1;
   flex-basis: 0;
+  z-index: ${NotificationRowZIndex.rowItem};
 `;
 
 export const UIDate = styled.div`
   opacity: 0.6;
   min-width: 4ch;
   text-align: right;
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
+
+export const UIHighlight = styled(motion.div)`
+  position: absolute;
+  will-change: transform;
+  ${theme.colors.layout.backgroundAccent.asBg}
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: ${NotificationRowZIndex.highlight};
+`;
+
+export const UISnoozeLabel = styled(SnoozeLabel)`
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
+
+export const UINotificationAppIcon = styled(NotificationAppIcon)`
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
+
+export const UIUnreadIndicator = styled.div<{ $isUnread: boolean }>`
+  height: 4px;
+  width: 4px;
+
+  ${(props) =>
+    props.$isUnread &&
+    css`
+      ${theme.colors.text.asBg};
+      border: 1px solid ${theme.colors.text};
+    `}
+
+  ${theme.radius.circle}
+  z-index: ${NotificationRowZIndex.rowItem};
+`;
+
+const springTransition: Transition = {
+  type: "spring",
+  duration: 0.23,
+};
+
+export const UIAnimatedHighlight = () => (
+  <UIHighlight
+    transition={{
+      layout: {
+        ...springTransition,
+      },
+    }}
+    layout="position"
+    layoutId="row-highlight"
+  />
+);
+
+export const UIRowQuickActions = (props: RowQuickActionsProps) => (
+  <UIAnimated
+    transition={{
+      layout: {
+        ...springTransition,
+      },
+    }}
+    layout="position"
+    layoutId="row-actions"
+  >
+    <RowQuickActions {...props} />
+  </UIAnimated>
+);
+
+const UIAnimated = styled(motion.div)`
+  will-change: transform;
 `;
