@@ -1,7 +1,7 @@
 import React from "react";
 
 import { requestForceReloadPreview, requestPreviewFocus } from "@aca/desktop/bridge/preview";
-import { assertGetActiveRouteParams, desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
@@ -16,10 +16,10 @@ export const exitFocusMode = defineAction({
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",
-  canApply: () => getIsRouteActive("focus"),
+  canApply: () => desktopRouter.getIsRouteActive("focus"),
   handler(context) {
     const notification = context.view(focusPageView)?.notification;
-    const { listId } = assertGetActiveRouteParams("focus");
+    const { listId } = desktopRouter.assertGetActiveRouteParams("focus");
 
     desktopRouter.navigate("list", { listId });
 
@@ -35,7 +35,7 @@ export const refreshNotificationPreview = defineAction({
   icon: <IconRefreshCcw />,
   keywords: ["reload"],
   shortcut: ["Mod", "R"],
-  canApply: () => getIsRouteActive("focus"),
+  canApply: () => desktopRouter.getIsRouteActive("focus"),
   async handler(context) {
     const notification = context.view(focusPageView)?.notification;
 
@@ -55,7 +55,7 @@ export const focusOnNotificationPreview = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Focus" : "Focus on notification screen"),
   shortcut: ["Mod", "Enter"],
-  canApply: () => getIsRouteActive("focus"),
+  canApply: () => desktopRouter.getIsRouteActive("focus"),
 
   handler(context) {
     const notification = context.assertTarget("notification");

@@ -13,7 +13,7 @@ import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButton";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
-import { getExactIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
 import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
@@ -58,7 +58,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
           <UISidebarItem
             action={goToList}
             target={allNotificationsList}
-            isActive={getExactIsRouteActive("list", { listId: "allNotifications" })}
+            isActive={desktopRouter.getIsRouteActive("list", { listId: "allNotifications" })}
             badgeCount={() => allNotificationsList.getCountIndicator()}
             additionalShortcut={["Meta", "1"]}
             contextMenuActions={[resolveAllNotifications]}
@@ -68,7 +68,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
           {getInboxLists()
             .filter((list) => list.id !== allNotificationsList.id)
             .map((list, index) => {
-              const isActive = getExactIsRouteActive("list", { listId: list.id });
+              const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
               // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
               const additionalShortcut: ShortcutDefinition | undefined =
                 index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
@@ -101,7 +101,7 @@ export const Sidebar = observer(({ isOpened }: Props) => {
 
         <UIItemGroup>
           {outOfInboxLists.map((list) => {
-            const isActive = getExactIsRouteActive("list", { listId: list.id });
+            const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
             const shouldShowCount = !list.dontShowCount;
             const count = shouldShowCount ? list.getAllNotifications().length : undefined;
             return (

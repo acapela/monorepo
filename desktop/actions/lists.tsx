@@ -4,7 +4,7 @@ import React from "react";
 
 import { getDb } from "@aca/desktop/clientdb";
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
-import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
@@ -200,7 +200,7 @@ export const focusNextNotificationInList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Next" : "Focus next notification in list"),
   group: currentListActionsGroup,
   canApply: () => {
-    return getIsRouteActive("list");
+    return desktopRouter.getIsRouteActive("list");
   },
   icon: <IconArrowBottom />,
   shortcut: "ArrowDown",
@@ -217,7 +217,7 @@ export const focusPreviousNotificationInList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Previous" : "Focus previous notification in list"),
   group: currentListActionsGroup,
   canApply: () => {
-    return getIsRouteActive("list");
+    return desktopRouter.getIsRouteActive("list");
   },
   icon: <IconArrowTop />,
   shortcut: "ArrowUp",
@@ -234,7 +234,7 @@ export const goToNextList = defineAction({
   name: (ctx) => (ctx.isContextual ? "Next list" : "Go to next list"),
   group: currentListActionsGroup,
   canApply: () => {
-    return getIsRouteActive("list");
+    return desktopRouter.getIsRouteActive("list");
   },
   icon: <IconArrowBottom />,
   supplementaryLabel: (context) => context.view(listPageView)?.nextList?.name,
@@ -253,7 +253,7 @@ export const goToPreviousList = defineAction({
   group: currentListActionsGroup,
   icon: <IconArrowTop />,
   canApply: () => {
-    return getIsRouteActive("list");
+    return desktopRouter.getIsRouteActive("list");
   },
   supplementaryLabel: (context) => context.view(listPageView)?.prevList?.name,
   shortcut: ["Shift", "Tab"],

@@ -3,8 +3,9 @@ import { action, autorun, computed, makeAutoObservable, observable, runInAction 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { routeChangeAtom } from "@aca/desktop/routes";
 import { createWindowEvent } from "@aca/shared/domEvents";
+
+import { desktopRouter } from "../routes";
 
 /**
  * Note on focus:
@@ -91,7 +92,7 @@ export const uiStore = makeAutoObservable({
  * After each route change, make sure sidebar is closed and the zen image is removed.
  */
 autorun(() => {
-  routeChangeAtom.reportObserved();
+  desktopRouter.activeRoute;
 
   runInAction(() => {
     uiStore.focusedTarget = null;

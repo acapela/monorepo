@@ -138,7 +138,7 @@ function initializeAnalytics(analytics: Analytics) {
    * But we can simply track our router we have and manually tell Segment what page we're in.
    */
   function updatePage() {
-    const { search, url } = desktopRouter.getLocation();
+    const { search, url } = desktopRouter.location;
 
     log("updating page", url);
 
@@ -146,10 +146,7 @@ function initializeAnalytics(analytics: Analytics) {
     analytics.page({ path: url, url: url, search });
   }
 
-  // Update page initially
-  updatePage();
-
-  cleanup.next = desktopRouter.subscribe(updatePage);
+  cleanup.next = autorun(updatePage);
 
   return cleanup.clean;
 }

@@ -4,7 +4,7 @@ import { defineAction } from "@aca/desktop/actions/action";
 import { trackEvent } from "@aca/desktop/analytics";
 import { getIntegrationAccountComposers } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
-import { desktopRouter, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { IconArrowLeft, IconEdit } from "@aca/ui/icons";
 
 export const exitComposeMode = defineAction({
@@ -12,7 +12,7 @@ export const exitComposeMode = defineAction({
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",
-  canApply: () => getIsRouteActive("compose"),
+  canApply: () => desktopRouter.getIsRouteActive("compose"),
   handler() {
     desktopRouter.goBack();
   },

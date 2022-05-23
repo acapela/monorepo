@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React, { useLayoutEffect } from "react";
 
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
-import { AppRedirect, desktopRouter, getActiveRoute } from "@aca/desktop/routes";
+import { AppRedirect, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
@@ -15,7 +15,7 @@ import { ConnectToolsView } from "../views/OnboardingView/ConnectToolsView";
 import { OnboardingView } from "../views/OnboardingView/OnboardingView";
 
 export const Router = observer(function Router() {
-  const activeRoute = getActiveRoute();
+  const activeRoute = desktopRouter.activeRoute;
 
   useLayoutEffect(() => {
     const { lastOpenedListId } = historyStore;
