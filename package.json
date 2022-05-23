@@ -43,6 +43,7 @@
     "backend": "yarn workspace @aca/backend",
     "desktop": "yarn workspace @aca/desktop",
     "tooling": "yarn workspace @aca/tooling",
+    "hooks": "yarn workspace @aca/hooks",
     "ui": "yarn workspace @aca/ui",
     "db": "yarn workspace @aca/db",
     "clientdb": "yarn workspace @aca/clientdb",
