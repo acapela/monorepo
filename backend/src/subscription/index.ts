@@ -17,7 +17,7 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
   async handle(userId, { plan: planUpper }) {
     const plan = planUpper.toLowerCase() as Lowercase<typeof planUpper>;
     const user = await db.user.findUnique({ where: { id: userId } });
-    assert(user, `missing user for id ${userId}`);
+    assert(userId && user, `missing user for id ${userId}`);
 
     // TODO this assertion needs to be removed when we enable the free plan
     assert(plan !== "free", `Tried to switch to free plan for user ${userId}`);
@@ -31,16 +31,20 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
       // so that switching to premium also charges users
       if (plan == "premium") {
         await stripe.subscriptions.del(user.stripe_subscription_id);
-        await db.user.update({
-          where: { id: userId },
-          data: { stripe_subscription_id: null, subscription_plan: "premium" },
-        });
+        await Promise.all([
+          db.user.update({
+            where: { id: userId },
+            data: { stripe_subscription_id: null, subscription_plan: "premium" },
+          }),
+          db.gmail_account.deleteMany({ where: { account: { user_id: userId } } }),
+        ]);
         return {};
       }
 
       const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
       await stripe.subscriptions.update(subscription.id, {
         cancel_at_period_end: false,
+        // Since cancellation is immediate, we currently pay out all the remaining days (which is what proration means)
         proration_behavior: "create_prorations",
         items: [{ id: subscription.items.data[0].id, price: PRICES[plan] }],
       });

@@ -10,6 +10,13 @@ import { SubscriptionPlan, SwitchSubscriptionPlanMutation, SwitchSubscriptionPla
 import { Button } from "@aca/ui/buttons/Button";
 
 export async function switchSubscription(plan: SubscriptionPlan) {
+  if (
+    plan == "PREMIUM" &&
+    !confirm("Do you really want to cancel your subscription? You will lose the ability to connect Gmail.")
+  ) {
+    return;
+  }
+
   const { data } = await apolloClient.mutate<SwitchSubscriptionPlanMutation, SwitchSubscriptionPlanMutationVariables>({
     mutation: gql`
       mutation SwitchSubscriptionPlan($plan: SubscriptionPlan!) {
