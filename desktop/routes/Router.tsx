@@ -1,7 +1,8 @@
+import { observer } from "mobx-react";
 import React, { useLayoutEffect } from "react";
 
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
-import { AppRedirect, allRouteNames, desktopRouter } from "@aca/desktop/routes";
+import { AppRedirect, desktopRouter, getActiveRoute } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
@@ -13,8 +14,8 @@ import { LoginView } from "../views/LoginView";
 import { ConnectToolsView } from "../views/OnboardingView/ConnectToolsView";
 import { OnboardingView } from "../views/OnboardingView/OnboardingView";
 
-export function Router() {
-  const activeRoute = desktopRouter.useRoute(allRouteNames);
+export const Router = observer(function Router() {
+  const activeRoute = getActiveRoute();
 
   useLayoutEffect(() => {
     const { lastOpenedListId } = historyStore;
@@ -50,4 +51,4 @@ export function Router() {
   }
 
   return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
-}
+});

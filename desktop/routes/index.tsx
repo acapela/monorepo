@@ -1,8 +1,8 @@
+import { isEqual } from "lodash";
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createAtom } from "mobx";
 import { useLayoutEffect } from "react";
 import { createRouter } from "react-chicane";
-import { ExtractRoutesParams, GetNestedRoutes, ParamsArg, PrependBasePath } from "react-chicane/dist/types";
 
 import { cachedComputed } from "@aca/clientdb";
 import { assert } from "@aca/shared/assert";
@@ -54,20 +54,60 @@ export function getObservedRouter() {
 }
 
 type Routes = typeof routes;
-type BasePath = string;
+type RouteName = keyof Routes;
 
-export const getRouteParamsIfActive = cachedComputed(function getRouteParamsIfActive<R extends keyof Routes>(
-  route: R
-): PathArguments<Routes[R]> | null {
+type RoutesMap = Record<string, string>;
+
+type OneOfRoutes<Routes extends RoutesMap> = keyof Routes extends infer R
+  ? R extends keyof Routes
+    ? {
+        name: R;
+        params: PathArguments<Routes[R]>;
+      }
+    : never
+  : never;
+
+export const getActiveRouteOf = cachedComputed(function getRouteParamsIfActive<R extends RoutesMap>(
+  routes: R
+): OneOfRoutes<R> | null {
   const router = getObservedRouter();
   const currentRouteURL = router.getLocation().url;
   // queries are treated as optional, thus their presence should not affect equality
   const [currentRouteURLWithoutQuery] = currentRouteURL.split("?");
 
-  const pattern = routes[route];
-  const [patternWithoutQuery] = pattern.split("?");
+  for (const [name, pattern] of Object.entries(routes)) {
+    const [patternWithoutQuery] = pattern.split("?");
 
-  return parseUrlWithPattern(patternWithoutQuery as typeof pattern, currentRouteURLWithoutQuery);
+    const params = parseUrlWithPattern(patternWithoutQuery, currentRouteURLWithoutQuery);
+
+    if (params) {
+      return { name, params } as OneOfRoutes<R>;
+    }
+  }
+
+  return null;
+});
+
+export const getActiveRoute = cachedComputed(function getActiveRoute() {
+  return getActiveRouteOf(routes);
+});
+
+const f = getActiveRoute();
+
+if (f?.name === "list") {
+  f.params;
+}
+
+export const getRouteParamsIfActive = cachedComputed(function getRouteParamsIfActive<R extends keyof Routes>(
+  route: R
+): PathArguments<Routes[R]> | null {
+  const activeRoute = getActiveRoute();
+
+  if (activeRoute?.name === route) {
+    return activeRoute.params as PathArguments<Routes[R]>;
+  }
+
+  return null;
 });
 
 export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): PathArguments<Routes[R]> {
@@ -79,8 +119,12 @@ export function assertGetActiveRouteParams<R extends keyof Routes>(route: R): Pa
 }
 
 export const getIsRouteActive = cachedComputed(function getIsRouteActive(route: keyof Routes): boolean {
-  return getRouteParamsIfActive(route) !== null;
+  return getActiveRoute()?.name === route;
 });
+
+type EmptyObject = Record<string | number | symbol, never>;
+
+type VoidableArgumetnOnEmptyObject<A> = A extends EmptyObject ? [] : [A];
 
 /**
  * Returns true if given route is currently active.
@@ -89,45 +133,31 @@ export const getIsRouteActive = cachedComputed(function getIsRouteActive(route: 
  *
  * Note: type signature is copy-pasted from `createURL` types.
  */
-const _getExactIsRouteActive: <
-  RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
->(
-  routeName: RouteName,
-  ...args: ParamsArg<
-    ExtractRoutesParams<
-      Omit<PrependBasePath<Routes, BasePath>, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
-    >[RouteName]
-  >
-) => boolean = (routeName, ...args) => {
-  const router = getObservedRouter();
-  router;
-  const routeUrl = router.createURL(routeName, ...args);
-  const currentRouteUrl = router.getLocation().url;
+function _getExactIsRouteActive<R extends RouteName>(
+  routeName: R,
+  ...args: VoidableArgumetnOnEmptyObject<PathArguments<Routes[R]>>
+): boolean {
+  const activeRoute = getActiveRoute();
 
-  return routeUrl === currentRouteUrl;
-};
+  if (activeRoute?.name !== routeName) return false;
+
+  const [params] = args;
+
+  return isEqual(params ?? {}, activeRoute.params ?? {});
+}
 
 export const getExactIsRouteActive = cachedComputed(_getExactIsRouteActive);
 
-type MaybeParams<T> = T extends [infer U] ? { params: U } : {};
+type MaybeParams<T> = T extends infer U ? (U extends EmptyObject ? {} : { params: U }) : {};
 
-type RedirectProps<RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>> =
-  {
-    to: RouteName;
-  } & MaybeParams<
-    ParamsArg<
-      ExtractRoutesParams<
-        Omit<PrependBasePath<Routes, BasePath>, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
-      >[RouteName]
-    >
-  >;
+type RedirectProps<RouteName extends keyof Routes> = {
+  to: RouteName;
+} & MaybeParams<PathArguments<Routes[RouteName]>>;
 
 /**
  * Type safe version of Redirect component
  */
-export function AppRedirect<
-  RouteName extends Exclude<keyof Routes, keyof GetNestedRoutes<PrependBasePath<Routes, BasePath>>>
->(props: RedirectProps<RouteName>) {
+export function AppRedirect<RouteName extends keyof Routes>(props: RedirectProps<RouteName>) {
   useLayoutEffect(() => {
     // @ts-ignore
     const isAlreadyActive = getExactIsRouteActive(props.to, props.params);
@@ -136,7 +166,7 @@ export function AppRedirect<
 
     // @ts-ignore
     desktopRouter.navigate(props.to, props.params);
-  }, [props.to]);
+  }, [props.to, JSON.stringify(Reflect.get(props, "params"))]);
 
   return null;
 }
