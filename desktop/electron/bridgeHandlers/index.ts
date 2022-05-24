@@ -7,6 +7,7 @@ import { initializePersistance } from "./persistance";
 import { initPreviewHandler } from "./previews";
 import { initializeSystemHandlers } from "./system";
 import { initializeSystemMenuHandlers } from "./systemMenu";
+import { initializeTrayHandlers } from "./tray";
 
 export function initializeBridgeHandlers() {
   initializePersistance();
@@ -17,4 +18,5 @@ export function initializeBridgeHandlers() {
   initializeContextMenuHandlers();
   initializeSystemMenuHandlers();
   initializeDialogsHandlers();
+  initializeTrayHandlers();
 }

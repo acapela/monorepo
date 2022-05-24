@@ -1,5 +1,5 @@
 import { nativeTheme } from "electron";
-import { autorun } from "mobx";
+import { action, autorun, observable } from "mobx";
 
 import { uiSettingsBridge } from "../bridge/ui";
 
@@ -15,4 +15,17 @@ export function initializeDarkModeHandling() {
 
     nativeTheme.themeSource = getElectronTheme();
   });
+}
+
+const isDarkModeEnabledBox = observable.box(nativeTheme.shouldUseDarkColors);
+
+nativeTheme.on(
+  "updated",
+  action(() => {
+    isDarkModeEnabledBox.set(nativeTheme.shouldUseDarkColors);
+  })
+);
+
+export function getObservedDarkMode() {
+  return isDarkModeEnabledBox.get();
 }

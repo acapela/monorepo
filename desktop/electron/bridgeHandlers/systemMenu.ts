@@ -91,6 +91,7 @@ function convertMenuItemDataToConstructorData(item: SystemMenuItemData): MenuIte
     enabled: !isDisabled,
     accelerator,
     registerAccelerator: false,
+    acceleratorWorksWhenHidden: false,
     click(electronItem, window, event) {
       if (event.triggeredByAccelerator) return;
 

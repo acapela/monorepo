@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 import { allNotificationsList } from "@aca/desktop/domains/list/all";
 import { AppRedirect, desktopRouter } from "@aca/desktop/routes";
@@ -8,6 +8,7 @@ import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/SettingsView";
 
+import { requestNavigateToList } from "../bridge/navigation";
 import { historyStore } from "../store/history";
 import { ComposeView } from "../views/ComposeView";
 import { LoginView } from "../views/LoginView";
@@ -24,6 +25,12 @@ export const Router = observer(function Router() {
 
     desktopRouter.replace("list", { listId: lastOpenedListId });
   }, []);
+
+  useEffect(() => {
+    return requestNavigateToList.subscribe(({ listId }) => {
+      desktopRouter.navigate("list", { listId });
+    });
+  });
 
   if (!activeRoute) {
     return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
