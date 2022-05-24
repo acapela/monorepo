@@ -9,11 +9,11 @@ import { mobxTicks } from "@aca/shared/mobx/time";
 
 import { UIDate } from "./shared";
 
-interface Props {
+export interface NotificationDateProps {
   notification: NotificationEntity;
 }
 
-export const NotificationDate = styledObserver(({ notification }: Props) => {
+export const NotificationDate = styledObserver(({ notification }: NotificationDateProps) => {
   return (
     <UIDate>
       {computed(

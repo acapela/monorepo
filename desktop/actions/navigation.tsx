@@ -3,7 +3,7 @@ import React from "react";
 // import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
 import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
-import { desktopRouter, getExactIsRouteActive, getIsRouteActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { settingsSections } from "@aca/desktop/views/SettingsView";
 import {
@@ -74,7 +74,7 @@ export const goToSettings = defineAction({
   icon: <IconSlidersHoriz />,
   analyticsEvent: "Settings Opened",
   keywords: ["options"],
-  canApply: () => !getIsRouteActive("settings"),
+  canApply: () => !desktopRouter.getIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
     desktopRouter.navigate("settings", { section: Object.keys(settingsSections)[0] });
@@ -91,7 +91,7 @@ export const goToSettingSectionsActions = Object.entries(settingsSections)
       icon: <IconSlidersHoriz />,
       keywords: ["options"],
       analyticsEvent: "Settings Opened",
-      canApply: () => !getExactIsRouteActive("settings", { section: id }),
+      canApply: () => !desktopRouter.getIsRouteActive("settings", { section: id }),
       handler() {
         desktopRouter.navigate("settings", { section: id });
       },
@@ -103,7 +103,7 @@ export const goToResolved = defineAction({
   group: navigationActionsGroup,
   icon: <IconListUnordered4 />,
   analyticsEvent: createAnalyticsEvent("Resolved Notifications Opened"),
-  canApply: () => !getExactIsRouteActive("list", { listId: resolvedList.id }),
+  canApply: () => !desktopRouter.getIsRouteActive("list", { listId: resolvedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: resolvedList.id });
   },
@@ -114,7 +114,7 @@ export const goToSnoozed = defineAction({
   group: navigationActionsGroup,
   icon: <IconClock />,
   analyticsEvent: createAnalyticsEvent("Snoozed Notifications Opened"),
-  canApply: () => !getExactIsRouteActive("list", { listId: snoozedList.id }),
+  canApply: () => !desktopRouter.getIsRouteActive("list", { listId: snoozedList.id }),
   handler() {
     desktopRouter.navigate("list", { listId: snoozedList.id });
   },
@@ -124,7 +124,7 @@ export const exitSettings = defineAction({
   name: "Exit settings",
   group: navigationActionsGroup,
   icon: <IconArrowLeft />,
-  canApply: () => getIsRouteActive("settings"),
+  canApply: () => desktopRouter.getIsRouteActive("settings"),
   shortcut: ["Esc"],
   handler() {
     desktopRouter.navigate("home");

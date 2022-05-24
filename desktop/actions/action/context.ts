@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { cachedComputed } from "@aca/clientdb";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
-import { getRouteParamsIfActive } from "@aca/desktop/routes";
+import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { deepMemoize } from "@aca/shared/deepMap";
 import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
@@ -20,7 +20,7 @@ export type ActionContextCallback<T> = (context: ActionContext) => T;
 export type ActionDataThunk<T> = T | ActionContextCallback<T>;
 
 const routeTargets = cachedComputed(function routeTargets(): unknown[] {
-  const focusRoute = getRouteParamsIfActive("focus");
+  const focusRoute = desktopRouter.getRouteParamsIfActive("focus");
 
   const db = getNullableDb();
 
@@ -30,7 +30,7 @@ const routeTargets = cachedComputed(function routeTargets(): unknown[] {
     return [db.notification.findById(notificationId), getInboxListsById(listId)];
   }
 
-  const listRoute = getRouteParamsIfActive("list");
+  const listRoute = desktopRouter.getRouteParamsIfActive("list");
 
   if (listRoute) {
     const { listId } = listRoute as unknown as { listId: string };

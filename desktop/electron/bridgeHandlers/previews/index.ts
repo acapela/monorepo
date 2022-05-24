@@ -4,6 +4,7 @@ import {
   requestForceReloadPreview,
   requestPreviewFocus,
   requestSetPreviewOnTopState,
+  startPreviewAnimation,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
@@ -11,6 +12,7 @@ import { getSourceWindowFromIPCEvent } from "@aca/desktop/electron/utils/ipc";
 import { assert } from "@aca/shared/assert";
 
 import { setBrowserViewZIndex } from "../../windows/viewZIndex";
+import { animateHorizontalPreviewSwipe, animateVerticalPreviewSwipe } from "./animation";
 import { attachPreview } from "./attach";
 import { requestPreviewBrowserView } from "./browserView";
 import { markViewAttachedTime } from "./instrumentation";
@@ -41,18 +43,50 @@ export function initPreviewHandler() {
 
     const { cancel: cancelPreloadingRequest, item: browserView } = requestPreviewBrowserView(url);
 
+    setViewPosition(browserView, position);
+
     loadPreviewIfNeeded(browserView, url);
 
     markViewAttachedTime(browserView);
-    const detach = attachPreview(browserView, targetWindow);
 
-    setViewPosition(browserView, position);
+    const detach = attachPreview(browserView, targetWindow);
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw
       detach();
       cancelPreloadingRequest();
     };
+  });
+
+  startPreviewAnimation.handle(async ({ startUrl, endUrl, position, animation }) => {
+    if (startUrl === endUrl) {
+      // No animation needed if animations don't change
+      return;
+    }
+
+    const startView = requestPreviewBrowserView.getExistingOnly(startUrl);
+    const endView = requestPreviewBrowserView.getExistingOnly(endUrl);
+
+    assert(startView, "start view not found to for animation");
+    assert(endView, "end view not found to for animation");
+
+    if (animation === "swipe-up" || animation === "swipe-down") {
+      const viewProps =
+        animation === "swipe-up"
+          ? { topView: startView, bottomView: endView }
+          : { topView: endView, bottomView: startView };
+
+      await animateVerticalPreviewSwipe({ ...viewProps, position, direction: animation });
+    }
+
+    if (animation === "swipe-left" || animation === "swipe-right") {
+      const viewProps =
+        animation === "swipe-left"
+          ? { leftView: startView, rightView: endView }
+          : { leftView: endView, rightView: startView };
+
+      await animateHorizontalPreviewSwipe({ ...viewProps, position, direction: animation });
+    }
   });
 
   updatePreviewPosition.handle(async ({ position, url }) => {

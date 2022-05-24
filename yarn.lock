@@ -355,6 +355,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-use: ^17.3.2
+    spring-easing: ^1.1.0
     styled-components: ^5.3.3
     trace-unhandled: ^2.0.1
     ts-node: ^10.4.0
@@ -23992,6 +23993,13 @@ fsevents@^1.2.7:
   dependencies:
     tslib: ^2.0.3
   checksum: 64f53d930f63c5a9e59d4cae487c1ffa87d25eab682833b01d572cc885e7e3fdbad4f03409a41f03ecb27f1f8959432253eb48332c7007c3388efddb24ba2792
+  languageName: node
+  linkType: hard
+
+"spring-easing@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "spring-easing@npm:1.1.0"
+  checksum: b8369af490d7b8013e6e00f489b5122cdf53016dad3803acf5a1fd0a5a346c80214cf79115c55e1366b58820049c92ba91defab2ae35320779076629e8ec4666
   languageName: node
   linkType: hard
 

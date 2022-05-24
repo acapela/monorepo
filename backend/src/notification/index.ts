@@ -45,10 +45,7 @@ export async function handleNotificationChanges(event: HasuraEvent<Notification>
 
 async function handleNotificationUpdates(event: UpdateHasuraEvent<Notification>) {
   if (event.item.resolved_at && !event.itemBefore.resolved_at) {
-    // we only want to test this feature in staging for now
-    if (process.env.STAGE !== "production") {
-      await addRelatedSlackMessageToMarkAsReadQueue(event.item.id);
-    }
+    await addRelatedSlackMessageToMarkAsReadQueue(event.item.id);
     await archiveGmailMessageForNotification(event.item.id);
   }
 

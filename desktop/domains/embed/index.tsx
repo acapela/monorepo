@@ -1,4 +1,5 @@
 import { AnimatePresence } from "framer-motion";
+import { isEqual } from "lodash";
 import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -6,7 +7,6 @@ import styled from "styled-components";
 import {
   preloadingPreviewsBridgeChannel,
   previewEventsBridge,
-  requestAttachPreview,
   updatePreviewPosition,
 } from "@aca/desktop/bridge/preview";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
@@ -22,6 +22,7 @@ import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
 import { theme } from "@aca/ui/theme";
 
+import { useAttachmentManager } from "./useAttachmentManager";
 import { handlePreviewMouseManagement } from "./useManagePreviewMouseHandling";
 
 export interface PreviewPosition {
@@ -60,7 +61,13 @@ export function getPreviewPositionFromElement(element: HTMLElement): PreviewPosi
   };
 }
 
-export const Embed = observer(function Preview({ url }: { url: string }) {
+interface Props {
+  url: string;
+}
+
+let previousPosition: PreviewPosition | null = null;
+
+export const Embed = observer(function Preview({ url }: Props) {
   const [position, setPosition] = useEqualState<PreviewPosition | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -89,8 +96,12 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     });
   }, []);
 
+  useAttachmentManager({ url, position });
+
   useDependencyChangeEffect(() => {
     if (!position) return;
+    if (isEqual(position, previousPosition)) return;
+    previousPosition = position;
     return updatePreviewPosition({ position, url });
   }, [position]);
 
@@ -102,12 +113,10 @@ export const Embed = observer(function Preview({ url }: { url: string }) {
     if (!position) return;
     if (hasError) return;
 
-    const stopAttaching = requestAttachPreview({ url, position });
     const cleanMouseManagement = handlePreviewMouseManagement(url, previewElement);
 
     return () => {
       cleanMouseManagement();
-      stopAttaching?.();
     };
   }, [
     url,
