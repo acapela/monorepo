@@ -1,0 +1,10 @@
+namespace: staging
+commonLabels:
+  app: hooks
+  env: staging
+resources:
+  - ../base
+configMapGenerator:
+  - name: hooks-default
+    envs:
+      - default.env

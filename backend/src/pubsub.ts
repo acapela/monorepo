@@ -5,7 +5,7 @@ import { db } from "@aca/db";
 
 const redisClient = new Client({ host: process.env.REDIS_HOST });
 const redlock = new Redlock([redisClient], {
-  retryCount: 100,
+  retryCount: 500,
 });
 
 export async function acquireLock(type: string, messageId: string) {

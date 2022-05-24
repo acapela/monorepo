@@ -1,0 +1,6 @@
+commonLabels:
+  app: hooks
+resources:
+  - deployment.yaml
+  - service.yaml
+  - hpa.yaml
