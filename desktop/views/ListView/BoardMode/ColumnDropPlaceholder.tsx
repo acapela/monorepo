@@ -12,11 +12,10 @@ interface Props {
 export const ColumnDropPlaceholder = observer(function BoardMode({ label = null }: Props) {
   const { setNodeRef } = useDroppable({ id: label?.id ?? "inbox-label", data: { label } });
 
-  return <UIHolder ref={setNodeRef}>DROP ME</UIHolder>;
+  return <UIHolder ref={setNodeRef}></UIHolder>;
 });
 
 const UIHolder = styled.div`
   /* flex-basis: 0; */
-  background-color: red;
   flex-grow: 1;
 `;

@@ -2,11 +2,10 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+import { createNewBoardColumn } from "@aca/desktop/actions/board";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
-import { accountStore } from "@aca/desktop/store/account";
-import { authStore } from "@aca/desktop/store/auth";
-import { Button } from "@aca/ui/buttons/Button";
+import { ActionButton } from "@aca/desktop/ui/ActionButton";
 
 import { BoardSortableContext } from "./BoardSortableContext";
 import { BoardColumn } from "./Column";
@@ -37,16 +36,7 @@ export const BoardMode = observer(function BoardMode({ list }: Props) {
         {labels.map((label) => {
           return <BoardColumn allNotifications={notificationGroups} label={label} />;
         })}
-        <Button
-          onClick={() => {
-            getDb().notificationStatusLabel.create({
-              name: `Label - ${Math.random()}`,
-              order: "A",
-            });
-          }}
-        >
-          Add Label
-        </Button>
+        <ActionButton action={createNewBoardColumn} />
       </UIHolder>
     </BoardSortableContext>
   );
