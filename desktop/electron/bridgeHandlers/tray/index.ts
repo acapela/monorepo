@@ -101,6 +101,4 @@ export function initializeTrayHandlers() {
 
     updateContextMenu(tray, lists);
   });
-
-  tray.setToolTip("This is my application.");
 }
