@@ -25,32 +25,16 @@ export const ReferralsView = observer(function ThemeSelector() {
       </UIInfo>
       <UIInfo>
         <p>
-          Every referral <strong>increases your chance to win AirPods Max</strong>. For every friend who signs up for an
-          account you get an <strong>additional ticket</strong> to win.
-        </p>
-        <p>
           So far, you have referred <strong>{pluralize`${user.count_referrals ?? 0} ${["friend"]}`}</strong>. Refer more
           friends now!
         </p>
-        <p>Share the following link with your friends, colleges or family to earn more tickets:</p>
+        <p>Share the following link with your friends, colleges or family:</p>
         <p>
           <Button kind="primarySubtle" tooltip="Copy to clipboard" onClick={handleCopy}>
             {referralUrl}
           </Button>
         </p>
       </UIInfo>
-      <UILegal>
-        <p>All raffles are subject to the following:</p>
-        <ul>
-          <li>
-            Employees of Acapela GmbH and the companies connected with it and there dependents are excluded from
-            participation in the raffles
-          </li>
-          <li>No cash disbursement and/or an replacement of the prizes is possible</li>
-          <li>Recourse to the courts is not permitted</li>
-          <li>No correspondence concerning the lottery will be held</li>
-        </ul>
-      </UILegal>
     </UIHolder>
   );
 });
@@ -69,21 +53,5 @@ const UIInfo = styled.div`
   p {
     margin-bottom: 16px;
     line-height: 1.6;
-  }
-`;
-
-const UILegal = styled.div`
-  font-size: 0.8em;
-  line-height: 1.25em;
-  opacity: 0.6;
-  ul {
-    list-style-type: disc;
-    padding-left: 2ch;
-  }
-  p {
-    margin-bottom: 16px;
-  }
-  li {
-    margin-bottom: 8px;
   }
 `;
