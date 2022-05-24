@@ -44,7 +44,7 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
         selectedItem={selectedInterval}
         onChange={(intervalOption) => {
           list.update({ notifications_interval_ms: intervalOption.intervalMs });
-          trackEvent("Desktop Notifications Updated", { interval: intervalOption.intervalMs });
+          trackEvent("Desktop Notifications Settings Updated", { interval: intervalOption.intervalMs });
         }}
       >
         <TopBarButton icon={<IconBell />} indicateNotification={!isNil(list.notifications_interval_ms)} />

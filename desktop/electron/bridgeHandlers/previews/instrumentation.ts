@@ -33,7 +33,10 @@ export function markFullPageLoadTime(browserView: BrowserView) {
   urlLoadState.fullPageLoad = new Date();
 
   if (urlLoadState.browserViewAttached) {
-    trackEvent("BrowserView Loaded after Attached", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
+    trackEvent("Partially Loaded BrowserView Attached", {
+      ...urlLoadState,
+      ...instrumentAttachmentResult(urlLoadState),
+    });
     return;
   }
 }
@@ -47,7 +50,7 @@ export function markViewAttachedTime(browserView: BrowserView) {
 
   urlLoadState.browserViewAttached = new Date();
   if (urlLoadState.fullPageLoad) {
-    trackEvent("BrowserView Attached after Loaded", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
+    trackEvent("Fully Loaded BrowserView Attached", { ...urlLoadState, ...instrumentAttachmentResult(urlLoadState) });
   }
 }
 
@@ -61,7 +64,7 @@ export function markViewDisposedTime(browserView: BrowserView) {
   urlLoadState.browserViewDisposed = new Date();
 
   if (!urlLoadState.browserViewAttached) {
-    trackEvent("BrowserView never used", { ...urlLoadState, ...instrumentDisposalResult(urlLoadState) });
+    trackEvent("BrowserView Never Attached", { ...urlLoadState, ...instrumentDisposalResult(urlLoadState) });
   }
 }
 
