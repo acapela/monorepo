@@ -69,6 +69,7 @@ if [[ "${APP_NAME}" == "all" ]]; then
   echo "deploying frontend and api..."
   ./scripts/send-slack-message.sh ":rocket: deploying version *${APP_VERSION}* to *${STAGE}*" "$STAGE"
   ./scripts/deploy.sh -s "$STAGE" -a api -v "$APP_VERSION" -S
+  ./scripts/deploy.sh -s "$STAGE" -a hooks -v "$APP_VERSION" -S
   ./scripts/deploy.sh -s "$STAGE" -a frontend -v "$APP_VERSION" -S
   ./scripts/wait-for-release.sh "$STAGE" "$APP_VERSION"
   echo "creating deploy-info.txt"

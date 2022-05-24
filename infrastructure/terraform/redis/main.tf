@@ -13,3 +13,7 @@ resource "google_redis_instance" "redis" {
   tier               = "BASIC"
   authorized_network = data.google_compute_network.default.id
 }
+
+output "host" {
+  value = google_redis_instance.redis.host
+}

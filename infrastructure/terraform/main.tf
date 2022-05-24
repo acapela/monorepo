@@ -20,7 +20,7 @@ provider "google" {
 
 locals {
   webhook_types = toset(["linear"])
-  redis_stages  = toset(["staging"])
+  redis_stages  = toset(["staging", "production"])
 }
 
 module "pubsub" {
@@ -34,4 +34,8 @@ module "redis" {
   for_each = local.redis_stages
   source   = "./redis"
   name     = each.value
+}
+
+output "redis_endpoints" {
+  value = {for k, s in module.redis: k => s.host}
 }

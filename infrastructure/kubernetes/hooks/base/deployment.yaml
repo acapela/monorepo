@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hooks
+  namespace: test
+  labels:
+    app: hooks
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: hooks
+  template:
+    metadata:
+      labels:
+        app: hooks
+    spec:
+      serviceAccountName: gsm
+      terminationGracePeriodSeconds: 15
+      containers:
+        - name: hooks
+          image: eu.gcr.io/meetnomoreapp/hooks:4.201.0
+          command: ["./scripts/start.sh"]
+          resources:
+            requests:
+              cpu: 400m
+          ports:
+            - containerPort: 1338
+          envFrom:
+            - configMapRef:
+                name: hooks-default
+          livenessProbe:
+            httpGet:
+              port: 1338
+              path: /healthz
+            periodSeconds: 5
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: 1338
+              path: /healthz
+            periodSeconds: 5
+            successThreshold: 3
+            timeoutSeconds: 10
+          startupProbe:
+            httpGet:
+              port: 1338
+              path: /healthz
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 15
