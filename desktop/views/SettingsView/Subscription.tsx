@@ -1,12 +1,13 @@
 import gql from "graphql-tag";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { openAppUrl } from "@aca/desktop/bridge/apps";
 import { accountStore } from "@aca/desktop/store/account";
 import { SubscriptionPlan, SwitchSubscriptionPlanMutation, SwitchSubscriptionPlanMutationVariables } from "@aca/gql";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { Button } from "@aca/ui/buttons/Button";
 import { theme } from "@aca/ui/theme";
 
@@ -35,9 +36,16 @@ export async function switchSubscription(plan: SubscriptionPlan) {
 }
 
 export const SubscriptionView = observer(() => {
+  const [isLoadingCheckout, setIsLoadingCheckout] = useState(false);
+
   const user = accountStore.assertUser;
   const plan = user.subscription_plan;
   const isBusiness = plan == "business";
+
+  // We assume the checkout has loaded when the plan has changed
+  useDependencyChangeEffect(() => {
+    setIsLoadingCheckout(false);
+  }, [plan]);
 
   return (
     <UIHolder>
@@ -48,9 +56,13 @@ export const SubscriptionView = observer(() => {
 
       <Button
         kind={isBusiness ? "secondary" : "primarySubtle"}
-        onClick={() => switchSubscription(isBusiness ? "PREMIUM" : "BUSINESS")}
+        isDisabled={isLoadingCheckout}
+        onClick={() => {
+          setIsLoadingCheckout(true);
+          switchSubscription(isBusiness ? "PREMIUM" : "BUSINESS");
+        }}
       >
-        {isBusiness ? "Cancel your subscription immediately" : "Upgrade to our business plan to unlock all features"}
+        {isBusiness ? "Cancel your subscription immediately" : "Upgrade to our ultimate plan to unlock all features"}
       </Button>
     </UIHolder>
   );

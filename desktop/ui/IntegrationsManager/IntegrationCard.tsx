@@ -59,6 +59,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
               kind="primarySubtle"
               isDisabled={isLoadingCheckout}
               onClick={async () => {
+                setIsloadingCheckout(true);
                 await switchSubscription("BUSINESS");
               }}
             >
