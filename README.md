@@ -305,3 +305,17 @@ There is generic, node-based `.gitignore` at root level, but each package has it
 ### prettier
 
 Prettier config is defined at root level and is used as-is in every package.
+
+## Deployment
+
+- Staging is automatically updated after every release on master.
+- Production releases require manual deployment. This is done by using the custom [deploy workflow](https://github.com/weareacapela/monorepo/actions/workflows/deploy.yaml) in GitHub Actions.
+
+![](./docs/deployment.jpg)
+
+After clicking on run workflow you can specify the stage, the application, and the version to deploy.
+
+The application value `all` releases the desktop app and deploys the frontend and backend application.
+If the application value is only set to `backend` the script will only update the backend service without creating a new releases of the desktop app.
+
+The version value `latest` will deploy the latest release. To deploy a specific version you can pass here the exact version number (e.g. `1.2.3`).
