@@ -58,7 +58,7 @@ export type AnalyticsEventsMap = {
   "Custom List Created": void;
   "Custom List Deleted": void;
   "New Message Composed": { integration: string };
-  "Desktop Notifications Updated": { interval: number | null };
+  "Desktop Notifications Settings Updated": { interval: number | null };
 
   // Navigation related events
 
@@ -86,9 +86,9 @@ export type AnalyticsEventsMap = {
   "ClickUp Integration Added": void;
 
   // Preview Loading instrumentation
-  "BrowserView Loaded after Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
-  "BrowserView Attached after Loaded": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
-  "BrowserView never used": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
+  "Partially Loaded BrowserView Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
+  "Fully Loaded BrowserView Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
+  "BrowserView Never Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
