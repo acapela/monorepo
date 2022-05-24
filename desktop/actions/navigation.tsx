@@ -77,24 +77,26 @@ export const goToSettings = defineAction({
   canApply: () => !desktopRouter.getIsRouteActive("settings"),
   shortcut: ["Mod", ","],
   handler() {
-    desktopRouter.navigate("settings", { section: settingsSections[0].id });
+    desktopRouter.navigate("settings", { section: Object.keys(settingsSections)[0] });
   },
 });
 
-export const goToSettingSectionsActions = settingsSections.map((section) => {
-  return defineAction({
-    name: "Settings",
-    supplementaryLabel: section.label,
-    group: navigationActionsGroup,
-    icon: <IconSlidersHoriz />,
-    keywords: ["options"],
-    analyticsEvent: "Settings Opened",
-    canApply: () => !desktopRouter.getIsRouteActive("settings", { section: section.id }),
-    handler() {
-      desktopRouter.navigate("settings", { section: section.id });
-    },
-  });
-});
+export const goToSettingSectionsActions = Object.entries(settingsSections)
+  .filter(([, { isHidden }]) => !isHidden)
+  .map(([id, { label }]) =>
+    defineAction({
+      name: "Settings",
+      supplementaryLabel: label,
+      group: navigationActionsGroup,
+      icon: <IconSlidersHoriz />,
+      keywords: ["options"],
+      analyticsEvent: "Settings Opened",
+      canApply: () => !desktopRouter.getIsRouteActive("settings", { section: id }),
+      handler() {
+        desktopRouter.navigate("settings", { section: id });
+      },
+    })
+  );
 
 export const goToResolved = defineAction({
   name: "Show resolved notifications",

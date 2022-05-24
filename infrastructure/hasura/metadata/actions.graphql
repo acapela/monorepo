@@ -35,11 +35,21 @@ type Query {
 }
 
 type Mutation {
+  switch_subscription_plan(plan: SubscriptionPlan!): SwitchSubscriptionPlanOutput!
+}
+
+type Mutation {
   uninstall_slack(team_id: uuid!): UninstallSlackOutput!
 }
 
 type Mutation {
   upgrade_current_user: UpgradeUserResponse
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+  BUSINESS
 }
 
 input GetTeamSlackInstallationURLInput {
@@ -137,4 +147,8 @@ type GitHubInstallation {
   id: Int!
   name: String!
   isOrg: Boolean!
+}
+
+type SwitchSubscriptionPlanOutput {
+  checkout_url: String
 }

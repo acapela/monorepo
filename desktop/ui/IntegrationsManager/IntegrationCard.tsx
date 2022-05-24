@@ -1,11 +1,14 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { connectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
+import { accountStore } from "@aca/desktop/store/account";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { switchSubscription } from "@aca/desktop/views/SettingsView/Subscription";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { Button, ButtonProps } from "@aca/ui/buttons/Button";
 import { IconCross } from "@aca/ui/icons";
 import { HStack } from "@aca/ui/Stack";
@@ -22,9 +25,23 @@ const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
 );
 
 export const IntegrationCard = observer(({ service }: Props) => {
+  const [isLoadingCheckout, setIsloadingCheckout] = useState(false);
   const { name, description, additionalSettings } = service;
   const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
+
+  const subscriptionPlan = accountStore.user?.subscription_plan;
+  const showUpsellButton = Boolean(subscriptionPlan !== "business" && service.isForBusinessUsers);
+
+  // Whenever the subscription plan changes, we consider checkout having been loaded
+  useDependencyChangeEffect(() => {
+    setIsloadingCheckout(false);
+  }, [subscriptionPlan]);
+
+  if (showUpsellButton && process.env.STAGE == "production") {
+    // TODO For now we hide the business-upsell in production
+    return null;
+  }
 
   return (
     <UIHolder>
@@ -37,17 +54,30 @@ export const IntegrationCard = observer(({ service }: Props) => {
             <UIName>{name}</UIName>
             <UIDescription>{description}</UIDescription>
           </UIInfoAboutIntegration>
-          <UIConnectAction>
-            <ActionButton
-              action={connectIntegration}
-              target={service}
-              notApplicableLabel="Connected"
-              notApplicableMode={service.disconnect && "hide"}
-              aria-label={`Connect ${name}`}
+          {showUpsellButton ? (
+            <Button
               kind="primarySubtle"
-            />
-            {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
-          </UIConnectAction>
+              isDisabled={isLoadingCheckout}
+              onClick={async () => {
+                setIsloadingCheckout(true);
+                await switchSubscription("BUSINESS");
+              }}
+            >
+              Upgrade to our business plan
+            </Button>
+          ) : (
+            <UIConnectAction>
+              <ActionButton
+                action={connectIntegration}
+                target={service}
+                notApplicableLabel="Connected"
+                notApplicableMode={service.disconnect && "hide"}
+                aria-label={`Connect ${name}`}
+                kind="primarySubtle"
+              />
+              {isSingularConnection && <DisconnectButton onClick={() => service.disconnect?.(workspaces[0].id)} />}
+            </UIConnectAction>
+          )}
         </UIHead>
         {!isSingularConnection &&
           workspaces.map(({ id, name }) => (

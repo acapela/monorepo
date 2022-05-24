@@ -7,4 +7,5 @@ export const routes = parameterizeRoutes({
   login: "/login",
   finishLogInInApp: "/app/return-to-app",
   loginForDesktop: "/app/login",
+  stripeCheckedOut: "/stripe/checked-out",
 } as const);

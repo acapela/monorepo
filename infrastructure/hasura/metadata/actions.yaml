@@ -80,6 +80,15 @@ actions:
           value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
     permissions:
       - role: user
+  - name: switch_subscription_plan
+    definition:
+      kind: synchronous
+      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    permissions:
+      - role: user
   - name: uninstall_slack
     definition:
       kind: synchronous
@@ -99,7 +108,18 @@ actions:
     permissions:
       - role: user
 custom_types:
-  enums: []
+  enums:
+    - name: SubscriptionPlan
+      values:
+        - value: FREE
+          is_deprecated: null
+          description: null
+        - value: PREMIUM
+          is_deprecated: null
+          description: null
+        - value: BUSINESS
+          is_deprecated: null
+          description: null
   input_objects:
     - name: GetTeamSlackInstallationURLInput
     - name: FindSlackUserInput
@@ -131,4 +151,5 @@ custom_types:
     - name: ServiceUser
     - name: SlackConversation
     - name: GitHubInstallation
+    - name: SwitchSubscriptionPlanOutput
   scalars: []

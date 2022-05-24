@@ -7,7 +7,7 @@ import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
 import axios from "axios";
 import cookieParser from "cookie-parser";
-import express, { Application, Request, json, urlencoded } from "express";
+import express, { Application, Request, urlencoded } from "express";
 import securityMiddleware from "helmet";
 
 import { listenToGmailSubscription } from "@aca/backend/src/gmail/capture";
@@ -29,6 +29,7 @@ import { router as linearRoutes } from "./linear/router";
 import nextAuth from "./nextAuth";
 import { router as sentryTunnel } from "./sentryTunnel";
 import { setupSlack } from "./slack/setup";
+import { router as stripeRoutes } from "./subscription";
 import { router as tracking } from "./tracking";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
 
@@ -71,7 +72,13 @@ function setupMiddleware(app: Application): void {
     next();
   });
   app.use(cookieParser());
-  app.use(json());
+  app.use((req, res, next): void => {
+    if (req.originalUrl.endsWith("/stripe/webhook")) {
+      next();
+    } else {
+      express.json()(req, res, next);
+    }
+  });
   app.use(urlencoded({ extended: true })); // needed for next-auth
 }
 
@@ -88,7 +95,8 @@ function setupRoutes(app: Application): void {
     atlassianRoutes,
     githubRoutes,
     asanaRoutes,
-    clickupRoutes
+    clickupRoutes,
+    stripeRoutes
   );
 
   nextAuth(app);

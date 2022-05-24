@@ -13,7 +13,6 @@ export interface IntegrationClient {
   description: string;
   imageURL: string;
   convertToLocalAppUrl?: (notification: NotificationEntity) => Promise<OpenAppUrl>;
-  getIsDisabled?: () => boolean;
   getIsConnected: () => boolean;
   // Returns false if an account is already connected and this integration only supports a single account
   getCanConnect?(): boolean;
@@ -24,4 +23,5 @@ export interface IntegrationClient {
   disconnect?(accountId: string): Promise<void>;
   additionalSettings?: ReactNode;
   isHiddenFromSettings?: boolean;
+  isForBusinessUsers?: boolean;
 }

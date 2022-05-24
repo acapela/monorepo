@@ -9,7 +9,6 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   notificationTypename: "notification_drive",
   name: "Google Suite",
   description: "Google Suite Notifications",
-  getIsDisabled: () => !getNullableDb()?.gmailAccount.hasItems,
   getIsConnected: () => false,
   getCanConnect: () => false,
   getAccounts: () => {
