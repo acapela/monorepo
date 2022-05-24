@@ -27,7 +27,7 @@ spec:
           command: ["./scripts/start.sh"]
           resources:
             requests:
-              cpu: 400m
+              cpu: 250m
           ports:
             - containerPort: 1338
           envFrom:
@@ -44,12 +44,12 @@ spec:
               port: 1338
               path: /healthz
             periodSeconds: 5
-            successThreshold: 3
+            successThreshold: 2
             timeoutSeconds: 10
           startupProbe:
             httpGet:
               port: 1338
               path: /healthz
-            periodSeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 10
             failureThreshold: 15
