@@ -2,6 +2,7 @@ import { isNil } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { TopBarButton } from "@aca/desktop/ui/systemTopBar/TopBarButton";
 import { styledObserver } from "@aca/shared/component";
@@ -43,6 +44,7 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
         selectedItem={selectedInterval}
         onChange={(intervalOption) => {
           list.update({ notifications_interval_ms: intervalOption.intervalMs });
+          trackEvent("Desktop Notifications Updated", { interval: intervalOption.intervalMs });
         }}
       >
         <TopBarButton icon={<IconBell />} indicateNotification={!isNil(list.notifications_interval_ms)} />
