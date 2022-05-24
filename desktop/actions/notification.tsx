@@ -163,7 +163,7 @@ export const snoozeNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => {
     if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Snooze all" : "Snooze group...";
+      return ctx.isContextual ? "Snooze group" : "Snooze group...";
     }
 
     return ctx.isContextual ? "Snooze" : "Snooze notification...";
