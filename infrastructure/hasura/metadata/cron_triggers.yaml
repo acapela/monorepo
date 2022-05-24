@@ -1,3 +1,12 @@
+- name: cleanup-processed-messages
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: 30 * * * *
+  include_in_metadata: true
+  payload:
+    handler: cleanup-processed-messages
+  headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: mark-resolved-slack-conversations-as-read
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * * * *'

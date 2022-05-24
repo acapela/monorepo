@@ -7,6 +7,7 @@ import { logger } from "@aca/shared/logger";
 import { refreshExpiringAtlassianProperties } from "../atlassian/utils";
 import { renewGmailWatchers } from "../gmail/capture";
 import { HttpStatus } from "../http";
+import { cleanupProcessedMessages } from "../pubsub";
 import { markSlackConversationsAsRead } from "../slack/events";
 import { syncSlackTeams } from "../slack/sync";
 
@@ -17,6 +18,7 @@ const handlers: Record<string, Function> = {
   "mark-slack-conversations-as-read": markSlackConversationsAsRead,
   "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
   "sync-slack-teams": syncSlackTeams,
+  "cleanup-processed-messages": cleanupProcessedMessages,
 };
 
 interface CronPayload {

@@ -37,5 +37,5 @@ module "redis" {
 }
 
 output "redis_endpoints" {
-  value = {for k, s in module.redis: k => s.host}
+  value = { for k, s in module.redis : k => s.host }
 }

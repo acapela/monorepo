@@ -1,7 +1,9 @@
+import { addDays } from "date-fns";
 import Client from "ioredis";
 import Redlock from "redlock";
 
 import { db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
 
 const redisClient = new Client({ host: process.env.REDIS_HOST });
 const redlock = new Redlock([redisClient], {
@@ -22,4 +24,12 @@ export async function markAsProcessed(type: string, messageId: string): Promise<
     throw e;
   }
   return true;
+}
+
+export async function cleanupProcessedMessages() {
+  const deleted = await db.processed_message.deleteMany({
+    // cleanup messages older than 7 days
+    where: { created_at: { lt: addDays(new Date(), -7) } },
+  });
+  logger.info(`Deleted ${deleted.count} processed messages`);
 }
