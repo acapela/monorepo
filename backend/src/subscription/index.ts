@@ -6,6 +6,7 @@ import { db } from "@aca/db";
 import { SubscriptionPlan, SwitchSubscriptionPlanOutput } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
+import { routes } from "@aca/shared/routes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08-27" });
 
@@ -24,24 +25,28 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
 
     assert(plan !== user.subscription_plan, `User ${userId} is already on a ${plan} subscription`);
 
-    const checkedOutURL = `${process.env.FRONTEND_URL}/stripe/checked-out`;
+    const checkedOutURL = process.env.FRONTEND_URL + routes.stripeCheckedOut;
 
-    if (user.stripe_subscription_id) {
+    const hasExistingSubscription = Boolean(user.stripe_subscription_id);
+    if (hasExistingSubscription) {
       // TODO when we leave the beta, and introduce the free plan as the new default, this needs to be changed
       // so that switching to premium also charges users
       if (plan == "premium") {
-        await stripe.subscriptions.del(user.stripe_subscription_id);
+        await stripe.subscriptions.del(user.stripe_subscription_id!);
         await Promise.all([
           db.user.update({
             where: { id: userId },
             data: { stripe_subscription_id: null, subscription_plan: "premium" },
           }),
+          // Gmail is a business plan feature, so we remove those integrations when someone disconnects
           db.gmail_account.deleteMany({ where: { account: { user_id: userId } } }),
         ]);
         return {};
       }
 
-      const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+      // TODO this code path currently cannot be reached, as we only have a business plan. Once premium becomes a
+      // subscription as well, this code path will need to be enabled to allow switching between premium and business
+      const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id!);
       await stripe.subscriptions.update(subscription.id, {
         cancel_at_period_end: false,
         // Since cancellation is immediate, we currently pay out all the remaining days (which is what proration means)
@@ -77,6 +82,8 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
 
 export const router = Router();
 
+const getPriceIdFromSubscription = ({ items }: Stripe.Subscription) => items.data[0].price.id;
+
 async function handleStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case "customer.subscription.created": {
@@ -86,7 +93,7 @@ async function handleStripeEvent(event: Stripe.Event) {
         break;
       }
       const stripeCustomerId = typeof customer == "string" ? customer : customer.id;
-      const isBusiness = subscription.items.data[0].price.id == PRICES.business;
+      const isBusiness = getPriceIdFromSubscription(subscription) == PRICES.business;
       await db.user.update({
         where: { stripe_customer_id: stripeCustomerId },
         data: { stripe_subscription_id: subscription.id, subscription_plan: isBusiness ? "business" : "premium" },
@@ -96,6 +103,7 @@ async function handleStripeEvent(event: Stripe.Event) {
   }
 }
 
+// Stripe needs to get the raw request to verify its signature
 router.post("/v1/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
   const signature = req.headers["stripe-signature"];
   assert(typeof signature == "string", `missing signature for event ${JSON.stringify(req.body)}`);

@@ -8,6 +8,7 @@ import { openAppUrl } from "@aca/desktop/bridge/apps";
 import { accountStore } from "@aca/desktop/store/account";
 import { SubscriptionPlan, SwitchSubscriptionPlanMutation, SwitchSubscriptionPlanMutationVariables } from "@aca/gql";
 import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 export async function switchSubscription(plan: SubscriptionPlan) {
   if (
@@ -61,6 +62,6 @@ const UIHolder = styled.div`
   gap: 24px;
 
   strong {
-    font-weight: 600;
+    ${theme.font.semibold}
   }
 `;

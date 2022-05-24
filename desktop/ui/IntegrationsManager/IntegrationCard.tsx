@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { connectIntegration } from "@aca/desktop/actions/auth";
@@ -8,6 +8,7 @@ import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { accountStore } from "@aca/desktop/store/account";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { switchSubscription } from "@aca/desktop/views/SettingsView/Subscription";
+import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { Button, ButtonProps } from "@aca/ui/buttons/Button";
 import { IconCross } from "@aca/ui/icons";
 import { HStack } from "@aca/ui/Stack";
@@ -24,11 +25,18 @@ const DisconnectButton = ({ onClick }: Pick<ButtonProps, "onClick">) => (
 );
 
 export const IntegrationCard = observer(({ service }: Props) => {
+  const [isLoadingCheckout, setIsloadingCheckout] = useState(false);
   const { name, description, additionalSettings } = service;
   const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
 
-  const showUpsellButton = Boolean(accountStore.user?.subscription_plan !== "business" && service.isForBusinessUsers);
+  const subscriptionPlan = accountStore.user?.subscription_plan;
+  const showUpsellButton = Boolean(subscriptionPlan !== "business" && service.isForBusinessUsers);
+
+  // Whenever the subscription plan changes, we consider checkout having been loaded
+  useDependencyChangeEffect(() => {
+    setIsloadingCheckout(false);
+  }, [subscriptionPlan]);
 
   if (showUpsellButton && process.env.STAGE == "production") {
     // TODO For now we hide the business-upsell in production
@@ -49,6 +57,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
           {showUpsellButton ? (
             <Button
               kind="primarySubtle"
+              isDisabled={isLoadingCheckout}
               onClick={async () => {
                 await switchSubscription("BUSINESS");
               }}

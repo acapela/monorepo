@@ -1,6 +1,7 @@
 import { createRouter } from "@swan-io/chicane";
 
 import { typedKeys } from "@aca/shared/object";
+import { routes as sharedRoutes } from "@aca/shared/routes";
 
 const routes = {
   root: "/",
@@ -13,7 +14,7 @@ const routes = {
   authError: "/auth/error",
   authSuccess: "/auth/success",
   recorder: "/recorder",
-  stripeCheckedOut: "/stripe/checked-out",
+  stripeCheckedOut: sharedRoutes.stripeCheckedOut,
 } as const;
 
 export const allRouteNames = typedKeys(routes);
