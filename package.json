@@ -69,7 +69,8 @@
     "build": "yarn frontend:build",
     "generate": "yarn db update && tooling gql frontend",
     "typecheck": "tsc --project tsconfig.typecheck.json",
-    "run-e2e-tests": "zx ./scripts/run-e2e-tests.mjs"
+    "run-e2e-tests": "zx ./scripts/run-e2e-tests.mjs",
+    "hooks:dev": "yarn hooks dev"
   },
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json,html}": "prettier --write",
@@ -101,6 +102,7 @@
         "commands": [
           "yarn frontend:dev",
           "yarn backend:dev",
+          "yarn hooks:dev",
           "yarn tooling:gql-types",
           "yarn hasura:console"
         ]
@@ -112,6 +114,7 @@
       "frontend:dev": "Start frontend dev server",
       "frontend:gql-types": "Generate graphql types for frontend",
       "backend:dev": "Start backend dev server",
+      "hooks:dev": "Start the hooks service dev server",
       "docker:up:detach": "Start docker infrastructure in detached mode",
       "docker:up": "Start docker infrastructure in interactive mode",
       "docker:stop": "Stop docker infrastructure",
