@@ -24,8 +24,6 @@ export type SlackInstallation = SlackBolt.Installation;
 
 export const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
 
-class NoInstallationFoundError extends Error {}
-
 function handleInstallationResponse(res: ServerResponse, redirectURL?: string, searchParams?: Record<string, string>) {
   if (redirectURL) {
     const redirectURLObject = new URL(redirectURL);
@@ -146,7 +144,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
         return userSlackInstallation.data as unknown as SlackInstallation;
       }
 
-      throw new NoInstallationFoundError(`No Slack installation for query ${JSON.stringify(query)}`);
+      logger.warn(`No Slack installation for query ${JSON.stringify(query)}`);
+      // this returns a dummy SlackInstallation so the event is still acknowledged
+      return { teamId: "XXXX", enterpriseId: "XXXX" } as unknown as SlackInstallation;
     },
   },
 
