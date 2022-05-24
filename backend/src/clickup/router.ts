@@ -8,6 +8,7 @@ import qs from "qs";
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
 import { ClickUpAccount, ClickUpTeam, db } from "@aca/db";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { getSignedState, getUserIdFromRequest, getWebhookEndpoint } from "../utils";
@@ -151,6 +152,7 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
     })
   );
   res.status(HttpStatus.OK).end();
+  trackBackendUserEvent(userId, "ClickUp Integration Added");
 });
 
 router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {
