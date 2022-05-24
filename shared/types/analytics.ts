@@ -58,6 +58,7 @@ export type AnalyticsEventsMap = {
   "Custom List Created": void;
   "Custom List Deleted": void;
   "New Message Composed": { integration: string };
+  "Desktop Notifications Updated": { interval: number | null };
 
   // Navigation related events
 
