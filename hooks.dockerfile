@@ -9,7 +9,7 @@ ARG BERGLAS_VERSION
 RUN npm install -g @install-binary/berglas@${BERGLAS_VERSION}
 
 ENV APP=hooks
-ENV HOOKS_PORT=1338
+ENV HOOKS_LISTEN_PORT=1338
 ENV NODE_ENV=production
 EXPOSE 1338
 

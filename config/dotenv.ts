@@ -71,7 +71,7 @@ const requiredEnvVarNamesBackend = [
 
 const requiredEnvVarNamesFrontend = ["HASURA_HOST", "BACKEND_HOST"] as const;
 
-const requiredEnvVarNamesHooks = ["HOOKS_PORT"] as const;
+const requiredEnvVarNamesHooks = [] as const;
 
 const optionalEnvVarNames = [
   "SEGMENT_API_KEY",

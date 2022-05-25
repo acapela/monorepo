@@ -78,7 +78,7 @@ createTerminus(server, {
   },
 });
 
-const port = process.env.HOOKS_PORT || 1338;
+const port = process.env.HOOKS_LISTEN_PORT || 1338;
 server.listen(port, () => {
   logger.info(`server is listening on port ${port}`);
 });
