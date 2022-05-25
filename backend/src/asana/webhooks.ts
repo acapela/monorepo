@@ -24,58 +24,70 @@ export async function processEvent(event: Webhook, webhook: DbWebhook) {
   // the oauth client also handles expired tokens internally and will refresh them
   client.useOauth({ credentials: webhook.asana_account });
 
-  // detect mentions or comments
-  if (event.resource.resource_type === "story" && event.resource.resource_subtype === "comment_added") {
-    // fetch comment from api
-    const comment = await client.stories.findById(event.resource.gid);
+  if (event.resource.resource_type === "story") {
+    // detect mentions or comments
+    if (event.resource.resource_subtype === "comment_added") {
+      // fetch comment from api
+      const comment = await client.stories.findById(event.resource.gid);
 
-    // asana converts mentions to weird links to personal projects
-    // some logic is required to resolve these ids to the actual user id
-    const mentionUsers = [...comment.text.matchAll(/https:\/\/app\.asana\.com\/0\/(\d+)\/list/gm)].map((m) => m[1]);
-    const userIds = await resolveMentions(client, mentionUsers);
-    const isMentioned = userIds.includes(webhook.asana_account.asana_user_id);
-    await createCommentNotification(webhook, comment, isMentioned);
-    return;
+      // asana converts mentions to weird links to personal projects
+      // some logic is required to resolve these ids to the actual user id
+      const mentionUsers = [...comment.text.matchAll(/https:\/\/app\.asana\.com\/0\/(\d+)\/[list|board]/gm)].map(
+        (m) => m[1]
+      );
+
+      const userIds = await resolveMentions(client, mentionUsers);
+      const isMentioned = userIds.includes(webhook.asana_account.asana_user_id);
+
+      await createCommentNotification(webhook, comment, isMentioned);
+      return;
+    }
   }
 
-  // detect assignments
-  if (event.resource.resource_type === "task" && event.change?.field === "assignee") {
-    if (!event.change.new_value) return; // unassigned
-    if (event.change.new_value.gid !== event.user.gid) return; // assigned to someone else
-    const [assigner, task] = await Promise.all([
-      client.users.findById(event.user.gid),
-      client.tasks.findById(event.resource.gid),
-    ]);
-    await createAssignNotification(webhook, assigner, task);
-    return;
+  if (event.resource.resource_type === "task") {
+    // detect assignments
+    if (event.change?.field === "assignee") {
+      if (!event.change.new_value) return; // unassigned
+      if (event.change.new_value.gid !== webhook.asana_account.asana_user_id) return; // assigned to someone else
+
+      const [assigner, task] = await Promise.all([
+        client.users.findById(event.user.gid),
+        client.tasks.findById(event.resource.gid),
+      ]);
+
+      await createAssignNotification(webhook, assigner, task);
+      return;
+    }
+
+    // detect section changes (like "In Progress" or "Done")
+    if (event.parent?.resource_type === "section" && event.action === "added") {
+      const [actor, task, section] = await Promise.all([
+        client.users.findById(event.user.gid),
+        client.tasks.findById(event.resource.gid),
+        client.sections.findById(event.parent.gid),
+      ]);
+      // ignore sections that are not part of the project
+      if (get(section, "project.gid") !== webhook.project_id) return;
+      await createStatusChangeNotification(webhook, actor, task, section.name);
+      return;
+    }
+
+    // detect status changes
+    if (event.change?.field === "completed") {
+      const [actor, task] = await Promise.all([
+        client.users.findById(event.user.gid),
+        client.tasks.findById(event.resource.gid),
+      ]);
+      await createStatusChangeNotification(
+        webhook,
+        actor,
+        task,
+        task.completed ? "mark:completed" : "mark:uncompleted"
+      );
+      return;
+    }
   }
 
-  // detect section changes (like "In Progress" or "Done")
-  if (
-    event.action === "added" &&
-    event.resource.resource_type === "task" &&
-    event.parent?.resource_type === "section"
-  ) {
-    const [actor, task, section] = await Promise.all([
-      client.users.findById(event.user.gid),
-      client.tasks.findById(event.resource.gid),
-      client.sections.findById(event.parent.gid),
-    ]);
-    // ignore sections that are not part of the project
-    if (get(section, "project.gid") !== webhook.project_id) return;
-    await createStatusChangeNotification(webhook, actor, task, section.name);
-    return;
-  }
-
-  // detect status changes
-  if (event.resource.resource_type === "task" && event.change?.field === "completed") {
-    const [actor, task] = await Promise.all([
-      client.users.findById(event.user.gid),
-      client.tasks.findById(event.resource.gid),
-    ]);
-    await createStatusChangeNotification(webhook, actor, task, task.completed ? "mark:completed" : "mark:uncompleted");
-    return;
-  }
   // TODO: add further events here
   // console.info(event); //for debugging
 }
