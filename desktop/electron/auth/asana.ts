@@ -1,9 +1,11 @@
+import axios from "axios";
 import { BrowserWindow, session } from "electron";
 
 import { asanaAuthTokenBridgeValue, loginAsanaBridge, logoutAsanaBridge } from "@aca/desktop/bridge/auth";
+import { getAcapelaAuthToken } from "@aca/desktop/electron/auth/acapela";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
-import { RETRY_DELAY_MS, RETRY_TIMES, authWindowDefaultOptions, userAgent } from "./utils";
+import { authWindowDefaultOptions, userAgent } from "./utils";
 
 export async function loginAsana() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
@@ -28,36 +30,17 @@ export async function loginAsana() {
 }
 
 export async function logoutAsana(webhookId?: string) {
-  const window = new BrowserWindow({
-    opacity: 0,
-    transparent: false,
-    alwaysOnTop: true,
-    focusable: false,
-    width: 100,
-    height: 100,
-    x: 1,
-    y: 1,
+  const acapelaAuthToken = await getAcapelaAuthToken();
+  await axios.get(`${FRONTEND_URL}/api/backend/v1/asana/unlink${webhookId ? "/" + webhookId : ""}`, {
+    headers: { Cookie: `next-auth.session-token=${acapelaAuthToken}` },
   });
-  window.setIgnoreMouseEvents(true);
-  await window.webContents.loadURL(`${FRONTEND_URL}/api/backend/v1/asana/unlink${webhookId ? "/" + webhookId : ""}`, {
-    userAgent,
-  });
+  if (webhookId) return; // don't sign out, we just have unlinked a project
 
-  for (let i = 0; i < RETRY_TIMES; i++) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
-    if (window.isDestroyed()) return;
-    const url = new URL(window.webContents.getURL());
-    if (url.origin !== FRONTEND_URL || !url.pathname.endsWith("done")) continue;
-    if (webhookId) break; // don't sign out, we just have unlinked a project
-    const serviceCookies = await session.defaultSession.cookies.get({ url: "https://app.asana.com" });
-    await Promise.all(
-      serviceCookies.map((cookie) => session.defaultSession.cookies.remove("https://app.asana.com", cookie.name))
-    );
-    await asanaAuthTokenBridgeValue.set(false);
-    break;
-  }
-
-  window.destroy();
+  const serviceCookies = await session.defaultSession.cookies.get({ url: "https://app.asana.com" });
+  await Promise.all(
+    serviceCookies.map((cookie) => session.defaultSession.cookies.remove("https://app.asana.com", cookie.name))
+  );
+  await asanaAuthTokenBridgeValue.set(false);
 }
 
 export function initializeAsanaAuthHandler() {
