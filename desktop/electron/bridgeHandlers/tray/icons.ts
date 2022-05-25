@@ -14,7 +14,9 @@ function convertFileUrlToPath(fileUrl: string) {
 
 const rawIcons = { dark, darkIndicator, light, lightIndicator };
 
-export const trayIcons = mapValues(rawIcons, (path) => convertFileUrlToPath(path));
+export const trayIcons = mapValues(rawIcons, (path) => {
+  return nativeImage.createFromPath(convertFileUrlToPath(path)).resize({ width: 20, height: 20, quality: "best" });
+});
 
 const listIconsRaw = {
   folder,
