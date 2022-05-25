@@ -52,14 +52,14 @@ docker build \
   --build-arg SENTRY_RELEASE="$VERSION" \
   --build-arg BERGLAS_VERSION="$BERGLAS_VERSION" \
   -t "$HOOKS_IMAGE_NAME_VERSION" -f ./hooks.dockerfile ./hooks
-docker tag "$HOOKS_IMAGE_NAME_VERSION" "$MONOREPO_IMAGE_NAME"
+docker tag "$HOOKS_IMAGE_NAME_VERSION" "$HOOKS_IMAGE_NAME"
 
 echo "pushing to gcr..."
 docker push "$MONOREPO_IMAGE_NAME_VERSION"
 docker push "$MONOREPO_IMAGE_NAME"
 
-docker push "$CADDY_IMAGE_NAME_VERSION"
-docker push "$CADDY_IMAGE_NAME"
-
 docker push "$HOOKS_IMAGE_NAME_VERSION"
 docker push "$HOOKS_IMAGE_NAME"
+
+docker push "$CADDY_IMAGE_NAME_VERSION"
+docker push "$CADDY_IMAGE_NAME"
