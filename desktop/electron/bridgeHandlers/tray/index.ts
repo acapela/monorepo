@@ -1,4 +1,4 @@
-import { Menu, MenuItemConstructorOptions, Tray, nativeImage } from "electron";
+import { Menu, MenuItemConstructorOptions, Tray } from "electron";
 import { autorun } from "mobx";
 
 import { requestNavigateToList } from "@aca/desktop/bridge/navigation";
@@ -81,22 +81,21 @@ function updateContextMenu(tray: Tray, lists: ApplicationTrayList[]) {
 }
 
 export function initializeTrayHandlers() {
-  const iconImage = nativeImage.createFromPath(trayIcons.light).resize({ width: 20, height: 20, quality: "best" });
-  const iconImageWithIndicator = nativeImage
-    .createFromPath(trayIcons.lightIndicator)
-    .resize({ width: 20, height: 20, quality: "best" });
+  const isDarkMode = getObservedDarkMode();
 
-  const tray = new Tray(iconImage);
+  const tray = new Tray(isDarkMode ? trayIcons.light : trayIcons.dark);
 
   autorun(() => {
+    // Don't remove this - otherwise it will not be observed
+    const isDarkMode = getObservedDarkMode();
     const { lists } = applicationTrayStateBridge.get();
 
     const shouldShowIndicator = getShouldShowIndicator(lists);
 
     if (shouldShowIndicator) {
-      tray.setImage(iconImageWithIndicator);
+      tray.setImage(isDarkMode ? trayIcons.lightIndicator : trayIcons.darkIndicator);
     } else {
-      tray.setImage(iconImage);
+      tray.setImage(isDarkMode ? trayIcons.light : trayIcons.dark);
     }
 
     updateContextMenu(tray, lists);
