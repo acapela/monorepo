@@ -156,6 +156,14 @@ Similar to the slack integration, setting up Linear is optional in development.
 2. Set the app name and set the redirect URL to `localhost:3000`.
 3. Configure `CLICKUP_CLIENT_ID` and `CLICKUP_CLIENT_SECRET` with the provided client id and client secret.
 
+### Gmail
+
+Get a Google service account key JSON file, through the console or from your colleagues. Specifiy its path in `GOOGLE_APPLICATION_CREDENTIALS`.
+
+1. Head over to our a topic within Google's PubSub (for example https://console.cloud.google.com/cloudpubsub/topic/detail/acapela-gmails-dev?project=meetnomoreapp) and create a new subscription for it.
+2. Set the `GMAIL_TOPIC_NAME` and `GMAIL_SUBSCRIPTION_NAME`
+3. Make sure the newly created subscription has all the necessary permissions, which you can do by comparing it with our [dev subscription](https://console.cloud.google.com/cloudpubsub/subscription/detail/acapela-gmails-dev-sub?project=meetnomoreapp) (click "Show info panel" to see the permissions)
+
 ## Commit Message Convention
 
 This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
