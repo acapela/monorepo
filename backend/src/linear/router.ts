@@ -126,7 +126,7 @@ router.get("/v1/linear/unlink", async (req: Request, res: Response) => {
     ]);
   }
 
-  res.redirect(`https://linear.app/`);
+  res.status(HttpStatus.OK).send("ok");
 });
 
 async function saveComment(payload: CommentWebhook) {

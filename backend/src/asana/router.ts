@@ -126,8 +126,6 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   await Promise.all(projects.map((p) => createWebhookForProject(p)));
 });
 
-const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/asana/done`;
-
 // unlink removes the asana account and all webhooks
 router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
@@ -154,7 +152,7 @@ router.get("/v1/asana/unlink", async (req: Request, res: Response) => {
 
   await db.asana_account.deleteMany({ where: { user_id: userId } });
 
-  res.redirect(doneEndpoint);
+  res.status(HttpStatus.OK).send("ok");
 });
 
 // unlink removes a single project from the user
@@ -182,10 +180,6 @@ router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
     db.asana_webhook.deleteMany({ where: { id: webhookId } }),
   ]);
 
-  res.redirect(doneEndpoint);
-});
-
-router.get("/v1/asana/done", async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).send("ok");
 });
 

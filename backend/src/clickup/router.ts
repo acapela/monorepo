@@ -177,11 +177,6 @@ router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => 
   await processEvent(webhook, team);
 });
 
-const doneEndpoint = `${process.env.FRONTEND_URL}/api/backend/v1/clickup/done`;
-router.get("/v1/clickup/done", async (req: Request, res: Response) => {
-  res.status(HttpStatus.OK).send("ok");
-});
-
 router.get("/v1/clickup/unlink", async (req: Request, res: Response) => {
   const userId = getUserIdFromRequest(req);
   const clickupAccount = await db.clickup_account.findFirst({
@@ -212,7 +207,7 @@ router.get("/v1/clickup/unlink", async (req: Request, res: Response) => {
 
   await db.clickup_account.deleteMany({ where: { user_id: userId } });
 
-  res.redirect(doneEndpoint);
+  res.status(HttpStatus.OK).send("ok");
 });
 
 router.get("/v1/clickup/unlink/:team", async (req: Request, res: Response) => {
@@ -245,5 +240,5 @@ router.get("/v1/clickup/unlink/:team", async (req: Request, res: Response) => {
     await db.clickup_account_to_team.delete({ where: { account_id_team_id: pick(team, "team_id", "account_id") } });
   }
 
-  res.redirect(doneEndpoint);
+  res.status(HttpStatus.OK).send("ok");
 });

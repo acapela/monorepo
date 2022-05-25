@@ -245,7 +245,7 @@ router.get("/v1/github/unlink/:installation", async (req: Request, res: Response
   if (isNaN(installationId)) throw new BadRequestError("installation id is invalid");
 
   await unlinkInstallation(userId, installationId);
-  res.redirect(doneEndpoint);
+  res.status(HttpStatus.OK).send("ok");
 });
 
 router.get("/v1/github/unlink", async (req: Request, res: Response) => {
@@ -274,5 +274,5 @@ router.get("/v1/github/unlink", async (req: Request, res: Response) => {
   } catch (e) {
     logger.error("could not unlink account: " + e);
   }
-  res.redirect(doneEndpoint);
+  res.status(HttpStatus.OK).send("ok");
 });
