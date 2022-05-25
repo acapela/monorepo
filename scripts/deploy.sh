@@ -66,7 +66,7 @@ fi
 
 # all means we want to deploy api and frontend
 if [[ "${APP_NAME}" == "all" ]]; then
-  echo "deploying frontend and api..."
+  echo "deploying frontend, api and hooks..."
   ./scripts/send-slack-message.sh ":rocket: deploying version *${APP_VERSION}* to *${STAGE}*" "$STAGE"
   ./scripts/deploy.sh -s "$STAGE" -a api -v "$APP_VERSION" -S
   ./scripts/deploy.sh -s "$STAGE" -a hooks -v "$APP_VERSION" -S
