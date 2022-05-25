@@ -1,9 +1,11 @@
+import axios from "axios";
 import { BrowserWindow } from "electron";
 
 import { linearAuthTokenBridgeValue, loginLinearBridge } from "@aca/desktop/bridge/auth";
+import { getAcapelaAuthToken } from "@aca/desktop/electron/auth/acapela";
 import { FRONTEND_URL } from "@aca/desktop/lib/env";
 
-import { RETRY_DELAY_MS, RETRY_TIMES, authWindowDefaultOptions, userAgent } from "./utils";
+import { RETRY_DELAY_MS, authWindowDefaultOptions, userAgent } from "./utils";
 
 export async function loginLinear() {
   const window = new BrowserWindow({ ...authWindowDefaultOptions });
@@ -28,6 +30,11 @@ export async function loginLinear() {
 }
 
 export async function logoutLinear() {
+  const acapelaAuthToken = await getAcapelaAuthToken();
+  await axios.get(`${FRONTEND_URL}/api/backend/v1/linear/unlink`, {
+    headers: { Cookie: `next-auth.session-token=${acapelaAuthToken}` },
+  });
+
   const window = new BrowserWindow({
     opacity: 0,
     transparent: false,
@@ -40,16 +47,12 @@ export async function logoutLinear() {
   });
   window.setIgnoreMouseEvents(true);
 
-  await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/linear/unlink", { userAgent });
+  await window.webContents.loadURL("https://linear.app", { userAgent });
 
-  for (let i = 0; i < RETRY_TIMES; i++) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
-    if (window.isDestroyed()) return;
-    if (!window.webContents.getURL().startsWith("https://linear.app")) continue;
-    await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore");', true);
-    await linearAuthTokenBridgeValue.set(false);
-    break;
-  }
+  await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+  if (window.isDestroyed()) return;
+  await window.webContents.executeJavaScript('localStorage.removeItem("ApplicationStore");', true);
+  await linearAuthTokenBridgeValue.set(false);
 
   window.close();
 }
