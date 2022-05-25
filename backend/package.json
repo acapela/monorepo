@@ -4,7 +4,7 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "scripts": {
-    "test": "APP=backend jest src --runInBand",
+    "test": "APP=backend jest src --runInBand --force-exit",
     "test:watch": "APP=backend jest src --runInBand --watch",
     "dev:inspect": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
