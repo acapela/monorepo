@@ -183,7 +183,10 @@ async function createNotificationFromMessage(
   }
 
   const [{ permalink }, { user: authorUser }, { channel: slackChannel }] = await Promise.all([
-    slackClient.chat.getPermalink({ token: userToken, channel, message_ts: messageTs }),
+    slackClient.chat.getPermalink({ token: userToken, channel, message_ts: messageTs }).catch((error) => {
+      logger.error(error, `Failed to get permalink for message ${messageTs} in channel ${channel}`);
+      throw error;
+    }),
     authorSlackUserId ? slackClient.users.info({ token: userToken, user: authorSlackUserId }) : { user: null },
     is_IM_or_MPIM
       ? // we only need to fetch info for channels, as we use their name for the notification title
