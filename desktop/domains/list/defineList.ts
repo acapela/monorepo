@@ -5,13 +5,17 @@ import { cachedComputed } from "@aca/clientdb";
 import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
-import { NotificationEntity, getReverseTime, notificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
 import { uiStore } from "@aca/desktop/store/ui";
 import { findAndMap } from "@aca/shared/array";
 import { assert, unsafeAssertType } from "@aca/shared/assert";
+import { weakMemoize } from "@aca/shared/deepMap";
+import { runUntracked } from "@aca/shared/mobx/utils";
 import { None } from "@aca/shared/none";
+
+type SortResult = string | number;
 
 type DefineListConfig = {
   id: string;
@@ -21,6 +25,7 @@ type DefineListConfig = {
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
   dontPreload?: boolean;
+  sort?: (notification: NotificationEntity) => SortResult;
 } & (
   | { getNotifications: () => NotificationEntity[] }
   | { filter: EntityFilterInputByDefinition<typeof notificationEntity> }
@@ -44,6 +49,15 @@ function iterateAndCollect<T>(start: T, iterator: (notification: T) => T | null,
   return collection;
 }
 
+/**
+ * We assume created_at never changes so:
+ * we don't need to track it to avoid creating observable connections
+ * we can memoize the result per notification
+ */
+const getNotificationCreatedAtTimestamp = weakMemoize((notification: NotificationEntity) => {
+  return runUntracked(() => new Date(notification.created_at).getTime());
+});
+
 export function defineNotificationsList({
   id,
   name,
@@ -52,6 +66,7 @@ export function defineNotificationsList({
   icon,
   dontShowCount = false,
   dontPreload = false,
+  sort,
   ...config
 }: DefineListConfig) {
   const getActiveNotification = cachedComputed(() => (uiStore.activeListId === id ? uiStore.activeNotification : null));
@@ -59,15 +74,30 @@ export function defineNotificationsList({
   const getRawNotificationsQuery = cachedComputed(function getRawNotificationsQuery() {
     const db = getDb();
 
-    let notifications = "filter" in config ? db.notification.find(config.filter) : config.getNotifications();
+    const notifications: NotificationEntity[] =
+      "filter" in config ? db.notification.find(config.filter) : config.getNotifications();
 
+    // It is possible we'll add active notification - but only if we do - we need to adjust default sorting
+    let notificationsWithActive = notifications;
     // Retains the active notification in the active list, to enable navigating to the next/previous notification
     const activeNotification = getActiveNotification();
     if (activeNotification && !notifications.some((n) => n == activeNotification)) {
-      notifications = orderBy([...notifications, activeNotification], (n) => getReverseTime(n.created_at));
+      notificationsWithActive = [...notifications, activeNotification];
     }
 
-    return notifications;
+    // If we have custom sort - we always apply it
+    if (sort) {
+      return orderBy(notificationsWithActive, sort);
+    }
+
+    // We don't have custom sort
+    if (notificationsWithActive === notifications) {
+      // If we did not append custom active item - no need to re-sort
+      return notificationsWithActive;
+    }
+
+    // We did add active item - we need to sort again
+    return orderBy(notifications, (n) => -getNotificationCreatedAtTimestamp(n));
   });
 
   const getAllGroupedNotifications = cachedComputed(function getAllGroupedNotifications() {
