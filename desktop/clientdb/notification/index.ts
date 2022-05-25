@@ -141,6 +141,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     });
 
     const connections = {
+      get resolvedAtTimestamp() {
+        if (!notification.resolved_at) return null;
+
+        return new Date(notification.resolved_at).getTime();
+      },
       get inner(): undefined | EntityByDefinition<typeof innerEntities[number]> {
         return getInner();
       },

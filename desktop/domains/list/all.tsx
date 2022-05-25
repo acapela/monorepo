@@ -36,6 +36,7 @@ export const resolvedList = defineNotificationsList({
   icon: <IconListUnordered4 />,
   dontShowCount: true,
   filter: { isResolved: true },
+  sort: (notification) => -1 * notification.resolvedAtTimestamp!,
   dontPreload: true,
 });
 
