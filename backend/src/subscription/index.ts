@@ -10,7 +10,7 @@ import { routes } from "@aca/shared/routes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08-27" });
 
-const PRICES = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, business: process.env.STRIPE_PRICE_BUSINESS_ID! };
+const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, business: process.env.STRIPE_PRICE_BUSINESS_ID! };
 
 export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPlan }, SwitchSubscriptionPlanOutput> = {
   actionName: "switch_subscription_plan",
@@ -51,7 +51,7 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
         cancel_at_period_end: false,
         // Since cancellation is immediate, we currently pay out all the remaining days (which is what proration means)
         proration_behavior: "create_prorations",
-        items: [{ id: subscription.items.data[0].id, price: PRICES[plan] }],
+        items: [{ id: subscription.items.data[0].id, price: PRICE_IDS[plan] }],
       });
       await db.user.update({ where: { id: userId }, data: { subscription_plan: plan } });
 
@@ -69,7 +69,7 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
 
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-      line_items: [{ price: PRICES[plan], quantity: 1 }],
+      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       mode: "subscription",
       success_url: checkedOutURL + "?reason=success",
       cancel_url: checkedOutURL + "?reason=cancel",
@@ -93,7 +93,7 @@ async function handleStripeEvent(event: Stripe.Event) {
         break;
       }
       const stripeCustomerId = typeof customer == "string" ? customer : customer.id;
-      const isBusiness = getPriceIdFromSubscription(subscription) == PRICES.business;
+      const isBusiness = getPriceIdFromSubscription(subscription) == PRICE_IDS.business;
       await db.user.update({
         where: { stripe_customer_id: stripeCustomerId },
         data: { stripe_subscription_id: subscription.id, subscription_plan: isBusiness ? "business" : "premium" },

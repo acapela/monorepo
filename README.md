@@ -288,6 +288,18 @@ yarn frontend add react
 
 Another example might be `yarn backend test:watch`, etc.
 
+## Migrations
+
+When making mutative (i.e. non-additive) changes to the database schema it is important to do it in a staggered fashion. The recommended order of operation is:
+
+1. ClientDb entity fragment
+   1. By still keeping it in the server we make sure older clients still work, though we are not generally trying to stay backwards compatible for too long
+2. Hasura metadata
+   1. This prevents a failed metadata update (e.g. due to a deadlock) to leave metadata in an inconsistent state. We run migrations before the metadata refresh and this is unfortunately not a single transaction.
+3. Actual database schema migration
+
+It's recommended to space deploying these changes out over some time. Create yourself linear issues with deadlines to remember when to kick off the next phase.
+
 ## Shared configuration
 
 ### tsconfig
