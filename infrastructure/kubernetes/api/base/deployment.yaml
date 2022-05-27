@@ -57,4 +57,4 @@ spec:
               path: /healthz
             periodSeconds: 10
             timeoutSeconds: 10
-            failureThreshold: 15
+            failureThreshold: 30
