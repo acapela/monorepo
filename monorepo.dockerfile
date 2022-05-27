@@ -14,6 +14,9 @@ RUN npm install -g @install-binary/berglas@${BERGLAS_VERSION}
 ARG PRISMA_VERSION
 RUN npm install -g @prisma/client@${PRISMA_VERSION}
 
+ARG NEWRELIC_VERSION
+RUN npm install -g newrelic@${NEWRELIC_VERSION}
+
 ENV NODE_PATH=/usr/local/lib/node_modules
 ENV APP=backend
 ENV BACKEND_PORT=1337
