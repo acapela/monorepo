@@ -23,6 +23,7 @@ ENV BACKEND_PORT=1337
 ENV NODE_ENV=production
 EXPOSE 1337
 
+COPY ./newrelic.js ./
 COPY ./dist ./dist
 COPY ./scripts ./scripts
 COPY ./.prisma /usr/local/lib/node_modules/.prisma
