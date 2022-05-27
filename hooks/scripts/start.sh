@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-berglas exec -- node ./dist/hooks/index.js
+berglas exec -- node -r newrelic ./dist/hooks/index.js
