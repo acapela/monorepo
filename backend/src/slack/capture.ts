@@ -184,7 +184,10 @@ async function createNotificationFromMessage(
 
   const [{ permalink }, { user: authorUser }, { channel: slackChannel }] = await Promise.all([
     slackClient.chat.getPermalink({ token: userToken, channel, message_ts: messageTs }).catch((error) => {
-      logger.error(error, `Failed to get permalink for message ${messageTs} in channel ${channel}`);
+      logger.error(
+        error,
+        `Failed to get permalink for message ${messageTs} in channel ${channel} for user ${slackUserId}`
+      );
       throw error;
     }),
     authorSlackUserId ? slackClient.users.info({ token: userToken, user: authorSlackUserId }) : { user: null },
