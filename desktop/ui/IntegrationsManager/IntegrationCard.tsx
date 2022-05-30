@@ -63,7 +63,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
                 await switchSubscription("BUSINESS");
               }}
             >
-              Upgrade to our business plan
+              Upgrade to our ultimate plan
             </Button>
           ) : (
             <UIConnectAction>
