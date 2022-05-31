@@ -13,6 +13,7 @@ HASURA_VERSION=$(jq -r '.dependencies["@install-binary/hasura"]' ./package.json)
 PRISMA_VERSION="$(jq -r '.dependencies["@prisma/client"]' ./db/package.json)"
 BERGLAS_VERSION="$(jq -r '.dependencies["@install-binary/berglas"]' ./package.json)"
 NEWRELIC_VERSION="$(jq -r '.dependencies["newrelic"]' ./package.json)"
+HEAPDUMP_VERSION="$(jq -r '.dependencies["heapdump"]' ./package.json)"
 
 echo "[caddy]: running frontend build"
 yarn frontend:build
@@ -40,6 +41,7 @@ docker build \
   --build-arg PRISMA_VERSION="$PRISMA_VERSION" \
   --build-arg BERGLAS_VERSION="$BERGLAS_VERSION" \
   --build-arg NEWRELIC_VERSION="$NEWRELIC_VERSION" \
+  --build-arg HEAPDUMP_VERSION="$HEAPDUMP_VERSION" \
   -t "$MONOREPO_IMAGE_NAME_VERSION" -f ./monorepo.dockerfile ./backend
 docker tag "$MONOREPO_IMAGE_NAME_VERSION" "$MONOREPO_IMAGE_NAME"
 
