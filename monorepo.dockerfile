@@ -17,6 +17,9 @@ RUN npm install -g @prisma/client@${PRISMA_VERSION}
 ARG NEWRELIC_VERSION
 RUN npm install -g newrelic@${NEWRELIC_VERSION}
 
+ARG HEAPDUMP_VERSION
+RUN npm install -g heapdump@${HEAPDUMP_VERSION}
+
 ENV NODE_PATH=/usr/local/lib/node_modules
 ENV APP=backend
 ENV BACKEND_PORT=1337
