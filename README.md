@@ -346,10 +346,10 @@ Fetch production heapdump from the server and save it locally.
 
 ```bash
 # list all backend pods
-kubectl -n staging get pods -l app=api
+kubectl -n production get pods -l app=api
 
-# select one and setup a portforward
-kubectl -n staging port-forward api-7dc75f758c-h7sz4 38080:8080
+# select a pod and setup a port forwarding
+kubectl -n production port-forward api-7dc75f758c-h7sz4 38080:8080
 
 # save the heapdump locally
 curl -H 'Authorization: verysupersecure' http://localhost:38080/api/v1/debug/heapdump > "./backend-$(date +%s).heapsnapshot"
