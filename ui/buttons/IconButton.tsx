@@ -16,7 +16,8 @@ export interface IconButtonProps {
   title?: string;
   tooltip?: string;
   isDisabled?: boolean;
-  iconSizeRatio?: number;
+  isCircular?: boolean;
+  iconScaleFactor?: number;
   indicateNotification?: boolean;
 }
 
@@ -24,7 +25,7 @@ export interface IconButtonProps {
  * By default icon occupy 0.75 of circle size. It might 'look' good for various icons or use cases to modify this ratio.
  * eg. 0.5 means if circle has 32px size, icon will have 16px size.
  */
-export const DEFAULT_ICON_SIZE_RATIO = 1.45;
+export const DEFAULT_ICON_SCALE_FACTOR = 1;
 
 export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(function CircleIconButton(
   {
@@ -35,7 +36,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
     className,
     tooltip,
     isDisabled = false,
-    iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
+    iconScaleFactor = DEFAULT_ICON_SCALE_FACTOR,
     indicateNotification,
     ...props
   }: IconButtonProps,
@@ -51,7 +52,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
       $size={size}
       $isDisabled={isDisabled}
       disabled={isDisabled}
-      iconSizeRatio={iconSizeRatio}
+      iconScaleFactor={iconScaleFactor}
       {...props}
     >
       {icon}
@@ -78,7 +79,7 @@ export const UIButton = styled.button<{
   $kind: ButtonKind;
   $size: ButtonSize;
   $isDisabled: boolean;
-  iconSizeRatio: number;
+  iconScaleFactor: number;
 }>`
   display: flex;
   position: relative;
@@ -88,13 +89,13 @@ export const UIButton = styled.button<{
   outline: none;
 
   ${theme.radius.button};
-  ${theme.transitions.hover()};
 
+  ${theme.transitions.hover()};
   ${(props) => getButtonKindStyles(props.$kind)}
   ${(props) => getButtonSizeStyles(props.$size).square}
 
   svg {
-    font-size: ${(props) => props.iconSizeRatio}em;
+    transform: scale(${(props) => props.iconScaleFactor});
   }
 
   ${(props) =>

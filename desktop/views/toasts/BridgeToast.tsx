@@ -11,7 +11,7 @@ interface Props extends MetaToastProps {
 }
 
 export function BridgeToast({ toast, pauseAutoHide, disablePositionalAnimations, animationsDelay }: Props) {
-  const { key, message, action, durationMs = 3 * SECOND, title, isInfinite = false } = toast;
+  const { key, message, action, durationMs = 5 * SECOND, title, isInfinite = false } = toast;
 
   return (
     <Toast
