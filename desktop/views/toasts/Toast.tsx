@@ -90,7 +90,7 @@ export function Toast({
       transition={{ duration: 0.25, delay: animationsDelay }}
     >
       <UIToast ref={toastRef}>
-        {true && (
+        {isHovered && (
           <FlyingCloseButton
             onClick={() => {
               handleCloseRequest();
@@ -182,6 +182,6 @@ const FlyingCloseButton = styled(IconButton)`
   position: absolute;
   top: 0;
   right: 0;
-  margin-top: -12px;
-  margin-right: -12px;
+  margin-top: -8px;
+  margin-right: -8px;
 `;

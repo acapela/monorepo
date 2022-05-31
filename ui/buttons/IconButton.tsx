@@ -95,6 +95,7 @@ export const UIButton = styled.button<{
   ${(props) => getButtonSizeStyles(props.$size).square}
 
   svg {
+    font-size: ${DEFAULT_ICON_SIZE_RATIO}em;
     transform: scale(${(props) => props.iconScaleFactor});
   }
 
