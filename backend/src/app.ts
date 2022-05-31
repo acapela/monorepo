@@ -1,15 +1,14 @@
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
 
 import { Server, ServerResponse, createServer } from "http";
-import { resolve } from "path";
 import { promisify } from "util";
+import { getHeapSnapshot } from "v8";
 
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
 import axios from "axios";
 import cookieParser from "cookie-parser";
 import express, { Application, Request, urlencoded } from "express";
-import heapdump from "heapdump";
 import securityMiddleware from "helmet";
 
 import { listenToGmailSubscription } from "@aca/backend/src/gmail/capture";
@@ -42,12 +41,8 @@ export function setupServer(): Server {
 
   app.get("/api/v1/debug/heapdump", (req, res) => {
     if (req.get("Authorization") !== "verysupersecure") return res.status(401).send("Unauthorized");
-    heapdump.writeSnapshot(function (err, filename) {
-      if (err) return res.status(500).send(err);
-      if (!filename) return res.status(500).send("no filename");
-      logger.info(`Heapdump written to ${filename}`);
-      res.sendFile(resolve(filename));
-    });
+    const snapshot = getHeapSnapshot();
+    snapshot.pipe(res);
   });
 
   // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
