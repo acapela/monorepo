@@ -339,3 +339,19 @@ The application value `all` releases the desktop app and deploys the frontend an
 If the application value is only set to `backend` the script will only update the backend service without creating a new releases of the desktop app.
 
 The version value `latest` will deploy the latest release. To deploy a specific version you can pass here the exact version number (e.g. `1.2.3`).
+
+## Heapdump
+
+Fetch production heapdump from the server and save it locally.
+
+```bash
+# list all backend pods
+kubectl -n staging get pods -l app=api
+
+# select one and setup a portforward
+kubectl -n staging port-forward api-7dc75f758c-h7sz4 38080:8080
+
+# save the heapdump locally
+curl -H 'Authorization: verysupersecure' http://localhost:38080/api/v1/debug/heapdump > "./backend-$(date +%s).heapsnapshot"
+
+```
