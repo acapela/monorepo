@@ -23,7 +23,7 @@ function createToastData({
   key = getUUID(),
   message,
   action,
-  durationMs = 9 * SECOND,
+  durationMs = 5 * SECOND,
   title,
   isInfinite,
 }: ToastInput): ToastBridgeData {

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { ActionData } from "@aca/desktop/actions/action";
 import { removeToast } from "@aca/desktop/domains/toasts/store";
@@ -89,15 +89,18 @@ export function Toast({
       presenceStyles={getAnimationStyles()}
       transition={{ duration: 0.25, delay: animationsDelay }}
     >
-      <UIToast ref={toastRef} $makeSpacingForCloseButton={!title}>
-        <FlyingCloseButton
-          onClick={() => {
-            handleCloseRequest();
-          }}
-          size="compact"
-          kind="transparent"
-          icon={<IconCross />}
-        ></FlyingCloseButton>
+      <UIToast ref={toastRef}>
+        {true && (
+          <FlyingCloseButton
+            onClick={() => {
+              handleCloseRequest();
+            }}
+            size="circle"
+            kind="tertiary"
+            iconScaleFactor={1.5}
+            icon={<IconCross />}
+          ></FlyingCloseButton>
+        )}
         <UICopy>
           {title && <UITitle>{title}</UITitle>}
           {message && (
@@ -130,27 +133,24 @@ const UIAnimator = styled(PresenceAnimator)`
   will-change: transform, filter;
 `;
 
-const UIToast = styled.div<{ $makeSpacingForCloseButton: boolean }>`
+const UIToast = styled.div`
   ${theme.colors.layout.backgroundAccent.withBorder.asBg};
   ${theme.box.panel.toast.padding.radius}
   ${theme.shadow.modal};
 
-  margin: 5px 0;
-
+  width: 320px;
+  height: fit-content;
   display: flex;
-  align-items: stretch;
+  align-items: center;
 
-  ${(props) =>
-    props.$makeSpacingForCloseButton &&
-    css`
-      padding-right: 24px;
-    `}
-  gap: 16px;
+  padding: 16px;
+  gap: 8px;
 `;
 
 const UICopy = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
   word-break: break-word;
   flex-grow: 1;
@@ -158,8 +158,6 @@ const UICopy = styled.div`
 
 const UITitle = styled.div`
   ${theme.typo.content.medium};
-  /* spacing for close button */
-  padding-right: 10px;
 `;
 
 const UIDescriptionHolder = styled.div`
@@ -176,12 +174,14 @@ const UIDescription = styled.div<{ $isOnlyContent: boolean }>`
   ${(props) => props.$isOnlyContent && theme.typo.content};
 `;
 
-const UIActions = styled.div`
-  align-self: flex-end;
-`;
+const UIActions = styled.div``;
 
 const FlyingCloseButton = styled(IconButton)`
+  ${theme.colors.layout.backgroundAccent.withBorder.asBg};
+
   position: absolute;
-  top: 5px;
+  top: 0;
   right: 0;
+  margin-top: -12px;
+  margin-right: -12px;
 `;
