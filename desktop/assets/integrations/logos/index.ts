@@ -10,6 +10,7 @@ import figma from "./figma.png";
 import github from "./github.svg";
 import gmail from "./gmail.svg";
 import googleSuite from "./google_suite.png";
+import google from "./google.svg";
 import jira from "./jira.svg";
 import linear from "./linear.png";
 import notion from "./notion.png";
@@ -32,4 +33,5 @@ export const integrationLogos = {
   driveJamboard,
   googleSuite,
   clickup,
+  google,
 };

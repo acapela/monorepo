@@ -2,7 +2,7 @@ import { css } from "styled-components";
 
 export const layout = {
   settingsPageMaxWidth: css`
-    max-width: 1024px;
+    max-width: 1240px;
     width: 100%;
   `,
 };
