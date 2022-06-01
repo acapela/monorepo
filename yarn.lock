@@ -36,6 +36,7 @@ __metadata:
     "@types/mime-types": ^2.1.1
     "@types/redlock": ^4.0.3
     "@types/supertest": ^2.0.11
+    "@types/tsscmp": ^1.0.0
     "@types/uuid": ^8.3.4
     airtable: ^0.11.2
     asana: ^0.18.6
@@ -67,6 +68,7 @@ __metadata:
     ts-node: ^10.4.0
     ts-node-dev: ^1.1.8
     tsc-watch: ^4.6.0
+    tsscmp: ^1.0.6
   peerDependencies:
     axios: "*"
     date-fns: "*"

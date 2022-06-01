@@ -1,6 +1,8 @@
+import { createHmac } from "crypto";
+
 import { AnyMiddlewareArgs } from "@slack/bolt";
-import { verifySignatureAndParseBody } from "@slack/bolt/dist/receivers/ExpressReceiver";
 import { Express } from "express";
+import tsscmp from "tsscmp";
 
 import { getIndividualSlackInstallURL } from "@aca/backend/src/slack/install";
 import { getPublicBackendURL } from "@aca/backend/src/utils";
@@ -64,4 +66,34 @@ export function setupSlack(app: Express) {
       customProperties: {},
     });
   });
+}
+
+// adapted from https://github.com/slackapi/bolt-js/blob/23cc0e16494c22783222821ebff789cfdaabeebd/src/receivers/ExpressReceiver.ts#L488
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function verifySignatureAndParseBody(signingSecret: string, rawBody: string, headers: any) {
+  const {
+    "x-slack-signature": signature,
+    "x-slack-request-timestamp": requestTimestamp,
+    "content-type": contentType,
+  } = headers;
+
+  const ts = Number(requestTimestamp);
+  // eslint-disable-next-line no-restricted-globals
+  if (isNaN(ts)) {
+    throw new Error("Slack request signing verification failed. Timestamp is invalid.");
+  }
+
+  const hmac = createHmac("sha256", signingSecret);
+  const [version, hash] = signature.split("=");
+  hmac.update(`${version}:${ts}:${rawBody}`);
+
+  if (!tsscmp(hash, hmac.digest("hex"))) {
+    throw new Error("Slack request signing verification failed. Signature mismatch.");
+  }
+
+  if (contentType === "application/x-www-form-urlencoded") {
+    throw new Error("Slack: Content-Type application/x-www-form-urlencoded is not supported.");
+  }
+
+  return JSON.parse(rawBody);
 }

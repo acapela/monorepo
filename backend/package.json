@@ -51,7 +51,8 @@
     "rfc4648": "^1.5.1",
     "slack-block-builder": "^2.4.2",
     "stripe": "^9.1.0",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.4.0",
+    "tsscmp": "^1.0.6"
   },
   "devDependencies": {
     "@types/asana": "^0.18.5",
@@ -64,6 +65,7 @@
     "@types/mime-types": "^2.1.1",
     "@types/redlock": "^4.0.3",
     "@types/supertest": "^2.0.11",
+    "@types/tsscmp": "^1.0.0",
     "@types/uuid": "^8.3.4",
     "esbuild": "^0.14.26",
     "jest": "27.4.7",
