@@ -52,7 +52,7 @@ app.use(async (ctx, next) => {
 });
 
 // allow only json payloads
-app.use(bodyParser({ enableTypes: ["json"], jsonLimit: "5mb" }));
+app.use(bodyParser({ enableTypes: ["json", "form"], jsonLimit: "5mb" }));
 
 // setup router
 const router = new Router();
