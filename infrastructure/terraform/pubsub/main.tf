@@ -30,4 +30,7 @@ resource "google_pubsub_subscription" "sub" {
   expiration_policy {
     ttl = "2678400s" # 31 days
   }
+  retry_policy {
+    minimum_backoff = "30s"
+  }
 }
