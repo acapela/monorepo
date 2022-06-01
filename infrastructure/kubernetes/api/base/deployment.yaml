@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: backend
-          image: eu.gcr.io/meetnomoreapp/monorepo:4.213.0
+          image: eu.gcr.io/meetnomoreapp/monorepo:4.226.4
           command: ["./scripts/start.sh"]
           resources:
             requests:
@@ -43,6 +43,7 @@ spec:
               port: 8080
               path: /healthz
             periodSeconds: 5
+            failureThreshold: 5
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
@@ -50,6 +51,7 @@ spec:
               path: /healthz
             periodSeconds: 5
             successThreshold: 3
+            failureThreshold: 2
             timeoutSeconds: 10
           startupProbe:
             httpGet:
