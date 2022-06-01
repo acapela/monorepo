@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: hooks
-          image: eu.gcr.io/meetnomoreapp/hooks:4.222.0
+          image: eu.gcr.io/meetnomoreapp/hooks:4.230.1
           command: ["./scripts/start.sh"]
           resources:
             requests:
