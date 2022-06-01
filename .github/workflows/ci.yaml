@@ -72,7 +72,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [typecheck, tests, e2e]
+    needs: [typecheck, tests]
     steps:
       - uses: actions/checkout@v2
       - name: semantic-release
