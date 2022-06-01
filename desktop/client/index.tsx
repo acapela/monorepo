@@ -21,8 +21,10 @@ import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 
 import { logStorage } from "../bridge/logger";
 import { registerLogEntryHandler } from "../domains/dev/makeLogger";
+import { RenderForLoggedInOnly } from "../ui/RenderForLoggedInOnly";
 import { BadgeCountManager } from "../views/BadgeCountManager";
 import { OnboardingFinishedAnimationManager } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
+import { PlanUpgadeCelebrationView } from "../views/PremiumPlan/PlanUpgadeCelebrationView";
 import { TrayManager } from "../views/TrayManager";
 import { UpdateInfo } from "../views/UpdateInfo/UpdateInfo";
 import { AppStyleProvider } from "./AppStyleProvider";
@@ -78,6 +80,10 @@ function App() {
             <SystemMenuManager />
             <CommandMenuManager />
             <RootView />
+            <RenderForLoggedInOnly>
+              <PlanUpgadeCelebrationView />
+            </RenderForLoggedInOnly>
+
             <DebugView />
           </RootErrorBoundary>
           <UpdateInfo />

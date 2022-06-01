@@ -5,12 +5,14 @@ import styled, { css } from "styled-components";
 import { openFeedbackWidget } from "@aca/desktop/domains/feedbackWidget";
 import { getEnabledIntegrationClientList } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
+import { getCurrentPlan } from "@aca/desktop/domains/plan/api";
 import { onboardingStore } from "@aca/desktop/store/onboarding";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconCheck } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
+import { UpgradePlanBadge } from "./plan/UpgradePlanBadge";
 import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
@@ -18,6 +20,7 @@ import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageCon
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageConnectTools = observer(({ onContinue, continueLabel = "Continue" }: OnboardingStageProps) => {
+  const currentPlan = getCurrentPlan();
   const canContinue = onboardingStore.hasLinkedApps;
   return (
     <OnboardingStageContainer>
@@ -65,6 +68,11 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
             </Button>
           </OnboardingAnimationItem>
         </UIButtons>
+        {currentPlan !== "BUSINESS" && (
+          <OnboardingAnimationItem>
+            <UpgradePlanBadge />
+          </OnboardingAnimationItem>
+        )}
       </OnboardingStageSections>
     </OnboardingStageContainer>
   );

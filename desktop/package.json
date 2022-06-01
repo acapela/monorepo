@@ -33,6 +33,7 @@
     "@sentry/cli": "^1.74.4",
     "@sentry/electron": "^3.0.7",
     "@sentry/react": "^6.19.7",
+    "@types/canvas-confetti": "^1.4.2",
     "@types/electron-json-storage": "^4.5.0",
     "@types/jest": "^27.4.1",
     "@types/node-cleanup": "^2.1.2",
@@ -81,5 +82,8 @@
       "releaseType": "release"
     },
     "npmRebuild": false
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.5.1"
   }
 }
