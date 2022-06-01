@@ -47,6 +47,12 @@ handle_path /api/backend/v1/linear/webhook {
 	reverse_proxy {$HOOKS_HOST}
 }
 
+handle_path /api/backend/slack/events {
+	rewrite * /slack/events
+	reverse_proxy {$HOOKS_HOST}
+}
+
+
 handle {
 	root * /var/www/frontend
 	file_server

@@ -63,6 +63,17 @@ router.post("/:service/:id?", async (ctx) => {
   const serviceName = ctx.params.service as Service;
   if (!allServices.includes(serviceName)) throw new APIError(404, "service not found");
 
+  if (serviceName === "slack") {
+    if (ctx.request.body?.type === "url_verification") {
+      ctx.body = { challenge: ctx.request.body.challenge };
+      return;
+    }
+    if (ctx.request.body?.ssl_check) {
+      ctx.body = "ssl check ok";
+      return;
+    }
+  }
+
   await publishWebhook(serviceName, ctx.request.rawBody, ctx.params, ctx.request.headers);
   ctx.body = "ok";
 });
