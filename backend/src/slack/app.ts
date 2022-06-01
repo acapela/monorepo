@@ -95,7 +95,7 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
   }
 }
 
-const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
+export const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
   clientId: SLACK_CLIENT_ID,
   clientSecret: SLACK_CLIENT_SECRET,
@@ -151,6 +151,8 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   },
 
   installerOptions: {
+    redirectUriPath: "/oauth_redirect",
+    installPath: "/install",
     legacyStateVerification: true,
     callbackOptions: {
       success(installation, options, req, res) {
@@ -178,7 +180,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 
 export const slackReceiver = new SlackBolt.ExpressReceiver({
   ...sharedOptions,
-  endpoints: { events: "/slack/events", commands: "/slack/commands", options: "/slack/options" },
+  endpoints: { events: "/events", commands: "/commands", options: "/options" },
   unhandledRequestHandler() {
     // We don't want this to show up as an error, as we have old installations on prod for which it keeps showing up
     logger.warn(
