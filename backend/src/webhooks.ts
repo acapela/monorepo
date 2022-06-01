@@ -18,7 +18,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
       lock = await acquireLock(service, message.id);
       if (!(await markAsProcessed(service, message.id))) {
         logger.info(`message ${message.id} was already processed`);
-        await lock.unlock();
+        lock.unlock().catch((err) => logger.warn("unlock error (processed)", err));
         return;
       }
       const data = JSON.parse(message.data.toString());
@@ -35,7 +35,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
       logger.error(err);
       Sentry.captureException(err);
     }
-    if (lock) await lock.unlock();
+    if (lock) lock.unlock().catch((err) => logger.warn("unlock error", err));
   });
   subscription.on("error", (err) => {
     logger.error(err);
