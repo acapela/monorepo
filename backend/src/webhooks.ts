@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/node";
 
 import { logger } from "@aca/shared/logger";
 
-import { acquireLock, markAsProcessed } from "./pubsub";
+import { acquireLock, markAsProcessed, removeMarkAsProcessed } from "./pubsub";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ProcessFunc = (rawBody: string, params: any, headers: any) => Promise<void>;
@@ -22,8 +22,15 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
         return;
       }
       const data = JSON.parse(message.data.toString());
-      await processFn(data.rawBody, data.params, data.headers);
-      message.ack();
+      try {
+        await processFn(data.rawBody, data.params, data.headers);
+        message.ack();
+      } catch (err) {
+        logger.error(err);
+        Sentry.captureException(err);
+        // the messaged could not be processed, unmark it
+        await removeMarkAsProcessed(service, message.id);
+      }
     } catch (err) {
       logger.error(err);
       Sentry.captureException(err);

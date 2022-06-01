@@ -26,6 +26,14 @@ export async function markAsProcessed(type: string, messageId: string): Promise<
   return true;
 }
 
+export async function removeMarkAsProcessed(type: string, messageId: string): Promise<void> {
+  try {
+    await db.processed_message.delete({ where: { id: `${type}:${messageId}` } });
+  } catch (e) {
+    logger.warn("removeMarkAsProcessed failed", e);
+  }
+}
+
 export async function cleanupProcessedMessages() {
   const deleted = await db.processed_message.deleteMany({
     // cleanup messages older than 7 days
