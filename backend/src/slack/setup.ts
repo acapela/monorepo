@@ -25,6 +25,16 @@ export function setupSlack(app: Express) {
     res.send("Success! Your workspace can be integrated with Acapela.");
   });
 
+  setupSlackCapture(slackApp);
+
+  // this function is used to prefilter event types before passing them to bolt
+  function checkEventType(type: string) {
+    let matches = 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (slackApp as any).listeners.forEach((l: any) => l[1]({ event: { type }, next: () => matches++ }));
+    return matches > 0;
+  }
+
   // listen for slack events
   listenForWebhooks("slack", async function (rawBody: string, params, headers) {
     if (params.id !== "events") {
@@ -39,6 +49,11 @@ export function setupSlack(app: Express) {
       return;
     }
 
+    if (body.type === "event_callback" && !checkEventType(body.event.type)) {
+      logger.info(`ignoring slack event: ${body.event.type}`);
+      return;
+    }
+
     await slackApp.processEvent({
       body,
       // webhook was already acknowledged by the hooks service, so we pass only a nop function here
@@ -49,6 +64,4 @@ export function setupSlack(app: Express) {
       customProperties: {},
     });
   });
-
-  setupSlackCapture(slackApp);
 }
