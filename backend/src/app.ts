@@ -6,7 +6,6 @@ import { getHeapSnapshot } from "v8";
 
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
-import axios from "axios";
 import cookieParser from "cookie-parser";
 import express, { Application, Request, urlencoded } from "express";
 import securityMiddleware from "helmet";
@@ -148,17 +147,10 @@ function setupGracefulShutdown(server: Server) {
       verbatim: true,
       "/healthz": async function () {
         await db.$executeRaw`SELECT 1;`;
-        const [hasuraRes, hasuraVersionRes] = await Promise.all([
-          axios.get(`${process.env.HASURA_ENDPOINT}/healthz`),
-          axios.get(`${process.env.HASURA_ENDPOINT}/v1/version`),
-        ]);
+
         return {
           version: process.env.SENTRY_RELEASE || "dev",
           db: true,
-          hasura: {
-            status: hasuraRes.data,
-            ...hasuraVersionRes.data,
-          },
         };
       },
     },
