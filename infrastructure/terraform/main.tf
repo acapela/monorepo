@@ -19,7 +19,7 @@ provider "google" {
 }
 
 locals {
-  webhook_types = toset(["linear"])
+  webhook_types = toset(["linear", "slack"])
   redis_stages  = toset(["staging", "production"])
 }
 
