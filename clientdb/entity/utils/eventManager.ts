@@ -1,7 +1,6 @@
-import { autorun, observable, runInAction } from "mobx";
+import { runInAction } from "mobx";
 
 import { IS_DEV } from "@aca/shared/dev";
-import { runUntracked } from "@aca/shared/mobx/utils";
 
 type EventHandler<T extends unknown[]> = (...args: T) => void;
 
@@ -30,36 +29,37 @@ export function createMobxAwareEventsEmmiter<EventsMap extends Record<string, un
 ): EventsEmmiter<EventsMap> {
   const subscribersMap = new Map<keyof EventsMap, Set<EventHandler<unknown[]>>>();
 
-  interface PendingEvent<Type extends keyof EventsMap> {
-    type: Type;
-    data: EventsMap[Type];
-  }
-
   // Keep pending events in observable array - we'll listen to this array and flush it instantly (in mobx world - instantly after last 'action' call is finished)
-  const pendingEvents = observable.array<PendingEvent<keyof EventsMap>>();
+  // TODO: seems it was bad idea - some check test 'observes deletes via query' -> autoRun was called twice as there was tearing between store items array and index array
+  // interface PendingEvent<Type extends keyof EventsMap> {
+  //   type: Type;
+  //   data: EventsMap[Type];
+  // }
+  // const pendingEvents = observable.array<PendingEvent<keyof EventsMap>>([], { deep: false });
 
-  const stop = autorun(() => {
-    if (!pendingEvents.length) return;
+  // const stop = autorun(() => {
+  //   if (!pendingEvents.length) return;
 
-    // Clone events list (flushing events might result in new events being creted)
-    const eventsClone = pendingEvents.slice();
+  //   // Clone events list (flushing events might result in new events being creted)
+  //   const eventsClone = pendingEvents.slice();
 
-    // Clear pending events before we start flushing
-    runUntracked(() => {
-      pendingEvents.clear();
-    });
+  //   // Clear pending events before we start flushing
+  //   runUntracked(() => {
+  //     pendingEvents.clear();
+  //   });
 
-    // Flush events in one batch
-    runInAction(() => {
-      eventsClone.forEach((event) => {
-        const listeners = getHandlersForEvent(event.type);
+  //   // Flush events in one batch
+  //   runInAction(() => {
+  //     eventsClone.forEach((event) => {
+  //       const listeners = getHandlersForEvent(event.type);
 
-        listeners.forEach((listener) => {
-          listener(...event.data);
-        });
-      });
-    });
-  });
+  //       listeners.forEach((listener) => {
+  //         listener(...event.data);
+  //       });
+  //     });
+  //   });
+
+  // });
 
   function getHandlersForEvent<N extends keyof EventsMap>(name: N): Set<EventHandler<EventsMap[N]>> {
     const existingSet = subscribersMap.get(name);
@@ -89,7 +89,11 @@ export function createMobxAwareEventsEmmiter<EventsMap extends Record<string, un
     }
 
     runInAction(() => {
-      pendingEvents.push({ type: name, data });
+      const listeners = getHandlersForEvent(name);
+
+      listeners.forEach((listener) => {
+        listener(...data);
+      });
     });
   }
 
@@ -97,7 +101,7 @@ export function createMobxAwareEventsEmmiter<EventsMap extends Record<string, un
     on,
     emit,
     destroy() {
-      stop();
+      // stop();
     },
   };
 }

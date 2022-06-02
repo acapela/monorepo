@@ -201,9 +201,8 @@ export function createEntityStore<Data, Connections>(
       runInAction(() => {
         items.push(entity);
         itemsMap[id] = entity;
+        events.emit("itemAdded", entity, source);
       });
-
-      events.emit("itemAdded", entity, source);
 
       return entity;
     },
@@ -272,9 +271,8 @@ export function createEntityStore<Data, Connections>(
         entity.cleanup.clean();
         didRemove = items.remove(entity);
         delete itemsMap[id];
+        events.emit("itemRemoved", entity, source);
       });
-
-      events.emit("itemRemoved", entity, source);
 
       return didRemove;
     },

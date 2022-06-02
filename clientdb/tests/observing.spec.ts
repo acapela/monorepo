@@ -1,4 +1,4 @@
-import { autorun } from "mobx";
+import { autorun, runInAction } from "mobx";
 
 import { createTestDb } from "./utils";
 
@@ -51,7 +51,9 @@ describe("clientdb tracking", () => {
     expect(tracker).toBeCalledTimes(1);
     expect(tracker).toHaveLastReturnedWith(2);
 
-    data.dogs.omars_rex.remove();
+    runInAction(() => {
+      data.dogs.omars_rex.remove();
+    });
 
     expect(tracker).toBeCalledTimes(2);
     expect(tracker).toHaveLastReturnedWith(1);

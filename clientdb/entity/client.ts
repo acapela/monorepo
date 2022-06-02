@@ -124,10 +124,6 @@ export function createEntityClient<Data, Connections>(
     linker
   );
 
-  async function initialize() {
-    persistanceManager.startPersistingChanges();
-  }
-
   let entityEventsCleanup: () => void;
 
   async function startSync() {
@@ -223,8 +219,6 @@ export function createEntityClient<Data, Connections>(
     fetchPersistedItems: persistanceManager.fetchPersistedItems,
     persistanceManager,
   };
-
-  initialize();
 
   return client;
 }
