@@ -110,7 +110,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
+  .addConnections((notification, { getEntity, updateSelf, cleanup }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -135,7 +135,6 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         snoozeDate,
         action(() => {
           snoozePassedAtom.reportChanged();
-          refreshIndex();
         })
       );
     });
