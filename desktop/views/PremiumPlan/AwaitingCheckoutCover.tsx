@@ -46,6 +46,7 @@ const UIHolder = styled(FadePresenceAnimator)`
   justify-content: center;
   flex-direction: column;
   gap: 40px;
+  z-index: ${theme.zIndex.top};
 
   ${UISpinner} {
     font-size: 32px;

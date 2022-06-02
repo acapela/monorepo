@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
+import { PremiumPlanView } from "@aca/desktop/views/PremiumPlan/PremiumPlanView";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconArrowRight, IconCross } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
-
-import { PremiumPlanView } from "../../PremiumPlan/PremiumPlanView";
 
 export const UpgradePlanBadge = observer(function OnboardingView() {
   const [isUpgrading, setIsUpgrading] = useState(false);
@@ -84,6 +83,7 @@ const UIUpgradeModal = styled(FadePresenceAnimator)`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: ${theme.zIndex.overlay};
 
   ${PremiumPlanView} {
     max-width: 960px;
