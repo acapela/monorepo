@@ -1,7 +1,7 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { getCurrentPlan } from "@aca/desktop/domains/plan/api";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -110,17 +110,25 @@ const UIHolder = styled(FadePresenceAnimator)`
   justify-content: center;
 `;
 
-const UIPanel = styled.div`
+const gradientSemiTransparent = theme.colors.layout.backgroundAccent.opacity(0.4);
+const gradientTransparent = theme.colors.layout.backgroundAccent.opacity(0);
+
+const accentGradientBackground = css`
   background: conic-gradient(
       from 180deg at 50% 25.96%,
-      rgba(38, 38, 38, 0) -50.97deg,
-      rgba(38, 38, 38, 0.4) 48.03deg,
+      ${gradientTransparent.value} -50.97deg,
+      ${gradientSemiTransparent.value} 48.03deg,
       #ff1a8c 180.43deg,
-      rgba(38, 38, 38, 0) 309.03deg,
-      rgba(38, 38, 38, 0.4) 408.03deg
+      ${gradientTransparent.value} 309.03deg,
+      ${gradientSemiTransparent.value} 408.03deg
     ),
-    #262626;
-  box-shadow: 0px 20px 50px 10px rgba(0, 0, 0, 0.2);
+    ${theme.colors.layout.backgroundAccent.value};
+`;
+
+const UIPanel = styled.div`
+  ${accentGradientBackground};
+
+  box-shadow: 0px 20px 50px 10px ${theme.colors.layout.background.opacity(0.2).value};
   border-radius: 10px;
   padding: 50px;
   max-width: 560px;
