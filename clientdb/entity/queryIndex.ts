@@ -1,3 +1,4 @@
+import { set } from "lodash";
 import { IObservableArray, ObservableMap, observable, observe, runInAction } from "mobx";
 import { Primitive } from "utility-types";
 
@@ -67,6 +68,12 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
    * Map keeping info to what index 'page' item currently belongs to
    */
   const currentItemIndexMap = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
+
+  try {
+    set(window, `__index.${store.definition.config.name}.${key}`, { observableIndex });
+  } catch (error) {
+    //
+  }
 
   function updateItemIndexWithValue(entity: TargetEntity, indexValue: TargetValue) {
     // Item might already be indexed somewhere
@@ -152,7 +159,8 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
   // We'll make sure we only observe key once per entity. We also need to save cleanup of observing for when entity is removed
   const entityDerievationWatching = new WeakMap<TargetEntity, () => void>();
 
-  function watchEntityForDerievedChange(entity: TargetEntity) {
+  function registerEntityForDerievedChanges(entity: TargetEntity) {
+    updateItemIndex(entity);
     if (entityDerievationWatching.has(entity)) {
       // Should not happen, but if does - could cause big bottlenecks
       console.warn("Bad state");
@@ -191,12 +199,12 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
         // Populate index with initial values
         updateItemIndex(entity);
         // Start watching using mobx
-        watchEntityForDerievedChange(entity);
+        registerEntityForDerievedChanges(entity);
       });
     });
 
     // We only need added/removed item
-    cleanup.next = store.events.on("itemAdded", watchEntityForDerievedChange);
+    cleanup.next = store.events.on("itemAdded", registerEntityForDerievedChanges);
     cleanup.next = store.events.on("itemRemoved", stopWatchingEntityForDerievedChange);
   }
 
