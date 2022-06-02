@@ -52,12 +52,12 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
           <Button
             isWide
             isDisabled={currentPlan === "PREMIUM"}
-            icon={<IconCheck />}
+            icon={currentPlan === "PREMIUM" ? <IconCheck /> : null}
             onClick={() => {
               onPlanChangeRequest("PREMIUM");
             }}
           >
-            {currentPlan === "PREMIUM" ? "Current plan" : "Get started"}
+            {currentPlan === "PREMIUM" ? "Current plan" : "Cancel subscription"}
           </Button>
         </UICTA>
       </UIProCard>
@@ -68,21 +68,24 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
         <Price price="12€" period="MONTHLY" description="Inbox Zero for every tool, without any limitations." />
         <UIDelimiter />
         <UIFeaturesList>
-          <UIFeature>Unlimited Integration</UIFeature>
+          <UIFeature>Unlimited Integrations</UIFeature>
           <UIFeature>Unlimited Custom Inboxes</UIFeature>
           <UIFeature>Unlimited Slack Workspaces</UIFeature>
-          <UIFeature>Gmail & Google Suite Integration</UIFeature>
+          <UIFeature>
+            <strong>Gmail & Google Suite Integration</strong>
+          </UIFeature>
         </UIFeaturesList>
         <UICTA>
           <Button
             isWide
             isDisabled={currentPlan === "BUSINESS"}
             kind="primary"
+            icon={currentPlan === "BUSINESS" ? <IconCheck /> : null}
             onClick={() => {
               onPlanChangeRequest("BUSINESS");
             }}
           >
-            {currentPlan === "BUSINESS" ? "Current plan" : "Get started"}
+            {currentPlan === "BUSINESS" ? "Current plan" : "Upgrade"}
           </Button>
         </UICTA>
       </UIUltimateCard>

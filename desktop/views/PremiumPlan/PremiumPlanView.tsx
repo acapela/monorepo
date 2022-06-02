@@ -45,7 +45,7 @@ export const PremiumPlanView = styledObserver(({ onPlanChanged, className }: Pro
         <UIPricingBadge>CHOOSE A PLAN</UIPricingBadge>
         <UIHero>Pricing</UIHero>
         <UIIntro>
-          It doesn’t matter if you are just getting started or already are a poweruser. We’ve got a plan for you!
+          No matter if you are just getting started or already are a poweruser. We’ve got a plan for you!
         </UIIntro>
       </UIHead>
 
