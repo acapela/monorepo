@@ -285,25 +285,33 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
     return;
   }
 
-  const author = await findUserForSlackInstallation(message.user);
+  // somehow passing message directly inside the anonymous segment functions causes a type error
+  // ¯\_(ツ)_/¯
+  const msg = message;
+
+  const author = await nr.startSegment("slack/message/findUserForSlackInstallation", true, async () =>
+    findUserForSlackInstallation(msg.user)
+  );
   if (author?.is_slack_auto_resolve_enabled) {
     try {
       const threadTs = message.thread_ts;
-      await resolveMessageNotifications(author.id, {
-        slack_conversation_id: message.channel,
-        OR: [
-          threadTs
-            ? { OR: [{ slack_thread_ts: threadTs }, { slack_message_ts: threadTs }] }
-            : { slack_thread_ts: null },
-        ],
-      });
+      await nr.startSegment("slack/message/resolveMessageNotifications", true, async () =>
+        resolveMessageNotifications(author.id, {
+          slack_conversation_id: msg.channel,
+          OR: [
+            threadTs
+              ? { OR: [{ slack_thread_ts: threadTs }, { slack_message_ts: threadTs }] }
+              : { slack_thread_ts: null },
+          ],
+        })
+      );
     } catch (error) {
       logger.error(error, "Error resolving slack notifications");
     }
   }
 
   try {
-    await recordInvolvedThreadUsers(message);
+    await nr.startSegment("slack/message/recordInvolvedThreadUsers", true, async () => recordInvolvedThreadUsers(msg));
   } catch (error) {
     logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
   }
@@ -311,7 +319,9 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
   const userSlackInstallations = await findUserSlackInstallations(eventContextId);
   for (const userSlackInstallation of userSlackInstallations) {
     try {
-      await createNotificationFromMessage(userSlackInstallation, message);
+      await nr.startSegment("slack/message/createNotificationFromMessage", true, async () =>
+        createNotificationFromMessage(userSlackInstallation, msg)
+      );
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
     }
