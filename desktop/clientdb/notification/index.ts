@@ -227,7 +227,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   })
   .addAccessValidation((notification) => {
     if (!notification.inner) {
-      log.debug(`No inner for entity ${notification.id}`);
+      setTimeout(() => {
+        if (!notification.inner) {
+          log.debug(`No inner for entity after 1s ${notification.id}`);
+        }
+      }, 1000);
+
       return false;
     }
     return true;

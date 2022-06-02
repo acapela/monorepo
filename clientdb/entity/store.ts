@@ -1,5 +1,5 @@
 import { sortBy } from "lodash";
-import { IObservableArray, computed, observable, runInAction } from "mobx";
+import { IObservableArray, action, computed, observable, runInAction } from "mobx";
 
 import { areArraysShallowEqual } from "@aca/shared/array";
 import { MessageOrError, assert } from "@aca/shared/assert";
@@ -24,6 +24,7 @@ import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex
 import { EntityChangeSource } from "./types";
 import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
+import { watchArrayChanges } from "./utils/watchArrayChanges";
 import { cachedComputed } from ".";
 
 export interface EntityStoreFindMethods<Data, Connections> {
@@ -109,6 +110,15 @@ export function createEntityStore<Data, Connections>(
     { equals: areArraysShallowEqual }
   );
 
+  const stopWatchingForAccessGained = watchArrayChanges(
+    () => accessableItems(),
+    action((itemsThatBecameAccessable) => {
+      itemsThatBecameAccessable.forEach((itemsAccessableNow) => {
+        itemsAccessableNow.refreshIndex();
+      });
+    })
+  );
+
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
@@ -184,7 +194,7 @@ export function createEntityStore<Data, Connections>(
     ) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => prepareResults(accessableItems()), { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(() => prepareResults(items), { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
@@ -285,9 +295,13 @@ export function createEntityStore<Data, Connections>(
       return createOrReuseQuery(undefined, sort);
     },
     destroy() {
-      cleanups.clean();
-      queryIndexes.forEach((queryIndex) => {
-        queryIndex.destroy();
+      runInAction(() => {
+        stopWatchingForAccessGained();
+        cleanups.clean();
+        queryIndexes.forEach((queryIndex) => {
+          queryIndex.destroy();
+        });
+        events.destroy();
       });
     },
   };

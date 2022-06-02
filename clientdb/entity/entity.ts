@@ -29,6 +29,7 @@ type EntityMethods<Data, Connections> = {
   definition: EntityDefinition<Data, Connections>;
   db: DatabaseLinker;
   cleanup: CleanupObject;
+  refreshIndex(): void;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -89,7 +90,7 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       },
       refreshIndex() {
         if (entity.isRemoved()) return;
-        store.events.emit("itemUpdated", entity, entity.getData(), "user");
+        store.events.emit("itemUpdated", entity, entity.getData(), "persistance");
       },
       cleanup: cleanupObject,
     }) ?? ({} as C);
@@ -149,6 +150,10 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
     getData() {
       const rawObject = toJS(entity);
       return pick(rawObject, rawDataKeys);
+    },
+    refreshIndex() {
+      if (entity.isRemoved()) return;
+      store.events.emit("itemUpdated", entity, entity.getData(), "persistance");
     },
     update(input, source: EntityChangeSource = "user"): EntityUpdateResult {
       const changedKeys = typedKeys(input).filter((keyToUpdate) => {
