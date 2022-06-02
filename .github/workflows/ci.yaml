@@ -34,6 +34,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/node-and-yarn
+        env:
+          NR_NATIVE_METRICS_NO_BUILD: true
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
