@@ -15,6 +15,8 @@ import { weakMemoize } from "@aca/shared/deepMap";
 import { runUntracked } from "@aca/shared/mobx/utils";
 import { None } from "@aca/shared/none";
 
+import { getCountIndicatorFromGroups } from "./count";
+
 type SortResult = string | number;
 
 type DefineListConfig = {
@@ -208,17 +210,7 @@ export function defineNotificationsList({
   });
 
   const getCountIndicator = cachedComputed(() => {
-    return getAllGroupedNotifications().reduce((count, groupOrNotification) => {
-      if (getIsNotificationsGroup(groupOrNotification)) {
-        if (groupOrNotification.isOnePreviewEnough) {
-          return count + 1;
-        }
-
-        return count + groupOrNotification.notifications.length;
-      }
-
-      return count + 1;
-    }, 0);
+    return getCountIndicatorFromGroups(getAllGroupedNotifications());
   });
 
   const getNotificationGroup = (notification: NotificationEntity) => {

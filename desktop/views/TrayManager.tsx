@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { useAutorun } from "@aca/shared/sharedState";
 
 import { ApplicationTrayList, applicationTrayStateBridge } from "../bridge/tray";
+import { getBadgeCountToShow } from "../domains/badge/count";
 import { getInboxLists } from "../domains/list/all";
 
 export const TrayManager = observer(() => {
@@ -20,7 +21,9 @@ export const TrayManager = observer(() => {
       };
     });
 
-    applicationTrayStateBridge.update({ lists: trayLists });
+    const badgeCount = getBadgeCountToShow();
+
+    applicationTrayStateBridge.update({ lists: trayLists, shouldShowIndicator: badgeCount === "•" || badgeCount > 0 });
   });
 
   return null;
