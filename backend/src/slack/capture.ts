@@ -167,8 +167,10 @@ async function createNotificationFromMessage(
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
-  const [mentionedSlackUserIds, isChannelMention] = nr.startSegment("extractMentionedSlackUserIds", true, () =>
-    extractMentionedSlackUserIdsFromMd(message.text)
+  const [mentionedSlackUserIds, isChannelMention] = nr.startSegment(
+    "slack/createNotificationFromMessage/extractMentionedSlackUserIds",
+    true,
+    () => extractMentionedSlackUserIdsFromMd(message.text)
   );
   const isUserMentioned = mentionedSlackUserIds.includes(slackUserId);
   const isMentioned = isChannelMention || isUserMentioned;
