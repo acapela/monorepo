@@ -104,6 +104,12 @@ export async function createClientDb<Entities extends EntitiesMap>(
     });
   }
 
+  /**
+   * We'll load all persisted data we have from all entities and register everything in one, big action call.
+   *
+   * This will ensure us that all events, relation mapping, index creation etc. happens when we have full data already present.
+   * This is especially important for cases when one entity depends on another instantly when created (eg. accessValidator)
+   */
   async function loadPersistedData() {
     const persistedDataWithClient = await Promise.all(
       Object.values<EntityClient<unknown, unknown>>(entityClients).map(async (client) => {
