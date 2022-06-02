@@ -110,7 +110,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity, updateSelf, refreshIndex, cleanup }) => {
+  .addConnections((notification, { getEntity, updateSelf, cleanup }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -135,7 +135,6 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         snoozeDate,
         action(() => {
           snoozePassedAtom.reportChanged();
-          refreshIndex();
         })
       );
     });
@@ -227,7 +226,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   })
   .addAccessValidation((notification) => {
     if (!notification.inner) {
-      log.debug(`No inner for entity ${notification.id}`);
+      setTimeout(() => {
+        if (!notification.inner) {
+          log.debug(`No inner for entity after 1s ${notification.id}`);
+        }
+      }, 1000);
+
       return false;
     }
     return true;

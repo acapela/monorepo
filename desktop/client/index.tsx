@@ -75,13 +75,14 @@ function App() {
           <RootErrorBoundary>
             <LoggerWindowManager />
             <BadgeCountManager />
-            <TrayManager />
+
             <PeekView />
             <SystemMenuManager />
             <CommandMenuManager />
             <RootView />
             <RenderForLoggedInOnly>
               <PlanUpgadeCelebrationView />
+              <TrayManager />
             </RenderForLoggedInOnly>
 
             <DebugView />

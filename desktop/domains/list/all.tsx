@@ -17,17 +17,20 @@ export const allNotificationsList = defineNotificationsList({
   filter: { isResolved: false, isSnoozed: false },
 });
 
-const getAvailableIntegrationLists = cachedComputed(() =>
-  Object.values(integrationClients)
-    .filter((client) => client.getAccounts().length > 0)
-    .map((client) =>
-      defineNotificationsList({
-        id: client.notificationTypename,
-        name: client.name,
-        icon: <IntegrationIcon integrationClient={client} />,
-        filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
-      })
-    )
+const getAvailableIntegrationLists = cachedComputed(
+  () =>
+    Object.values(integrationClients)
+      .filter((client) => client.getAccounts().length > 0)
+      .map((client) =>
+        defineNotificationsList({
+          id: client.notificationTypename,
+          name: client.name,
+          icon: <IntegrationIcon integrationClient={client} />,
+          filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
+        })
+      ),
+  // Result of this function is observable (Eg. client.getAccounts().length) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
+  { requiresReaction: true }
 );
 
 export const resolvedList = defineNotificationsList({
@@ -61,12 +64,16 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
   });
 });
 
-export const getInboxLists = cachedComputed(() => {
-  const customLists = getDb().notificationList.all.map((listEntity) =>
-    createNotificationsListFromListEntity(listEntity)
-  );
-  return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
-});
+export const getInboxLists = cachedComputed(
+  () => {
+    const customLists = getDb().notificationList.all.map((listEntity) =>
+      createNotificationsListFromListEntity(listEntity)
+    );
+    return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
+  },
+  // Result of this function is observable (eg. depends on database being present and notifications lists) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
+  { requiresReaction: true }
+);
 
 export const outOfInboxLists = [snoozedList, resolvedList];
 

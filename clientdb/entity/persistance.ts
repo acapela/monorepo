@@ -1,5 +1,4 @@
 import { memoize, throttle } from "lodash";
-import { runInAction } from "mobx";
 
 import { createResolvablePromise } from "@aca/shared/promises";
 
@@ -10,17 +9,16 @@ import { createPushQueue } from "./utils/pushQueue";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type EntityPersistanceManager<Data, Connections> = {
-  loadPersistedData(): Promise<void>;
   startPersistingChanges(): void;
   destroy(): void;
   persistedItemsLoaded: Promise<void>;
+  fetchPersistedItems(): Promise<Data[]>;
 };
 
 interface PersistanceManagerConfig<Data> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   store: EntityStore<Data, any>;
   persistanceDb: PersistanceDB;
-  createNewEntity: (data: Data) => void;
 }
 
 const persistanceExecuteQueue = createPushQueue();
@@ -34,7 +32,7 @@ export const PERSISTANCE_BATCH_FLUSH_TIMEOUT = 50;
  */
 export function createEntityPersistanceManager<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { persistanceDb, createNewEntity, store }: PersistanceManagerConfig<Data>
+  { persistanceDb, store }: PersistanceManagerConfig<Data>
 ): EntityPersistanceManager<Data, Connections> {
   const persistedItems = createResolvablePromise<void>();
 
@@ -48,28 +46,20 @@ export function createEntityPersistanceManager<Data, Connections>(
     return persistanceTable;
   });
 
-  const loadPersistedData = memoize(async () => {
+  const fetchPersistedItems = async () => {
     const persistanceTable = await getPersistanceTable();
 
-    if (!persistanceTable) return;
+    if (!persistanceTable) return [];
 
     // Instantly fetch all already persisted items
     const allItems = await persistanceTable.fetchAllItems();
 
-    runInAction(() => {
-      // For all persisted items, create entities and add them
-      allItems.forEach((item) => {
-        createNewEntity(item);
-      });
-    });
-
-    persistedItems.resolve();
-  });
+    return allItems;
+  };
 
   let currentCancelPromise: Promise<(() => void) | null>;
 
   async function startPersistingChanges() {
-    await loadPersistedData();
     const persistanceTable = await getPersistanceTable();
 
     if (!persistanceTable) return null;
@@ -153,7 +143,12 @@ export function createEntityPersistanceManager<Data, Connections>(
     cancelSync?.();
   }
 
-  return { loadPersistedData, startPersistingChanges, destroy, persistedItemsLoaded: persistedItems.promise };
+  return {
+    startPersistingChanges,
+    destroy,
+    persistedItemsLoaded: persistedItems.promise,
+    fetchPersistedItems: fetchPersistedItems,
+  };
 }
 
 export type GetEntityClientByDefinition<Data, Connections> = (

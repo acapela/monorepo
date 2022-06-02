@@ -6,7 +6,7 @@ import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseLinker } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
-import { createEntityPersistanceManager } from "./persistance";
+import { EntityPersistanceManager, createEntityPersistanceManager } from "./persistance";
 import { createEntitySearch } from "./search";
 import { EntityStoreFindMethods, createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
@@ -24,6 +24,8 @@ export interface EntityClient<Data, Connections> extends EntityStoreFindMethods<
   persistanceLoaded: Promise<void>;
   firstSyncLoaded: Promise<void>;
   startSync(): Promise<void>;
+  fetchPersistedItems(): Promise<Data[]>;
+  persistanceManager: EntityPersistanceManager<Data, Connections>;
 }
 
 export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unknown>> = Def extends EntityDefinition<
@@ -97,10 +99,6 @@ export function createEntityClient<Data, Connections>(
   const persistanceManager = createEntityPersistanceManager(definition, {
     store,
     persistanceDb,
-    createNewEntity: (data) => {
-      const entity = createEntityWithData(data);
-      store.add(entity, "persistance");
-    },
   });
 
   const syncManager = createEntitySyncManager<Data, Connections>(
@@ -125,11 +123,6 @@ export function createEntityClient<Data, Connections>(
     },
     linker
   );
-
-  async function initialize() {
-    await persistanceManager.loadPersistedData();
-    persistanceManager.startPersistingChanges();
-  }
 
   let entityEventsCleanup: () => void;
 
@@ -213,17 +206,19 @@ export function createEntityClient<Data, Connections>(
     },
     startSync,
     destroy() {
-      persistanceManager.destroy();
-      syncManager.cancel();
-      store.destroy();
-      searchEngine?.destroy();
-      entityEventsCleanup?.();
+      runInAction(() => {
+        persistanceManager.destroy();
+        syncManager.cancel();
+        store.destroy();
+        searchEngine?.destroy();
+        entityEventsCleanup?.();
+      });
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,
+    fetchPersistedItems: persistanceManager.fetchPersistedItems,
+    persistanceManager,
   };
-
-  initialize();
 
   return client;
 }

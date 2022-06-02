@@ -23,7 +23,7 @@ import {
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
 import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
-import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
+import { EventsEmmiter, createMobxAwareEventsEmmiter } from "./utils/eventManager";
 import { cachedComputed } from ".";
 
 export interface EntityStoreFindMethods<Data, Connections> {
@@ -110,7 +110,7 @@ export function createEntityStore<Data, Connections>(
   );
 
   // Allow listening to CRUD updates in the store
-  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
+  const events = createMobxAwareEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
   const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
@@ -184,7 +184,7 @@ export function createEntityStore<Data, Connections>(
     ) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => prepareResults(accessableItems()), { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(() => prepareResults(items), { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
@@ -201,9 +201,8 @@ export function createEntityStore<Data, Connections>(
       runInAction(() => {
         items.push(entity);
         itemsMap[id] = entity;
+        events.emit("itemAdded", entity, source);
       });
-
-      events.emit("itemAdded", entity, source);
 
       return entity;
     },
@@ -272,9 +271,8 @@ export function createEntityStore<Data, Connections>(
         entity.cleanup.clean();
         didRemove = items.remove(entity);
         delete itemsMap[id];
+        events.emit("itemRemoved", entity, source);
       });
-
-      events.emit("itemRemoved", entity, source);
 
       return didRemove;
     },
@@ -285,9 +283,12 @@ export function createEntityStore<Data, Connections>(
       return createOrReuseQuery(undefined, sort);
     },
     destroy() {
-      cleanups.clean();
-      queryIndexes.forEach((queryIndex) => {
-        queryIndex.destroy();
+      runInAction(() => {
+        cleanups.clean();
+        queryIndexes.forEach((queryIndex) => {
+          queryIndex.destroy();
+        });
+        events.destroy();
       });
     },
   };

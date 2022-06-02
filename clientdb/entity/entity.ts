@@ -87,10 +87,6 @@ export function createEntity<D, C>({ data, definition, store, linker }: CreateEn
       updateSelf(data) {
         return entity.update(data, "user");
       },
-      refreshIndex() {
-        if (entity.isRemoved()) return;
-        store.events.emit("itemUpdated", entity, entity.getData(), "user");
-      },
       cleanup: cleanupObject,
     }) ?? ({} as C);
 

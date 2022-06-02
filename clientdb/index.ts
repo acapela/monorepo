@@ -1,4 +1,5 @@
 import { find, forEach, mapValues } from "lodash";
+import { runInAction } from "mobx";
 
 import { assert } from "@aca/shared/assert";
 import { isClient } from "@aca/shared/document";
@@ -96,14 +97,42 @@ export async function createClientDb<Entities extends EntitiesMap>(
   function destroy() {
     // ! close indexeddb connection so in case new clientdb is created for same name - it will be able to connect.
     persistanceDb.close();
-    forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
-      client.destroy();
+    runInAction(() => {
+      forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
+        client.destroy();
+      });
     });
   }
 
-  const persistanceLoadedPromise = Promise.all(
-    Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
-  );
+  /**
+   * We'll load all persisted data we have from all entities and register everything in one, big action call.
+   *
+   * This will ensure us that all events, relation mapping, index creation etc. happens when we have full data already present.
+   * This is especially important for cases when one entity depends on another instantly when created (eg. accessValidator)
+   */
+  async function loadPersistedData() {
+    const persistedDataWithClient = await Promise.all(
+      Object.values<EntityClient<unknown, unknown>>(entityClients).map(async (client) => {
+        const persistedData = await client.persistanceManager.fetchPersistedItems();
+
+        return { persistedData, client };
+      })
+    );
+
+    runInAction(() => {
+      persistedDataWithClient.forEach(({ client, persistedData }) => {
+        for (const persistedItem of persistedData) {
+          client.create(persistedItem as Partial<unknown>, "persistance");
+        }
+      });
+    });
+
+    persistedDataWithClient.forEach(({ client }) => {
+      client.persistanceManager.startPersistingChanges();
+    });
+  }
+
+  const persistanceLoadedPromise = loadPersistedData();
 
   if (!disableSync) {
     // Start sync at once when all persistance data is loaded

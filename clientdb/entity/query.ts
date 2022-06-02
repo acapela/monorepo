@@ -156,7 +156,7 @@ export function createEntityQuery<Data, Connections>(
       let items = getSource();
 
       if (!items.length) {
-        return items;
+        return [];
       }
 
       /**

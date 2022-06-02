@@ -5,7 +5,7 @@
  *
  * Example:
  *
- * const call = cancellableDebounce(() => console.log("foo"), 500);
+ * const call = cancellableDebounce(() => console.info("foo"), 500);
  *
  * const cancelA = call();
  * const cancelB = call();
