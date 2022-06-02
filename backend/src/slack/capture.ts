@@ -167,7 +167,9 @@ async function createNotificationFromMessage(
   const { id: slackUserId, token: userToken } = installationData.user;
   const { channel, ts: messageTs, thread_ts: threadTs, user: authorSlackUserId } = message;
 
-  const [mentionedSlackUserIds, isChannelMention] = extractMentionedSlackUserIdsFromMd(message.text);
+  const [mentionedSlackUserIds, isChannelMention] = nr.startSegment("extractMentionedSlackUserIds", true, () =>
+    extractMentionedSlackUserIdsFromMd(message.text)
+  );
   const isUserMentioned = mentionedSlackUserIds.includes(slackUserId);
   const isMentioned = isChannelMention || isUserMentioned;
 
@@ -184,18 +186,28 @@ async function createNotificationFromMessage(
   }
 
   const [{ permalink }, { user: authorUser }, { channel: slackChannel }] = await Promise.all([
-    slackClient.chat.getPermalink({ token: userToken, channel, message_ts: messageTs }).catch((error) => {
-      logger.error(
-        error,
-        `Failed to get permalink for message ${messageTs} in channel ${channel} for user ${slackUserId}`
-      );
-      throw error;
-    }),
-    authorSlackUserId ? slackClient.users.info({ token: userToken, user: authorSlackUserId }) : { user: null },
+    nr
+      .startSegment("slack/createNotificationFromMessage/getPermalink", true, () =>
+        slackClient.chat.getPermalink({ token: userToken, channel, message_ts: messageTs })
+      )
+      .catch((error) => {
+        logger.error(
+          error,
+          `Failed to get permalink for message ${messageTs} in channel ${channel} for user ${slackUserId}`
+        );
+        throw error;
+      }),
+    authorSlackUserId
+      ? nr.startSegment("slack/createNotificationFromMessage/usersInfo", true, () =>
+          slackClient.users.info({ token: userToken, user: authorSlackUserId })
+        )
+      : { user: null },
     is_IM_or_MPIM
       ? // we only need to fetch info for channels, as we use their name for the notification title
         { channel: undefined }
-      : slackClient.conversations.info({ token: userToken, channel }),
+      : nr.startSegment("slack/createNotificationFromMessage/conversationsInfo", true, () =>
+          slackClient.conversations.info({ token: userToken, channel })
+        ),
   ]);
   assert(permalink, `could not get permalink for message ${messageTs} in channel ${channel}`);
 
@@ -209,7 +221,11 @@ async function createNotificationFromMessage(
       // For Slack-Connect users the name was only found within the profile object
       from: authorUser?.profile?.real_name ?? authorUser?.real_name ?? "Unknown",
       url: permalink,
-      text_preview: await createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds),
+      text_preview: await nr.startSegment(
+        "slack/createNotificationFromMessage/createTextPreviewFromSlackMessage",
+        true,
+        async () => createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds)
+      ),
       created_at: new Date(Number(message.ts) * 1000).toISOString(),
       notification_slack_message: {
         create: {
