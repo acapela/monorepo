@@ -15,7 +15,7 @@ import {
 import { getDb } from "@aca/desktop/clientdb";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
-import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { getListById } from "@aca/desktop/domains/list/all";
 import { NotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
@@ -37,7 +37,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
   const db = getDb();
   const notification = db.notification.assertFindById(notificationId);
 
-  const list = getInboxListsById(listId);
+  const list = getListById(listId);
 
   useEffect(() => {
     const activeListId = list?.id ?? null;

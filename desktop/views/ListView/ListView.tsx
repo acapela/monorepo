@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
-import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { getListById } from "@aca/desktop/domains/list/all";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
-  const list = getInboxListsById(listId);
+  const list = getListById(listId);
 
   const notificationGroups = list?.getAllGroupedNotifications() ?? [];
 

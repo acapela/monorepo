@@ -7,3 +7,5 @@ export interface ApplicationTrayList {
 }
 
 export const requestNavigateToList = createChannelBridge<{ listId: string }>("requestNavigateToList");
+
+export const requestOpenFocusMode = createChannelBridge<{ listId: string }>("requestOpenFocusMode");

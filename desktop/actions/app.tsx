@@ -14,6 +14,7 @@ import { IconArrowsExpand, IconArrowsMove2, IconBox, IconRefreshCcw, IconSend2 }
 
 import { trackEvent } from "../analytics";
 import { forceWorkerSyncRun } from "../bridge/apps";
+import { uiStore } from "../store/ui";
 import { defineAction } from "./action";
 import { defineGroup } from "./action/group";
 
@@ -30,6 +31,18 @@ export const toggleFullscreen = defineAction({
     toggleFullscreenRequest();
   },
 });
+
+export const exitFullScreen = defineAction({
+  name: "Exit fullscreen",
+  group: appActionsGroup,
+  shortcut: ["Mod", "Esc"],
+  canApply: () => uiStore.isFullscreen,
+  icon: <IconArrowsExpand />,
+  handler() {
+    toggleFullscreenRequest();
+  },
+});
+
 export const toggleMaximize = defineAction({
   name: "Toggle maximize",
   group: appActionsGroup,

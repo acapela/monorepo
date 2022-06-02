@@ -1,14 +1,17 @@
 import { observer } from "mobx-react";
 import React, { useEffect, useLayoutEffect } from "react";
 
-import { allNotificationsList } from "@aca/desktop/domains/list/all";
+import { allNotificationsList, getListById } from "@aca/desktop/domains/list/all";
 import { AppRedirect, desktopRouter } from "@aca/desktop/routes";
 import { FocusModeView } from "@aca/desktop/views/FocusMode/FocusModeView";
 import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/SettingsView";
 
-import { requestNavigateToList } from "../bridge/navigation";
+import { goToList } from "../actions/lists";
+import { openFocusMode } from "../actions/notification";
+import { requestNavigateToList, requestOpenFocusMode } from "../bridge/navigation";
+import { runActionWithTarget } from "../domains/runAction";
 import { historyStore } from "../store/history";
 import { ComposeView } from "../views/ComposeView";
 import { LoginView } from "../views/LoginView";
@@ -28,7 +31,21 @@ export const Router = observer(function Router() {
 
   useEffect(() => {
     return requestNavigateToList.subscribe(({ listId }) => {
-      desktopRouter.navigate("list", { listId });
+      const list = getListById(listId);
+
+      if (!list) return;
+
+      runActionWithTarget(goToList, list);
+    });
+  });
+
+  useEffect(() => {
+    return requestOpenFocusMode.subscribe(({ listId }) => {
+      const list = getListById(listId);
+
+      if (!list) return;
+
+      runActionWithTarget(openFocusMode, list);
     });
   });
 

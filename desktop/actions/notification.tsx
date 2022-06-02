@@ -23,6 +23,8 @@ import {
   IconTarget,
 } from "@aca/ui/icons";
 
+import { getIsNotificationsGroup } from "../domains/group/group";
+import { NotificationOrGroup } from "../domains/group/groupNotifications";
 import { getNotificationTitle } from "../domains/notification/title";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
@@ -232,31 +234,34 @@ export const openFocusMode = defineAction({
   shortcut: "Enter",
   canApply: ({ hasTarget }) => {
     if (desktopRouter.getIsRouteActive("focus") || !hasTarget("list", true)) return false;
-    if (!hasTarget("notification") && !hasTarget("group")) return false;
 
     return true;
   },
   handler(context) {
     const list = context.assertTarget("list", true);
-    const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
 
-    if (group) {
-      openedNotificationsGroupsStore.open(group.id);
+    let targetToOpen: NotificationOrGroup | null = context.getTarget("notification") || context.getTarget("group");
+
+    if (!targetToOpen) {
+      targetToOpen = list.getAllGroupedNotifications().at(0) ?? null;
+    }
+
+    if (!targetToOpen) return;
+
+    if (getIsNotificationsGroup(targetToOpen)) {
+      openedNotificationsGroupsStore.open(targetToOpen.id);
       // When there's a single preview enabled, only one notification out of many is shown in focus
       // This check attempts to mark all of the notifications inside a single preview group as seen
-      if (group.isOnePreviewEnough) {
-        group.notifications.forEach((n) => n.markAsSeen());
+      if (targetToOpen.isOnePreviewEnough) {
+        targetToOpen.notifications.forEach((n) => n.markAsSeen());
       }
-      const notificationToShow = group.notifications[0];
+      const notificationToShow = targetToOpen.notifications[0];
       desktopRouter.navigate("focus", { listId: list.id, notificationId: notificationToShow.id });
       return;
     }
 
-    if (notification) {
-      notification.markAsSeen();
-      desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
-    }
+    targetToOpen.markAsSeen();
+    desktopRouter.navigate("focus", { listId: list.id, notificationId: targetToOpen.id });
   },
   onMightBeSelected(context) {
     const notification = context.getTarget("notification");

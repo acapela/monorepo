@@ -1,9 +1,10 @@
 import { Menu, MenuItemConstructorOptions, Tray } from "electron";
 import { autorun } from "mobx";
 
-import { requestNavigateToList } from "@aca/desktop/bridge/navigation";
+import { requestNavigateToList, requestOpenFocusMode } from "@aca/desktop/bridge/navigation";
 import { ApplicationTrayList, applicationTrayStateBridge } from "@aca/desktop/bridge/tray";
 import { groupBy } from "@aca/shared/groupBy";
+import { wait } from "@aca/shared/time";
 
 import { getObservedDarkMode } from "../../darkMode";
 import { getMainWindow } from "../../windows/mainWindow";
@@ -44,6 +45,17 @@ function updateContextMenu(tray: Tray, lists: ApplicationTrayList[]) {
       acceleratorWorksWhenHidden: false,
       click() {
         showApp();
+      },
+    },
+    {
+      label: "Enter focus mode",
+      acceleratorWorksWhenHidden: false,
+      async click() {
+        showApp();
+        requestOpenFocusMode.send({ listId: "allNotifications" });
+
+        await wait(100);
+        getMainWindow().setFullScreen(true);
       },
     },
   ];

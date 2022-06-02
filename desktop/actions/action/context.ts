@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
 import { getNullableDb } from "@aca/desktop/clientdb";
-import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { getListById } from "@aca/desktop/domains/list/all";
 import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { deepMemoize } from "@aca/shared/deepMap";
@@ -27,7 +27,7 @@ const routeTargets = cachedComputed(function routeTargets(): unknown[] {
   if (focusRoute) {
     if (!db) return [];
     const { notificationId, listId } = focusRoute;
-    return [db.notification.findById(notificationId), getInboxListsById(listId)];
+    return [db.notification.findById(notificationId), getListById(listId)];
   }
 
   const listRoute = desktopRouter.getRouteParamsIfActive("list");
@@ -35,7 +35,7 @@ const routeTargets = cachedComputed(function routeTargets(): unknown[] {
   if (listRoute) {
     const { listId } = listRoute as unknown as { listId: string };
 
-    return [getInboxListsById(listId)];
+    return [getListById(listId)];
   }
 
   return [];

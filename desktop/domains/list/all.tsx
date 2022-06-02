@@ -87,7 +87,7 @@ export function getOutOfInboxListsById(id: string): NotificationsList | null {
   return outOfInboxLists.find((list) => list.id === id) ?? null;
 }
 
-export function getInboxListsById(id: string): NotificationsList | null {
+export function getListById(id: string): NotificationsList | null {
   return getInboxListById(id) ?? getOutOfInboxListsById(id) ?? null;
 }
 
