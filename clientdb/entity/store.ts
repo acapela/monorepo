@@ -23,7 +23,7 @@ import {
 import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
 import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
-import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
+import { EventsEmmiter, createMobxAwareEventsEmmiter } from "./utils/eventManager";
 import { cachedComputed } from ".";
 
 export interface EntityStoreFindMethods<Data, Connections> {
@@ -110,7 +110,7 @@ export function createEntityStore<Data, Connections>(
   );
 
   // Allow listening to CRUD updates in the store
-  const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
+  const events = createMobxAwareEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
   const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
 
