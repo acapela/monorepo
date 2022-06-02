@@ -9,7 +9,7 @@
     "dev:inspect": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
     "start": "./scripts/start.sh",
-    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --sourcemap --external:@prisma/client",
+    "build": "esbuild ./src/index.ts --outdir=dist --target=node16 --bundle --platform=node --sourcemap --external:@prisma/client --external:newrelic",
     "upload:sourcemaps": "sentry-cli releases files ${VERSION} upload-sourcemaps ./dist --url-prefix /app/dist"
   },
   "peerDependencies": {
