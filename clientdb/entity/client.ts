@@ -96,11 +96,6 @@ export function createEntityClient<Data, Connections>(
     return createEntity<Data, Connections>({ data: input, definition, store, linker });
   }
 
-  // createNewEntity: (data) => {
-  //   const entity = createEntityWithData(data);
-  //   store.add(entity, "persistance");
-  // },
-
   const persistanceManager = createEntityPersistanceManager(definition, {
     store,
     persistanceDb,

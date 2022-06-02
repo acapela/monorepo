@@ -1,9 +1,8 @@
-import { IObservableArray, ObservableMap, observable, observe, runInAction, spy } from "mobx";
+import { IObservableArray, ObservableMap, observable, observe, runInAction } from "mobx";
 import { Primitive } from "utility-types";
 
 import { Entity } from "@aca/clientdb";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { IS_DEV } from "@aca/shared/dev";
 import { Thunk, resolveThunk } from "@aca/shared/thunk";
 
 import { EntityStore } from "./store";
@@ -38,47 +37,6 @@ function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter
   return newValue;
 }
 
-// Note: spy event type is not exported in mobx, let's pick it from signature spy(listener: (change: SpyEvent) => void): Lambda
-type SpyEvent = Parameters<Parameters<typeof spy>[0]>[0];
-
-/**
- * This function will check if given mobx operation reads from other entity than given one.
- * Only reads from current entity are allowed during simple query.
- * Spy event docs - https://mobx.js.org/analyzing-reactivity.html#spy
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function devIsNotReadingFromSelf(event: SpyEvent, entity: Entity<any, any>) {
-  // Update operation happens if computed value is calculated.
-  if (event.type === "update") {
-    /**
-     * Entity is reading from itself eg.
-     * // task.ts
-     * const connections = {
-     *   get isOwn() {
-     *     return task.user_id === currentUserId
-     *   },
-     *   get isActionable() {
-     *     return connections.isOwn
-     *   }
-     * }
-     *
-     * Having such keys in task - reading from both of them is safe, even tho they are computed (but no reading from other entity happens)
-     */
-    if (event.object === entity) return false;
-
-    /**
-     * At any point - we started to read properties from other entity - this is forbidden.
-     */
-    if (event.object && event.object !== entity) return true;
-  }
-
-  // Reaction happens eg. if you create new query inside value getter. This is forbidden.
-  // example of created reaction: `new Reaction` in cachedComputedWithoutArgs.ts
-  if (event.type === "reaction") return true;
-
-  return false;
-}
-
 /**
  * Will create unique key index for entity store that will automatically add/update/delete items from the index on changes.
  */
@@ -102,43 +60,7 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
   const observableIndex = observable.map<TargetValue, IObservableArray<TargetEntity>>({});
 
   function getCurrentIndexValue(entity: TargetEntity): TargetValue {
-    if (!IS_DEV) {
-      return entity[key];
-    }
-
-    /**
-     * We'll throw if reading from other entities during getting getting current value.
-     *
-     * This is unsafe as index only updates is target entity updates, not when its relations are updated.
-     *
-     * Example: task.hasAssigneeWithNameBob: boolean, then you do task.query({ hasAssigneeWithNameBob: true })
-     *
-     * In such case, result depends on user entities, not on task entities, thus index can easily become outdated.
-     */
-
-    let didReadFromOtherEntities = false;
-
-    // Start spying on mobx before we read data
-    const stopSpy = spy((change) => {
-      // If any step in reading did read from other entities, report it.
-      if (devIsNotReadingFromSelf(change, entity)) {
-        didReadFromOtherEntities = true;
-      }
-    });
-
-    // Finally perform read operation.
-    const value = entity[key];
-
-    // TODO: Figure out why this is not working when referring to parent entities
-    // Look at figma/comment.ts (connection to `notification`)
-    if (didReadFromOtherEntities) {
-      console.warn(
-        `Forbidden '.query({${key}})' usage on entity "${entity.definition.config.name}". Fields that read from other entities or use queries are not allowed in simple query. Either check "${key}" implementation to avoid such operations or convert ".query({${key}: value})" to ".query((item) => item.${key} === value)"`
-      );
-    }
-    stopSpy();
-
-    return value;
+    return entity[key];
   }
 
   /**
