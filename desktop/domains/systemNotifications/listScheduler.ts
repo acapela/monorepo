@@ -6,6 +6,7 @@ import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
+import { desktopRouter } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
 import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
@@ -71,6 +72,9 @@ const bundleListNotifications = cachedComputed(
                 n.update({ notified_user_at: now });
               });
             },
+            onClick() {
+              desktopRouter.navigate("focus", { listId: "allNotifications", notificationId: newNotifications[0].id });
+            },
           };
         }
 
@@ -90,6 +94,12 @@ const bundleListNotifications = cachedComputed(
             const now = new Date().toISOString();
             allNotificationsFromLists.forEach((n) => {
               n.update({ notified_user_at: now });
+            });
+          },
+          onClick() {
+            desktopRouter.navigate("focus", {
+              listId: "allNotifications",
+              notificationId: allNotificationsFromLists[0].id,
             });
           },
         };
