@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
-import { GenericMessageEvent, App as SlackApp } from "@slack/bolt";
+import { AllMiddlewareArgs, GenericMessageEvent, App as SlackApp, SlackEventMiddlewareArgs } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
+import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
 
 import { slackClient } from "@aca/backend/src/slack/app";
@@ -276,56 +277,66 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
   }
 }
 
-export function setupSlackCapture(app: SlackApp) {
-  app.event("message", async ({ message, body }) => {
-    const eventContextId = body.event_context as string;
-    message = message as GenericMessageEvent;
+async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
+  const eventContextId = body.event_context as string;
+  message = message as GenericMessageEvent;
 
-    if (message.type !== "message" || message.text === undefined) {
-      return;
-    }
+  if (message.type !== "message" || message.text === undefined) {
+    return;
+  }
 
-    const author = await findUserForSlackInstallation(message.user);
-    if (author?.is_slack_auto_resolve_enabled) {
-      try {
-        const threadTs = message.thread_ts;
-        await resolveMessageNotifications(author.id, {
-          slack_conversation_id: message.channel,
-          OR: [
-            threadTs
-              ? { OR: [{ slack_thread_ts: threadTs }, { slack_message_ts: threadTs }] }
-              : { slack_thread_ts: null },
-          ],
-        });
-      } catch (error) {
-        logger.error(error, "Error resolving slack notifications");
-      }
-    }
-
+  const author = await findUserForSlackInstallation(message.user);
+  if (author?.is_slack_auto_resolve_enabled) {
     try {
-      await recordInvolvedThreadUsers(message);
+      const threadTs = message.thread_ts;
+      await resolveMessageNotifications(author.id, {
+        slack_conversation_id: message.channel,
+        OR: [
+          threadTs
+            ? { OR: [{ slack_thread_ts: threadTs }, { slack_message_ts: threadTs }] }
+            : { slack_thread_ts: null },
+        ],
+      });
     } catch (error) {
-      logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
+      logger.error(error, "Error resolving slack notifications");
     }
+  }
 
-    const userSlackInstallations = await findUserSlackInstallations(eventContextId);
-    for (const userSlackInstallation of userSlackInstallations) {
-      try {
-        await createNotificationFromMessage(userSlackInstallation, message);
-      } catch (error) {
-        logger.error(error, "Error creating slack notifications");
-      }
+  try {
+    await recordInvolvedThreadUsers(message);
+  } catch (error) {
+    logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
+  }
+
+  const userSlackInstallations = await findUserSlackInstallations(eventContextId);
+  for (const userSlackInstallation of userSlackInstallations) {
+    try {
+      await createNotificationFromMessage(userSlackInstallation, message);
+    } catch (error) {
+      logger.error(error, "Error creating slack notifications");
     }
+  }
+}
+
+async function handleReactionAdded({ event }: SlackEventMiddlewareArgs<"reaction_added"> & AllMiddlewareArgs) {
+  if (!event.user) {
+    return;
+  }
+  const user = await findUserForSlackInstallation(event.user);
+  if (user?.is_slack_auto_resolve_enabled && event.item.type === "message") {
+    const { channel, ts } = event.item;
+    await resolveMessageNotifications(user.id, { slack_conversation_id: channel, slack_message_ts: ts });
+  }
+}
+
+export function setupSlackCapture(app: SlackApp) {
+  app.event("message", async function (event) {
+    nr.incrementMetric("slack/message/count");
+    await nr.startBackgroundTransaction("slack_event_message", async () => handleMessages(event));
   });
 
-  app.event("reaction_added", async ({ event }) => {
-    if (!event.user) {
-      return;
-    }
-    const user = await findUserForSlackInstallation(event.user);
-    if (user?.is_slack_auto_resolve_enabled && event.item.type === "message") {
-      const { channel, ts } = event.item;
-      await resolveMessageNotifications(user.id, { slack_conversation_id: channel, slack_message_ts: ts });
-    }
+  app.event("reaction_added", async function (event) {
+    nr.incrementMetric("slack/reaction_added/count");
+    await nr.startBackgroundTransaction("slack_event_reaction_added", async () => handleReactionAdded(event));
   });
 }

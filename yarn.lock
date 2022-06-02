@@ -348,6 +348,7 @@ __metadata:
     "@types/inquirer": ^8.2.0
     "@types/jest": ^27.4.0
     "@types/lodash": ^4.14.178
+    "@types/newrelic": ^7.0.3
     "@types/node": ^16.11.22
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
@@ -8461,6 +8462,13 @@ __metadata:
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
   checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
+  languageName: node
+  linkType: hard
+
+"@types/newrelic@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@types/newrelic@npm:7.0.3"
+  checksum: 31156f61c5cf6c22e3cd227966499d758e4af278a2b0097194578feee9579339473f7a08b07556530046a2f64ba449656a220a553116b475c4bbd8cca177dfd3
   languageName: node
   linkType: hard
 
