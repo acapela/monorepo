@@ -29,6 +29,7 @@ const getAvailableIntegrationLists = cachedComputed(
           filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
         })
       ),
+  // Result of this function is observable (Eg. client.getAccounts().length) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
   { requiresReaction: true }
 );
 
@@ -70,6 +71,7 @@ export const getInboxLists = cachedComputed(
     );
     return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
   },
+  // Result of this function is observable (eg. depends on database being present and notifications lists) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
   { requiresReaction: true }
 );
 
