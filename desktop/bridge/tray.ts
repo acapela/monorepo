@@ -10,5 +10,6 @@ export interface ApplicationTrayList {
 export const applicationTrayStateBridge = createBridgeValue("applicationTrayStateBridge", {
   getDefault: () => ({
     lists: [] as ApplicationTrayList[],
+    shouldShowIndicator: false,
   }),
 });

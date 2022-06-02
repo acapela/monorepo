@@ -9,18 +9,6 @@ import { getObservedDarkMode } from "../../darkMode";
 import { getMainWindow } from "../../windows/mainWindow";
 import { listIcons, trayIcons } from "./icons";
 
-function getShouldShowIndicator(lists: ApplicationTrayList[]) {
-  const totalCount = getTotal(lists, (list) => list.count);
-
-  return totalCount > 0;
-}
-
-function getTotal<T>(items: T[], numberGetter: (item: T) => number): number {
-  return items.reduce((total, nextItem) => {
-    return total + numberGetter(nextItem);
-  }, 0);
-}
-
 function showApp() {
   getMainWindow().show();
 }
@@ -88,9 +76,7 @@ export function initializeTrayHandlers() {
   autorun(() => {
     // Don't remove this - otherwise it will not be observed
     const isDarkMode = getObservedDarkMode();
-    const { lists } = applicationTrayStateBridge.get();
-
-    const shouldShowIndicator = getShouldShowIndicator(lists);
+    const { lists, shouldShowIndicator } = applicationTrayStateBridge.get();
 
     if (shouldShowIndicator) {
       tray.setImage(isDarkMode ? trayIcons.lightIndicator : trayIcons.darkIndicator);
