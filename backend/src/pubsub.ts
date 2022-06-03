@@ -1,11 +1,11 @@
 import { addDays } from "date-fns";
-import Client from "ioredis";
 import Redlock from "redlock";
 
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-const redisClient = new Client({ host: process.env.REDIS_HOST });
+import { redisClient } from "./redis";
+
 const redlock = new Redlock([redisClient], {
   retryCount: 500,
 });
