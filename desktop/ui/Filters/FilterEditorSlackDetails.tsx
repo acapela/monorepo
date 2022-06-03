@@ -311,7 +311,7 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
       <UILimiter />
 
       <UIGroup>
-        <FilterSettingRow title="Any message" icon={<IconComment2Text />}>
+        <FilterSettingRow title="Other messages" icon={<IconComment2Text />}>
           <Toggle
             isSet={!!anyMessages}
             onChange={(isSelected) => {
@@ -329,7 +329,7 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
         {!!anyMessages && (
           <UIIndent>
             <FilterSettingRow
-              title="From channels"
+              title="Any message in channel"
               description="Will include every message, even if you're not mentioned."
             >
               <SlackConversationsDropdown
