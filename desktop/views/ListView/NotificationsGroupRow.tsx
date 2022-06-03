@@ -28,6 +28,7 @@ import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { pluralize } from "@aca/shared/text/pluralize";
+import { getFadeInAnimationStyles } from "@aca/ui/animations";
 import { IconChevronRight } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
@@ -195,6 +196,8 @@ const UISendersMore = styled.span``;
 const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
   position: relative;
   ${theme.box.items.listRow.size.padding};
+
+  ${getFadeInAnimationStyles()}
 
   ${NotificationAppIcon} {
     font-size: 24px;

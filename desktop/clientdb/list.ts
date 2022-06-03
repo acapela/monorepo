@@ -42,6 +42,7 @@ const notificationFragment = gql`
     notifications_interval_ms
     seen_at
     emoji
+    system_id
   }
 `;
 
@@ -62,6 +63,8 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     user_id: getContextValue(userIdContext) ?? null,
     notifications_interval_ms: null,
     emoji: null,
+    system_id: null,
+    seen_at: undefined,
     filters: [],
     ...getGenericDefaultData(),
   }),
@@ -79,6 +82,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
       "notifications_interval_ms",
       "seen_at",
       "emoji",
+      "system_id",
     ],
     updateColumns: ["updated_at", "title", "filters", "notifications_interval_ms", "seen_at", "emoji"],
     upsertConstraint: "notification_filter_pkey",
@@ -155,7 +159,7 @@ const getIsNotificationPassingFilter = cachedComputed(
     const { id, ...actualFilter } = filter;
     id;
 
-    return getIsItemMatchingFilters(notificationInner, actualFilter);
+    return getIsItemMatchingFilters(notificationInner, actualFilter, true);
   }
 );
 

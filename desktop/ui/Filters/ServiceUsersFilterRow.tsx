@@ -11,14 +11,21 @@ import { FilterSettingRow, getWorkspaceLabel } from "./utils";
 type FilterUser = Omit<ServiceUser, "__typename" | "workspace_id"> & { workspace_id?: string };
 
 interface Props {
+  label?: string;
   integrationClient: IntegrationClient;
   users: FilterUser[];
   selectedUsers: FilterUser[];
   onChange: (users: FilterUser[]) => void;
 }
 
-export const ServiceUsersFilterRow = ({ integrationClient, users, selectedUsers, onChange }: Props) => (
-  <FilterSettingRow title="People">
+export const ServiceUsersFilterRow = ({
+  label = "People",
+  integrationClient,
+  users,
+  selectedUsers,
+  onChange,
+}: Props) => (
+  <FilterSettingRow title={label}>
     <MultipleOptionsDropdown<FilterUser>
       items={users}
       keyGetter={(user) => user.id}
@@ -41,7 +48,7 @@ export const ServiceUsersFilterRow = ({ integrationClient, users, selectedUsers,
         );
       }}
       onChange={onChange}
-      placeholder="Everyone"
+      placeholder="None"
     />
   </FilterSettingRow>
 );

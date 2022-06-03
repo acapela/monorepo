@@ -26,6 +26,7 @@ import { styledObserver } from "@aca/shared/component";
 import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { makeElementVisible } from "@aca/shared/interactionUtils";
+import { getFadeInAnimationStyles } from "@aca/ui/animations";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
@@ -116,6 +117,8 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" 
   ${theme.box.items.listRow.size.padding}
   min-width: 0;
   position: relative;
+
+  ${getFadeInAnimationStyles()}
 
   ${(props) => {
     const status = props.$preloadingState;

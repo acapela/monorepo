@@ -8,11 +8,13 @@ interface Props {
   description?: string;
   children?: ReactNode;
   fixedOptionWidth?: number;
+  icon?: ReactNode;
 }
 
-export function SettingRow({ title, description, children, fixedOptionWidth }: Props) {
+export function SettingRow({ title, description, children, fixedOptionWidth, icon }: Props) {
   return (
     <UIHolder>
+      {icon && <UIIcon>{icon}</UIIcon>}
       <UIInfo>
         <UITitle>{title}</UITitle>
         {description && <UIDescription>{description}</UIDescription>}
@@ -31,6 +33,10 @@ const UIHolder = styled.div`
 const UIInfo = styled.div`
   flex-grow: 1;
   min-width: 0;
+`;
+
+const UIIcon = styled.div`
+  font-size: 20px;
 `;
 
 const UITitle = styled.div`

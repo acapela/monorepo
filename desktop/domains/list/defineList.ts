@@ -16,6 +16,7 @@ import { runUntracked } from "@aca/shared/mobx/utils";
 import { None } from "@aca/shared/none";
 
 import { getCountIndicatorFromGroups } from "./count";
+import { CUSTOM_SYSTEM_LIST_ICONS, ListSystemId } from "./system";
 
 type SortResult = string | number;
 
@@ -242,6 +243,9 @@ export function defineNotificationsList({
     getNotificationsToPreload,
     listEntity,
     get icon() {
+      if (listEntity?.system_id) {
+        return CUSTOM_SYSTEM_LIST_ICONS[listEntity.system_id as ListSystemId];
+      }
       return listEntity?.emoji ?? icon;
     },
     dontShowCount,

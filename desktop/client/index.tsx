@@ -16,11 +16,13 @@ import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { GlobalShortcutsManager } from "@aca/desktop/views/GlobalShortcutsManager";
 import { PeekView } from "@aca/desktop/views/PeekView";
 import { RootView } from "@aca/desktop/views/RootView";
+import { createCleanupObject } from "@aca/shared/cleanup";
 import { PromiseUIRenderer } from "@aca/ui/createPromiseUI";
 import { TooltipsRenderer } from "@aca/ui/popovers/TooltipsRenderer";
 
 import { logStorage } from "../bridge/logger";
 import { registerLogEntryHandler } from "../domains/dev/makeLogger";
+import { ensureSystemListsCreated } from "../domains/list/system";
 import { RenderForLoggedInOnly } from "../ui/RenderForLoggedInOnly";
 import { BadgeCountManager } from "../views/BadgeCountManager";
 import { OnboardingFinishedAnimationManager } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
@@ -59,7 +61,12 @@ const rootElement = document.getElementById("root");
 
 function App() {
   useEffect(() => {
-    return initializeListNotificationsScheduling();
+    const cleanup = createCleanupObject();
+    cleanup.next = initializeListNotificationsScheduling();
+
+    cleanup.next = ensureSystemListsCreated();
+
+    return cleanup.clean;
   }, []);
 
   return (

@@ -5,11 +5,11 @@ import styled from "styled-components";
 
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
-import { typedKeys } from "@aca/shared/object";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
 
 import { FilterEditorSlackDetails } from "./FilterEditorSlackDetails";
 import { FilterLabel } from "./FilterLabel";
+import { isSlackFilterEmpty } from "./slackModel";
 import { FilterKindEditorProps, NotificationFilterKind, unsafeAssertFilterType } from "./types";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
@@ -18,18 +18,6 @@ export const FilterEditorSlack = observer(({ filter, onChange, onRemoveRequest }
   unsafeAssertFilterType(filter!, "notification_slack_message");
 
   function handleFilterChange(changedFilter: SlackFilter) {
-    if (!changedFilter.id) {
-      onChange({ ...changedFilter, __typename: "notification_slack_message" });
-      return;
-    }
-    const keys = typedKeys(changedFilter);
-
-    // User de-selected all slack channels and people inside existing filter
-    if (filter && keys.length === 2 && changedFilter.__typename && changedFilter.id) {
-      onRemoveRequest?.(filter);
-      return;
-    }
-
     onChange({ ...changedFilter, __typename: "notification_slack_message" });
   }
 
@@ -45,7 +33,7 @@ export const FilterEditorSlack = observer(({ filter, onChange, onRemoveRequest }
       <FilterLabel
         label="Slack"
         icon={<IntegrationIcon integrationClient={slackIntegrationClient} />}
-        isFilled={!!filter}
+        isFilled={!isSlackFilterEmpty(filter)}
         onClick={toggleOpened}
         onClearRequest={() => {
           if (filter) {
