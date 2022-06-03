@@ -35,5 +35,5 @@ export const gmailIntegrationClient: IntegrationClient = {
     }
   },
   imageURL: integrationLogos.gmail,
-  isForBusinessUsers: true,
+  isForUltimateUsers: true,
 };

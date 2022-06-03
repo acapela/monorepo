@@ -8,6 +8,7 @@ import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { switchSubscription } from "@aca/desktop/domains/plan/api";
 import { accountStore } from "@aca/desktop/store/account";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
+import { SubscriptionPlan } from "@aca/gql";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
 import { Button, ButtonProps } from "@aca/ui/buttons/Button";
 import { IconCross } from "@aca/ui/icons";
@@ -30,8 +31,8 @@ export const IntegrationCard = observer(({ service }: Props) => {
   const workspaces = service.getAccounts();
   const isSingularConnection = workspaces.length == 1 && !service.getCanConnect?.();
 
-  const subscriptionPlan = accountStore.user?.subscription_plan;
-  const showUpsellButton = Boolean(subscriptionPlan !== "business" && service.isForBusinessUsers);
+  const subscriptionPlan = accountStore.user?.subscription_plan as Lowercase<SubscriptionPlan>;
+  const showUpsellButton = Boolean(subscriptionPlan !== "ultimate" && service.isForUltimateUsers);
 
   // Whenever the subscription plan changes, we consider checkout having been loaded
   useDependencyChangeEffect(() => {
@@ -39,7 +40,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
   }, [subscriptionPlan]);
 
   if (showUpsellButton && process.env.STAGE == "production") {
-    // TODO For now we hide the business-upsell in production
+    // TODO For now we hide the upsell in production
     return null;
   }
 
@@ -60,10 +61,10 @@ export const IntegrationCard = observer(({ service }: Props) => {
               isDisabled={isLoadingCheckout}
               onClick={async () => {
                 setIsloadingCheckout(true);
-                await switchSubscription("BUSINESS");
+                await switchSubscription("ULTIMATE");
               }}
             >
-              Upgrade to our business plan
+              Upgrade to our ultimate plan
             </Button>
           ) : (
             <UIConnectAction>

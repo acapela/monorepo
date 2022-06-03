@@ -68,7 +68,7 @@ export const StageConnectTools = observer(({ onContinue, continueLabel = "Contin
             </Button>
           </OnboardingAnimationItem>
         </UIButtons>
-        {currentPlan !== "BUSINESS" && (
+        {currentPlan !== "ULTIMATE" && (
           <OnboardingAnimationItem>
             <UpgradePlanBadge />
           </OnboardingAnimationItem>
