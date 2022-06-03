@@ -52,7 +52,7 @@ export const PlanUpgadeCelebrationView = styledObserver(() => {
   const currentPlan = getCurrentPlan();
 
   useDependencyChangeEffect(() => {
-    if (currentPlan === "BUSINESS") {
+    if (currentPlan === "ULTIMATE") {
       setIsCelebrating(true);
     }
   }, [currentPlan]);

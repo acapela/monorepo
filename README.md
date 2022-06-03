@@ -75,9 +75,9 @@ Add the authtoken from the Ngrok dashboard into your `.env` as `NGROK_AUTH_TOKEN
 
 ### Stripe
 
-Get yourself an invite to our Stripe account from one of our team members. Otherwise, you can also create an account for yourself. Make sure to create two products, one for the `premium` plan and one for the `business plan`.
+Get yourself an invite to our Stripe account from one of our team members. Otherwise, you can also create an account for yourself. Make sure to create two products, one for the `premium` plan and one for the `ultimate plan`.
 
-1. Copy the **price** (not product) ids into your `.env` as `STRIPE_PRICE_PREMIUM_ID` and `STRIPE_PRICE_BUSINESS_ID`
+1. Copy the **price** (not product) ids into your `.env` as `STRIPE_PRICE_PREMIUM_ID` and `STRIPE_PRICE_ULTIMATE_ID`
 2. Copy the secret key from [here](https://dashboard.stripe.com/test/apikeys) into your `.env` as `STRIPE_SECRET_KEY`
 3. Head over [here](https://dashboard.stripe.com/test/webhooks), create a webhook
    1. Use your ngrok domain for the endpoint URL e.g. `https://gregapela.ngrok.io/api/backend/v1/stripe/webhook`

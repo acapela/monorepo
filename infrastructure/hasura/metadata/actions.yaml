@@ -117,7 +117,7 @@ custom_types:
         - value: PREMIUM
           is_deprecated: null
           description: null
-        - value: BUSINESS
+        - value: ULTIMATE
           is_deprecated: null
           description: null
   input_objects:

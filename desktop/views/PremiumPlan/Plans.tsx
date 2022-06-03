@@ -78,14 +78,14 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
         <UICTA>
           <Button
             isWide
-            isDisabled={currentPlan === "BUSINESS"}
+            isDisabled={currentPlan === "ULTIMATE"}
             kind="primary"
-            icon={currentPlan === "BUSINESS" ? <IconCheck /> : null}
+            icon={currentPlan === "ULTIMATE" ? <IconCheck /> : null}
             onClick={() => {
-              onPlanChangeRequest("BUSINESS");
+              onPlanChangeRequest("ULTIMATE");
             }}
           >
-            {currentPlan === "BUSINESS" ? "Current plan" : "Upgrade"}
+            {currentPlan === "ULTIMATE" ? "Current plan" : "Upgrade"}
           </Button>
         </UICTA>
       </UIUltimateCard>
