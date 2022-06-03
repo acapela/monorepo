@@ -3,7 +3,6 @@ import { AllMiddlewareArgs, GenericMessageEvent, App as SlackApp, SlackEventMidd
 import { WebClient } from "@slack/web-api";
 import { Channel } from "@slack/web-api/dist/response/ChannelsInfoResponse";
 import { Team } from "@slack/web-api/dist/response/TeamInfoResponse";
-import { User as SlackUser } from "@slack/web-api/dist/response/UsersInfoResponse";
 import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
 
@@ -19,6 +18,13 @@ import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { getSlackInstallationData } from "./utils";
+
+async function getSlackUserName(token?: string, teamId?: string, userId?: string): Promise<string> {
+  if (!token || !userId || !teamId) return "Unknown";
+  const { user } = await slackClient.users.info({ token: token, user: userId });
+  // For Slack-Connect users the name was only found within the profile object
+  return user?.profile?.real_name ?? user?.real_name ?? "Unknown";
+}
 
 export function findUserForSlackInstallation(slackUserId: string) {
   try {
@@ -86,13 +92,14 @@ async function findUserSlackInstallations(eventContextId: string) {
 const createTextPreviewFromSlackMessage = async (
   userToken: string,
   slackMessageText: string,
+  teamId: string,
   mentionedSlackUserIds: string[]
 ) => {
   const mentionedNamesBySlackId = Object.fromEntries(
     await Promise.all(
       mentionedSlackUserIds.map(async (slackUserId) => [
         slackUserId,
-        (await slackClient.users.info({ token: userToken, user: slackUserId })).user?.real_name ?? "Unknown",
+        await getSlackUserName(userToken, teamId, slackUserId),
       ])
     )
   );
@@ -165,8 +172,8 @@ async function createNotificationFromMessage(
   userSlackInstallation: UserSlackInstallation & { user: User; slack_team: SlackTeam },
   message: Pick<GenericMessageEvent, "channel" | "thread_ts" | "ts" | "text" | "user" | "channel_type"> &
     TeamFilterMessage,
-  slackChannel?: Channel,
-  authorUser?: SlackUser
+  authorUserName: string,
+  slackChannel?: Channel
 ) {
   const installationData = getSlackInstallationData(userSlackInstallation);
   const { id: slackUserId, token: userToken } = installationData.user;
@@ -197,13 +204,18 @@ async function createNotificationFromMessage(
   await db.notification.create({
     data: {
       user_id: userSlackInstallation.user_id,
-      // For Slack-Connect users the name was only found within the profile object
-      from: authorUser?.profile?.real_name ?? authorUser?.real_name ?? "Unknown",
+      from: authorUserName,
       url: permalink,
       text_preview: await nr.startSegment(
         "slack/createNotificationFromMessage/createTextPreviewFromSlackMessage",
         true,
-        async () => createTextPreviewFromSlackMessage(userToken, message.text ?? "", mentionedSlackUserIds)
+        async () =>
+          createTextPreviewFromSlackMessage(
+            userToken,
+            message.text ?? "",
+            userSlackInstallation.slack_team_id,
+            mentionedSlackUserIds
+          )
       ),
       created_at: new Date(Number(message.ts) * 1000).toISOString(),
       notification_slack_message: {
@@ -254,9 +266,6 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
         continue;
       }
       for (const message of messages) {
-        const authorUser = message.user
-          ? (await slackClient.users.info({ token, user: message.user })).user
-          : undefined;
         await createNotificationFromMessage(
           { ...userSlackInstallation, user, slack_team: slackTeam },
           {
@@ -268,8 +277,7 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
             ts: message.ts!,
             ...message,
           },
-          undefined, // we only import im and mpim messages, channel name not needed
-          authorUser
+          await getSlackUserName(token, userSlackInstallation.slack_team_id, message.user)
         );
       }
     }
@@ -331,7 +339,7 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
     ? (await client.conversations.members({ channel: message.channel })).members
     : undefined;
 
-  const authorUser = message.user ? (await client.users.info({ user: message.user })).user : undefined;
+  const authorUserName = await getSlackUserName(client.token, body.team_id, message.user);
 
   for (const userSlackInstallation of userSlackInstallations) {
     if (channelMembers && !channelMembers.includes(userSlackInstallation.slack_user_id)) {
@@ -340,7 +348,7 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
     }
     try {
       await nr.startSegment("slack/message/createNotificationFromMessage", true, async () =>
-        createNotificationFromMessage(userSlackInstallation, msg, channelInfo, authorUser)
+        createNotificationFromMessage(userSlackInstallation, msg, authorUserName, channelInfo)
       );
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
