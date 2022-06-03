@@ -270,7 +270,7 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
             </UISegmented>
             {mentions.type === "selectedChannels" && (
               <UIIndent>
-                <FilterSettingRow title="Exclude channels">
+                <FilterSettingRow title="Select channels">
                   <SlackConversationsDropdown
                     placeholder="None"
                     checkSelected={(id) => mentions.selectedChannels.includes(id)}
@@ -333,7 +333,7 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
               description="Will include every message, even if you're not mentioned."
             >
               <SlackConversationsDropdown
-                placeholder="None"
+                placeholder="Select channels..."
                 checkSelected={(id) => anyMessages.channels.includes(id)}
                 onChange={(channels) => {
                   update((filter) => {
