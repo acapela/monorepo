@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { AllMiddlewareArgs, GenericMessageEvent, App as SlackApp, SlackEventMiddlewareArgs } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
-import { Channel } from "@slack/web-api/dist/response/ChannelsInfoResponse";
 import { Team } from "@slack/web-api/dist/response/TeamInfoResponse";
 import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
@@ -32,6 +31,20 @@ async function getSlackUserName(token?: string, teamId?: string, userId?: string
   const username = user?.profile?.real_name ?? user?.real_name ?? "Unknown";
   await redisClient.set(userNameKey, username, "EX", 60 * 60); // cache username for one hour
   return username;
+}
+
+async function getSlackChannelName(token?: string, teamId?: string, channelId?: string): Promise<string> {
+  if (!token || !channelId || !teamId) return "Unknown";
+
+  const channelNameKey = `slack:channelname:${teamId}:${channelId}`;
+  const cachedChannelName = await redisClient.get(channelNameKey);
+  if (cachedChannelName) return cachedChannelName;
+
+  const { channel } = await slackClient.conversations.info({ token, channel: channelId });
+  // For Slack-Connect users the name was only found within the profile object
+  const channelName = channel ? (channel.is_private ? "🔒 " : "#") + channel.name_normalized : "Unknown";
+  await redisClient.set(channelNameKey, channelName, "EX", 60 * 60); // cache username for one hour
+  return channelName;
 }
 
 export function findUserForSlackInstallation(slackUserId: string) {
@@ -181,7 +194,7 @@ async function createNotificationFromMessage(
   message: Pick<GenericMessageEvent, "channel" | "thread_ts" | "ts" | "text" | "user" | "channel_type"> &
     TeamFilterMessage,
   authorUserName: string,
-  slackChannel?: Channel
+  channelName?: string
 ) {
   const installationData = getSlackInstallationData(userSlackInstallation);
   const { id: slackUserId, token: userToken } = installationData.user;
@@ -235,11 +248,7 @@ async function createNotificationFromMessage(
           slack_message_ts: messageTs,
           is_mention: isMentioned,
           conversation_type: message.channel_type,
-          conversation_name: slackChannel
-            ? (slackChannel.is_private ? "🔒 " : "#") + slackChannel.name_normalized
-            : message.channel_type == "im"
-            ? "Direct Message"
-            : "Group Chat",
+          conversation_name: channelName ? channelName : message.channel_type == "im" ? "Direct Message" : "Group Chat",
         },
       },
     },
@@ -339,8 +348,8 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
   const userSlackInstallations = await findUserSlackInstallations(eventContextId);
 
   const isPublicChannel = message.channel_type !== "im" && message.channel_type !== "mpim";
-  const channelInfo = isPublicChannel
-    ? (await client.conversations.info({ channel: message.channel })).channel
+  const channelName = isPublicChannel
+    ? await getSlackChannelName(client.token, body.team_id, message.channel)
     : undefined;
 
   const channelMembers = isPublicChannel
@@ -356,7 +365,7 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
     }
     try {
       await nr.startSegment("slack/message/createNotificationFromMessage", true, async () =>
-        createNotificationFromMessage(userSlackInstallation, msg, authorUserName, channelInfo)
+        createNotificationFromMessage(userSlackInstallation, msg, authorUserName, channelName)
       );
     } catch (error) {
       logger.error(error, "Error creating slack notifications");
