@@ -6,6 +6,7 @@ import { Team } from "@slack/web-api/dist/response/TeamInfoResponse";
 import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
 
+import { redisClient } from "@aca/backend/src/redis";
 import { slackClient } from "@aca/backend/src/slack/app";
 import {
   convertMessageContentToPlainText,
@@ -21,9 +22,16 @@ import { getSlackInstallationData } from "./utils";
 
 async function getSlackUserName(token?: string, teamId?: string, userId?: string): Promise<string> {
   if (!token || !userId || !teamId) return "Unknown";
+
+  const userNameKey = `slack:username:${teamId}:${userId}`;
+  const cachedUsername = await redisClient.get(userNameKey);
+  if (cachedUsername) return cachedUsername;
+
   const { user } = await slackClient.users.info({ token: token, user: userId });
   // For Slack-Connect users the name was only found within the profile object
-  return user?.profile?.real_name ?? user?.real_name ?? "Unknown";
+  const username = user?.profile?.real_name ?? user?.real_name ?? "Unknown";
+  await redisClient.set(userNameKey, username, "EX", 60 * 60); // cache username for one hour
+  return username;
 }
 
 export function findUserForSlackInstallation(slackUserId: string) {
