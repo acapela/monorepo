@@ -43,8 +43,24 @@ async function getSlackChannelName(token?: string, teamId?: string, channelId?: 
   const { channel } = await slackClient.conversations.info({ token, channel: channelId });
   // For Slack-Connect users the name was only found within the profile object
   const channelName = channel ? (channel.is_private ? "🔒 " : "#") + channel.name_normalized : "Unknown";
-  await redisClient.set(channelNameKey, channelName, "EX", 60 * 60); // cache username for one hour
+  await redisClient.set(channelNameKey, channelName, "EX", 60 * 60); // cache channel name for one hour
   return channelName;
+}
+
+async function getSlackChannelMembers(
+  token?: string,
+  teamId?: string,
+  channelId?: string
+): Promise<string[] | undefined> {
+  if (!token || !channelId || !teamId) return undefined;
+
+  const channelMembersKey = `slack:channelmembers:${teamId}:${channelId}`;
+  const cachedChannelMembers = await redisClient.get(channelMembersKey);
+  if (cachedChannelMembers) return JSON.parse(cachedChannelMembers);
+
+  const { members } = await slackClient.conversations.members({ token, channel: channelId });
+  await redisClient.set(channelMembersKey, JSON.stringify(members || []), "EX", 30); // cache members for 30s
+  return members || [];
 }
 
 export function findUserForSlackInstallation(slackUserId: string) {
@@ -357,7 +373,7 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
     : undefined;
 
   const channelMembers = isPublicChannel
-    ? (await client.conversations.members({ channel: message.channel })).members
+    ? await getSlackChannelMembers(client.token, body.team_id, message.channel)
     : undefined;
 
   const authorUserName = await getSlackUserName(client.token, body.team_id, message.user);
