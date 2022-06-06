@@ -2,6 +2,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { isNotNullish } from "@aca/shared/nullish";
 
 import { getNotificationTitle } from "./title";
 
@@ -10,7 +11,7 @@ export const getNotificationSearchTerms = cachedComputed(function getNotificatio
 ) {
   const title = getNotificationTitle(notification);
 
-  return [title, notification.from];
+  return [title, notification.from, notification.text_preview].filter(isNotNullish);
 });
 
 export function notificationsFuzzySearch(keyword: string) {

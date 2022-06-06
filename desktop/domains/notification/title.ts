@@ -4,19 +4,49 @@ import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { jiraIssueFieldAlias } from "@aca/shared/attlassian";
+import { isNotFalsy } from "@aca/shared/nullish";
 
-function getTitle(inner: NotificationEntity["inner"], isGroupItem: boolean): string {
+function getTitle(notification: NotificationEntity, isGroupItem: boolean): string {
+  const inner = notification.inner;
+
   if (!inner) {
     return `Unknown notification`;
   }
 
   const type = inner.__typename;
 
+  const { from } = notification;
+
   switch (type) {
     case "notification_slack_message": {
-      const name = inner.conversation_type == "channel" ? inner?.conversation_name : "";
-      const threadLabel = inner.slack_thread_ts ? `Thread${name ? " in " : ""}` : "";
-      return threadLabel + name;
+      const { conversation_name, conversation_type, is_mention, slack_thread_ts } = inner;
+
+      const isThread = !!slack_thread_ts;
+
+      if (conversation_type === "im") {
+        if (is_mention) {
+          return `${from} mentioned you in ${isThread ? "thread" : "direct message"}`;
+        }
+        return [`Direct message from ${from}`, isThread && "(thread)"].filter(isNotFalsy).join(" ");
+      }
+
+      if (conversation_type === "mpim") {
+        if (is_mention) {
+          return [`${from} mentioned you in group conversation`, isThread && "(thread)"].filter(isNotFalsy).join(" ");
+        }
+
+        return [`New message from ${from} in group conversation`, isThread && "(thread)"].filter(isNotFalsy).join(" ");
+      }
+
+      if (conversation_type === "channel") {
+        if (is_mention) {
+          return [`${from} mentioned you in ${conversation_name}`, isThread && "(thread)"].filter(isNotFalsy).join(" ");
+        }
+
+        return [`New message in ${conversation_name}`, isThread && "(thread)"].filter(isNotFalsy).join(" ");
+      }
+
+      return `New message from ${from}`;
     }
     case "notification_notion": {
       switch (inner.type) {
@@ -106,7 +136,7 @@ function getTitle(inner: NotificationEntity["inner"], isGroupItem: boolean): str
       return `Unhandled notification in "${inner.title}"`;
     }
     case "notification_gmail": {
-      return "";
+      return `Email from ${from}`;
     }
     case "notification_asana": {
       if (inner.type.startsWith("status:")) {
@@ -173,11 +203,23 @@ export const getNotificationTitle = cachedComputed(
     const client = Object.values(integrationClients).find((client) => client.notificationTypename == inner?.__typename);
     const hasMultipleWorkspaces =
       (client?.getAccounts().length ?? 0) > 1 || (client?.getWorkspaces?.().length ?? 0) > 1;
+
     const workspaceName = hasMultipleWorkspaces && inner && "workspaceName" in inner && inner.workspaceName;
-    const title = getTitle(inner, !!isGroupItem);
+
+    const title = getTitle(notification, !!isGroupItem);
+
     if (isGroupItem) {
       return title;
     }
-    return title + (workspaceName ? (title ? " in " : "") + workspaceName : "");
+
+    if (!workspaceName) {
+      return title;
+    }
+
+    if (!title) {
+      return workspaceName;
+    }
+
+    return `${title} in ${workspaceName}`;
   }
 );
