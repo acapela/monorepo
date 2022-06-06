@@ -6,9 +6,11 @@ import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import {
+  cancelSaveNotification,
   copyNotificationLink,
   openFocusMode,
   resolveNotification,
+  saveNotification,
   snoozeNotification,
   unresolveNotification,
   unsnoozeNotification,
@@ -58,6 +60,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
     elementRef,
     [
       [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
+      [saveNotification, cancelSaveNotification],
       [toggleNotificationsGroup, openFocusMode],
       [copyNotificationLink],
     ],

@@ -3,7 +3,9 @@ import React from "react";
 import styled from "styled-components";
 
 import {
+  cancelSaveNotification,
   resolveNotification,
+  saveNotification,
   snoozeNotification,
   unresolveNotification,
   unsnoozeNotification,
@@ -19,6 +21,22 @@ export interface RowQuickActionsProps {
 export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
   return (
     <UIHolder>
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={saveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="primarySubtle"
+        size="compact"
+        action={cancelSaveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
       <ActionIconButton
         kind="transparent"
         size="compact"

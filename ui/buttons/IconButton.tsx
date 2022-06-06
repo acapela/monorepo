@@ -6,6 +6,8 @@ import { handleWithStopPropagationAndPreventDefault } from "@aca/shared/events";
 import { theme } from "@aca/ui/theme";
 
 import { disabledCss } from "../disabled";
+import { ShortcutDefinition } from "../keyboard/shortcutBase";
+import { getTooltipProps } from "../popovers/tooltipProps";
 import { ButtonKind, ButtonSize, getButtonKindStyles, getButtonSizeStyles } from "./variants";
 
 export interface IconButtonProps {
@@ -16,6 +18,7 @@ export interface IconButtonProps {
   className?: string;
   title?: string;
   tooltip?: string;
+  shortcut?: ShortcutDefinition;
   isDisabled?: boolean;
   isCircular?: boolean;
   iconScaleFactor?: number;
@@ -34,6 +37,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
     kind = "transparent",
     size = "regular",
     onClick,
+    shortcut,
     className,
     tooltip,
     isDisabled = false,
@@ -46,7 +50,7 @@ export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(f
   return (
     <UIButton
       ref={ref}
-      data-tooltip={tooltip}
+      {...getTooltipProps({ label: tooltip, shortcut })}
       className={className}
       onClick={onClick ? handleWithStopPropagationAndPreventDefault(onClick) : onClick}
       $kind={kind}

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { OneTimeTip } from "@aca/desktop/domains/onboarding/OneTimeTip";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
@@ -78,11 +79,13 @@ export const ListView = observer(({ listId }: Props) => {
           </UIListTools>
         )}
 
+        {list?.tip && <OneTimeTip id={`${list.id}-tip`}>{list.tip}</OneTimeTip>}
+
         {list && !list.dontPreload && <ListViewPreloader list={list} />}
 
         <UIListsScroller>
           {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
-            <ZeroNotifications key={listId} />
+            <ZeroNotifications key={listId} list={list} />
           )}
 
           {list && notificationGroups && notificationGroups.length > 0 && (
@@ -122,6 +125,11 @@ const UIHolder = styled.div<{}>`
   min-height: 0;
   position: relative;
   ${theme.colors.layout.background.asBgWithReadableText}
+
+  ${OneTimeTip} {
+    margin: 24px 24px;
+    align-self: center;
+  }
 `;
 
 const UINotifications = styled.div`

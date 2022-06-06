@@ -1,13 +1,24 @@
 import React from "react";
 import styled from "styled-components";
 
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { theme } from "@aca/ui/theme";
 
-export function ZeroNotifications() {
+interface Props {
+  list: NotificationsList;
+}
+
+export function ZeroNotifications({ list }: Props) {
   return (
     <UIHolder>
-      <UIUnderlined>No notifications in this list.</UIUnderlined>
+      <UITitle>No notifications in this list.</UITitle>
+
+      {!!list.listEntity && (
+        <UIAdditionalInfo>
+          Try to customize list filters to decide which items should end up in this list.{" "}
+        </UIAdditionalInfo>
+      )}
     </UIHolder>
   );
 }
@@ -19,8 +30,14 @@ const UIHolder = styled(FadePresenceAnimator)`
   justify-content: center;
   text-align: center;
   display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const UIUnderlined = styled.span`
+const UITitle = styled.span`
   ${theme.typo.content.semibold.opacity(0.5)};
+`;
+
+const UIAdditionalInfo = styled.div`
+  ${theme.typo.content.opacity(0.5)};
 `;

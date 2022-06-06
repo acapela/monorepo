@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList, resolveAllNotifications } from "@aca/desktop/actions/lists";
+import { resolvedList } from "@aca/desktop/domains/list/all";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
@@ -43,7 +44,11 @@ export const ListViewTopBar = observer(({ list }: Props) => {
       }
       targetActionItems={
         <>
-          <TopBarActionButton action={resolveAllNotifications} />
+          {list !== resolvedList && (
+            <>
+              <TopBarActionButton action={resolveAllNotifications} />
+            </>
+          )}
 
           {list?.listEntity && (
             <>

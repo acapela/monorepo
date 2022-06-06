@@ -85,7 +85,16 @@ export const resolveAllNotifications = defineAction({
   icon: <IconListUnordered4 />,
   group: currentListActionsGroup,
   name: (ctx) => {
-    return ctx.isContextual ? "Resolve all" : "Resolve all notifications in list";
+    if (ctx.isContextual) {
+      return "Resolve all";
+    }
+    const list = ctx.getTarget("list", true);
+
+    if (list) {
+      return `Resolve all notifications in "${list.name}"`;
+    }
+
+    return "Resolve all notifications in list";
   },
   analyticsEvent: (ctx) => {
     const list = ctx.getTarget("list", true);
@@ -279,7 +288,7 @@ export const goToPreviousList = defineAction({
 
 export const createNotificationList = defineAction({
   icon: <IconPlus />,
-  name: (ctx) => (ctx.isContextual ? "New list" : "New notifications list"),
+  name: (ctx) => (ctx.isContextual ? "New list" : "Create custom notifications list"),
   keywords: ["new list", "bucket", "add"],
   handler: () => ({
     searchPlaceholder: "New list name...",

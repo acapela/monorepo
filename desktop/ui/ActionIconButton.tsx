@@ -64,6 +64,7 @@ export const ActionIconButton = styledObserver(function ActionIconButton({
       size={size}
       icon={icon}
       isDisabled={isDisabled}
+      shortcut={shortcut}
       tooltip={getTooltip()}
       onClick={() => {
         runAction(action, context);
