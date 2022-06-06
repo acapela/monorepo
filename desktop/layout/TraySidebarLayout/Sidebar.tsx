@@ -1,27 +1,17 @@
 import { observer } from "mobx-react";
-import React, { Fragment, useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import {
-  createNotificationList,
-  deleteNotificationList,
-  goToList,
-  renameNotificationList,
-  resolveAllNotifications,
-} from "@aca/desktop/actions/lists";
+import { createNotificationList } from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButton";
 import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
-import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
-import { desktopRouter } from "@aca/desktop/routes";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
 import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
-import { ShortcutKey } from "@aca/ui/keyboard/codes";
-import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
 
-import { SidebarItem } from "./SidebarItem";
+import { SidebarListsGroup } from "./ListsGroup";
 
 export const SIDEBAR_WIDTH = 270;
 
@@ -48,66 +38,23 @@ export const Sidebar = observer(({ isOpened }: Props) => {
       </UIWindowDragger>
       <UIItems>
         <UIItemGroup>
-          <ActionSystemMenuItem
-            action={goToList}
-            path={["View", "List"]}
-            target={allNotificationsList}
-            customShortcut={["Meta", "1"]}
-            group="lists-dropdown"
-          />
-          <UISidebarItem
-            action={goToList}
-            target={allNotificationsList}
-            isActive={desktopRouter.getIsRouteActive("list", { listId: "allNotifications" })}
-            badgeCount={() => allNotificationsList.getCountIndicator()}
-            additionalShortcut={["Meta", "1"]}
-            contextMenuActions={[resolveAllNotifications]}
+          <SidebarListsGroup
+            lists={[...getInboxLists().filter((list) => list.listEntity?.system_id), allNotificationsList]}
           />
         </UIItemGroup>
         <UIItemGroup>
-          {getInboxLists()
-            .filter((list) => list.id !== allNotificationsList.id)
-            .map((list, index) => {
-              const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
-              // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
-              const additionalShortcut: ShortcutDefinition | undefined =
-                index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
-              return (
-                <Fragment key={list.id}>
-                  <ActionSystemMenuItem
-                    action={goToList}
-                    path={["View", "List"]}
-                    target={list}
-                    customShortcut={additionalShortcut}
-                    group="lists-dropdown"
-                  />
+          <SidebarListsGroup
+            lists={getInboxLists().filter((list) => {
+              if (list.id === allNotificationsList.id) return false;
+              if (list.listEntity?.system_id) return false;
 
-                  <UISidebarItem
-                    action={goToList}
-                    target={list}
-                    isActive={isActive}
-                    badgeCount={() => list.getCountIndicator()}
-                    additionalShortcut={additionalShortcut}
-                    contextMenuActions={
-                      list.isCustom
-                        ? [renameNotificationList, deleteNotificationList, resolveAllNotifications]
-                        : [resolveAllNotifications]
-                    }
-                  />
-                </Fragment>
-              );
+              return true;
             })}
+          />
         </UIItemGroup>
 
         <UIItemGroup>
-          {outOfInboxLists.map((list) => {
-            const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
-            const shouldShowCount = !list.dontShowCount;
-            const count = shouldShowCount ? list.getAllNotifications().length : undefined;
-            return (
-              <UISidebarItem key={list.id} action={goToList} target={list} isActive={isActive} badgeCount={count} />
-            );
-          })}
+          <SidebarListsGroup lists={outOfInboxLists} />
         </UIItemGroup>
       </UIItems>
       <UIFixedButton>
@@ -145,8 +92,6 @@ const UIItems = styled.div`
   row-gap: 16px;
   flex-grow: 1;
 `;
-
-const UISidebarItem = styled(SidebarItem)``;
 
 const UIWindowDragger = styled.div`
   ${systemBarPlaceholder};

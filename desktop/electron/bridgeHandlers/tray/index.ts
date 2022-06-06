@@ -1,4 +1,5 @@
 import { Menu, MenuItemConstructorOptions, Tray } from "electron";
+import { sortBy } from "lodash";
 import { autorun } from "mobx";
 
 import { requestNavigateToList } from "@aca/desktop/bridge/navigation";
@@ -59,7 +60,9 @@ function updateContextMenu(tray: Tray, lists: ApplicationTrayList[]) {
   for (const group of groups) {
     items.push(createSeparator());
 
-    items.push(...group.items.map((item) => convertListInfoToContextMenuItem(item, ++listIndex)));
+    const sortedItems = sortBy(group.items, (item) => item.order);
+
+    items.push(...sortedItems.map((item) => convertListInfoToContextMenuItem(item, ++listIndex)));
   }
 
   items.push(createSeparator(), { label: "Quit Acapela", role: "quit" });

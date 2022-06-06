@@ -18,7 +18,6 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: renew-gmail-watchers
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  # at 1500 every Tuesday
   schedule: 0 15 * * 2
   include_in_metadata: true
   payload:

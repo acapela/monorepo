@@ -22,6 +22,7 @@ export const ListFilters = styledObserver(({ value, onChange, className }: Props
 
   function handleFilterChange(changedFilter: NotificationFilter) {
     changedFilter = { id: getUUID(), ...changedFilter };
+
     const isExistingFilter = value.some((filter) => filter.id === changedFilter.id);
 
     if (!isExistingFilter) {

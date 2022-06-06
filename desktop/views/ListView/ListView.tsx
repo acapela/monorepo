@@ -67,12 +67,12 @@ export const ListView = observer(({ listId }: Props) => {
       )}
       <ListViewTopBar key={list?.id} list={list ?? undefined} />
       <UIHolder>
-        {list?.isCustom && (
+        {list?.listEntity && (
           <UIListTools>
             <ListFilters
-              value={list.listEntity?.typedFilters ?? []}
+              value={list.listEntity.typedFilters ?? []}
               onChange={(filters) => {
-                list?.listEntity?.update({ filters });
+                list.listEntity?.update({ filters });
               }}
             />
           </UIListTools>

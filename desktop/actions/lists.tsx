@@ -37,7 +37,9 @@ export const currentListActionsGroup = defineGroup({
   },
 });
 
-const canApplyCustomListAction = (ctx: ActionContext) => !!ctx.getTarget("list", true)?.isCustom;
+const getTargetIsCustomList = (ctx: ActionContext) => !!ctx.getTarget("list", true)?.listEntity;
+const getTargetIsCustomNonSystemList = (ctx: ActionContext) =>
+  ctx.getTarget("list", true)?.listEntity?.isSystemList === false;
 
 export const renameNotificationList = defineAction({
   icon: <IconEdit2 />,
@@ -46,9 +48,10 @@ export const renameNotificationList = defineAction({
   group: currentListActionsGroup,
   supplementaryLabel: (ctx) => ctx.getTarget("list", true)?.name,
 
-  canApply: canApplyCustomListAction,
+  canApply: getTargetIsCustomNonSystemList,
   handler: (ctx) => {
     const list = ctx.assertTarget("list", true);
+
     return {
       searchPlaceholder: "List name...",
       initialSearchValue: list.name,
@@ -96,8 +99,16 @@ export const resolveAllNotifications = defineAction({
   canApply: (ctx) => {
     return !!ctx.getTarget("list", true)?.getAllNotifications().length;
   },
-  handler(context) {
+  async handler(context) {
     const list = context.assertTarget("list");
+
+    const didConfirm = await showConfirmDialogRequest({
+      message: "Resolve all notifications?",
+      detail: `Are you sure to resolve all open notifications in "${list.name}"?`,
+      confirmLabel: "Resolve all",
+    });
+
+    if (!didConfirm) return;
 
     const allNotifications = list.getAllNotifications();
 
@@ -138,7 +149,7 @@ export const editNotificationList = defineAction({
   supplementaryLabel: (ctx) => ctx.view(listPageView)?.list.name,
 
   keywords: ["filters"],
-  canApply: canApplyCustomListAction,
+  canApply: getTargetIsCustomList,
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     desktopRouter.navigate("list", { listId: list.id, isEditing: "true" });
@@ -154,7 +165,7 @@ export const deleteNotificationList = defineAction({
 
   keywords: ["remove", "trash"],
   analyticsEvent: "Custom List Deleted",
-  canApply: canApplyCustomListAction,
+  canApply: getTargetIsCustomNonSystemList,
   async handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     const didConfirm = await showConfirmDialogRequest({

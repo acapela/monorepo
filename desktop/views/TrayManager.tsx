@@ -4,7 +4,8 @@ import { useAutorun } from "@aca/shared/sharedState";
 
 import { ApplicationTrayList, applicationTrayStateBridge } from "../bridge/tray";
 import { getBadgeCountToShow } from "../domains/badge/count";
-import { getInboxLists } from "../domains/list/all";
+import { allNotificationsList, getInboxLists } from "../domains/list/all";
+import { LIST_SYSTEM_IDS } from "../domains/list/system";
 
 export const TrayManager = observer(() => {
   useAutorun(() => {
@@ -13,11 +14,20 @@ export const TrayManager = observer(() => {
     const trayLists = inboxLists.map((list): ApplicationTrayList => {
       const count = list.getCountIndicator();
 
+      function getGroupAndOrderInfo(): Partial<ApplicationTrayList> {
+        if (list.listEntity?.system_id === LIST_SYSTEM_IDS.important) return { group: "summary", order: 1 };
+        if (list === allNotificationsList) return { group: "summary", order: 2 };
+
+        if (!list.listEntity) return { group: "built-in" };
+
+        return { group: "custom" };
+      }
+
       return {
         id: list.id,
         count,
         name: list.name,
-        group: list.listEntity ? "custom" : "built-in",
+        ...getGroupAndOrderInfo(),
       };
     });
 

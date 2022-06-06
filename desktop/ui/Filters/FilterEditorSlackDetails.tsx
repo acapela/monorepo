@@ -6,16 +6,15 @@ import styled from "styled-components";
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { SlackConversationsQuery, SlackConversationsQueryVariables, SlackUsersQuery } from "@aca/gql";
-import { getFilterValueAllowedValues } from "@aca/shared/filters";
-import { isPlainObjectEqual } from "@aca/shared/isPlainObjectEqual";
-import { isNotNullish } from "@aca/shared/nullish";
-import { typedKeys } from "@aca/shared/object";
-import { updateValue } from "@aca/shared/updateValue";
+import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
+import { IconComment2Text, IconHashtagCircle, IconUsers } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 import { Toggle } from "@aca/ui/toggle";
 
 import { ServiceUsersFilterRow } from "./ServiceUsersFilterRow";
-import { NotificationFilterKind, NotificationFilterOption } from "./types";
+import { ParsedSlackFilter, compileSlackFilter, parseSlackFilter } from "./slackModel";
+import { NotificationFilterKind } from "./types";
 import { FilterSettingRow, getWorkspaceLabel } from "./utils";
 
 type SlackFilter = NotificationFilterKind<"notification_slack_message">;
@@ -23,53 +22,6 @@ interface Props {
   filter: SlackFilter;
   onChange: (filter: SlackFilter) => void;
 }
-
-export const slackConversationTypeLabels = {
-  im: "DMs",
-  mpim: "Groups",
-  group: "Private Channels",
-  channel: "Channels",
-};
-export const slackConversationTypes = typedKeys(slackConversationTypeLabels);
-
-export const slackNotificationTypeOptions: NotificationFilterOption<SlackFilter>[] = [
-  {
-    label: "All messages",
-    updater: (filter) => {
-      delete filter.is_mention;
-    },
-    isActive: (filter) => filter.is_mention === undefined,
-  },
-  {
-    label: "Only mentions",
-    updater: (filter) => (filter.is_mention = true),
-    isActive: (filter) => filter.is_mention === true,
-  },
-];
-
-export const slackThreadedOptions: NotificationFilterOption<SlackFilter>[] = [
-  {
-    label: "With threads",
-    updater: (filter) => {
-      delete filter.slack_thread_ts;
-    },
-    isActive: (filter) => filter.slack_thread_ts === undefined,
-  },
-  {
-    label: "Without threads",
-    updater: (filter) => {
-      filter.slack_thread_ts = null;
-    },
-    isActive: (filter) => filter.slack_thread_ts === null,
-  },
-  {
-    label: "Only threads",
-    updater: (filter) => {
-      filter.slack_thread_ts = { $not: null };
-    },
-    isActive: (filter) => isPlainObjectEqual(filter.slack_thread_ts, { $not: null }),
-  },
-];
 
 function useSlackUsers() {
   const { data } = useQuery<SlackUsersQuery>(
@@ -148,125 +100,250 @@ export const SlackConversationsDropdown = observer(
     );
   }
 );
-
-function pickConversationIds(filter: SlackFilter) {
-  if (!filter.$or) return [];
-
-  for (const orPart of filter.$or) {
-    if (!orPart.slack_conversation_id) {
-      continue;
-    }
-
-    return getFilterValueAllowedValues(orPart.slack_conversation_id);
-  }
-
-  return [];
-}
-
-function pickPeopleIds(filter: SlackFilter) {
-  if (!filter.$or) return [];
-
-  for (const orPart of filter.$or) {
-    if (!orPart.slack_user_id) {
-      continue;
-    }
-
-    return getFilterValueAllowedValues(orPart.slack_user_id).filter(isNotNullish);
-  }
-
-  return [];
-}
-
-function updateConversationIds(filter: SlackFilter, ids: string[]): SlackFilter {
-  return updateValue(filter, (filter) => {
-    if (!filter.$or) {
-      filter.$or = [{ slack_conversation_id: { $in: ids } }];
-      return filter;
-    }
-
-    for (const orPart of filter.$or) {
-      if (orPart.slack_conversation_id) {
-        orPart.slack_conversation_id = { $in: ids };
-        return filter;
-      }
-    }
-
-    filter.$or.push({ slack_conversation_id: { $in: ids } });
-  });
-}
-
-function updatePeopleIds(filter: SlackFilter, ids: string[]): SlackFilter {
-  return updateValue(filter, (filter) => {
-    if (!filter.$or) {
-      filter.$or = [{ slack_user_id: { $in: ids } }];
-      return filter;
-    }
-
-    for (const orPart of filter.$or) {
-      if (orPart.slack_user_id) {
-        orPart.slack_user_id = { $in: ids };
-        return filter;
-      }
-    }
-
-    filter.$or.push({ slack_user_id: { $in: ids } });
-  });
-}
-
 export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) => {
   const slackUsers = useSlackUsers();
 
-  const selectedUserIds = pickPeopleIds(filter);
-  const selectedConversations = pickConversationIds(filter);
+  const parsedFilter = parseSlackFilter(filter);
 
-  const isOnlyMentionSelected = !!filter.is_mention;
+  const { anyMessages, directMessages, mentions } = parsedFilter;
+
+  function update(updater: ValueUpdater<ParsedSlackFilter>) {
+    const newParsedFilter = updateValue(parsedFilter, updater);
+    const newRawFilters = compileSlackFilter(newParsedFilter);
+
+    newRawFilters.__typename === "notification_slack_message";
+    if (filter.id) {
+      newRawFilters.id = filter.id;
+    }
+
+    onChange(newRawFilters);
+  }
+
+  function getSlackUsersByIds(ids: string[]) {
+    return slackUsers.filter((slackUser) => ids.includes(slackUser.id));
+  }
 
   return (
     <UIHolder>
-      <FilterSettingRow title="Channels">
-        <SlackConversationsDropdown
-          checkSelected={(id) => selectedConversations.includes(id)}
-          onChange={(channels) => {
-            onChange(
-              updateConversationIds(
-                filter,
-                channels.map((c) => c.id)
-              )
-            );
-          }}
-        />
-      </FilterSettingRow>
+      <UIGroup>
+        <FilterSettingRow title="Direct messages" icon={<IconUsers />}>
+          <Toggle
+            isSet={!!directMessages}
+            onChange={(isSelected) => {
+              update((filter) => {
+                if (!isSelected) {
+                  delete filter.directMessages;
+                } else {
+                  filter.directMessages = { type: "everyone" };
+                }
+              });
+            }}
+          />
+        </FilterSettingRow>
 
-      <ServiceUsersFilterRow
-        integrationClient={slackIntegrationClient}
-        users={slackUsers}
-        selectedUsers={slackUsers.filter((user) => selectedUserIds.includes(user.id))}
-        onChange={(users) => {
-          onChange(
-            updatePeopleIds(
-              filter,
-              users.map((u) => u.id)
-            )
-          );
-        }}
-      />
+        {directMessages && (
+          <>
+            <UISegmented>
+              <UISegment
+                $isActive={directMessages.type === "everyone"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.directMessages = { type: "everyone" };
+                  });
+                }}
+              >
+                Everyone
+              </UISegment>
+              <UISegment
+                $isActive={directMessages.type === "selectedPeople"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.directMessages = { type: "selectedPeople", selectedPeople: [] };
+                  });
+                }}
+              >
+                Select people
+              </UISegment>
+              <UISegment
+                $isActive={directMessages.type === "excludedPeople"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.directMessages = { type: "excludedPeople", excludedPeople: [] };
+                  });
+                }}
+              >
+                Everyone except
+              </UISegment>
+            </UISegmented>
+            {directMessages.type === "excludedPeople" && (
+              <UIIndent>
+                <ServiceUsersFilterRow
+                  label="Exclude people"
+                  integrationClient={slackIntegrationClient}
+                  users={slackUsers}
+                  selectedUsers={getSlackUsersByIds(directMessages.excludedPeople)}
+                  onChange={(users) => {
+                    update((filter) => {
+                      filter.directMessages = {
+                        type: "excludedPeople",
+                        excludedPeople: users.map((u) => u.id),
+                      };
+                    });
+                  }}
+                />
+              </UIIndent>
+            )}
+            {directMessages.type === "selectedPeople" && (
+              <UIIndent>
+                <ServiceUsersFilterRow
+                  label="Select people"
+                  integrationClient={slackIntegrationClient}
+                  users={slackUsers}
+                  selectedUsers={getSlackUsersByIds(directMessages.selectedPeople)}
+                  onChange={(users) => {
+                    update((filter) => {
+                      filter.directMessages = {
+                        type: "selectedPeople",
+                        selectedPeople: users.map((u) => u.id),
+                      };
+                    });
+                  }}
+                />
+              </UIIndent>
+            )}
+          </>
+        )}
+      </UIGroup>
 
-      <FilterSettingRow title="Only mentions">
-        <Toggle
-          isSet={isOnlyMentionSelected}
-          onChange={(isSelected) => {
-            if (isSelected) {
-              onChange(updateValue(filter, (filter) => (filter.is_mention = true)));
-            } else {
-              onChange(
-                updateValue(filter, (filter) => {
-                  delete filter.is_mention;
-                })
-              );
-            }
-          }}
-        />
-      </FilterSettingRow>
+      <UILimiter />
+
+      <UIGroup>
+        <FilterSettingRow title="Mentions" icon={<IconHashtagCircle />}>
+          <Toggle
+            isSet={!!mentions}
+            onChange={(isSelected) => {
+              update((filter) => {
+                if (isSelected) {
+                  filter.mentions = { type: "everyChannel" };
+                } else {
+                  delete filter.mentions;
+                }
+              });
+            }}
+          />
+        </FilterSettingRow>
+
+        {mentions && (
+          <>
+            <UISegmented>
+              <UISegment
+                $isActive={mentions.type === "everyChannel"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.mentions = { type: "everyChannel" };
+                  });
+                }}
+              >
+                All channels
+              </UISegment>
+              <UISegment
+                $isActive={mentions.type === "selectedChannels"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.mentions = { type: "selectedChannels", selectedChannels: [] };
+                  });
+                }}
+              >
+                Select channels
+              </UISegment>
+              <UISegment
+                $isActive={mentions.type === "excludedChannels"}
+                onClick={() => {
+                  update((filter) => {
+                    filter.mentions = { type: "excludedChannels", excludedChannels: [] };
+                  });
+                }}
+              >
+                All channels except
+              </UISegment>
+            </UISegmented>
+            {mentions.type === "selectedChannels" && (
+              <UIIndent>
+                <FilterSettingRow title="Select channels">
+                  <SlackConversationsDropdown
+                    placeholder="None"
+                    checkSelected={(id) => mentions.selectedChannels.includes(id)}
+                    onChange={(channels) => {
+                      update((filter) => {
+                        filter.mentions = {
+                          type: "selectedChannels",
+                          selectedChannels: channels.map((c) => c.id),
+                        };
+                      });
+                    }}
+                  />
+                </FilterSettingRow>
+              </UIIndent>
+            )}
+            {mentions.type === "excludedChannels" && (
+              <UIIndent>
+                <FilterSettingRow title="Exclude channels">
+                  <SlackConversationsDropdown
+                    placeholder="None"
+                    checkSelected={(id) => mentions.excludedChannels.includes(id)}
+                    onChange={(channels) => {
+                      update((filter) => {
+                        filter.mentions = {
+                          type: "excludedChannels",
+                          excludedChannels: channels.map((c) => c.id),
+                        };
+                      });
+                    }}
+                  />
+                </FilterSettingRow>
+              </UIIndent>
+            )}
+          </>
+        )}
+      </UIGroup>
+
+      <UILimiter />
+
+      <UIGroup>
+        <FilterSettingRow title="Other messages" icon={<IconComment2Text />}>
+          <Toggle
+            isSet={!!anyMessages}
+            onChange={(isSelected) => {
+              update((filter) => {
+                if (isSelected) {
+                  filter.anyMessages = { channels: [] };
+                } else {
+                  delete filter.anyMessages;
+                }
+              });
+            }}
+          />
+        </FilterSettingRow>
+
+        {!!anyMessages && (
+          <UIIndent>
+            <FilterSettingRow
+              title="Any message in channel"
+              description="Will include every message, even if you're not mentioned."
+            >
+              <SlackConversationsDropdown
+                placeholder="Select channels..."
+                checkSelected={(id) => anyMessages.channels.includes(id)}
+                onChange={(channels) => {
+                  update((filter) => {
+                    filter.anyMessages!.channels = channels.map((c) => c.id);
+                  });
+                }}
+              />
+            </FilterSettingRow>
+          </UIIndent>
+        )}
+      </UIGroup>
     </UIHolder>
   );
 });
@@ -274,5 +351,54 @@ export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) =
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+  max-width: 400px;
+`;
+
+const UILimiter = styled.div`
+  height: 2px;
+  ${theme.colors.layout.divider.asBg}
+`;
+
+const UIGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const UIIndent = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  border-radius: 8px;
+  padding-top: 12px;
+`;
+
+const UISegmented = styled.div`
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  ${theme.colors.layout.backgroundAccent.hover.withBorder.asBgWithReadableText};
+`;
+
+const UISegment = styled.div<{ $isActive?: boolean }>`
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  padding: 8px 4px;
+
+  ${theme.transitions.hover()}
+
+  ${(props) => {
+    if (props.$isActive) return theme.colors.primary.asBgWithReadableText;
+
+    return theme.colors.layout.backgroundAccent.hover.interactive;
+  }}
+
+  ${theme.typo.action.regular.semibold}
+
+  &:not(:last-child) {
+    border-right: 1px solid ${theme.colors.layout.divider.value};
+  }
 `;

@@ -33,7 +33,6 @@ import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";
-import { UIUnreadIndicator } from "./shared";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,
@@ -42,6 +41,7 @@ import {
   UIRowQuickActions,
   UISendersLabel,
   UISnoozeLabel,
+  UIUnreadIndicator,
   useStoreRowVisibility,
 } from "./shared";
 

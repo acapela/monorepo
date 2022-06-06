@@ -16,6 +16,7 @@ import { runUntracked } from "@aca/shared/mobx/utils";
 import { None } from "@aca/shared/none";
 
 import { getCountIndicatorFromGroups } from "./count";
+import { CUSTOM_SYSTEM_LIST_ICONS, ListSystemId } from "./system";
 
 type SortResult = string | number;
 
@@ -23,7 +24,6 @@ type DefineListConfig = {
   id: string;
   name: string;
   icon?: ReactNode;
-  isCustom?: boolean;
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
   dontPreload?: boolean;
@@ -63,7 +63,6 @@ const getNotificationCreatedAtTimestamp = weakMemoize((notification: Notificatio
 export function defineNotificationsList({
   id,
   name,
-  isCustom,
   listEntity,
   icon,
   dontShowCount = false,
@@ -230,7 +229,6 @@ export function defineNotificationsList({
     get name() {
       return listEntity?.title ?? name;
     },
-    isCustom,
     dontPreload,
     getNotificationGroup,
     getAllGroupedNotifications,
@@ -242,6 +240,9 @@ export function defineNotificationsList({
     getNotificationsToPreload,
     listEntity,
     get icon() {
+      if (listEntity?.system_id) {
+        return CUSTOM_SYSTEM_LIST_ICONS[listEntity.system_id as ListSystemId];
+      }
       return listEntity?.emoji ?? icon;
     },
     dontShowCount,

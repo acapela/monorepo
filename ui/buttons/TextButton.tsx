@@ -5,6 +5,8 @@ import styled, { css } from "styled-components";
 import { styledForwardRef } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
+import { disabledCss } from "../disabled";
+
 export interface ButtonDisabledInfo {
   reason: string;
 }
@@ -92,7 +94,7 @@ export const UIButton = styled(motion.button)<{
   ${(props) =>
     props.$isDisabled &&
     css`
+      ${disabledCss};
       cursor: unset;
-      opacity: 0.5;
     `}
 `;

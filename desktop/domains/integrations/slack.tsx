@@ -6,6 +6,7 @@ import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { NotificationFilter } from "@aca/desktop/clientdb/list";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
@@ -121,3 +122,13 @@ async function querySlackInstallationURL(teamId?: string) {
   );
   return assertDefined(slackInstallation?.url, "missing slack installation url");
 }
+
+export const slackMentionsAndPrivateMessagesFilter: NotificationFilter = {
+  __typename: "notification_slack_message",
+  $or: [
+    {
+      is_mention: true,
+    },
+    { conversation_type: { $in: ["im", "mpim"] } },
+  ],
+};
