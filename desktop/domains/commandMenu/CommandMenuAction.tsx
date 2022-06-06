@@ -45,7 +45,7 @@ export const CommandMenuAction = observer(function CommandMenuAction({
         {name}{" "}
         {supplementaryLabel && (
           <UIInfo>
-            <IconChevronRight /> {supplementaryLabel}
+            <IconChevronRight /> <UIEllipsis>{supplementaryLabel}</UIEllipsis>
           </UIInfo>
         )}
       </UIName>
@@ -87,7 +87,14 @@ const UIName = styled.div`
   flex-grow: 1;
   display: flex;
   align-items: center;
+  gap: 8px;
   ${theme.common.ellipsisText}
+`;
+
+const UIEllipsis = styled.div`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`
@@ -105,8 +112,10 @@ const UIShortcut = styled(ShortcutDescriptor)`
   }
 `;
 
-const UIInfo = styled.span`
-  display: inline-flex;
+const UIInfo = styled.div`
+  display: flex;
   align-items: center;
   opacity: 0.5;
+
+  min-width: 0;
 `;

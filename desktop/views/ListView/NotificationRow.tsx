@@ -94,18 +94,13 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         $preloadingState={devSettingsStore.debugPreloading && preloadingPreviewsBridgeChannel.get()[notification.url]}
       >
         {isFocused && <UIAnimatedHighlight />}
-
         <UIUnreadIndicator $isUnread={notification.isUnread} />
         <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
-
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
-
         {!notification.isResolved && !isFocused && <UISnoozeLabel notificationOrGroup={notification} />}
-
         {isFocused && <UIRowQuickActions target={notification} />}
-
         <NotificationDate notification={notification} key={notification.id} />
       </UIHolder>
     </ActionTrigger>

@@ -15,6 +15,7 @@ import {
   getPreviousItemInArray,
 } from "@aca/shared/array";
 import { useFuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { groupByFilter } from "@aca/shared/groupByFilter";
 import { isNotNullish } from "@aca/shared/nullish";
 import { FadePresenceAnimator, PopPresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
@@ -57,10 +58,13 @@ export const CommandMenuView = observer(function CommandMenuView({ session, onAc
     return true;
   });
 
-  const actionsToAlwaysShow = applicableActions.filter((action) => action.alwaysShowInSearch);
+  const [actionsToAlwaysShow, actionsToPerformSearchOn] = groupByFilter(
+    applicableActions,
+    (action) => action.alwaysShowInSearch ?? false
+  );
 
   const actionsToShow = useFuzzySearch(
-    applicableActions,
+    actionsToPerformSearchOn,
     (action) => {
       return getActionSearchTerms(action, actionContext);
     },

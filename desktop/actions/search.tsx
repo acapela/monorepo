@@ -13,6 +13,7 @@ import { NotificationAppIcon } from "@aca/desktop/domains/notification/Notificat
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { runActionWithTarget } from "@aca/desktop/domains/runAction";
+import { isNotNullish } from "@aca/shared/nullish";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder, IconSearch } from "@aca/ui/icons";
 
@@ -57,6 +58,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
     .map((notificationOrGroup) => {
       if (notificationOrGroup.kind === "group") {
         return defineAction({
+          id: notificationOrGroup.id + "search",
           name: notificationOrGroup.name,
           supplementaryLabel: () => pluralize`${notificationOrGroup.notifications.length} ${["notification"]}`,
           group: searchNotificationsGroup,
@@ -64,6 +66,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
             notificationOrGroup.integrationTitle,
             ...uniq(notificationOrGroup.notifications.map((n) => n.from)),
           ],
+          alwaysShowInSearch: true,
           icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup.notifications[0]} />,
           handler() {
             runActionWithTarget(openFocusMode, notificationOrGroup.notifications[0]);
@@ -72,10 +75,12 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
       }
 
       return defineAction({
+        id: notificationOrGroup.id + "search",
         name: getNotificationTitle(notificationOrGroup),
-        supplementaryLabel: () => notificationOrGroup.from,
+        alwaysShowInSearch: true,
+        supplementaryLabel: () => notificationOrGroup.text_preview,
         group: searchNotificationsGroup,
-        keywords: [notificationOrGroup.from],
+        keywords: [notificationOrGroup.from, notificationOrGroup.text_preview].filter(isNotNullish),
         icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup} />,
         handler() {
           runActionWithTarget(openFocusMode, notificationOrGroup);
