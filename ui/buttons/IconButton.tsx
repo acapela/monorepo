@@ -67,7 +67,7 @@ const INDICATOR_SIZE = 6;
 const UIIndicator = styled.div`
   height: ${INDICATOR_SIZE}px;
   width: ${INDICATOR_SIZE}px;
-  background-color: #e3224f;
+  ${theme.colors.primary.asBg};
   border-radius: 10px;
   position: absolute;
   top: 0;
