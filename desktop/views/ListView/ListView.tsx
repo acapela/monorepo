@@ -72,7 +72,7 @@ export const ListView = observer(({ listId }: Props) => {
             <ListFilters
               value={list.listEntity.typedFilters ?? []}
               onChange={(filters) => {
-                list.listEntity.update({ filters });
+                list.listEntity?.update({ filters });
               }}
             />
           </UIListTools>
