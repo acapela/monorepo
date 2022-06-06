@@ -30,7 +30,7 @@ export const ActionButton = styledObserver(function ActionButton({
   ...buttonProps
 }: Props) {
   const context = useActionContext(target, { isContextual: true });
-  const { name, icon } = resolveActionData(action, context);
+  const { name, icon, shortcut } = resolveActionData(action, context);
 
   const canApply = action.canApply(context);
 
@@ -66,6 +66,7 @@ export const ActionButton = styledObserver(function ActionButton({
       icon={hideIcon ? undefined : icon}
       isDisabled={getShouldShowAsDisabled()}
       disableClicks={!canApply}
+      shortcut={shortcut}
       tooltip={getTooltip()}
       onClick={() => {
         runAction(action, context);

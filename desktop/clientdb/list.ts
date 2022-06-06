@@ -107,7 +107,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     .query(cachedGetIsNotificationPassingFilters);
 
   const inboxNotificationsQuery = notificationsDb
-    .query({ isResolved: false, isSnoozed: false })
+    .query({ isResolved: false, isSnoozed: false, isSaved: false })
     .query(cachedGetIsNotificationPassingFilters);
 
   const inboxNotificationsSinceLastSeen = cachedComputed(() => {

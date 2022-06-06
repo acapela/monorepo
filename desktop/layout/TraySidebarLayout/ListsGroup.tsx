@@ -34,6 +34,7 @@ export const SidebarListsGroup = observer(({ lists }: Props) => {
         // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
         const additionalShortcut: ShortcutDefinition | undefined =
           index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
+
         return (
           <Fragment key={list.id}>
             <ActionSystemMenuItem
@@ -48,7 +49,11 @@ export const SidebarListsGroup = observer(({ lists }: Props) => {
               action={goToList}
               target={list}
               isActive={isActive}
-              badgeCount={() => list.getCountIndicator()}
+              badgeCount={() => {
+                if (list.dontShowCount) return;
+
+                return list.getCountIndicator();
+              }}
               additionalShortcut={additionalShortcut}
               contextMenuActions={
                 list.listEntity

@@ -10,6 +10,10 @@ export const LIST_SYSTEM_IDS = {
   important: "important",
 } as const;
 
+export const SYSTEM_LISTS_TIP: Record<ListSystemId, string> = {
+  important: `This is list of your important notifications. Use filter tools above to decide which notifications should automatically show up here.`,
+};
+
 export type ListSystemId = typeof LIST_SYSTEM_IDS[keyof typeof LIST_SYSTEM_IDS];
 
 export const CUSTOM_SYSTEM_LIST_ICONS: Record<keyof typeof LIST_SYSTEM_IDS, ReactNode> = {

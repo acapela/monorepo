@@ -18,6 +18,7 @@ import {
   IconClock,
   IconClockCross,
   IconExternalLink,
+  IconFlag,
   IconGlasses,
   IconLink1,
   IconTarget,
@@ -110,6 +111,99 @@ export const resolveNotification = defineAction({
 
     addToast({
       message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
+  },
+});
+
+export const saveNotification = defineAction({
+  icon: <IconFlag />,
+  group: currentNotificationActionsGroup,
+  name: `Move to "Saved"`,
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Resolved", { notification_id });
+    }
+  },
+  keywords: ["flag"],
+  shortcut: ["S"],
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  canApply: (ctx) => {
+    return (
+      (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isSaved)) ||
+      (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isSaved)
+    );
+  },
+  handler(context) {
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
+
+    const cancel = createCleanupObject();
+
+    cancel.next = focusNextItemIfAvailable(context);
+
+    if (notification) {
+      cancel.next = notification.markAsSaved().undo;
+    }
+
+    if (group) {
+      group?.notifications.forEach((notification) => {
+        cancel.next = notification.markAsSaved()?.undo;
+      });
+    }
+
+    // Waiting for lists to get updated
+    defer(() => {
+      displayZenModeIfFinished(context);
+    });
+
+    addToast({
+      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} saved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
+  },
+});
+
+export const cancelSaveNotification = defineAction({
+  icon: <IconFlag />,
+  group: currentNotificationActionsGroup,
+  name: `Remove from "Saved"`,
+  shortcut: ["Shift", "S"],
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  keywords: ["undo", "flag"],
+  canApply: (ctx) => {
+    return ctx.getTarget("notification")?.isSaved || !!ctx.getTarget("group")?.notifications.some((n) => n.isSaved);
+  },
+  analyticsEvent: "Notification Unresolved",
+  handler(context) {
+    const notification = context.getTarget("notification");
+    const group = context.getTarget("group");
+
+    const cancel = createCleanupObject();
+
+    cancel.next = focusNextItemIfAvailable(context);
+
+    cancel.next = notification?.update({ saved_at: null }).undo;
+
+    group?.notifications.forEach((notification) => {
+      cancel.next = notification.update({ saved_at: null }).undo;
+    });
+
+    addToast({
+      message: pluralize`Cancelled save for ${group ? group.notifications.length : 1} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {

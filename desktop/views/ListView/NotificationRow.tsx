@@ -3,12 +3,14 @@ import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import {
+  cancelSaveNotification,
   copyNotificationLink,
   markNotificationRead,
   markNotificationUnread,
   openFocusMode,
   openNotificationInApp,
   resolveNotification,
+  saveNotification,
   snoozeNotification,
   unresolveNotification,
   unsnoozeNotification,
@@ -55,6 +57,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
     elementRef,
     [
       [openFocusMode, openNotificationInApp],
+      [saveNotification, cancelSaveNotification],
       [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
       [copyNotificationLink],
       [markNotificationRead, markNotificationUnread],

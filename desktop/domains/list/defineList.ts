@@ -25,6 +25,7 @@ type DefineListConfig = {
   name: string;
   icon?: ReactNode;
   listEntity?: NotificationListEntity;
+  tip?: ReactNode;
   dontShowCount?: boolean;
   dontPreload?: boolean;
   sort?: (notification: NotificationEntity) => SortResult;
@@ -68,6 +69,7 @@ export function defineNotificationsList({
   dontShowCount = false,
   dontPreload = false,
   sort,
+  tip,
   ...config
 }: DefineListConfig) {
   const getActiveNotification = cachedComputed(() => (uiStore.activeListId === id ? uiStore.activeNotification : null));
@@ -239,6 +241,7 @@ export function defineNotificationsList({
     getCountIndicator,
     getNotificationsToPreload,
     listEntity,
+    tip,
     get icon() {
       if (listEntity?.system_id) {
         return CUSTOM_SYSTEM_LIST_ICONS[listEntity.system_id as ListSystemId];

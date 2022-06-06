@@ -4,7 +4,7 @@ import { useAutorun } from "@aca/shared/sharedState";
 
 import { ApplicationTrayList, applicationTrayStateBridge } from "../bridge/tray";
 import { getBadgeCountToShow } from "../domains/badge/count";
-import { allNotificationsList, getInboxLists } from "../domains/list/all";
+import { allNotificationsList, getInboxLists, savedNotificationsList } from "../domains/list/all";
 import { LIST_SYSTEM_IDS } from "../domains/list/system";
 
 export const TrayManager = observer(() => {
@@ -16,7 +16,8 @@ export const TrayManager = observer(() => {
 
       function getGroupAndOrderInfo(): Partial<ApplicationTrayList> {
         if (list.listEntity?.system_id === LIST_SYSTEM_IDS.important) return { group: "summary", order: 1 };
-        if (list === allNotificationsList) return { group: "summary", order: 2 };
+        if (list === savedNotificationsList) return { group: "summary", order: 2 };
+        if (list === allNotificationsList) return { group: "summary", order: 3 };
 
         if (!list.listEntity) return { group: "built-in" };
 

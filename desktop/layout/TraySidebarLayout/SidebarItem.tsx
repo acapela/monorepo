@@ -18,7 +18,7 @@ interface Props {
   target?: unknown;
   className?: string;
   isActive?: boolean;
-  badgeCount?: Thunk<number>;
+  badgeCount?: Thunk<number | undefined>;
   additionalShortcut?: ShortcutDefinition;
   contextMenuActions?: ActionData[];
 }

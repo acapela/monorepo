@@ -24,6 +24,7 @@ insert_permissions:
         - last_seen_at
         - notified_user_at
         - resolved_at
+        - saved_at
         - snoozed_until
         - text_preview
         - updated_at
@@ -40,6 +41,7 @@ select_permissions:
         - last_seen_at
         - notified_user_at
         - resolved_at
+        - saved_at
         - snoozed_until
         - text_preview
         - updated_at
@@ -52,10 +54,10 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - from
         - last_seen_at
         - notified_user_at
         - resolved_at
+        - saved_at
         - snoozed_until
         - text_preview
         - updated_at

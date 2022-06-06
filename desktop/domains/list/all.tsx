@@ -7,14 +7,24 @@ import { integrationClients } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { IconClock, IconListUnordered4 } from "@aca/ui/icons";
+import { IconClock, IconFlag, IconListUnordered4 } from "@aca/ui/icons";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
+import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
 
 export const allNotificationsList = defineNotificationsList({
   id: "allNotifications",
   name: "All",
-  filter: { isResolved: false, isSnoozed: false },
+  filter: { isResolved: false, isSnoozed: false, isSaved: false },
+  tip: "This list will contain every single notification you receive",
+});
+
+export const savedNotificationsList = defineNotificationsList({
+  id: "saved",
+  name: "Saved",
+  icon: <IconFlag />,
+  tip: `You can mark notifications as "Saved". All saved notifications can be found in this list`,
+  filter: { isResolved: false, isSnoozed: false, isSaved: true },
 });
 
 const getAvailableIntegrationLists = cachedComputed(
@@ -26,7 +36,7 @@ const getAvailableIntegrationLists = cachedComputed(
           id: client.notificationTypename,
           name: client.name,
           icon: <IntegrationIcon integrationClient={client} />,
-          filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false },
+          filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false, isSaved: false },
         })
       ),
   // Result of this function is observable (Eg. client.getAccounts().length) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
@@ -59,6 +69,7 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
     id: listEntity.id,
     name: listEntity.title,
     listEntity: listEntity,
+    tip: listEntity.system_id ? SYSTEM_LISTS_TIP[listEntity.system_id as ListSystemId] : undefined,
     getNotifications: () => listEntity.inboxNotifications.all,
   });
 });
@@ -68,7 +79,7 @@ export const getInboxLists = cachedComputed(
     const customLists = getDb().notificationList.all.map((listEntity) =>
       createNotificationsListFromListEntity(listEntity)
     );
-    return [allNotificationsList, ...customLists, ...getAvailableIntegrationLists()];
+    return [...customLists, savedNotificationsList, allNotificationsList, ...getAvailableIntegrationLists()];
   },
   // Result of this function is observable (eg. depends on database being present and notifications lists) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
   { requiresReaction: true }

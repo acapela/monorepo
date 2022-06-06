@@ -9,6 +9,7 @@ import { HOUR } from "@aca/shared/time";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
 import { resetSessionBridges } from "../bridge/base/persistance";
+import { onboardingStateStore } from "../domains/onboarding/store";
 import { addToast } from "../domains/toasts/store";
 import { desktopRouter } from "../routes";
 import { startOnboardingFinishedAnimation } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
@@ -201,6 +202,15 @@ export const simulateListWasNotSeen = defineAction({
   handler(ctx) {
     const { list } = ctx.assertView(listPageView);
     list.listEntity?.update({ seen_at: subDays(new Date(), 180).toISOString() });
+  },
+});
+
+export const resetOnboardingFlags = defineAction({
+  icon: <IconKeyboard />,
+  group: devActionsGroup,
+  name: "Reset onboarding flags",
+  handler() {
+    onboardingStateStore.closedFlags = [];
   },
 });
 

@@ -5,9 +5,15 @@ import styled, { css } from "styled-components";
 import { createNotificationList } from "@aca/desktop/actions/lists";
 import { toggleMaximizeRequest } from "@aca/desktop/bridge/system";
 import { FeedbackButton } from "@aca/desktop/domains/feedbackWidget/FeedbackButton";
-import { allNotificationsList, getInboxLists, outOfInboxLists } from "@aca/desktop/domains/list/all";
+import {
+  allNotificationsList,
+  getInboxLists,
+  outOfInboxLists,
+  savedNotificationsList,
+} from "@aca/desktop/domains/list/all";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 import { systemBarPlaceholder } from "@aca/desktop/ui/systemTopBar/ui";
+import { groupByFilter } from "@aca/shared/groupByFilter";
 import { useDoubleClick } from "@aca/shared/hooks/useDoubleClick";
 import { theme } from "@aca/ui/theme";
 
@@ -31,6 +37,20 @@ export const Sidebar = observer(({ isOpened }: Props) => {
     toggleMaximizeRequest();
   });
 
+  const allInboxLists = getInboxLists();
+
+  const [systemInboxLists, nonSystemInboxLists] = groupByFilter(allInboxLists, (list) => {
+    if (list.id === allNotificationsList.id) return true;
+    if (list.id === savedNotificationsList.id) return true;
+    if (list.listEntity?.system_id) return true;
+
+    return false;
+  });
+
+  const [customInboxLists, integrationInboxLists] = groupByFilter(nonSystemInboxLists, (list) => {
+    return !!list.listEntity;
+  });
+
   return (
     <UIHolder ref={sideBarRef} $isOpened={isOpened}>
       <UIWindowDragger ref={draggerRef}>
@@ -38,19 +58,16 @@ export const Sidebar = observer(({ isOpened }: Props) => {
       </UIWindowDragger>
       <UIItems>
         <UIItemGroup>
-          <SidebarListsGroup
-            lists={[...getInboxLists().filter((list) => list.listEntity?.system_id), allNotificationsList]}
-          />
+          <SidebarListsGroup lists={systemInboxLists} />
         </UIItemGroup>
-        <UIItemGroup>
-          <SidebarListsGroup
-            lists={getInboxLists().filter((list) => {
-              if (list.id === allNotificationsList.id) return false;
-              if (list.listEntity?.system_id) return false;
+        {customInboxLists.length > 0 && (
+          <UIItemGroup>
+            <SidebarListsGroup lists={customInboxLists} />
+          </UIItemGroup>
+        )}
 
-              return true;
-            })}
-          />
+        <UIItemGroup>
+          <SidebarListsGroup lists={integrationInboxLists} />
         </UIItemGroup>
 
         <UIItemGroup>

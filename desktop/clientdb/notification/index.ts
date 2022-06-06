@@ -38,6 +38,7 @@ const notificationFragment = gql`
     last_seen_at
     snoozed_until
     notified_user_at
+    saved_at
   }
 `;
 
@@ -68,6 +69,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     snoozed_until: null,
     text_preview: null,
     last_seen_at: null,
+    saved_at: null,
     notified_user_at: null,
     ...getGenericDefaultData(),
   }),
@@ -96,6 +98,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "text_preview",
         "last_seen_at",
         "notified_user_at",
+        "saved_at",
       ],
       updateColumns: [
         "updated_at",
@@ -105,6 +108,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "text_preview",
         "last_seen_at",
         "notified_user_at",
+        "saved_at",
       ],
       upsertConstraint: "notification_pkey",
     }
@@ -150,6 +154,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       },
       get kind() {
         return getInner()?.__typename ?? null;
+      },
+      get isSaved() {
+        return !!notification.saved_at;
+      },
+      markAsSaved() {
+        return updateSelf({ saved_at: new Date().toISOString() });
       },
       get isResolved() {
         return !!notification.resolved_at;

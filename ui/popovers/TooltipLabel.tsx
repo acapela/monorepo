@@ -24,7 +24,7 @@ export const TooltipLabel = styled<TooltipLabelProps>(
       <TooltipFlyer anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
         <UITooltip presenceStyles={POP_PRESENCE_STYLES} transition={{ duration: 0.2 }}>
           {label}
-          {shortcut && <Shortcut shortcut={shortcut} />}
+          {shortcut && <UIShortcut shortcut={shortcut} />}
         </UITooltip>
       </TooltipFlyer>
     );
@@ -41,9 +41,19 @@ const UITooltip = styled(PresenceAnimator)<{}>`
   ${theme.colors.panels.tooltip.asBgWithReadableText};
   ${theme.box.panel.tooltip.padding.radius};
   ${theme.radius.secondaryItem};
+  ${theme.shadow.item};
   ${theme.spacing.actions.asGap}
+  border: 1px solid ${theme.colors.layout.divider.value};
   pointer-events: none;
   max-width: 300px;
   display: flex;
   align-items: center;
+  text-align: center;
+`;
+
+const UIShortcut = styled(Shortcut)`
+  ${theme.colors.panels.tooltip.hover.asBgWithReadableText};
+  ${theme.radius.badge};
+  padding: 3px 6px;
+  font-size: 13px;
 `;
