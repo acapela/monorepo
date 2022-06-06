@@ -54,11 +54,18 @@ export const ActionButton = styledObserver(function ActionButton({
     if (children) return getLabel();
   }
 
+  function getShouldShowAsDisabled() {
+    if (canApply) return false;
+
+    return notApplicableMode !== "notClickable";
+  }
+
   return (
     <Button
       size={size}
       icon={hideIcon ? undefined : icon}
-      isDisabled={!canApply}
+      isDisabled={getShouldShowAsDisabled()}
+      disableClicks={!canApply}
       tooltip={getTooltip()}
       onClick={() => {
         runAction(action, context);

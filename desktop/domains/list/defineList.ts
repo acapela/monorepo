@@ -24,7 +24,6 @@ type DefineListConfig = {
   id: string;
   name: string;
   icon?: ReactNode;
-  isCustom?: boolean;
   listEntity?: NotificationListEntity;
   dontShowCount?: boolean;
   dontPreload?: boolean;
@@ -64,7 +63,6 @@ const getNotificationCreatedAtTimestamp = weakMemoize((notification: Notificatio
 export function defineNotificationsList({
   id,
   name,
-  isCustom,
   listEntity,
   icon,
   dontShowCount = false,
@@ -231,7 +229,6 @@ export function defineNotificationsList({
     get name() {
       return listEntity?.title ?? name;
     },
-    isCustom,
     dontPreload,
     getNotificationGroup,
     getAllGroupedNotifications,

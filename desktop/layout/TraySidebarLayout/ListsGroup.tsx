@@ -51,7 +51,7 @@ export const SidebarListsGroup = observer(({ lists }: Props) => {
               badgeCount={() => list.getCountIndicator()}
               additionalShortcut={additionalShortcut}
               contextMenuActions={
-                list.isCustom
+                list.listEntity
                   ? [renameNotificationList, deleteNotificationList, resolveAllNotifications]
                   : [resolveAllNotifications]
               }

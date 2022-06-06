@@ -139,6 +139,11 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     get inboxNotificationsSinceLastSeen() {
       return inboxNotificationsSinceLastSeen();
     },
+    get isSystemList() {
+      if (list.system_id) return true;
+
+      return false;
+    },
     // Notifications that we never notified user about
     // TODO: Name is weird
     get notificationsToNotifyUserAbout() {

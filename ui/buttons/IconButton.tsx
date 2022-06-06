@@ -1,10 +1,11 @@
 import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { styledForwardRef } from "@aca/shared/component";
 import { handleWithStopPropagationAndPreventDefault } from "@aca/shared/events";
 import { theme } from "@aca/ui/theme";
 
+import { disabledCss } from "../disabled";
 import { ButtonKind, ButtonSize, getButtonKindStyles, getButtonSizeStyles } from "./variants";
 
 export interface IconButtonProps {
@@ -99,12 +100,7 @@ export const UIButton = styled.button<{
     transform: scale(${(props) => props.iconScaleFactor});
   }
 
-  ${(props) =>
-    props.$isDisabled &&
-    css`
-      opacity: 0.25;
-      pointer-events: none;
-    `}
+  ${(props) => props.$isDisabled && disabledCss}
 
   ${(props) => !props.$isDisabled && theme.common.clickable};
 `;

@@ -7,7 +7,6 @@ import { apolloClient } from "@aca/desktop/apolloClient";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { SlackConversationsQuery, SlackConversationsQueryVariables, SlackUsersQuery } from "@aca/gql";
 import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
-import { FadePresenceAnimator } from "@aca/ui/animations";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { IconComment2Text, IconHashtagCircle, IconUsers } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
@@ -368,18 +367,15 @@ const UIGroup = styled.div`
   gap: 12px;
 `;
 
-const UIIndent = styled(FadePresenceAnimator)`
-  /* padding: 20px; */
+const UIIndent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-
-  /* ${theme.colors.layout.backgroundAccent.hover.withBorder.asBgWithReadableText} */
   border-radius: 8px;
   padding-top: 12px;
 `;
 
-const UISegmented = styled(FadePresenceAnimator)`
+const UISegmented = styled.div`
   display: flex;
   border-radius: 8px;
   overflow: hidden;

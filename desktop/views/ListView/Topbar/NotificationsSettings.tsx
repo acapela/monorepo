@@ -21,8 +21,8 @@ interface NotificationsIntervalOption {
 }
 
 const notificationIntervalOptions: NotificationsIntervalOption[] = [
-  { label: `Don't notify`, intervalMs: null },
-  { label: `Notify instantly`, intervalMs: 0 },
+  { label: `Never`, intervalMs: null },
+  { label: `Instantly `, intervalMs: 0 },
   { label: `Every 15 minutes`, intervalMs: MINUTE * 15 },
   { label: `Every hour`, intervalMs: HOUR },
   { label: `Every 3 hours`, intervalMs: HOUR * 3 },
@@ -35,8 +35,9 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
       (intervalOption) => intervalOption.intervalMs === list.notifications_interval_ms
     ) ?? notificationIntervalOptions[0];
 
+  const isEnabled = !isNil(list.notifications_interval_ms);
   return (
-    <UIHolder className={className}>
+    <UIHolder className={className} data-tooltip="Notify about new items...">
       <SingleOptionDropdown<NotificationsIntervalOption>
         items={notificationIntervalOptions}
         keyGetter={(intervalOption) => intervalOption.label}
@@ -47,7 +48,12 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
           trackEvent("Desktop Notifications Settings Updated", { interval: intervalOption.intervalMs });
         }}
       >
-        <TopBarButton icon={<IconBell />} indicateNotification={!isNil(list.notifications_interval_ms)} />
+        <TopBarButton
+          key={`${isEnabled}`}
+          icon={<IconBell />}
+          kind={isEnabled ? "primarySubtle" : undefined}
+          indicateNotification={isEnabled}
+        />
       </SingleOptionDropdown>
     </UIHolder>
   );

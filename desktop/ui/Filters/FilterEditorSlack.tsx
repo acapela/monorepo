@@ -33,7 +33,7 @@ export const FilterEditorSlack = observer(({ filter, onChange, onRemoveRequest }
       <FilterLabel
         label="Slack"
         icon={<IntegrationIcon integrationClient={slackIntegrationClient} />}
-        isFilled={!isSlackFilterEmpty(filter)}
+        isFilled={!!filter && !isSlackFilterEmpty(filter)}
         onClick={toggleOpened}
         onClearRequest={() => {
           if (filter) {

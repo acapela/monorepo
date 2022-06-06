@@ -28,8 +28,15 @@ export const ListViewTopBar = observer(({ list }: Props) => {
       }
       titleNode={
         <UITitle>
-          {list?.listEntity && <ListEmojiPicker list={list.listEntity} />}
-          <ActionButton size="compact" kind="transparent" action={renameNotificationList} target={list} hideIcon>
+          {list && <ListEmojiPicker list={list} />}
+          <ActionButton
+            size="compact"
+            kind="transparent"
+            action={renameNotificationList}
+            target={list}
+            hideIcon
+            notApplicableMode="notClickable"
+          >
             {list?.name}
           </ActionButton>
         </UITitle>
@@ -42,9 +49,8 @@ export const ListViewTopBar = observer(({ list }: Props) => {
             <>
               <TopBarDivider />
               <ListNotificationsSettings list={list.listEntity} />
-              <TopBarActionButton action={renameNotificationList} />
 
-              <TopBarActionButton action={deleteNotificationList} />
+              <TopBarActionButton action={deleteNotificationList} target={list} notApplicableMode="hide" />
             </>
           )}
         </>

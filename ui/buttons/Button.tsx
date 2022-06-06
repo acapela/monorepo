@@ -28,6 +28,7 @@ export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "disabled">
   iconAtStart?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean | ButtonDisabledInfo;
+  disableClicks?: boolean;
   tooltip?: string;
   shortcut?: ShortcutDefinition;
   indicateDropdown?: boolean;
@@ -56,6 +57,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     shortcut,
     onClick,
     indicateDropdown,
+    disableClicks,
     ...htmlProps
   },
   ref
@@ -84,6 +86,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       ref={ref}
       $isLoading={isLoading}
       $isDisabled={isDisabledBoolean}
+      $disableClicks={disableClicks}
       disabled={isDisabledBoolean}
       $isWide={isWide}
       {...getTooltipProps({ label: getTooltipLabel(), shortcut })}
@@ -138,13 +141,20 @@ export const UIButton = styled(motion.button)<{
   $isLoading?: boolean;
   $isDisabled?: boolean;
   $isWide?: boolean;
+  $disableClicks?: boolean;
 }>`
   ${baseButtonStyles};
 
   ${(props) => getButtonKindStyles(props.$kind)};
   ${(props) => getButtonSizeStyles(props.$size)};
 
-  ${theme.common.clickable}
+  ${theme.common.clickable};
+
+  ${(props) =>
+    props.$disableClicks &&
+    css`
+      pointer-events: none;
+    `}
 
   ${(props) => (props.$isDisabled || props.$isLoading) && disabledCss};
   ${(props) =>

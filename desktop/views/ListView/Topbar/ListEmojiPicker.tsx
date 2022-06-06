@@ -1,15 +1,16 @@
 import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
+import styled, { css } from "styled-components";
 
-import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { useContextMenu } from "@aca/desktop/domains/contextMenu/useContextMenu";
+import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { EmojiPickerPopover } from "@aca/ui/emoji/EmojiPicker/EmojiPickerPopover";
 import { IconFolder } from "@aca/ui/icons";
 
 interface Props {
-  list: NotificationListEntity;
+  list: NotificationsList;
 }
 
 export const ListEmojiPicker = observer(({ list }: Props) => {
@@ -17,21 +18,25 @@ export const ListEmojiPicker = observer(({ list }: Props) => {
 
   const [isPickingEmoji, setIsPickingEmoji] = useState(false);
 
+  const listEntity = list.listEntity;
+
+  const canPick = !!listEntity && !listEntity.isSystemList;
+
   useContextMenu(holderRef, () => [
     {
       label: "Remove emoji",
-      enabled: !!list.emoji,
+      enabled: !!listEntity?.emoji,
       onSelected() {
-        list.update({ emoji: null });
+        listEntity?.update({ emoji: null });
       },
     },
   ]);
 
   return (
-    <div ref={holderRef}>
+    <UIHolder ref={holderRef} $disable={!canPick}>
       <IconButton
         size="compact"
-        icon={<>{list.emoji ?? <IconFolder />}</>}
+        icon={<>{list.icon ?? <IconFolder />}</>}
         onClick={() => {
           setIsPickingEmoji(true);
         }}
@@ -42,7 +47,7 @@ export const ListEmojiPicker = observer(({ list }: Props) => {
           <EmojiPickerPopover
             anchorRef={holderRef}
             onEmojiPicked={(emoji) => {
-              list.update({ emoji });
+              listEntity?.update({ emoji });
               setIsPickingEmoji(false);
             }}
             onCloseRequest={() => {
@@ -51,6 +56,14 @@ export const ListEmojiPicker = observer(({ list }: Props) => {
           />
         )}
       </AnimatePresence>
-    </div>
+    </UIHolder>
   );
 });
+
+const UIHolder = styled.div<{ $disable: boolean }>`
+  ${(props) =>
+    props.$disable &&
+    css`
+      pointer-events: none;
+    `}
+`;
