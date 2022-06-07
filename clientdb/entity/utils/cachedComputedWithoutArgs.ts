@@ -1,8 +1,6 @@
 import { IComputedValueOptions, Reaction, createAtom } from "mobx";
 
-import { IS_DEV } from "@aca/shared/dev";
 import { createLogger } from "@aca/shared/log";
-import { mapGetOrCreate } from "@aca/shared/map";
 import { SECOND } from "@aca/shared/time";
 
 import { createSharedInterval, sharedDefer } from "./sharedDefer";
@@ -30,8 +28,6 @@ export interface CachedComputedOptions<T> extends IComputedValueOptions<T> {
 
 const sharedDisopseInterval = createSharedInterval(KEEP_ALIVE_TIME_AFTER_UNOBSERVED);
 
-const namesMap = new Map<string, number>();
-
 /**
  * This is computed that connect advantages of both 'keepAlive' true and false of normal computed:
  *
@@ -46,9 +42,6 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
 
   log?.(`Creating`);
 
-  // This is dev for debugging what sort of computed values are created
-  namesMap.set(name, mapGetOrCreate(namesMap, name, () => 0) + 1);
-
   // return computed(getter, options);
 
   let latestValue: T;
@@ -59,13 +52,11 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
     name,
     () => {
       sharedDisopseInterval.remove(dispose);
-      aliveLazyReactions++;
     },
     handleBecameUnobserved
   );
 
   function handleBecameUnobserved() {
-    aliveLazyReactions--;
     // It became unobserved as result of other lazyComputed disposing. We don't need to wait for 'keep alive' time
     if (isDisposalCascadeRunning) {
       // Use timeout to avoid max-call-stack in case of very long computed>computed dependencies chains
@@ -181,19 +172,4 @@ export function cachedComputedWithoutArgs<T>(getter: () => T, options: CachedCom
       return latestValue;
     },
   };
-}
-
-/**
- * Debug utils
- */
-
-let aliveLazyReactions = 0;
-
-// As those are not auto disposed by mobx - we need to be careful with memory leaks - aliveLazyReactions should always fall to 0 after a while if no more reactions are running
-const DEBUG_MEMORY_LEAKS = false;
-
-if (typeof document !== "undefined" && DEBUG_MEMORY_LEAKS && IS_DEV) {
-  setInterval(() => {
-    console.info("alive lazy reactions", aliveLazyReactions, namesMap);
-  }, 250);
 }

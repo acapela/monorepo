@@ -178,15 +178,13 @@ export function createEntityQuery<Data, Connections>(
     { name: `${queryKeyBase}.hasItems` }
   );
 
-  function getAll() {
-    return passingItems.get();
-  }
-
-  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${queryKeyBase}.count` });
-  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${queryKeyBase}.first` });
+  const countComputed = cachedComputedWithoutArgs(() => passingItems.get().length, { name: `${queryKeyBase}.count` });
+  const firstComputed = cachedComputedWithoutArgs(() => passingItems.get()[0] ?? null, {
+    name: `${queryKeyBase}.first`,
+  });
   const lastComputed = cachedComputedWithoutArgs(
     () => {
-      const all = getAll();
+      const all = passingItems.get();
 
       return all[all.length - 1] ?? null;
     },
@@ -195,7 +193,7 @@ export function createEntityQuery<Data, Connections>(
 
   const byIdMapComputed = cachedComputedWithoutArgs(
     () => {
-      const all = getAll();
+      const all = passingItems.get();
 
       const record: Record<string, Entity<Data, Connections>> = {};
 
@@ -220,7 +218,7 @@ export function createEntityQuery<Data, Connections>(
   function createOrReuseQuery(filter?: FindInput<Data, Connections>, sort?: EntityQuerySortInput<Data, Connections>) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
     const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
-      const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
+      const query = createEntityQuery(passingItems.get, { filter, sort: resolvedSort }, store);
 
       return query;
     });
@@ -236,7 +234,7 @@ export function createEntityQuery<Data, Connections>(
       return countComputed.get();
     },
     get all() {
-      return getAll();
+      return passingItems.get();
     },
     get first() {
       return firstComputed.get();

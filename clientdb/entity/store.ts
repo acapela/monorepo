@@ -1,16 +1,15 @@
 import { sortBy } from "lodash";
-import { IObservableArray, computed, observable, runInAction } from "mobx";
+import { IObservableArray, observable, runInAction } from "mobx";
 
 import { areArraysShallowEqual } from "@aca/shared/array";
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { deepMemoize } from "@aca/shared/deepMap";
-import { mapGetOrCreate } from "@aca/shared/map";
 
 import { EntityDefinition } from "./definition";
 import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";
-import { FindInput, findInSource } from "./find";
+import { FindInput } from "./find";
 import {
   EntityQuery,
   EntityQuerySortFunction,
@@ -20,7 +19,6 @@ import {
 } from "./query";
 import { IndexableData, IndexableKey, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
-import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
 import { EventsEmmiter, createMobxAwareEventsEmmiter } from "./utils/eventManager";
 import { cachedComputed } from ".";
 
@@ -89,21 +87,25 @@ export function createEntityStore<Data, Connections>(
   const items = observable.array<StoreEntity>([]);
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
-  const getIsEntityAccessable = cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
-    if (!config.accessValidator) {
-      return true;
-    }
+  const getIsEntityAccessable =
+    !!config.accessValidator &&
+    cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
+      return config.accessValidator!(entity, linker);
+    });
 
-    return config.accessValidator!(entity, linker);
-  });
+  const getRootSource = cachedComputed(
+    function getSourceForQueryInput(): Entity<Data, Connections>[] {
+      let output = items as StoreEntity[];
 
-  const accessableItems = cachedComputed(
-    () => {
-      if (!config.accessValidator) {
-        return items;
+      if (config.accessValidator) {
+        output = output.filter((entity) => config.accessValidator!(entity, linker));
       }
 
-      return items.filter((item) => config.accessValidator!(item, linker));
+      if (config.defaultSort) {
+        output = sortBy(output, config.defaultSort);
+      }
+
+      return output;
     },
     { equals: areArraysShallowEqual }
   );
@@ -122,47 +124,41 @@ export function createEntityStore<Data, Connections>(
     return id;
   }
 
-  function prepareResults(entities: StoreEntity[]): StoreEntity[] {
-    const accessableEntities = entities.filter((entity) => {
-      return getIsEntityAccessable(entity);
-    });
-
-    if (!config.defaultSort) {
-      return accessableEntities;
-    }
-
-    return sortBy(accessableEntities, config.defaultSort);
-  }
-
-  const getRootSource = cachedComputed(
-    function getSourceForQueryInput(): Entity<Data, Connections>[] {
-      if (!config.defaultSort) {
-        return accessableItems();
-      }
-
-      return sortBy(accessableItems(), config.defaultSort);
-    },
-    { equals: areArraysShallowEqual }
-  );
-
   const cleanups = createCleanupObject();
 
   const createOrReuseQuery = deepMemoize(
     function createOrReuseQuery(filter?: FindInput<Data, Connections>, sort?: EntityQuerySortInput<Data, Connections>) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => prepareResults(items), { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(getRootSource, { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
+
+  const findById = cachedComputed((id: string) => {
+    const entity = itemsMap[id];
+
+    if (!entity) return null;
+
+    if (getIsEntityAccessable && !getIsEntityAccessable(entity)) return null;
+
+    return entity;
+  });
 
   const store: EntityStore<Data, Connections> = {
     definition,
     events,
     items,
     getKeyIndex(key) {
-      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-      return index;
+      const existingIndex = queryIndexes.get(key);
+
+      if (existingIndex) return existingIndex;
+
+      const newIndex = createQueryFieldIndex(key, store);
+
+      queryIndexes.set(key, newIndex);
+
+      return newIndex;
     },
     add(entity, source = "user") {
       const id = getEntityId(entity);
@@ -176,15 +172,7 @@ export function createEntityStore<Data, Connections>(
       return entity;
     },
     findById(id) {
-      return computed(() => {
-        const entity = itemsMap[id];
-
-        if (!entity) return null;
-
-        if (!getIsEntityAccessable(entity)) return null;
-
-        return entity;
-      }).get();
+      return findById(id);
     },
     assertFindById(id, error) {
       const item = store.findById(id);
@@ -194,12 +182,10 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     find(filter) {
-      return findInSource(getRootSource(), store, filter);
+      return store.query(filter).all;
     },
     findFirst(filter) {
-      const all = store.find(filter);
-
-      return createArrayFirstComputed(all).get();
+      return store.query(filter).first;
     },
     findByUniqueIndex(key, value) {
       const results = store.getKeyIndex(key).find(value);
@@ -210,7 +196,7 @@ export function createEntityStore<Data, Connections>(
 
       const result = results[0];
 
-      if (getIsEntityAccessable(result)) return result;
+      if (getIsEntityAccessable && getIsEntityAccessable(result)) return result;
 
       return null;
     },
