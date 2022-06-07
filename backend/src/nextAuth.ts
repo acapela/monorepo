@@ -8,14 +8,13 @@ import SlackProvider from "next-auth/providers/slack";
 import { setupGmailWatcher } from "@aca/backend/src/gmail/capture";
 import { User, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
-import { trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
+import { identifyBackendUser, trackBackendUserEvent, trackFirstBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_CI, IS_DEV, TESTING_PREFIX } from "@aca/shared/dev";
 import { GMAIL_SCOPES, GOOGLE_AUTH_SCOPES, isGmailIncludedInPlan } from "@aca/shared/google";
 import { createJWT, signJWT, verifyJWT } from "@aca/shared/jwt";
 import { logger } from "@aca/shared/logger";
 import { Maybe } from "@aca/shared/types";
 
-import { updateUserOnboardingStatus } from "./tracking/utils";
 import { createNewReferralCode } from "./utils";
 
 // Fail quickly in case of missing env variables
@@ -244,7 +243,7 @@ function nextAuthMiddleware(req: Request, res: Response) {
           },
         });
         trackFirstBackendUserEvent(user, "Signed Up", { email, name, origin: referralCode ? "referred" : "organic" });
-        updateUserOnboardingStatus(user);
+        identifyBackendUser(user.id, { onboarding: "self_serve" });
         return toAdapterUser(user);
       },
 

@@ -5,16 +5,13 @@ import { ActionHandler } from "@aca/backend/src/actions/actionHandlers";
 import { db } from "@aca/db";
 import { SubscriptionPlan, SwitchSubscriptionPlanOutput } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08-27" });
 
 const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, ultimate: process.env.STRIPE_PRICE_ULTIMATE_ID! };
-
-const optionalDiscounts = process.env.STRIPE_DISCOUNT_CODE_ID
-  ? [{ coupon: process.env.STRIPE_DISCOUNT_CODE_ID }]
-  : undefined;
 
 export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPlan }, SwitchSubscriptionPlanOutput> = {
   actionName: "switch_subscription_plan",
@@ -73,9 +70,8 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
 
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       mode: "setup",
-      discounts: optionalDiscounts,
+      payment_method_types: ["card"],
       success_url: checkedOutURL + "?reason=success",
       cancel_url: checkedOutURL + "?reason=cancel",
     });
@@ -99,10 +95,15 @@ async function handleStripeEvent(event: Stripe.Event) {
       }
       const stripeCustomerId = typeof customer == "string" ? customer : customer.id;
       const isUltimate = getPriceIdFromSubscription(subscription) == PRICE_IDS.ultimate;
-      await db.user.update({
+      const user = await db.user.update({
         where: { stripe_customer_id: stripeCustomerId },
         data: { stripe_subscription_id: subscription.id, subscription_plan: isUltimate ? "ultimate" : "premium" },
       });
+      if (isUltimate) {
+        trackBackendUserEvent(user.id, "Plan Upgraded", { plan_start_date: new Date(), plan_name: "ultimate" });
+      } else {
+        trackBackendUserEvent(user.id, "Plan Downgraded", { plan_end_date: new Date(), plan_name: "premium" });
+      }
       break;
     }
   }

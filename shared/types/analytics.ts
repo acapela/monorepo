@@ -5,7 +5,7 @@ import { Maybe } from "@aca/shared/types";
 
 import { PreloadInstrumentationReportResult, PreloadURLLoadState } from "../debug/electronInstrumentation.types";
 
-export type PlanType = "trial" | "free" | "premium";
+export type PlanType = "free" | "premium" | "ultimate";
 
 /**
  * Map of tracking event types with their required parameters.
