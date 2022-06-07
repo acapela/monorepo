@@ -12,6 +12,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08
 
 const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, ultimate: process.env.STRIPE_PRICE_ULTIMATE_ID! };
 
+const optionalDiscounts = process.env.STRIPE_DISCOUNT_CODE_ID
+  ? [{ coupon: process.env.STRIPE_DISCOUNT_CODE_ID }]
+  : undefined;
+
 export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPlan }, SwitchSubscriptionPlanOutput> = {
   actionName: "switch_subscription_plan",
 
@@ -70,7 +74,8 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
-      mode: "subscription",
+      mode: "setup",
+      discounts: optionalDiscounts,
       success_url: checkedOutURL + "?reason=success",
       cancel_url: checkedOutURL + "?reason=cancel",
     });
