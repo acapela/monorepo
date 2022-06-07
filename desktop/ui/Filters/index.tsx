@@ -1,3 +1,4 @@
+import { unionBy } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
@@ -23,14 +24,16 @@ export const ListFilters = styledObserver(({ value, onChange, className }: Props
   function handleFilterChange(changedFilter: NotificationFilter) {
     changedFilter = { id: getUUID(), ...changedFilter };
 
-    const isExistingFilter = value.some((filter) => filter.id === changedFilter.id);
+    const currentUniqueFilters = unionBy(value, (existingFilter) => existingFilter.__typename);
+
+    const isExistingFilter = currentUniqueFilters.some((filter) => filter.id === changedFilter.id);
 
     if (!isExistingFilter) {
       onChange([...value, changedFilter]);
       return;
     }
 
-    const newFilters = value.map((existingFilter) => {
+    const newFilters = currentUniqueFilters.map((existingFilter) => {
       if (existingFilter.id !== changedFilter.id) {
         return existingFilter;
       }
