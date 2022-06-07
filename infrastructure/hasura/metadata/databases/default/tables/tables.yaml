@@ -19,6 +19,7 @@
 - "!include public_linear_issue.yaml"
 - "!include public_linear_oauth_token.yaml"
 - "!include public_notification.yaml"
+- "!include public_notification_acapela.yaml"
 - "!include public_notification_asana.yaml"
 - "!include public_notification_clickup.yaml"
 - "!include public_notification_drive.yaml"
