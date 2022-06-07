@@ -71,7 +71,7 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexableData<D & C>
   const currentItemIndexMap = new WeakMap<TargetEntity, IObservableArray<Entity<D, C>>>();
 
   try {
-    set(window, `__index.${store.definition.config.name}.${key}`, { observableIndex });
+    set(window, `__index.${store.definition.config.name}.${key.toString()}`, { observableIndex });
   } catch (error) {
     //
   }
