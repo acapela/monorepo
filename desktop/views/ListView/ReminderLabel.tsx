@@ -40,7 +40,7 @@ export const ReminderLabel = styledObserver(function ReminderLabel({ notificatio
   }
 
   return (
-    <UIHolder className={className} data-tooltip={`Has reminder - ${niceFormatDateTime(currentReminderDate)}`}>
+    <UIHolder className={className} data-tooltip={`Reminder - ${niceFormatDateTime(currentReminderDate)}`}>
       <IconClock />
     </UIHolder>
   );
@@ -52,6 +52,7 @@ const UIHolder = styled.div`
   padding: 4px;
   ${theme.radius.badge};
   ${theme.typo.label.semibold}
+  ${theme.colors.primary.asBgWithReadableText};
 
   svg {
     height: 1rem;

@@ -7,7 +7,7 @@ import { integrationClients } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { IconFlag, IconListUnordered4 } from "@aca/ui/icons";
+import { IconListUnordered4, IconStar } from "@aca/ui/icons";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
@@ -22,8 +22,8 @@ export const allNotificationsList = defineNotificationsList({
 export const savedNotificationsList = defineNotificationsList({
   id: "saved",
   name: "Saved",
-  icon: <IconFlag />,
-  tip: `You can mark notifications as "Saved". All saved notifications can be found in this list`,
+  icon: <IconStar />,
+  tip: `This list will show notifications you saved or have set reminders for.`,
   filter: { isResolved: false, $or: [{ hasReminder: true }, { isSaved: true }] },
 });
 

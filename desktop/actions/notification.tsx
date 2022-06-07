@@ -18,9 +18,9 @@ import {
   IconCheckboxSquare,
   IconClockCross,
   IconExternalLink,
-  IconFlag,
   IconGlasses,
   IconLink1,
+  IconStar,
   IconTarget,
 } from "@aca/ui/icons";
 
@@ -122,7 +122,7 @@ export const resolveNotification = defineAction({
 });
 
 export const saveNotification = defineAction({
-  icon: <IconFlag />,
+  icon: <IconStar />,
   group: currentNotificationActionsGroup,
   name: `Move to "Saved"`,
   analyticsEvent: (ctx) => {
@@ -178,7 +178,7 @@ export const saveNotification = defineAction({
 });
 
 export const cancelSaveNotification = defineAction({
-  icon: <IconFlag />,
+  icon: <IconStar />,
   group: currentNotificationActionsGroup,
   name: `Remove from "Saved"`,
   shortcut: ["Shift", "S"],

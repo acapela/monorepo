@@ -1,4 +1,4 @@
-import { isFuture } from "date-fns";
+import { isPast } from "date-fns";
 import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
@@ -183,18 +183,18 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
 
         const reminderDate = new Date(notification.snoozed_until);
 
+        const alreadyPassed = isPast(reminderDate);
+
+        reminderPassedAtom.reportObserved();
+
+        if (alreadyPassed) return null;
+
         return reminderDate;
       },
       get hasReminder() {
         const { reminderDate } = connections;
 
-        if (!reminderDate) return false;
-
-        const stillHasReminder = isFuture(reminderDate);
-
-        reminderPassedAtom.reportObserved();
-
-        return stillHasReminder;
+        return !!reminderDate;
       },
       get canAddReminder() {
         if (connections.isResolved) return false;
