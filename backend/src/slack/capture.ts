@@ -6,7 +6,7 @@ import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
 
 import { redisClient } from "@aca/backend/src/redis";
-import { slackClient } from "@aca/backend/src/slack/app";
+import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import {
   convertMessageContentToPlainText,
   parseAndTransformToTipTapJSON,
@@ -238,6 +238,7 @@ async function createNotificationFromMessage(
 
   const teamInfo = userSlackInstallation.slack_team.team_info_data as Team;
   assert(teamInfo.url, `could not get team url for ${userSlackInstallation.slack_team.slack_team_id}`);
+  // TODO: fetch team.info API endpoint and store in db??
 
   let permalink = `${teamInfo.url}archives/${message.channel}/p${messageTs.replace(".", "")}`;
   if (message.thread_ts) permalink += `?thread_ts=${message.thread_ts}&cid=${message.channel}`;
@@ -326,7 +327,7 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
   }
 }
 
-async function handleMessages({ message, body, client }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
+async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
   const eventContextId = body.event_context as string;
   message = message as GenericMessageEvent;
 
@@ -367,16 +368,23 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
 
   const userSlackInstallations = await findUserSlackInstallations(eventContextId);
 
+  // find a random user token to get the channel name / author name
+  const userTokens = userSlackInstallations
+    .map((usi) => (usi.data as unknown as SlackInstallation).user.token)
+    .filter(isNotNullish);
+  assert(userTokens.length > 0, "no user tokens were found");
+  const randomUserToken = userTokens[Math.floor(Math.random() * userTokens.length)];
+
   const isPublicChannel = message.channel_type !== "im" && message.channel_type !== "mpim";
   const channelName = isPublicChannel
-    ? await getSlackChannelName(client.token, body.team_id, message.channel)
+    ? await getSlackChannelName(randomUserToken, body.team_id, message.channel)
     : undefined;
 
   const channelMembers = isPublicChannel
-    ? await getSlackChannelMembers(client.token, body.team_id, message.channel)
+    ? await getSlackChannelMembers(randomUserToken, body.team_id, message.channel)
     : undefined;
 
-  const authorUserName = await getSlackUserName(client.token, body.team_id, message.user);
+  const authorUserName = await getSlackUserName(randomUserToken, body.team_id, message.user);
 
   for (const userSlackInstallation of userSlackInstallations) {
     if (channelMembers && !channelMembers.includes(userSlackInstallation.slack_user_id)) {

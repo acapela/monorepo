@@ -77,8 +77,8 @@ export const PlanUpgadeCelebrationView = styledObserver(() => {
               <UIContent>
                 <UITitle>Upgrade successful!</UITitle>
                 <UIMessage>
-                  We are thrilled, that you decided to take your notification-game to the next level. You now have
-                  access to all Acapela Ultimate features.
+                  You are currently on a free trial and will not be charged. You now have access to all Acapela Ultimate
+                  features.
                 </UIMessage>
               </UIContent>
               <Button
