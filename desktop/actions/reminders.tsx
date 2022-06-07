@@ -6,7 +6,7 @@ import { createCleanupObject } from "@aca/shared/cleanup";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { pluralize } from "@aca/shared/text/pluralize";
-import { IconClock } from "@aca/ui/icons";
+import { IconBell } from "@aca/ui/icons";
 
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
@@ -14,17 +14,17 @@ import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
-export function canApplySnooze(context: ActionContext) {
-  if (context.getTarget("notification")?.canSnooze === true) return true;
-  if (context.getTarget("group")?.notifications.some((notification) => notification.canSnooze) === true) return true;
+export function getIsTargetNotificationOrGroup(context: ActionContext) {
+  if (context.getTarget("notification")) return true;
+  if (context.getTarget("group")) return true;
 
   return false;
 }
 
-export function getSnoozeOptionsForSearch(context: ActionContext) {
-  if (!canApplySnooze(context)) return [];
+export function getReminderOptionsForSearch(context: ActionContext) {
+  if (!getIsTargetNotificationOrGroup(context)) return [];
 
-  return getSnoozeSuggestionActions(context);
+  return getReminderSuggestionActions(context);
 }
 
 const DEFAULT_WORK_START_HOUR = 9;
@@ -70,12 +70,12 @@ const defaultSuggestions: DateSuggestion[] = [
   },
 ];
 
-export function getSnoozeSuggestionActions(context: ActionContext) {
-  const dateSuggestions = getSnoozeSuggestions(context);
+export function getReminderSuggestionActions(context: ActionContext) {
+  const dateSuggestions = getReminderSuggestions(context);
 
-  const snoozeActions = dateSuggestions.map(convertDateSuggestionToAction);
+  const reminderActions = dateSuggestions.map(convertDateSuggestionToAction);
 
-  return snoozeActions;
+  return reminderActions;
 }
 
 function convertDateToStartOfDay(date: Date) {
@@ -92,7 +92,7 @@ function prepareSuggestionTime(date: Date, now = new Date()) {
   return convertDateToStartOfDay(date);
 }
 
-function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
+function getReminderSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
   if (!searchKeyword.trim()) return defaultSuggestions;
 
   const now = new Date();
@@ -108,8 +108,8 @@ function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): D
 
 function convertDateSuggestionToAction(suggestion: DateSuggestion) {
   return defineAction({
-    name: (ctx) => (ctx.isContextual ? suggestion.text : `Snooze until "${suggestion.text}"`),
-    icon: <IconClock />,
+    name: (ctx) => (ctx.isContextual ? suggestion.text : `Remind me: "${suggestion.text}"`),
+    icon: <IconBell />,
     group: currentNotificationActionsGroup,
     supplementaryLabel: () => niceFormatDateTime(suggestion.date),
     handler(context) {
@@ -124,7 +124,7 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
 
       if (!group && notification) {
         // If the given notification is part of a group which can be previewed through a single notification, we treat
-        // marking one of them as snoozed, as marking the whole group as snoozed
+        // adding reminder to one of them is adding reminder to whole group
         const list = context.assertTarget("list", true);
         const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
 
@@ -134,19 +134,19 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
       }
 
       if (notification) {
-        cancel.next = notification.snooze(date)?.undo;
+        cancel.next = notification.addReminder(date)?.undo;
       }
 
       if (group) {
         group.notifications.forEach((notification) => {
-          cancel.next = notification.snooze(date)?.undo;
+          cancel.next = notification.addReminder(date)?.undo;
         });
       }
 
       displayZenModeIfFinished(context);
 
       addToast({
-        message: pluralize`${cancel.size} ${["notification"]} snoozed`,
+        message: pluralize`Added reminder to ${cancel.size} ${["notification"]}`,
         action: {
           label: "Undo",
           callback() {

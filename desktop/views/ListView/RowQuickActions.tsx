@@ -3,12 +3,12 @@ import React from "react";
 import styled from "styled-components";
 
 import {
+  addReminderToNotification,
   cancelSaveNotification,
+  removeNotificationReminder,
   resolveNotification,
   saveNotification,
-  snoozeNotification,
   unresolveNotification,
-  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -48,7 +48,7 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
       <ActionIconButton
         kind="transparent"
         size="compact"
-        action={snoozeNotification}
+        action={addReminderToNotification}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"
@@ -56,7 +56,7 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
       <ActionIconButton
         kind="transparent"
         size="compact"
-        action={unsnoozeNotification}
+        action={removeNotificationReminder}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"

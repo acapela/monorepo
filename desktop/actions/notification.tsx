@@ -13,9 +13,9 @@ import { desktopRouter } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
 import {
+  IconBell,
   IconCheck,
   IconCheckboxSquare,
-  IconClock,
   IconClockCross,
   IconExternalLink,
   IconFlag,
@@ -28,7 +28,7 @@ import { getNotificationTitle } from "../domains/notification/title";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
-import { canApplySnooze, getSnoozeSuggestionActions } from "./snooze";
+import { getIsTargetNotificationOrGroup, getReminderSuggestionActions } from "./reminders";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<OpenAppUrl> {
@@ -253,15 +253,9 @@ export const unresolveNotification = defineAction({
   },
 });
 
-export const snoozeNotification = defineAction({
+export const addReminderToNotification = defineAction({
   group: currentNotificationActionsGroup,
-  name: (ctx) => {
-    if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Snooze group" : "Snooze group...";
-    }
-
-    return ctx.isContextual ? "Snooze" : "Snooze notification...";
-  },
+  name: "Add reminder",
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
@@ -272,28 +266,28 @@ export const snoozeNotification = defineAction({
     }
   },
   keywords: ["delay", "time"],
-  canApply: canApplySnooze,
-  icon: <IconClock />,
+  canApply: getIsTargetNotificationOrGroup,
+  icon: <IconBell />,
   shortcut: ["H"],
   handler() {
     return {
       searchPlaceholder: "In 3 days...",
       isContextual: true,
       getActions: (context) => {
-        return getSnoozeSuggestionActions(context);
+        return getReminderSuggestionActions(context);
       },
     };
   },
 });
 
-export const unsnoozeNotification = defineAction({
+export const removeNotificationReminder = defineAction({
   group: currentNotificationActionsGroup,
-  name: "Cancel snooze",
+  name: "Remove reminder",
   supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["now", "remove", "schedule", "do", "unsnooze", "undo"],
+  keywords: ["now", "remove", "schedule", "do", "cancel", "undo"],
   canApply: (ctx) => {
-    if (ctx.getTarget("notification")?.isSnoozed === true) return true;
-    if (ctx.getTarget("group")?.notifications.some((n) => n.isSnoozed) === true) return true;
+    if (ctx.getTarget("notification")?.hasReminder === true) return true;
+    if (ctx.getTarget("group")?.notifications.some((n) => n.hasReminder) === true) return true;
 
     return false;
   },
@@ -308,7 +302,7 @@ export const unsnoozeNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
+      message: pluralize`Removed reminder for ${cancel.size} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {
@@ -420,7 +414,7 @@ export const markNotificationUnread = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
   shortcut: ["U"],
-  keywords: ["snooze", "remind"],
+  keywords: ["remind"],
   canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
     const notification = context.assertTarget("notification");

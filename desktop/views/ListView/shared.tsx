@@ -8,8 +8,8 @@ import { NotificationAppIcon } from "@aca/desktop/domains/notification/Notificat
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
+import { ReminderLabel } from "./ReminderLabel";
 import { RowQuickActions, RowQuickActionsProps } from "./RowQuickActions";
-import { SnoozeLabel } from "./SnoozeLabel";
 
 const SENDERS_WIDTH = 150;
 
@@ -124,7 +124,7 @@ export const UIHighlight = styled(motion.div)`
   z-index: ${NotificationRowZIndex.highlight};
 `;
 
-export const UISnoozeLabel = styled(SnoozeLabel)`
+export const UIReminderLabel = styled(ReminderLabel)`
   z-index: ${NotificationRowZIndex.rowItem};
 `;
 

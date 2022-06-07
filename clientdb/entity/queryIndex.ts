@@ -9,17 +9,18 @@ import { Thunk, resolveThunk } from "@aca/shared/thunk";
 import { EntityStore } from "./store";
 import { computedArray } from "./utils/computedArray";
 
-export type IndexQueryInput<I> = Partial<IndexableData<I>>;
-
-type IndexableData<T> = {
-  [key in keyof T]: T[key] extends Primitive ? QueryIndexValue<T[key]> : never;
+export type IndexableData<T> = {
+  [key in keyof T]: T[key] extends Primitive ? T[key] : never;
 };
 
-export type QueryIndexValue<T> = Thunk<T | T[]>;
+export type IndexableKey<T> = keyof IndexableData<T>;
+export type IndexFindInput<D, C, K extends IndexableKey<D & C>> = IndexValueInput<IndexableData<D & C>[K]>;
 
-export interface QueryIndex<D, C, V> {
+export type IndexValueInput<T> = Thunk<T | T[]>;
+
+export interface QueryIndex<D, C, K extends IndexableKey<D & C>> {
   destroy(): void;
-  find(value: V): Entity<D, C>[];
+  find(value: IndexFindInput<D, C, K>): Entity<D, C>[];
 }
 
 /**
@@ -41,13 +42,13 @@ function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter
 /**
  * Will create unique key index for entity store that will automatically add/update/delete items from the index on changes.
  */
-export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & C>>(
+export function createQueryFieldIndex<D, C, K extends keyof IndexableData<D & C>>(
   key: K,
   store: EntityStore<D, C>
-): QueryIndex<D, C, Entity<D, C>[K]> {
+): QueryIndex<D, C, K> {
   type TargetEntity = Entity<D, C>;
-  type TargetValue = TargetEntity[K];
-  type TargetValueInput = QueryIndexValue<TargetValue>;
+  type TargetValue = IndexableData<TargetEntity>[K];
+  type TargetValueInput = IndexValueInput<TargetValue>;
 
   /**
    * Index map. Example: topic has slug. Lets say we have 2 slugs 'foo' and 'bar'.
@@ -61,7 +62,7 @@ export function createQueryFieldIndex<D, C, K extends keyof IndexQueryInput<D & 
   const observableIndex = observable.map<TargetValue, IObservableArray<TargetEntity>>({});
 
   function getCurrentIndexValue(entity: TargetEntity): TargetValue {
-    return entity[key];
+    return entity[key] as TargetValue;
   }
 
   /**

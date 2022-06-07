@@ -9,7 +9,7 @@ export interface OnboardingNotificationRowData {
   timeAgoSent: string;
   content: ReactNode;
   onResolve?: (notification: OnboardingNotificationRowData) => void;
-  onSnooze?: (notification: OnboardingNotificationRowData) => void;
+  onAddReminder?: (notification: OnboardingNotificationRowData) => void;
   onOpen?: (notification: OnboardingNotificationRowData) => void;
 }
 

@@ -6,10 +6,10 @@ import styled from "styled-components";
 
 import { exitFocusMode, refreshNotificationPreview } from "@aca/desktop/actions/focus";
 import {
+  addReminderToNotification,
   copyNotificationLink,
   openNotificationInApp,
   resolveNotification,
-  snoozeNotification,
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
 import { getDb } from "@aca/desktop/clientdb";
@@ -62,7 +62,7 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
     <AppLayout footer={<FocusModeFooter />} transparent>
       <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={notification} />
       <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
-      <ActionSystemMenuItem action={snoozeNotification} path={["Notification"]} target={notification} />
+      <ActionSystemMenuItem action={addReminderToNotification} path={["Notification"]} target={notification} />
       <SystemMenuGroup>
         <ActionSystemMenuItem action={refreshNotificationPreview} path={["Notification"]} target={notification} />
         <ActionSystemMenuItem action={openNotificationInApp} path={["Notification"]} target={notification} />

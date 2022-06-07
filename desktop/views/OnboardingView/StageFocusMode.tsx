@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { pickSnoozeTime } from "@aca/desktop/actions/snoozeUtils";
+import { pickReminderTime } from "@aca/desktop/actions/remindersUtils";
 import { asanaIntegrationClient } from "@aca/desktop/domains/integrations/asana";
 import { googleDriveIntegrationClient } from "@aca/desktop/domains/integrations/drive";
 import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
@@ -17,7 +17,7 @@ import { useThrottledState } from "@aca/shared/hooks/useDebouncedState";
 import { getObjectKey } from "@aca/shared/object";
 import { wait } from "@aca/shared/time";
 import { FadePresenceAnimator } from "@aca/ui/animations";
-import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconCheck, IconTime } from "@aca/ui/icons";
+import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconBell, IconCheck } from "@aca/ui/icons";
 
 import { FakeIntegrationScreen, FakeIntegrationScreenProps } from "./focus/FakeIntegrationScreen";
 import { FakeWindow } from "./focus/FakeWindow";
@@ -78,7 +78,7 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
         <OnboardingStageSections>
           <OnboardingSecondaryHero
             title="Action your notifications"
-            description="When you open a notification, that app gets loaded full screen in Acapela. You can use Focus Mode to reply directly, or snooze and resolve it to move onto the next one. Try it out!"
+            description="When you open a notification, that app gets loaded full screen in Acapela. You can use Focus Mode to reply directly, or add reimnder and resolve it to move onto the next one. Try it out!"
           />
           <OnboardingAnimationItem>
             <UIFakeApp>
@@ -161,14 +161,14 @@ export const StageFocusMode = observer(({ onContinue }: OnboardingStageProps) =>
                           );
                         }}
                       </GuideItem>
-                      <GuideItem index={2} content="Click to snooze it">
+                      <GuideItem index={2} content="Click to add reminder for later">
                         {(complete) => {
                           return (
                             <TopBarButton
-                              icon={<IconTime />}
-                              tooltip="Snooze notification..."
+                              icon={<IconBell />}
+                              tooltip="Add reminder..."
                               onClick={async () => {
-                                await pickSnoozeTime();
+                                await pickReminderTime();
                                 complete();
                                 refreshFakeApp({
                                   onSent() {
