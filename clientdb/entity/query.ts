@@ -52,7 +52,7 @@ export function resolveSortInput<Data, Connections>(
 type MaybeObservableArray<T> = IObservableArray<T> | T[];
 
 export type EntityQuery<Data, Connections> = {
-  all: Entity<Data, Connections>[];
+  all: ReadonlyArray<Entity<Data, Connections>>;
   first: Entity<Data, Connections> | null;
   last: Entity<Data, Connections> | null;
   hasItems: boolean;

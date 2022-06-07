@@ -46,7 +46,7 @@ export interface EntityStoreFindMethods<Data, Connections> {
   assertFindById(id: string, error?: MessageOrError): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
 
-  find(filter: FindInput<Data, Connections>): Entity<Data, Connections>[];
+  find(filter: FindInput<Data, Connections>): ReadonlyArray<Entity<Data, Connections>>;
   findFirst(filter: FindInput<Data, Connections>): Entity<Data, Connections> | null;
 }
 
