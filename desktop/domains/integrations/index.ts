@@ -1,6 +1,7 @@
 import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
 
+import { acapelaIntegrationClient } from "./acapela";
 import { asanaIntegrationClient } from "./asana";
 import { clickupIntegrationClient } from "./clickup";
 import { googleDriveIntegrationClient } from "./drive";
@@ -14,6 +15,7 @@ import { slackIntegrationClient } from "./slack";
 import { IntegrationClient } from "./types";
 
 export const integrationClients = {
+  acapela: acapelaIntegrationClient,
   slack: slackIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,
