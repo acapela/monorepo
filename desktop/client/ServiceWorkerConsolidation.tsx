@@ -130,7 +130,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         }
 
         const space = db.notionSpace.findByUniqueIndex("space_id", notionNotification.synced_spaced_id);
-        const spaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", space?.id);
+        const spaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", space?.id as string);
 
         if (!spaceUser) {
           log.error("[Notion] space user should have existed when consolidating notifications");

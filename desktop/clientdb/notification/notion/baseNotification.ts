@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "@aca/clientdb";
+import { FindInput } from "@aca/clientdb/entity/find";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -90,7 +91,10 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const client = getEntity(entity as any);
 
-          const foundInner = client.findFirst({ notification_notion_id: notificationNotion.id });
+          const foundInner = client.findFirst({ notification_notion_id: notificationNotion.id } as FindInput<
+            unknown,
+            unknown
+          >);
 
           if (foundInner) {
             return foundInner as unknown as EntityByDefinition<typeof notionInnerEntities[number]>;
