@@ -57,7 +57,8 @@ export type AnalyticsEventsMap = {
   "All Notifications Resolved": { list_id: string };
   "Notification Reminder Added": { notification_id: string };
   "Notification Saved": { notification_id: string };
-  "Notification Unresolved": void;
+  "Notification Unsaved": { notification_id: string };
+  "Notification Unresolved": { notification_id: string };
   "Custom List Created": void;
   "Custom List Deleted": void;
   "New Message Composed": { integration: string };
