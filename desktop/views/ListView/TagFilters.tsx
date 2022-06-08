@@ -1,14 +1,14 @@
 import { AnimatePresence } from "framer-motion";
 import { sortBy } from "lodash";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
 import { NotificationTag } from "@aca/desktop/domains/notification/tag";
-import { getArrayWithElementToggled } from "@aca/shared/array";
+import { getArrayWithElementToggled, getArraysCommonPart } from "@aca/shared/array";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { IconButton } from "@aca/ui/buttons/IconButton";
 import { IconCross } from "@aca/ui/icons";
@@ -57,7 +57,7 @@ const collectUniqueTags = cachedComputed((items: NotificationOrGroup[]): Notific
 });
 
 export const TagFilters = observer(({ allItems, onChange, selectedTags }: Props) => {
-  const allTags = collectUniqueTags(allItems).slice(0, 20);
+  const allTags = collectUniqueTags(allItems);
 
   if (!allTags.length) return null;
 
@@ -65,9 +65,17 @@ export const TagFilters = observer(({ allItems, onChange, selectedTags }: Props)
     onChange(getArrayWithElementToggled(selectedTags, tag));
   }
 
+  useEffect(() => {
+    const existingSelectedTags = getArraysCommonPart(selectedTags, allTags);
+
+    if (existingSelectedTags.length === selectedTags.length) return;
+
+    onChange(existingSelectedTags);
+  }, [allTags]);
+
   return (
     <UIHolder>
-      {allTags.map((tag) => {
+      {allTags.slice(0, 20).map((tag) => {
         const isSelected = selectedTags.includes(tag);
         return (
           <NotificationTagDisplayer key={tag.id} isSelected={isSelected} tag={tag} onClick={toggleTag} forceShowLabel />
