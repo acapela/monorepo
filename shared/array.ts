@@ -215,6 +215,14 @@ export function toggleElementInArray<T>(array: T[], item: T) {
   }
 }
 
+export function getArrayWithElementToggled<T>(array: T[], item: T) {
+  if (array.includes(item)) {
+    return array.filter((existing) => existing !== item);
+  } else {
+    return [...array, item];
+  }
+}
+
 interface NeigbourAwareIteration<T> {
   item: T;
   previous: T | null;

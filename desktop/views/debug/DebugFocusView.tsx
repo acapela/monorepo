@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { getImplicitTargets } from "@aca/desktop/actions/action/context";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { NotificationsGroup } from "@aca/desktop/domains/group/group";
+import { NotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { getGuarded } from "@aca/shared/assert";
@@ -24,7 +24,7 @@ export const DebugFocusView = observer(() => {
         }
 
         if (checkType<NotificationsGroup>(target, (target) => target?.kind === "group")) {
-          return <UITarget key={target.id}>[Group] {target.name}</UITarget>;
+          return <UITarget key={target.id}>[Group] {getNotificationsGroupMeta(target).title}</UITarget>;
         }
 
         if (checkType<NotificationsList>(target, (target) => target?.kind === "notificationsList")) {

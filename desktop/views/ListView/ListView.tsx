@@ -1,10 +1,11 @@
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
-import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
+import { getIsNotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { NotificationTag } from "@aca/desktop/domains/notification/tag";
 import { OneTimeTip } from "@aca/desktop/domains/onboarding/OneTimeTip";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
@@ -20,6 +21,7 @@ import { theme } from "@aca/ui/theme";
 import { ListViewFooter } from "./ListViewFooter";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationsGroupRow } from "./NotificationsGroupRow";
+import { TagFilters } from "./TagFilters";
 import { ListViewTopBar } from "./Topbar";
 import { ListViewZenOverlay } from "./ZenMode";
 import { ZeroNotifications } from "./ZeroNotifications";
@@ -29,9 +31,24 @@ interface Props {
 }
 
 export const ListView = observer(({ listId }: Props) => {
+  const [tagFilters, setTagFilters] = useState<NotificationTag[]>([]);
   const list = getInboxListsById(listId);
 
   const notificationGroups = list?.getAllGroupedNotifications() ?? [];
+
+  function getGroupsToShow() {
+    if (!tagFilters.length) return notificationGroups;
+
+    return notificationGroups.filter((group) => {
+      const tags = getNotificationsGroupMeta(group).tags;
+
+      if (!tags) return false;
+
+      return tags.some((itemTag) => tagFilters.includes(itemTag));
+    });
+  }
+
+  const notificationGroupsToShow = getGroupsToShow();
 
   const isInCelebrationMode = uiStore.isDisplayingZenImage;
 
@@ -49,10 +66,10 @@ export const ListView = observer(({ listId }: Props) => {
   }, [list]);
 
   useEffect(() => {
-    if (isInCelebrationMode && notificationGroups.length > 0) {
+    if (isInCelebrationMode && notificationGroupsToShow.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
-  }, [isInCelebrationMode, notificationGroups.length]);
+  }, [isInCelebrationMode, notificationGroupsToShow.length]);
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>
@@ -84,11 +101,13 @@ export const ListView = observer(({ listId }: Props) => {
         {list && !list.dontPreload && <ListViewPreloader list={list} />}
 
         <UIListsScroller>
-          {list && !isInCelebrationMode && (notificationGroups?.length ?? 0) === 0 && (
+          {list && !isInCelebrationMode && (notificationGroupsToShow?.length ?? 0) === 0 && (
             <ZeroNotifications key={listId} list={list} />
           )}
 
-          {list && notificationGroups && notificationGroups.length > 0 && (
+          <TagFilters allItems={notificationGroups} selectedTags={tagFilters} onChange={setTagFilters} />
+
+          {list && notificationGroupsToShow && notificationGroupsToShow.length > 0 && (
             <UINotifications>
               <LazyChildrenRender
                 initialCount={300}
@@ -102,7 +121,7 @@ export const ListView = observer(({ listId }: Props) => {
                   );
                 }}
               >
-                {notificationGroups?.map((notificationOrGroup) => {
+                {notificationGroupsToShow?.map((notificationOrGroup) => {
                   if (getIsNotificationsGroup(notificationOrGroup)) {
                     return <NotificationsGroupRow key={notificationOrGroup.id} group={notificationOrGroup} />;
                   }

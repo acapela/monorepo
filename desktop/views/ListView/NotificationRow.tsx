@@ -20,8 +20,8 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
+import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
-import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { styledObserver } from "@aca/shared/component";
@@ -31,10 +31,10 @@ import { makeElementVisible } from "@aca/shared/interactionUtils";
 import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
+import { NotificationTags } from "./NotificationTags";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,
-  UINotificationPreviewText,
   UINotificationRowTitle,
   UIReminderLabel,
   UIRowQuickActions,
@@ -45,10 +45,9 @@ import {
 
 interface Props {
   notification: NotificationEntity;
-  isBundledInGroup?: boolean;
 }
 
-export const NotificationRow = styledObserver(({ notification, isBundledInGroup = false }: Props) => {
+export const NotificationRow = styledObserver(({ notification }: Props) => {
   const isFocused = uiStore.useFocus(notification);
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -86,7 +85,8 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
 
   useStoreRowVisibility(elementRef, notification.id);
 
-  const title = getNotificationTitle(notification, isBundledInGroup);
+  const { title, tags } = getNotificationMeta(notification);
+
   return (
     <ActionTrigger action={openFocusMode} target={notification}>
       {/* This might be not super smart - we preload 5 notifications around focused one to have some chance of preloading it before you eg. click it */}
@@ -100,8 +100,8 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         <UIUnreadIndicator $isUnread={notification.isUnread} />
         <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
+        {tags && <NotificationTags tags={tags} />}
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
-        <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
         {!notification.isResolved && <UIReminderLabel notificationOrGroup={notification} />}
         {isFocused && <UIRowQuickActions target={notification} />}
         <NotificationDate notification={notification} key={notification.id} />
