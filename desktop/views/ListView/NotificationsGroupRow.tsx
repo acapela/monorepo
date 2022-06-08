@@ -6,14 +6,14 @@ import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
 import {
+  addReminderToNotification,
   cancelSaveNotification,
   copyNotificationLink,
   openFocusMode,
+  removeNotificationReminder,
   resolveNotification,
   saveNotification,
-  snoozeNotification,
   unresolveNotification,
-  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
@@ -40,9 +40,9 @@ import {
   UINotificationAppIcon,
   UINotificationGroupTitle,
   UINotificationPreviewText,
+  UIReminderLabel,
   UIRowQuickActions,
   UISendersLabel,
-  UISnoozeLabel,
   UIUnreadIndicator,
   useStoreRowVisibility,
 } from "./shared";
@@ -59,7 +59,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
   useActionsContextMenu(
     elementRef,
     [
-      [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
+      [resolveNotification, unresolveNotification, addReminderToNotification, removeNotificationReminder],
       [saveNotification, cancelSaveNotification],
       [toggleNotificationsGroup, openFocusMode],
       [copyNotificationLink],
@@ -170,9 +170,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
               {group.notifications.find((n) => !!n.text_preview)?.text_preview}
             </UINotificationPreviewText>
           </UITitle>
-          {!isFocused && group.notifications.some((n) => !n.isResolved) && (
-            <UISnoozeLabel notificationOrGroup={group} />
-          )}
+          {group.notifications.some((n) => !n.isResolved) && <UIReminderLabel notificationOrGroup={group} />}
 
           {isFocused && <UIRowQuickActions target={group} />}
 

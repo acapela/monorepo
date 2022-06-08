@@ -27,7 +27,11 @@ function showNotification(scheduledNotification: ScheduledNotification) {
 
   const didShow = antiSpamGuard(
     () => {
-      const notification = new Notification(title, { body: body, timestamp: date.getTime() });
+      const notification = new Notification(title, {
+        body: body,
+        timestamp: date.getTime(),
+        requireInteraction: scheduledNotification.requireInteraction,
+      });
 
       notification.addEventListener("click", () => onClick?.(notification));
       return true;

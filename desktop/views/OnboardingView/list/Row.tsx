@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { openFocusMode, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
+import { addReminderToNotification, openFocusMode, resolveNotification } from "@aca/desktop/actions/notification";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
 import { IconButton } from "@aca/ui/buttons/IconButton";
-import { IconCheck, IconTime } from "@aca/ui/icons";
+import { IconBell, IconCheck } from "@aca/ui/icons";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { theme } from "@aca/ui/theme";
 
@@ -23,15 +23,15 @@ interface Props {
 }
 
 export function OnboardingNotificationRow({ notification, onSelectRequest, onDeselectRequest, isSelected }: Props) {
-  const { integration, author, target, content, timeAgoSent, onOpen, onResolve, onSnooze } = notification;
+  const { integration, author, target, content, timeAgoSent, onOpen, onResolve, onAddReminder } = notification;
   const holderRef = useRef<HTMLDivElement>(null);
   useUserFocusedOnElement(holderRef, onSelectRequest, onDeselectRequest);
 
   useShortcut(resolveNotification.shortcut!, () => onResolve?.(notification), { isEnabled: isSelected });
   useShortcut(
-    snoozeNotification.shortcut!,
+    addReminderToNotification.shortcut!,
     () => {
-      onSnooze?.(notification);
+      onAddReminder?.(notification);
       return true;
     },
     { isEnabled: isSelected }
@@ -65,9 +65,9 @@ export function OnboardingNotificationRow({ notification, onSelectRequest, onDes
           <IconButton
             kind="transparent"
             size="compact"
-            icon={<IconTime />}
-            tooltip="Snooze notification..."
-            onClick={() => onSnooze?.(notification)}
+            icon={<IconBell />}
+            tooltip="Add reminder..."
+            onClick={() => onAddReminder?.(notification)}
           />
         </UIActions>
       )}

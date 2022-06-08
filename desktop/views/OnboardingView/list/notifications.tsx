@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
 import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
-import { IconCheck, IconTime } from "@aca/ui/icons";
+import { IconBell, IconCheck } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 
 import { OnboardingNotificationRowData } from "./types";
@@ -29,7 +29,7 @@ export const onboardingNotificationRows: OnboardingNotificationRowData[] = [
     target: "New Landing",
     content: (
       <>
-        Click <IconTime /> or press <UIShortcut shortcut={"H"} /> to snooze the notification
+        Click <IconBell /> or press <UIShortcut shortcut={"H"} /> to add reminder to the notification
       </>
     ),
     timeAgoSent: "40m",

@@ -102,12 +102,12 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     .query({ isResolved: true })
     .query(cachedGetIsNotificationPassingFilters);
 
-  const snoozedNotificationsQuery = notificationsDb
-    .query({ isSnoozed: true, isResolved: false })
+  const notificationsWithReminderQuery = notificationsDb
+    .query({ hasReminder: true, isResolved: false })
     .query(cachedGetIsNotificationPassingFilters);
 
   const inboxNotificationsQuery = notificationsDb
-    .query({ isResolved: false, isSnoozed: false, isSaved: false })
+    .query({ isResolved: false, hasReminder: false, isSaved: false })
     .query(cachedGetIsNotificationPassingFilters);
 
   const inboxNotificationsSinceLastSeen = cachedComputed(() => {
@@ -130,8 +130,8 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     get resolvedNotifications() {
       return resolvedNotificationsQuery;
     },
-    get snoozedNotifications() {
-      return snoozedNotificationsQuery;
+    get notificationsWithReminder() {
+      return notificationsWithReminderQuery;
     },
     get inboxNotifications() {
       return inboxNotificationsQuery;

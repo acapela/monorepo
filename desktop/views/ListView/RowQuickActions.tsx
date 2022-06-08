@@ -3,12 +3,12 @@ import React from "react";
 import styled from "styled-components";
 
 import {
+  addReminderToNotification,
   cancelSaveNotification,
+  removeNotificationReminder,
   resolveNotification,
   saveNotification,
-  snoozeNotification,
   unresolveNotification,
-  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -24,6 +24,40 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
       <ActionIconButton
         kind="transparent"
         size="compact"
+        action={resolveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={unresolveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={addReminderToNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
+        action={removeNotificationReminder}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+
+      <ActionIconButton
+        kind="transparent"
+        size="compact"
         action={saveNotification}
         target={target}
         showTitleInTooltip
@@ -33,38 +67,6 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
         kind="primarySubtle"
         size="compact"
         action={cancelSaveNotification}
-        target={target}
-        showTitleInTooltip
-        notApplicableMode="hide"
-      />
-      <ActionIconButton
-        kind="transparent"
-        size="compact"
-        action={resolveNotification}
-        target={target}
-        showTitleInTooltip
-        notApplicableMode="hide"
-      />
-      <ActionIconButton
-        kind="transparent"
-        size="compact"
-        action={snoozeNotification}
-        target={target}
-        showTitleInTooltip
-        notApplicableMode="hide"
-      />
-      <ActionIconButton
-        kind="transparent"
-        size="compact"
-        action={unsnoozeNotification}
-        target={target}
-        showTitleInTooltip
-        notApplicableMode="hide"
-      />
-      <ActionIconButton
-        kind="transparent"
-        size="compact"
-        action={unresolveNotification}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"

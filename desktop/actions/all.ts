@@ -10,10 +10,10 @@ import * as groupActions from "./group";
 import * as listsActions from "./lists";
 import * as navigationActions from "./navigation";
 import * as notificationActions from "./notification";
+import * as remindersActions from "./reminders";
 import * as searchActions from "./search";
 import * as settingsActions from "./settings";
 import * as slackActions from "./slack";
-import * as snoozeActions from "./snooze";
 
 export * as appActions from "./app";
 export * as authActions from "./auth";
@@ -25,7 +25,7 @@ export * as navigationActions from "./navigation";
 export * as notificationActions from "./notification";
 export * as settingsActions from "./settings";
 export * as slackActions from "./slack";
-export * as snoozeActions from "./snooze";
+export * as remindersActions from "./reminders";
 export * as searchActions from "./search";
 export * as groupActions from "./group";
 
@@ -42,7 +42,7 @@ export const allActions = composeActionsFromImports(
   focusActions,
   appActions,
   notificationActions,
-  snoozeActions,
+  remindersActions,
   settingsActions,
   searchActions,
   groupActions

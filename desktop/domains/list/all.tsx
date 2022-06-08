@@ -7,7 +7,7 @@ import { integrationClients } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { IconClock, IconFlag, IconListUnordered4 } from "@aca/ui/icons";
+import { IconListUnordered4, IconStar } from "@aca/ui/icons";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
@@ -15,16 +15,16 @@ import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
 export const allNotificationsList = defineNotificationsList({
   id: "allNotifications",
   name: "All",
-  filter: { isResolved: false, isSnoozed: false, isSaved: false },
+  filter: { isResolved: false, hasReminder: false, isSaved: false },
   tip: "This list will contain every single notification you receive",
 });
 
 export const savedNotificationsList = defineNotificationsList({
   id: "saved",
-  name: "Saved",
-  icon: <IconFlag />,
-  tip: `You can mark notifications as "Saved". All saved notifications can be found in this list`,
-  filter: { isResolved: false, isSnoozed: false, isSaved: true },
+  name: "Saved & Reminders",
+  icon: <IconStar />,
+  tip: `This list will show notifications you saved or have set reminders for.`,
+  filter: { isResolved: false, $or: [{ hasReminder: true }, { isSaved: true }] },
 });
 
 const getAvailableIntegrationLists = cachedComputed(
@@ -36,7 +36,7 @@ const getAvailableIntegrationLists = cachedComputed(
           id: client.notificationTypename,
           name: client.name,
           icon: <IntegrationIcon integrationClient={client} />,
-          filter: { kind: client.notificationTypename, isResolved: false, isSnoozed: false, isSaved: false },
+          filter: { kind: client.notificationTypename, isResolved: false, hasReminder: false, isSaved: false },
         })
       ),
   // Result of this function is observable (Eg. client.getAccounts().length) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
@@ -53,15 +53,8 @@ export const resolvedList = defineNotificationsList({
   dontPreload: true,
 });
 
-export const snoozedList = defineNotificationsList({
-  id: "snoozed",
-  name: "Snoozed",
-  icon: <IconClock />,
-  filter: { isSnoozed: true },
-});
-
 export const canListShowZenScreen = (list: NotificationsList) => {
-  return list.id !== snoozedList.id && list.id !== resolvedList.id;
+  return list.id !== resolvedList.id;
 };
 
 const createNotificationsListFromListEntity = weakMemoize((listEntity: NotificationListEntity) => {
@@ -85,7 +78,7 @@ export const getInboxLists = cachedComputed(
   { requiresReaction: true }
 );
 
-export const outOfInboxLists = [snoozedList, resolvedList];
+export const outOfInboxLists = [resolvedList];
 
 export function getInboxListById(id: string): NotificationsList | null {
   return getInboxLists().find((list) => list.id === id) ?? null;

@@ -4,4 +4,5 @@ export interface ScheduledNotification {
   body?: string;
   onClick?: (notification: Notification) => void;
   onShown?: () => void;
+  requireInteraction?: boolean;
 }

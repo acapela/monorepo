@@ -1,34 +1,30 @@
 import { sortBy } from "lodash";
-import { IObservableArray, computed, observable, runInAction } from "mobx";
+import { IObservableArray, observable, runInAction } from "mobx";
 
 import { areArraysShallowEqual } from "@aca/shared/array";
 import { MessageOrError, assert } from "@aca/shared/assert";
 import { createCleanupObject } from "@aca/shared/cleanup";
-import { createReuseValueGroup } from "@aca/shared/createEqualReuser";
 import { deepMemoize } from "@aca/shared/deepMap";
-import { mapGetOrCreate } from "@aca/shared/map";
-import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
 import { DatabaseLinker } from "./entitiesConnections";
 import { Entity } from "./entity";
+import { FindInput } from "./find";
 import {
-  EntityFilterInput,
   EntityQuery,
   EntityQuerySortFunction,
   EntityQuerySortInput,
   createEntityQuery,
   resolveSortInput,
 } from "./query";
-import { IndexQueryInput, QueryIndex, createQueryFieldIndex } from "./queryIndex";
+import { IndexableData, IndexableKey, QueryIndex, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
-import { createArrayFirstComputed } from "./utils/arrayFirstComputed";
 import { EventsEmmiter, createMobxAwareEventsEmmiter } from "./utils/eventManager";
 import { cachedComputed } from ".";
 
 export interface EntityStoreFindMethods<Data, Connections> {
   query: (
-    filter: EntityFilterInput<Data, Connections>,
+    filter: FindInput<Data, Connections>,
     sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
 
@@ -37,21 +33,21 @@ export interface EntityStoreFindMethods<Data, Connections> {
   //   key: K,
   //   value: IndexQueryInput<Data & Connections>[K]
   // ): IObservableArray<Entity<Data, Connections>>;
-  findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+  findByUniqueIndex<K extends IndexableKey<Data & Connections>>(
     key: K,
-    value: IndexQueryInput<Data & Connections>[K]
+    value: IndexableData<Data & Connections>[K]
   ): Entity<Data, Connections> | null;
-  assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
+  assertFindByUniqueIndex<K extends IndexableKey<Data & Connections>>(
     key: K,
-    value: IndexQueryInput<Data & Connections>[K]
+    value: IndexableData<Data & Connections>[K]
   ): Entity<Data, Connections>;
 
   findById(id: string): Entity<Data, Connections> | null;
   assertFindById(id: string, error?: MessageOrError): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
 
-  find(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[];
-  findFirst(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections> | null;
+  find(filter: FindInput<Data, Connections>): Entity<Data, Connections>[];
+  findFirst(filter: FindInput<Data, Connections>): Entity<Data, Connections> | null;
 }
 
 export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
@@ -60,6 +56,7 @@ export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<D
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
   destroy: () => void;
+  getKeyIndex<K extends IndexableKey<Data & Connections>>(key: K): QueryIndex<Data, Connections, K>;
 }
 
 export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknown, unknown>> =
@@ -90,21 +87,25 @@ export function createEntityStore<Data, Connections>(
   const items = observable.array<StoreEntity>([]);
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
-  const getIsEntityAccessable = cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
-    if (!config.accessValidator) {
-      return true;
-    }
+  const getIsEntityAccessable =
+    !!config.accessValidator &&
+    cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
+      return config.accessValidator!(entity, linker);
+    });
 
-    return config.accessValidator!(entity, linker);
-  });
+  const getRootSource = cachedComputed(
+    function getSourceForQueryInput(): Entity<Data, Connections>[] {
+      let output = items as StoreEntity[];
 
-  const accessableItems = cachedComputed(
-    () => {
-      if (!config.accessValidator) {
-        return items;
+      if (config.accessValidator) {
+        output = output.filter((entity) => config.accessValidator!(entity, linker));
       }
 
-      return items.filter((item) => config.accessValidator!(item, linker));
+      if (config.defaultSort) {
+        output = sortBy(output, config.defaultSort);
+      }
+
+      return output;
     },
     { equals: areArraysShallowEqual }
   );
@@ -112,7 +113,10 @@ export function createEntityStore<Data, Connections>(
   // Allow listening to CRUD updates in the store
   const events = createMobxAwareEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
 
-  const queryIndexes = new Map<keyof Data | keyof Connections, QueryIndex<Data, Connections, unknown>>();
+  const queryIndexes = new Map<
+    keyof Data | keyof Connections,
+    QueryIndex<Data, Connections, IndexableKey<Data & Connections>>
+  >();
 
   function getEntityId(entity: Entity<Data, Connections>) {
     const id = `${entity[config.keyField]}`;
@@ -120,81 +124,42 @@ export function createEntityStore<Data, Connections>(
     return id;
   }
 
-  function prepareResults(entities: StoreEntity[]): StoreEntity[] {
-    const accessableEntities = entities.filter((entity) => {
-      return getIsEntityAccessable(entity);
-    });
-
-    if (!config.defaultSort) {
-      return accessableEntities;
-    }
-
-    return sortBy(accessableEntities, config.defaultSort);
-  }
-
-  const getSourceForQueryInput = cachedComputed(
-    function getSourceForQueryInput(filter: EntityFilterInput<Data, Connections>): Entity<Data, Connections>[] {
-      if (typeof filter === "function") {
-        return prepareResults(accessableItems().filter(filter));
-      }
-
-      const keys = typedKeys(filter);
-
-      if (keys.length === 1) {
-        const key = keys[0];
-        const value = filter[key];
-
-        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-        const results = index.find(value);
-
-        return prepareResults(results);
-      }
-
-      let results: Entity<Data, Connections>[] | undefined;
-
-      for (const key of keys) {
-        const value = filter[key];
-        const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-        const keyResults = index.find(value);
-
-        if (!results) {
-          results = keyResults;
-        }
-
-        if (results.length === 0) {
-          return results;
-        }
-
-        results = results.filter((previouslyPassedResult) => keyResults.includes(previouslyPassedResult));
-      }
-
-      return prepareResults(results!);
-    },
-    { equals: areArraysShallowEqual }
-  );
-
   const cleanups = createCleanupObject();
 
   const createOrReuseQuery = deepMemoize(
-    function createOrReuseQuery(
-      filter?: EntityFilterInput<Data, Connections>,
-      sort?: EntityQuerySortInput<Data, Connections>
-    ) {
+    function createOrReuseQuery(filter?: FindInput<Data, Connections>, sort?: EntityQuerySortInput<Data, Connections>) {
       const resolvedSort = resolveSortInput(sort) ?? undefined;
 
-      return createEntityQuery(() => prepareResults(items), { filter: filter, sort: resolvedSort }, store);
+      return createEntityQuery(getRootSource, { filter: filter, sort: resolvedSort }, store);
     },
     { checkEquality: true }
   );
 
-  const reuseEqual = createReuseValueGroup();
+  const findById = cachedComputed((id: string) => {
+    const entity = itemsMap[id];
+
+    if (!entity) return null;
+
+    if (getIsEntityAccessable && !getIsEntityAccessable(entity)) return null;
+
+    return entity;
+  });
 
   const store: EntityStore<Data, Connections> = {
     definition,
     events,
     items,
+    getKeyIndex(key) {
+      const existingIndex = queryIndexes.get(key);
+
+      if (existingIndex) return existingIndex;
+
+      const newIndex = createQueryFieldIndex(key, store);
+
+      queryIndexes.set(key, newIndex);
+
+      return newIndex;
+    },
     add(entity, source = "user") {
       const id = getEntityId(entity);
 
@@ -207,15 +172,7 @@ export function createEntityStore<Data, Connections>(
       return entity;
     },
     findById(id) {
-      return computed(() => {
-        const entity = itemsMap[id];
-
-        if (!entity) return null;
-
-        if (!getIsEntityAccessable(entity)) return null;
-
-        return entity;
-      }).get();
+      return findById(id);
     },
     assertFindById(id, error) {
       const item = store.findById(id);
@@ -225,20 +182,13 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     find(filter) {
-      return getSourceForQueryInput(reuseEqual(filter));
+      return store.query(filter).all;
     },
     findFirst(filter) {
-      const all = getSourceForQueryInput(filter);
-
-      return createArrayFirstComputed(all).get();
+      return store.query(filter).first;
     },
-    findByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
-      key: K,
-      value: IndexQueryInput<Data & Connections>[K]
-    ) {
-      const index = mapGetOrCreate(queryIndexes, key, () => createQueryFieldIndex(key, store));
-
-      const results = index.find(value);
+    findByUniqueIndex(key, value) {
+      const results = store.getKeyIndex(key).find(value);
 
       if (!results.length) return null;
 
@@ -246,14 +196,11 @@ export function createEntityStore<Data, Connections>(
 
       const result = results[0];
 
-      if (getIsEntityAccessable(result)) return result;
+      if (getIsEntityAccessable && !getIsEntityAccessable(result)) return null;
 
-      return null;
+      return result;
     },
-    assertFindByUniqueIndex<K extends keyof IndexQueryInput<Data & Connections>>(
-      key: K,
-      value: IndexQueryInput<Data & Connections>[K]
-    ) {
+    assertFindByUniqueIndex(key, value) {
       const entity = store.findByUniqueIndex(key, value);
 
       assert(entity, `Assertion error for assertFindByUniqueIndex for key ${key} and value ${value}`);

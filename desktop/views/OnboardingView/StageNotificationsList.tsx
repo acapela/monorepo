@@ -2,14 +2,14 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { pickSnoozeTime } from "@aca/desktop/actions/snoozeUtils";
+import { pickReminderTime } from "@aca/desktop/actions/remindersUtils";
 import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
 import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { useMethod } from "@aca/shared/hooks/useMethod";
 import { getObjectKey } from "@aca/shared/object";
-import { IconCheck, IconTime } from "@aca/ui/icons";
+import { IconBell, IconCheck } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 
@@ -24,8 +24,8 @@ import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageCon
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageNotificationsList = observer(({ onContinue }: OnboardingStageProps) => {
-  const handleSnoozeNotification = useMethod(async (notification: OnboardingNotificationRowData) => {
-    await pickSnoozeTime();
+  const handleAddReminder = useMethod(async (notification: OnboardingNotificationRowData) => {
+    await pickReminderTime();
     removeNotification(notification);
   });
 
@@ -49,7 +49,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
         ),
         timeAgoSent: "10m",
         onResolve: removeNotification,
-        onSnooze: handleSnoozeNotification,
+        onAddReminder: handleAddReminder,
       },
       {
         integration: figmaIntegrationClient,
@@ -57,7 +57,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
         target: "New Landing",
         content: (
           <>
-            Click <IconTime /> or press <UIShortcut shortcut={"H"} /> to snooze
+            Click <IconBell /> or press <UIShortcut shortcut={"H"} /> to add reminder
           </>
         ),
         onOpen: () => {
@@ -65,7 +65,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
         },
         timeAgoSent: "40m",
         onResolve: removeNotification,
-        onSnooze: handleSnoozeNotification,
+        onAddReminder: handleAddReminder,
       },
       {
         integration: slackIntegrationClient,
@@ -78,7 +78,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
         ),
         timeAgoSent: "1hr",
         onResolve: removeNotification,
-        onSnooze: handleSnoozeNotification,
+        onAddReminder: handleAddReminder,
       },
     ];
   });
@@ -126,7 +126,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
       <OnboardingStageSections>
         <OnboardingSecondaryHero
           title="Your Inbox"
-          description="All your notifications get captured in your Acapela inbox. You can quickly snooze, resolve, or open them from here. Try it out!"
+          description="All your notifications get captured in your Acapela inbox. You can quickly resolve, add reminder, or open them from here. Try it out!"
         />
         <OnboardingAnimationItem>
           <UIOnboardingCard>

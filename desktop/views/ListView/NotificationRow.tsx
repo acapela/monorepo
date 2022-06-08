@@ -3,17 +3,17 @@ import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import {
+  addReminderToNotification,
   cancelSaveNotification,
   copyNotificationLink,
   markNotificationRead,
   markNotificationUnread,
   openFocusMode,
   openNotificationInApp,
+  removeNotificationReminder,
   resolveNotification,
   saveNotification,
-  snoozeNotification,
   unresolveNotification,
-  unsnoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
@@ -36,9 +36,9 @@ import {
   UINotificationAppIcon,
   UINotificationPreviewText,
   UINotificationRowTitle,
+  UIReminderLabel,
   UIRowQuickActions,
   UISendersLabel,
-  UISnoozeLabel,
   UIUnreadIndicator,
   useStoreRowVisibility,
 } from "./shared";
@@ -58,7 +58,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
     [
       [openFocusMode, openNotificationInApp],
       [saveNotification, cancelSaveNotification],
-      [resolveNotification, unresolveNotification, snoozeNotification, unsnoozeNotification],
+      [resolveNotification, unresolveNotification, addReminderToNotification, removeNotificationReminder],
       [copyNotificationLink],
       [markNotificationRead, markNotificationUnread],
     ],
@@ -102,7 +102,7 @@ export const NotificationRow = styledObserver(({ notification, isBundledInGroup 
         <UISendersLabel>{notification.from}</UISendersLabel>
         {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         <UINotificationPreviewText>{notification.text_preview}</UINotificationPreviewText>
-        {!notification.isResolved && !isFocused && <UISnoozeLabel notificationOrGroup={notification} />}
+        {!notification.isResolved && <UIReminderLabel notificationOrGroup={notification} />}
         {isFocused && <UIRowQuickActions target={notification} />}
         <NotificationDate notification={notification} key={notification.id} />
       </UIHolder>

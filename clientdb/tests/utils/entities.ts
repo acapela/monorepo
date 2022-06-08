@@ -45,7 +45,9 @@ export const owner = defineEntity<TestOwnerEntity>({
   getDefaultValues: getDefaultCommonData,
 }).addConnections((ownerData, { getEntity }) => {
   return {
-    dogs: getEntity(dog).query({ owner_id: ownerData.id }),
+    get dogs() {
+      return getEntity(dog).query({ owner_id: ownerData.id });
+    },
   };
 });
 

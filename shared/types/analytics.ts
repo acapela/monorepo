@@ -53,7 +53,7 @@ export type AnalyticsEventsMap = {
 
   "Notification Resolved": { notification_id: string };
   "All Notifications Resolved": { list_id: string };
-  "Notification Snoozed": { notification_id: string };
+  "Added Notification Reminder": { notification_id: string };
   "Notification Unresolved": void;
   "Custom List Created": void;
   "Custom List Deleted": void;
@@ -67,7 +67,7 @@ export type AnalyticsEventsMap = {
   "App Updated": void;
   "App Theme Changed": { theme: AppTheme };
   "Settings Opened": void;
-  "Snoozed Notifications Opened": void;
+  "Saved Notifications Opened": void;
   "Resolved Notifications Opened": void;
   "Notification Deeplink Opened": { service_name: string | undefined };
   "Notification Group Toggled": void;

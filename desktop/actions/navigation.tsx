@@ -2,7 +2,7 @@ import React from "react";
 
 // import { trackingEvent } from "@aca/desktop/analytics";
 import { openLinkRequest } from "@aca/desktop/bridge/system";
-import { resolvedList, snoozedList } from "@aca/desktop/domains/list/all";
+import { resolvedList, savedNotificationsList } from "@aca/desktop/domains/list/all";
 import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { settingsSections } from "@aca/desktop/views/SettingsView";
@@ -109,14 +109,14 @@ export const goToResolved = defineAction({
   },
 });
 
-export const goToSnoozed = defineAction({
-  name: "Show snoozed notifications",
+export const goToSaved = defineAction({
+  name: "Show saved notifications",
   group: navigationActionsGroup,
   icon: <IconClock />,
-  analyticsEvent: createAnalyticsEvent("Snoozed Notifications Opened"),
-  canApply: () => !desktopRouter.getIsRouteActive("list", { listId: snoozedList.id }),
+  analyticsEvent: createAnalyticsEvent("Saved Notifications Opened"),
+  canApply: () => !desktopRouter.getIsRouteActive("list", { listId: savedNotificationsList.id }),
   handler() {
-    desktopRouter.navigate("list", { listId: snoozedList.id });
+    desktopRouter.navigate("list", { listId: savedNotificationsList.id });
   },
 });
 

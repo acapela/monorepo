@@ -3,7 +3,7 @@ import React from "react";
 
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
-import { IconClock } from "@aca/ui/icons";
+import { IconBell } from "@aca/ui/icons";
 
 import { runAction } from "../domains/runAction";
 import { defineAction } from "./action";
@@ -39,17 +39,17 @@ const defaultSuggestions: DateSuggestion[] = [
   },
 ];
 
-type SnoozeActionCallback = (date: Date, context: ActionContext) => void;
+type ReminderActionCallback = (date: Date, context: ActionContext) => void;
 
-export function getSnoozeSuggestionActions(context: ActionContext, callback: SnoozeActionCallback) {
-  const dateSuggestions = getSnoozeSuggestions(context);
+export function getReminderSuggestionActions(context: ActionContext, callback: ReminderActionCallback) {
+  const dateSuggestions = getReminderSuggestions(context);
 
-  const snoozeActions = dateSuggestions.map((suggestion) => convertDateSuggestionToAction(suggestion, callback));
+  const addReminderActions = dateSuggestions.map((suggestion) => convertDateSuggestionToAction(suggestion, callback));
 
-  return snoozeActions;
+  return addReminderActions;
 }
 
-function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
+function getReminderSuggestions({ searchKeyword, isContextual }: ActionContext): DateSuggestion[] {
   if (!searchKeyword.trim()) return defaultSuggestions;
 
   return autosuggestDate(searchKeyword, { maxResults: isContextual ? 5 : 2 }).map((suggestion) => {
@@ -61,10 +61,10 @@ function getSnoozeSuggestions({ searchKeyword, isContextual }: ActionContext): D
   });
 }
 
-function convertDateSuggestionToAction(suggestion: DateSuggestion, callback: SnoozeActionCallback) {
+function convertDateSuggestionToAction(suggestion: DateSuggestion, callback: ReminderActionCallback) {
   return defineAction({
-    name: (ctx) => (ctx.isContextual ? suggestion.text : `Snooze until "${suggestion.text}"`),
-    icon: <IconClock />,
+    name: (ctx) => (ctx.isContextual ? suggestion.text : `Add reminder: "${suggestion.text}"`),
+    icon: <IconBell />,
     supplementaryLabel: () => niceFormatDateTime(suggestion.date),
     handler(context) {
       const date = suggestion.date;
@@ -74,9 +74,9 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion, callback: Sno
   });
 }
 
-export async function pickSnoozeTime() {
+export async function pickReminderTime() {
   return new Promise<Date>((resolve) => {
-    const action = createPickSnoozeAction((date) => {
+    const action = createPickReminderAction((date) => {
       resolve(date);
     });
 
@@ -84,21 +84,21 @@ export async function pickSnoozeTime() {
   });
 }
 
-function createPickSnoozeAction(callback: SnoozeActionCallback) {
-  const snoozeNotification = defineAction({
-    name: "Snooze",
+function createPickReminderAction(callback: ReminderActionCallback) {
+  const addReminder = defineAction({
+    name: "Add reminder",
     supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-    icon: <IconClock />,
+    icon: <IconBell />,
     handler() {
       return {
         searchPlaceholder: "In 3 days...",
         isContextual: true,
         getActions: (context) => {
-          return getSnoozeSuggestionActions(context, callback);
+          return getReminderSuggestionActions(context, callback);
         },
       };
     },
   });
 
-  return snoozeNotification;
+  return addReminder;
 }
