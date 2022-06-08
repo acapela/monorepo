@@ -17,10 +17,10 @@ export function createDefaultContextMenu(url: string, view: BrowserView) {
           },
         },
         {
-          label: "Snooze...",
+          label: "Add reminder...",
           click: () => {
             focusMainView();
-            previewEventsBridge.send({ url, type: "snooze-request" });
+            previewEventsBridge.send({ url, type: "add-reminder-request" });
           },
         },
         { type: "separator" },

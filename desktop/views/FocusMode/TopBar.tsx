@@ -9,11 +9,11 @@ import {
   refreshNotificationPreview,
 } from "@aca/desktop/actions/focus";
 import {
+  addReminderToNotification,
   cancelSaveNotification,
   openNotificationInApp,
   resolveNotification,
   saveNotification,
-  snoozeNotification,
 } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
@@ -46,9 +46,9 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
       targetActionItems={
         <>
           <TopBarActionButton action={resolveNotification} />
-          <TopBarActionButton action={snoozeNotification} />
-          <TopBarActionButton action={saveNotification} />
-          <TopBarActionButton action={cancelSaveNotification} />
+          <TopBarActionButton action={addReminderToNotification} />
+          <TopBarActionButton action={saveNotification} notApplicableMode="hide" />
+          <TopBarActionButton action={cancelSaveNotification} notApplicableMode="hide" />
 
           <TopBarDivider />
           <TopBarActionButton action={refreshNotificationPreview} />

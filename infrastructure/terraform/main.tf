@@ -21,6 +21,10 @@ provider "google" {
 locals {
   webhook_types = toset(["linear", "slack"])
   redis_stages  = toset(["staging", "production"])
+  redis_memory_size_gb = {
+    staging    = 1
+    production = 5
+  }
 }
 
 module "pubsub" {
@@ -31,9 +35,10 @@ module "pubsub" {
 
 
 module "redis" {
-  for_each = local.redis_stages
-  source   = "./redis"
-  name     = each.value
+  for_each       = local.redis_stages
+  source         = "./redis"
+  name           = each.value
+  memory_size_gb = local.redis_memory_size_gb[each.value]
 }
 
 output "redis_endpoints" {

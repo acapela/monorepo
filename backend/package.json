@@ -29,7 +29,6 @@
     "@sentry/node": "^6.19.7",
     "@slack/bolt": "^3.11.0",
     "@slack/web-api": "^6.7.1",
-    "airtable": "^0.11.2",
     "asana": "^0.18.6",
     "axios-better-stacktrace": "^2.1.2",
     "cookie-parser": "^1.4.6",

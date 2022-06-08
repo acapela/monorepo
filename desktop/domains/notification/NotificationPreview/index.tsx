@@ -1,7 +1,11 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 
-import { openNotificationInApp, resolveNotification, snoozeNotification } from "@aca/desktop/actions/notification";
+import {
+  addReminderToNotification,
+  openNotificationInApp,
+  resolveNotification,
+} from "@aca/desktop/actions/notification";
 import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { Embed } from "@aca/desktop/domains/embed";
@@ -20,8 +24,8 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
         return;
       }
 
-      if (event.type === "snooze-request") {
-        runActionWithTarget(snoozeNotification, notification);
+      if (event.type === "add-reminder-request") {
+        runActionWithTarget(addReminderToNotification, notification);
       }
 
       if (event.type === "resolve-request") {

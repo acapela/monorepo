@@ -7,7 +7,7 @@ import { createDeepMap } from "@aca/shared/deepMap";
 
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
-import { IndexQueryInput } from "./queryIndex";
+import { FindInput, findInSource } from "./find";
 import { EntityStore } from "./store";
 import { cachedComputed } from "./utils/cachedComputed";
 import { cachedComputedWithoutArgs } from "./utils/cachedComputedWithoutArgs";
@@ -29,19 +29,11 @@ export type EntityQuerySortInput<Data, Connections> =
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
 
-export type EntityFilterInput<Data, Connections> =
-  | EntityFilterFunction<Data, Connections>
-  | IndexQueryInput<Data & Connections>;
-
 export type EntityQueryConfig<Data, Connections> = {
-  filter?: EntityFilterInput<Data, Connections>;
+  filter?: FindInput<Data, Connections>;
   sort?: EntityQuerySortInput<Data, Connections>;
   name?: string;
 };
-
-export type EntityFilterInputByDefinition<Def> = Def extends EntityDefinition<infer D, infer C>
-  ? EntityFilterInput<D, C>
-  : never;
 
 export type EntityQueryByDefinition<Def> = Def extends EntityDefinition<infer D, infer C> ? EntityQuery<D, C> : never;
 
@@ -65,10 +57,9 @@ export type EntityQuery<Data, Connections> = {
   last: Entity<Data, Connections> | null;
   hasItems: boolean;
   count: number;
-
   findById(id: string): Entity<Data, Connections> | null;
   query: (
-    filter: EntityFilterInput<Data, Connections>,
+    filter: FindInput<Data, Connections>,
     sort?: EntityQuerySortFunction<Data, Connections>
   ) => EntityQuery<Data, Connections>;
   sort(sort: EntityQuerySortFunction<Data, Connections>): EntityQuery<Data, Connections>;
@@ -159,21 +150,10 @@ export function createEntityQuery<Data, Connections>(
         return [];
       }
 
-      /**
-       * Important!
-       *
-       * Do not create 'cachedComputed' of (item: Entity) => boolean to filter those here.
-       *
-       * This can easily create 100k+ computed as it would be created by any combination of queries.
-       */
-      if (cachedFilterForFunctionalFilter) {
-        items = items.filter((item) => cachedFilterForFunctionalFilter(item));
-      }
+      const finalFilter = cachedFilterForFunctionalFilter ?? filter;
 
-      if (filter && typeof filter !== "function") {
-        const storeMatchingItems = store.find(filter);
-
-        items = items.filter((passingItem) => storeMatchingItems.includes(passingItem));
+      if (finalFilter) {
+        items = findInSource(items, store, finalFilter);
       }
 
       if (sortConfig) {
@@ -198,15 +178,13 @@ export function createEntityQuery<Data, Connections>(
     { name: `${queryKeyBase}.hasItems` }
   );
 
-  function getAll() {
-    return passingItems.get();
-  }
-
-  const countComputed = cachedComputedWithoutArgs(() => getAll().length, { name: `${queryKeyBase}.count` });
-  const firstComputed = cachedComputedWithoutArgs(() => getAll()[0] ?? null, { name: `${queryKeyBase}.first` });
+  const countComputed = cachedComputedWithoutArgs(() => passingItems.get().length, { name: `${queryKeyBase}.count` });
+  const firstComputed = cachedComputedWithoutArgs(() => passingItems.get()[0] ?? null, {
+    name: `${queryKeyBase}.first`,
+  });
   const lastComputed = cachedComputedWithoutArgs(
     () => {
-      const all = getAll();
+      const all = passingItems.get();
 
       return all[all.length - 1] ?? null;
     },
@@ -215,7 +193,7 @@ export function createEntityQuery<Data, Connections>(
 
   const byIdMapComputed = cachedComputedWithoutArgs(
     () => {
-      const all = getAll();
+      const all = passingItems.get();
 
       const record: Record<string, Entity<Data, Connections>> = {};
 
@@ -237,13 +215,10 @@ export function createEntityQuery<Data, Connections>(
 
   const reuseQueriesMap = createDeepMap<EntityQuery<Data, Connections>>();
 
-  function createOrReuseQuery(
-    filter?: EntityFilterInput<Data, Connections>,
-    sort?: EntityQuerySortInput<Data, Connections>
-  ) {
+  function createOrReuseQuery(filter?: FindInput<Data, Connections>, sort?: EntityQuerySortInput<Data, Connections>) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
     const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
-      const query = createEntityQuery(() => passingItems.get(), { filter, sort: resolvedSort }, store);
+      const query = createEntityQuery(passingItems.get, { filter, sort: resolvedSort }, store);
 
       return query;
     });
@@ -259,7 +234,7 @@ export function createEntityQuery<Data, Connections>(
       return countComputed.get();
     },
     get all() {
-      return getAll();
+      return passingItems.get();
     },
     get first() {
       return firstComputed.get();

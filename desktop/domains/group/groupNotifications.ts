@@ -1,7 +1,7 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { unsafeAssertType } from "@aca/shared/assert";
 
-import { NotificationsGroup, getIsNotificationsGroup } from "./group";
+import { NotificationsGroup, getIsNotificationsGroup, getNotificationsGroupMeta } from "./group";
 import { getNotificationGroupTarget } from "./target";
 
 export type NotificationOrGroup = NotificationEntity | NotificationsGroup;
@@ -45,12 +45,17 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
       return;
     }
 
-    // Create new group
-    result.push({
+    const group: NotificationsGroup = {
       kind: "group",
       ...target,
       notifications: [notification],
-    });
+      getMeta() {
+        return getNotificationsGroupMeta(notification);
+      },
+    };
+
+    // Create new group
+    result.push(group);
   });
 
   /**

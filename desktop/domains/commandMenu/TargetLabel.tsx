@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { styledObserver } from "@aca/shared/component";
 import { theme } from "@aca/ui/theme";
 
+import { getNotificationsGroupMeta } from "../group/group";
+import { getNotificationMeta } from "../notification/meta";
 import { CommandMenuSession } from "./session";
 
 interface Props {
@@ -21,11 +22,11 @@ export const CommandMenuTargetLabel = styledObserver(function CommandMenuView({ 
 
     const notification = actionContext.getTarget("notification");
 
-    if (notification) return `Notification - ${getNotificationTitle(notification)}`;
+    if (notification) return `Notification - ${getNotificationMeta(notification).title}`;
 
     const group = actionContext.getTarget("group");
 
-    if (group) return `${group.integrationTitle} - ${group.name}`;
+    if (group) return `${getNotificationsGroupMeta(group).title}`;
 
     return null;
   }

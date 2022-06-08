@@ -1,9 +1,9 @@
-import { isFuture } from "date-fns";
+import { isPast } from "date-fns";
 import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
-import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
+import { EntityDataByDefinition, EntityDefinition } from "@aca/clientdb/entity/definition";
 import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
@@ -61,7 +61,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   keyField: "id",
   keys: getFragmentKeys<DesktopNotificationFragment>(notificationFragment),
   // Show newest first
-  defaultSort: (notification) => getReverseTime(notification.created_at),
+  defaultSort: (notification) => {
+    return getReverseTime(notification.created_at);
+  },
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification",
     user_id: getContextValue(userIdContext) ?? undefined,
@@ -118,7 +120,10 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = getEntity(entity as any).findFirst({ notification_id: notification.id });
+        const result = getEntity(entity as EntityDefinition<any, any>).findByUniqueIndex(
+          "notification_id",
+          notification.id
+        );
 
         if (result) {
           return result as unknown as EntityByDefinition<typeof innerEntities[number]>;
@@ -126,19 +131,19 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       }
     });
 
-    const snoozePassedAtom = createAtom("Snooze change");
+    const reminderPassedAtom = createAtom("Reminder Passed Atom");
 
-    cleanup.next = autorunEffect(function handleSettingUpSnoozePassedSignal() {
+    cleanup.next = autorunEffect(function handleReminderDatePassed() {
       // Note: Not sure about this one
       if (notification.resolved_at) return;
       if (!notification.snoozed_until) return;
 
-      const snoozeDate = new Date(notification.snoozed_until);
+      const reminderDate = new Date(notification.snoozed_until);
 
       return createDateTimeout(
-        snoozeDate,
+        reminderDate,
         action(() => {
-          snoozePassedAtom.reportChanged();
+          reminderPassedAtom.reportChanged();
         })
       );
     });
@@ -177,28 +182,32 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       markAsSeen() {
         return updateSelf({ last_seen_at: new Date().toISOString() });
       },
+      get reminderDate() {
+        if (notification.resolved_at) return null;
+        if (!notification.snoozed_until) return null;
 
-      get isSnoozed() {
-        // Note: Not sure about this one
-        if (notification.resolved_at) return false;
-        if (!notification.snoozed_until) return false;
+        const reminderDate = new Date(notification.snoozed_until);
 
-        const snoozeDate = new Date(notification.snoozed_until);
+        const alreadyPassed = isPast(reminderDate);
 
-        const isStillSnoozed = isFuture(snoozeDate);
+        reminderPassedAtom.reportObserved();
 
-        snoozePassedAtom.reportObserved();
+        if (alreadyPassed) return null;
 
-        return isStillSnoozed;
+        return reminderDate;
       },
-      get canSnooze() {
+      get hasReminder() {
+        const { reminderDate } = connections;
+
+        return !!reminderDate;
+      },
+      get canAddReminder() {
         if (connections.isResolved) return false;
-        if (connections.isSnoozed) return false;
 
         return true;
       },
-      snooze(date: Date = new Date()) {
-        if (!connections.canSnooze) return;
+      addReminder(date: Date = new Date()) {
+        if (!connections.canAddReminder) return;
 
         return updateSelf({ snoozed_until: date.toISOString() });
       },
@@ -209,14 +218,14 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   .addEventHandlers({
     itemUpdated(notification, dataBefore) {
       const isResolvedNow = !dataBefore.resolved_at && notification.resolved_at;
-      const isSnoozedNow = !dataBefore.snoozed_until && notification.snoozed_until;
+      const hasReminderNow = !dataBefore.snoozed_until && notification.snoozed_until;
 
       if (isResolvedNow) {
         trackEvent("Notification Resolved", { notification_id: notification.id });
       }
 
-      if (isSnoozedNow) {
-        trackEvent("Notification Snoozed", { notification_id: notification.id });
+      if (hasReminderNow) {
+        trackEvent("Added Notification Reminder", { notification_id: notification.id });
       }
 
       if (!isResolvedNow) return;

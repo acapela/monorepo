@@ -2,9 +2,8 @@ import { autorun, runInAction } from "mobx";
 import React, { ReactNode } from "react";
 
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { compileSlackFilter } from "@aca/desktop/ui/Filters/slackModel";
 import { IconTarget } from "@aca/ui/icons";
-
-import { slackMentionsAndPrivateMessagesFilter } from "../integrations/slack";
 
 export const LIST_SYSTEM_IDS = {
   important: "important",
@@ -40,7 +39,7 @@ export function ensureSystemListsCreated() {
       db.notificationList.create({
         title: "Important",
         system_id: LIST_SYSTEM_IDS.important,
-        filters: [slackMentionsAndPrivateMessagesFilter],
+        filters: [compileSlackFilter({ directMessages: { type: "everyone" }, mentions: { type: "everyChannel" } })],
       });
 
       shouldBeCreated = true;

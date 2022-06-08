@@ -82,7 +82,7 @@ export type EntityDataByDefinition<Def extends EntityDefinition<any, any>> = Def
   ? Data
   : never;
 
-export function defineEntity<Data, Connections = {}>(
+export function defineEntity<Data extends {}, Connections extends {} = {}>(
   config: DefineEntityConfig<Data, Connections>
 ): EntityDefinition<Data, Connections> {
   return {

@@ -10,7 +10,7 @@ import { apolloClient } from "@aca/desktop/apolloClient";
 import { CommandMenuManager } from "@aca/desktop/domains/commandMenu/CommandMenuManager";
 import { RootErrorBoundary } from "@aca/desktop/domains/errorRecovery/RootErrorBoundary";
 import { SystemMenuManager } from "@aca/desktop/domains/systemMenu/SystemMenuManager";
-import { initializeListNotificationsScheduling } from "@aca/desktop/domains/systemNotifications/listScheduler";
+import { initializeDesktopNotifications } from "@aca/desktop/domains/systemNotifications";
 import { accountStore } from "@aca/desktop/store/account";
 import { DebugView } from "@aca/desktop/views/debug/DebugView";
 import { GlobalShortcutsManager } from "@aca/desktop/views/GlobalShortcutsManager";
@@ -62,7 +62,7 @@ const rootElement = document.getElementById("root");
 function App() {
   useEffect(() => {
     const cleanup = createCleanupObject();
-    cleanup.next = initializeListNotificationsScheduling();
+    cleanup.next = initializeDesktopNotifications();
 
     cleanup.next = ensureSystemListsCreated();
 

@@ -51,7 +51,7 @@ type PreviewEventData =
       type: "blur";
     }
   | { type: "load-error" }
-  | { type: "snooze-request" }
+  | { type: "add-reminder-request" }
   | { type: "resolve-request" }
   | { type: "open-in-app-request" };
 

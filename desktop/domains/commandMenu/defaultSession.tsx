@@ -6,7 +6,7 @@ import { ActionContext, createActionContext } from "@aca/desktop/actions/action/
 import { allActions } from "@aca/desktop/actions/all";
 import { isNotificationAction, searchListActionsGroup } from "@aca/desktop/actions/groups";
 import { goToList } from "@aca/desktop/actions/lists";
-import { getSnoozeOptionsForSearch } from "@aca/desktop/actions/snooze";
+import { getReminderOptionsForSearch } from "@aca/desktop/actions/reminders";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { runActionWithTarget } from "@aca/desktop/domains/runAction";
 import { pluralize } from "@aca/shared/text/pluralize";
@@ -31,7 +31,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
     })
   );
 
-  return [...listActions, ...getSnoozeOptionsForSearch(context)];
+  return [...listActions, ...getReminderOptionsForSearch(context)];
 });
 
 export function createDefaultCommandMenuSession(): CommandMenuSession {

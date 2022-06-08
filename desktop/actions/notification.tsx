@@ -13,23 +13,45 @@ import { desktopRouter } from "@aca/desktop/routes";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { pluralize } from "@aca/shared/text/pluralize";
 import {
+  IconBell,
+  IconBellSlash,
   IconCheck,
-  IconCheckboxSquare,
-  IconClock,
-  IconClockCross,
   IconExternalLink,
-  IconFlag,
   IconGlasses,
   IconLink1,
+  IconStar,
   IconTarget,
+  IconUndo,
 } from "@aca/ui/icons";
 
 import { getNotificationTitle } from "../domains/notification/title";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
+import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
-import { canApplySnooze, getSnoozeSuggestionActions } from "./snooze";
+import { getReminderSuggestionActions } from "./reminders";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
+
+function getContextHasNotificationMatching(
+  ctx: ActionContext,
+  matcher?: (notification: NotificationEntity) => boolean
+) {
+  const notification = ctx.getTarget("notification");
+
+  if (notification) {
+    if (!matcher) return true;
+    return matcher(notification);
+  }
+
+  const group = ctx.getTarget("group");
+
+  if (group) {
+    if (!matcher) return true;
+    return group.notifications.some((notification) => matcher(notification));
+  }
+
+  return false;
+}
 
 async function convertToLocalAppUrlIfAny(notification: NotificationEntity): Promise<OpenAppUrl> {
   const notificationKind = notification.kind;
@@ -69,14 +91,12 @@ export const resolveNotification = defineAction({
   },
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["E"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   canApply: (ctx) => {
     return (
       // This is the primary action for moving through lists in focus mode, we do not want to block this behavior
       // just because a notification is already resolved.
-      ctx.hasView(focusPageView) ||
-      (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isResolved)) ||
-      (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isResolved)
+      ctx.hasView(focusPageView) || getContextHasNotificationMatching(ctx, (n) => !n.isResolved)
     );
   },
   handler(context) {
@@ -122,7 +142,7 @@ export const resolveNotification = defineAction({
 });
 
 export const saveNotification = defineAction({
-  icon: <IconFlag />,
+  icon: <IconStar />,
   group: currentNotificationActionsGroup,
   name: `Move to "Saved"`,
   analyticsEvent: (ctx) => {
@@ -135,12 +155,9 @@ export const saveNotification = defineAction({
   },
   keywords: ["flag"],
   shortcut: ["S"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   canApply: (ctx) => {
-    return (
-      (ctx.hasTarget("group") && ctx.getTarget("group")?.notifications.some((n) => !n.isSaved)) ||
-      (ctx.hasTarget("notification") && !ctx.getTarget("notification")?.isSaved)
-    );
+    return getContextHasNotificationMatching(ctx, (n) => !n.isSaved);
   },
   handler(context) {
     const notification = context.getTarget("notification");
@@ -178,14 +195,14 @@ export const saveNotification = defineAction({
 });
 
 export const cancelSaveNotification = defineAction({
-  icon: <IconFlag />,
+  icon: <IconStar />,
   group: currentNotificationActionsGroup,
   name: `Remove from "Saved"`,
   shortcut: ["Shift", "S"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   keywords: ["undo", "flag"],
   canApply: (ctx) => {
-    return ctx.getTarget("notification")?.isSaved || !!ctx.getTarget("group")?.notifications.some((n) => n.isSaved);
+    return getContextHasNotificationMatching(ctx, (n) => n.isSaved);
   },
   analyticsEvent: "Notification Unresolved",
   handler(context) {
@@ -215,16 +232,14 @@ export const cancelSaveNotification = defineAction({
 });
 
 export const unresolveNotification = defineAction({
-  icon: <IconCheckboxSquare />,
+  icon: <IconUndo />,
   group: currentNotificationActionsGroup,
   name: "Undo resolve",
   shortcut: ["Shift", "E"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: (ctx) => {
-    return (
-      ctx.getTarget("notification")?.isResolved || !!ctx.getTarget("group")?.notifications.some((n) => n.isResolved)
-    );
+    return getContextHasNotificationMatching(ctx, (n) => n.isResolved);
   },
   analyticsEvent: "Notification Unresolved",
   handler(context) {
@@ -253,16 +268,10 @@ export const unresolveNotification = defineAction({
   },
 });
 
-export const snoozeNotification = defineAction({
+export const addReminderToNotification = defineAction({
   group: currentNotificationActionsGroup,
-  name: (ctx) => {
-    if (ctx.hasTarget("group")) {
-      return ctx.isContextual ? "Snooze group" : "Snooze group...";
-    }
-
-    return ctx.isContextual ? "Snooze" : "Snooze notification...";
-  },
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  name: "Add reminder",
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
@@ -272,32 +281,29 @@ export const snoozeNotification = defineAction({
     }
   },
   keywords: ["delay", "time"],
-  canApply: canApplySnooze,
-  icon: <IconClock />,
+  canApply: (ctx) => getContextHasNotificationMatching(ctx, (n) => !n.hasReminder),
+  icon: <IconBell />,
   shortcut: ["H"],
   handler() {
     return {
       searchPlaceholder: "In 3 days...",
       isContextual: true,
       getActions: (context) => {
-        return getSnoozeSuggestionActions(context);
+        return getReminderSuggestionActions(context);
       },
     };
   },
 });
 
-export const unsnoozeNotification = defineAction({
+export const removeNotificationReminder = defineAction({
   group: currentNotificationActionsGroup,
-  name: "Cancel snooze",
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
-  keywords: ["now", "remove", "schedule", "do", "unsnooze", "undo"],
+  name: "Remove reminder",
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
+  keywords: ["now", "remove", "schedule", "do", "cancel", "undo"],
   canApply: (ctx) => {
-    if (ctx.getTarget("notification")?.isSnoozed === true) return true;
-    if (ctx.getTarget("group")?.notifications.some((n) => n.isSnoozed) === true) return true;
-
-    return false;
+    return getContextHasNotificationMatching(ctx, (n) => n.hasReminder);
   },
-  icon: <IconClockCross />,
+  icon: <IconBellSlash />,
   shortcut: ["Mod", "W"],
   handler(ctx) {
     const cancel = createCleanupObject("from-last");
@@ -308,7 +314,7 @@ export const unsnoozeNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${cancel.size} ${["notification"]} unsnoozed`,
+      message: pluralize`Removed reminder for ${cancel.size} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {
@@ -420,7 +426,7 @@ export const markNotificationUnread = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Mark unread" : "Mark notification as unread"),
   shortcut: ["U"],
-  keywords: ["snooze", "remind"],
+  keywords: ["remind"],
   canApply: (ctx) => !!ctx.getTarget("notification")?.last_seen_at,
   handler(context) {
     const notification = context.assertTarget("notification");

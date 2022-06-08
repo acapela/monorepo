@@ -6,7 +6,7 @@ import nr from "newrelic";
 import { SingleASTNode } from "simple-markdown";
 
 import { redisClient } from "@aca/backend/src/redis";
-import { slackClient } from "@aca/backend/src/slack/app";
+import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
 import {
   convertMessageContentToPlainText,
   parseAndTransformToTipTapJSON,
@@ -29,7 +29,7 @@ async function getSlackUserName(token?: string, teamId?: string, userId?: string
   const { user } = await slackClient.users.info({ token: token, user: userId });
   // For Slack-Connect users the name was only found within the profile object
   const username = user?.profile?.real_name ?? user?.real_name ?? "Unknown";
-  await redisClient.set(userNameKey, username, "EX", 60 * 60); // cache username for one hour
+  await redisClient.set(userNameKey, username, "EX", 6 * 3600); // cache username for six hours
   return username;
 }
 
@@ -43,23 +43,19 @@ async function getSlackChannelName(token?: string, teamId?: string, channelId?: 
   const { channel } = await slackClient.conversations.info({ token, channel: channelId });
   // For Slack-Connect users the name was only found within the profile object
   const channelName = channel ? (channel.is_private ? "🔒 " : "#") + channel.name_normalized : "Unknown";
-  await redisClient.set(channelNameKey, channelName, "EX", 60 * 60); // cache channel name for one hour
+  await redisClient.set(channelNameKey, channelName, "EX", 6 * 3600); // cache channel name for six hours
   return channelName;
 }
 
-async function getSlackChannelMembers(
-  token?: string,
-  teamId?: string,
-  channelId?: string
-): Promise<string[] | undefined> {
-  if (!token || !channelId || !teamId) return undefined;
+async function getSlackChannelMembers(token?: string, teamId?: string, channelId?: string): Promise<string[]> {
+  if (!token || !channelId || !teamId) return [];
 
   const channelMembersKey = `slack:channelmembers:${teamId}:${channelId}`;
   const cachedChannelMembers = await redisClient.get(channelMembersKey);
   if (cachedChannelMembers) return JSON.parse(cachedChannelMembers);
 
   const { members } = await slackClient.conversations.members({ token, channel: channelId });
-  await redisClient.set(channelMembersKey, JSON.stringify(members || []), "EX", 30); // cache members for 30s
+  await redisClient.set(channelMembersKey, JSON.stringify(members || []), "EX", 600); // cache members for ten minutes
   return members || [];
 }
 
@@ -114,16 +110,9 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
 
 // A special client authorized with the app token for the few API calls that need app level scopes
 const appClient = new WebClient(process.env.SLACK_APP_TOKEN);
-async function findUserSlackInstallations(eventContextId: string) {
+async function fetchAuthorizedUserIds(eventContextId: string): Promise<string[]> {
   const { authorizations } = await appClient.apps.event.authorizations.list({ event_context: eventContextId });
-  return db.user_slack_installation.findMany({
-    where: {
-      OR: (authorizations ?? [])
-        .filter((auth) => auth.team_id && auth.user_id)
-        .map((auth) => ({ slack_team_id: auth.team_id, slack_user_id: auth.user_id })),
-    },
-    include: { user: true, slack_team: true },
-  });
+  return authorizations?.map((a) => a.user_id).filter(isNotNullish) || [];
 }
 
 const createTextPreviewFromSlackMessage = async (
@@ -238,6 +227,7 @@ async function createNotificationFromMessage(
 
   const teamInfo = userSlackInstallation.slack_team.team_info_data as Team;
   assert(teamInfo.url, `could not get team url for ${userSlackInstallation.slack_team.slack_team_id}`);
+  // TODO: fetch team.info API endpoint and store in db??
 
   let permalink = `${teamInfo.url}archives/${message.channel}/p${messageTs.replace(".", "")}`;
   if (message.thread_ts) permalink += `?thread_ts=${message.thread_ts}&cid=${message.channel}`;
@@ -326,24 +316,28 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
   }
 }
 
-async function handleMessages({ message, body, client }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
+async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
   const eventContextId = body.event_context as string;
-  message = message as GenericMessageEvent;
+  const msg = message as GenericMessageEvent;
 
-  if (message.type !== "message" || message.text === undefined) {
+  if (msg.type !== "message" || msg.text === undefined) {
     return;
   }
 
-  // somehow passing message directly inside the anonymous segment functions causes a type error
-  // ¯\_(ツ)_/¯
-  const msg = message;
+  const teamSlackInstallations = await db.user_slack_installation.findMany({
+    where: {
+      slack_team_id: body.team_id,
+    },
+    include: { user: true, slack_team: true },
+  });
 
-  const author = await nr.startSegment("slack/message/findUserForSlackInstallation", true, async () =>
-    findUserForSlackInstallation(msg.user)
-  );
+  // we have no users in our database, let's ignore this message
+  if (teamSlackInstallations.length === 0) return;
+
+  const author = teamSlackInstallations.find((si) => si.slack_user_id === msg.user)?.user;
   if (author?.is_slack_auto_resolve_enabled) {
     try {
-      const threadTs = message.thread_ts;
+      const threadTs = msg.thread_ts;
       await nr.startSegment("slack/message/resolveMessageNotifications", true, async () =>
         resolveMessageNotifications(author.id, {
           slack_conversation_id: msg.channel,
@@ -365,24 +359,41 @@ async function handleMessages({ message, body, client }: SlackEventMiddlewareArg
     logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
   }
 
-  const userSlackInstallations = await findUserSlackInstallations(eventContextId);
+  // at first, we try to use the authorized users that was delivered with the webhooks
+  const authorizedUserId = body.authorizations && body.authorizations[0]?.user_id;
+  let authorizedSlackInstallation = teamSlackInstallations.find((si) => si.slack_user_id === authorizedUserId);
+  if (!authorizedSlackInstallation) {
+    // if no user was found we use the slack api to fetch the authorized users
+    logger.warn(`no user token (${authorizedUserId}) was found directly for team ${body.team_id}`);
+    const authorizedUserIds = await nr.startSegment("slack/message/fetchAuthorizedUserIds", true, async () =>
+      fetchAuthorizedUserIds(eventContextId)
+    );
+    authorizedSlackInstallation = teamSlackInstallations.find((si) => authorizedUserIds.includes(si.slack_user_id));
+  }
 
-  const isPublicChannel = message.channel_type !== "im" && message.channel_type !== "mpim";
-  const channelName = isPublicChannel
-    ? await getSlackChannelName(client.token, body.team_id, message.channel)
-    : undefined;
+  const authorizedUserToken = (authorizedSlackInstallation?.data as unknown as SlackInstallation)?.user.token;
+  assert(authorizedUserToken, `no slack user token was found for message in team ${body.team_id}`);
 
-  const channelMembers = isPublicChannel
-    ? await getSlackChannelMembers(client.token, body.team_id, message.channel)
-    : undefined;
+  // fetch channel members and enforce permissions
+  const channelMembers = await nr.startSegment("slack/message/getSlackChannelMembers", true, async () =>
+    getSlackChannelMembers(authorizedUserToken, body.team_id, msg.channel)
+  );
+  const usersToNotify = teamSlackInstallations.filter((si) => channelMembers.includes(si.slack_user_id));
+  if (usersToNotify.length === 0) return;
 
-  const authorUserName = await getSlackUserName(client.token, body.team_id, message.user);
+  // only fetch the name for public and private channels
+  const channelName =
+    msg.channel_type !== "im" && msg.channel_type !== "mpim"
+      ? await nr.startSegment("slack/message/getSlackChannelMembers", true, async () =>
+          getSlackChannelName(authorizedUserToken, body.team_id, msg.channel)
+        )
+      : undefined;
 
-  for (const userSlackInstallation of userSlackInstallations) {
-    if (channelMembers && !channelMembers.includes(userSlackInstallation.slack_user_id)) {
-      // user is not a member of the channel
-      continue;
-    }
+  const authorUserName = await nr.startSegment("slack/message/getSlackUserName", true, async () =>
+    getSlackUserName(authorizedUserToken, body.team_id, msg.user)
+  );
+
+  for (const userSlackInstallation of usersToNotify) {
     try {
       await nr.startSegment("slack/message/createNotificationFromMessage", true, async () =>
         createNotificationFromMessage(userSlackInstallation, msg, authorUserName, channelName)
@@ -406,12 +417,10 @@ async function handleReactionAdded({ event }: SlackEventMiddlewareArgs<"reaction
 
 export function setupSlackCapture(app: SlackApp) {
   app.event("message", async function (event) {
-    nr.incrementMetric("slack/message/count");
     await nr.startBackgroundTransaction("slack_event_message", async () => handleMessages(event));
   });
 
   app.event("reaction_added", async function (event) {
-    nr.incrementMetric("slack/reaction_added/count");
     await nr.startBackgroundTransaction("slack_event_reaction_added", async () => handleReactionAdded(event));
   });
 }

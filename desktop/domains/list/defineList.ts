@@ -2,7 +2,7 @@ import { orderBy } from "lodash";
 import { ReactNode } from "react";
 
 import { cachedComputed } from "@aca/clientdb";
-import { EntityFilterInputByDefinition } from "@aca/clientdb/entity/query";
+import { EntityFindInputByDefinition } from "@aca/clientdb/entity/find";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
@@ -31,7 +31,7 @@ type DefineListConfig = {
   sort?: (notification: NotificationEntity) => SortResult;
 } & (
   | { getNotifications: () => NotificationEntity[] }
-  | { filter: EntityFilterInputByDefinition<typeof notificationEntity> }
+  | { filter: EntityFindInputByDefinition<typeof notificationEntity> }
 );
 
 // For non-grouped notifications the index is a single number

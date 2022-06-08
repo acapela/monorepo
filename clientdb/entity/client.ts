@@ -175,7 +175,7 @@ export function createEntityClient<Data, Connections>(
       return searchEngine.search(term);
     },
     get all() {
-      return client.query(truePredicate, definition.config.defaultSort).all;
+      return client.query(truePredicate).all;
     },
     get hasItems() {
       return hasItemsComputed.get();

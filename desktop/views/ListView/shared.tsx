@@ -8,8 +8,8 @@ import { NotificationAppIcon } from "@aca/desktop/domains/notification/Notificat
 import { uiStore } from "@aca/desktop/store/ui";
 import { theme } from "@aca/ui/theme";
 
+import { ReminderLabel } from "./ReminderLabel";
 import { RowQuickActions, RowQuickActionsProps } from "./RowQuickActions";
-import { SnoozeLabel } from "./SnoozeLabel";
 
 const SENDERS_WIDTH = 150;
 
@@ -26,7 +26,7 @@ const scheduleVisibleIdsUpdate = debounce(
   50
 );
 
-const NotificationRowZIndex = {
+export const NotificationRowZIndex = {
   highlight: 0,
   rowItem: 1,
 };
@@ -81,7 +81,8 @@ export const UISendersLabel = styled.div`
   ${theme.common.ellipsisText};
   width: ${SENDERS_WIDTH}px;
   max-width: ${SENDERS_WIDTH}px;
-  display: flex;
+  min-width: ${SENDERS_WIDTH}px;
+  display: block;
   align-items: center;
   z-index: ${NotificationRowZIndex.rowItem};
 `;
@@ -90,6 +91,9 @@ export const UINotificationRowTitle = styled.div`
   ${theme.typo.content.medium};
   ${theme.common.ellipsisText};
   z-index: ${NotificationRowZIndex.rowItem};
+  flex-grow: 1;
+  flex-basis: 0;
+  opacity: 0.6;
 `;
 
 export const UINotificationGroupTitle = styled(UINotificationRowTitle)`
@@ -124,7 +128,7 @@ export const UIHighlight = styled(motion.div)`
   z-index: ${NotificationRowZIndex.highlight};
 `;
 
-export const UISnoozeLabel = styled(SnoozeLabel)`
+export const UIReminderLabel = styled(ReminderLabel)`
   z-index: ${NotificationRowZIndex.rowItem};
 `;
 

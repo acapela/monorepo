@@ -5,16 +5,11 @@ import { ActionHandler } from "@aca/backend/src/actions/actionHandlers";
 import { db } from "@aca/db";
 import { SubscriptionPlan, SwitchSubscriptionPlanOutput } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
+import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08-27" });
-
-const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, ultimate: process.env.STRIPE_PRICE_ULTIMATE_ID! };
-
-const optionalDiscounts = process.env.STRIPE_DISCOUNT_CODE_ID
-  ? [{ coupon: process.env.STRIPE_DISCOUNT_CODE_ID }]
-  : undefined;
 
 export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPlan }, SwitchSubscriptionPlanOutput> = {
   actionName: "switch_subscription_plan",
@@ -29,14 +24,11 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
 
     assert(plan !== user.subscription_plan, `User ${userId} is already on a ${plan} subscription`);
 
-    const checkedOutURL = process.env.FRONTEND_URL + routes.stripeCheckedOut;
-
     const hasExistingSubscription = Boolean(user.stripe_subscription_id);
     if (hasExistingSubscription) {
       // TODO when we leave the beta, and introduce the free plan as the new default, this needs to be changed
       // so that switching to premium also charges users
       if (plan == "premium") {
-        await stripe.subscriptions.del(user.stripe_subscription_id!);
         await Promise.all([
           db.user.update({
             where: { id: userId },
@@ -45,21 +37,11 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
           // Gmail is a ultimate plan feature, so we remove those integrations when someone disconnects
           db.gmail_account.deleteMany({ where: { account: { user_id: userId } } }),
         ]);
+        trackBackendUserEvent(user.id, "Plan Downgraded", { plan_end_date: new Date(), plan_name: "premium" });
         return {};
       }
 
-      // TODO this code path currently cannot be reached, as we only have a ultimate plan. Once premium becomes a
-      // subscription as well, this code path will need to be enabled to allow switching between premium and ultimate
-      const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id!);
-      await stripe.subscriptions.update(subscription.id, {
-        cancel_at_period_end: false,
-        // Since cancellation is immediate, we currently pay out all the remaining days (which is what proration means)
-        proration_behavior: "create_prorations",
-        items: [{ id: subscription.items.data[0].id, price: PRICE_IDS[plan] }],
-      });
-      await db.user.update({ where: { id: userId }, data: { subscription_plan: plan } });
-
-      return {};
+      // TODO: Once premium becomes a subscription as well, we need to support switching between premium and ultimate
     }
 
     // TODO enable assertion when we bring in the free plan
@@ -71,11 +53,12 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
       await db.user.update({ where: { id: userId }, data: { stripe_customer_id: stripeCustomerId } });
     }
 
+    const checkedOutURL = process.env.FRONTEND_URL + routes.stripeCheckedOut;
+
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       mode: "setup",
-      discounts: optionalDiscounts,
+      payment_method_types: ["card"],
       success_url: checkedOutURL + "?reason=success",
       cancel_url: checkedOutURL + "?reason=cancel",
     });
@@ -85,28 +68,26 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
   },
 };
 
-export const router = Router();
-
-const getPriceIdFromSubscription = ({ items }: Stripe.Subscription) => items.data[0].price.id;
-
 async function handleStripeEvent(event: Stripe.Event) {
   switch (event.type) {
-    case "customer.subscription.created": {
-      const subscription = event.data.object as Stripe.Subscription;
+    case "setup_intent.succeeded": {
+      const subscription = event.data.object as Stripe.SetupIntent;
       const { customer } = subscription;
       if (!customer) {
         break;
       }
       const stripeCustomerId = typeof customer == "string" ? customer : customer.id;
-      const isUltimate = getPriceIdFromSubscription(subscription) == PRICE_IDS.ultimate;
-      await db.user.update({
+      const user = await db.user.update({
         where: { stripe_customer_id: stripeCustomerId },
-        data: { stripe_subscription_id: subscription.id, subscription_plan: isUltimate ? "ultimate" : "premium" },
+        data: { stripe_subscription_id: subscription.id, subscription_plan: "ultimate" },
       });
+      trackBackendUserEvent(user.id, "Plan Upgraded", { plan_start_date: new Date(), plan_name: "ultimate" });
       break;
     }
   }
 }
+
+export const router = Router();
 
 // Stripe needs to get the raw request to verify its signature
 router.post("/v1/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {

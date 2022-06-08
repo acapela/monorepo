@@ -1,7 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
@@ -393,7 +393,10 @@ const UISegment = styled.div<{ $isActive?: boolean }>`
   ${(props) => {
     if (props.$isActive) return theme.colors.primary.asBgWithReadableText;
 
-    return theme.colors.layout.backgroundAccent.hover.interactive;
+    return css`
+      ${theme.colors.layout.backgroundAccent.hover.interactive}
+      ${theme.colors.text.asColor};
+    `;
   }}
 
   ${theme.typo.action.regular.semibold}

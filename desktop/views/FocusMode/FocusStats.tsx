@@ -96,7 +96,7 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
         key={groupProgress.group?.id ?? currentNotification.id}
         all={groupProgress.all}
         done={groupProgress.done}
-        title={groupProgress.group?.name ?? "Current Notification"}
+        title={groupProgress.group?.getMeta().title ?? "Current Notification"}
         // title="Current group"
         avgTimePerItem={avgTimePerNotification}
       />

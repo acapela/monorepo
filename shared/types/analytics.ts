@@ -5,7 +5,7 @@ import { Maybe } from "@aca/shared/types";
 
 import { PreloadInstrumentationReportResult, PreloadURLLoadState } from "../debug/electronInstrumentation.types";
 
-export type PlanType = "trial" | "free" | "premium";
+export type PlanType = "free" | "premium" | "ultimate";
 
 /**
  * Map of tracking event types with their required parameters.
@@ -44,16 +44,16 @@ export type AnalyticsEventsMap = {
   "Trial Started": { trial_start_date: Date; trial_end_date: Date; plan_name: PlanType };
   // to be implemented later
   "Trial Ended": { trial_start_date: Date; trial_end_date: Date; plan_name: PlanType };
-  // to be implemented later
+  // after successful stripe flow
   "Plan Upgraded": { plan_start_date: Date; plan_name: PlanType };
-  // to be implemented later
+  // after successful downgrade
   "Plan Downgraded": { plan_end_date: Date; plan_name: PlanType };
 
   // Feature related events
 
   "Notification Resolved": { notification_id: string };
   "All Notifications Resolved": { list_id: string };
-  "Notification Snoozed": { notification_id: string };
+  "Added Notification Reminder": { notification_id: string };
   "Notification Unresolved": void;
   "Custom List Created": void;
   "Custom List Deleted": void;
@@ -67,12 +67,17 @@ export type AnalyticsEventsMap = {
   "App Updated": void;
   "App Theme Changed": { theme: AppTheme };
   "Settings Opened": void;
-  "Snoozed Notifications Opened": void;
+  "Saved Notifications Opened": void;
   "Resolved Notifications Opened": void;
   "Notification Deeplink Opened": { service_name: string | undefined };
   "Notification Group Toggled": void;
   "Feedback Button Clicked": void;
   "Feedback Call Booked": void;
+
+  // Subscription flow events
+
+  "Upgrade Button Clicked": void;
+  "Upgrade Flow Cancelled": void;
 
   // Integration related events
   "Linear Integration Added": void;
@@ -140,6 +145,7 @@ export type AnalyticsUserProfile = {
   asana_installed_at?: Date;
   clickup_installed_at?: Date;
   onboarding: "self_serve" | "white_glove";
+  subscription_plan: PlanType;
   // reserved user traits: https://segment.com/docs/connections/spec/identify/#traits
   // can also use snake_case for reserved traits: https://segment.com/docs/connections/spec/identify/#:~:text=You%20can%20pass%20these%20reserved%20traits%20using%20camelCase%20or%20snake_case
   first_name?: Maybe<string>;

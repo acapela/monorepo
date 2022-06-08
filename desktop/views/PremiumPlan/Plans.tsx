@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { SubscriptionPlan } from "@aca/gql";
 import { Button } from "@aca/ui/buttons/Button";
 import { IconCheck } from "@aca/ui/icons";
@@ -22,12 +23,12 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
         <UIHead>
           <UIPricingBadge>FREE</UIPricingBadge>
         </UIHead>
-        <Price price="0€" period="MONTHLY" description="Start taking control of your notifications. Yep, it’s free." />
+        <Price price="$0" period="MONTHLY" description="Start taking control of your notifications. Yep, it’s free." />
 
         <UIDelimiter />
         <UIFeaturesList>
-          <UIFeature>3 Integrations</UIFeature>
-          <UIFeature>2 Custom Inboxes</UIFeature>
+          <UIFeature>500 Notifications</UIFeature>
+          <UIFeature>1 Custom Inbox</UIFeature>
           <UIFeature>1 Slack Workspaces</UIFeature>
         </UIFeaturesList>
         <UICTA>
@@ -39,13 +40,18 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
       <UIProCard>
         <UIHead>
           <UIPricingBadge $kind="secondary">Premium</UIPricingBadge>
-          <UIPricingBadge $kind="meta">Launch offer</UIPricingBadge>
+          <UIPricingBadge $kind="meta">Beta offer</UIPricingBadge>
         </UIHead>
-        <Price price="0€" period="MONTHLY" description="Connect all your work tools and transform your workflow." />
+        <Price
+          originalPrice="$8"
+          price="$0"
+          period="MONTHLY"
+          description="Connect all your work tools and transform your workflow."
+        />
         <UIDelimiter />
         <UIFeaturesList>
-          <UIFeature>10 Integrations</UIFeature>
-          <UIFeature>5 Custom Inboxes</UIFeature>
+          <UIFeature>5000 Notifications</UIFeature>
+          <UIFeature>3 Custom Inboxes</UIFeature>
           <UIFeature>3 Slack Workspaces</UIFeature>
         </UIFeaturesList>
         <UICTA>
@@ -65,10 +71,10 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
         <UIHead>
           <UIPricingBadge>Ultimate</UIPricingBadge>
         </UIHead>
-        <Price price="12€" period="MONTHLY" description="Inbox Zero for every tool, without any limitations." />
+        <Price price="$12" period="MONTHLY" description="Inbox Zero for every tool, without any limitations." />
         <UIDelimiter />
         <UIFeaturesList>
-          <UIFeature>Unlimited Integrations</UIFeature>
+          <UIFeature>Unlimited Notifications</UIFeature>
           <UIFeature>Unlimited Custom Inboxes</UIFeature>
           <UIFeature>Unlimited Slack Workspaces</UIFeature>
           <UIFeature>
@@ -82,6 +88,7 @@ export const Plans = observer(({ currentPlan, onPlanChangeRequest }: Props) => {
             kind="primary"
             icon={currentPlan === "ULTIMATE" ? <IconCheck /> : null}
             onClick={() => {
+              trackEvent("Upgrade Button Clicked");
               onPlanChangeRequest("ULTIMATE");
             }}
           >
