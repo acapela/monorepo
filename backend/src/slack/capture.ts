@@ -110,7 +110,7 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
 
 // A special client authorized with the app token for the few API calls that need app level scopes
 const appClient = new WebClient(process.env.SLACK_APP_TOKEN);
-async function fetchAuthorizedUserIds(eventContextId: string) {
+async function fetchAuthorizedUserIds(eventContextId: string): Promise<string[]> {
   const { authorizations } = await appClient.apps.event.authorizations.list({ event_context: eventContextId });
   return authorizations?.map((a) => a.user_id).filter(isNotNullish) || [];
 }
