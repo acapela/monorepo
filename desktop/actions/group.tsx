@@ -43,7 +43,7 @@ export const toggleNotificationsGroup = defineAction({
 
     return isOpened ? "Hide notifications in group" : "Show notifications in group";
   },
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   shortcut: "Space",
   keywords: ["toggle", "group", "all"],
   canApply: (context) => {

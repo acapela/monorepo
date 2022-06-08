@@ -14,7 +14,7 @@ export function setupFakeDataRoute(app: Application) {
       res.json("Can not create spam without pre-existing notification");
       return;
     }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 500; i++) {
       await db.notification.create({
         data: {
           from: "Spammer",

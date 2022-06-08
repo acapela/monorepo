@@ -87,7 +87,7 @@ export async function pickReminderTime() {
 function createPickReminderAction(callback: ReminderActionCallback) {
   const addReminder = defineAction({
     name: "Add reminder",
-    supplementaryLabel: (ctx) => ctx.getTarget("group")?.name ?? undefined,
+    supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
     icon: <IconBell />,
     handler() {
       return {

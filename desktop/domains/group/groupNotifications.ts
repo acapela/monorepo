@@ -49,7 +49,7 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
       kind: "group",
       ...target,
       notifications: [notification],
-      get meta() {
+      getMeta() {
         return getNotificationsGroupMeta(notification);
       },
     };
