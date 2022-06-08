@@ -49,7 +49,7 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
         return { title: title ?? "New direct message", tags: tags("directMessage") };
       }
 
-      if (conversation_type === "channel") {
+      if (conversation_type === "channel" || conversation_type === "group") {
         if (is_mention) {
           return {
             title: title ?? "New mention",
@@ -58,13 +58,13 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
         }
 
         return {
-          title: title ?? "New mention",
+          title: title ?? "New message",
           tags: tags({ category: "channel", customLabel: conversation_name }),
         };
       }
 
       return {
-        title: "New message",
+        title: title ?? "New message",
       };
     }
     case "notification_notion": {
