@@ -47,8 +47,8 @@ export const FocusModeTopBar = observer(({ notification }: Props) => {
         <>
           <TopBarActionButton action={resolveNotification} />
           <TopBarActionButton action={addReminderToNotification} />
-          <TopBarActionButton action={saveNotification} />
-          <TopBarActionButton action={cancelSaveNotification} />
+          <TopBarActionButton action={saveNotification} notApplicableMode="hide" />
+          <TopBarActionButton action={cancelSaveNotification} notApplicableMode="hide" />
 
           <TopBarDivider />
           <TopBarActionButton action={refreshNotificationPreview} />
