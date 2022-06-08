@@ -28,6 +28,7 @@ import {
   AnalyticsEventName,
   AnalyticsEventPayload,
   AnalyticsUserProfile,
+  PlanType,
 } from "@aca/shared/types/analytics";
 
 export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null {
@@ -42,6 +43,7 @@ export function getUserAnalyticsProfile(): Partial<AnalyticsUserProfile> | null 
     created_at: new Date(user.created_at), // will convert string into Date type if necessary,
     avatar: user.avatar_url,
     color_mode: uiSettingsBridge.get().theme,
+    subscription_plan: user.subscription_plan as PlanType,
 
     figma_installed_at: (!!figmaAuthTokenBridgeValue.get() && figmaAuthTokenBridgeValue.lastUpdateDate) || undefined,
     notion_installed_at: (!!notionAuthTokenBridgeValue.get() && notionAuthTokenBridgeValue.lastUpdateDate) || undefined,

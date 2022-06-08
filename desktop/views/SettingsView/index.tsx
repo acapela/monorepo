@@ -30,7 +30,6 @@ export const settingsSections: Record<string, SettingsSection> = {
   subscription: {
     label: "Subscription",
     component: SubscriptionView,
-    isHidden: process.env.STAGE === "production",
   },
   general: {
     label: "General",

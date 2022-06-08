@@ -77,8 +77,8 @@ export const PlanUpgadeCelebrationView = styledObserver(() => {
               <UIContent>
                 <UITitle>Upgrade successful!</UITitle>
                 <UIMessage>
-                  You are currently on a free trial and will not be charged. You now have access to all Acapela Ultimate
-                  features.
+                  You are currently on a free trial and will not be charged for the next 30 days. You now have access to
+                  all Acapela Ultimate features.
                 </UIMessage>
               </UIContent>
               <Button
