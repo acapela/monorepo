@@ -360,9 +360,8 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
   const authorizedUserId = body.authorizations && body.authorizations[0]?.user_id;
   let authorizedSlackInstallation = teamSlackInstallations.find((si) => si.slack_user_id === authorizedUserId);
   if (!authorizedSlackInstallation) {
-    nr.incrementMetric("slack/api/event/authorizations/list");
     // if no user was found we use the slack api to fetch the authorized users
-    logger.error(`no user token (${authorizedUserId}) was found directly for team ${body.team_id}`);
+    logger.warn(`no user token (${authorizedUserId}) was found directly for team ${body.team_id}`);
     const authorizedUserIds = await nr.startSegment("slack/message/fetchAuthorizedUserIds", true, async () =>
       fetchAuthorizedUserIds(eventContextId)
     );
@@ -415,12 +414,10 @@ async function handleReactionAdded({ event }: SlackEventMiddlewareArgs<"reaction
 
 export function setupSlackCapture(app: SlackApp) {
   app.event("message", async function (event) {
-    nr.incrementMetric("slack/message/count");
     await nr.startBackgroundTransaction("slack_event_message", async () => handleMessages(event));
   });
 
   app.event("reaction_added", async function (event) {
-    nr.incrementMetric("slack/reaction_added/count");
     await nr.startBackgroundTransaction("slack_event_reaction_added", async () => handleReactionAdded(event));
   });
 }
