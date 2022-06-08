@@ -55,7 +55,8 @@ export type AnalyticsEventsMap = {
 
   "Notification Resolved": { notification_id: string };
   "All Notifications Resolved": { list_id: string };
-  "Added Notification Reminder": { notification_id: string };
+  "Notification Reminder Added": { notification_id: string };
+  "Notification Saved": { notification_id: string };
   "Notification Unresolved": void;
   "Custom List Created": void;
   "Custom List Deleted": void;
@@ -75,6 +76,8 @@ export type AnalyticsEventsMap = {
   "Notification Group Toggled": void;
   "Feedback Button Clicked": void;
   "Feedback Call Booked": void;
+  // TODO: to be tracked, I was not able to attach an event logger to the tray without crashing the app
+  "Tray Icon Clicked": void;
 
   // Subscription flow events
 
