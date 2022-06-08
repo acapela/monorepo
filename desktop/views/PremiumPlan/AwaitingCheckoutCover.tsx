@@ -21,7 +21,7 @@ export const AwaitingCheckoutCover = observer(({ onCancel }: Props) => {
       <UIHolder>
         <UIHead>
           <UISpinner />
-          <UITitle>Continue your checkout in browser</UITitle>
+          <UITitle>Continue the checkout in your browser</UITitle>
         </UIHead>
 
         <UIActions>
@@ -29,7 +29,7 @@ export const AwaitingCheckoutCover = observer(({ onCancel }: Props) => {
             Cancel
           </Button>
           <ActionButton kind="transparent" size="compact" action={sendFeedback} hideIcon hideTooltip>
-            Report issues
+            Report an issue
           </ActionButton>
         </UIActions>
       </UIHolder>
@@ -46,6 +46,7 @@ const UIHolder = styled(FadePresenceAnimator)`
   justify-content: center;
   flex-direction: column;
   gap: 40px;
+  z-index: ${theme.zIndex.top};
 
   ${UISpinner} {
     font-size: 32px;

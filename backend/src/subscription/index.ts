@@ -10,7 +10,11 @@ import { routes } from "@aca/shared/routes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2020-08-27" });
 
-const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, business: process.env.STRIPE_PRICE_BUSINESS_ID! };
+const PRICE_IDS = { premium: process.env.STRIPE_PRICE_PREMIUM_ID!, ultimate: process.env.STRIPE_PRICE_ULTIMATE_ID! };
+
+const optionalDiscounts = process.env.STRIPE_DISCOUNT_CODE_ID
+  ? [{ coupon: process.env.STRIPE_DISCOUNT_CODE_ID }]
+  : undefined;
 
 export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPlan }, SwitchSubscriptionPlanOutput> = {
   actionName: "switch_subscription_plan",
@@ -38,14 +42,14 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
             where: { id: userId },
             data: { stripe_subscription_id: null, subscription_plan: "premium" },
           }),
-          // Gmail is a business plan feature, so we remove those integrations when someone disconnects
+          // Gmail is a ultimate plan feature, so we remove those integrations when someone disconnects
           db.gmail_account.deleteMany({ where: { account: { user_id: userId } } }),
         ]);
         return {};
       }
 
-      // TODO this code path currently cannot be reached, as we only have a business plan. Once premium becomes a
-      // subscription as well, this code path will need to be enabled to allow switching between premium and business
+      // TODO this code path currently cannot be reached, as we only have a ultimate plan. Once premium becomes a
+      // subscription as well, this code path will need to be enabled to allow switching between premium and ultimate
       const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id!);
       await stripe.subscriptions.update(subscription.id, {
         cancel_at_period_end: false,
@@ -70,7 +74,8 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
-      mode: "subscription",
+      mode: "setup",
+      discounts: optionalDiscounts,
       success_url: checkedOutURL + "?reason=success",
       cancel_url: checkedOutURL + "?reason=cancel",
     });
@@ -93,10 +98,10 @@ async function handleStripeEvent(event: Stripe.Event) {
         break;
       }
       const stripeCustomerId = typeof customer == "string" ? customer : customer.id;
-      const isBusiness = getPriceIdFromSubscription(subscription) == PRICE_IDS.business;
+      const isUltimate = getPriceIdFromSubscription(subscription) == PRICE_IDS.ultimate;
       await db.user.update({
         where: { stripe_customer_id: stripeCustomerId },
-        data: { stripe_subscription_id: subscription.id, subscription_plan: isBusiness ? "business" : "premium" },
+        data: { stripe_subscription_id: subscription.id, subscription_plan: isUltimate ? "ultimate" : "premium" },
       });
       break;
     }
