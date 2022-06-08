@@ -24,15 +24,7 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
       <ActionIconButton
         kind="transparent"
         size="compact"
-        action={saveNotification}
-        target={target}
-        showTitleInTooltip
-        notApplicableMode="hide"
-      />
-      <ActionIconButton
-        kind="primarySubtle"
-        size="compact"
-        action={cancelSaveNotification}
+        action={resolveNotification}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"
@@ -40,11 +32,12 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
       <ActionIconButton
         kind="transparent"
         size="compact"
-        action={resolveNotification}
+        action={unresolveNotification}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"
       />
+
       <ActionIconButton
         kind="transparent"
         size="compact"
@@ -61,10 +54,19 @@ export const RowQuickActions = observer(({ target }: RowQuickActionsProps) => {
         showTitleInTooltip
         notApplicableMode="hide"
       />
+
       <ActionIconButton
         kind="transparent"
         size="compact"
-        action={unresolveNotification}
+        action={saveNotification}
+        target={target}
+        showTitleInTooltip
+        notApplicableMode="hide"
+      />
+      <ActionIconButton
+        kind="primarySubtle"
+        size="compact"
+        action={cancelSaveNotification}
         target={target}
         showTitleInTooltip
         notApplicableMode="hide"

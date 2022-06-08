@@ -6,7 +6,7 @@ import { NotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { styledObserver } from "@aca/shared/component";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
-import { IconClock } from "@aca/ui/icons";
+import { IconBell } from "@aca/ui/icons";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -41,7 +41,7 @@ export const ReminderLabel = styledObserver(function ReminderLabel({ notificatio
 
   return (
     <UIHolder className={className} data-tooltip={`Reminder - ${niceFormatDateTime(currentReminderDate)}`}>
-      <IconClock />
+      <IconBell />
     </UIHolder>
   );
 })``;

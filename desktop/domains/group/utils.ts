@@ -1,3 +1,7 @@
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+
+import { NotificationOrGroup } from "./groupNotifications";
+
 /**
  * countRepeats([{name: "Adam"}, {name: "Adam"}, {name: "Omar"}], item => item.name)
  *
@@ -22,4 +26,26 @@ export function countRepeats<I, R>(input: I[], getter: (item: I) => R | undefine
   }
 
   return resultsMap;
+}
+
+export function notificationOrGroupHasSome(
+  notificationOrGroup: NotificationOrGroup,
+  check: (notification: NotificationEntity) => boolean
+): boolean {
+  if (notificationOrGroup.kind === "group") {
+    return notificationOrGroup.notifications.some((notification) => check(notification));
+  }
+
+  return check(notificationOrGroup);
+}
+
+export function notificationOrGroupHasEvery(
+  notificationOrGroup: NotificationOrGroup,
+  check: (notification: NotificationEntity) => boolean
+): boolean {
+  if (notificationOrGroup.kind === "group") {
+    return notificationOrGroup.notifications.every((notification) => check(notification));
+  }
+
+  return check(notificationOrGroup);
 }

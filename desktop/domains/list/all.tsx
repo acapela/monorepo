@@ -21,7 +21,7 @@ export const allNotificationsList = defineNotificationsList({
 
 export const savedNotificationsList = defineNotificationsList({
   id: "saved",
-  name: "Saved",
+  name: "Saved & Reminders",
   icon: <IconStar />,
   tip: `This list will show notifications you saved or have set reminders for.`,
   filter: { isResolved: false, $or: [{ hasReminder: true }, { isSaved: true }] },

@@ -21,6 +21,7 @@ function prepareNotification(notification: NotificationEntity): ScheduledNotific
     date: reminderDate,
     title: `Reminder`,
     body: getNotificationTitle(notification),
+    requireInteraction: true,
     onClick() {
       desktopRouter.navigate("focus", {
         listId: savedNotificationsList.id,
