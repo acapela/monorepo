@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
 import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
-import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
+import { EntityDataByDefinition, EntityDefinition } from "@aca/clientdb/entity/definition";
 import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
@@ -61,7 +61,9 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   keyField: "id",
   keys: getFragmentKeys<DesktopNotificationFragment>(notificationFragment),
   // Show newest first
-  defaultSort: (notification) => getReverseTime(notification.created_at),
+  defaultSort: (notification) => {
+    return getReverseTime(notification.created_at);
+  },
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification",
     user_id: getContextValue(userIdContext) ?? undefined,
@@ -118,7 +120,10 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = getEntity(entity as any).findFirst({ notification_id: notification.id } as any);
+        const result = getEntity(entity as EntityDefinition<any, any>).findByUniqueIndex(
+          "notification_id",
+          notification.id
+        );
 
         if (result) {
           return result as unknown as EntityByDefinition<typeof innerEntities[number]>;

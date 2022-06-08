@@ -1,4 +1,5 @@
 import { createDeepMap } from "@aca/shared/deepMap";
+import { IS_DEV } from "@aca/shared/dev";
 
 import { CachedComputedOptions, cachedComputedWithoutArgs } from "./cachedComputedWithoutArgs";
 
@@ -22,6 +23,11 @@ export function cachedComputed<A extends any[], T>(getter: (...args: A) => T, op
   }
 
   function getValue(...args: A) {
+    if (IS_DEV && args[2] && Array.isArray(args[2])) {
+      console.warn(
+        `You might be using cached computed directly as filter function. It will break caching. Use items.filter(item => cached(item)) instead of items.filter(cached)`
+      );
+    }
     return getComputed(...args).get();
   }
 

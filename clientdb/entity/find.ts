@@ -19,6 +19,30 @@ type AnyKeyIndexInput<T> = IndexValueInput<T> extends infer U ? U[keyof U] : nev
 
 type MaybeObservableArray<T> = IObservableArray<T> | T[];
 
+/**
+ * Optimized way to pick items that are present in both arrays
+ */
+function getArraysCommonPart<T extends object>(itemsA: T[], itemsB: T[]) {
+  // Use weekset as it has O(1) .has call cost
+  const weakA = new WeakSet(itemsA);
+  const weakB = new WeakSet(itemsB);
+
+  const results: T[] = [];
+
+  // Iterate on shorter array when comparing
+  if (itemsA.length > itemsB.length) {
+    for (const itemB of itemsB) {
+      if (weakA.has(itemB)) results.push(itemB);
+    }
+  } else {
+    for (const itemA of itemsA) {
+      if (weakB.has(itemA)) results.push(itemA);
+    }
+  }
+
+  return results;
+}
+
 function getRemainingItemsAfterApplyingQueryFields<Data, Connections>(
   currentItems: Entity<Data, Connections>[],
   store: EntityStore<Data, Connections>,
@@ -34,7 +58,7 @@ function getRemainingItemsAfterApplyingQueryFields<Data, Connections>(
 
     if (itemsMatchingValue.length === 0) return [];
 
-    passingItems = passingItems.filter((passingItem) => itemsMatchingValue.includes(passingItem));
+    passingItems = getArraysCommonPart(passingItems, itemsMatchingValue);
   }
 
   return passingItems;
@@ -71,13 +95,7 @@ export function findInSourceByObjectInput<Data, Connections>(
     return getRemainingItemsAfterApplyingQueryFields(source, store, orQuery);
   });
 
-  const flatUniqueOrResults = new Set(orQueriesResults.flat());
-
-  const itemsMatchingRootAndOneOfOrResults = itemsMatchingRootQuery.filter((itemMatchingRootQuery) => {
-    return flatUniqueOrResults.has(itemMatchingRootQuery);
-  });
-
-  return itemsMatchingRootAndOneOfOrResults;
+  return getArraysCommonPart(orQueriesResults.flat(), itemsMatchingRootQuery);
 }
 
 type FindFunctionalInput<T> = (item: T) => boolean;
@@ -92,7 +110,8 @@ export function findInSource<Data, Connections>(
   input: FindInput<Data, Connections>
 ) {
   if (typeof input === "function") {
-    return source.filter(input);
+    // ! Do not pass filter directly as it will break cache (filter pass 3 arguments)
+    return source.filter((item) => input(item));
   }
 
   return findInSourceByObjectInput(source, store, input);

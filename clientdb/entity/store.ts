@@ -88,7 +88,7 @@ export function createEntityStore<Data, Connections>(
   const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
   const getIsEntityAccessable =
-    !!config.accessValidator &&
+    config.accessValidator &&
     cachedComputed(function getIsEntityAccessable(entity: StoreEntity) {
       return config.accessValidator!(entity, linker);
     });
@@ -98,7 +98,7 @@ export function createEntityStore<Data, Connections>(
       let output = items as StoreEntity[];
 
       if (config.accessValidator) {
-        output = output.filter((entity) => config.accessValidator!(entity, linker));
+        output = output.filter((entity) => getIsEntityAccessable!(entity));
       }
 
       if (config.defaultSort) {
