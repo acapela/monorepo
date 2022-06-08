@@ -29,7 +29,7 @@ async function getSlackUserName(token?: string, teamId?: string, userId?: string
   const { user } = await slackClient.users.info({ token: token, user: userId });
   // For Slack-Connect users the name was only found within the profile object
   const username = user?.profile?.real_name ?? user?.real_name ?? "Unknown";
-  await redisClient.set(userNameKey, username, "EX", 60 * 60); // cache username for one hour
+  await redisClient.set(userNameKey, username, "EX", 6 * 3600); // cache username for six hours
   return username;
 }
 
@@ -43,23 +43,19 @@ async function getSlackChannelName(token?: string, teamId?: string, channelId?: 
   const { channel } = await slackClient.conversations.info({ token, channel: channelId });
   // For Slack-Connect users the name was only found within the profile object
   const channelName = channel ? (channel.is_private ? "🔒 " : "#") + channel.name_normalized : "Unknown";
-  await redisClient.set(channelNameKey, channelName, "EX", 60 * 60); // cache channel name for one hour
+  await redisClient.set(channelNameKey, channelName, "EX", 6 * 3600); // cache channel name for six hours
   return channelName;
 }
 
-async function getSlackChannelMembers(
-  token?: string,
-  teamId?: string,
-  channelId?: string
-): Promise<string[] | undefined> {
-  if (!token || !channelId || !teamId) return undefined;
+async function getSlackChannelMembers(token?: string, teamId?: string, channelId?: string): Promise<string[]> {
+  if (!token || !channelId || !teamId) return [];
 
   const channelMembersKey = `slack:channelmembers:${teamId}:${channelId}`;
   const cachedChannelMembers = await redisClient.get(channelMembersKey);
   if (cachedChannelMembers) return JSON.parse(cachedChannelMembers);
 
   const { members } = await slackClient.conversations.members({ token, channel: channelId });
-  await redisClient.set(channelMembersKey, JSON.stringify(members || []), "EX", 30); // cache members for 30s
+  await redisClient.set(channelMembersKey, JSON.stringify(members || []), "EX", 600); // cache members for ten minutes
   return members || [];
 }
 
@@ -366,7 +362,9 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
     logger.error(error, `Error recording involved thread users for message: ${JSON.stringify(message)}`);
   }
 
-  const userSlackInstallations = await findUserSlackInstallations(eventContextId);
+  const userSlackInstallations = await nr.startSegment("slack/message/findUserSlackInstallations", true, async () =>
+    findUserSlackInstallations(eventContextId)
+  );
 
   // find a random user token to get the channel name / author name
   const userTokens = userSlackInstallations
@@ -375,19 +373,22 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
   assert(userTokens.length > 0, "no user tokens were found");
   const randomUserToken = userTokens[Math.floor(Math.random() * userTokens.length)];
 
-  const isPublicChannel = message.channel_type !== "im" && message.channel_type !== "mpim";
-  const channelName = isPublicChannel
-    ? await getSlackChannelName(randomUserToken, body.team_id, message.channel)
+  const isPublicOrPrivateChannel = message.channel_type !== "im" && message.channel_type !== "mpim";
+  const channelName = isPublicOrPrivateChannel
+    ? await nr.startSegment("slack/message/getSlackChannelMembers", true, async () =>
+        getSlackChannelName(randomUserToken, body.team_id, message.channel)
+      )
     : undefined;
 
-  const channelMembers = isPublicChannel
-    ? await getSlackChannelMembers(randomUserToken, body.team_id, message.channel)
-    : undefined;
-
-  const authorUserName = await getSlackUserName(randomUserToken, body.team_id, message.user);
+  const channelMembers = await nr.startSegment("slack/message/getSlackChannelMembers", true, async () =>
+    getSlackChannelMembers(randomUserToken, body.team_id, msg.channel)
+  );
+  const authorUserName = await nr.startSegment("slack/message/getSlackUserName", true, async () =>
+    getSlackUserName(randomUserToken, body.team_id, msg.user)
+  );
 
   for (const userSlackInstallation of userSlackInstallations) {
-    if (channelMembers && !channelMembers.includes(userSlackInstallation.slack_user_id)) {
+    if (!channelMembers.includes(userSlackInstallation.slack_user_id)) {
       // user is not a member of the channel
       continue;
     }
