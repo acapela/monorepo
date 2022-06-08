@@ -7,6 +7,8 @@ import { PreloadInstrumentationReportResult, PreloadURLLoadState } from "../debu
 
 export type PlanType = "free" | "premium" | "ultimate";
 
+export type Integration = "linear" | "figma" | "slack" | "notion" | "jira" | "gmail" | "asana" | "github" | "clickup";
+
 /**
  * Map of tracking event types with their required parameters.
  * Use past tense and Title Case event names for new types.
@@ -89,6 +91,7 @@ export type AnalyticsEventsMap = {
   "Asana Integration Added": void;
   "GitHub Integration Added": void;
   "ClickUp Integration Added": void;
+  "New Integration Added": { integration: Integration };
 
   // Preview Loading instrumentation
   "Partially Loaded BrowserView Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;
