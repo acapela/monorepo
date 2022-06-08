@@ -361,7 +361,7 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
   let authorizedSlackInstallation = teamSlackInstallations.find((si) => si.slack_user_id === authorizedUserId);
   if (!authorizedSlackInstallation) {
     // if no user was found we use the slack api to fetch the authorized users
-    logger.warn(`no user token was found for ${authorizedUserId}`);
+    logger.error(`no user token (${authorizedUserId}) was found directly for team ${body.team_id}`);
     const authorizedUserIds = await nr.startSegment("slack/message/fetchAuthorizedUserIds", true, async () =>
       fetchAuthorizedUserIds(eventContextId)
     );
