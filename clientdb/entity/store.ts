@@ -52,6 +52,7 @@ export interface EntityStoreFindMethods<Data, Connections> {
 
 export interface EntityStore<Data, Connections> extends EntityStoreFindMethods<Data, Connections> {
   items: IObservableArray<Entity<Data, Connections>>;
+  sortItems(items: Entity<Data, Connections>[]): Entity<Data, Connections>[];
   add(input: Entity<Data, Connections>, source?: EntityChangeSource): Entity<Data, Connections>;
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
@@ -101,14 +102,18 @@ export function createEntityStore<Data, Connections>(
         output = output.filter((entity) => getIsEntityAccessable!(entity));
       }
 
-      if (config.defaultSort) {
-        output = sortBy(output, config.defaultSort);
-      }
-
       return output;
     },
     { equals: areArraysShallowEqual }
   );
+
+  const sortItems = cachedComputed((items: StoreEntity[]) => {
+    if (!config.defaultSort) {
+      return items;
+    }
+
+    return sortBy(items, config.defaultSort);
+  });
 
   // Allow listening to CRUD updates in the store
   const events = createMobxAwareEventsEmmiter<EntityStoreEvents<Data, Connections>>(config.name);
@@ -149,6 +154,7 @@ export function createEntityStore<Data, Connections>(
     definition,
     events,
     items,
+    sortItems,
     getKeyIndex(key) {
       const existingIndex = queryIndexes.get(key);
 

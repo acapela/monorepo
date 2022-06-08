@@ -156,6 +156,15 @@ export function createEntityQuery<Data, Connections>(
         items = findInSource(items, store, finalFilter);
       }
 
+      return items;
+    },
+    { name: `${queryKeyBase}.passingItems`, equals: areArraysShallowEqual }
+  );
+
+  const passingSortedItems = cachedComputedWithoutArgs(
+    () => {
+      let items = passingItems.get();
+
       if (sortConfig) {
         items = sortBy(items, sortConfig.sort);
 
@@ -166,9 +175,9 @@ export function createEntityQuery<Data, Connections>(
         return items.reverse();
       }
 
-      return items;
+      return store.sortItems(items);
     },
-    { name: `${queryKeyBase}.passingItems`, equals: areArraysShallowEqual }
+    { name: `${queryKeyBase}.passingSortedItems`, equals: areArraysShallowEqual }
   );
 
   const hasItemsComputed = cachedComputedWithoutArgs(
@@ -179,12 +188,12 @@ export function createEntityQuery<Data, Connections>(
   );
 
   const countComputed = cachedComputedWithoutArgs(() => passingItems.get().length, { name: `${queryKeyBase}.count` });
-  const firstComputed = cachedComputedWithoutArgs(() => passingItems.get()[0] ?? null, {
+  const firstComputed = cachedComputedWithoutArgs(() => passingSortedItems.get()[0] ?? null, {
     name: `${queryKeyBase}.first`,
   });
   const lastComputed = cachedComputedWithoutArgs(
     () => {
-      const all = passingItems.get();
+      const all = passingSortedItems.get();
 
       return all[all.length - 1] ?? null;
     },
@@ -234,7 +243,7 @@ export function createEntityQuery<Data, Connections>(
       return countComputed.get();
     },
     get all() {
-      return passingItems.get();
+      return passingSortedItems.get();
     },
     get first() {
       return firstComputed.get();
