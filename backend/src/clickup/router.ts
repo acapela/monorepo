@@ -153,6 +153,7 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
   );
   res.status(HttpStatus.OK).end();
   trackBackendUserEvent(userId, "ClickUp Integration Added");
+  trackBackendUserEvent(userId, "New Integration Added", { integration: "clickup" });
 });
 
 router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {

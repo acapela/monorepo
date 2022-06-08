@@ -92,6 +92,7 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
       }),
     ]);
     trackBackendUserEvent(userId, "Slack Integration Added");
+    trackBackendUserEvent(userId, "New Integration Added", { integration: "slack" });
   }
 }
 

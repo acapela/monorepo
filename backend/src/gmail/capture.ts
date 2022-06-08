@@ -142,6 +142,7 @@ export async function setupGmailWatcher(authAccount: NextAuthAccount) {
     }
 
     trackBackendUserEvent(account.user_id, "Gmail Integration Added");
+    trackBackendUserEvent(account.user_id, "New Integration Added", { integration: "gmail" });
   } catch (error) {
     logger.error(error, "Error setting up Gmail watcher");
   }

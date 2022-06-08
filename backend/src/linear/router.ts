@@ -93,6 +93,7 @@ router.get("/v1/linear/callback", async (req: Request, res: Response) => {
     },
   });
   trackBackendUserEvent(userId, "Linear Integration Added");
+  trackBackendUserEvent(userId, "New Integration Added", { integration: "linear" });
   res.status(HttpStatus.OK).end();
 });
 

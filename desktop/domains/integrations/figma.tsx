@@ -29,6 +29,7 @@ export const figmaIntegrationClient: IntegrationClient = {
   async connect() {
     await loginFigmaBridge();
     trackEvent("Figma Integration Added");
+    trackEvent("New Integration Added", { integration: "figma" });
   },
   imageURL: integrationLogos.figma,
 };

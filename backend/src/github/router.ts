@@ -127,6 +127,7 @@ router.get("/v1/github/callback", async (req: Request, res: Response) => {
   res.redirect(doneEndpoint);
   if (userId) {
     trackBackendUserEvent(userId, "GitHub Integration Added");
+    trackBackendUserEvent(userId, "New Integration Added", { integration: "github" });
   }
 });
 
