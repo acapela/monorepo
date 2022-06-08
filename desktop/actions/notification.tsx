@@ -205,7 +205,14 @@ export const cancelSaveNotification = defineAction({
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isSaved);
   },
-  analyticsEvent: "Notification Unresolved",
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Unsaved", { notification_id });
+    }
+  },
   handler(context) {
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");
@@ -242,7 +249,14 @@ export const unresolveNotification = defineAction({
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isResolved);
   },
-  analyticsEvent: "Notification Unresolved",
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Unresolved", { notification_id });
+    }
+  },
   handler(context) {
     const notification = context.getTarget("notification");
     const group = context.getTarget("group");

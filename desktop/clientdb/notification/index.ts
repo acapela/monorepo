@@ -220,7 +220,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       }
 
       if (hasReminderNow) {
-        trackEvent("Added Notification Reminder", { notification_id: notification.id });
+        trackEvent("Notification Reminder Added", { notification_id: notification.id });
       }
 
       if (!isResolvedNow) return;
