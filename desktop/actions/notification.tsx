@@ -15,11 +15,12 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import {
   IconBell,
   IconBellSlash,
+  IconBookmarkPlus,
+  IconBookmarkSlash,
   IconCheck,
   IconExternalLink,
   IconGlasses,
   IconLink1,
-  IconStar,
   IconTarget,
   IconUndo,
 } from "@aca/ui/icons";
@@ -142,7 +143,7 @@ export const resolveNotification = defineAction({
 });
 
 export const saveNotification = defineAction({
-  icon: <IconStar />,
+  icon: <IconBookmarkPlus />,
   group: currentNotificationActionsGroup,
   name: `Move to "Saved"`,
   analyticsEvent: (ctx) => {
@@ -150,7 +151,7 @@ export const saveNotification = defineAction({
 
     const notification_id = notification?.id;
     if (notification_id) {
-      return createAnalyticsEvent("Notification Resolved", { notification_id });
+      return createAnalyticsEvent("Notification Saved", { notification_id });
     }
   },
   keywords: ["flag"],
@@ -195,7 +196,7 @@ export const saveNotification = defineAction({
 });
 
 export const cancelSaveNotification = defineAction({
-  icon: <IconStar />,
+  icon: <IconBookmarkSlash />,
   group: currentNotificationActionsGroup,
   name: `Remove from "Saved"`,
   shortcut: ["Shift", "S"],

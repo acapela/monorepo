@@ -48,12 +48,7 @@ export const ListNotificationsSettings = styledObserver(({ list, className }: Pr
           trackEvent("Desktop Notifications Settings Updated", { interval: intervalOption.intervalMs });
         }}
       >
-        <TopBarButton
-          key={`${isEnabled}`}
-          icon={<IconBell />}
-          kind={isEnabled ? "primarySubtle" : undefined}
-          indicateNotification={isEnabled}
-        />
+        <TopBarButton key={`${isEnabled}`} icon={<IconBell />} kind={isEnabled ? "primarySubtle" : undefined} />
       </SingleOptionDropdown>
     </UIHolder>
   );
