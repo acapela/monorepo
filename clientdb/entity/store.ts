@@ -196,9 +196,9 @@ export function createEntityStore<Data, Connections>(
 
       const result = results[0];
 
-      if (getIsEntityAccessable && getIsEntityAccessable(result)) return result;
+      if (getIsEntityAccessable && !getIsEntityAccessable(result)) return null;
 
-      return null;
+      return result;
     },
     assertFindByUniqueIndex(key, value) {
       const entity = store.findByUniqueIndex(key, value);
