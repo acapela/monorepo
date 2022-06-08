@@ -331,6 +331,9 @@ async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"messa
     include: { user: true, slack_team: true },
   });
 
+  // we have no users in our database, let's ignore this message
+  if (teamSlackInstallations.length === 0) return;
+
   const author = teamSlackInstallations.find((si) => si.slack_user_id === msg.user)?.user;
   if (author?.is_slack_auto_resolve_enabled) {
     try {
