@@ -26,7 +26,7 @@ const scheduleVisibleIdsUpdate = debounce(
   50
 );
 
-const NotificationRowZIndex = {
+export const NotificationRowZIndex = {
   highlight: 0,
   rowItem: 1,
 };
@@ -81,7 +81,8 @@ export const UISendersLabel = styled.div`
   ${theme.common.ellipsisText};
   width: ${SENDERS_WIDTH}px;
   max-width: ${SENDERS_WIDTH}px;
-  display: flex;
+  min-width: ${SENDERS_WIDTH}px;
+  display: block;
   align-items: center;
   z-index: ${NotificationRowZIndex.rowItem};
 `;
@@ -90,6 +91,9 @@ export const UINotificationRowTitle = styled.div`
   ${theme.typo.content.medium};
   ${theme.common.ellipsisText};
   z-index: ${NotificationRowZIndex.rowItem};
+  flex-grow: 1;
+  flex-basis: 0;
+  opacity: 0.6;
 `;
 
 export const UINotificationGroupTitle = styled(UINotificationRowTitle)`

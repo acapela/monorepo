@@ -20,7 +20,7 @@ import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActio
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
-import { NotificationsGroup } from "@aca/desktop/domains/group/group";
+import { NotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/openedStore";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { uiStore } from "@aca/desktop/store/ui";
@@ -35,11 +35,11 @@ import { theme } from "@aca/ui/theme";
 
 import { NotificationDate } from "./NotificationDate";
 import { NotificationsRows } from "./NotificationsRows";
+import { NotificationTags } from "./NotificationTags";
 import {
   UIAnimatedHighlight,
   UINotificationAppIcon,
   UINotificationGroupTitle,
-  UINotificationPreviewText,
   UIReminderLabel,
   UIRowQuickActions,
   UISendersLabel,
@@ -118,6 +118,8 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
 
   useStoreRowVisibility(elementRef, group.id);
 
+  const { title, tags } = getNotificationsGroupMeta(group);
+
   return (
     <>
       <ActionTrigger
@@ -153,6 +155,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
               </>
             )}
           </UISendersLabel>
+          {tags && <NotificationTags tags={tags} />}
           <UITitle>
             {!group.isOnePreviewEnough && (
               <UIToggleIconAnimator
@@ -165,10 +168,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
             <UICountIndicator data-tooltip={pluralize`${group.notifications.length} ${["notification"]} in this group`}>
               {group.notifications.length}
             </UICountIndicator>
-            {group.name && <UITitleText>{group.name}</UITitleText>}
-            <UINotificationPreviewText>
-              {group.notifications.find((n) => !!n.text_preview)?.text_preview}
-            </UINotificationPreviewText>
+            {title && <UITitleText>{title}</UITitleText>}
           </UITitle>
           {group.notifications.some((n) => !n.isResolved) && <UIReminderLabel notificationOrGroup={group} />}
 
@@ -178,7 +178,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
         </UIHolder>
         {!group.isOnePreviewEnough && isOpened && (
           <UINotifications>
-            <NotificationsRows notifications={group.notifications} isBundledInGroup />
+            <NotificationsRows notifications={group.notifications} />
           </UINotifications>
         )}
       </ActionTrigger>
@@ -226,7 +226,7 @@ const UITitle = styled(UINotificationGroupTitle)`
 `;
 
 const UITitleText = styled.div`
-  ${theme.common.ellipsisText}
+  ${theme.common.ellipsisText};
 `;
 
 const UINotifications = styled.div`

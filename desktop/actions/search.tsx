@@ -17,6 +17,8 @@ import { isNotNullish } from "@aca/shared/nullish";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder, IconSearch } from "@aca/ui/icons";
 
+import { getNotificationsGroupMeta } from "../domains/group/group";
+import { getTagConfig } from "../domains/notification/tag";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
@@ -56,16 +58,19 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
   const notificationActions = groupNotifications(notifications)
     .slice(0, 10)
     .map((notificationOrGroup) => {
+      const { title, supplementary, tags } = getNotificationsGroupMeta(notificationOrGroup);
+
       if (notificationOrGroup.kind === "group") {
         return defineAction({
           id: notificationOrGroup.id + "search",
-          name: notificationOrGroup.name,
+          name: title ?? supplementary ?? "",
           supplementaryLabel: () => pluralize`${notificationOrGroup.notifications.length} ${["notification"]}`,
           group: searchNotificationsGroup,
           keywords: [
-            notificationOrGroup.integrationTitle,
+            supplementary,
+            ...(tags?.map((tag) => getTagConfig(tag).label) ?? []),
             ...uniq(notificationOrGroup.notifications.map((n) => n.from)),
-          ],
+          ].filter(isNotNullish),
           alwaysShowInSearch: true,
           icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup.notifications[0]} />,
           handler() {

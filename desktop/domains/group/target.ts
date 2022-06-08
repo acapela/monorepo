@@ -1,24 +1,16 @@
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { SupportedIntegrationName } from "@aca/desktop/domains/integrations";
-import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { countRepeats } from "./utils";
 
 export interface NotificationGroupTarget {
   id: string;
-  name: string;
-  integration: SupportedIntegrationName | "unknown";
-  integrationTitle: string;
   isOnePreviewEnough?: boolean;
 }
 
 const unknownTarget: NotificationGroupTarget = {
   id: "unknown",
-  name: "Unknown",
-  integration: "unknown",
-  integrationTitle: "Slack conversation",
 };
 
 const getNotionDiscussionId = (inner: InnerEntity) => {
@@ -72,9 +64,6 @@ export function getNotificationGroupTarget(
     const isThread = !!targetNotification.thread_comment_id;
     return {
       id: targetNotification.file_id + "#" + targetNotification.thread_comment_id,
-      name: (isThread ? "Comment Thread in " : "") + targetNotification.file_name,
-      integration: "figma",
-      integrationTitle: "Figma file",
       isOnePreviewEnough: isThread,
     };
   }
@@ -88,9 +77,6 @@ export function getNotificationGroupTarget(
 
     return {
       id: targetNotification.page_id + "#" + (hasReplies ? discussionId : ""),
-      name: (hasReplies ? "Comment Thread in " : "") + targetNotification.page_title,
-      integration: "notion",
-      integrationTitle: "Notion page",
       isOnePreviewEnough: false,
     };
   }
@@ -104,9 +90,6 @@ export function getNotificationGroupTarget(
 
     return {
       id: targetNotification.slack_conversation_id + "#" + (threadTs ?? (hasReplies ? ts : "")),
-      name: getNotificationTitle(notification),
-      integration: "slack",
-      integrationTitle: "Slack conversation",
       isOnePreviewEnough: true,
     };
   }
@@ -114,9 +97,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_linear") {
     return {
       id: targetNotification.issue_id,
-      name: targetNotification.issue_title,
-      integration: "linear",
-      integrationTitle: "Linear issue",
       isOnePreviewEnough: true,
     };
   }
@@ -124,9 +104,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_jira_issue") {
     return {
       id: targetNotification.issue_id,
-      name: targetNotification.issue_title,
-      integration: "jira",
-      integrationTitle: "Jira issue",
       isOnePreviewEnough: false,
     };
   }
@@ -134,9 +111,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_github") {
     return {
       id: `${targetNotification.issue_id || targetNotification.pr_id}`,
-      name: targetNotification.title || "",
-      integration: "github",
-      integrationTitle: `GitHub ${targetNotification.issue_id ? "issue" : "pull request"}`,
       isOnePreviewEnough: false,
     };
   }
@@ -144,9 +118,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_gmail") {
     return {
       id: targetNotification.gmail_thread_id ?? targetNotification.id,
-      name: "",
-      integration: "gmail",
-      integrationTitle: "Gmail message",
       isOnePreviewEnough: true,
     };
   }
@@ -154,9 +125,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_asana") {
     return {
       id: targetNotification.task_id,
-      name: targetNotification.title || "",
-      integration: "github",
-      integrationTitle: `Asana Task`,
       isOnePreviewEnough: true,
     };
   }
@@ -164,9 +132,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_drive") {
     return {
       id: targetNotification.google_drive_file_id,
-      name: targetNotification.documentName ?? "",
-      integration: "drive",
-      integrationTitle: "Google Drive Document",
       isOnePreviewEnough: false,
     };
   }
@@ -174,9 +139,6 @@ export function getNotificationGroupTarget(
   if (targetNotification.__typename === "notification_clickup") {
     return {
       id: targetNotification.task_id,
-      name: targetNotification.title || "",
-      integration: "clickup",
-      integrationTitle: `ClickUp Task`,
       isOnePreviewEnough: false,
     };
   }
