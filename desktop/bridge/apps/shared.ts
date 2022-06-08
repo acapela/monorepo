@@ -16,6 +16,7 @@ const gmailType = ["notification_gmail"] as const;
 const asanaType = ["notification_asana"] as const;
 const driveType = ["notification_drive"] as const;
 const clickupType = ["notification_clickup"] as const;
+const acapelaType = ["notification_acapela"] as const;
 
 const supportedNotificationTypes = [
   notionType,
@@ -28,6 +29,7 @@ const supportedNotificationTypes = [
   driveType,
   asanaType,
   clickupType,
+  acapelaType,
 ].flat();
 
 type SupportedNotificationTypes = typeof supportedNotificationTypes[number];
@@ -43,6 +45,7 @@ export const integrationNotificationMap: Record<SupportedIntegrationName, Suppor
   gmail: ["notification_gmail"],
   asana: ["notification_asana"],
   clickup: ["notification_clickup"],
+  acapela: ["notification_acapela"],
 };
 
 const log = makeLogger("Integration-Mapper");
