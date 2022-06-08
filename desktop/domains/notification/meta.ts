@@ -237,6 +237,8 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
         title: "New ClickUp notification",
       };
     }
+    case "notification_acapela":
+      return { title: inner.title };
     default:
       return { title: "New Notification" };
   }
