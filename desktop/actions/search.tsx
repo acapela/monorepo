@@ -58,16 +58,15 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
   const notificationActions = groupNotifications(notifications)
     .slice(0, 10)
     .map((notificationOrGroup) => {
-      const { title, supplementary, tags } = getNotificationsGroupMeta(notificationOrGroup);
+      const { title, tags } = getNotificationsGroupMeta(notificationOrGroup);
 
       if (notificationOrGroup.kind === "group") {
         return defineAction({
           id: notificationOrGroup.id + "search",
-          name: title ?? supplementary ?? "",
+          name: title ?? "",
           supplementaryLabel: () => pluralize`${notificationOrGroup.notifications.length} ${["notification"]}`,
           group: searchNotificationsGroup,
           keywords: [
-            supplementary,
             ...(tags?.map((tag) => getTagConfig(tag).label) ?? []),
             ...uniq(notificationOrGroup.notifications.map((n) => n.from)),
           ].filter(isNotNullish),
