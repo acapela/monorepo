@@ -8,7 +8,7 @@ import { NotificationGroupTarget } from "./target";
 export interface NotificationsGroup extends NotificationGroupTarget {
   kind: "group";
   notifications: NotificationEntity[];
-  meta: NotificationMeta;
+  getMeta: () => NotificationMeta;
 }
 
 export function getIsNotificationsGroup(item: unknown): item is NotificationsGroup {

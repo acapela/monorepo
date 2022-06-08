@@ -50,7 +50,7 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
       ...target,
       notifications: [notification],
       get meta() {
-        return getNotificationsGroupMeta(group);
+        return getNotificationsGroupMeta(notification);
       },
     };
 

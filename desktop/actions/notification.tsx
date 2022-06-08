@@ -91,7 +91,7 @@ export const resolveNotification = defineAction({
   },
   keywords: ["done", "next", "mark", "complete"],
   shortcut: ["E"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   canApply: (ctx) => {
     return (
       // This is the primary action for moving through lists in focus mode, we do not want to block this behavior
@@ -155,7 +155,7 @@ export const saveNotification = defineAction({
   },
   keywords: ["flag"],
   shortcut: ["S"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => !n.isSaved);
   },
@@ -199,7 +199,7 @@ export const cancelSaveNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: `Remove from "Saved"`,
   shortcut: ["Shift", "S"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   keywords: ["undo", "flag"],
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isSaved);
@@ -236,7 +236,7 @@ export const unresolveNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: "Undo resolve",
   shortcut: ["Shift", "E"],
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   keywords: ["undo", "todo", "mark", "resolve", "revert"],
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isResolved);
@@ -271,7 +271,7 @@ export const unresolveNotification = defineAction({
 export const addReminderToNotification = defineAction({
   group: currentNotificationActionsGroup,
   name: "Add reminder",
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   analyticsEvent: (ctx) => {
     const notification = ctx.getTarget("notification");
 
@@ -298,7 +298,7 @@ export const addReminderToNotification = defineAction({
 export const removeNotificationReminder = defineAction({
   group: currentNotificationActionsGroup,
   name: "Remove reminder",
-  supplementaryLabel: (ctx) => ctx.getTarget("group")?.meta.title ?? undefined,
+  supplementaryLabel: (ctx) => ctx.getTarget("group")?.getMeta().title ?? undefined,
   keywords: ["now", "remove", "schedule", "do", "cancel", "undo"],
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.hasReminder);
