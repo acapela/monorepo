@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "@aca/desktop/analytics";
 import { getCurrentPlan, switchSubscription } from "@aca/desktop/domains/plan/api";
 import { SubscriptionPlan } from "@aca/gql";
 import { styledObserver } from "@aca/shared/component";
@@ -56,6 +57,7 @@ export const PremiumPlanView = styledObserver(({ onPlanChanged, className }: Pro
         {isWaitingForCheckout && (
           <AwaitingCheckoutCover
             onCancel={() => {
+              trackEvent("Upgrade Flow Cancelled");
               setIsWaitingForCheckout(false);
             }}
           />

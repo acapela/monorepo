@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { connectIntegration } from "@aca/desktop/actions/auth";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
-import { switchSubscription } from "@aca/desktop/domains/plan/api";
+import { desktopRouter } from "@aca/desktop/routes";
 import { accountStore } from "@aca/desktop/store/account";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { SubscriptionPlan } from "@aca/gql";
@@ -39,11 +39,6 @@ export const IntegrationCard = observer(({ service }: Props) => {
     setIsloadingCheckout(false);
   }, [subscriptionPlan]);
 
-  if (showUpsellButton && process.env.STAGE == "production") {
-    // TODO For now we hide the upsell in production
-    return null;
-  }
-
   return (
     <UIHolder>
       <UILogo>
@@ -60,8 +55,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
               kind="primarySubtle"
               isDisabled={isLoadingCheckout}
               onClick={async () => {
-                setIsloadingCheckout(true);
-                await switchSubscription("ULTIMATE");
+                desktopRouter.navigate("settings", { section: "subscription" });
               }}
             >
               Upgrade to our ultimate plan

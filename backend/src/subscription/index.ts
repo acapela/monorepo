@@ -29,7 +29,6 @@ export const switchSubscriptionPlanAction: ActionHandler<{ plan: SubscriptionPla
       // TODO when we leave the beta, and introduce the free plan as the new default, this needs to be changed
       // so that switching to premium also charges users
       if (plan == "premium") {
-        await stripe.setupIntents.cancel(user.stripe_subscription_id!);
         await Promise.all([
           db.user.update({
             where: { id: userId },

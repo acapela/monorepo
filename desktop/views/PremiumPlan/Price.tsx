@@ -6,12 +6,14 @@ interface Props {
   price: string;
   period: string;
   description: string;
+  originalPrice?: string;
 }
 
-export const Price = observer(({ price, period, description }: Props) => {
+export const Price = observer(({ price, period, description, originalPrice }: Props) => {
   return (
     <UIPriceAndDescription>
       <UIPrice>
+        {originalPrice && <UICrossedPriceLabel>{originalPrice}</UICrossedPriceLabel>}
         <UIPriceLabel>{price}</UIPriceLabel>
 
         <UIPriceMeta>/ {period}</UIPriceMeta>
@@ -37,6 +39,11 @@ const UIPrice = styled.div`
 `;
 
 const UIPriceLabel = styled.div``;
+
+const UICrossedPriceLabel = styled.div`
+  text-decoration: line-through;
+  opacity: 0.5;
+`;
 
 const UIPriceMeta = styled.div`
   font-weight: 600;
