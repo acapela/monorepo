@@ -4,6 +4,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
+import { appLogo } from "@aca/desktop/assets";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
@@ -39,6 +40,10 @@ interface Props {
 function getIconSource(notification: NotificationInner, isOnDarkBackground: boolean) {
   if (notification.__typename === "notification_slack_message") {
     return { icon: slack, isInverted: false };
+  }
+
+  if (notification.__typename === "notification_acapela") {
+    return { icon: appLogo, isInverted: true };
   }
 
   if (notification.__typename === "notification_figma_comment") {

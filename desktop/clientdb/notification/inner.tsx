@@ -1,3 +1,4 @@
+import { notificationAcapelaEntity } from "./acapela";
 import { notificationAsanaEntity } from "./asana/task";
 import { notificationClickUpEntity } from "./clickup/task";
 import { notificationDriveEntity } from "./drive/activity";
@@ -20,4 +21,5 @@ export const innerEntities = [
   notificationAsanaEntity,
   notificationDriveEntity,
   notificationClickUpEntity,
+  notificationAcapelaEntity,
 ];

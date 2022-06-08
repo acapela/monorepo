@@ -7,8 +7,12 @@ import { integrationClients } from "@aca/desktop/domains/integrations";
  */
 const clients = Object.values(integrationClients);
 
+// Acapela treated as an app
+const AMOUNT_OF_ALWAYS_CONNECTED_APPS = 1;
+
 export const onboardingStore = makeAutoObservable({
   get hasLinkedApps() {
-    return clients.some((ic) => ic.getAccounts().length > 0);
+    const amountOfConnectedApps = clients.filter((ic) => ic.getAccounts().length > 0).length;
+    return amountOfConnectedApps > AMOUNT_OF_ALWAYS_CONNECTED_APPS;
   },
 });

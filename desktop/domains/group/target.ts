@@ -143,5 +143,12 @@ export function getNotificationGroupTarget(
     };
   }
 
+  if (targetNotification.__typename === "notification_acapela") {
+    return {
+      id: targetNotification.id,
+      isOnePreviewEnough: false,
+    };
+  }
+
   return unknownTarget;
 }

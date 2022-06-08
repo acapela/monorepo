@@ -16,6 +16,7 @@ import { asanaWebhookEntity } from "./asanaWebhook";
 import { clickupTeamEntity } from "./clickupTeam";
 import { notificationListEntity } from "./list";
 import { notificationEntity } from "./notification";
+import { notificationAcapelaEntity } from "./notification/acapela";
 import { notificationAsanaEntity } from "./notification/asana/task";
 import { notificationClickUpEntity } from "./notification/clickup/task";
 import { notificationDriveEntity } from "./notification/drive/activity";
@@ -72,6 +73,8 @@ export const appClientDbEntities = {
 
   notificationList: notificationListEntity,
   notificationSlackMessage: notificationSlackMessageEntity,
+
+  notificationAcapela: notificationAcapelaEntity,
 
   notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
   notificationNotionCommented: notificationNotionCommentedEntity,
