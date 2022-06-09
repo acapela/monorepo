@@ -11,6 +11,10 @@ export function focusNextItemIfAvailable(context: ActionContext) {
   };
 }
 
+export function getNextContextItem(context: ActionContext) {
+  return context.view(focusPageView)?.nextNotification ?? context.view(listPageView)?.nextListItem;
+}
+
 export function focusPrevItemIfAvailable(context: ActionContext) {
   (context.view(focusPageView) ?? context.view(listPageView))?.focusPrevItemIfAvailable();
 

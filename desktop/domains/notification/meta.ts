@@ -1,11 +1,10 @@
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { NotificationTag, NotificationTagInput, getNotificationTag } from "@aca/desktop/domains/tag/tag";
 import { jiraIssueFieldAlias } from "@aca/shared/attlassian";
 import { niceFormatDate } from "@aca/shared/dates/format";
 import { Falsy, isNotFalsy } from "@aca/shared/nullish";
-
-import { NotificationTag, NotificationTagInput, getNotificationTag } from "./tag";
 
 export interface NotificationMeta {
   title?: string | null;

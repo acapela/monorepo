@@ -36,6 +36,7 @@ export const typo = {
   section: {
     // Used for 'open', 'closed' topic groups titles,
     minorTitle: subtitle,
+    title: readable.size(13).medium,
   },
   functional: {
     // eg "Hit ⌘ + Enter to create Topic"

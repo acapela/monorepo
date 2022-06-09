@@ -15,6 +15,7 @@ import { weakMemoize } from "@aca/shared/deepMap";
 import { runUntracked } from "@aca/shared/mobx/utils";
 import { None } from "@aca/shared/none";
 
+import { collectTags } from "../tag/collectTags";
 import { getCountIndicatorFromGroups } from "./count";
 import { CUSTOM_SYSTEM_LIST_ICONS, ListSystemId } from "./system";
 
@@ -236,6 +237,10 @@ export function defineNotificationsList({
     return notificationGroupMapResult.get(notification);
   });
 
+  const getCollectedTags = cachedComputed(() => {
+    return collectTags(getRawNotificationsQuery());
+  });
+
   return {
     kind: "notificationsList" as const,
     id,
@@ -243,6 +248,7 @@ export function defineNotificationsList({
       return listEntity?.title ?? name;
     },
     dontPreload,
+    collectTags: getCollectedTags,
     getNotificationGroup,
     getAllGroupedNotifications,
     getAllNotifications: getFlattenedNotifications,

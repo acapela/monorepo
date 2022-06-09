@@ -38,6 +38,6 @@ export const targetPredicates = {
   },
 };
 
-export function createActionTargetPredicates(targets: () => unknown[]) {
-  return createPredicates(targetPredicates, targets);
+export function createActionTargetPredicates(forcedTargets: () => unknown[]) {
+  return createPredicates(targetPredicates, forcedTargets);
 }
