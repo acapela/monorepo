@@ -35,6 +35,7 @@ const getAvailableIntegrationLists = cachedComputed(
       .map((client) =>
         defineNotificationsList({
           id: client.notificationTypename,
+          isHidden: client.isHiddenFromSidebar?.(),
           name: client.name,
           icon: <IntegrationIcon integrationClient={client} />,
           filter: { kind: client.notificationTypename, isResolved: false, hasReminder: false, isSaved: false },

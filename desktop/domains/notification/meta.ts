@@ -232,7 +232,7 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
       };
     }
     case "notification_acapela":
-      return { title: inner.title };
+      return { title: inner.title, tags: tags("update") };
     default:
       return { title: "New Notification" };
   }

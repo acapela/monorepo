@@ -23,5 +23,6 @@ export interface IntegrationClient {
   disconnect?(accountId: string): Promise<void>;
   additionalSettings?: ReactNode;
   isHiddenFromSettings?: boolean;
+  isHiddenFromSidebar?(): boolean;
   isForUltimateUsers?: boolean;
 }

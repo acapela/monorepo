@@ -26,6 +26,7 @@ type DefineListConfig = {
   icon?: ReactNode;
   listEntity?: NotificationListEntity;
   tip?: ReactNode;
+  isHidden?: boolean;
   dontShowCount?: boolean;
   dontPreload?: boolean;
   sort?: (notification: NotificationEntity) => SortResult;
@@ -68,6 +69,7 @@ export function defineNotificationsList({
   icon,
   dontShowCount = false,
   dontPreload = false,
+  isHidden = false,
   sort,
   tip,
   ...config
@@ -260,6 +262,7 @@ export function defineNotificationsList({
       return listEntity?.emoji ?? icon;
     },
     dontShowCount,
+    isHidden,
   };
 }
 

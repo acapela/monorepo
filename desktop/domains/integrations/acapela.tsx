@@ -1,4 +1,5 @@
 import { appLogo } from "@aca/desktop/assets";
+import { getNullableDb } from "@aca/desktop/clientdb";
 
 import { IntegrationClient } from "./types";
 
@@ -17,6 +18,9 @@ export const acapelaIntegrationClient: IntegrationClient = {
       name: "Acapela",
     },
   ],
+
+  isHiddenFromSidebar: () =>
+    !getNullableDb()?.notification.query({ kind: "notification_acapela", isResolved: false, isSaved: false }).hasItems,
   connect() {
     return Promise.resolve();
   },
