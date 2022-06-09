@@ -1,45 +1,50 @@
-import React, { useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { NotificationTag, getTagConfig } from "@aca/desktop/domains/notification/tag";
 import { styledObserver } from "@aca/shared/component";
 import { useElementHasOverflow } from "@aca/shared/hooks/useElementHasOverflow";
+import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
+import { PopPresenceAnimator } from "@aca/ui/animations";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  tag: NotificationTag;
-  forceShowLabel?: boolean;
+  label: string;
+  color?: string;
+  icon?: ReactNode;
+  onClick?: () => void;
   isSelected?: boolean;
-  onClick?: (tag: NotificationTag) => void;
+  tooltip?: string;
+  count?: number;
 }
 
-export const NotificationTagDisplayer = styledObserver(({ tag, onClick, isSelected, forceShowLabel }: Props) => {
+export const TagLabel = styledObserver(({ label, color, icon, onClick, isSelected, tooltip, count }: Props) => {
+  const holderRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
-  const { color, icon, label, tooltip } = getTagConfig(tag);
 
   const hasOverflow = useElementHasOverflow(labelRef);
 
+  const isHovered = useIsElementOrChildHovered(holderRef);
+
   function getTooltip() {
     if (tooltip) return tooltip;
-
-    if (!shouldShowLabel) return label;
 
     if (!hasOverflow) return;
 
     return label;
   }
 
-  const shouldShowLabel = forceShowLabel || tag.customLabel;
-
   return (
     <UITag
+      ref={holderRef}
       data-tooltip={getTooltip()}
       $isClickable={!!onClick}
       $isSelected={isSelected ?? false}
-      onClick={() => onClick?.(tag)}
+      onClick={onClick}
     >
       <UIIcon $color={color}>{icon}</UIIcon>
       {<UILabel ref={labelRef}>{label}</UILabel>}
+      <AnimatePresence>{isHovered && !!count && <UICount>{count}</UICount>}</AnimatePresence>
     </UITag>
   );
 })``;
@@ -55,6 +60,7 @@ const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
   display: flex;
   gap: 8px;
   align-items: center;
+  position: relative;
   ${theme.transitions.hover()}
 
   ${(props) => (props.$isClickable ? tagBgBase.withBorder.interactive : tagBgBase.asBgWithReadableText)}
@@ -73,8 +79,22 @@ const UILabel = styled.div`
   max-width: 130px;
 `;
 
-const UIIcon = styled.div<{ $color: string }>`
+const UIIcon = styled.div<{ $color?: string }>`
   color: ${(props) => props.$color};
   font-size: ${1 + ICON_SCALE_INCREASE}em;
   margin: ${-ICON_SCALE_INCREASE / 2}em;
+`;
+
+const UICount = styled(PopPresenceAnimator)`
+  position: absolute;
+  top: -1em;
+  right: -0.75em;
+  min-width: 3ch;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 2px;
+  border-radius: 4px;
+  line-height: 1em;
+  ${tagBgBase.active.withBorder.asBgWithReadableText};
 `;

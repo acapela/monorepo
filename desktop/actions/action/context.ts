@@ -1,5 +1,6 @@
 import assert from "assert";
 
+import { uniq } from "lodash";
 import { makeObservable, observable } from "mobx";
 import { useMemo } from "react";
 
@@ -10,6 +11,7 @@ import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { deepMemoize } from "@aca/shared/deepMap";
 import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
+import { runUntracked } from "@aca/shared/mobx/utils";
 import { isNotNullish } from "@aca/shared/nullish";
 
 import { createActionTargetPredicates } from "./targets";
@@ -60,10 +62,7 @@ function convertTargetOrTargetsToArray(targetOrTargets: unknown): unknown[] {
   return [targetOrTargets];
 }
 
-export const createActionContext = deepMemoize(function createActionContext(
-  forcedTargetOrTargets?: unknown,
-  options?: ActionContextConfig
-) {
+function createActionContextWithTargetGetter(targetsGetter: () => unknown[], options?: ActionContextConfig) {
   const {
     isContextual = false,
     searchPlaceholder = "Find anything...",
@@ -71,22 +70,19 @@ export const createActionContext = deepMemoize(function createActionContext(
     hideTarget = false,
   } = options ?? {};
 
-  const forcedTargets = convertTargetOrTargetsToArray(forcedTargetOrTargets);
-
   // TODO: handle forced target as array
-  const targetPredicates = createActionTargetPredicates(() => {
-    const targets = [...forcedTargets, ...getImplicitTargets()].filter(isNotNullish);
-
-    return targets;
-  });
+  const targetPredicates = createActionTargetPredicates(targetsGetter);
 
   const context = makeObservable(
     {
+      options,
       searchPlaceholder,
       hideTarget,
       isContextual,
       // Not really used, but makes it easier to debug actions
-      target: forcedTargets,
+      get target() {
+        return targetsGetter();
+      },
       view<D>(view: ActionView<D>): D {
         return view.getView(context);
       },
@@ -107,7 +103,26 @@ export const createActionContext = deepMemoize(function createActionContext(
   );
 
   return context;
+}
+
+export const createActionContext = deepMemoize(function createActionContext(
+  forcedTargetOrTargets?: unknown,
+  options?: ActionContextConfig
+) {
+  const forcedTargets = convertTargetOrTargetsToArray(forcedTargetOrTargets);
+
+  return createActionContextWithTargetGetter(() => {
+    const targets = uniq([...forcedTargets, ...getImplicitTargets()]).filter(isNotNullish);
+
+    return targets;
+  }, options);
 });
+
+export function getFrozenActionContext(context: ActionContext) {
+  const targets = runUntracked(() => context.target.slice());
+
+  return createActionContextWithTargetGetter(() => targets, context.options);
+}
 
 export function useActionContext(targetOrTargets?: unknown, options?: ActionContextConfig) {
   const equalOptions = useEqualRef(options);

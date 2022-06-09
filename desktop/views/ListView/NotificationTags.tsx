@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import { NotificationTag } from "@aca/desktop/domains/notification/tag";
+import { NotificationTagDisplayer } from "@aca/desktop/domains/tag/NotificationTag";
+import { NotificationTag } from "@aca/desktop/domains/tag/tag";
 import { styledObserver } from "@aca/shared/component";
 
-import { NotificationTagDisplayer } from "./NotificationTag";
 import { NotificationRowZIndex } from "./shared";
 
 interface Props {

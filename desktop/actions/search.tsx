@@ -18,7 +18,7 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder, IconSearch } from "@aca/ui/icons";
 
 import { getNotificationsGroupMeta } from "../domains/group/group";
-import { getTagConfig } from "../domains/notification/tag";
+import { getTagConfig } from "../domains/tag/tag";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
