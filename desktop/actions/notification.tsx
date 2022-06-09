@@ -188,16 +188,20 @@ export const cancelSaveNotification = defineAction({
     }
   },
   handler(context) {
+    const cancel = createCleanupObject();
+    cancel.next = focusNextItemIfAvailable(context);
     const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
       return notification.update({ saved_at: null }).undo;
     });
+
+    cancel.next = undo;
 
     addToast({
       message: pluralize`Cancelled save for ${operationsCount} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {
-          undo();
+          cancel.clean("from-last");
         },
       },
     });
