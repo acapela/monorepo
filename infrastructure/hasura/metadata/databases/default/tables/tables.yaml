@@ -1,3 +1,4 @@
+- "!include public_acapela_update.yaml"
 - "!include public_account.yaml"
 - "!include public_alert.yaml"
 - "!include public_alert_read_receipt.yaml"
