@@ -49,7 +49,7 @@ export const toggleNotificationsGroup = defineAction({
   canApply: (context) => {
     const focusedGroup = context.view(listPageView)?.focusedGroup;
 
-    const canApply = Boolean(focusedGroup && !focusedGroup.isOnePreviewEnough);
+    const canApply = Boolean(focusedGroup && !focusedGroup.treatAsOneNotification);
 
     return canApply;
   },

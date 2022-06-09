@@ -45,6 +45,6 @@ export async function runAction(action: ActionData, context: ActionContext = cre
   }
 }
 
-export function runActionWithTarget(action: ActionData, targetOrTargets: unknown) {
+export function runActionWith(action: ActionData, targetOrTargets: unknown) {
   return runAction(action, createActionContext(targetOrTargets));
 }

@@ -30,7 +30,7 @@ actionResultChannel.subscribe(
     }
 
     commandMenuStore.session = createCommandMenuSession({
-      actionContext: createActionContext(currentSession?.actionContext.forcedTarget, {
+      actionContext: createActionContext(currentSession?.actionContext.target, {
         isContextual: actionResult.isContextual ?? currentSession?.actionContext.isContextual,
         searchPlaceholder: actionResult.searchPlaceholder,
         initialSearchValue: actionResult.initialSearchValue,

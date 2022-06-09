@@ -95,7 +95,7 @@ export const getCollapsedGroupedElementsInList = cachedComputed(function getColl
     result.push(notificationOrGroup);
     if (
       getIsNotificationsGroup(notificationOrGroup) &&
-      !notificationOrGroup.isOnePreviewEnough &&
+      !notificationOrGroup.treatAsOneNotification &&
       openedNotificationsGroupsStore.getIsOpened(notificationOrGroup.id)
     ) {
       result.push(...notificationOrGroup.notifications);

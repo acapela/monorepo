@@ -1,7 +1,7 @@
 import { orderBy } from "lodash";
 import { ReactNode } from "react";
 
-import { cachedComputed } from "@aca/clientdb";
+import { cachedComputed, cachedComputedWithoutArgs } from "@aca/clientdb";
 import { EntityFindInputByDefinition } from "@aca/clientdb/entity/find";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
@@ -148,7 +148,7 @@ export function defineNotificationsList({
       const group = groupedNotifications[index[0]];
       assert(getIsNotificationsGroup(group), "must be a notification group");
       const nextNotification = group.notifications[index[1] + direction];
-      if (!group.isOnePreviewEnough && nextNotification) {
+      if (!group.treatAsOneNotification && nextNotification) {
         return nextNotification;
       }
       nextNotificationOrGroup = groupedNotifications[index[0] + direction];
@@ -161,7 +161,7 @@ export function defineNotificationsList({
     }
     if (getIsNotificationsGroup(nextNotificationOrGroup)) {
       const group = nextNotificationOrGroup;
-      return direction == -1 && !group.isOnePreviewEnough
+      return direction == -1 && !group.treatAsOneNotification
         ? group.notifications[group.notifications.length - 1]
         : group.notifications[0];
     } else {
@@ -214,16 +214,27 @@ export function defineNotificationsList({
     return getCountIndicatorFromGroups(getAllGroupedNotifications());
   });
 
-  const getNotificationGroup = (notification: NotificationEntity) => {
+  const notificationGroupMap = cachedComputedWithoutArgs(() => {
     const groups = getAllGroupedNotifications();
 
-    return groups.find((groupOrNotification) => {
-      if (groupOrNotification.kind === "group") {
-        return groupOrNotification.notifications.some((n) => n.id === notification.id);
+    const notificationGroupMap = new Map<NotificationEntity, NotificationsGroup>();
+
+    for (const group of groups) {
+      if (group.kind === "group") {
+        for (const groupNotification of group.notifications) {
+          notificationGroupMap.set(groupNotification, group);
+        }
       }
-      return false;
-    }) as NotificationsGroup | undefined;
-  };
+    }
+
+    return notificationGroupMap;
+  });
+
+  const getNotificationGroup = cachedComputed((notification: NotificationEntity) => {
+    const notificationGroupMapResult = notificationGroupMap.get();
+
+    return notificationGroupMapResult.get(notification);
+  });
 
   return {
     kind: "notificationsList" as const,

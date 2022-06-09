@@ -2,7 +2,6 @@ import { isSameDay, nextMonday, setDay, setHours, startOfTomorrow } from "date-f
 import { addHours } from "date-fns/esm";
 import React from "react";
 
-import { createCleanupObject } from "@aca/shared/cleanup";
 import { DateSuggestion, autosuggestDate } from "@aca/shared/dates/autocomplete/suggestions";
 import { niceFormatDateTime } from "@aca/shared/dates/format";
 import { pluralize } from "@aca/shared/text/pluralize";
@@ -12,6 +11,7 @@ import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
+import { runForEachTargettedNotification } from "./utils";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 export function getIsTargetNotificationOrGroup(context: ActionContext) {
@@ -113,44 +113,22 @@ function convertDateSuggestionToAction(suggestion: DateSuggestion) {
     group: currentNotificationActionsGroup,
     supplementaryLabel: () => niceFormatDateTime(suggestion.date),
     handler(context) {
-      const notification = context.getTarget("notification");
-      let group = context.getTarget("group");
-
       const date = suggestion.date;
 
       focusNextItemIfAvailable(context);
 
-      const cancel = createCleanupObject("from-last");
-
-      if (!group && notification) {
-        // If the given notification is part of a group which can be previewed through a single notification, we treat
-        // adding reminder to one of them is adding reminder to whole group
-        const list = context.assertTarget("list", true);
-        const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
-
-        if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
-          group = groupThatNotificationBelongsTo;
-        }
-      }
-
-      if (notification) {
-        cancel.next = notification.addReminder(date)?.undo;
-      }
-
-      if (group) {
-        group.notifications.forEach((notification) => {
-          cancel.next = notification.addReminder(date)?.undo;
-        });
-      }
+      const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
+        return notification.addReminder(date)?.undo;
+      });
 
       displayZenModeIfFinished(context);
 
       addToast({
-        message: pluralize`Added reminder to ${cancel.size} ${["notification"]}`,
+        message: pluralize`Added reminder to ${operationsCount} ${["notification"]}`,
         action: {
           label: "Undo",
           callback() {
-            cancel.clean();
+            undo();
           },
         },
       });
