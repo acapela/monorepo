@@ -52,8 +52,16 @@ export function getImplicitTargets() {
   return [uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
 }
 
+function convertTargetOrTargetsToArray(targetOrTargets: unknown): unknown[] {
+  if (Array.isArray(targetOrTargets)) {
+    return targetOrTargets;
+  }
+
+  return [targetOrTargets];
+}
+
 export const createActionContext = deepMemoize(function createActionContext(
-  forcedTarget?: unknown,
+  forcedTargetOrTargets?: unknown,
   options?: ActionContextConfig
 ) {
   const {
@@ -62,9 +70,12 @@ export const createActionContext = deepMemoize(function createActionContext(
     initialSearchValue = "",
     hideTarget = false,
   } = options ?? {};
+
+  const forcedTargets = convertTargetOrTargetsToArray(forcedTargetOrTargets);
+
   // TODO: handle forced target as array
   const targetPredicates = createActionTargetPredicates(() => {
-    const targets = [forcedTarget, ...getImplicitTargets()].filter(isNotNullish);
+    const targets = [...forcedTargets, ...getImplicitTargets()].filter(isNotNullish);
 
     return targets;
   });
@@ -75,7 +86,7 @@ export const createActionContext = deepMemoize(function createActionContext(
       hideTarget,
       isContextual,
       // Not really used, but makes it easier to debug actions
-      forcedTarget,
+      target: forcedTargets,
       view<D>(view: ActionView<D>): D {
         return view.getView(context);
       },
@@ -98,12 +109,12 @@ export const createActionContext = deepMemoize(function createActionContext(
   return context;
 });
 
-export function useActionContext(forcedTarget?: unknown, options?: ActionContextConfig) {
+export function useActionContext(targetOrTargets?: unknown, options?: ActionContextConfig) {
   const equalOptions = useEqualRef(options);
 
   const context = useMemo(() => {
-    return createActionContext(forcedTarget, equalOptions);
-  }, [forcedTarget, equalOptions]);
+    return createActionContext(targetOrTargets, equalOptions);
+  }, [targetOrTargets, equalOptions]);
 
   return context;
 }

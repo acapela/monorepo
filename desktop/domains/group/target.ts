@@ -6,7 +6,7 @@ import { countRepeats } from "./utils";
 
 export interface NotificationGroupTarget {
   id: string;
-  isOnePreviewEnough?: boolean;
+  treatAsOneNotification?: boolean;
 }
 
 const unknownTarget: NotificationGroupTarget = {
@@ -64,7 +64,7 @@ export function getNotificationGroupTarget(
     const isThread = !!targetNotification.thread_comment_id;
     return {
       id: targetNotification.file_id + "#" + targetNotification.thread_comment_id,
-      isOnePreviewEnough: isThread,
+      treatAsOneNotification: isThread,
     };
   }
 
@@ -77,76 +77,87 @@ export function getNotificationGroupTarget(
 
     return {
       id: targetNotification.page_id + "#" + (hasReplies ? discussionId : ""),
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 
   if (targetNotification.__typename === "notification_slack_message") {
-    const { slack_thread_ts: threadTs, slack_message_ts: ts } = targetNotification;
+    const { slack_thread_ts: threadId, slack_message_ts: messageId } = targetNotification;
 
-    const slackThreadCount = getSlackParentThreadCounts(otherInners);
+    let pointerId = "";
 
-    const hasReplies = threadTs && !!slackThreadCount.get(threadTs);
+    /**
+     * If there are more than 1 reply in a thread - bundle it by thread, otherwise - don't bundle (use messageId as target)
+     */
+    if (threadId) {
+      const messagesInThisThreadCount = getSlackParentThreadCounts(otherInners).get(threadId);
+
+      if (messagesInThisThreadCount && messagesInThisThreadCount > 1) {
+        pointerId = threadId;
+      } else {
+        pointerId = messageId ?? "";
+      }
+    }
 
     return {
-      id: targetNotification.slack_conversation_id + "#" + (threadTs ?? (hasReplies ? ts : "")),
-      isOnePreviewEnough: true,
+      id: targetNotification.slack_conversation_id + "#" + pointerId,
+      treatAsOneNotification: true,
     };
   }
 
   if (targetNotification.__typename === "notification_linear") {
     return {
       id: targetNotification.issue_id,
-      isOnePreviewEnough: true,
+      treatAsOneNotification: true,
     };
   }
 
   if (targetNotification.__typename === "notification_jira_issue") {
     return {
       id: targetNotification.issue_id,
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 
   if (targetNotification.__typename === "notification_github") {
     return {
       id: `${targetNotification.issue_id || targetNotification.pr_id}`,
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 
   if (targetNotification.__typename === "notification_gmail") {
     return {
       id: targetNotification.gmail_thread_id ?? targetNotification.id,
-      isOnePreviewEnough: true,
+      treatAsOneNotification: true,
     };
   }
 
   if (targetNotification.__typename === "notification_asana") {
     return {
       id: targetNotification.task_id,
-      isOnePreviewEnough: true,
+      treatAsOneNotification: true,
     };
   }
 
   if (targetNotification.__typename === "notification_drive") {
     return {
       id: targetNotification.google_drive_file_id,
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 
   if (targetNotification.__typename === "notification_clickup") {
     return {
       id: targetNotification.task_id,
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 
   if (targetNotification.__typename === "notification_acapela") {
     return {
       id: targetNotification.id,
-      isOnePreviewEnough: false,
+      treatAsOneNotification: false,
     };
   }
 

@@ -6,7 +6,7 @@ import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/gr
 export const getCountIndicatorFromGroups = cachedComputed((groups: NotificationOrGroup[]) => {
   return groups.reduce((count, groupOrNotification) => {
     if (getIsNotificationsGroup(groupOrNotification)) {
-      if (groupOrNotification.isOnePreviewEnough) {
+      if (groupOrNotification.treatAsOneNotification) {
         return count + 1;
       }
 

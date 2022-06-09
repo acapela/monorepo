@@ -16,7 +16,7 @@ export const focusPageView = createActionView((context) => {
 
     // When there's a single preview enabled, only one notification out of many is shown in focus
     // This check attempts to mark all of the notifications inside a single preview group as seen
-    if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
+    if (groupThatNotificationBelongsTo?.treatAsOneNotification) {
       groupThatNotificationBelongsTo.notifications.forEach((n) => n.markAsSeen());
     } else {
       notification.markAsSeen();

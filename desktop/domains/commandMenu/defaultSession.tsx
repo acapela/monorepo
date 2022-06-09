@@ -8,7 +8,7 @@ import { isNotificationAction, searchListActionsGroup } from "@aca/desktop/actio
 import { goToList } from "@aca/desktop/actions/lists";
 import { getReminderOptionsForSearch } from "@aca/desktop/actions/reminders";
 import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
-import { runActionWithTarget } from "@aca/desktop/domains/runAction";
+import { runActionWith } from "@aca/desktop/domains/runAction";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder } from "@aca/ui/icons";
 
@@ -26,7 +26,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
       group: searchListActionsGroup,
       icon: <IconFolder />,
       handler() {
-        runActionWithTarget(goToList, list);
+        runActionWith(goToList, list);
       },
     })
   );
