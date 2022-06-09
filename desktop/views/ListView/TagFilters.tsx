@@ -59,8 +59,6 @@ const collectUniqueTags = cachedComputed((items: NotificationOrGroup[]): Notific
 export const TagFilters = observer(({ allItems, onChange, selectedTags }: Props) => {
   const allTags = collectUniqueTags(allItems);
 
-  if (!allTags.length) return null;
-
   function toggleTag(tag: NotificationTag) {
     onChange(getArrayWithElementToggled(selectedTags, tag));
   }
@@ -72,6 +70,8 @@ export const TagFilters = observer(({ allItems, onChange, selectedTags }: Props)
 
     onChange(existingSelectedTags);
   }, [allTags]);
+
+  if (!allTags.length) return null;
 
   return (
     <UIHolder>
