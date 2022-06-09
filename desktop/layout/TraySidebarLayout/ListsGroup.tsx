@@ -29,41 +29,43 @@ interface Props {
 export const SidebarListsGroup = observer(({ lists }: Props) => {
   return (
     <UIItemGroup>
-      {lists.map((list, index) => {
-        const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
-        // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
-        const additionalShortcut: ShortcutDefinition | undefined =
-          index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
+      {lists
+        .filter((list) => !list.isHidden)
+        .map((list, index) => {
+          const isActive = desktopRouter.getIsRouteActive("list", { listId: list.id });
+          // A double digit number shortcut doesn't exist in keyboard and  will crash the app! .e.g Meta+`10`
+          const additionalShortcut: ShortcutDefinition | undefined =
+            index + 2 < 10 ? ["Meta", `${index + 2}` as ShortcutKey] : undefined;
 
-        return (
-          <Fragment key={list.id}>
-            <ActionSystemMenuItem
-              action={goToList}
-              path={["View", "List"]}
-              target={list}
-              customShortcut={additionalShortcut}
-              group="lists-dropdown"
-            />
+          return (
+            <Fragment key={list.id}>
+              <ActionSystemMenuItem
+                action={goToList}
+                path={["View", "List"]}
+                target={list}
+                customShortcut={additionalShortcut}
+                group="lists-dropdown"
+              />
 
-            <UISidebarItem
-              action={goToList}
-              target={list}
-              isActive={isActive}
-              badgeCount={() => {
-                if (list.dontShowCount) return;
+              <UISidebarItem
+                action={goToList}
+                target={list}
+                isActive={isActive}
+                badgeCount={() => {
+                  if (list.dontShowCount) return;
 
-                return list.getCountIndicator();
-              }}
-              additionalShortcut={additionalShortcut}
-              contextMenuActions={
-                list.listEntity
-                  ? [renameNotificationList, deleteNotificationList, resolveAllNotifications]
-                  : [resolveAllNotifications]
-              }
-            />
-          </Fragment>
-        );
-      })}
+                  return list.getCountIndicator();
+                }}
+                additionalShortcut={additionalShortcut}
+                contextMenuActions={
+                  list.listEntity
+                    ? [renameNotificationList, deleteNotificationList, resolveAllNotifications]
+                    : [resolveAllNotifications]
+                }
+              />
+            </Fragment>
+          );
+        })}
     </UIItemGroup>
   );
 });
