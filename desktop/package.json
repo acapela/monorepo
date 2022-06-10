@@ -63,6 +63,13 @@
   "build": {
     "productName": "Acapela",
     "appId": "com.desktop.acapela",
+    "copyright": "Copyright © 2022 Acapela",
+    "protocols": {
+      "name": "Acapela",
+      "schemes": [
+        "acapela"
+      ]
+    },
     "files": [
       "!node_modules/**/*",
       "dist"
