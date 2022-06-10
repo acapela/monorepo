@@ -228,6 +228,9 @@ async function createNotificationsForNewMessages(
 }
 
 function extractKeyfileFromEnv(): string | undefined {
+  // if no keyfile is provided, we'll use the default one provided by kubernetes
+  // e.g. on staging the oauth app and the pubsub topics are in the same project
+  // so no keyfile is required
   if (!process.env.GMAIL_PUBSUB_KEYFILE) return;
   const keyfileData = Buffer.from(process.env.GMAIL_PUBSUB_KEYFILE, "base64");
   const keyfilePath = join(tmpdir(), "gmail-keyfile.json");
