@@ -2,7 +2,7 @@ import { addSeconds, subHours, subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
 import { SlackInstallation, slackClient } from "@aca/backend/src/slack/app";
-import { captureInitialMessages } from "@aca/backend/src/slack/capture";
+import { captureGeneralChannel, captureInitialMessages } from "@aca/backend/src/slack/capture";
 import { syncUserSlackInstallationTeam } from "@aca/backend/src/slack/sync";
 import { NotificationSlackMessage, UserSlackInstallation, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
@@ -14,6 +14,7 @@ export async function handleUserSlackInstallationChanges(event: HasuraEvent<User
   const userSlackInstallation = event.item;
   await Promise.all([
     captureInitialMessages(userSlackInstallation),
+    captureGeneralChannel(userSlackInstallation),
     syncUserSlackInstallationTeam(userSlackInstallation),
   ]);
 }
