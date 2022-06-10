@@ -2,12 +2,24 @@ import { app, shell } from "electron";
 
 import { openAppUrl } from "@aca/desktop/bridge/apps";
 import { authTokenBridgeValue } from "@aca/desktop/bridge/auth";
+import { requestOpenRoute } from "@aca/desktop/bridge/navigation";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { checkIfAppExists } from "@aca/desktop/electron/utils/checkIfAppExists";
+import { removePrefix } from "@aca/shared/text/substring";
 import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
 export const APP_PROTOCOL = "acapela";
 const APP_PROTOCOL_PREFIX = `${APP_PROTOCOL}://`;
+
+const REQUEST_ROUTE_URL = "open/"; // acapela://open/foo/bar
+
+function handleMaybeRouteChangeRequest(url: string) {
+  if (!url.startsWith(REQUEST_ROUTE_URL)) return;
+
+  const route = removePrefix(url, REQUEST_ROUTE_URL);
+
+  requestOpenRoute.send({ path: `/${route}` });
+}
 
 function handleAppReceivedUrl(url: string) {
   // should never happen - app handled different protocol than one we register here (is it even possible?)
@@ -20,6 +32,8 @@ function handleAppReceivedUrl(url: string) {
   handleUrlWithPattern("authorize/:token", path, ({ token }) => {
     authTokenBridgeValue.set(token);
   });
+
+  handleMaybeRouteChangeRequest(path);
 }
 
 const log = makeLogger("App-Openner");

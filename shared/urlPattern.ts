@@ -75,9 +75,11 @@ export function handleUrlWithPattern<Pattern extends string>(
 ) {
   const urlArguments = parseUrlWithPattern(pattern, url);
 
-  if (urlArguments === null) return;
+  if (urlArguments === null) return false;
 
   handler(urlArguments, url);
+
+  return true;
 }
 
 // UrlPatternOptions is not exported from url-pattern, but it is inside - copy pasted

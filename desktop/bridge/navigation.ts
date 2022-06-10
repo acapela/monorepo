@@ -7,3 +7,4 @@ export interface ApplicationTrayList {
 }
 
 export const requestNavigateToList = createChannelBridge<{ listId: string }>("requestNavigateToList");
+export const requestOpenRoute = createChannelBridge<{ path: string }>("requestOpenRoute");
