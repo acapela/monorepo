@@ -238,7 +238,7 @@ function extractKeyfileFromEnv(): string | undefined {
 // Listens to messages posted to the Gmail topic's subscription
 export function listenToGmailSubscription() {
   const keyFilename = extractKeyfileFromEnv();
-  logger.info(`using pubsub keyfile ${keyFilename}`);
+  if (keyFilename) logger.info(`using pubsub keyfile ${keyFilename}`);
   const pubsub = new PubSub({ projectId: PROJECT_ID, keyFilename });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
