@@ -31,10 +31,9 @@ export function createObservableRouter<Routes extends RoutesMap>(routes: Routes)
     currentLocation.set(router.getLocation());
   });
 
-  function getActiveRoute() {
-    const currentRouteURL = currentLocation.get().url;
+  function parsePath(url: string) {
     // queries are treated as optional, thus their presence should not affect equality
-    const [currentRouteURLWithoutQuery] = currentRouteURL.split("?");
+    const [currentRouteURLWithoutQuery] = url.split("?");
 
     for (const [name, pattern] of Object.entries(routes)) {
       const [patternWithoutQuery] = pattern.split("?");
@@ -47,6 +46,22 @@ export function createObservableRouter<Routes extends RoutesMap>(routes: Routes)
     }
 
     return null;
+  }
+
+  function getActiveRoute() {
+    const currentRouteURL = currentLocation.get().url;
+
+    return parsePath(currentRouteURL);
+  }
+
+  function navigateByPath(path: string) {
+    const parsedRoute = parsePath(path);
+
+    if (!parsedRoute) return;
+
+    const { name, params } = parsedRoute;
+
+    Reflect.apply(navigate, null, [name, params]);
   }
 
   function navigate<Route extends keyof Routes>(
@@ -94,6 +109,7 @@ export function createObservableRouter<Routes extends RoutesMap>(routes: Routes)
       return currentLocation.get();
     },
     navigate,
+    navigateByPath,
     replace,
     goBack: router.goBack,
     getRouteParamsIfActive,

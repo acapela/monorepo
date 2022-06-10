@@ -8,7 +8,7 @@ import { ListView } from "@aca/desktop/views/ListView/ListView";
 import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/SettingsView";
 
-import { requestNavigateToList } from "../bridge/navigation";
+import { requestNavigateToList, requestOpenRoute } from "../bridge/navigation";
 import { historyStore } from "../store/history";
 import { ComposeView } from "../views/ComposeView";
 import { LoginView } from "../views/LoginView";
@@ -29,6 +29,12 @@ export const Router = observer(function Router() {
   useEffect(() => {
     return requestNavigateToList.subscribe(({ listId }) => {
       desktopRouter.navigate("list", { listId });
+    });
+  });
+
+  useEffect(() => {
+    return requestOpenRoute.subscribe(({ path }) => {
+      desktopRouter.navigateByPath(path);
     });
   });
 
