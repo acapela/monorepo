@@ -42,6 +42,7 @@ export const getPreloadingWindow = memoize(() => {
     transparent: false,
     alwaysOnTop: true,
     focusable: false,
+    show: false,
     width: mainWindowSize?.x ?? 900,
     height: mainWindowSize?.y ?? 900,
     x: 1,

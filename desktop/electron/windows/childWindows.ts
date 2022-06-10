@@ -13,7 +13,7 @@ const createChildWindowHost = () => {
     width: 900,
     height: 680,
     opacity: 0,
-    title: "Acapela",
+    title: "",
     webPreferences: {
       contextIsolation: true,
       backgroundThrottling: false,
