@@ -1,3 +1,7 @@
+import { writeFileSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
+
 import { PubSub } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
 import { gmail_v1, google } from "googleapis";
@@ -23,7 +27,7 @@ import { findHeader } from "./utils";
  * - After a day we renew all those watches, as that is required by Gmail's API.
  */
 
-const PROJECT_ID = "meetnomoreapp";
+const PROJECT_ID = "weareacapela";
 const { GMAIL_TOPIC_NAME, GMAIL_SUBSCRIPTION_NAME } = process.env as Record<string, string>;
 
 const createGmailClientForAccount = (account: Account) => {
@@ -224,9 +228,18 @@ async function createNotificationsForNewMessages(
   await resolveArchivedMessageNotifications(historyResponse.data.history ?? []);
 }
 
+function extractKeyfileFromEnv(): string | undefined {
+  if (!process.env.GMAIL_PUBSUB_KEYFILE) return;
+  const keyfileData = Buffer.from(process.env.GMAIL_PUBSUB_KEYFILE, "base64");
+  const keyfilePath = join(tmpdir(), "gmail-keyfile.json");
+  writeFileSync(keyfilePath, keyfileData);
+  return keyfilePath;
+}
 // Listens to messages posted to the Gmail topic's subscription
 export function listenToGmailSubscription() {
-  const pubsub = new PubSub({ projectId: PROJECT_ID });
+  const keyFilename = extractKeyfileFromEnv();
+  logger.info(`using pubsub keyfile ${keyFilename}`);
+  const pubsub = new PubSub({ projectId: PROJECT_ID, keyFilename });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
   subscription.on("message", async (message) => {
