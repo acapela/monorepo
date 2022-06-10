@@ -61,6 +61,7 @@ const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
   gap: 8px;
   align-items: center;
   position: relative;
+  min-width: 30px;
   ${theme.transitions.hover()}
 
   ${(props) => (props.$isClickable ? tagBgBase.withBorder.interactive : tagBgBase.asBgWithReadableText)}
@@ -77,6 +78,7 @@ const ICON_SCALE_INCREASE = 0.125;
 const UILabel = styled.div`
   ${theme.common.ellipsisText};
   max-width: 130px;
+  min-width: 0;
 `;
 
 const UIIcon = styled.div<{ $color?: string }>`
