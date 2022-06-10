@@ -18,7 +18,6 @@ export const acapelaIntegrationClient: IntegrationClient = {
       name: "Acapela",
     },
   ],
-
   isHiddenFromSidebar: () =>
     !getNullableDb()?.notification.query({ kind: "notification_acapela", isResolved: false, isSaved: false }).hasItems,
   connect() {

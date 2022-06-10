@@ -9,11 +9,7 @@ import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { IS_DEV } from "@aca/shared/dev";
 import { logger } from "@aca/shared/logger";
 import { routes } from "@aca/shared/routes";
-import {
-  SLACK_INSTALL_ERROR_KEY,
-  SLACK_WORKSPACE_ALREADY_USED_ERROR,
-  USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER,
-} from "@aca/shared/slack";
+import { SLACK_INSTALL_ERROR_KEY, SLACK_WORKSPACE_ALREADY_USED_ERROR } from "@aca/shared/slack";
 
 import { HttpStatus } from "../http";
 import { parseMetadata } from "./installMetadata";
@@ -76,7 +72,8 @@ async function storeUserSlackInstallation(userId: string, installation: SlackIns
           user_slack_channels_by_team: {
             create: {
               user_id: userId,
-              included_channels: [USER_ALL_CHANNELS_INCLUDED_PLACEHOLDER],
+              included_channels: [],
+              are_all_channels_included: true,
               slack_workspace_id: slackTeamId,
             },
           },

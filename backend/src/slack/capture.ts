@@ -339,6 +339,62 @@ export async function captureInitialMessages(userSlackInstallation: UserSlackIns
   }
 }
 
+export async function captureGeneralChannel(userSlackInstallation: UserSlackInstallation) {
+  try {
+    const userId = userSlackInstallation.user_id;
+
+    const [user, slackTeam] = await Promise.all([
+      db.user.findUnique({ where: { id: userId } }),
+      db.slack_team.findUnique({ where: { slack_team_id: userSlackInstallation.slack_team_id } }),
+    ]);
+    assert(user, "missing user for id " + userId);
+    assert(slackTeam, "missing slack team for id " + userId);
+
+    const { token } = getSlackInstallationData(userSlackInstallation).user;
+
+    const { channels } = await slackClient.users.conversations({
+      token,
+      types: "public_channel",
+      exclude_archived: true,
+      limit: 1000,
+    });
+
+    const generalChannel = (channels ?? []).find((c) => c.is_general);
+
+    if (generalChannel) {
+      const { messages } = await slackClient.conversations.history({
+        token,
+        channel: generalChannel.id!,
+        limit: 10,
+      });
+
+      if (!messages) {
+        return;
+      }
+      for (const message of messages) {
+        await createNotificationFromMessage(
+          { ...userSlackInstallation, user, slack_team: slackTeam },
+          {
+            text: message.text,
+            channel: generalChannel.id!,
+
+            channel_type: "channel",
+            user: message.user!,
+            ts: message.ts!,
+            ...message,
+          },
+          await getSlackUserName(token, userSlackInstallation.slack_team_id, message.user)
+        );
+      }
+    }
+  } catch (error) {
+    logger.error(
+      error,
+      `Error while capturing initial messages for user_slack_installation ${userSlackInstallation.id}`
+    );
+  }
+}
+
 async function handleMessages({ message, body }: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs) {
   const eventContextId = body.event_context as string;
   const msg = message as GenericMessageEvent;
