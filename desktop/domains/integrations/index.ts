@@ -15,7 +15,6 @@ import { slackIntegrationClient } from "./slack";
 import { IntegrationClient } from "./types";
 
 export const integrationClients = {
-  acapela: acapelaIntegrationClient,
   slack: slackIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,
