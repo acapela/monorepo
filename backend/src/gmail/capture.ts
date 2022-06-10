@@ -27,7 +27,6 @@ import { findHeader } from "./utils";
  * - After a day we renew all those watches, as that is required by Gmail's API.
  */
 
-const PROJECT_ID = "weareacapela";
 const { GMAIL_TOPIC_NAME, GMAIL_SUBSCRIPTION_NAME } = process.env as Record<string, string>;
 
 const createGmailClientForAccount = (account: Account) => {
@@ -239,7 +238,7 @@ function extractKeyfileFromEnv(): string | undefined {
 export function listenToGmailSubscription() {
   const keyFilename = extractKeyfileFromEnv();
   if (keyFilename) logger.info(`using pubsub keyfile ${keyFilename}`);
-  const pubsub = new PubSub({ projectId: PROJECT_ID, keyFilename });
+  const pubsub = new PubSub({ keyFilename });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
   subscription.on("message", async (message) => {
