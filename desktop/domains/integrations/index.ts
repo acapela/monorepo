@@ -26,6 +26,7 @@ export const integrationClients = {
   asana: asanaIntegrationClient,
   drive: googleDriveIntegrationClient,
   clickup: clickupIntegrationClient,
+  acapela: acapelaIntegrationClient,
 };
 
 export type SupportedIntegrationName = keyof typeof integrationClients;

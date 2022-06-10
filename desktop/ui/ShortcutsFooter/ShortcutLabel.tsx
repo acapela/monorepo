@@ -27,7 +27,7 @@ export const FooterShortcutLabel = observer(function FooterShortcutLabel({ actio
     <UIHolder
       action={action}
       data-tooltip={shouldShowTooltip ? name : undefined}
-      target={context.forcedTarget}
+      target={context.target}
       $isEnabled={isEnabled}
     >
       <UIName ref={nameRef}>{name}</UIName>

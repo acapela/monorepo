@@ -61,6 +61,7 @@ export async function handleAccountUpdates(event: HasuraEvent<Account>) {
   if (account?.provider_id === "atlassian" && event.type === "create") {
     handleCreateAtlassianAccount(account);
     trackBackendUserEvent(account.user_id, "Jira Integration Added");
+    trackBackendUserEvent(account.user_id, "New Integration Added", { integration: "jira" });
     return;
   }
 

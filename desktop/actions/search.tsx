@@ -12,13 +12,13 @@ import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { notificationsFuzzySearch } from "@aca/desktop/domains/notification/search";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
-import { runActionWithTarget } from "@aca/desktop/domains/runAction";
+import { runActionWith } from "@aca/desktop/domains/runAction";
 import { isNotNullish } from "@aca/shared/nullish";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder, IconSearch } from "@aca/ui/icons";
 
 import { getNotificationsGroupMeta } from "../domains/group/group";
-import { getTagConfig } from "../domains/notification/tag";
+import { getTagConfig } from "../domains/tag/tag";
 import { defineGroup } from "./action/group";
 
 export const accountActionsGroup = defineGroup({
@@ -73,7 +73,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
           alwaysShowInSearch: true,
           icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup.notifications[0]} />,
           handler() {
-            runActionWithTarget(openFocusMode, notificationOrGroup.notifications[0]);
+            runActionWith(openFocusMode, notificationOrGroup.notifications[0]);
           },
         });
       }
@@ -87,7 +87,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
         keywords: [notificationOrGroup.from, notificationOrGroup.text_preview].filter(isNotNullish),
         icon: <NotificationAppIcon isOnDarkBackground notification={notificationOrGroup} />,
         handler() {
-          runActionWithTarget(openFocusMode, notificationOrGroup);
+          runActionWith(openFocusMode, notificationOrGroup);
         },
       });
     });
@@ -101,7 +101,7 @@ const getSearchActions = cachedComputed(function getSearchActions(context: Actio
       group: searchListActionsGroup,
       icon: () => list.icon ?? <IconFolder />,
       handler() {
-        runActionWithTarget(goToList, list);
+        runActionWith(goToList, list);
       },
     })
   );

@@ -105,7 +105,7 @@ export const ListView = observer(({ listId }: Props) => {
             <ZeroNotifications key={listId} list={list} />
           )}
 
-          <TagFilters allItems={notificationGroups} selectedTags={tagFilters} onChange={setTagFilters} />
+          {list && <TagFilters list={list} selectedTags={tagFilters} onChange={setTagFilters} />}
 
           {list && notificationGroupsToShow && notificationGroupsToShow.length > 0 && (
             <UINotifications>

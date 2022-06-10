@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { deleteNotificationList, renameNotificationList, resolveAllNotifications } from "@aca/desktop/actions/lists";
+import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { resolvedList } from "@aca/desktop/domains/list/all";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { ActionButton } from "@aca/desktop/ui/ActionButton";
@@ -12,6 +12,7 @@ import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionBut
 import { TopBarDivider } from "@aca/desktop/ui/systemTopBar/ui";
 import { theme } from "@aca/ui/theme";
 
+import { BatchResolverButton } from "./BatchResolverButton";
 import { ListEmojiPicker } from "./ListEmojiPicker";
 import { ListNotificationsSettings } from "./NotificationsSettings";
 
@@ -44,9 +45,9 @@ export const ListViewTopBar = observer(({ list }: Props) => {
       }
       targetActionItems={
         <>
-          {list !== resolvedList && (
+          {!!list && list !== resolvedList && (
             <>
-              <TopBarActionButton action={resolveAllNotifications} />
+              <BatchResolverButton list={list} />
             </>
           )}
 

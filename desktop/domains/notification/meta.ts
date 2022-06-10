@@ -1,11 +1,10 @@
 import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { integrationClients } from "@aca/desktop/domains/integrations";
+import { NotificationTag, NotificationTagInput, getNotificationTag } from "@aca/desktop/domains/tag/tag";
 import { jiraIssueFieldAlias } from "@aca/shared/attlassian";
 import { niceFormatDate } from "@aca/shared/dates/format";
 import { Falsy, isNotFalsy } from "@aca/shared/nullish";
-
-import { NotificationTag, NotificationTagInput, getNotificationTag } from "./tag";
 
 export interface NotificationMeta {
   title?: string | null;
@@ -33,23 +32,17 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
 
   switch (type) {
     case "notification_slack_message": {
-      const { conversation_name, conversation_type, is_mention } = inner;
+      const { conversation_name, conversation_type, is_mention, slack_thread_ts } = inner;
 
-      if (conversation_type === "im") {
+      const isThread = !!slack_thread_ts;
+      if (conversation_type === "im" || conversation_type === "mpim") {
         if (is_mention) {
-          return { title: title ?? "New mention", tags: tags("mention") };
+          return { title: title ?? "New mention", tags: tags("mention", isThread && "thread") };
         }
-        return { title: title ?? "New direct message", tags: tags("directMessage") };
+        return { title: title ?? "New direct message", tags: tags("directMessage", isThread && "thread") };
       }
 
-      if (conversation_type === "mpim") {
-        if (is_mention) {
-          return { title: title ?? "New mention", tags: tags("mention") };
-        }
-        return { title: title ?? "New direct message", tags: tags("directMessage") };
-      }
-
-      if (conversation_type === "channel") {
+      if (conversation_type === "channel" || conversation_type === "group") {
         if (is_mention) {
           return {
             title: title ?? "New mention",
@@ -58,13 +51,13 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
         }
 
         return {
-          title: title ?? "New mention",
+          title: title ?? "New message",
           tags: tags({ category: "channel", customLabel: conversation_name }),
         };
       }
 
       return {
-        title: "New message",
+        title: title ?? "New message",
       };
     }
     case "notification_notion": {
@@ -238,7 +231,7 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
       };
     }
     case "notification_acapela":
-      return { title: inner.title };
+      return { title: inner.title, tags: tags("update") };
     default:
       return { title: "New Notification" };
   }

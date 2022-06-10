@@ -37,7 +37,7 @@ export const slackIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_slack_message",
   name: "Slack",
-  description: "Important or urgent conversations.",
+  description: "Get updates about selected conversations from Slack.",
   additionalSettings: <SlackSettings />,
   imageURL: integrationLogos.slack,
   getCanConnect: () => !!accountStore.user,

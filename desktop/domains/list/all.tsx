@@ -7,22 +7,23 @@ import { integrationClients } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
-import { IconListUnordered4, IconStar } from "@aca/ui/icons";
+import { IconBookmark, IconInbox, IconListUnordered4 } from "@aca/ui/icons";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
 
 export const allNotificationsList = defineNotificationsList({
   id: "allNotifications",
-  name: "All",
+  name: "Inbox",
+  icon: <IconInbox />,
   filter: { isResolved: false, hasReminder: false, isSaved: false },
   tip: "This list will contain every single notification you receive",
 });
 
 export const savedNotificationsList = defineNotificationsList({
   id: "saved",
-  name: "Saved & Reminders",
-  icon: <IconStar />,
+  name: "Saved",
+  icon: <IconBookmark />,
   tip: `This list will show notifications you saved or have set reminders for.`,
   filter: { isResolved: false, $or: [{ hasReminder: true }, { isSaved: true }] },
 });
@@ -34,6 +35,7 @@ const getAvailableIntegrationLists = cachedComputed(
       .map((client) =>
         defineNotificationsList({
           id: client.notificationTypename,
+          isHidden: client.isHiddenFromSidebar?.(),
           name: client.name,
           icon: <IntegrationIcon integrationClient={client} />,
           filter: { kind: client.notificationTypename, isResolved: false, hasReminder: false, isSaved: false },

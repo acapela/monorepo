@@ -7,6 +7,8 @@ import { PreloadInstrumentationReportResult, PreloadURLLoadState } from "../debu
 
 export type PlanType = "free" | "premium" | "ultimate";
 
+export type Integration = "linear" | "figma" | "slack" | "notion" | "jira" | "gmail" | "asana" | "github" | "clickup";
+
 /**
  * Map of tracking event types with their required parameters.
  * Use past tense and Title Case event names for new types.
@@ -53,8 +55,10 @@ export type AnalyticsEventsMap = {
 
   "Notification Resolved": { notification_id: string };
   "All Notifications Resolved": { list_id: string };
-  "Added Notification Reminder": { notification_id: string };
-  "Notification Unresolved": void;
+  "Notification Reminder Added": { notification_id: string };
+  "Notification Saved": { notification_id: string };
+  "Notification Unsaved": { notification_id: string };
+  "Notification Unresolved": { notification_id: string };
   "Custom List Created": void;
   "Custom List Deleted": void;
   "New Message Composed": { integration: string };
@@ -73,6 +77,8 @@ export type AnalyticsEventsMap = {
   "Notification Group Toggled": void;
   "Feedback Button Clicked": void;
   "Feedback Call Booked": void;
+  // TODO: to be tracked, I was not able to attach an event logger to the tray without crashing the app
+  "Tray Icon Clicked": void;
 
   // Subscription flow events
 
@@ -89,6 +95,7 @@ export type AnalyticsEventsMap = {
   "Asana Integration Added": void;
   "GitHub Integration Added": void;
   "ClickUp Integration Added": void;
+  "New Integration Added": { integration: Integration };
 
   // Preview Loading instrumentation
   "Partially Loaded BrowserView Attached": PreloadURLLoadState & Partial<PreloadInstrumentationReportResult>;

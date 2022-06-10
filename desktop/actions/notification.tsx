@@ -15,11 +15,12 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import {
   IconBell,
   IconBellSlash,
+  IconBookmarkPlus,
+  IconBookmarkSlash,
   IconCheck,
   IconExternalLink,
   IconGlasses,
   IconLink1,
-  IconStar,
   IconTarget,
   IconUndo,
 } from "@aca/ui/icons";
@@ -30,6 +31,7 @@ import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
 import { getReminderSuggestionActions } from "./reminders";
+import { runForEachTargettedNotification } from "./utils";
 import { displayZenModeIfFinished, focusNextItemIfAvailable } from "./views/common";
 
 function getContextHasNotificationMatching(
@@ -100,29 +102,15 @@ export const resolveNotification = defineAction({
     );
   },
   handler(context) {
-    const notification = context.getTarget("notification");
-    let group = context.getTarget("group");
-
     const cancel = createCleanupObject();
 
     cancel.next = focusNextItemIfAvailable(context);
 
-    if (!group && notification) {
-      // If the given notification is part of a group which can be previewed through a single notification, we treat
-      // marking one of them as done as marking the whole group as done
-      const list = context.assertTarget("list", true);
-      const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
-
-      if (groupThatNotificationBelongsTo?.isOnePreviewEnough) {
-        group = groupThatNotificationBelongsTo;
-      }
-    }
-
-    cancel.next = notification?.resolve()?.undo;
-
-    group?.notifications.forEach((notification) => {
-      cancel.next = notification.resolve()?.undo;
+    const { operationsCount, undo: undoResolved } = runForEachTargettedNotification(context, (notification) => {
+      return notification.resolve()?.undo;
     });
+
+    cancel.next = undoResolved;
 
     // Waiting for lists to get updated
     defer(() => {
@@ -130,7 +118,7 @@ export const resolveNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} resolved`,
+      message: pluralize`${operationsCount} ${["notification"]} resolved`,
       action: {
         label: "Undo",
         callback() {
@@ -142,7 +130,7 @@ export const resolveNotification = defineAction({
 });
 
 export const saveNotification = defineAction({
-  icon: <IconStar />,
+  icon: <IconBookmarkPlus />,
   group: currentNotificationActionsGroup,
   name: `Move to "Saved"`,
   analyticsEvent: (ctx) => {
@@ -150,7 +138,7 @@ export const saveNotification = defineAction({
 
     const notification_id = notification?.id;
     if (notification_id) {
-      return createAnalyticsEvent("Notification Resolved", { notification_id });
+      return createAnalyticsEvent("Notification Saved", { notification_id });
     }
   },
   keywords: ["flag"],
@@ -160,22 +148,9 @@ export const saveNotification = defineAction({
     return getContextHasNotificationMatching(ctx, (n) => !n.isSaved);
   },
   handler(context) {
-    const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
-
-    const cancel = createCleanupObject();
-
-    cancel.next = focusNextItemIfAvailable(context);
-
-    if (notification) {
-      cancel.next = notification.markAsSaved().undo;
-    }
-
-    if (group) {
-      group?.notifications.forEach((notification) => {
-        cancel.next = notification.markAsSaved()?.undo;
-      });
-    }
+    const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
+      return notification.markAsSaved().undo;
+    });
 
     // Waiting for lists to get updated
     defer(() => {
@@ -183,11 +158,11 @@ export const saveNotification = defineAction({
     });
 
     addToast({
-      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} saved`,
+      message: pluralize`${operationsCount} ${["notification"]} saved`,
       action: {
         label: "Undo",
         callback() {
-          cancel.clean("from-last");
+          undo();
         },
       },
     });
@@ -195,7 +170,7 @@ export const saveNotification = defineAction({
 });
 
 export const cancelSaveNotification = defineAction({
-  icon: <IconStar />,
+  icon: <IconBookmarkSlash />,
   group: currentNotificationActionsGroup,
   name: `Remove from "Saved"`,
   shortcut: ["Shift", "S"],
@@ -204,23 +179,25 @@ export const cancelSaveNotification = defineAction({
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isSaved);
   },
-  analyticsEvent: "Notification Unresolved",
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
+
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Unsaved", { notification_id });
+    }
+  },
   handler(context) {
-    const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
-
     const cancel = createCleanupObject();
-
     cancel.next = focusNextItemIfAvailable(context);
-
-    cancel.next = notification?.update({ saved_at: null }).undo;
-
-    group?.notifications.forEach((notification) => {
-      cancel.next = notification.update({ saved_at: null }).undo;
+    const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
+      return notification.update({ saved_at: null }).undo;
     });
 
+    cancel.next = undo;
+
     addToast({
-      message: pluralize`Cancelled save for ${group ? group.notifications.length : 1} ${["notification"]}`,
+      message: pluralize`Cancelled save for ${operationsCount} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {
@@ -241,23 +218,27 @@ export const unresolveNotification = defineAction({
   canApply: (ctx) => {
     return getContextHasNotificationMatching(ctx, (n) => n.isResolved);
   },
-  analyticsEvent: "Notification Unresolved",
-  handler(context) {
-    const notification = context.getTarget("notification");
-    const group = context.getTarget("group");
+  analyticsEvent: (ctx) => {
+    const notification = ctx.getTarget("notification");
 
+    const notification_id = notification?.id;
+    if (notification_id) {
+      return createAnalyticsEvent("Notification Unresolved", { notification_id });
+    }
+  },
+  handler(context) {
     const cancel = createCleanupObject();
 
     cancel.next = focusNextItemIfAvailable(context);
 
-    cancel.next = notification?.update({ resolved_at: null }).undo;
-
-    group?.notifications.forEach((notification) => {
-      cancel.next = notification.update({ resolved_at: null }).undo;
+    const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
+      return notification.update({ resolved_at: null }).undo;
     });
 
+    cancel.next = undo;
+
     addToast({
-      message: pluralize`${group ? group.notifications.length : 1} ${["notification"]} unresolved`,
+      message: pluralize`${operationsCount} ${["notification"]} unresolved`,
       action: {
         label: "Undo",
         callback() {
@@ -306,19 +287,16 @@ export const removeNotificationReminder = defineAction({
   icon: <IconBellSlash />,
   shortcut: ["Mod", "W"],
   handler(ctx) {
-    const cancel = createCleanupObject("from-last");
-
-    cancel.next = ctx.getTarget("notification")?.update({ snoozed_until: null }).undo;
-    ctx.getTarget("group")?.notifications.forEach((notification) => {
-      cancel.next = notification.update({ snoozed_until: null }).undo;
+    const { operationsCount, undo } = runForEachTargettedNotification(ctx, (notification) => {
+      return notification.update({ snoozed_until: null }).undo;
     });
 
     addToast({
-      message: pluralize`Removed reminder for ${cancel.size} ${["notification"]}`,
+      message: pluralize`Removed reminder for ${operationsCount} ${["notification"]}`,
       action: {
         label: "Undo",
         callback() {
-          cancel.clean();
+          undo();
         },
       },
     });
@@ -345,7 +323,7 @@ export const openFocusMode = defineAction({
       openedNotificationsGroupsStore.open(group.id);
       // When there's a single preview enabled, only one notification out of many is shown in focus
       // This check attempts to mark all of the notifications inside a single preview group as seen
-      if (group.isOnePreviewEnough) {
+      if (group.treatAsOneNotification) {
         group.notifications.forEach((n) => n.markAsSeen());
       }
       const notificationToShow = group.notifications[0];

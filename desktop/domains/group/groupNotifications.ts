@@ -1,7 +1,7 @@
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { unsafeAssertType } from "@aca/shared/assert";
 
-import { NotificationsGroup, getIsNotificationsGroup, getNotificationsGroupMeta } from "./group";
+import { NotificationsGroup, getNotificationsGroupMeta } from "./group";
 import { getNotificationGroupTarget } from "./target";
 
 export type NotificationOrGroup = NotificationEntity | NotificationsGroup;
@@ -19,25 +19,28 @@ export function getIsNotificationOrGroup(input: unknown): input is NotificationO
   return false;
 }
 
+function modifySingleItemGroupsToNotifications(groups: NotificationsGroup[]) {
+  return groups.map((group): NotificationOrGroup => {
+    // It has multiple notifications
+    if (group.notifications.length > 1) return group;
+
+    const [onlyNotificationInGroup] = group.notifications;
+    return onlyNotificationInGroup;
+  });
+}
+
 /**
  * Will group notification so if 2+ are related to the same 'target', they'll be bundled together
  */
 export function groupNotifications(notifications: NotificationEntity[]): NotificationOrGroup[] {
-  const result: NotificationOrGroup[] = [];
+  const groups: NotificationsGroup[] = [];
+
+  const groupIdMap = new Map<string, NotificationsGroup>();
 
   notifications.forEach((notification) => {
     const target = getNotificationGroupTarget(notification, notifications);
 
-    // Should not happen - but consider as single notification then
-    if (!target) {
-      result.push(notification);
-      return;
-    }
-
-    // Try to get existing group if such exists
-    const existingGroup = result
-      .map((result) => (getIsNotificationsGroup(result) ? result : null))
-      .find((group) => group?.id === target.id);
+    const existingGroup = groupIdMap.get(target.id);
 
     // If group exists - add notification to it
     if (existingGroup) {
@@ -50,29 +53,15 @@ export function groupNotifications(notifications: NotificationEntity[]): Notific
       ...target,
       notifications: [notification],
       getMeta() {
-        return getNotificationsGroupMeta(notification);
+        return getNotificationsGroupMeta(group);
       },
     };
 
+    groupIdMap.set(group.id, group);
+
     // Create new group
-    result.push(group);
+    groups.push(group);
   });
 
-  /**
-   * It is now possible that we have groups containing only one notification.
-   *
-   * If so, convert such group to 'flat' notification only.
-   */
-  const onlyGroupWithMultipleItems = result.map((notificationOrGroup): NotificationOrGroup => {
-    // It is not a group
-    if (!getIsNotificationsGroup(notificationOrGroup)) return notificationOrGroup;
-
-    // It has multiple notifications
-    if (notificationOrGroup.notifications.length > 1) return notificationOrGroup;
-
-    const [onlyNotificationInGroup] = notificationOrGroup.notifications;
-    return onlyNotificationInGroup;
-  });
-
-  return onlyGroupWithMultipleItems;
+  return modifySingleItemGroupsToNotifications(groups);
 }

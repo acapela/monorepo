@@ -5,7 +5,7 @@ import { ActionData, resolveActionDataWithTarget } from "@aca/desktop/actions/ac
 import { resolveGroupDataWithTarget } from "@aca/desktop/actions/action/group";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 
-import { runActionWithTarget } from "../runAction";
+import { runActionWith } from "../runAction";
 import { SystemMenuItem } from "./SystemMenuItem";
 
 interface Props {
@@ -46,7 +46,7 @@ export const ActionSystemMenuItem = observer(function ActionSystemMenuItem({
       isChecked={isChecked}
       isDisabled={!isApplicable}
       onClicked={() => {
-        runActionWithTarget(action, target);
+        runActionWith(action, target);
       }}
     />
   );

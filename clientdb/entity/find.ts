@@ -1,5 +1,6 @@
 import { IObservableArray } from "mobx";
 
+import { getArraysCommonPart } from "@aca/shared/array";
 import { typedKeys } from "@aca/shared/object";
 
 import { EntityDefinition } from "./definition";
@@ -18,30 +19,6 @@ export type FindObjectInput<T> = FindObjectPartInput<T> & {
 type AnyKeyIndexInput<T> = IndexValueInput<T> extends infer U ? U[keyof U] : never;
 
 type MaybeObservableArray<T> = IObservableArray<T> | T[];
-
-/**
- * Optimized way to pick items that are present in both arrays
- */
-function getArraysCommonPart<T extends object>(itemsA: T[], itemsB: T[]) {
-  // Use weekset as it has O(1) .has call cost
-  const weakA = new WeakSet(itemsA);
-  const weakB = new WeakSet(itemsB);
-
-  const results: T[] = [];
-
-  // Iterate on shorter array when comparing
-  if (itemsA.length > itemsB.length) {
-    for (const itemB of itemsB) {
-      if (weakA.has(itemB)) results.push(itemB);
-    }
-  } else {
-    for (const itemA of itemsA) {
-      if (weakB.has(itemA)) results.push(itemA);
-    }
-  }
-
-  return results;
-}
 
 function getRemainingItemsAfterApplyingQueryFields<Data, Connections>(
   currentItems: Entity<Data, Connections>[],

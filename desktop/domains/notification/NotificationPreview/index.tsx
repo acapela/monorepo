@@ -10,7 +10,7 @@ import { previewEventsBridge } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { Embed } from "@aca/desktop/domains/embed";
 
-import { runActionWithTarget } from "../../runAction";
+import { runActionWith } from "../../runAction";
 
 type Props = {
   notification: NotificationEntity;
@@ -25,15 +25,15 @@ export const NotificationPreview = observer(function NotificationPreview({ notif
       }
 
       if (event.type === "add-reminder-request") {
-        runActionWithTarget(addReminderToNotification, notification);
+        runActionWith(addReminderToNotification, notification);
       }
 
       if (event.type === "resolve-request") {
-        runActionWithTarget(resolveNotification, notification);
+        runActionWith(resolveNotification, notification);
       }
 
       if (event.type === "open-in-app-request") {
-        runActionWithTarget(openNotificationInApp, notification);
+        runActionWith(openNotificationInApp, notification);
       }
     });
   }, [notification]);

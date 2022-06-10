@@ -8,6 +8,7 @@ import { createHasuraEventsHandler } from "@aca/backend/src/hasura";
 import { handleNotificationChanges } from "@aca/backend/src/notification";
 import { handleSignup } from "@aca/backend/src/user/handleSignup";
 import {
+  AcapelaUpdate,
   Account,
   GithubAccountToInstallation,
   GmailAccount,
@@ -21,6 +22,7 @@ import {
 } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
+import { handleAcapelaUpdate } from "../acapelaUpdate/handleAcapelaUpdate";
 import { handleAccountUpdates } from "../atlassian";
 import { handleLinearIssueChanges, handleLinearOauthTokenCreated } from "../linear/events";
 import { handleChannelFilterMigrationSync } from "../slack/channelFilterMigration";
@@ -32,6 +34,7 @@ export const router = Router();
 logger.info("Initialize hasura event handlers");
 
 const hasuraEvents = createHasuraEventsHandler<{
+  acapela_update_created: AcapelaUpdate;
   account_updates: Account;
   gmail_account_updates: GmailAccount;
   github_account_to_installation_updates: GithubAccountToInstallation;
@@ -54,6 +57,7 @@ hasuraEvents.addHandler("notification_updates", ["UPDATE"], handleNotificationCh
 hasuraEvents.addHandler("notification_slack_message_updates", ["DELETE"], handleNotificationSlackMessageChanges);
 hasuraEvents.addHandler("user_slack_installation_updates", ["INSERT"], handleUserSlackInstallationChanges);
 hasuraEvents.addHandler("user_signup", ["INSERT"], handleSignup);
+hasuraEvents.addHandler("acapela_update_created", ["INSERT"], handleAcapelaUpdate);
 
 // TODO: Temporary Migration! This event should be removed once all users upgraded their App to use the new
 // "are_all_channels_included" column in "user_slack_channels_by_team". Migration should probably be done by July 2022.

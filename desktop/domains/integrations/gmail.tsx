@@ -8,7 +8,8 @@ export const gmailIntegrationClient: IntegrationClient = {
   kind: "integration",
   notificationTypename: "notification_gmail",
   name: "Google Gmail",
-  description: "New emails and Google Suite notifications",
+  description:
+    "New emails and Google Suite notifications. Beware that imported emails will be marked as read in Gmail.",
   getIsConnected: () => getNullableDb()?.gmailAccount.hasItems ?? false,
   getCanConnect: () => !getNullableDb()?.gmailAccount.hasItems ?? false,
   getAccounts: () =>

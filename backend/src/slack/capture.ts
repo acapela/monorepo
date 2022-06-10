@@ -190,6 +190,30 @@ async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMess
   });
 }
 
+function getPermalink({
+  url,
+  team,
+  channel,
+  messageTs,
+  threadTs,
+}: {
+  url?: string;
+  team: string;
+  channel: string;
+  messageTs: string;
+  threadTs?: string;
+}) {
+  if (!url) {
+    const permalink = `https://app.slack.com/client/${team}/${channel}/`;
+    if (!threadTs) return permalink + messageTs;
+    return permalink + `thread/${channel}-${threadTs}/${messageTs}`;
+  }
+
+  const permalink = `${url}archives/${channel}/p${messageTs.replace(".", "")}`;
+  if (!threadTs) return permalink;
+  return permalink + `?thread_ts=${threadTs}&cid=${channel}`;
+}
+
 /**
  * Creates notification for the given user who are in the Slack conversation in which the message was posted. If the
  * conversation is a Slack channel we only create a notification if it was a mention or within a thread.
@@ -225,18 +249,17 @@ async function createNotificationFromMessage(
     return;
   }
 
-  const teamInfo = userSlackInstallation.slack_team.team_info_data as Team;
-  assert(teamInfo.url, `could not get team url for ${userSlackInstallation.slack_team.slack_team_id}`);
-  // TODO: fetch team.info API endpoint and store in db??
-
-  let permalink = `${teamInfo.url}archives/${message.channel}/p${messageTs.replace(".", "")}`;
-  if (message.thread_ts) permalink += `?thread_ts=${message.thread_ts}&cid=${message.channel}`;
-
   await db.notification.create({
     data: {
       user_id: userSlackInstallation.user_id,
       from: authorUserName,
-      url: permalink,
+      url: getPermalink({
+        url: (userSlackInstallation.slack_team.team_info_data as Team).url,
+        team: message.team!,
+        channel,
+        messageTs,
+        threadTs,
+      }),
       text_preview: await nr.startSegment(
         "slack/createNotificationFromMessage/createTextPreviewFromSlackMessage",
         true,

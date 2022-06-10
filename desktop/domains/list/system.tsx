@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { compileSlackFilter } from "@aca/desktop/ui/Filters/slackModel";
-import { IconTarget } from "@aca/ui/icons";
+import { IconLightning } from "@aca/ui/icons";
 
 export const LIST_SYSTEM_IDS = {
   important: "important",
@@ -16,7 +16,7 @@ export const SYSTEM_LISTS_TIP: Record<ListSystemId, string> = {
 export type ListSystemId = typeof LIST_SYSTEM_IDS[keyof typeof LIST_SYSTEM_IDS];
 
 export const CUSTOM_SYSTEM_LIST_ICONS: Record<keyof typeof LIST_SYSTEM_IDS, ReactNode> = {
-  important: <IconTarget />,
+  important: <IconLightning />,
 };
 
 export function ensureSystemListsCreated() {

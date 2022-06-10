@@ -49,6 +49,7 @@ export const notionIntegrationClient: IntegrationClient = {
   async connect() {
     await loginNotionBridge();
     trackEvent("Notion Integration Added");
+    trackEvent("New Integration Added", { integration: "notion" });
   },
   imageURL: integrationLogos.notion,
 
