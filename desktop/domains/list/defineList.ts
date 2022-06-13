@@ -249,6 +249,9 @@ export function defineNotificationsList({
     get name() {
       return listEntity?.title ?? name;
     },
+    get systemId() {
+      return listEntity?.system_id ?? null;
+    },
     dontPreload,
     collectTags: getCollectedTags,
     getNotificationGroup,

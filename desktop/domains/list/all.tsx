@@ -83,7 +83,7 @@ export const getInboxLists = cachedComputed(
 export const outOfInboxLists = [resolvedList];
 
 export function getInboxListById(id: string): NotificationsList | null {
-  return getInboxLists().find((list) => list.id === id) ?? null;
+  return getInboxLists().find((list) => list.id === id || list.systemId === id) ?? null;
 }
 
 export const isInboxList = (id: string) => Boolean(getInboxListById(id));
