@@ -1,6 +1,6 @@
 import { BrowserView, BrowserWindow, WebContents } from "electron";
 
-import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
+import { preloadingPreviewsBridgeChannel, unattachedPreloadBridgeChannel } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/windows/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -106,15 +106,7 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
       });
 
       if (state !== "attached") {
-        console.error(
-          `
-        ********************
-
-        Detached before viewed
-
-        ********************
-        `
-        );
+        unattachedPreloadBridgeChannel.send({ url });
       }
 
       markViewDisposedTime(view);

@@ -66,3 +66,5 @@ export const preloadingPreviewsBridgeChannel = createBridgeValue("preloadingPrev
     return {} as Record<string, PreloadingState>;
   },
 });
+
+export const unattachedPreloadBridgeChannel = createChannelBridge<{ url: string }>("unattached-preload");
