@@ -3,10 +3,18 @@ import { orderBy } from "lodash";
 
 import { getIndividualSlackInstallURL } from "@aca/backend/src/slack/install";
 import { db } from "@aca/db";
-import { GetSlackInstallationUrlInput, GetSlackInstallationUrlOutput, ServiceUser, SlackConversation } from "@aca/gql";
+import {
+  GetSlackInstallationUrlInput,
+  GetSlackInstallationUrlOutput,
+  HandleRevertUrlViewInput,
+  HandleRevertUrlViewOutput,
+  ServiceUser,
+  SlackConversation,
+} from "@aca/gql";
 import { assert, assertDefined } from "@aca/shared/assert";
 
 import { ActionHandler } from "../actions/actionHandlers";
+import { revertGmailRead } from "../gmail/revertRead";
 import { SlackInstallation, slackClient } from "./app";
 
 async function findSlackTeamsWithTokens(userId: string) {
@@ -106,5 +114,22 @@ export const slackConversations: ActionHandler<void, SlackConversation[]> = {
       );
     });
     return orderBy((await Promise.all(teamUserPromises)).flat(), "name");
+  },
+};
+
+export const handleRevertUrlView: ActionHandler<
+  {
+    input: HandleRevertUrlViewInput;
+  },
+  HandleRevertUrlViewOutput
+> = {
+  actionName: "handle_revert_url_view",
+
+  async handle(userId, { input: { inner_notification_id, inner_table_type } }) {
+    switch (inner_table_type) {
+      case "notification_gmail":
+        revertGmailRead(inner_notification_id, userId);
+    }
+    return { success: true };
   },
 };
