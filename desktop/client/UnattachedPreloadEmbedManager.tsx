@@ -28,7 +28,10 @@ export const UnattachedPreloadEmbedManager = observer(
 );
 
 async function handleUnattachedPreload(notification: NotificationEntity) {
-  if (notification.inner) {
+  // We're currently only using this for reverting gmail unreads
+  // Because of this, the business logic check of `notification.last_seen_at`
+  // is currently leaking into this file in order to avoid unnecessary db calls
+  if (notification.inner && !notification.last_seen_at) {
     mutateRevertUrlView(notification.inner.id, notification.inner.__typename);
   }
 }

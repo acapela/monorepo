@@ -14,7 +14,7 @@ import {
 import { assert, assertDefined } from "@aca/shared/assert";
 
 import { ActionHandler } from "../actions/actionHandlers";
-import { revertGmailRead } from "../gmail/revertRead";
+import { revertGmailMessageToUnread } from "../gmail/revertRead";
 import { SlackInstallation, slackClient } from "./app";
 
 async function findSlackTeamsWithTokens(userId: string) {
@@ -128,7 +128,7 @@ export const handleRevertUrlView: ActionHandler<
   async handle(userId, { input: { inner_notification_id, inner_table_type } }) {
     switch (inner_table_type) {
       case "notification_gmail":
-        revertGmailRead(inner_notification_id, userId);
+        revertGmailMessageToUnread(inner_notification_id, userId);
     }
     return { success: true };
   },
