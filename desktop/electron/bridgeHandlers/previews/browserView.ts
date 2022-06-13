@@ -100,9 +100,22 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
   {
     keyGetter: (url) => url,
     cleanup(view, url) {
+      const state = preloadingPreviewsBridgeChannel.get()[url];
       preloadingPreviewsBridgeChannel.update((stateMap) => {
         delete stateMap[url];
       });
+
+      if (state !== "attached") {
+        console.error(
+          `
+        ********************
+
+        Detached before viewed
+
+        ********************
+        `
+        );
+      }
 
       markViewDisposedTime(view);
       destroyBrowserView(view);

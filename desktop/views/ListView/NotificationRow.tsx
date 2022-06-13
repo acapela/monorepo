@@ -15,7 +15,7 @@ import {
   saveNotification,
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
-import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
+import { PreloadingState, preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
@@ -110,7 +110,7 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
+const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: PreloadingState | false }>`
   ${theme.box.items.listRow.size.padding}
   min-width: 0;
   position: relative;
