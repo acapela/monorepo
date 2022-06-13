@@ -8,6 +8,8 @@ import { checkIfAppExists } from "@aca/desktop/electron/utils/checkIfAppExists";
 import { removePrefix } from "@aca/shared/text/substring";
 import { handleUrlWithPattern } from "@aca/shared/urlPattern";
 
+import { getMainWindow } from "../windows/mainWindow";
+
 export const APP_PROTOCOL = "acapela";
 const APP_PROTOCOL_PREFIX = `${APP_PROTOCOL}://`;
 
@@ -19,6 +21,8 @@ function handleMaybeRouteChangeRequest(url: string) {
   const route = removePrefix(url, REQUEST_ROUTE_URL);
 
   requestOpenRoute.send({ path: `/${route}` });
+
+  getMainWindow().focus();
 }
 
 function handleAppReceivedUrl(url: string) {
