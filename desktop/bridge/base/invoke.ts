@@ -1,7 +1,5 @@
 import type { IpcMainInvokeEvent } from "electron";
 
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
-
 /**
  * Important note!
  *
@@ -19,9 +17,8 @@ import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
  * Each invoke bridge needs to have handler added somewhere in electron to be able to be invoked.
  */
 export function createInvokeBridge<Input = void, Result = void>(key: string) {
-  const log = makeLogger(`${key}`, false);
   async function invoke(input: Input): Promise<Result> {
-    log("invoke", input);
+    console.info("invoke", input);
     if (process.env.ELECTRON_CONTEXT !== "client") {
       await global.electronGlobal.appReadyPromise;
       //
