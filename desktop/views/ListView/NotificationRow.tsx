@@ -101,7 +101,7 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
         <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
         {tags && <NotificationTags tags={tags} />}
-        {title && <UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
+        {<UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
         {!notification.isResolved && <UIReminderLabel notificationOrGroup={notification} />}
         {isFocused && <UIRowQuickActions target={notification} />}
         <NotificationDate notification={notification} key={notification.id} />
