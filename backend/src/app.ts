@@ -32,6 +32,7 @@ import { setupSlack } from "./slack/setup";
 import { router as stripeRoutes } from "./subscription";
 import { router as tracking } from "./tracking";
 import { router as waitlistRoutes } from "./waitlist/waitlist";
+import { closeSubscriptions } from "./webhooks";
 
 const NANOSECONDS_IN_MILLISECOND = 1e6;
 
@@ -131,7 +132,8 @@ function setupGracefulShutdown(server: Server) {
     onSignal: () => {
       return closeServer();
     },
-    beforeShutdown: () => {
+    beforeShutdown: async () => {
+      await closeSubscriptions();
       return new Promise((resolve) => {
         setTimeout(resolve, 5000);
       });
