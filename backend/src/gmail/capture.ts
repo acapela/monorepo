@@ -5,6 +5,7 @@ import { join } from "path";
 import { PubSub } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
 import { gmail_v1, google } from "googleapis";
+import { uniqWith } from "lodash";
 import { Account as NextAuthAccount } from "next-auth";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
@@ -29,7 +30,7 @@ import { findHeader } from "./utils";
 
 const { GMAIL_TOPIC_NAME, GMAIL_SUBSCRIPTION_NAME } = process.env as Record<string, string>;
 
-const createGmailClientForAccount = (account: Account) => {
+export const createGmailClientForAccount = (account: Account) => {
   const auth = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
   auth.setCredentials({ access_token: account.access_token, refresh_token: account.refresh_token });
   return google.gmail({ version: "v1", auth });
@@ -189,7 +190,76 @@ async function resolveArchivedMessageNotifications(history: gmail_v1.Schema$Hist
   });
 }
 
-async function createNotificationsForNewMessages(
+async function handleReadStateInNotifications(history: gmail_v1.Schema$History[]) {
+  // [{historyIndex: 5, id: 3}, {historyIndex:4, id:3},{historyIndex:3, id:2}]
+  const markedAsReadMessageIds = (history ?? [])
+    .flatMap((h) => (h.labelsRemoved ? h.labelsRemoved.map((la) => ({ id: h.id, ...la })) : []))
+    .filter((r) => r.labelIds?.includes("UNREAD"))
+    .map((r) => ({ historyIndex: r.id, id: r.message?.id }))
+    .filter((props) => props.historyIndex && props.id)
+    .reverse() as { historyIndex: string; id: string }[];
+
+  const dedupedMarkedAsReadMessageIds = uniqWith(markedAsReadMessageIds, function comparator(a, b) {
+    return a.id === b.id;
+  });
+
+  // [{historyIndex: 5, id: 3}, {historyIndex:4, id:3},{historyIndex:3, id:2}]
+  const markedAsUnreadMessageIds = (history ?? [])
+    .flatMap((h) => (h.labelsAdded ? h.labelsAdded.map((la) => ({ id: h.id, ...la })) : []))
+    .filter((r) => r.labelIds?.includes("UNREAD"))
+    .map((r) => ({ historyIndex: r.id, id: r.message?.id }))
+    .filter((props) => !!props.historyIndex && !!props.id)
+    .reverse() as { historyIndex: string; id: string }[];
+
+  const dedupedMarkedAsUnreadMessageIds = uniqWith(markedAsUnreadMessageIds, function comparator(a, b) {
+    return a.id === b.id;
+  });
+
+  /*
+   We can have multiple opposite updates in a single history batch.
+   This algo works for cases in which a single gmailMessageId was markedAsRead and markedAsUnread more than once in a 
+   single batch.
+
+   We're doing this by finding the "last update" that happened in the batch, based on the historyIndex (largest number means
+    it happened later).
+  */
+  for (let i = 0; i < dedupedMarkedAsReadMessageIds.length; i++) {
+    const markedAsRead = dedupedMarkedAsReadMessageIds[i];
+    const sameMessageMarkedAsUnreadIndex = dedupedMarkedAsUnreadMessageIds.findIndex((m) => m.id === markedAsRead.id);
+
+    if (sameMessageMarkedAsUnreadIndex < 0) {
+      continue;
+    }
+
+    const sameMessageMarkedAsUnread = dedupedMarkedAsUnreadMessageIds[sameMessageMarkedAsUnreadIndex];
+
+    if (sameMessageMarkedAsUnread) {
+      const wasMarkedAsUnreadAfterMarkedAsRead =
+        Number(sameMessageMarkedAsUnread.historyIndex) >= Number(markedAsRead.historyIndex);
+      if (wasMarkedAsUnreadAfterMarkedAsRead) {
+        dedupedMarkedAsReadMessageIds.splice(i, 1);
+      } else {
+        dedupedMarkedAsUnreadMessageIds.splice(sameMessageMarkedAsUnreadIndex, 1);
+      }
+    }
+  }
+
+  await db.notification.updateMany({
+    where: {
+      notification_gmail: { some: { gmail_message_id: { in: dedupedMarkedAsReadMessageIds.map(({ id }) => id) } } },
+    },
+    data: { last_seen_at: new Date().toISOString() },
+  });
+
+  await db.notification.updateMany({
+    where: {
+      notification_gmail: { some: { gmail_message_id: { in: dedupedMarkedAsUnreadMessageIds.map(({ id }) => id) } } },
+    },
+    data: { last_seen_at: null },
+  });
+}
+
+async function upsertNotificationsGivenGmailHistory(
   { id: gmailAccountId, account }: GmailAccount & { account: Account },
   startHistoryId: string
 ) {
@@ -198,7 +268,6 @@ async function createNotificationsForNewMessages(
     .list({
       userId: account.provider_account_id,
       startHistoryId,
-      labelId: "INBOX",
     })
     .catch((error) => {
       if (error.message.includes("Insufficient Permission")) {
@@ -206,14 +275,18 @@ async function createNotificationsForNewMessages(
       }
       throw error;
     });
+
   if (!historyResponse) {
     // We ignore messages for users for whom we lost permission to access their inbox
     return;
   }
+
   const addedMessageIds = (historyResponse.data.history ?? [])
     .flatMap((h) => h.messagesAdded ?? [])
+    .filter(({ message }) => message?.labelIds?.includes("INBOX"))
     .map(({ message }) => message?.id)
     .filter(isNotNullish);
+
   const existingMessageNotifications = await db.notification_gmail.findMany({
     where: { gmail_message_id: { in: addedMessageIds } },
   });
@@ -225,6 +298,7 @@ async function createNotificationsForNewMessages(
   }
 
   await resolveArchivedMessageNotifications(historyResponse.data.history ?? []);
+  await handleReadStateInNotifications(historyResponse.data.history ?? []);
 }
 
 function extractKeyfileFromEnv(): string | undefined {
@@ -254,7 +328,7 @@ export function listenToGmailSubscription() {
     if (gmailAccount) {
       const lastHistoryId = gmailAccount.last_history_id;
       if (lastHistoryId) {
-        await createNotificationsForNewMessages(gmailAccount, lastHistoryId.toString());
+        await upsertNotificationsGivenGmailHistory(gmailAccount, lastHistoryId.toString());
       }
       await db.gmail_account.update({
         where: { id: gmailAccount.id },

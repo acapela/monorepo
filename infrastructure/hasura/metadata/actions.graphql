@@ -11,6 +11,10 @@ type Query {
 }
 
 type Mutation {
+  handle_revert_url_view(input: HandleRevertUrlViewInput): HandleRevertUrlViewOutput
+}
+
+type Mutation {
   invite_user(input: InviteUserInput!): InviteUserOutput
 }
 
@@ -70,6 +74,11 @@ input InviteUserInput {
 input GetSlackInstallationURLInput {
   redirectURL: String!
   teamId: String
+}
+
+input HandleRevertUrlViewInput {
+  inner_notification_id: uuid!
+  inner_table_type: String!
 }
 
 type UpgradeUserResponse {
@@ -151,4 +160,8 @@ type GitHubInstallation {
 
 type SwitchSubscriptionPlanOutput {
   checkout_url: String
+}
+
+type HandleRevertUrlViewOutput {
+  success: Boolean!
 }

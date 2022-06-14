@@ -15,7 +15,7 @@ import {
   saveNotification,
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
-import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
+import { PreloadingState, preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
@@ -193,7 +193,7 @@ const UISendersPerson = styled.span`
 
 const UISendersMore = styled.span``;
 
-const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: "loading" | "ready" | "error" | false }>`
+const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: PreloadingState | false }>`
   position: relative;
   ${theme.box.items.listRow.size.padding};
 

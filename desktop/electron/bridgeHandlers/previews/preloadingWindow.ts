@@ -76,7 +76,7 @@ export function attachViewToPreloadingWindow(
 }
 
 /**
- * Lets initialize preloading window as soon as possible (so we dont wait for React to request it)
+ * Lets initialize preloading window as soon as possible (so we don't wait for React to request it)
  */
 appAndEnvReadyPromise.then(() => {
   getPreloadingWindow();

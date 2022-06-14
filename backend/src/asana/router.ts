@@ -123,7 +123,7 @@ router.get("/v1/asana/callback", async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).end();
   trackBackendUserEvent(userId, "Asana Integration Added");
   trackBackendUserEvent(userId, "New Integration Added", { integration: "asana" });
-  // TODO: might run here into asana API ratelimits
+  // TODO: might run here into asana API rate limits
   await Promise.all(projects.map((p) => createWebhookForProject(p)));
 });
 

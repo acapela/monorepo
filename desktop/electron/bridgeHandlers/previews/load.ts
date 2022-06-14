@@ -21,9 +21,9 @@ async function ensureBrowserViewHasBackground(view: BrowserView) {
 export async function loadPreviewIfNeeded(browserView: BrowserView, url: string) {
   const currentLoadState = preloadingPreviewsBridgeChannel.get()[url];
 
-  if (currentLoadState === "loading" || currentLoadState === "ready") return;
-
-  return await forceLoadPreview(browserView, url);
+  if (!currentLoadState || currentLoadState === "error") {
+    return await forceLoadPreview(browserView, url);
+  }
 }
 
 export async function forceLoadPreview(browserView: BrowserView, url: string) {

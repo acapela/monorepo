@@ -1,6 +1,6 @@
 import { BrowserView, BrowserWindow, WebContents } from "electron";
 
-import { preloadingPreviewsBridgeChannel } from "@aca/desktop/bridge/preview";
+import { preloadingPreviewsBridgeChannel, unattachedPreloadBridgeChannel } from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/windows/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -100,9 +100,14 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
   {
     keyGetter: (url) => url,
     cleanup(view, url) {
+      const state = preloadingPreviewsBridgeChannel.get()[url];
       preloadingPreviewsBridgeChannel.update((stateMap) => {
         delete stateMap[url];
       });
+
+      if (state !== "attached") {
+        unattachedPreloadBridgeChannel.send({ url });
+      }
 
       markViewDisposedTime(view);
       destroyBrowserView(view);

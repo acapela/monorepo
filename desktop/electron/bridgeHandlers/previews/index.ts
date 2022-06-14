@@ -1,4 +1,5 @@
 import {
+  preloadingPreviewsBridgeChannel,
   requestAttachPreview,
   requestEmbedPreload,
   requestForceReloadPreview,
@@ -50,6 +51,8 @@ export function initPreviewHandler() {
     markViewAttachedTime(browserView);
 
     const detach = attachPreview(browserView, targetWindow);
+
+    preloadingPreviewsBridgeChannel.update({ [url]: "attached" });
 
     return () => {
       // !important - detach should be called first (before cancel). Cancel might destroy browser view and detaching destroyed view might throw

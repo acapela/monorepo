@@ -59,8 +59,12 @@ type PreviewEvent = PreviewEventBase & PreviewEventData;
 
 export const previewEventsBridge = createChannelBridge<PreviewEvent>("preview-event");
 
+export type PreloadingState = "loading" | "ready" | "attached" | "error";
+
 export const preloadingPreviewsBridgeChannel = createBridgeValue("preloadingPreviews", {
   getDefault() {
-    return {} as Record<string, "loading" | "ready" | "error">;
+    return {} as Record<string, PreloadingState>;
   },
 });
+
+export const unattachedPreloadBridgeChannel = createChannelBridge<{ url: string }>("unattached-preload");

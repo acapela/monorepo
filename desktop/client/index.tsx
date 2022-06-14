@@ -32,6 +32,7 @@ import { UpdateInfo } from "../views/UpdateInfo/UpdateInfo";
 import { AppStyleProvider } from "./AppStyleProvider";
 import { LoggerWindowManager } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
+import { UnattachedPreloadEmbedManager } from "./UnattachedPreloadEmbedManager";
 
 const appEnv = window.electronBridge.env;
 
@@ -78,6 +79,7 @@ function App() {
           <PromiseUIRenderer />
           <TooltipsRenderer />
 
+          <UnattachedPreloadEmbedManager />
           <ServiceWorkerConsolidation />
           <RootErrorBoundary>
             <LoggerWindowManager />
