@@ -25,6 +25,7 @@ import { registerLogEntryHandler } from "../domains/dev/makeLogger";
 import { ensureSystemListsCreated } from "../domains/list/system";
 import { RenderForLoggedInOnly } from "../ui/RenderForLoggedInOnly";
 import { BadgeCountManager } from "../views/BadgeCountManager";
+import { FocusSessionManager } from "../views/FocusBar/FocusSessionManager";
 import { OnboardingFinishedAnimationManager } from "../views/OnboardingView/OnboardingFinishedAnimationManager";
 import { PlanUpgadeCelebrationView } from "../views/PremiumPlan/PlanUpgadeCelebrationView";
 import { TrayManager } from "../views/TrayManager";
@@ -88,6 +89,7 @@ function App() {
             <PeekView />
             <SystemMenuManager />
             <CommandMenuManager />
+            <FocusSessionManager />
             <RootView />
             <RenderForLoggedInOnly>
               <PlanUpgadeCelebrationView />

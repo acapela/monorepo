@@ -51,6 +51,7 @@ export function box(input: BoxInput, flags: BoxFlag[] = []): Box {
             parts.push(
               css`
                 width: ${width ?? height}px;
+                min-width: ${width ?? height}px;
                 justify-content: center;
               `
             );

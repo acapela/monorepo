@@ -27,6 +27,7 @@ import {
 
 import { getNotificationTitle } from "../domains/notification/title";
 import { addToast } from "../domains/toasts/store";
+import { startFocusSession } from "../store/focus";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
 import { currentNotificationActionsGroup } from "./groups";
@@ -148,6 +149,8 @@ export const saveNotification = defineAction({
     return getContextHasNotificationMatching(ctx, (n) => !n.isSaved);
   },
   handler(context) {
+    focusNextItemIfAvailable(context);
+
     const { operationsCount, undo } = runForEachTargettedNotification(context, (notification) => {
       return notification.markAsSaved().undo;
     });
@@ -327,13 +330,14 @@ export const openFocusMode = defineAction({
         group.notifications.forEach((n) => n.markAsSeen());
       }
       const notificationToShow = group.notifications[0];
-      desktopRouter.navigate("focus", { listId: list.id, notificationId: notificationToShow.id });
+      startFocusSession({ list, activeNotification: notificationToShow });
+
       return;
     }
 
     if (notification) {
       notification.markAsSeen();
-      desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+      startFocusSession({ list, activeNotification: notification });
     }
   },
   onMightBeSelected(context) {
