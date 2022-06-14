@@ -1,4 +1,11 @@
-import { BrowserWindow, WebContents } from "electron";
+import { BrowserWindow, WebContents, app } from "electron";
+
+import { ChildWindowCustomKind } from "@aca/desktop/domains/childWindow/kinds";
+import { createCleanupObject } from "@aca/shared/cleanup";
+import { removePrefix } from "@aca/shared/text/substring";
+
+import { childWindowKindHandlers } from "./childWindowKinds/handlers";
+import { ChildWindowHandler } from "./childWindowKinds/types";
 
 /**
  * We're creating invisible window as a host for child windows.
@@ -8,7 +15,7 @@ import { BrowserWindow, WebContents } from "electron";
  *
  * I tried to find a way to 'remember previously focused app' and restore it, but was not able to.
  */
-const createChildWindowHost = () => {
+const createChildWindowHost = (handler: ChildWindowHandler | null) => {
   const hostWindow = new BrowserWindow({
     width: 900,
     height: 680,
@@ -25,8 +32,17 @@ const createChildWindowHost = () => {
 
   hostWindow.setIgnoreMouseEvents(true);
 
+  const cleanup = createCleanupObject();
+
+  app.on("browser-window-created", (_, window) => {
+    if (window.getParentWindow() === hostWindow) {
+      cleanup.next = handler?.initializer?.(window, hostWindow);
+    }
+  });
+
   hostWindow.webContents.on("did-create-window", (childWindow) => {
     childWindow.on("closed", () => {
+      cleanup.clean();
       hostWindow.close();
     });
   });
@@ -34,17 +50,36 @@ const createChildWindowHost = () => {
   return hostWindow;
 };
 
+function pickWindowKindFromFeatures(features: string): ChildWindowCustomKind | null {
+  const segments = features.split(",");
+
+  for (const segment of segments) {
+    if (!segment.startsWith("kind=")) continue;
+
+    return removePrefix(segment, "kind=") as ChildWindowCustomKind;
+  }
+
+  return null;
+}
+
 export function initializeChildWindowHandlers(webContents: WebContents) {
-  webContents.setWindowOpenHandler(({ url }) => {
+  webContents.setWindowOpenHandler(({ url, features }) => {
     if (url !== "about:blank") {
       return { action: "deny" };
     }
+
+    const kind = pickWindowKindFromFeatures(features);
+
+    const customHandler = kind ? childWindowKindHandlers[kind] : null;
+
+    const host = createChildWindowHost(customHandler);
 
     return {
       action: "allow",
       overrideBrowserWindowOptions: {
         paintWhenInitiallyHidden: true,
-        parent: createChildWindowHost(),
+        parent: host,
+        ...customHandler?.options,
         webPreferences: {
           nodeIntegration: false,
           contextIsolation: true,

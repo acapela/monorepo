@@ -4,10 +4,12 @@ import React, { ReactNode, forwardRef, useEffect, useLayoutEffect, useState } fr
 import { createPortal } from "react-dom";
 import styled, { StyleSheetManager, createGlobalStyle } from "styled-components";
 
-import { GlobalDesktopStyles } from "@aca/desktop/styles/GlobalDesktopStyles";
+import { AppStyleProvider } from "@aca/desktop/client/AppStyleProvider";
 import { WindowContext } from "@aca/shared/context/window";
 import { useSharedRef } from "@aca/shared/hooks/useSharedRef";
 import { PresenceAnimator } from "@aca/ui/PresenceAnimator";
+
+import { ChildWindowCustomKind } from "../childWindow/kinds";
 
 // prettier-ignore
 type VibrancyStyle = "appearance-based"| "light"| "dark"| "titlebar"| "selection"| "menu"| "popover"| "sidebar"| "medium-light"| "ultra-dark"| "header"| "sheet"| "window"| "hud"| "fullscreen-ui"| "tooltip"| "content"| "under-window"| "under-page";
@@ -30,6 +32,7 @@ interface WindowInitialOptions {
 interface Props {
   children: ReactNode;
   options?: WindowInitialOptions;
+  kind?: ChildWindowCustomKind;
   /**
    * This prop is required! We cannot prevent user from closing the window, yet we want react-state to reflect
    * that window is closed and stop rendering.
@@ -44,12 +47,16 @@ interface Props {
  *
  * https://www.electronjs.org/docs/latest/api/window-open
  */
-function prepareFeaturesString(options: WindowInitialOptions) {
-  return entries(options)
-    .map(([key, value]) => {
-      return `${key}=${value}`;
-    })
-    .join(",");
+function prepareFeaturesString(options: WindowInitialOptions, kind?: ChildWindowCustomKind) {
+  const featuresList = entries(options).map(([key, value]) => {
+    return `${key}=${value}`;
+  });
+
+  if (kind) {
+    featuresList.push(`kind=${kind}`);
+  }
+
+  return featuresList.join(",");
 }
 
 /**
@@ -57,13 +64,13 @@ function prepareFeaturesString(options: WindowInitialOptions) {
  * Simply do <NewBrowserWindow>Foo</NewBrowserWindow> and Foo will be rendered in a new window
  */
 export const NewBrowserWindow = forwardRef<Window, Props>(function NewBrowserWindow(
-  { children, options = {}, onClosed }: Props,
+  { children, options = {}, onClosed, kind }: Props,
   ref
 ) {
   const [newWindow, setNewWindowBody] = useState<Window | null>(null);
   const [isClosed, setIsClosed] = useState(false);
 
-  const features = prepareFeaturesString(options);
+  const features = prepareFeaturesString(options, kind);
 
   const innerRef = useSharedRef<Window | null>(null, [ref]);
 
@@ -111,20 +118,18 @@ export const NewBrowserWindow = forwardRef<Window, Props>(function NewBrowserWin
      * Everything rendered inside this StyleSheetManager will create <style> tags inside new window <head>
      */
     <StyleSheetManager target={newWindow.document.body}>
-      <>
+      <AppStyleProvider>
         {/* We want to keep element alive for a moment in case window is closed with animation */}
         <AnimatePresence>
           <KeepAlive presenceStyles={{ opacity: [1, 1] }} transition={{ duration: 0.5 }}>
             {/* We wrap new 'window' context. This is important for all hooks like 'useShortcut', or 'useWindowEvent' to read from it to attach events to correct window */}
             <WindowContext value={newWindow}>
               <WindowStyles />
-              {/* We need to re-initialize all the root-styles */}
-              <GlobalDesktopStyles />
               {children}
             </WindowContext>
           </KeepAlive>
         </AnimatePresence>
-      </>
+      </AppStyleProvider>
     </StyleSheetManager>,
     newWindow.document.body
   );

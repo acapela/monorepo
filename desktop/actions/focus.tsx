@@ -1,12 +1,13 @@
 import React from "react";
 
 import { requestForceReloadPreview, requestPreviewFocus } from "@aca/desktop/bridge/preview";
-import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
+import { showMainWindowRequest } from "../bridge/system";
 import { animationStore } from "../domains/embed/animationStore";
 import { addToast } from "../domains/toasts/store";
+import { stopFocusSession } from "../store/focus";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { focusPageView } from "./views/focus";
@@ -17,16 +18,19 @@ export const exitFocusMode = defineAction({
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",
-  canApply: () => desktopRouter.getIsRouteActive("focus"),
+  canApply: (ctx) => {
+    return !!ctx.view(focusPageView);
+  },
   handler(context) {
     const notification = context.view(focusPageView)?.notification;
-    const { listId } = desktopRouter.assertGetActiveRouteParams("focus");
 
-    desktopRouter.navigate("list", { listId });
+    stopFocusSession();
 
     if (notification) {
       uiStore.focusedTarget = notification;
     }
+
+    showMainWindowRequest();
   },
 });
 
@@ -36,7 +40,7 @@ export const refreshNotificationPreview = defineAction({
   icon: <IconRefreshCcw />,
   keywords: ["reload"],
   shortcut: ["Mod", "R"],
-  canApply: () => desktopRouter.getIsRouteActive("focus"),
+  canApply: (ctx) => !!ctx.view(focusPageView),
   async handler(context) {
     const notification = context.view(focusPageView)?.notification;
 
@@ -56,7 +60,7 @@ export const focusOnNotificationPreview = defineAction({
   group: currentNotificationActionsGroup,
   name: (ctx) => (ctx.isContextual ? "Focus" : "Focus on notification screen"),
   shortcut: ["Mod", "Enter"],
-  canApply: () => desktopRouter.getIsRouteActive("focus"),
+  canApply: (ctx) => !!ctx.view(focusPageView),
 
   handler(context) {
     const notification = context.assertTarget("notification");

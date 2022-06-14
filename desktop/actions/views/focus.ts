@@ -3,13 +3,19 @@ import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { animationStore } from "@aca/desktop/domains/embed/animationStore";
 import { canListShowZenScreen } from "@aca/desktop/domains/list/all";
 import { desktopRouter } from "@aca/desktop/routes";
+import { focusSessionStore } from "@aca/desktop/store/focus";
 import { uiStore } from "@aca/desktop/store/ui";
 
 export const focusPageView = createActionView((context) => {
-  if (!desktopRouter.getIsRouteActive("focus")) return null;
+  const { session } = focusSessionStore;
+  const isFocusRoute = desktopRouter.getIsRouteActive("focus");
+
+  if (!session && !isFocusRoute) {
+    return null;
+  }
 
   const list = context.assertTarget("list", true);
-  const notification = context.assertTarget("notification");
+  const notification = context.getTarget("notification");
 
   function navigateToNotification(notification: NotificationEntity) {
     const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);
@@ -22,16 +28,22 @@ export const focusPageView = createActionView((context) => {
       notification.markAsSeen();
     }
 
-    desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+    focusSessionStore.session!.activeNotification = notification;
   }
 
   const view = {
     list,
     notification,
     get nextNotification() {
+      if (!notification) {
+        return list.getAllNotifications().at(0) ?? null;
+      }
       return list.getNextNotification(notification);
     },
     get prevNotification() {
+      if (!notification) {
+        return list.getAllNotifications().at(-1) ?? null;
+      }
       return list.getPreviousNotification(notification);
     },
     focusNextItemIfAvailable() {
@@ -57,7 +69,6 @@ export const focusPageView = createActionView((context) => {
       const { prevNotification } = view;
 
       if (!prevNotification) {
-        desktopRouter.navigate("list", { listId: list.id });
         return null;
       }
 

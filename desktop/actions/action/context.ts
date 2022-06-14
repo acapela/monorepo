@@ -8,6 +8,7 @@ import { cachedComputed } from "@aca/clientdb";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { desktopRouter } from "@aca/desktop/routes";
+import { focusSessionStore } from "@aca/desktop/store/focus";
 import { uiStore } from "@aca/desktop/store/ui";
 import { deepMemoize } from "@aca/shared/deepMap";
 import { useEqualRef } from "@aca/shared/hooks/useEqualRef";
@@ -51,7 +52,7 @@ interface ActionContextConfig {
 }
 
 export function getImplicitTargets() {
-  return [uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
+  return [focusSessionStore.session?.activeNotification, uiStore.focusedTarget, ...routeTargets()].filter(isNotNullish);
 }
 
 function convertTargetOrTargetsToArray(targetOrTargets: unknown): unknown[] {
