@@ -50,6 +50,7 @@ export const applicationWideSettingsBridge = createBridgeValue("app-wide-setting
     showUnreadNotificationsCountBadge: false,
     notificationsCountBadgeListIds: [] as string[],
     showShortcutsBar: true,
+    useFocusBar: false,
   }),
 });
 

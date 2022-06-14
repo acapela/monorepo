@@ -18,9 +18,7 @@ export const exitFocusMode = defineAction({
   icon: <IconArrowLeft />,
   keywords: ["exit", "back"],
   shortcut: "Esc",
-  canApply: (ctx) => {
-    return !!ctx.view(focusPageView);
-  },
+  canApply: (ctx) => !!ctx.view(focusPageView),
   handler(context) {
     const notification = context.view(focusPageView)?.notification;
 

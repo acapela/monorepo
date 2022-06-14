@@ -14,8 +14,10 @@ export const focusPageView = createActionView((context) => {
     return null;
   }
 
-  const list = context.assertTarget("list", true);
+  const list = context.getTarget("list", true)!;
   const notification = context.getTarget("notification");
+
+  if (!list) return null;
 
   function navigateToNotification(notification: NotificationEntity) {
     const groupThatNotificationBelongsTo = list.getNotificationGroup(notification);

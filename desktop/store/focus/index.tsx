@@ -1,5 +1,7 @@
 import { makeAutoObservable, makeObservable, observable, runInAction } from "mobx";
 
+import { cachedComputed } from "@aca/clientdb";
+import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { desktopRouter } from "@aca/desktop/routes";
@@ -22,14 +24,16 @@ export const focusSessionStore = makeObservable(
   { session: observable.ref }
 );
 
-export const NEW_FOCUS = !true;
+const getShouldUseFocusBar = cachedComputed(() => {
+  return applicationWideSettingsBridge.get().useFocusBar === true;
+});
 
 export function startFocusSession(input: CreateFocusSessionInput) {
-  if (NEW_FOCUS) {
-    const session = createFocusSession(input);
+  if (getShouldUseFocusBar()) {
+    const newSession = createFocusSession(input);
 
     runInAction(() => {
-      focusSessionStore.session = session;
+      focusSessionStore.session = newSession;
     });
   } else {
     desktopRouter.navigate("focus", { listId: input.list.id, notificationId: input.activeNotification.id });
@@ -37,7 +41,7 @@ export function startFocusSession(input: CreateFocusSessionInput) {
 }
 
 export function stopFocusSession() {
-  if (NEW_FOCUS) {
+  if (getShouldUseFocusBar()) {
     runInAction(() => {
       focusSessionStore.session = null;
     });

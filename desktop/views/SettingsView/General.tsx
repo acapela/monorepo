@@ -19,11 +19,24 @@ const THEME_LABELS = {
 };
 
 export const GeneralSettings = observer(function ThemeSelector() {
-  const { showShortcutsBar } = applicationWideSettingsBridge.get();
+  const { showShortcutsBar, useFocusBar } = applicationWideSettingsBridge.get();
   const settings = applicationWideSettingsBridge.get();
 
   return (
     <SettingsList>
+      <SettingRow
+        title="Open notifications using Focus Bar"
+        description="When opening notification - it will open it in original and show Acapela navigation widget"
+      >
+        <Toggle
+          size="small"
+          isDisabled
+          isSet={useFocusBar}
+          onChange={(isSet) => {
+            applicationWideSettingsBridge.update({ useFocusBar: isSet });
+          }}
+        />
+      </SettingRow>
       <SettingRow title="Show shortcuts footer">
         <ActionTrigger action={toggleShowShortcutsBar}>
           <Toggle size="small" isDisabled isSet={showShortcutsBar} />
