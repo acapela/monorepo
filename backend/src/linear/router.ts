@@ -161,6 +161,7 @@ async function saveComment(payload: CommentWebhook) {
             user_id: u.user_id,
             url: payload.url,
             from: payload.data.user.name,
+            text_preview: payload.data.body,
           },
         },
         type: "Comment",
