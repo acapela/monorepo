@@ -82,20 +82,6 @@ function handlePositioning(window: BrowserWindow, hostWindow: BrowserWindow) {
   let whoIsMovingWindow: "user" | "system" = "user";
 
   const cleanup = createCleanupObject();
-  function handleWindowMoved() {
-    if (whoIsMovingWindow === "system") {
-      return;
-    }
-
-    // Window was moved manually by user, skip moving
-    cleanup.clean();
-  }
-
-  window.addListener("moved", handleWindowMoved);
-
-  cleanup.next = () => {
-    window.removeListener("moved", handleWindowMoved);
-  };
 
   function autoPosition() {
     try {
@@ -123,6 +109,21 @@ function handlePositioning(window: BrowserWindow, hostWindow: BrowserWindow) {
     // As it seems to be cheap - let's track it frequently to avoid delay when cursor moved between displays
     autoPosition();
   }, 250);
+
+  function handleWindowMoved() {
+    if (whoIsMovingWindow === "system") {
+      return;
+    }
+
+    // Window was moved manually by user, skip moving
+    cleanup.clean();
+  }
+
+  window.addListener("moved", handleWindowMoved);
+
+  cleanup.next = () => {
+    window.removeListener("moved", handleWindowMoved);
+  };
 
   return cleanup.clean;
 }
