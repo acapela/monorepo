@@ -30,7 +30,11 @@ export const focusPageView = createActionView((context) => {
       notification.markAsSeen();
     }
 
-    focusSessionStore.session!.activeNotification = notification;
+    if (focusSessionStore.session) {
+      focusSessionStore.session.activeNotification = notification;
+    } else {
+      desktopRouter.navigate("focus", { listId: list.id, notificationId: notification.id });
+    }
   }
 
   const view = {
