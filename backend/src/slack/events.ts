@@ -63,20 +63,17 @@ export async function markSlackConversationsAsRead() {
   });
 }
 
+// Mark read messages as such in the db
 export async function markReadSlackMessages() {
-  // console.log("Marking read slack messages...");
-
+  // Get all slack user installations
   const userSlackInstallations = await db.user_slack_installation.findMany();
 
   await Promise.all(
     userSlackInstallations.map(async (installation) => {
       const installData = installation.data as unknown as SlackInstallation;
-
-      // console.log(`User Scopes: ${installData.user.scopes}`);
-
       const token = installData.user.token;
-      // console.log(`User token: ${token}`);
 
+      // Get all conversations of user
       const conversations = await slackClient.users.conversations({
         token: token,
         types: "public_channel,private_channel,mpim,im",
@@ -84,7 +81,10 @@ export async function markReadSlackMessages() {
         exclude_archived: true,
       });
 
-      assert(conversations.channels, "Conversation doesn't have any channels");
+      if (!conversations.channels) {
+        // Empty conversations list
+        return;
+      }
 
       await Promise.all(
         conversations.channels?.map(async (channel) => {
@@ -94,9 +94,12 @@ export async function markReadSlackMessages() {
             channel: channel.id,
           });
 
+          // Current read timestamp of the user for this channel
+          // NOTE: Doesn't currently work for threads
           const timestamp = info.channel?.last_read;
 
-          const newlyRead = await db.notification_slack_message.findMany({
+          // Get all messages that are older than the current read timestamp and not yet marked as read
+          const newlyReadMessages = await db.notification_slack_message.findMany({
             where: {
               slack_conversation_id: info.channel?.id,
               user_slack_installation_id: installation.id,
@@ -105,22 +108,15 @@ export async function markReadSlackMessages() {
             },
           });
 
-          // if (newlyRead.length) {
-          //   console.log(`Found newly read messages in channel ${channel.name}, read timestamp: ${timestamp}`);
-          // }
-
+          // Mark messages as read
           await Promise.all(
-            newlyRead.map(async (message) => {
+            newlyReadMessages.map(async (message) => {
               await db.notification_slack_message.update({
                 where: { id: message.id },
                 data: {
                   is_read: true,
                 },
               });
-
-              // console.log(
-              //   `Newly read message in conversation: ${message.conversation_name} (${message.slack_message_ts})`
-              // );
             })
           );
         })
