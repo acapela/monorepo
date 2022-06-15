@@ -67,4 +67,6 @@ export const preloadingPreviewsBridgeChannel = createBridgeValue("preloadingPrev
   },
 });
 
-export const unattachedPreloadBridgeChannel = createChannelBridge<{ url: string }>("unattached-preload");
+export const previewLoadedChannel = createChannelBridge<{ url: string }>("preview-loaded");
+
+export const previewUnattachedChannel = createChannelBridge<{ url: string }>("preview-unattached");

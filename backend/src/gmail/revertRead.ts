@@ -5,8 +5,6 @@ import { logger } from "@aca/shared/logger";
 import { createGmailClientForAccount } from "./capture";
 
 export async function revertGmailMessageToUnread(innerNotificationId: string, userId?: string) {
-  console.info("Reverting gmail read for", innerNotificationId);
-
   const gmailNotification = await db.notification_gmail.findUnique({
     where: {
       id: innerNotificationId,
@@ -17,7 +15,7 @@ export async function revertGmailMessageToUnread(innerNotificationId: string, us
     },
   });
 
-  console.info(`Subject ${gmailNotification?.notification.text_preview}`);
+  console.info("Reverting gmail read for", innerNotificationId, gmailNotification?.gmail_message_id);
 
   assert(gmailNotification, `No gmail notification found for ${innerNotificationId}`);
   assert(
@@ -40,7 +38,8 @@ export async function revertGmailMessageToUnread(innerNotificationId: string, us
       id: gmail_message_id,
       requestBody: { addLabelIds: ["UNREAD"] },
     });
-    logger.info("Mark gmail message as unread: " + gmail_message_id);
+
+    logger.info("Reverted gmail message as unread: " + gmail_message_id);
   } catch (error) {
     logger.error(error);
   }

@@ -39,6 +39,7 @@ const notificationFragment = gql`
     snoozed_until
     notified_user_at
     saved_at
+    last_preloaded_at
   }
 `;
 
@@ -73,6 +74,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     last_seen_at: null,
     saved_at: null,
     notified_user_at: null,
+    last_preloaded_at: null,
     ...getGenericDefaultData(),
   }),
   functionalFilterCheck: IS_DEV
@@ -101,6 +103,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "last_seen_at",
         "notified_user_at",
         "saved_at",
+        "last_preloaded_at",
       ],
       updateColumns: [
         "updated_at",
@@ -111,6 +114,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         "last_seen_at",
         "notified_user_at",
         "saved_at",
+        "last_preloaded_at",
       ],
       upsertConstraint: "notification_pkey",
     }

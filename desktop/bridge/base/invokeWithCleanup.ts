@@ -1,7 +1,6 @@
 import type { IpcMainInvokeEvent } from "electron";
 import { memoize } from "lodash";
 
-import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { MaybePromise, resolveMaybePromise } from "@aca/shared/promises";
 import { getUUID } from "@aca/shared/uuid";
 
@@ -40,7 +39,6 @@ export function initializeCleanupsHandler() {
  * Each invoke bridge needs to have handler added somewhere in electron to be able to be invoked.
  */
 export function createInvokeWithCleanupBridge<Input = void>(key: string) {
-  const log = makeLogger(key, false);
   type InnerInput = { input: Input; cleanupId: string };
   const initKey = `${key}_init`;
   function invoke(input: Input): MaybeCleanup {
@@ -56,9 +54,6 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
       };
     }
 
-    // Client side
-    log("invoke", input);
-
     const cleanupId = getUUID();
 
     const innerInput: InnerInput = { input, cleanupId };
@@ -66,9 +61,7 @@ export function createInvokeWithCleanupBridge<Input = void>(key: string) {
     const invokePromise = window.electronBridge.invoke(initKey, innerInput);
 
     return function clean() {
-      log("clean", cleanupId);
       invokePromise.then(() => {
-        log("clean done", cleanupId);
         cleanupBridge({ id: cleanupId });
       });
     };

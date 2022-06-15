@@ -10,7 +10,7 @@ type SiteFilter = {
   on: (url: URL) => boolean;
   rewriteURL?: (url: URL) => string;
   css?: StylesPart;
-  onLoad?: (browserView: BrowserView) => void;
+  onLoad?: (browserView: BrowserView, url: string) => void;
 };
 
 const isHostSlack = (url: URL) => url.hostname.endsWith(".slack.com");
@@ -131,6 +131,14 @@ const siteFilters: SiteFilter[] = [
         display: none !important;
       }
     `,
+    onLoad: (browserView) =>
+      onElementHidden(
+        browserView.webContents,
+        function () {
+          markFullPageLoadTime(browserView);
+        },
+        "#loading"
+      ),
   },
 ];
 
@@ -163,7 +171,7 @@ export async function loadURLWithFilters(browserView: BrowserView, url: string) 
   function handleOnPageContentsLoaded() {
     markHtmlPageLoadTime(browserView);
     for (const filter of applicableSiteFilters) {
-      cleanup.next = filter.onLoad?.(browserView);
+      cleanup.next = filter.onLoad?.(browserView, url);
     }
   }
 
