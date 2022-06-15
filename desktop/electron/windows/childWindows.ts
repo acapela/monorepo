@@ -38,10 +38,8 @@ const createChildWindowHost = (handler: ChildWindowHandler | null) => {
     if (window.getParentWindow() === hostWindow) {
       cleanup.next = handler?.initializer?.(window, hostWindow);
     }
-  });
 
-  hostWindow.webContents.on("did-create-window", (childWindow) => {
-    childWindow.on("closed", () => {
+    window.once("closed", () => {
       cleanup.clean();
       hostWindow.close();
     });

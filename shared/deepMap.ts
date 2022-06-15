@@ -74,7 +74,19 @@ export function createDeepMap<V>({ checkEquality = false, useWeakMap = false }: 
     return targetMap.has(targetSymbol);
   }
 
-  function get(path: unknown[], factory: () => V) {
+  function set(path: unknown[], value: V) {
+    const targetMap = getFinalTargetMap(path);
+
+    targetMap.set(targetSymbol, value);
+  }
+
+  function get(path: unknown[]) {
+    const targetMap = getFinalTargetMap(path);
+
+    return targetMap.get(targetSymbol) as V | undefined;
+  }
+
+  function getOrCreate(path: unknown[], factory: () => V) {
     const targetMap = getFinalTargetMap(path);
 
     if (targetMap.has(targetSymbol)) {
@@ -88,7 +100,7 @@ export function createDeepMap<V>({ checkEquality = false, useWeakMap = false }: 
     return newResult;
   }
 
-  return { get, has };
+  return { getOrCreate, has, set, get };
 }
 
 /**
@@ -98,7 +110,7 @@ export function deepMemoize<A extends unknown[], R>(callback: (...args: A) => R,
   const deepMap = createDeepMap<R>(options);
 
   return function getMemoized(...args: A): R {
-    return deepMap.get(args, () => callback(...args));
+    return deepMap.getOrCreate(args, () => callback(...args));
   };
 }
 
@@ -106,6 +118,6 @@ export function weakMemoize<A extends object[], R>(callback: (...args: A) => R) 
   const deepMap = createDeepMap<R>({ useWeakMap: true });
 
   return function getMemoized(...args: A): R {
-    return deepMap.get(args, () => callback(...args));
+    return deepMap.getOrCreate(args, () => callback(...args));
   };
 }

@@ -226,7 +226,7 @@ export function createEntityQuery<Data, Connections>(
 
   function createOrReuseQuery(filter?: FindInput<Data, Connections>, sort?: EntityQuerySortInput<Data, Connections>) {
     const resolvedSort = resolveSortInput(sort) ?? undefined;
-    const query = reuseQueriesMap.get([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
+    const query = reuseQueriesMap.getOrCreate([reuseQueryFilter(filter), reuseQuerySort(resolvedSort)], () => {
       const query = createEntityQuery(passingItems.get, { filter, sort: resolvedSort }, store);
 
       return query;
