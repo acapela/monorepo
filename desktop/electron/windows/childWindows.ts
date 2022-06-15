@@ -34,14 +34,12 @@ const createChildWindowHost = (handler: ChildWindowHandler | null) => {
 
   const cleanup = createCleanupObject();
 
-  app.on("browser-window-created", (_, window) => {
-    if (window.getParentWindow() === hostWindow) {
-      cleanup.next = handler?.initializer?.(window, hostWindow);
-    }
-  });
+  app.on("browser-window-created", (_, childWindow) => {
+    if (childWindow.getParentWindow() !== hostWindow) return;
 
-  hostWindow.webContents.on("did-create-window", (childWindow) => {
-    childWindow.on("closed", () => {
+    cleanup.next = handler?.initializer?.(childWindow, hostWindow);
+
+    childWindow.once("close", () => {
       cleanup.clean();
       hostWindow.close();
     });

@@ -6,12 +6,12 @@ describe("deepMap", () => {
 
     const fn = jest.fn(() => 42);
 
-    map.get([1, 2, 3], fn);
-    map.get([1, 2, 3], fn);
+    map.getOrCreate([1, 2, 3], fn);
+    map.getOrCreate([1, 2, 3], fn);
 
     expect(fn).toBeCalledTimes(1);
 
-    map.get([1, 2, 4], fn);
+    map.getOrCreate([1, 2, 4], fn);
 
     expect(fn).toBeCalledTimes(2);
   });
@@ -26,13 +26,13 @@ describe("deepMap", () => {
     const c = {};
     const d = {};
 
-    map.get([a, b, c], fn);
-    map.get([a, b, c], fn);
+    map.getOrCreate([a, b, c], fn);
+    map.getOrCreate([a, b, c], fn);
 
     expect(fn).toBeCalledTimes(1);
 
-    map.get([a, b, d], fn);
-    map.get([a, b, c], fn);
+    map.getOrCreate([a, b, d], fn);
+    map.getOrCreate([a, b, c], fn);
 
     expect(fn).toBeCalledTimes(2);
   });
@@ -45,8 +45,8 @@ describe("deepMap", () => {
     const a = {};
     const b = {};
 
-    map.get([a, b, undefined], fn);
-    map.get([a, b, undefined], fn);
+    map.getOrCreate([a, b, undefined], fn);
+    map.getOrCreate([a, b, undefined], fn);
 
     expect(fn).toBeCalledTimes(1);
   });
@@ -58,7 +58,7 @@ describe("deepMap", () => {
     const b = {};
     const c = {};
 
-    map.get([a, b], () => 42);
+    map.getOrCreate([a, b], () => 42);
     expect(map.has([a, b])).toBeTruthy();
     expect(map.has([a, c])).toBeFalsy();
   });
@@ -71,8 +71,8 @@ describe("deepMap", () => {
 
     const fn = jest.fn(() => 42);
 
-    const resultA = map.get([a], fn);
-    const resultB = map.get([b], fn);
+    const resultA = map.getOrCreate([a], fn);
+    const resultB = map.getOrCreate([b], fn);
 
     expect(fn).toBeCalledTimes(1);
     expect(resultA).toBe(42);
