@@ -28,6 +28,8 @@ function getOpenNotificationsForBadge(): NotificationEntity[] {
 export function getBadgeCountToShow() {
   const settings = applicationWideSettingsBridge.get();
 
+  if (!getNullableDb()) return 0;
+
   if (!settings.showNotificationsCountBadge) {
     return 0;
   }

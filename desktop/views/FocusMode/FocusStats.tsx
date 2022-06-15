@@ -47,7 +47,7 @@ export const FocusStats = observer(({ currentNotification, list }: Props) => {
    */
   const allNotificationsWhenFocusStarted = useGrowingArray(list.getAllNotifications());
 
-  const groups = list.getAllGroupedNotifications();
+  const groups = list.getGroups();
 
   const currentGroup =
     groups.filter(getIsNotificationsGroup).find((group) => group.notifications.includes(currentNotification)) ?? null;

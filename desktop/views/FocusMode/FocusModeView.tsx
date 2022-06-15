@@ -1,7 +1,5 @@
-import * as Sentry from "@sentry/react";
-import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { exitFocusMode, refreshNotificationPreview } from "@aca/desktop/actions/focus";
@@ -12,67 +10,41 @@ import {
   resolveNotification,
   unresolveNotification,
 } from "@aca/desktop/actions/notification";
-import { getDb } from "@aca/desktop/clientdb";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
-import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { getPrimaryNotification } from "@aca/desktop/domains/group/group";
 import { NotificationPreview } from "@aca/desktop/domains/notification/NotificationPreview";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { SystemMenuGroup } from "@aca/desktop/domains/systemMenu/SystemMenuGroup";
 import { AppLayout } from "@aca/desktop/layout/AppLayout";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
-import { uiStore } from "@aca/desktop/store/ui";
-import { uiSettings } from "@aca/desktop/store/uiSettings";
+import { FocusSession } from "@aca/desktop/store/focus";
 
 import { FocusModeFooter } from "./FocusModeFooter";
-import { FocusStats } from "./FocusStats";
 import { FocusModeTopBar } from "./TopBar";
 
 interface Props {
-  notificationId: string;
-  listId: string;
+  session: FocusSession;
 }
 
-export const FocusModeView = observer(({ notificationId, listId }: Props) => {
-  const db = getDb();
-  const notification = db.notification.assertFindById(notificationId);
-
-  const list = getInboxListsById(listId);
-
-  useEffect(() => {
-    const activeListId = list?.id ?? null;
-    const activeNotification = notification;
-    runInAction(() => {
-      uiStore.activeListId = activeListId;
-      uiStore.activeNotification = activeNotification;
-    });
-    return () => {
-      if (uiStore.activeNotification === activeNotification && uiStore.activeListId === activeListId) {
-        runInAction(() => {
-          uiStore.activeListId = null;
-          uiStore.activeNotification = null;
-        });
-      } else {
-        Sentry.captureException(new Error("Tried to reset values set by another component"));
-      }
-    };
-  }, [list?.id, notification]);
+export const FocusModeView = observer(({ session }: Props) => {
+  const { activeNotification, notificationsToPreload } = session;
 
   return (
     <AppLayout footer={<FocusModeFooter />} transparent>
-      <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={notification} />
-      <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={notification} />
-      <ActionSystemMenuItem action={addReminderToNotification} path={["Notification"]} target={notification} />
+      <ActionSystemMenuItem action={unresolveNotification} path={["Notification"]} target={activeNotification} />
+      <ActionSystemMenuItem action={resolveNotification} path={["Notification"]} target={activeNotification} />
+      <ActionSystemMenuItem action={addReminderToNotification} path={["Notification"]} target={activeNotification} />
       <SystemMenuGroup>
-        <ActionSystemMenuItem action={refreshNotificationPreview} path={["Notification"]} target={notification} />
-        <ActionSystemMenuItem action={openNotificationInApp} path={["Notification"]} target={notification} />
-        <ActionSystemMenuItem action={copyNotificationLink} path={["Notification"]} target={notification} />
-        <ActionSystemMenuItem action={exitFocusMode} path={["View"]} target={notification} group="foo" />
+        <ActionSystemMenuItem action={refreshNotificationPreview} path={["Notification"]} target={activeNotification} />
+        <ActionSystemMenuItem action={openNotificationInApp} path={["Notification"]} target={activeNotification} />
+        <ActionSystemMenuItem action={copyNotificationLink} path={["Notification"]} target={activeNotification} />
+        <ActionSystemMenuItem action={exitFocusMode} path={["View"]} target={activeNotification} group="foo" />
       </SystemMenuGroup>
 
-      <FocusModeTopBar notification={notification} />
+      <FocusModeTopBar item={activeNotification} />
       <UIHeader>
-        {list?.getNotificationsToPreload(notification).map((notificationToPreload) => {
+        {notificationsToPreload.map((notificationToPreload) => {
           return (
             <PreloadEmbed
               priority={PreviewLoadingPriority.next}
@@ -81,20 +53,12 @@ export const FocusModeView = observer(({ notificationId, listId }: Props) => {
             />
           );
         })}
-
-        {uiSettings.showFocusModeStats && (
-          <UIStats>{list && <FocusStats list={list} currentNotification={notification} />}</UIStats>
-        )}
       </UIHeader>
-      <NotificationPreview notification={notification} />
+      <NotificationPreview notification={getPrimaryNotification(activeNotification)} />
     </AppLayout>
   );
 });
 
 const UIHeader = styled.div`
   ${appViewContainerStyles};
-`;
-
-const UIStats = styled.div`
-  margin: 16px 0;
 `;

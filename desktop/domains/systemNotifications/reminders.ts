@@ -1,7 +1,7 @@
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { desktopRouter } from "@aca/desktop/routes";
+import { startFocusSession } from "@aca/desktop/store/focus";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
 import { isNotNullish } from "@aca/shared/nullish";
@@ -23,9 +23,10 @@ function prepareNotification(notification: NotificationEntity): ScheduledNotific
     body: getNotificationTitle(notification),
     requireInteraction: true,
     onClick() {
-      desktopRouter.navigate("focus", {
+      startFocusSession({
+        activeNotification: notification,
         listId: savedNotificationsList.id,
-        notificationId: notification.id,
+        notificationsGetter: savedNotificationsList.getAllNotifications,
       });
     },
   };

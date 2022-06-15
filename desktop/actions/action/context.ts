@@ -23,14 +23,14 @@ export type ActionContextCallback<T> = (context: ActionContext) => T;
 export type ActionDataThunk<T> = T | ActionContextCallback<T>;
 
 const routeTargets = cachedComputed(function routeTargets(): unknown[] {
-  const focusRoute = desktopRouter.getRouteParamsIfActive("focus");
+  const { session } = focusSessionStore;
 
   const db = getNullableDb();
 
-  if (focusRoute) {
+  if (session) {
     if (!db) return [];
-    const { notificationId, listId } = focusRoute;
-    return [db.notification.findById(notificationId), getInboxListsById(listId)];
+    const { activeNotification, listId } = session;
+    return [activeNotification, getInboxListsById(listId)];
   }
 
   const listRoute = desktopRouter.getRouteParamsIfActive("list");

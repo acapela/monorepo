@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { openNotificationInApp } from "@aca/desktop/actions/notification";
+import { getPrimaryNotification } from "@aca/desktop/domains/group/group";
 import { runActionWith } from "@aca/desktop/domains/runAction";
 import { FocusSession } from "@aca/desktop/store/focus";
 import { getFadeInAnimationStyles } from "@aca/ui/animations";
@@ -21,7 +22,7 @@ export const FocusBarContent = observer(({ session }: Props) => {
   useEffect(() => {
     if (!session.activeNotification) return;
 
-    runActionWith(openNotificationInApp, session.activeNotification);
+    runActionWith(openNotificationInApp, getPrimaryNotification(session.activeNotification));
   }, [session.activeNotification]);
 
   return (

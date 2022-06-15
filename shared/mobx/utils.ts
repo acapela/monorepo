@@ -1,8 +1,10 @@
+import { uniqBy } from "lodash";
 import {
   CreateObservableOptions,
   IObservableValue,
   action,
   autorun,
+  computed,
   observable,
   reaction,
   runInAction,
@@ -277,4 +279,35 @@ export function lazyBox<T>(getter: () => T, options?: CreateObservableOptions) {
   };
 
   return lazyBox;
+}
+
+export function observableGrowingArray<T>(getter: () => T[], keyGetter?: (item: T) => string) {
+  let currentItems: T[] = [];
+
+  function getCurrent() {
+    return uniqBy(getter(), (item) => {
+      if (!keyGetter) return item;
+
+      return keyGetter(item);
+    });
+  }
+
+  const getGrowing = computed(() => {
+    const newItems = getCurrent();
+
+    const currentKeys = keyGetter ? currentItems.map(keyGetter) : currentItems;
+
+    const itemsToAdd = newItems.filter((newItem) => {
+      const key = keyGetter ? keyGetter(newItem) : newItem;
+      return !currentKeys.includes(key as string & T);
+    });
+
+    const currentAndNewItems = [...currentItems, ...itemsToAdd];
+
+    currentItems = currentAndNewItems;
+
+    return currentAndNewItems;
+  });
+
+  return getGrowing;
 }

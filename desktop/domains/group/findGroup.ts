@@ -8,7 +8,7 @@ export const getNotificationParentGroupInList = cachedComputed(function getNotif
   notification: NotificationEntity,
   list: NotificationsList
 ): NotificationsGroup | null {
-  const groupsList = list.getAllGroupedNotifications();
+  const groupsList = list.getGroups();
 
   const groups = groupsList.filter(getIsNotificationsGroup);
 
