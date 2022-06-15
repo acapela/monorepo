@@ -1,3 +1,5 @@
+import assert from "assert";
+
 import { addSeconds, subHours, subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
@@ -59,4 +61,70 @@ export async function markSlackConversationsAsRead() {
       })),
     },
   });
+}
+
+export async function markReadSlackMessages() {
+  // console.log("Marking read slack messages...");
+
+  const userSlackInstallations = await db.user_slack_installation.findMany();
+
+  await Promise.all(
+    userSlackInstallations.map(async (installation) => {
+      const installData = installation.data as unknown as SlackInstallation;
+
+      // console.log(`User Scopes: ${installData.user.scopes}`);
+
+      const token = installData.user.token;
+      // console.log(`User token: ${token}`);
+
+      const conversations = await slackClient.users.conversations({
+        token: token,
+        types: "public_channel,private_channel,mpim,im",
+        user: installData.user.id,
+        exclude_archived: true,
+      });
+
+      assert(conversations.channels, "Conversation doesn't have any channels");
+
+      await Promise.all(
+        conversations.channels?.map(async (channel) => {
+          assert(channel.id, "Slack channel doesn't have id");
+          const info = await slackClient.conversations.info({
+            token: token,
+            channel: channel.id,
+          });
+
+          const timestamp = info.channel?.last_read;
+
+          const newlyRead = await db.notification_slack_message.findMany({
+            where: {
+              slack_conversation_id: info.channel?.id,
+              user_slack_installation_id: installation.id,
+              is_read: false,
+              slack_message_ts: { lte: timestamp },
+            },
+          });
+
+          // if (newlyRead.length) {
+          //   console.log(`Found newly read messages in channel ${channel.name}, read timestamp: ${timestamp}`);
+          // }
+
+          await Promise.all(
+            newlyRead.map(async (message) => {
+              await db.notification_slack_message.update({
+                where: { id: message.id },
+                data: {
+                  is_read: true,
+                },
+              });
+
+              // console.log(
+              //   `Newly read message in conversation: ${message.conversation_name} (${message.slack_message_ts})`
+              // );
+            })
+          );
+        })
+      );
+    })
+  );
 }
