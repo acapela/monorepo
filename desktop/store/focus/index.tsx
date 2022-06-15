@@ -107,8 +107,6 @@ export function startFocusSession(input: CreateFocusSessionInput) {
   });
 
   if (!getShouldUseFocusBar()) {
-    createFocusSession(input);
-
     desktopRouter.navigate("focus");
   }
 }
