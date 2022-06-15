@@ -4,6 +4,7 @@ import { join } from "path";
 
 import { PubSub } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
+import { subMinutes } from "date-fns";
 import { gmail_v1, google } from "googleapis";
 import { uniqWith } from "lodash";
 import { Account as NextAuthAccount } from "next-auth";
@@ -244,22 +245,51 @@ async function handleReadStateInNotifications(history: gmail_v1.Schema$History[]
     }
   }
 
-  await db.notification.updateMany({
-    where: {
-      notification_gmail: { some: { gmail_message_id: { in: dedupedMarkedAsReadMessageIds.map(({ id }) => id) } } },
-    },
-    data: { last_seen_at: new Date().toISOString() },
-  });
+  /*
+   We need to actually account for the times in which the "Preload" actually triggers a read event for gmail.
+   What we've done is created a buffer where "READ" events are ignored. That buffer is "5 minutes after the last preload
+   as requested". During that buffer, people won't be able to sync read state from Gmail -> Acapela.
+  */
 
-  await db.notification.updateMany({
-    where: {
-      notification_gmail: { some: { gmail_message_id: { in: dedupedMarkedAsUnreadMessageIds.map(({ id }) => id) } } },
-    },
-    data: { last_seen_at: null },
-  });
+  if (dedupedMarkedAsReadMessageIds.length > 0) {
+    await db.notification.updateMany({
+      where: {
+        AND: [
+          {
+            notification_gmail: {
+              some: { gmail_message_id: { in: dedupedMarkedAsReadMessageIds.map(({ id }) => id) } },
+            },
+          },
+          {
+            OR: [
+              {
+                last_preloaded_at: null,
+              },
+              {
+                // Was last preloaded at least 5 minutes ago
+                last_preloaded_at: {
+                  lte: subMinutes(new Date(), 5),
+                },
+              },
+            ],
+          },
+        ],
+      },
+      data: { last_seen_at: new Date().toISOString() },
+    });
+  }
+
+  if (dedupedMarkedAsUnreadMessageIds.length > 0) {
+    await db.notification.updateMany({
+      where: {
+        notification_gmail: { some: { gmail_message_id: { in: dedupedMarkedAsUnreadMessageIds.map(({ id }) => id) } } },
+      },
+      data: { last_seen_at: null },
+    });
+  }
 }
 
-async function upsertNotificationsGivenGmailHistory(
+export async function upsertNotificationsGivenGmailHistory(
   { id: gmailAccountId, account }: GmailAccount & { account: Account },
   startHistoryId: string
 ) {
@@ -318,6 +348,7 @@ export function listenToGmailSubscription() {
   const pubsub = new PubSub({ keyFilename });
   const topic = pubsub.topic(GMAIL_TOPIC_NAME);
   const subscription = topic.subscription(GMAIL_SUBSCRIPTION_NAME);
+
   subscription.on("message", async (message) => {
     const eventData = JSON.parse(message.data.toString());
 
@@ -325,6 +356,7 @@ export function listenToGmailSubscription() {
       where: { account: { provider_id: "google", email: eventData.emailAddress } },
       include: { account: true },
     });
+
     if (gmailAccount) {
       const lastHistoryId = gmailAccount.last_history_id;
       if (lastHistoryId) {

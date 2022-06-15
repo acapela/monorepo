@@ -1,6 +1,10 @@
 import { BrowserView, BrowserWindow, WebContents } from "electron";
 
-import { preloadingPreviewsBridgeChannel, unattachedPreloadBridgeChannel } from "@aca/desktop/bridge/preview";
+import {
+  preloadingPreviewsBridgeChannel,
+  previewLoadedChannel,
+  previewUnattachedChannel,
+} from "@aca/desktop/bridge/preview";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { makeLinksOpenInDefaultBrowser } from "@aca/desktop/electron/windows/utils/openLinks";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -95,6 +99,7 @@ export function destroyBrowserView(view: BrowserView) {
 
 export const requestPreviewBrowserView = memoizeWithCleanup(
   (url: string) => {
+    previewLoadedChannel.send({ url });
     return createPreviewBrowserView(url);
   },
   {
@@ -106,7 +111,7 @@ export const requestPreviewBrowserView = memoizeWithCleanup(
       });
 
       if (state !== "attached") {
-        unattachedPreloadBridgeChannel.send({ url });
+        previewUnattachedChannel.send({ url });
       }
 
       markViewDisposedTime(view);

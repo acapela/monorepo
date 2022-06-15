@@ -18,7 +18,6 @@ import type { IpcMainInvokeEvent } from "electron";
  */
 export function createInvokeBridge<Input = void, Result = void>(key: string) {
   async function invoke(input: Input): Promise<Result> {
-    console.info("invoke", input);
     if (process.env.ELECTRON_CONTEXT !== "client") {
       await global.electronGlobal.appReadyPromise;
       //

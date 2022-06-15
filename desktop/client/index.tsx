@@ -31,9 +31,9 @@ import { PlanUpgadeCelebrationView } from "../views/PremiumPlan/PlanUpgadeCelebr
 import { TrayManager } from "../views/TrayManager";
 import { UpdateInfo } from "../views/UpdateInfo/UpdateInfo";
 import { AppStyleProvider } from "./AppStyleProvider";
+import { IntegrationReadSyncManager } from "./IntegrationReadSyncManager";
 import { LoggerWindowManager } from "./LoggerWindow";
 import { ServiceWorkerConsolidation } from "./ServiceWorkerConsolidation";
-import { UnattachedPreloadEmbedManager } from "./UnattachedPreloadEmbedManager";
 
 const appEnv = window.electronBridge.env;
 
@@ -80,7 +80,7 @@ function App() {
           <PromiseUIRenderer />
           <TooltipsRenderer />
 
-          <UnattachedPreloadEmbedManager />
+          <IntegrationReadSyncManager />
           <ServiceWorkerConsolidation />
           <RootErrorBoundary>
             <LoggerWindowManager />
