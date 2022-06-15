@@ -7,12 +7,12 @@ import {
   resolveNotification,
   saveNotification,
 } from "@aca/desktop/actions/notification";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getPrimaryNotification } from "@aca/desktop/domains/group/group";
+import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionButton";
 
 interface Props {
-  notification: NotificationEntity;
+  notification: NotificationOrGroup;
 }
 
 export const FocusBarActiveItemActions = observer(({ notification }: Props) => {
