@@ -34,7 +34,7 @@ export const ListView = observer(({ listId }: Props) => {
   const [tagFilters, setTagFilters] = useState<NotificationTag[]>([]);
   const list = getInboxListsById(listId);
 
-  const notificationGroups = list?.getAllGroupedNotifications() ?? [];
+  const notificationGroups = list?.getGroups() ?? [];
 
   function getGroupsToShow() {
     if (!tagFilters.length) return notificationGroups;

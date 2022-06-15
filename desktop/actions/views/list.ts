@@ -87,7 +87,7 @@ export const listPageView = createActionView((context) => {
 export const getCollapsedGroupedElementsInList = cachedComputed(function getCollapsedGroupedElementsInList(
   list: NotificationsList
 ): NotificationOrGroup[] {
-  const groupedList = list.getAllGroupedNotifications();
+  const groupedList = list.getGroups();
 
   const result: NotificationOrGroup[] = [];
 

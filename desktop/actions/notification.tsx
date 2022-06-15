@@ -329,15 +329,23 @@ export const openFocusMode = defineAction({
       if (group.treatAsOneNotification) {
         group.notifications.forEach((n) => n.markAsSeen());
       }
-      const notificationToShow = group.notifications[0];
-      startFocusSession({ list, activeNotification: notificationToShow });
+
+      startFocusSession({
+        activeNotification: group,
+        notificationsGetter: () => list.getAllNotifications(),
+        listId: list.id,
+      });
 
       return;
     }
 
     if (notification) {
       notification.markAsSeen();
-      startFocusSession({ list, activeNotification: notification });
+      startFocusSession({
+        activeNotification: notification,
+        notificationsGetter: () => list.getAllNotifications(),
+        listId: list.id,
+      });
     }
   },
   onMightBeSelected(context) {

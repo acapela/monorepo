@@ -15,8 +15,8 @@ import {
   resolveNotification,
   saveNotification,
 } from "@aca/desktop/actions/notification";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
-import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
+import { getNotificationsGroupMeta, getPrimaryNotification } from "@aca/desktop/domains/group/group";
+import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { NotificationTagDisplayer } from "@aca/desktop/domains/tag/NotificationTag";
 import { SystemTopBar } from "@aca/desktop/ui/systemTopBar";
@@ -27,11 +27,14 @@ import { niceFormatDateTime, relativeShortFormatDate } from "@aca/shared/dates/f
 import { theme } from "@aca/ui/theme";
 
 interface Props {
-  notification: NotificationEntity;
+  item: NotificationOrGroup;
 }
 
-export const FocusModeTopBar = observer(({ notification }: Props) => {
-  const { tags, title } = getNotificationMeta(notification);
+export const FocusModeTopBar = observer(({ item }: Props) => {
+  const { tags, title } = getNotificationsGroupMeta(item);
+
+  const notification = getPrimaryNotification(item);
+
   return (
     <SystemTopBar
       isFullWidth

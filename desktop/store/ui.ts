@@ -2,7 +2,6 @@ import { action, autorun, computed, makeAutoObservable, observable, runInAction 
 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { createWindowEvent } from "@aca/shared/domEvents";
 
 import { desktopRouter } from "../routes";
@@ -47,8 +46,6 @@ createWindowEvent(
  */
 export const uiStore = makeAutoObservable({
   focusedTarget: null as unknown,
-  activeListId: null as string | null,
-  activeNotification: null as NotificationEntity | null,
   isSidebarOpened: true,
   isInDarkMode: false,
   isDisplayingZenImage: false,

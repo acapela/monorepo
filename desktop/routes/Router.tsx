@@ -9,6 +9,7 @@ import { NotificationView } from "@aca/desktop/views/NotificationView";
 import { SettingsView } from "@aca/desktop/views/SettingsView";
 
 import { requestNavigateToList, requestOpenRoute } from "../bridge/navigation";
+import { focusSessionStore } from "../store/focus";
 import { historyStore } from "../store/history";
 import { ComposeView } from "../views/ComposeView";
 import { LoginView } from "../views/LoginView";
@@ -52,7 +53,11 @@ export const Router = observer(function Router() {
     case "list":
       return <ListView key={activeRoute.params.listId} listId={activeRoute.params.listId} />;
     case "focus":
-      return <FocusModeView notificationId={activeRoute.params.notificationId} listId={activeRoute.params.listId} />;
+      if (!focusSessionStore.session) {
+        return <AppRedirect to="list" params={{ listId: allNotificationsList.id }} />;
+      }
+
+      return <FocusModeView session={focusSessionStore.session} />;
     case "onboarding":
       return <OnboardingView />;
     case "connect":

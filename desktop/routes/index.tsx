@@ -11,7 +11,7 @@ const routes = {
   settings: "/settings/:section",
   notification: "/notifications/:notificationId",
   list: "/list/:listId?:isEditing",
-  focus: "/focus/:listId/:notificationId",
+  focus: "/focus",
   compose: "/compose/:url",
   onboarding: "/onboarding",
   connect: "/connect",

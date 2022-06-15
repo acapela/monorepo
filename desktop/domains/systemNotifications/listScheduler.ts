@@ -6,7 +6,7 @@ import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
-import { desktopRouter } from "@aca/desktop/routes";
+import { startFocusSession } from "@aca/desktop/store/focus";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
 import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
@@ -14,6 +14,7 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
 
 import { makeLogger } from "../dev/makeLogger";
+import { allNotificationsList } from "../list/all";
 import { BundledItem, bundleScheduledItems } from "./bundle";
 import { getNextScheduledDate } from "./schedule";
 import { scheduleNotification } from "./systemNotification";
@@ -73,7 +74,11 @@ const bundleListNotifications = cachedComputed(
               });
             },
             onClick() {
-              desktopRouter.navigate("focus", { listId: "allNotifications", notificationId: newNotifications[0].id });
+              startFocusSession({
+                activeNotification: newNotifications[0],
+                listId: allNotificationsList.id,
+                notificationsGetter: allNotificationsList.getAllNotifications,
+              });
             },
           };
         }
@@ -97,9 +102,10 @@ const bundleListNotifications = cachedComputed(
             });
           },
           onClick() {
-            desktopRouter.navigate("focus", {
-              listId: "allNotifications",
-              notificationId: allNotificationsFromLists[0].id,
+            startFocusSession({
+              activeNotification: allNotificationsFromLists[0],
+              listId: allNotificationsList.id,
+              notificationsGetter: allNotificationsList.getAllNotifications,
             });
           },
         };

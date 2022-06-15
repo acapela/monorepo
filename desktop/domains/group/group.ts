@@ -41,3 +41,11 @@ export function getNotificationsGroupMeta(group: NotificationOrGroup): Notificat
 
   return getNotificationMeta(group);
 }
+
+export function getPrimaryNotification(group: NotificationOrGroup) {
+  if (group.kind === "group") {
+    return group.notifications[0];
+  }
+
+  return group;
+}
