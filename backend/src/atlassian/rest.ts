@@ -98,26 +98,50 @@ export async function fetchAndSaveNewAccessToken(
   accountId: string,
   previousRefreshToken: string
 ): Promise<RefreshTokenData> {
-  const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
-    grant_type: "refresh_token",
-    client_id: process.env.ATLASSIAN_CLIENT_ID,
-    client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-    refresh_token: previousRefreshToken,
-  });
+  try {
+    const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
+      grant_type: "refresh_token",
+      client_id: process.env.ATLASSIAN_CLIENT_ID,
+      client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
+      refresh_token: previousRefreshToken,
+    });
 
-  const { refresh_token, access_token, expires_in } = response.data;
+    const { refresh_token, access_token, expires_in } = response.data;
 
-  await db.account.update({
-    where: { id: accountId },
-    data: {
-      refresh_token,
-      access_token,
-      access_token_expires: addSeconds(new Date(), expires_in),
-      atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
-    },
-  });
+    await db.account.update({
+      where: { id: accountId },
+      data: {
+        refresh_token,
+        access_token,
+        access_token_expires: addSeconds(new Date(), expires_in),
+        atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
+      },
+    });
 
-  return access_token;
+    return access_token;
+  } catch (e: unknown) {
+    if ((e as AxiosError).response?.status === 403) {
+      const deleted = await db.account.delete({
+        where: {
+          id: accountId,
+        },
+      });
+
+      await db.alert.create({
+        data: {
+          user: {
+            connect: {
+              id: deleted.user_id,
+            },
+          },
+          title: "Please Reconnect Jira",
+          body: "Your Jira notifications have been paused. You can resume them by reconnecting Jira in the Settings section.",
+        },
+      });
+    }
+
+    throw e;
+  }
 }
 
 export async function getAccessTokenAndRefreshIfExpired(account: Account) {
