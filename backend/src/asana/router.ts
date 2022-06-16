@@ -3,6 +3,7 @@ import { createHmac } from "crypto";
 import Asana from "asana";
 import { addSeconds } from "date-fns";
 import { Request, Response, Router } from "express";
+import * as uuid from "uuid";
 
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
@@ -211,6 +212,10 @@ async function verifyAndProcess({
   hookSecret?: string;
   webhookId: string;
 }) {
+  if (!uuid.validate(webhookId)) {
+    logger.warn(`invalid webhook id: ${webhookId}`);
+    return;
+  }
   // the first webhook we get contains an x-hook-secret header
   // we need to save the secret to the database to verify future webhooks
   if (hookSecret) {

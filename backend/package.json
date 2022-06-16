@@ -51,7 +51,8 @@
     "slack-block-builder": "^2.4.2",
     "stripe": "^9.1.0",
     "ts-node": "^10.4.0",
-    "tsscmp": "^1.0.6"
+    "tsscmp": "^1.0.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/asana": "^0.18.5",
