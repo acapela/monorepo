@@ -44,7 +44,7 @@ export function createInvokeBridge<Input = void, Result = void>(key: string) {
 
   async function handleRequest(arg: Input, event?: IpcMainInvokeEvent) {
     if (!invokeHandler) {
-      throw new Error(`No handler for arg ${JSON.stringify(arg)} given event ${JSON.stringify(event)}`);
+      throw new Error(`No handler initialized`);
     }
     const result = await invokeHandler(arg, event);
 
