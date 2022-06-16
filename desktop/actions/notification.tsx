@@ -331,7 +331,7 @@ export const openFocusMode = defineAction({
       }
 
       startFocusSession({
-        activeNotification: group,
+        activeNotification: group.treatAsOneNotification ? group : group.notifications[0],
         notificationsGetter: () => list.getAllNotifications(),
         listId: list.id,
       });
