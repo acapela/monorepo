@@ -1,4 +1,5 @@
 import { initializeCleanupsHandler } from "@aca/desktop/bridge/base/invokeWithCleanup";
+import { initializeLogger } from "@aca/desktop/domains/dev/logger";
 import { initializeAuthHandlers } from "@aca/desktop/electron/auth";
 
 import { initializeContextMenuHandlers } from "./contextMenu";
@@ -19,4 +20,5 @@ export function initializeBridgeHandlers() {
   initializeSystemMenuHandlers();
   initializeDialogsHandlers();
   initializeTrayHandlers();
+  initializeLogger();
 }

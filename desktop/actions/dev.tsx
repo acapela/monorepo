@@ -125,7 +125,7 @@ export const copyLogsIntoClipboard = defineAction({
   async handler() {
     const logs = await getAllLogsBridge();
     await navigator.clipboard.writeText(
-      logs.map((l) => `[${l.timestamp}] ${l.severity} (${l.prefix}): ${l.text}`).join("\n")
+      logs.map((l) => `[${l.timestamp}],${l.severity},(${l.prefix}),${l.text}`).join("\n")
     );
   },
 });

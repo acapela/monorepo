@@ -2,12 +2,12 @@ import { LogEntry, getAllLogsBridge, logStorage } from "@aca/desktop/bridge/logg
 
 const allLogs: LogEntry[] = [];
 
-export function InitializeLogger() {
+export function initializeLogger() {
   logStorage.subscribe((entry) => {
     allLogs.push(entry);
   });
 
   getAllLogsBridge.handle(async () => {
-    return allLogs;
+    return allLogs.map((log) => ({ ...log }));
   });
 }
