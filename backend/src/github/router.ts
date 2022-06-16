@@ -5,6 +5,7 @@ import { Octokit } from "octokit";
 import { BadRequestError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
+import { listenForWebhooks } from "@aca/backend/src/webhooks";
 import { db } from "@aca/db";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
@@ -18,6 +19,22 @@ export const router = Router();
 const oauthStateSecret = process.env.GITHUB_OAUTH_SECRET;
 
 addWebhookHandlers(githubApp.webhooks);
+
+listenForWebhooks("github", async (rawBody, params, headers) => {
+  const id = headers["x-github-delivery"];
+  const name = headers["x-github-event"];
+  const signature = headers["x-hub-signature-256"];
+  if (!id || !name || !signature) {
+    logger.warn("invalid github webhook headers");
+    return;
+  }
+  await githubApp.webhooks.verifyAndReceive({
+    id,
+    name,
+    signature,
+    payload: rawBody,
+  });
+});
 
 router.post("/v1/github/webhook", createNodeMiddleware(githubApp.webhooks, { path: "/v1/github/webhook" }));
 
