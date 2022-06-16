@@ -17,12 +17,12 @@ interface CreateFocusSessionInput {
   listId: string;
 }
 
-const getIsResolved = cachedComputed(function getIsResolved(item: NotificationOrGroup) {
+const getIsActioned = cachedComputed(function getIsActioned(item: NotificationOrGroup) {
   if (item.kind === "group") {
-    return item.notifications.every((n) => n.isResolved);
+    return item.notifications.every((n) => n.isResolved || n.isSaved || n.hasReminder);
   }
 
-  return item.isResolved;
+  return item.isResolved || item.isSaved || item.hasReminder;
 });
 
 function createFocusSession({ notificationsGetter, activeNotification, listId }: CreateFocusSessionInput) {
@@ -62,7 +62,7 @@ function createFocusSession({ notificationsGetter, activeNotification, listId }:
         return groups.slice(indexOfActive - 1, indexOfActive + 2).map(getPrimaryNotification);
       },
       get isDone(): boolean {
-        return session.groups.every(getIsResolved);
+        return session.groups.every(getIsActioned);
       },
       goToNext() {
         if (!session.next) return;
