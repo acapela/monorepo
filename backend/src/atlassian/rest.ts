@@ -121,9 +121,13 @@ export async function fetchAndSaveNewAccessToken(
     return access_token;
   } catch (e: unknown) {
     if ((e as AxiosError).response?.status === 403) {
-      const deleted = await db.account.delete({
+      // Cannot delete as it will break the app
+      const user = await db.account.findUnique({
         where: {
           id: accountId,
+        },
+        select: {
+          user_id: true,
         },
       });
 
@@ -131,7 +135,7 @@ export async function fetchAndSaveNewAccessToken(
         data: {
           user: {
             connect: {
-              id: deleted.user_id,
+              id: user?.user_id ?? "",
             },
           },
           title: "Please Reconnect Jira",
