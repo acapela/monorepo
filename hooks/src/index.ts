@@ -74,6 +74,11 @@ router.post("/:service/:id?", async (ctx) => {
     }
   }
 
+  if (serviceName === "asana") {
+    const hookSecret = ctx.get("x-hook-secret");
+    if (hookSecret) ctx.set("x-hook-secret", hookSecret);
+  }
+
   await publishWebhook(serviceName, ctx.request.rawBody, ctx.params, ctx.request.headers);
   ctx.body = "ok";
 });
