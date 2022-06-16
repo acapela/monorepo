@@ -77,6 +77,7 @@ export async function processEvent(webhook: Webhook, team: DbTeam) {
               taskName: task.name,
               fromName: hist.user.username,
               isMention: mentions.includes(uid),
+              textPreview: hist.comment.text_content,
             })
           )
       );
@@ -198,6 +199,7 @@ async function createCommentNotification(data: {
   taskName: string;
   fromName: string;
   isMention: boolean;
+  textPreview: string;
 }) {
   return db.notification_clickup.create({
     data: {
@@ -206,6 +208,7 @@ async function createCommentNotification(data: {
           user_id: data.userId,
           url: `https://app.clickup.com/t/${data.taskId}?comment=${data.commentId}`,
           from: data.fromName,
+          text_preview: data.textPreview,
         },
       },
       type: data.isMention ? "mention" : "comment",
