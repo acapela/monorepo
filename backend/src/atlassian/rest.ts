@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
+import { addSeconds } from "date-fns";
 
 import { Account, db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
@@ -6,7 +7,7 @@ import { logger } from "@aca/shared/logger";
 import { getPublicBackendURL } from "../utils";
 import { WEBHOOK_PATH } from "./index";
 import { GetWatchersResponse, JiraAccountWithAllDetails, JiraWebhookCreationResult } from "./types";
-import { refreshTokens } from "./utils";
+import { getRefreshTokenExpiresAt } from "./utils";
 
 interface JiraRestMeta {
   jiraCloudId: string;
@@ -93,29 +94,44 @@ export function isTokenExpired(expires_at: Date | string | null) {
   return Date.now() > expiry.getTime();
 }
 
-export async function getNewAccessToken(refresh_token: string): Promise<RefreshTokenData> {
+export async function fetchAndSaveNewAccessToken(
+  accountId: string,
+  previousRefreshToken: string
+): Promise<RefreshTokenData> {
   const response = await axios.post(`https://auth.atlassian.com/oauth/token`, {
     grant_type: "refresh_token",
     client_id: process.env.ATLASSIAN_CLIENT_ID,
     client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
-    refresh_token,
+    refresh_token: previousRefreshToken,
   });
 
-  return response.data;
+  const { refresh_token, access_token, expires_in } = response.data;
+
+  await db.account.update({
+    where: { id: accountId },
+    data: {
+      refresh_token,
+      access_token,
+      access_token_expires: addSeconds(new Date(), expires_in),
+      atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
+    },
+  });
+
+  return access_token;
 }
 
-export async function refreshAccountIfTokenExpired(account: Account) {
+export async function getAccessTokenAndRefreshIfExpired(account: Account) {
   if (!isTokenExpired(account.access_token_expires)) {
-    return account;
+    return account.access_token;
   }
 
   logger.info(`Token from account ${account.id} needs refreshing`);
 
-  return refreshTokens(account);
+  return (await fetchAndSaveNewAccessToken(account.id, account.refresh_token ?? "")).access_token;
 }
 
-export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, jiraRequest: JiraRequest<Data>) {
-  const { access_token } = await refreshAccountIfTokenExpired(jiraAccount.account);
+export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, requestCallback: JiraRequest<Data>) {
+  const access_token = await getAccessTokenAndRefreshIfExpired(jiraAccount.account);
 
   const headers = {
     Authorization: `Bearer ${access_token}`,
@@ -126,7 +142,7 @@ export async function jiraRequest<Data>(jiraAccount: JiraAccountWithAllDetails, 
   let response;
 
   try {
-    response = await jiraRequest(headers, {
+    response = await requestCallback(headers, {
       jiraCloudId: jiraAccount.atlassian_site.atlassian_cloud_id,
       jiraAccountId: jiraAccount.account.provider_account_id,
     });

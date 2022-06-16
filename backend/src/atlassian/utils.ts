@@ -1,11 +1,11 @@
 import * as Sentry from "@sentry/node";
 import axios from "axios";
-import { addDays, addSeconds } from "date-fns";
+import { addDays } from "date-fns";
 
-import { Account, db } from "@aca/db";
+import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
-import { getNewAccessToken, jiraRequest, refreshWebhooks } from "./rest";
+import { fetchAndSaveNewAccessToken as fetchAndRefreshAccessToken, jiraRequest, refreshWebhooks } from "./rest";
 import { handleAccountUpdates } from ".";
 
 export async function deleteAllJiraWebhooks() {
@@ -70,20 +70,6 @@ export async function __simulateNewAtlassianAccountCreation(provider_account_id:
  */
 export const getRefreshTokenExpiresAt = () => addDays(new Date(), 90).toISOString();
 
-export async function refreshTokens(account: Account) {
-  const { refresh_token, access_token, expires_in } = await getNewAccessToken(account.refresh_token ?? "");
-
-  return await db.account.update({
-    where: { id: account.id },
-    data: {
-      refresh_token,
-      access_token,
-      access_token_expires: addSeconds(new Date(), expires_in),
-      atlassian_refresh_token_expiry: { update: { expires_at: getRefreshTokenExpiresAt() } },
-    },
-  });
-}
-
 export async function refreshExpiringAtlassianProperties() {
   await updateAtlassianRefreshToken();
   await refreshAtlassianWebhooks();
@@ -99,7 +85,7 @@ async function updateAtlassianRefreshToken() {
   });
   for (const account of accounts) {
     try {
-      await refreshTokens(account);
+      await fetchAndRefreshAccessToken(account.id, account.refresh_token ?? "");
     } catch (error) {
       logger.error(error, `Failed to refresh token for account ${account.id}`);
       Sentry.captureException(error);
