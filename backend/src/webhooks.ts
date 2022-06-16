@@ -1,5 +1,6 @@
 import { PubSub, Subscription } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
+import nr from "newrelic";
 
 import { logger } from "@aca/shared/logger";
 
@@ -28,7 +29,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
     try {
       lock = await acquireLock(service, message.id);
       if (!(await markAsProcessed(service, message.id))) {
-        logger.info(`message ${message.id} was already processed`);
+        logger.info(`message ${message.id} from ${service} was already processed`);
         lock.unlock().catch((err) => logger.warn("unlock error (processed)", err));
         // we do not acknowledge the message if it was already processed
         message.nack();
@@ -36,7 +37,9 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
       }
       const data = JSON.parse(message.data.toString());
       try {
-        await processFn(data.rawBody, data.params, data.headers);
+        await nr.startBackgroundTransaction(`process_${service}`, async () =>
+          processFn(data.rawBody, data.params, data.headers)
+        );
         shouldAck = true;
       } catch (err) {
         logger.error(err);
