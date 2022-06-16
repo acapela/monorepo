@@ -168,7 +168,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         return !!notification.saved_at;
       },
       markAsSaved() {
-        return updateSelf({ saved_at: new Date().toISOString() });
+        return updateSelf({ saved_at: new Date().toISOString(), resolved_at: null });
       },
       get isResolved() {
         return !!notification.resolved_at;
@@ -181,7 +181,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       },
       resolve() {
         if (notification.resolved_at) return;
-        return updateSelf({ resolved_at: new Date().toISOString() });
+        return updateSelf({ resolved_at: new Date().toISOString(), saved_at: null, snoozed_until: null });
       },
       markAsSeen() {
         return updateSelf({ last_seen_at: new Date().toISOString() });
@@ -206,14 +206,12 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
         return !!reminderDate;
       },
       get canAddReminder() {
-        if (connections.isResolved) return false;
-
         return true;
       },
       addReminder(date: Date = new Date()) {
         if (!connections.canAddReminder) return;
 
-        return updateSelf({ snoozed_until: date.toISOString() });
+        return updateSelf({ snoozed_until: date.toISOString(), resolved_at: null });
       },
     };
 
