@@ -28,12 +28,17 @@ listenForWebhooks("github", async (rawBody, params, headers) => {
     logger.warn("invalid github webhook headers");
     return;
   }
-  await githubApp.webhooks.verifyAndReceive({
-    id,
-    name,
-    signature,
-    payload: rawBody,
-  });
+  try {
+    await githubApp.webhooks.verifyAndReceive({
+      id,
+      name,
+      signature,
+      payload: rawBody,
+    });
+  } catch (e) {
+    // error is handled via event emitter
+    logger.warn(e, "could not verify github webhook");
+  }
 });
 
 router.post("/v1/github/webhook", createNodeMiddleware(githubApp.webhooks, { path: "/v1/github/webhook" }));

@@ -200,11 +200,15 @@ async function verifyAndProcess({
 }
 
 listenForWebhooks("clickup", async (rawBody, params, headers) => {
-  await verifyAndProcess({
-    rawBody,
-    signature: headers["x-signature"],
-    teamId: params.id,
-  });
+  try {
+    await verifyAndProcess({
+      rawBody,
+      signature: headers["x-signature"],
+      teamId: params.id,
+    });
+  } catch (e) {
+    logger.error(e, "error processing clickup webhook");
+  }
 });
 
 router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {

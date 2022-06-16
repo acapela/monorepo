@@ -262,10 +262,14 @@ async function verifyAndProcess({
 }
 
 listenForWebhooks("asana", async (rawBody, params, headers) => {
-  await verifyAndProcess({
-    rawBody,
-    signature: headers["x-hook-signature"],
-    hookSecret: headers["x-hook-secret"],
-    webhookId: params.id,
-  });
+  try {
+    await verifyAndProcess({
+      rawBody,
+      signature: headers["x-hook-signature"],
+      hookSecret: headers["x-hook-secret"],
+      webhookId: params.id,
+    });
+  } catch (e) {
+    logger.error(e, "error processing asana webhook");
+  }
 });
