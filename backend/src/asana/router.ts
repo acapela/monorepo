@@ -7,6 +7,7 @@ import { Request, Response, Router } from "express";
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
 import { getUserIdFromRequest } from "@aca/backend/src/utils";
+import { listenForWebhooks } from "@aca/backend/src/webhooks";
 import { db } from "@aca/db";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
@@ -186,35 +187,80 @@ router.get("/v1/asana/unlink/:webhook", async (req: Request, res: Response) => {
 
 // webhook handler
 router.post("/v1/asana/webhook/:id", async (req: Request, res: Response) => {
+  const hookSecret = req.headers["x-hook-secret"] as string | undefined;
+  if (hookSecret) {
+    res.setHeader("x-hook-secret", hookSecret);
+  }
+  res.status(HttpStatus.OK).end();
+  await verifyAndProcess({
+    rawBody: req.body,
+    signature: req.headers["x-hook-signature"] as string,
+    hookSecret,
+    webhookId: req.params.id,
+  });
+});
+
+async function verifyAndProcess({
+  rawBody,
+  signature,
+  hookSecret,
+  webhookId,
+}: {
+  rawBody: string | object;
+  signature: string;
+  hookSecret?: string;
+  webhookId: string;
+}) {
   // the first webhook we get contains an x-hook-secret header
   // we need to save the secret to the database to verify future webhooks
-  const hooksSecret = req.headers["x-hook-secret"];
-  if (hooksSecret) {
-    res.setHeader("x-hook-secret", hooksSecret);
+  if (hookSecret) {
+    const dbWebhook = await db.asana_webhook.findFirst({ where: { id: webhookId } });
+    if (!dbWebhook) {
+      logger.warn(`asana webhook ${webhookId} not found`);
+      return;
+    }
+    if (dbWebhook.secret) {
+      logger.error(`asana webhook ${webhookId} already has a secret`);
+      return;
+    }
     await db.asana_webhook.update({
-      where: { id: req.params.id },
-      data: { secret: hooksSecret as string },
+      where: { id: webhookId },
+      data: { secret: hookSecret },
     });
-    res.status(HttpStatus.OK).end();
     return;
   }
 
   const dbWebhook = await db.asana_webhook.findFirst({
-    where: { id: req.params.id },
+    where: { id: webhookId },
     include: { asana_account: { include: { user: true } } },
   });
   // check webhook id and secret
-  if (!dbWebhook || !dbWebhook.secret) throw new BadRequestError("webhook id not found in database");
+  if (!dbWebhook || !dbWebhook.secret) {
+    logger.warn(`asana webhook ${webhookId} not found or secret not set`);
+    return;
+  }
 
   // verify webhook signature
-  const whSignature = createHmac("sha256", dbWebhook.secret!).update(JSON.stringify(req.body)).digest("hex");
-  if (req.headers["x-hook-signature"] !== whSignature) throw new BadRequestError("invalid webhook signature");
+  const whSignature = createHmac("sha256", dbWebhook.secret!)
+    .update(typeof rawBody === "object" ? JSON.stringify(rawBody) : rawBody)
+    .digest("hex");
+  if (signature !== whSignature) {
+    logger.warn("invalid webhook signature");
+    return;
+  }
 
-  // accept webhook
-  res.status(HttpStatus.OK).end();
-
+  const body = typeof rawBody === "object" ? rawBody : JSON.parse(rawBody);
   // a webhook contains multiple events, process them one by one
-  for (const event of req.body.events) {
+  for (const event of body.events) {
     await processEvent(event, dbWebhook);
   }
+}
+
+listenForWebhooks("asana", async (rawBody, params, headers) => {
+  await verifyAndProcess({
+    rawBody,
+    signature: headers["x-hook-signature"],
+    hookSecret: headers["x-hook-secret"],
+    webhookId: params.id,
+  });
 });
