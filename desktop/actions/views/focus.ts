@@ -30,9 +30,9 @@ export const focusPageView = createActionView(() => {
       if (!session.isDone) {
         return;
       }
+      stopFocusSession();
       uiStore.isDisplayingZenImage = true;
       desktopRouter.navigate("list", { listId: session.listId });
-      stopFocusSession();
     },
     goToPreviousNotification() {
       return session.goToPrev();

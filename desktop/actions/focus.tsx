@@ -1,13 +1,13 @@
 import React from "react";
 
 import { requestForceReloadPreview, requestPreviewFocus } from "@aca/desktop/bridge/preview";
+import { showMainWindowRequest } from "@aca/desktop/bridge/system";
+import { animationStore } from "@aca/desktop/domains/embed/animationStore";
+import { addToast } from "@aca/desktop/domains/toasts/store";
+import { stopFocusSession } from "@aca/desktop/store/focus";
 import { uiStore } from "@aca/desktop/store/ui";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconKeyboard, IconRefreshCcw } from "@aca/ui/icons";
 
-import { showMainWindowRequest } from "../bridge/system";
-import { animationStore } from "../domains/embed/animationStore";
-import { addToast } from "../domains/toasts/store";
-import { stopFocusSession } from "../store/focus";
 import { defineAction } from "./action";
 import { currentNotificationActionsGroup } from "./groups";
 import { focusPageView } from "./views/focus";
