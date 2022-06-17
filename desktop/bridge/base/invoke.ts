@@ -48,7 +48,7 @@ export function createInvokeBridge<Input = void, Result = void>(key: string) {
     if (!invokeHandler) {
       throw new Error(`No handler initialized`);
     }
-    
+
     try {
       const result = await invokeHandler(arg, event);
       return result;
