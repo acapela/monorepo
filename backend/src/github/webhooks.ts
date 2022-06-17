@@ -89,6 +89,8 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
         },
         type: "mention",
         issue_id: event.payload.issue.id,
+        // we don't know the correct pr id here, but we save the issue id to mark this as a pr
+        pr_id: event.payload.issue.pull_request ? event.payload.issue.id : null,
         title: event.payload.issue.title,
         repository_id: event.payload.repository.id,
         repository_full_name: event.payload.repository.full_name,

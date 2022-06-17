@@ -9,7 +9,7 @@ variable "prefix" {
 }
 
 locals {
-  stages = toset(["development", "staging", "production"])
+  stages = toset(["development", "staging", "production", "chris"])
 }
 
 locals {
