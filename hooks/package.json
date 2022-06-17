@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only -- ./src/index.ts",
     "start": "node ./dist/hooks/index.js",
-    "build": "esbuild ./src/index.ts --outdir=dist/hooks --target=node16 --bundle --platform=node --sourcemap",
+    "build": "esbuild ./src/index.ts --outdir=dist/hooks --target=node16 --bundle --platform=node --sourcemap --external:newrelic",
     "upload:sourcemaps": "sentry-cli releases files ${VERSION} upload-sourcemaps ./dist --url-prefix /app/dist"
   },
   "peerDependencies": {
