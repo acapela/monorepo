@@ -2,9 +2,6 @@ table:
   schema: public
   name: sync_request
 object_relationships:
-  - name: team
-    using:
-      foreign_key_constraint_on: team_id
   - name: user
     using:
       foreign_key_constraint_on: user_id
@@ -17,10 +14,7 @@ select_permissions:
         - entity_id
         - entity_name
         - id
-        - team_id
         - user_id
       filter:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+        user_id:
+          _eq: X-Hasura-User-Id
