@@ -119,6 +119,7 @@ async function createNotificationFromMessage(gmailAccountId: string, account: Ac
           from: fromName,
           text_preview: subject,
           created_at: createdAt,
+          last_seen_at: message.labelIds?.includes("UNREAD") ? null : new Date(),
         },
       },
       gmail_account: { connect: { id: gmailAccountId } },
