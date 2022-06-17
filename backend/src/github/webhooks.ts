@@ -84,6 +84,7 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
             user_id: a.user_id,
             url: event.payload.comment.html_url,
             from: commentCreatorName,
+            text_preview: event.payload.comment.body,
           },
         },
         type: "mention",
