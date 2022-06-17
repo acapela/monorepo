@@ -143,15 +143,16 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
     }
     case "notification_github": {
       const issueTag = inner.title && ({ category: "space", customLabel: inner.title } as const);
+      const prTag = inner.pr_id && "pr"; // detect if notification is from a pull request
       switch (inner.type) {
         case "mention":
-          return { title, tags: tags("mention", issueTag) };
+          return { title, tags: tags(prTag, "mention", issueTag) };
         case "assign":
-          return { title, tags: tags("assigned", issueTag) };
+          return { title: "You've been assigned", tags: tags(prTag, "assigned", issueTag) };
         case "review":
-          return { title, tags: tags("pr", issueTag) };
+          return { title: "Your review was requested", tags: tags(prTag, issueTag) };
       }
-      return { title: "New Github notification" };
+      return { title: "New GitHub notification" };
     }
     case "notification_gmail": {
       return { title };
