@@ -1,14 +1,16 @@
 import { HTMLMotionProps, motion } from "framer-motion";
-import React, { MouseEvent, ReactNode } from "react";
+import React, { MouseEvent, ReactNode, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { styledForwardRef } from "@aca/shared/component";
+import { MaybePromise } from "@aca/shared/promises";
 import { PopPresenceAnimator } from "@aca/ui/animations";
 import { disabledCss } from "@aca/ui/disabled";
 import { IconChevronDown } from "@aca/ui/icons";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { useOptionalShortcut } from "@aca/ui/keyboard/useShortcut";
 import { getTooltipProps } from "@aca/ui/popovers/tooltipProps";
+import { UISpinner } from "@aca/ui/Spinner";
 import { theme } from "@aca/ui/theme";
 
 import { ButtonKind, ButtonSize, getButtonKindStyles, getButtonSizeStyles } from "./variants";
@@ -32,7 +34,7 @@ export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "disabled">
   tooltip?: string;
   shortcut?: ShortcutDefinition;
   indicateDropdown?: boolean;
-  onClick?: (event?: MouseEvent) => void;
+  onClick?: (event?: MouseEvent) => MaybePromise<unknown>;
 }
 
 export const PopAnimatedButton = (props: ButtonProps) => {
@@ -62,6 +64,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
   },
   ref
 ) {
+  const [isInProgress, setIsInProgress] = useState(false);
   const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
 
   const isDisabledBoolean = !!isDisabled;
@@ -74,17 +77,34 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
     return tooltip ?? null;
   }
 
+  async function handleTrigger(event?: MouseEvent) {
+    if (isDisabled) return;
+
+    const clickResult = onClick?.(event);
+
+    if (!clickResult) return;
+
+    try {
+      setIsInProgress(true);
+      await clickResult;
+    } finally {
+      setIsInProgress(false);
+    }
+  }
+
   useOptionalShortcut(shortcut, () => {
     if (isDisabled) return;
 
-    onClick?.();
+    handleTrigger();
     return true;
   });
+
+  const showAsLoading = isLoading || isInProgress;
 
   return (
     <UIButton
       ref={ref}
-      $isLoading={isLoading}
+      $isLoading={showAsLoading}
       $isDisabled={isDisabledBoolean}
       $disableClicks={disableClicks}
       disabled={isDisabledBoolean}
@@ -92,7 +112,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
       {...getTooltipProps({ label: getTooltipLabel(), shortcut })}
       $kind={kind}
       $size={size}
-      onClick={onClick}
+      onClick={handleTrigger}
       {...htmlProps}
     >
       {iconAtStart && iconNode}
@@ -103,6 +123,7 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
           <IconChevronDown />
         </UIIconHolder>
       )}
+      {showAsLoading && <UISpinner $thick />}
     </UIButton>
   );
 })``;
@@ -156,7 +177,13 @@ export const UIButton = styled(motion.button)<{
       pointer-events: none;
     `}
 
-  ${(props) => (props.$isDisabled || props.$isLoading) && disabledCss};
+  ${(props) =>
+    (props.$isDisabled || props.$isLoading) &&
+    css`
+      pointer-events: none;
+    `};
+
+  ${(props) => props.$isDisabled && disabledCss}
   ${(props) =>
     props.$isWide &&
     css`

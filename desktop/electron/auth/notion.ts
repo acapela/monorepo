@@ -35,7 +35,10 @@ export async function loginNotion() {
     window.focus();
   });
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
+    window.once("closed", () => {
+      reject(new Error("Window closed before authorized"));
+    });
     window.webContents.on("did-navigate-in-page", async () => {
       const token = await getNotionAuthToken();
 
@@ -43,10 +46,10 @@ export async function loginNotion() {
         return;
       }
 
-      window.close();
-
       notionAuthTokenBridgeValue.set(token);
       resolve();
+
+      window.close();
     });
   });
 }

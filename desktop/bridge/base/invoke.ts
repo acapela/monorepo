@@ -1,5 +1,7 @@
 import type { IpcMainInvokeEvent } from "electron";
 
+import { unsafeAssertType } from "@aca/shared/assert";
+
 /**
  * Important note!
  *
@@ -46,9 +48,20 @@ export function createInvokeBridge<Input = void, Result = void>(key: string) {
     if (!invokeHandler) {
       throw new Error(`No handler initialized`);
     }
-    const result = await invokeHandler(arg, event);
-
-    return result;
+    try {
+      const result = await invokeHandler(arg, event);
+      return result;
+    } catch (error) {
+      unsafeAssertType<Error>(error);
+      if (!error) {
+        // If we reject promise with null - Electron with crash on calling .toString
+        throw new Error(`Invoke handler thrown an error`);
+      } else if (typeof error === "string") {
+        throw new Error(error);
+      } else {
+        throw error;
+      }
+    }
   }
 
   if (process.env.ELECTRON_CONTEXT !== "client") {
