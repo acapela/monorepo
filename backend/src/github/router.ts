@@ -37,7 +37,7 @@ listenForWebhooks("github", async (rawBody, params, headers) => {
     });
   } catch (e) {
     // error is handled via event emitter
-    logger.warn(e, "could not verify github webhook");
+    logger.warn(e, "could not process github webhook");
   }
 });
 
