@@ -9,6 +9,7 @@ import Router from "@koa/router";
 import * as Sentry from "@sentry/node";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
+import nr from "newrelic";
 
 import { APIError } from "@aca/hooks/src/errors";
 import { publishWebhook } from "@aca/hooks/src/pubsub";
@@ -62,6 +63,8 @@ app.use(router.allowedMethods());
 router.post("/:service/:id?", async (ctx) => {
   const serviceName = ctx.params.service as Service;
   if (!allServices.includes(serviceName)) throw new APIError(404, "service not found");
+
+  nr.incrementMetric(`webhook/${serviceName}`);
 
   if (serviceName === "slack") {
     if (ctx.request.body?.type === "url_verification") {
