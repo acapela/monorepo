@@ -5,7 +5,7 @@ import { getAllLogsBridge } from "@aca/desktop/bridge/logger";
 import { restartAppRequest, toggleDevtoolsRequest } from "@aca/desktop/bridge/system";
 import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { uiStore } from "@aca/desktop/store/ui";
-import { HOUR } from "@aca/shared/time";
+import { HOUR, wait } from "@aca/shared/time";
 import { IconClock, IconKeyboard } from "@aca/ui/icons";
 
 import { resetSessionBridges } from "../bridge/base/persistance";
@@ -187,6 +187,16 @@ export const forceZenMode = defineAction({
   group: devActionsGroup,
   handler() {
     uiStore.isDisplayingZenImage = !uiStore.isDisplayingZenImage;
+  },
+});
+
+export const longAction = defineAction({
+  icon: devIcon,
+  name: "Run long action",
+  canApply: getIsDevModeEnabled,
+  group: devActionsGroup,
+  async handler() {
+    await wait(2000);
   },
 });
 

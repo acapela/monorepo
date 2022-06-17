@@ -27,16 +27,23 @@ export async function loginGoogle() {
 
   window.webContents.loadURL("https://accounts.google.com/servicelogin");
 
-  window.webContents.on("did-navigate-in-page", async () => {
-    const token = await getGoogleAuthToken();
+  return new Promise<void>((resolve, reject) => {
+    window.once("closed", () => {
+      reject(new Error("Window closed before authorized"));
+    });
+    window.webContents.on("did-navigate-in-page", async () => {
+      const token = await getGoogleAuthToken();
 
-    if (!token) {
-      return;
-    }
+      if (!token) {
+        return;
+      }
 
-    window.close();
+      resolve();
 
-    googleAuthTokenBridgeValue.set(token);
+      googleAuthTokenBridgeValue.set(token);
+
+      window.close();
+    });
   });
 }
 

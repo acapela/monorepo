@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { exitSettings } from "@aca/desktop/actions/navigation";
+import { devSettingsStore } from "@aca/desktop/domains/dev/store";
 import { desktopRouter } from "@aca/desktop/routes";
 import { IntegrationsManager } from "@aca/desktop/ui/IntegrationsManager";
 import { UINavItem } from "@aca/desktop/ui/nav/NavItem";
@@ -10,6 +11,7 @@ import { TopBarActionButton } from "@aca/desktop/ui/systemTopBar/TopBarActionBut
 import { theme } from "@aca/ui/theme";
 
 import { AccountSettings } from "./Account";
+import { DevSettings } from "./Dev";
 import { GeneralSettings } from "./General";
 import { NotificationsSettings } from "./Notifications";
 import { ReferralsView } from "./Referrals";
@@ -46,6 +48,13 @@ export const settingsSections: Record<string, SettingsSection> = {
   referrals: {
     label: "Referrals",
     component: ReferralsView,
+  },
+  dev: {
+    label: "Dev",
+    component: DevSettings,
+    get isHidden() {
+      return !devSettingsStore.devMode;
+    },
   },
 };
 

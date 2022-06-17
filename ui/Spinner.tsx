@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 import { theme } from "@aca/ui/theme";
 
@@ -7,7 +7,7 @@ const spin = keyframes`
   to { transform: rotate(360deg); }
 `;
 
-export const UISpinner = styled.div`
+export const UISpinner = styled.div<{ $thick?: boolean }>`
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -15,4 +15,10 @@ export const UISpinner = styled.div`
   border-radius: 50%;
   border-top-color: ${theme.colors.primary.value};
   animation: ${spin} 1s ease-in-out infinite;
+
+  ${(props) =>
+    props.$thick &&
+    css`
+      border-width: 0.15em;
+    `}
 `;

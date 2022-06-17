@@ -17,9 +17,12 @@ export async function loginGitHub() {
 
   await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/github/auth", { userAgent });
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     function checkIfCallbackSuccessful() {
-      if (window.isDestroyed()) return;
+      if (window.isDestroyed()) {
+        reject(new Error("Window closed before authorized"));
+        return;
+      }
       const url = new URL(window.webContents.getURL());
       const ghMatch =
         url.origin === "https://github.com" &&

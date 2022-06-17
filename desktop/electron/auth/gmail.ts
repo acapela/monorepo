@@ -14,11 +14,14 @@ export function initializeGmailAuthHandler() {
         scope: GOOGLE_AUTH_WITH_GMAIL_SCOPES,
       })}`
     );
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
+      window.once("closed", () => {
+        reject(new Error("Window closed before authorized"));
+      });
       window.webContents.on("did-navigate-in-page", async () => {
         if (window.webContents.getURL().includes("/auth/success")) {
-          window.close();
           resolve();
+          window.close();
         }
       });
     });

@@ -7,9 +7,8 @@ import { ActionButton } from "@aca/desktop/ui/ActionButton";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { BodyPortal } from "@aca/ui/BodyPortal";
 import { Button } from "@aca/ui/buttons/Button";
+import { UISpinner } from "@aca/ui/Spinner";
 import { theme } from "@aca/ui/theme";
-
-import { UISpinner } from "./Spinner";
 
 interface Props {
   onCancel: () => void;
