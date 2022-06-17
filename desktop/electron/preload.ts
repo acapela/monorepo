@@ -30,7 +30,7 @@ const publishedApi = {
   invoke: async (key: string, data: unknown) => {
     // TODO (security): reject other channels than registered bridges
     try {
-      return ipcRenderer.invoke(key, serializeUntracked(data));
+      return await ipcRenderer.invoke(key, serializeUntracked(data));
     } catch (error) {
       console.error(`Failed to invoke ${key}`, data, error);
       throw error;

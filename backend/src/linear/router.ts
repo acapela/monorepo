@@ -200,8 +200,12 @@ async function addIssueToDatabase(payload: IssueWebhook) {
 listenForWebhooks("linear", async (rawBody) => {
   const payload = JSON.parse(rawBody) as Webhook;
 
-  if (payload.type === "Issue") await addIssueToDatabase(payload);
+  try {
+    if (payload.type === "Issue") await addIssueToDatabase(payload);
 
-  // comment updates are not handled
-  if (payload.action === "create" && payload.type === "Comment") await saveComment(payload);
+    // comment updates are not handled
+    if (payload.action === "create" && payload.type === "Comment") await saveComment(payload);
+  } catch (e) {
+    logger.error(e, "error processing linear webhook");
+  }
 });

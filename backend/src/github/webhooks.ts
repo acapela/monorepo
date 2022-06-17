@@ -2,6 +2,7 @@ import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 import { Team, User } from "@octokit/webhooks-types";
 import * as Sentry from "@sentry/node";
 
+import { githubApp } from "@aca/backend/src/github/app";
 import { db } from "@aca/db";
 import { logger } from "@aca/shared/logger";
 
@@ -75,6 +76,15 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
     }),
   ]);
 
+  let prId: number | null = null;
+  if (event.payload.issue.pull_request) {
+    const octokit = await githubApp.getInstallationOctokit(installationId);
+    const prInfo = await octokit.request(
+      `GET /repos/${event.payload.repository.full_name}/pulls/${event.payload.issue.number}`
+    );
+    prId = prInfo.data.id;
+  }
+
   const commentCreatorName = commentCreatorAccount?.github_account.user.name || commentCreator.login;
   const notificationPromises = ghAccounts.map((a) =>
     db.notification_github.create({
@@ -84,10 +94,13 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
             user_id: a.user_id,
             url: event.payload.comment.html_url,
             from: commentCreatorName,
+            text_preview: event.payload.comment.body,
           },
         },
         type: "mention",
-        issue_id: event.payload.issue.id,
+        issue_id: prId ? null : event.payload.issue.id,
+        // we don't know the correct pr id here, but we save the issue id to mark this as a pr
+        pr_id: prId,
         title: event.payload.issue.title,
         repository_id: event.payload.repository.id,
         repository_full_name: event.payload.repository.full_name,

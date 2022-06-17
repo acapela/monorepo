@@ -12,14 +12,19 @@ export async function loginClickUp() {
 
   await window.webContents.loadURL(FRONTEND_URL + "/api/backend/v1/clickup/auth", { userAgent });
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     function checkIfCallbackSuccessful() {
-      if (window.isDestroyed()) return;
+      if (window.isDestroyed()) {
+        reject(new Error("Window closed before authorized"));
+        return;
+      }
       const url = window.webContents.getURL();
       if (url.startsWith(FRONTEND_URL) && url.split("?")[0].endsWith("callback")) {
         clickupAuthTokenBridgeValue.set(true);
-        window.close();
         resolve();
+
+        window.close();
+
         return;
       }
       setTimeout(checkIfCallbackSuccessful, 1000);

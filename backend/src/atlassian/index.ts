@@ -4,6 +4,8 @@ import { addDays } from "date-fns";
 import { Router } from "express";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
+import { HttpStatus } from "@aca/backend/src/http";
+import { listenForWebhooks } from "@aca/backend/src/webhooks";
 import { Account, db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
@@ -23,8 +25,13 @@ router.post(WEBHOOK_PATH, async (req, res) => {
 
   await captureJiraWebhook(payload);
 
-  res.statusCode = 200;
-  res.end();
+  res.status(HttpStatus.OK).end();
+});
+
+listenForWebhooks("atlassian", async (rawBody) => {
+  const payload = JSON.parse(rawBody) as JiraWebhookPayload;
+
+  await captureJiraWebhook(payload);
 });
 
 /*

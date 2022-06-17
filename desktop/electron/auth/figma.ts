@@ -43,7 +43,10 @@ export async function loginFigma() {
     window.focus();
   });
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
+    window.once("closed", () => {
+      reject(new Error("Window closed before authorized"));
+    });
     window.webContents.on("did-navigate-in-page", async () => {
       const token = await getFigmaAuthTokenFromCookies();
 
@@ -53,10 +56,11 @@ export async function loginFigma() {
 
       const figmaSessionData = await getFigmaSessionData(window.webContents);
 
+      resolve();
+
       window.close();
 
       figmaAuthTokenBridgeValue.set(figmaSessionData);
-      resolve();
     });
   });
 }

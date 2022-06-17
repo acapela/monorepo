@@ -19,7 +19,7 @@ provider "google" {
 }
 
 locals {
-  webhook_types = toset(["linear", "slack", "github", "asana", "clickup"])
+  webhook_types = toset(["linear", "slack", "github", "asana", "clickup", "atlassian"])
   redis_stages  = toset(["staging", "production"])
   redis_memory_size_gb = {
     staging    = 1

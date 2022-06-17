@@ -13,11 +13,14 @@ export async function loginJira() {
 
   await window.webContents.loadURL(FRONTEND_URL + "/auth/sign-in?provider=atlassian", { userAgent });
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
+    window.once("closed", () => {
+      reject(new Error("Window closed before authorized"));
+    });
     window.webContents.on("did-navigate-in-page", async () => {
       if (window.webContents.getURL().includes("/auth/success")) {
-        window.close();
         resolve();
+        window.close();
       }
     });
   });

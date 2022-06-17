@@ -20,6 +20,7 @@ export async function closeSubscriptions() {
 export function listenForWebhooks(service: string, processFn: ProcessFunc) {
   const pubsub = new PubSub();
   const topicName = `${process.env.STAGE}-webhooks-${service}`;
+  logger.info(`listening for webhooks on topic ${topicName}`);
   const subscription = pubsub.topic(topicName).subscription(`${topicName}-sub`, {
     flowControl: { maxMessages: 10, allowExcessMessages: false },
   });

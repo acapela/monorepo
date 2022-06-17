@@ -56,15 +56,19 @@ export function setupSlack(app: Express) {
       return;
     }
 
-    await slackApp.processEvent({
-      body,
-      // webhook was already acknowledged by the hooks service, so we pass only a nop function here
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      ack: async () => {},
-      retryNum: headers["x-slack-retry-num"],
-      retryReason: headers["x-slack-retry-reason"],
-      customProperties: {},
-    });
+    try {
+      await slackApp.processEvent({
+        body,
+        // webhook was already acknowledged by the hooks service, so we pass only a nop function here
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        ack: async () => {},
+        retryNum: headers["x-slack-retry-num"],
+        retryReason: headers["x-slack-retry-reason"],
+        customProperties: {},
+      });
+    } catch (e) {
+      logger.error(e, "error processing slack webhook");
+    }
   });
 }
 

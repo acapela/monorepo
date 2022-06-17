@@ -4,9 +4,11 @@ import axios from "axios";
 import { Request, Response, Router } from "express";
 import { map, pick } from "lodash";
 import qs from "qs";
+import * as uuid from "uuid";
 
 import { BadRequestError, NotFoundError } from "@aca/backend/src/errors/errorTypes";
 import { HttpStatus } from "@aca/backend/src/http";
+import { listenForWebhooks } from "@aca/backend/src/webhooks";
 import { ClickUpAccount, ClickUpTeam, db } from "@aca/db";
 import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
@@ -156,26 +158,68 @@ router.get("/v1/clickup/callback", async (req: Request, res: Response) => {
   trackBackendUserEvent(userId, "New Integration Added", { integration: "clickup" });
 });
 
-router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {
-  const webhook = req.body as Webhook;
+async function verifyAndProcess({
+  rawBody,
+  signature,
+  teamId,
+}: {
+  rawBody: string | object;
+  signature: string;
+  teamId: string;
+}) {
+  if (!uuid.validate(teamId)) {
+    logger.warn(`invalid team id: ${teamId}`);
+    return;
+  }
+
+  const webhook = (typeof rawBody === "object" ? rawBody : JSON.parse(rawBody)) as Webhook;
   // ignore events that are not handled
   if (!EventTypes.includes(webhook.event)) return;
 
   const team = await db.clickup_team.findFirst({
-    where: { id: req.params.team },
+    where: { id: teamId },
     include: { clickup_account_to_team: { include: { clickup_account: true } } },
   });
-  if (!team) throw new NotFoundError("team not found");
-  if (team.webhook_id !== webhook.webhook_id) throw new BadRequestError("invalid webhook id");
+  if (!team) {
+    logger.warn(`team not found: ${teamId}`);
+    return;
+  }
+  if (team.webhook_id !== webhook.webhook_id) {
+    logger.warn(`webhook id mismatch: ${team.webhook_id} !== ${webhook.webhook_id}`);
+    return;
+  }
 
   // validate webhook signature
   const whSignature = createHmac("sha256", team.webhook_secret!).update(JSON.stringify(webhook)).digest("hex");
-  if (req.headers["x-signature"] !== whSignature) throw new BadRequestError("invalid webhook signature");
+  if (signature !== whSignature) {
+    logger.warn(`invalid webhook signature`);
+    return;
+  }
 
+  await processEvent(webhook, team);
+}
+
+listenForWebhooks("clickup", async (rawBody, params, headers) => {
+  try {
+    await verifyAndProcess({
+      rawBody,
+      signature: headers["x-signature"],
+      teamId: params.id,
+    });
+  } catch (e) {
+    logger.error(e, "error processing clickup webhook");
+  }
+});
+
+router.post("/v1/clickup/webhook/:team", async (req: Request, res: Response) => {
   // accept webhook
   res.status(HttpStatus.OK).end();
 
-  await processEvent(webhook, team);
+  await verifyAndProcess({
+    rawBody: req.body,
+    signature: req.headers["x-signature"] as string,
+    teamId: req.params.team,
+  });
 });
 
 router.get("/v1/clickup/unlink", async (req: Request, res: Response) => {

@@ -69,7 +69,7 @@ export const ActionButton = styledObserver(function ActionButton({
       shortcut={shortcut}
       tooltip={getTooltip()}
       onClick={() => {
-        runAction(action, context);
+        return runAction(action, context);
       }}
       {...buttonProps}
     >

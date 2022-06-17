@@ -30,29 +30,36 @@ export async function loginAcapela(provider: "slack" | "google") {
 
   window.webContents.loadURL(FRONTEND_URL + `/app/login?provider=${provider}`);
 
-  window.webContents.on("did-navigate-in-page", async () => {
-    const token = await getAcapelaAuthToken();
+  return new Promise<void>((resolve, reject) => {
+    window.once("closed", () => {
+      reject(new Error("Window closed before authorized"));
+    });
+    window.webContents.on("did-navigate-in-page", async () => {
+      const token = await getAcapelaAuthToken();
 
-    if (!token) {
-      return;
-    }
+      if (!token) {
+        return;
+      }
 
-    window.close();
+      resolve();
 
-    authTokenBridgeValue.set(token);
+      window.close();
 
-    /**
-     * We don't know what kind of auth method user has chosen.
-     *
-     * But a side-effect is that user is already logged in in one of those.
-     *
-     * eg. if you sign to acapela with Google, you'll already by logged in Google when it's done.
-     *
-     * Thus lets re-check auth status so it is up-to-date and synced with frontend
-     *
-     * TODO: Maybe there is some 'cookie change' listener so we could avoid such imperative code.
-     */
-    await syncGoogleAuthState();
+      authTokenBridgeValue.set(token);
+
+      /**
+       * We don't know what kind of auth method user has chosen.
+       *
+       * But a side-effect is that user is already logged in in one of those.
+       *
+       * eg. if you sign to acapela with Google, you'll already by logged in Google when it's done.
+       *
+       * Thus lets re-check auth status so it is up-to-date and synced with frontend
+       *
+       * TODO: Maybe there is some 'cookie change' listener so we could avoid such imperative code.
+       */
+      await syncGoogleAuthState();
+    });
   });
 }
 

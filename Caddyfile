@@ -53,15 +53,26 @@ handle_path /api/backend/v1/linear/webhook {
 #	reverse_proxy {$HOOKS_HOST}
 #}
 
-# disabled for now
-#handle_path /api/backend/v1/github/webhook {
-#	rewrite * /github
-#	reverse_proxy {$HOOKS_HOST}
-#}
+handle_path /api/backend/v1/github/webhook {
+	rewrite * /github
+	reverse_proxy {$HOOKS_HOST}
+}
 
 # disabled for now
 #handle_path /api/backend/v1/asana/webhook/* {
 #	rewrite * /asana{path}
+#	reverse_proxy {$HOOKS_HOST}
+#}
+
+
+handle_path /api/backend/v1/clickup/webhook/* {
+	rewrite * /clickup{path}
+	reverse_proxy {$HOOKS_HOST}
+}
+
+# disabled for now
+#handle_path /api/backend/v1/atlassian/webhooks {
+#	rewrite * /atlassian
 #	reverse_proxy {$HOOKS_HOST}
 #}
 
