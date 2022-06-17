@@ -42,7 +42,6 @@ handle_path /api/hooks/healthz {
 	reverse_proxy {$HOOKS_HOST}
 }
 
-
 ############################################
 # webhooks are routed to the hooks service #
 ############################################
@@ -78,7 +77,6 @@ handle_path /api/backend/v1/clickup/webhook/* {
 #	rewrite * /slack/events
 #	reverse_proxy {$HOOKS_HOST}
 #}
-
 
 
 handle {
