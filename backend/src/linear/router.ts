@@ -160,7 +160,7 @@ async function saveComment(payload: CommentWebhook) {
           create: {
             user_id: u.user_id,
             url: payload.url,
-            from: payload.data.user.name,
+            from: payload.data?.user?.name ?? "Linear",
             text_preview: payload.data.body,
           },
         },

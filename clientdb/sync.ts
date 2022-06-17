@@ -30,10 +30,8 @@ const syncRequestFragment = gql`
 
 const pullSyncRequestsSubscription = gql`
   ${syncRequestFragment}
-  subscription PullSyncRequests($lastSyncDate: timestamptz!, $entityName: String!, $teamId: uuid!) {
-    sync_request(
-      where: { date: { _gt: $lastSyncDate }, entity_name: { _eq: $entityName }, team_id: { _eq: $teamId } }
-    ) {
+  subscription PullSyncRequests($lastSyncDate: timestamptz!, $entityName: String!) {
+    sync_request(where: { date: { _gt: $lastSyncDate }, entity_name: { _eq: $entityName } }) {
       ...SyncRequest
     }
   }
@@ -104,7 +102,7 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
   const upperType = upperFirst(type);
 
   /**
-   * Provide array of ids you want to check if you have access to. Will return list of items you dont have access to.
+   * Provide array of ids you want to check if you have access to. Will return list of items you don't have access to.
    *
    * Note: this method is batched, so one request per list is needed.
    */
@@ -360,18 +358,12 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
     },
     pullRemoves({ getContextValue, lastSyncDate, removeItems }) {
       const apollo = getContextValue(apolloContext);
-      const teamId = getContextValue(teamIdContext);
-
-      if (!teamId) {
-        return;
-      }
 
       const observer = apollo.subscribe<PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables>({
         query: pullSyncRequestsSubscription,
         variables: {
           lastSyncDate: fixLastUpdateDateForHasura(lastSyncDate).toISOString(),
           entityName: type,
-          teamId,
         },
       });
 

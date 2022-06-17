@@ -12,7 +12,7 @@ import { trackBackendUserEvent } from "@aca/shared/backendAnalytics";
 import { logger } from "@aca/shared/logger";
 
 import { captureJiraWebhook } from "./capturing/capturing";
-import { createWebhooks, deleteWebhooks, getNewAccessToken, getWebhooks, isTokenExpired, jiraRequest } from "./rest";
+import { createWebhooks, deleteWebhooks, getAccessTokenAndRefreshIfExpired, getWebhooks, jiraRequest } from "./rest";
 import { GetResourcesResponse, JiraAccountWithAllDetails, JiraWebhookPayload } from "./types";
 import { getRefreshTokenExpiresAt } from "./utils";
 
@@ -106,7 +106,7 @@ async function handleCreateAtlassianAccount(account: Account) {
     );
 
     for (const atlassianSitePayload of availableSitesWithRequiresScopes) {
-      // The attlassian site is what identifies the jira domain we're in
+      // The atlassian site is what identifies the jira domain we're in
       // e.g. acapela-team.atlassian.net
       const atlassianSite = await db.atlassian_site.upsert({
         where: {
@@ -282,20 +282,9 @@ async function registerAndStoreNewWebhooks(jiraAccount: JiraAccountWithAllDetail
   logger.info(`Webhooks created successfully for atlassian site ${jiraAccount.atlassian_site.atlassian_cloud_id}`);
 }
 
-async function getAccessToken(account: Account): Promise<string> {
-  if (!isTokenExpired(account.access_token_expires)) {
-    return account.access_token ?? "";
-  }
-
-  logger.info(`Atlassian access token for acapela account ${account.id} needs refreshing`);
-
-  const refreshTokenData = await getNewAccessToken(account?.refresh_token ?? "");
-  return refreshTokenData.access_token;
-}
-
 async function getHeaders(account: Account) {
   return {
-    Authorization: `Bearer ${await getAccessToken(account)}`,
+    Authorization: `Bearer ${await getAccessTokenAndRefreshIfExpired(account)}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };

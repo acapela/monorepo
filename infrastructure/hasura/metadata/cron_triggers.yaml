@@ -36,7 +36,7 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: update-atlassian-refresh-token
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: 0 * 15 * *
+  schedule: 40 * * * *
   include_in_metadata: true
   payload:
     handler: update-atlassian-refresh-token

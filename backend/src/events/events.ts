@@ -27,7 +27,6 @@ import { handleAccountUpdates } from "../atlassian";
 import { handleLinearIssueChanges, handleLinearOauthTokenCreated } from "../linear/events";
 import { handleChannelFilterMigrationSync } from "../slack/channelFilterMigration";
 import { handleNotificationSlackMessageChanges, handleUserSlackInstallationChanges } from "../slack/events";
-import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
 export const router = Router();
 
@@ -63,8 +62,6 @@ hasuraEvents.addHandler("acapela_update_created", ["INSERT"], handleAcapelaUpdat
 // "are_all_channels_included" column in "user_slack_channels_by_team". Migration should probably be done by July 2022.
 // Remember to remove it from Hasura as well!
 hasuraEvents.addHandler("channel_filter_migration", ["INSERT", "UPDATE"], handleChannelFilterMigrationSync);
-
-hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
