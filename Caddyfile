@@ -42,28 +42,25 @@ handle_path /api/hooks/healthz {
 	reverse_proxy {$HOOKS_HOST}
 }
 
+
+############################################
+# webhooks are routed to the hooks service #
+############################################
+
 handle_path /api/backend/v1/linear/webhook {
 	rewrite * /linear
 	reverse_proxy {$HOOKS_HOST}
 }
-
-# disabled for now
-#handle_path /api/backend/slack/events {
-#	rewrite * /slack/events
-#	reverse_proxy {$HOOKS_HOST}
-#}
 
 handle_path /api/backend/v1/github/webhook {
 	rewrite * /github
 	reverse_proxy {$HOOKS_HOST}
 }
 
-# disabled for now
-#handle_path /api/backend/v1/asana/webhook/* {
-#	rewrite * /asana{path}
-#	reverse_proxy {$HOOKS_HOST}
-#}
-
+handle_path /api/backend/v1/asana/webhook/* {
+	rewrite * /asana{path}
+	reverse_proxy {$HOOKS_HOST}
+}
 
 handle_path /api/backend/v1/clickup/webhook/* {
 	rewrite * /clickup{path}
@@ -75,6 +72,13 @@ handle_path /api/backend/v1/clickup/webhook/* {
 #	rewrite * /atlassian
 #	reverse_proxy {$HOOKS_HOST}
 #}
+
+# disabled for now
+#handle_path /api/backend/slack/events {
+#	rewrite * /slack/events
+#	reverse_proxy {$HOOKS_HOST}
+#}
+
 
 
 handle {
