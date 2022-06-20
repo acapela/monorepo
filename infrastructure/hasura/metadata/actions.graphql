@@ -143,6 +143,7 @@ type ServiceUser {
   display_name: String!
   real_name: String
   avatar_url: String
+  conversation_id: String
 }
 
 type SlackConversation {

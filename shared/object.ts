@@ -116,3 +116,18 @@ export function deepMerge<T>(source: T, overwrites: DeepPartial<T>) {
     return value;
   }) as T;
 }
+
+export function mapArrayToObject<T, K extends string, V>(
+  items: T[],
+  mapper: (item: T) => { key: K; value: V }
+): Record<K, V> {
+  const map = {} as Record<K, V>;
+
+  for (const item of items) {
+    const { key, value } = mapper(item);
+
+    map[key] = value;
+  }
+
+  return map;
+}

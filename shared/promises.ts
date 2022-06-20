@@ -70,6 +70,12 @@ export function createSharedPromise<T>(getter: () => Promise<T>) {
     }
   }
 
+  function getIsInProgress() {
+    return !!currentPromise;
+  }
+
+  get.getIsInProgress = getIsInProgress;
+
   return get;
 }
 

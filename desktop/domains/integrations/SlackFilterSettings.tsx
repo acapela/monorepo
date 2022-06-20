@@ -6,13 +6,14 @@ import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
-import { querySlackConversations } from "@aca/desktop/ui/Filters/FilterEditorSlackDetails";
 import { SlackTeamConversationsDropdown } from "@aca/desktop/ui/Filters/SlackTeamConversationsDropdown";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { SlackConversationsQuery } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
 import { VStack } from "@aca/ui/Stack";
 import { Toggle } from "@aca/ui/toggle";
+
+import { getSlackConversations } from "../slack/conversations";
 
 // Uncomment if needed
 // import { makeLogger } from "../dev/makeLogger";
@@ -47,7 +48,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
   }, []);
 
   async function updateAvailableChannels() {
-    const conversations = await querySlackConversations();
+    const conversations = await getSlackConversations();
     const conversationsByTeams = conversations.reduce((acc, curr) => {
       if (!acc[curr.workspace_id]) {
         acc[curr.workspace_id] = [];
