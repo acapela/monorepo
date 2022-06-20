@@ -12,9 +12,11 @@ import {
   SlackConversation,
 } from "@aca/gql";
 import { assert, assertDefined } from "@aca/shared/assert";
+import { MINUTE } from "@aca/shared/time";
 
 import { ActionHandler } from "../actions/actionHandlers";
 import { revertGmailMessageToUnread } from "../gmail/revertRead";
+import { redisCached } from "../redis";
 import { SlackInstallation, slackClient } from "./app";
 
 async function findSlackTeamsWithTokens(userId: string) {
@@ -37,25 +39,48 @@ export const getIndividualSlackInstallationURLHandler: ActionHandler<
   },
 };
 
+async function getUserConversationIdMap(token?: string) {
+  const { channels = [] } = await slackClient.users.conversations({ token, types: "im" });
+
+  const map = new Map<string, string>();
+
+  for (const channel of channels) {
+    if (channel.user && channel.id) {
+      map.set(channel.user, channel.id);
+    }
+  }
+
+  return map;
+}
+
+const getSlackUsersForUser = redisCached("getSlackUsersForUser", MINUTE, async (userId: string) => {
+  const teams = await findSlackTeamsWithTokens(assertDefined(userId, "missing userId"));
+  const teamUserPromises = teams.map(async (team) => {
+    const [{ members }, userConversationIdLookup] = await Promise.all([
+      slackClient.users.list({ token: team.token }),
+      getUserConversationIdMap(team.token),
+    ]);
+
+    return (members ?? []).map(
+      (member) =>
+        ({
+          workspace_id: team.id,
+          id: assertDefined(member.id, `missing id for member ${JSON.stringify(member)}`),
+          display_name: assertDefined(member.name, `missing name for member ${JSON.stringify(member)}`),
+          real_name: member.real_name ?? null,
+          avatar_url: member.profile?.image_original ?? null,
+          conversation_id: userConversationIdLookup.get(member.id!) ?? null,
+        } as ServiceUser)
+    );
+  });
+  return orderBy((await Promise.all(teamUserPromises)).flat(), (u) => u.real_name ?? u.display_name);
+});
+
 export const slackUsers: ActionHandler<void, ServiceUser[]> = {
   actionName: "slack_users",
 
   async handle(userId) {
-    const teams = await findSlackTeamsWithTokens(assertDefined(userId, "missing userId"));
-    const teamUserPromises = teams.map(async (team) => {
-      const { members } = await slackClient.users.list({ token: team.token });
-      return (members ?? []).map(
-        (member) =>
-          ({
-            workspace_id: team.id,
-            id: assertDefined(member.id, `missing id for member ${JSON.stringify(member)}`),
-            display_name: assertDefined(member.name, `missing name for member ${JSON.stringify(member)}`),
-            real_name: member.real_name ?? null,
-            avatar_url: member.profile?.image_original ?? null,
-          } as ServiceUser)
-      );
-    });
-    return orderBy((await Promise.all(teamUserPromises)).flat(), (u) => u.real_name ?? u.display_name);
+    return getSlackUsersForUser(assertDefined(userId, "missing userId"));
   },
 };
 

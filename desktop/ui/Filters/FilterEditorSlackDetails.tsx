@@ -1,11 +1,10 @@
-import { gql, useQuery } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled, { css } from "styled-components";
 
-import { apolloClient } from "@aca/desktop/apolloClient";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
-import { SlackConversationsQuery, SlackConversationsQueryVariables, SlackUsersQuery } from "@aca/gql";
+import { getSlackConversations, getSlackUsers } from "@aca/desktop/domains/slack/conversations";
+import { SlackConversationsQuery } from "@aca/gql";
 import { ValueUpdater, updateValue } from "@aca/shared/updateValue";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
 import { IconComment2Text, IconHashtagCircle, IconUsers } from "@aca/ui/icons";
@@ -23,41 +22,6 @@ interface Props {
   onChange: (filter: SlackFilter) => void;
 }
 
-function useSlackUsers() {
-  const { data } = useQuery<SlackUsersQuery>(
-    gql`
-      query SlackUsers {
-        slack_users {
-          workspace_id
-          id
-          display_name
-          real_name
-          avatar_url
-        }
-      }
-    `
-  );
-
-  return data?.slack_users ?? [];
-}
-
-export async function querySlackConversations() {
-  const { data } = await apolloClient.query<SlackConversationsQuery, SlackConversationsQueryVariables>({
-    query: gql`
-      query SlackConversations {
-        slack_conversations {
-          workspace_id
-          id
-          name
-          is_private
-        }
-      }
-    `,
-    fetchPolicy: "no-cache",
-  });
-  return data?.slack_conversations ?? [];
-}
-
 export const SlackConversationsDropdown = observer(
   ({
     checkSelected,
@@ -72,15 +36,7 @@ export const SlackConversationsDropdown = observer(
     className?: string;
     placeholder?: string;
   }) => {
-    const [slackConversations, setSlackConversations] = useState<SlackConversationsQuery["slack_conversations"]>([]);
-
-    async function updateConversations() {
-      querySlackConversations().then(setSlackConversations);
-    }
-
-    useEffect(() => {
-      updateConversations();
-    }, []);
+    const slackConversations = getSlackConversations();
 
     return (
       <MultipleOptionsDropdown<typeof slackConversations[number]>
@@ -94,14 +50,13 @@ export const SlackConversationsDropdown = observer(
           getWorkspaceLabel(slackIntegrationClient, channel.workspace_id)
         }
         selectedItems={slackConversations.filter(({ id }) => checkSelected(id))}
-        onOpen={updateConversations}
         onChange={onChange}
       />
     );
   }
 );
 export const FilterEditorSlackDetails = observer(({ filter, onChange }: Props) => {
-  const slackUsers = useSlackUsers();
+  const slackUsers = getSlackUsers();
 
   const parsedFilter = parseSlackFilter(filter);
 
