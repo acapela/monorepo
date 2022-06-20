@@ -18,11 +18,6 @@ export const gmailIntegrationClient: IntegrationClient = {
       id: gmailAccount.id,
       name: gmailAccount.account!.email!,
     })) ?? [],
-  getComposeURLs: () =>
-    getDb().gmailAccount.all.map((gmailAccount) => ({
-      accountId: gmailAccount.id,
-      url: "https://mail.google.com/mail/u/0/?fs=1&to=&su=&body=&tf=cm",
-    })),
   async connect() {
     await loginGmailBridge();
   },

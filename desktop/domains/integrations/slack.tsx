@@ -45,11 +45,6 @@ export const slackIntegrationClient: IntegrationClient = {
     return accountStore.user?.slackInstallations.hasItems ?? false;
   },
   getAccounts,
-  getComposeURLs: () =>
-    getAccounts().map((team) => ({
-      accountId: team.id,
-      url: `https://app.slack.com/client/${team.id}/composer/draft`,
-    })),
   convertToLocalAppUrl: async (notification) => {
     const inner = notification.inner;
     if (inner?.__typename !== "notification_slack_message") {
