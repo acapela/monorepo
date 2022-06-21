@@ -22,7 +22,7 @@ interface Props {
   onSelectRequest: () => void;
   onDeselectRequest: () => void;
   isSelected: boolean;
-  tags: NotificationTag[];
+  tags?: NotificationTag[];
 }
 
 export function OnboardingNotificationRow({
@@ -60,9 +60,11 @@ export function OnboardingNotificationRow({
       </UIIcon>
 
       <UIAuthor>{author}</UIAuthor>
-      <UITags>
-        <NotificationTagsList tags={tags} />
-      </UITags>
+      {!!tags && (
+        <UITags>
+          <NotificationTagsList tags={tags} />
+        </UITags>
+      )}
       <UIContent>{content}</UIContent>
       <UITime>{timeAgoSent}</UITime>
       {isSelected && (

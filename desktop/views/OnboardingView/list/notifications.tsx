@@ -15,7 +15,6 @@ export const onboardingNotificationRows: OnboardingNotificationRowData[] = [
   {
     integration: notionIntegrationClient,
     author: "Adam",
-    target: "Q3 Goals",
     content: (
       <>
         Click <IconCheck /> or press <UIShortcut shortcut={"E"} /> to resolve the notification
@@ -26,7 +25,6 @@ export const onboardingNotificationRows: OnboardingNotificationRowData[] = [
   {
     integration: figmaIntegrationClient,
     author: "Nico",
-    target: "New Landing",
     content: (
       <>
         Click <IconBell /> or press <UIShortcut shortcut={"H"} /> to add reminder to the notification
@@ -37,7 +35,6 @@ export const onboardingNotificationRows: OnboardingNotificationRowData[] = [
   {
     integration: slackIntegrationClient,
     author: "Heiki",
-    target: "#general",
     content: (
       <>
         Click notification or press <UIShortcut shortcut={"Enter"} /> to open the notification
