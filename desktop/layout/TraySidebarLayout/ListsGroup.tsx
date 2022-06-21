@@ -51,6 +51,7 @@ export const SidebarListsGroup = observer(({ lists }: Props) => {
                 action={goToList}
                 target={list}
                 isActive={isActive}
+                requiresReconnection={list.requiresReconnection}
                 badgeCount={() => {
                   if (list.dontShowCount) return;
 

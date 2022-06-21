@@ -16,14 +16,14 @@ import { IntegrationClient } from "./types";
 
 export const integrationClients = {
   slack: slackIntegrationClient,
+  gmail: gmailIntegrationClient,
+  drive: googleDriveIntegrationClient,
   notion: notionIntegrationClient,
   figma: figmaIntegrationClient,
   linear: linearIntegrationClient,
   jira: jiraIntegrationClient,
   github: githubIntegrationClient,
-  gmail: gmailIntegrationClient,
   asana: asanaIntegrationClient,
-  drive: googleDriveIntegrationClient,
   clickup: clickupIntegrationClient,
   acapela: acapelaIntegrationClient,
 };

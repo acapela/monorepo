@@ -80,8 +80,6 @@ function App() {
           <PromiseUIRenderer />
           <TooltipsRenderer />
 
-          <IntegrationReadSyncManager />
-          <ServiceWorkerConsolidation />
           <RootErrorBoundary>
             <LoggerWindowManager />
             <BadgeCountManager />
@@ -92,6 +90,8 @@ function App() {
             <FocusSessionManager />
             <RootView />
             <RenderForLoggedInOnly>
+              <IntegrationReadSyncManager />
+              <ServiceWorkerConsolidation />
               <PlanUpgadeCelebrationView />
               <TrayManager />
             </RenderForLoggedInOnly>

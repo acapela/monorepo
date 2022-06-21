@@ -22,6 +22,7 @@ type DefineListConfig = {
   listEntity?: NotificationListEntity;
   tip?: ReactNode;
   isHidden?: boolean;
+  requiresReconnection?: boolean;
   dontShowCount?: boolean;
   dontPreload?: boolean;
   sort?: (notification: NotificationEntity) => SortResult;
@@ -47,6 +48,7 @@ export function defineNotificationsList({
   dontShowCount = false,
   dontPreload = false,
   isHidden = false,
+  requiresReconnection = false,
   sort,
   tip,
   ...config
@@ -95,6 +97,7 @@ export function defineNotificationsList({
     },
     dontShowCount,
     isHidden,
+    requiresReconnection,
   };
 }
 

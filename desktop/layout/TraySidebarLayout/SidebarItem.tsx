@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React from "react";
+import { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
@@ -8,7 +9,7 @@ import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActio
 import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
 import { Thunk, resolveThunk } from "@aca/shared/thunk";
-import { IconFolder } from "@aca/ui/icons";
+import { IconFolder, IconRefreshCcwAlert } from "@aca/ui/icons";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
 import { ShortcutDefinition } from "@aca/ui/keyboard/shortcutBase";
 import { theme } from "@aca/ui/theme";
@@ -18,6 +19,7 @@ interface Props {
   target?: unknown;
   className?: string;
   isActive?: boolean;
+  requiresReconnection?: boolean;
   badgeCount?: Thunk<number | undefined>;
   additionalShortcut?: ShortcutDefinition;
   contextMenuActions?: ActionData[];
@@ -28,6 +30,7 @@ export const SidebarItem = observer(function SidebarItem({
   target,
   className,
   isActive = false,
+  requiresReconnection = false,
   badgeCount,
   additionalShortcut,
   contextMenuActions = [],
@@ -41,9 +44,28 @@ export const SidebarItem = observer(function SidebarItem({
   const resolvedBadgeCount = resolveThunk(badgeCount);
 
   return (
-    <UIHolder ref={elementRef} action={action} target={target} className={className} $isActive={isActive}>
-      <UILabelBody>
+    <UIHolder
+      ref={elementRef}
+      action={action}
+      target={target}
+      className={className}
+      $isActive={isActive}
+      $requiresReconnection={requiresReconnection}
+    >
+      <UILabelBody
+        data-tooltip={
+          requiresReconnection
+            ? `${name} sync has stopped. You can re-enable ${name} notification sync in Settings`
+            : undefined
+        }
+      >
+        {requiresReconnection && (
+          <UIIcon $isDanger={true}>
+            <IconRefreshCcwAlert />
+          </UIIcon>
+        )}
         {icon && <UIIcon>{icon}</UIIcon>}
+
         <UIName>{name}</UIName>
       </UILabelBody>
 
@@ -81,7 +103,7 @@ const UICount = styled.div`
   justify-content: center;
 `;
 
-const UIHolder = styled(ActionTrigger)<{ $isActive: boolean }>`
+const UIHolder = styled(ActionTrigger)<{ $isActive: boolean; $requiresReconnection?: boolean }>`
   display: flex;
   align-items: center;
   ${theme.box.control.sidebar.size.padding.radius};
@@ -93,10 +115,16 @@ const UIHolder = styled(ActionTrigger)<{ $isActive: boolean }>`
   }
 
   ${(props) => props.$isActive && activeStyles};
+  ${(props) => props.$requiresReconnection && reconnectionStyles};
 `;
 
-const UIIcon = styled.div`
+const UIIcon = styled.div<{ $isDanger?: boolean }>`
   font-size: 1.2em;
+  ${(props) =>
+    props.$isDanger &&
+    css`
+      ${theme.colors.status.danger.asColor}
+    `}
 `;
 
 const UIName = styled.div`
@@ -105,8 +133,8 @@ const UIName = styled.div`
 
 const activeStyles = css`
   background-color: #8882;
+`;
 
-  ${UICount} {
-    /* background-color: transparent; */
-  }
+const reconnectionStyles = css`
+  ${theme.colors.status.danger.opacity(0.05).asBg};
 `;

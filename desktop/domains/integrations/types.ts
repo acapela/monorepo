@@ -24,4 +24,5 @@ export interface IntegrationClient {
   isHiddenFromSettings?: boolean;
   isHiddenFromSidebar?(): boolean;
   isForUltimateUsers?: boolean;
+  requiresReconnection?(): boolean;
 }
