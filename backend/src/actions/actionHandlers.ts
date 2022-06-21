@@ -4,6 +4,7 @@ import {
   handleRevertUrlView,
   slackConversations,
   slackUsers,
+  updateSlackMessagesReadStatus,
 } from "@aca/backend/src/slack/hasuraActions";
 import { switchSubscriptionPlanAction } from "@aca/backend/src/subscription";
 
@@ -20,4 +21,5 @@ export const handlers: ActionHandler<any, any>[] = [
   slackConversations,
   switchSubscriptionPlanAction,
   handleRevertUrlView,
+  updateSlackMessagesReadStatus,
 ];

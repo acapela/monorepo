@@ -47,6 +47,10 @@ type Mutation {
 }
 
 type Mutation {
+  update_slack_messages_read_status: UpdateSlackMessagesReadStatusOutput
+}
+
+type Mutation {
   upgrade_current_user: UpgradeUserResponse
 }
 
@@ -165,5 +169,9 @@ type SwitchSubscriptionPlanOutput {
 }
 
 type HandleRevertUrlViewOutput {
+  success: Boolean!
+}
+
+type UpdateSlackMessagesReadStatusOutput {
   success: Boolean!
 }

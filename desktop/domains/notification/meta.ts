@@ -32,27 +32,33 @@ function getNotificationMetaWithoutWorkspace(notification: NotificationEntity): 
 
   switch (type) {
     case "notification_slack_message": {
-      const { conversation_name, conversation_type, is_mention, slack_thread_ts } = inner;
+      const { conversation_name, conversation_type, is_mention, slack_thread_ts, is_read } = inner;
 
       const isThread = !!slack_thread_ts;
       if (conversation_type === "im" || conversation_type === "mpim") {
         if (is_mention) {
-          return { title: title ?? "New mention", tags: tags("mention", isThread && "thread") };
+          return {
+            title: title ?? "New mention",
+            tags: tags("mention", isThread && "thread", is_read && "read"),
+          };
         }
-        return { title: title ?? "New direct message", tags: tags("directMessage", isThread && "thread") };
+        return {
+          title: title ?? "New direct message",
+          tags: tags("directMessage", isThread && "thread", is_read && "read"),
+        };
       }
 
       if (conversation_type === "channel" || conversation_type === "group") {
         if (is_mention) {
           return {
             title: title ?? "New mention",
-            tags: tags("mention", { category: "channel", customLabel: conversation_name }),
+            tags: tags("mention", is_read && "read", { category: "channel", customLabel: conversation_name }),
           };
         }
 
         return {
           title: title ?? "New message",
-          tags: tags({ category: "channel", customLabel: conversation_name }),
+          tags: tags(is_read && "read", { category: "channel", customLabel: conversation_name }),
         };
       }
 

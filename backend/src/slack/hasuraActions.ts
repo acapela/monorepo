@@ -10,6 +10,7 @@ import {
   HandleRevertUrlViewOutput,
   ServiceUser,
   SlackConversation,
+  UpdateSlackMessagesReadStatusOutput,
 } from "@aca/gql";
 import { assert, assertDefined } from "@aca/shared/assert";
 import { MINUTE } from "@aca/shared/time";
@@ -155,6 +156,83 @@ export const handleRevertUrlView: ActionHandler<
     switch (inner_table_type) {
       case "notification_gmail":
         revertGmailMessageToUnread(inner_notification_id, userId);
+    }
+    return { success: true };
+  },
+};
+
+export const updateSlackMessagesReadStatus: ActionHandler<void, UpdateSlackMessagesReadStatusOutput> = {
+  actionName: "update_slack_messages_read_status",
+
+  async handle(userId) {
+    // Get all installations for user
+    const userSlackInstallations = await db.user_slack_installation.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+
+    for (const installation of userSlackInstallations) {
+      const installData = installation.data as unknown as SlackInstallation;
+      const token = installData.user.token;
+
+      if (!token) {
+        continue;
+      }
+
+      // Get all conversations of user
+      let conversations;
+      try {
+        conversations = await slackClient.users.conversations({
+          token: token,
+          types: "public_channel,private_channel,mpim,im",
+          user: installData.user.id,
+          exclude_archived: true,
+        });
+      } catch (error) {
+        continue;
+      }
+
+      if (!conversations.channels) {
+        // Empty conversations list
+        return { success: true };
+      }
+
+      for (const channel of conversations.channels) {
+        if (!channel.id) {
+          // Don't know why this would happen, but safeguard against it anyway
+          continue;
+        }
+        const info = await slackClient.conversations.info({
+          token: token,
+          channel: channel.id,
+        });
+
+        // Current read timestamp of the user for this channel
+        const timestamp = info.channel?.last_read;
+
+        // Get all messages that are older than the current read timestamp and not yet marked as read
+        const newlyReadMessages = await db.notification_slack_message.findMany({
+          where: {
+            slack_conversation_id: info.channel?.id,
+            user_slack_installation_id: installation.id,
+            is_read: false,
+            slack_message_ts: { lte: timestamp },
+          },
+        });
+
+        // Mark messages as read
+        await Promise.all(
+          newlyReadMessages.map(async (message) => {
+            await db.notification_slack_message.update({
+              where: { id: message.id },
+              data: {
+                is_read: true,
+              },
+            });
+          })
+        );
+      }
     }
     return { success: true };
   },
