@@ -1,6 +1,7 @@
 import { trackEvent } from "@aca/desktop/analytics";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { clearServiceCookiesBridge, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
+import { getNullableDb } from "@aca/desktop/clientdb";
 
 import { IntegrationClient } from "./types";
 
@@ -30,6 +31,15 @@ export const figmaIntegrationClient: IntegrationClient = {
     await loginFigmaBridge();
     trackEvent("Figma Integration Added");
     trackEvent("New Integration Added", { integration: "figma" });
+  },
+  requiresReconnection() {
+    const isCurrentlyConnected = figmaAuthTokenBridgeValue.get();
+    if (isCurrentlyConnected) {
+      return false;
+    }
+
+    const hasPreviousNotifications = !!getNullableDb()?.notificationFigmaComment.hasItems;
+    return hasPreviousNotifications;
   },
   imageURL: integrationLogos.figma,
 };

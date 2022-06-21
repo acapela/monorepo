@@ -1,3 +1,4 @@
+import { chain } from "lodash";
 import React from "react";
 
 import { cachedComputed } from "@aca/clientdb";
@@ -30,17 +31,20 @@ export const savedNotificationsList = defineNotificationsList({
 
 const getAvailableIntegrationLists = cachedComputed(
   () =>
-    Object.values(integrationClients)
-      .filter((client) => client.getAccounts().length > 0)
+    chain(Object.values(integrationClients))
+      .filter((client) => client.getAccounts().length > 0 || !!client.requiresReconnection?.())
+      .orderBy((client) => !client.requiresReconnection?.(), "desc")
       .map((client) =>
         defineNotificationsList({
           id: client.notificationTypename,
           isHidden: client.isHiddenFromSidebar?.(),
+          requiresReconnection: client.requiresReconnection?.(),
           name: client.name,
           icon: <IntegrationIcon integrationClient={client} />,
           filter: { kind: client.notificationTypename, isResolved: false, hasReminder: false, isSaved: false },
         })
-      ),
+      )
+      .value(),
   // Result of this function is observable (Eg. client.getAccounts().length) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)
   { requiresReaction: true }
 );
