@@ -1,5 +1,6 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { loginJiraBridge } from "@aca/desktop/bridge/auth";
+import { getNullableDb } from "@aca/desktop/clientdb";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationClient } from "./types";
@@ -28,5 +29,13 @@ export const jiraIntegrationClient: IntegrationClient = {
     for (const account of getAtlassianAccounts()) {
       account.remove();
     }
+  },
+  requiresReconnection() {
+    if (jiraIntegrationClient.getIsConnected()) {
+      return false;
+    }
+
+    const hasReceivedJiraNotifications = !!getNullableDb()?.notificationNotion.hasItems;
+    return hasReceivedJiraNotifications;
   },
 };

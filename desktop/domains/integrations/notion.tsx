@@ -51,6 +51,15 @@ export const notionIntegrationClient: IntegrationClient = {
     trackEvent("Notion Integration Added");
     trackEvent("New Integration Added", { integration: "notion" });
   },
+
+  requiresReconnection() {
+    if (notionIntegrationClient.getIsConnected()) {
+      return false;
+    }
+
+    const hasReceivedNotionNotifications = !!getNullableDb()?.notificationNotion.hasItems;
+    return hasReceivedNotionNotifications;
+  },
   imageURL: integrationLogos.notion,
 
   additionalSettings: <NotionSettings />,
