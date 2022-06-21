@@ -112,7 +112,7 @@ export const ListView = observer(({ listId }: Props) => {
     }
 
     // Check if list contains unread slack messages, otherwise don't update
-    const groups = list?.getAllGroupedNotifications();
+    const groups = list?.getGroups();
     const slackNotifications = groups?.find((group) => group.kind === "notification_slack_message");
 
     if (!slackNotifications) {
