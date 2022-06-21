@@ -27,9 +27,11 @@ export function FakeIntegrationScreen({ onSent, integrationClient }: FakeIntegra
   return (
     <UIHolder>
       <UISidebar>
-        <UILogo>
-          <IntegrationIcon integrationClient={integrationClient ?? slackIntegrationClient} />
-        </UILogo>
+        {integrationClient && (
+          <UILogo>
+            <IntegrationIcon integrationClient={integrationClient ?? slackIntegrationClient} />
+          </UILogo>
+        )}
         <FakeMenu count={3} />
         <FakeUserList count={2} />
       </UISidebar>

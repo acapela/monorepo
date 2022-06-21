@@ -6,6 +6,7 @@ import { pickReminderTime } from "@aca/desktop/actions/remindersUtils";
 import { figmaIntegrationClient } from "@aca/desktop/domains/integrations/figma";
 import { notionIntegrationClient } from "@aca/desktop/domains/integrations/notion";
 import { slackIntegrationClient } from "@aca/desktop/domains/integrations/slack";
+import { getNotificationTag } from "@aca/desktop/domains/tag/tag";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { useMethod } from "@aca/shared/hooks/useMethod";
 import { getObjectKey } from "@aca/shared/object";
@@ -41,7 +42,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
       {
         integration: notionIntegrationClient,
         author: "Adam",
-        target: "Q3 Goals",
+        tags: [getNotificationTag("update")],
         content: (
           <>
             Click <IconCheck /> or press <UIShortcut shortcut={"E"} /> to mark as done
@@ -54,7 +55,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
       {
         integration: figmaIntegrationClient,
         author: "Nico",
-        target: "New Landing",
+        tags: [getNotificationTag("mention")],
         content: (
           <>
             Click <IconBell /> or press <UIShortcut shortcut={"H"} /> to add reminder
@@ -70,7 +71,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
       {
         integration: slackIntegrationClient,
         author: "Heiki",
-        target: "#general",
+        tags: [getNotificationTag("thread"), getNotificationTag({ category: "channel", customLabel: "#general" })],
         content: (
           <>
             Click notification or press <UIShortcut shortcut={"Enter"} /> to open
@@ -138,6 +139,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
                     key={getObjectKey(notification)}
                     notification={notification}
                     isSelected={isSelected}
+                    tags={notification.tags}
                     onSelectRequest={() => {
                       setSelectedNotification(notification);
                     }}

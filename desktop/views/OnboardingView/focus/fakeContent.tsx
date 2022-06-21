@@ -152,10 +152,25 @@ export function FakeAvatar() {
   );
 }
 
+export function FakeIcon() {
+  return (
+    <FakeContentItem>
+      <UIIcon />
+    </FakeContentItem>
+  );
+}
+
 const UIAvatar = styled.div`
   height: 1.5em;
   width: 1.5em;
   border-radius: 100px;
+  background-color: ${fakeContentColor};
+`;
+
+const UIIcon = styled.div`
+  height: 1.5em;
+  width: 1.5em;
+  border-radius: 6px;
   background-color: ${fakeContentColor};
 `;
 
@@ -219,4 +234,54 @@ const UIUserList = styled(FakeContentItem)`
   display: flex;
   flex-direction: column;
   gap: 10px;
+`;
+
+export function FakeRow() {
+  return (
+    <UIRow>
+      <FakeIcon />
+      <UIRowColumn $size={1}>
+        <FakeLabel />
+      </UIRowColumn>
+      <UIRowColumn $size={3}>
+        <FakeLabel min={6} />
+      </UIRowColumn>
+      <UIRowColumn $size={1}>
+        <FakeLabel min={2} max={3} />
+      </UIRowColumn>
+    </UIRow>
+  );
+}
+
+export function FakeRows({ count = 3 }: { count?: number }) {
+  return (
+    <UIRows>
+      {Array.from({ length: count }).map((_, index) => {
+        return <FakeRow key={index} />;
+      })}
+    </UIRows>
+  );
+}
+
+const UIRow = styled(FakeContentItem)`
+  display: flex;
+  align-items: center;
+  gap: 1em;
+`;
+
+const UIRows = styled(FakeContentItem)`
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+`;
+
+const UIRowColumn = styled.div<{ $size: number }>`
+  min-width: 120px;
+  flex-grow: ${(props) => props.$size};
+  flex-basis: 0;
+  display: flex;
+
+  &:last-child {
+    justify-content: flex-end;
+  }
 `;

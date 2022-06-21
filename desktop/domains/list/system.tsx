@@ -19,6 +19,10 @@ export const CUSTOM_SYSTEM_LIST_ICONS: Record<keyof typeof LIST_SYSTEM_IDS, Reac
   important: <IconLightning />,
 };
 
+export function getSystemList(systemId: ListSystemId) {
+  return getNullableDb()?.notificationList.findFirst({ system_id: systemId });
+}
+
 export function ensureSystemListsCreated() {
   let shouldBeCreated = false;
   autorun(() => {
@@ -26,7 +30,7 @@ export function ensureSystemListsCreated() {
 
     if (!db) return;
 
-    const importantList = db.notificationList.findFirst({ system_id: LIST_SYSTEM_IDS.important });
+    const importantList = getSystemList("important");
 
     if (importantList) return;
 

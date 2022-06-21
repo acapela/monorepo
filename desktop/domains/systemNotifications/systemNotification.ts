@@ -7,6 +7,7 @@ import { createTimeout } from "@aca/shared/time";
 
 import { makeLogger } from "../dev/makeLogger";
 import { createAntiSpamGuard } from "./antiSpam";
+import { requestNotificationsPermissionIfNeeded } from "./permission";
 import { ScheduledNotification } from "./types";
 
 function createDateTimeout(callback: () => void, date: Date) {
@@ -49,6 +50,8 @@ function showNotification(scheduledNotification: ScheduledNotification) {
 }
 
 export function scheduleNotification(scheduledNotification: ScheduledNotification) {
+  requestNotificationsPermissionIfNeeded();
+
   const { date } = scheduledNotification;
   const { promise, resolve } = createResolvablePromise<boolean>();
 
