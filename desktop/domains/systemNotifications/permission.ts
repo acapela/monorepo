@@ -1,6 +1,6 @@
 import { memoize } from "lodash";
 
-export const requestNotificationsPermission = memoize(function requestNotificationsPermission() {
+export const requestNotificationsPermissionIfNeeded = memoize(function requestNotificationsPermission() {
   new Notification("");
 
   Notification.requestPermission();
