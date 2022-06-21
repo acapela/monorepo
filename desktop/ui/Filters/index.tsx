@@ -2,7 +2,7 @@ import { uniqBy } from "lodash";
 import React from "react";
 import styled from "styled-components";
 
-import { NotificationFilter } from "@aca/desktop/clientdb/list";
+import { NotificationFilter, NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClientList } from "@aca/desktop/domains/integrations";
 import { styledObserver } from "@aca/shared/component";
 import { getObjectKey } from "@aca/shared/object";
@@ -13,8 +13,7 @@ import { ToggleFilterLabel } from "./ToggleFilterLabel";
 import { pickFilterByClient } from "./types";
 
 interface Props {
-  currentFilters: NotificationFilter[];
-  onChange: (filters: NotificationFilter[]) => void;
+  list: NotificationListEntity;
   className?: string;
 }
 
@@ -26,8 +25,14 @@ function cleanupCurrentFilters(filters: NotificationFilter[]) {
   return uniqueKindFilters;
 }
 
-export const ListFilters = styledObserver(({ currentFilters, onChange, className }: Props) => {
+export const ListFiltersEditor = styledObserver(({ list, className }: Props) => {
   const connectedClients = integrationClientList.filter((integration) => integration.getIsConnected());
+
+  let currentFilters = list.typedFilters;
+
+  function onChange(filters: NotificationFilter[]) {
+    list.update({ filters });
+  }
 
   currentFilters = cleanupCurrentFilters(currentFilters);
 

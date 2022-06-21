@@ -1,10 +1,12 @@
 import { FunctionComponent, ReactNode } from "react";
 
+import { StageCompose } from "./StageCompose";
 import { StageConnectTools } from "./StageConnectTools";
 import { StageDarkMode } from "./StageDarkMode";
+import { StageDesktopNotifications } from "./StageDesktopNotifications";
 import { StageFocusMode } from "./StageFocusMode";
+import { StageImportantFilters } from "./StageImportantFilters";
 import { StageNotificationsList } from "./StageNotificationsList";
-import { StageReadyToGo } from "./StageReadyToGo";
 import { StageWelcome } from "./StageWelcome";
 
 export interface OnboardingStageProps {
@@ -23,5 +25,7 @@ export const onboardingStages: OnboardingStage[] = [
   { Component: StageConnectTools },
   { Component: StageNotificationsList },
   { Component: StageFocusMode },
-  { Component: StageReadyToGo },
+  { Component: StageCompose },
+  { Component: StageImportantFilters },
+  { Component: StageDesktopNotifications },
 ];

@@ -12,7 +12,7 @@ import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
 import { uiStore } from "@aca/desktop/store/ui";
 import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
-import { ListFilters } from "@aca/desktop/ui/Filters";
+import { ListFiltersEditor } from "@aca/desktop/ui/Filters";
 import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
 import { Button } from "@aca/ui/buttons/Button";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
@@ -87,12 +87,7 @@ export const ListView = observer(({ listId }: Props) => {
       <UIHolder>
         {list?.listEntity && (
           <UIListTools>
-            <ListFilters
-              currentFilters={list.listEntity.typedFilters ?? []}
-              onChange={(filters) => {
-                list.listEntity?.update({ filters });
-              }}
-            />
+            <ListFiltersEditor list={list.listEntity} />
           </UIListTools>
         )}
 
@@ -184,7 +179,7 @@ const UIListTools = styled.div`
 
   padding-top: 16px;
 
-  ${ListFilters} {
+  ${ListFiltersEditor} {
     flex-grow: 1;
   }
 `;

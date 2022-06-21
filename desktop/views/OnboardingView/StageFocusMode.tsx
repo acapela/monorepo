@@ -213,7 +213,8 @@ const UITopbarTitle = styled(FadePresenceAnimator)`
 `;
 
 const UIFakeApp = styled.div`
-  width: 720px;
+  max-width: 840px;
+  width: 100%;
 `;
 
 const UITitleIcon = styled.div`

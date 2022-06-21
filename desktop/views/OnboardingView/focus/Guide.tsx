@@ -2,7 +2,7 @@ import { AnimatePresence, Transition } from "framer-motion";
 import { sortBy, throttle } from "lodash";
 import { action, autorun, computed, makeAutoObservable, observable } from "mobx";
 import { observer } from "mobx-react";
-import React, { PropsWithChildren, ReactNode, createContext, useContext, useEffect, useRef } from "react";
+import React, { PropsWithChildren, ReactNode, createContext, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { removeElementFromArray } from "@aca/shared/array";
@@ -25,6 +25,7 @@ interface Props {
   className?: string;
   onCompleted?: () => void;
   isDisabled?: boolean;
+  hideTipOnAction?: boolean;
 }
 
 function pickNextGuideItem(pendingItems: GuideItem[]) {
@@ -42,60 +43,74 @@ const springTransition: Transition = {
   mass: 2,
 };
 
-export const GuideItem = observer(({ content, index, children, className, onCompleted, isDisabled }: Props) => {
-  const store = useGuideStore();
-  const holderRef = useRef<HTMLDivElement>(null);
-  // Reference to this item
-  const selfItem = useConst<GuideItem>(() => {
-    return { id: getUUID(), index };
-  });
+export const GuideItem = observer(
+  ({ content, index, children, className, onCompleted, isDisabled, hideTipOnAction = false }: Props) => {
+    const store = useGuideStore();
+    const holderRef = useRef<HTMLDivElement>(null);
+    // Reference to this item
+    const selfItem = useConst<GuideItem>(() => {
+      return { id: getUUID(), index };
+    });
 
-  const currentlyDisplayedGuideItem = store.currentItem;
+    const [wasClicked, setWasClicked] = useState(false);
 
-  const isCurrentGuideItem = computed(() => currentlyDisplayedGuideItem === selfItem).get();
+    const currentlyDisplayedGuideItem = store.currentItem;
 
-  useEffect(() => {
-    if (isDisabled) return;
-    // Register this item to list of pending items so store can pick it and decide which item should be next
-    store.pendingItems.push(selfItem);
+    const isCurrentGuideItem = computed(() => currentlyDisplayedGuideItem === selfItem).get();
 
-    // When on-mounting (or disabled) - unregister
-    return () => {
-      if (store.currentItem === selfItem) {
-        store.currentItem = null;
-      }
+    useEffect(() => {
+      if (isDisabled) return;
+      // Register this item to list of pending items so store can pick it and decide which item should be next
+      store.pendingItems.push(selfItem);
 
+      // When on-mounting (or disabled) - unregister
+      return () => {
+        if (store.currentItem === selfItem) {
+          store.currentItem = null;
+        }
+
+        removeElementFromArray(store.pendingItems, selfItem);
+      };
+    }, [isDisabled]);
+
+    const complete = action(() => {
+      // Make sure complete is allowed when this is current item only.
+      if (store.currentItem !== selfItem) return;
       removeElementFromArray(store.pendingItems, selfItem);
-    };
-  }, [isDisabled]);
+      store.currentItem = null;
+      store.completedItems.push(selfItem);
+      onCompleted?.();
+    });
 
-  const complete = action(() => {
-    // Make sure complete is allowed when this is current item only.
-    if (store.currentItem !== selfItem) return;
-    removeElementFromArray(store.pendingItems, selfItem);
-    store.currentItem = null;
-    store.completedItems.push(selfItem);
-    onCompleted?.();
-  });
+    const shouldHideDueToAction = hideTipOnAction && wasClicked;
 
-  return (
-    <UIHolder ref={holderRef} className={className}>
-      {children(complete, isCurrentGuideItem)}
-      <AnimatePresence>
-        {isCurrentGuideItem && (
-          <NonClickablePopover anchorRef={holderRef} placement="bottom">
-            <UIGuidePanel
-              presenceStyles={{ y: [20, 0], opacity: [0, 1], scale: [0.9, 1] }}
-              transition={springTransition}
-            >
-              {content}
-            </UIGuidePanel>
-          </NonClickablePopover>
-        )}
-      </AnimatePresence>
-    </UIHolder>
-  );
-});
+    const shouldShow = isCurrentGuideItem && !shouldHideDueToAction;
+
+    return (
+      <UIHolder
+        ref={holderRef}
+        className={className}
+        onMouseUp={() => {
+          setWasClicked(true);
+        }}
+      >
+        {children(complete, isCurrentGuideItem)}
+        <AnimatePresence>
+          {shouldShow && (
+            <NonClickablePopover anchorRef={holderRef} placement="bottom">
+              <UIGuidePanel
+                presenceStyles={{ y: [20, 0], opacity: [0, 1], scale: [0.9, 1] }}
+                transition={springTransition}
+              >
+                {content}
+              </UIGuidePanel>
+            </NonClickablePopover>
+          )}
+        </AnimatePresence>
+      </UIHolder>
+    );
+  }
+);
 
 const UIHolder = styled.div``;
 

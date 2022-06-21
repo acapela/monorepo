@@ -9,7 +9,10 @@ export const TopBarDivider = styled.div`
   ${theme.colors.layout.divider.asBg};
   align-self: stretch;
   width: 1px;
-  margin: 4px 8px;
+  margin: 0px 8px;
+  max-height: 28px;
+  align-self: center;
+  height: 28px;
 `;
 
 export const systemBarPlaceholder = css`
