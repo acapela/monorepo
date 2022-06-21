@@ -53,7 +53,7 @@ async function getUserConversationIdMap(token?: string) {
   return map;
 }
 
-const getSlackUsersForUser = redisCached("getSlackUsersForUser", MINUTE, async (userId: string) => {
+const getSlackUsersForUser = redisCached("getSlackUsersForUser_v2", MINUTE, async (userId: string) => {
   const teams = await findSlackTeamsWithTokens(assertDefined(userId, "missing userId"));
   const teamUserPromises = teams.map(async (team) => {
     const [{ members }, userConversationIdLookup] = await Promise.all([
@@ -70,6 +70,7 @@ const getSlackUsersForUser = redisCached("getSlackUsersForUser", MINUTE, async (
           real_name: member.real_name ?? null,
           avatar_url: member.profile?.image_original ?? null,
           conversation_id: userConversationIdLookup.get(member.id!) ?? null,
+          is_bot: member.is_bot ?? false,
         } as ServiceUser)
     );
   });

@@ -22,6 +22,7 @@ export const linearUsers: ActionHandler<void, ServiceUser[]> = {
       display_name: user.displayName,
       real_name: user.name,
       avatar_url: user.avatarUrl ?? null,
+      is_bot: false,
     })) as ServiceUser[];
   },
 };

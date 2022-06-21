@@ -2,6 +2,7 @@ import Client from "ioredis";
 import { isEqual } from "lodash";
 
 import { assert } from "@aca/shared/assert";
+import { IS_DEV } from "@aca/shared/dev";
 import { createResolvablePromise } from "@aca/shared/promises";
 
 export const redisClient = new Client({ host: process.env.REDIS_HOST });
@@ -31,6 +32,10 @@ export function redisCached<A extends unknown[], R>(
   const currentResultPromiseForCacheKey = new Map<string, Promise<R>>();
 
   async function getCachedOrCreate(...args: A) {
+    if (IS_DEV) {
+      return getter(...args);
+    }
+
     const cacheKey = `${key}` + safeSerialize(args);
 
     // It was already called and is not yet saved to redis
