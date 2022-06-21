@@ -144,6 +144,7 @@ type ServiceUser {
   real_name: String
   avatar_url: String
   conversation_id: String
+  is_bot: Boolean!
 }
 
 type SlackConversation {

@@ -15,6 +15,7 @@ export const getSlackUsers = createObservablePromiseCache(async () => {
           real_name
           avatar_url
           conversation_id
+          is_bot
         }
       }
     `,

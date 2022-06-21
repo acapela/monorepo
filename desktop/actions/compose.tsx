@@ -86,28 +86,30 @@ const getSlackComposeTargetActions = cachedComputed(
       };
     });
 
-    const slackUsers = getSlackUsers().map((slackUser) => {
-      return defineAction({
-        id: `compose-${slackUser.id}`,
-        name: slackUser.real_name ?? slackUser.display_name,
-        group: slackTeamLookup[slackUser.workspace_id],
-        supplementaryLabel: `@${slackUser.display_name}`,
-        get icon() {
-          if (slackUser.avatar_url) {
-            return <Avatar src={slackUser.avatar_url} />;
-          }
+    const slackUsers = getSlackUsers()
+      .filter((user) => !user.is_bot)
+      .map((slackUser) => {
+        return defineAction({
+          id: `compose-${slackUser.id}`,
+          name: slackUser.real_name ?? slackUser.display_name,
+          group: slackTeamLookup[slackUser.workspace_id],
+          supplementaryLabel: `@${slackUser.display_name}`,
+          get icon() {
+            if (slackUser.avatar_url) {
+              return <Avatar src={slackUser.avatar_url} />;
+            }
 
-          return <IntegrationIcon integrationClient={slackIntegrationClient} />;
-        },
-        handler() {
-          const url = `https://app.slack.com/client/${slackUser.workspace_id}/${slackUser.conversation_id}`;
+            return <IntegrationIcon integrationClient={slackIntegrationClient} />;
+          },
+          handler() {
+            const url = `https://app.slack.com/client/${slackUser.workspace_id}/${slackUser.conversation_id}`;
 
-          trackEvent("New Message Composed", { integration: "Slack" });
+            trackEvent("New Message Composed", { integration: "Slack" });
 
-          desktopRouter.navigate("compose", { url });
-        },
+            desktopRouter.navigate("compose", { url });
+          },
+        });
       });
-    });
 
     const slackChannels = getSlackConversations().map((conversation) => {
       return defineAction({
