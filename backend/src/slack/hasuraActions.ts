@@ -150,13 +150,22 @@ export const updateSlackMessagesReadStatus: ActionHandler<void, UpdateSlackMessa
       const installData = installation.data as unknown as SlackInstallation;
       const token = installData.user.token;
 
+      if (!token) {
+        continue;
+      }
+
       // Get all conversations of user
-      const conversations = await slackClient.users.conversations({
-        token: token,
-        types: "public_channel,private_channel,mpim,im",
-        user: installData.user.id,
-        exclude_archived: true,
-      });
+      let conversations;
+      try {
+        conversations = await slackClient.users.conversations({
+          token: token,
+          types: "public_channel,private_channel,mpim,im",
+          user: installData.user.id,
+          exclude_archived: true,
+        });
+      } catch (error) {
+        continue;
+      }
 
       if (!conversations.channels) {
         // Empty conversations list
@@ -164,7 +173,10 @@ export const updateSlackMessagesReadStatus: ActionHandler<void, UpdateSlackMessa
       }
 
       for (const channel of conversations.channels) {
-        assert(channel.id, "Slack channel doesn't have id");
+        if (!channel.id) {
+          // Don't know why this would happen, but safeguard against it anyway
+          continue;
+        }
         const info = await slackClient.conversations.info({
           token: token,
           channel: channel.id,

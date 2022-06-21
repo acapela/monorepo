@@ -36,6 +36,8 @@ interface Props {
   listId: string;
 }
 
+const SLACK_READ_UPDATE_INTERVAL = 30000;
+
 // Keep those 2 vars outside the component, so we can keep an interval across multiple instances of a list view for
 // performance reasons
 
@@ -147,7 +149,7 @@ export const ListView = observer(({ listId }: Props) => {
 
   const setupSlackReadUpdateInterval = () => {
     updateSlackMessagesReadStatus();
-    clearSlackReadUpdateInterval = createInterval(updateSlackMessagesReadStatus, 30000);
+    clearSlackReadUpdateInterval = createInterval(updateSlackMessagesReadStatus, SLACK_READ_UPDATE_INTERVAL);
   };
 
   return (
