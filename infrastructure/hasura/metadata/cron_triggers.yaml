@@ -7,15 +7,6 @@
   headers:
     - name: Authorization
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-- name: mark-read-slack-messages
-  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * * * *'
-  include_in_metadata: true
-  payload:
-    handler: mark-read-slack-messages
-  headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: mark-resolved-slack-conversations-as-read
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
   schedule: '* * * * *'

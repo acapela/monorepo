@@ -1,10 +1,13 @@
+import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
+import { apolloClient } from "@aca/desktop/apolloClient";
 import { getIsNotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
+import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
 import { NotificationTag } from "@aca/desktop/domains/notification/tag";
 import { OneTimeTip } from "@aca/desktop/domains/onboarding/OneTimeTip";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
@@ -14,6 +17,9 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFilters } from "@aca/desktop/ui/Filters";
 import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
+import { UpdateSlackMessagesReadStatusMutation } from "@aca/gql";
+import { assert } from "@aca/shared/assert";
+import { createInterval } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
@@ -29,6 +35,14 @@ import { ZeroNotifications } from "./ZeroNotifications";
 interface Props {
   listId: string;
 }
+
+// Keep those 2 vars outside the component, so we can keep an interval across multiple instances of a list view for
+// performance reasons
+
+// Number of mounted list views, used to decide if we should keep a slack read update interval running
+let mountedListCount = 0;
+// Clear function for the slack read update interval, also used to check if an interval is currently running
+let clearSlackReadUpdateInterval: (() => void) | undefined = undefined;
 
 export const ListView = observer(({ listId }: Props) => {
   const [tagFilters, setTagFilters] = useState<NotificationTag[]>([]);
@@ -55,21 +69,86 @@ export const ListView = observer(({ listId }: Props) => {
   useEffect(() => {
     if (!list) return;
 
+    mountedListCount++;
+
     list.listEntity?.update({ seen_at: new Date().toISOString() });
+
+    if (!clearSlackReadUpdateInterval) {
+      // No slack read update interval running, set it up!
+      setupSlackReadUpdateInterval();
+    }
 
     return () => {
       const listEntity = list.listEntity;
       if (listEntity && !listEntity.isRemoved()) {
         listEntity.update({ seen_at: new Date().toISOString() });
       }
+      mountedListCount--;
     };
   }, [list]);
+
+  useEffect(() => {
+    // App got focused and we currently have no slack read update interval, create it!
+    if (uiStore.isAppFocused && !clearSlackReadUpdateInterval) {
+      setupSlackReadUpdateInterval();
+    }
+  }, [uiStore.isAppFocused]);
 
   useEffect(() => {
     if (isInCelebrationMode && notificationGroupsToShow.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
   }, [isInCelebrationMode, notificationGroupsToShow.length]);
+
+  const updateSlackMessagesReadStatus = () => {
+    // If there are no more list views or the app isn't focused when this gets called, delete the interval
+    if (!mountedListCount || !uiStore.isAppFocused) {
+      assert(clearSlackReadUpdateInterval, "Slack read status update interval running but no clear function set");
+      clearSlackReadUpdateInterval();
+      clearSlackReadUpdateInterval = undefined;
+      return;
+    }
+
+    // Check if list contains unread slack messages, otherwise don't update
+    const groups = list?.getAllGroupedNotifications();
+    const slackNotifications = groups?.find((group) => group.kind === "notification_slack_message");
+
+    if (!slackNotifications) {
+      return;
+    }
+
+    if (getIsNotificationsGroup(slackNotifications)) {
+      if (
+        slackNotifications.notifications.some((notification) => {
+          const { tags } = getNotificationMeta(notification);
+          return !tags?.some((tag) => tag.category === "read");
+        })
+      ) {
+        return;
+      }
+    } else {
+      const { tags } = getNotificationMeta(slackNotifications);
+      if (tags?.some((tag) => tag.category === "read")) {
+        return;
+      }
+    }
+
+    apolloClient.mutate<UpdateSlackMessagesReadStatusMutation>({
+      mutation: gql`
+        mutation UpdateSlackMessagesReadStatus {
+          result: update_slack_messages_read_status {
+            success
+          }
+        }
+      `,
+      fetchPolicy: "no-cache",
+    });
+  };
+
+  const setupSlackReadUpdateInterval = () => {
+    updateSlackMessagesReadStatus();
+    clearSlackReadUpdateInterval = createInterval(updateSlackMessagesReadStatus, 30000);
+  };
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>

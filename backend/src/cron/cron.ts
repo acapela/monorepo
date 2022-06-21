@@ -8,7 +8,7 @@ import { refreshExpiringAtlassianProperties } from "../atlassian/utils";
 import { renewGmailWatchers } from "../gmail/capture";
 import { HttpStatus } from "../http";
 import { cleanupProcessedMessages } from "../pubsub";
-import { markReadSlackMessages, markSlackConversationsAsRead } from "../slack/events";
+import { markSlackConversationsAsRead } from "../slack/events";
 import { syncSlackTeams } from "../slack/sync";
 
 export const router = Router();
@@ -19,7 +19,6 @@ const handlers: Record<string, Function> = {
   "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
   "sync-slack-teams": syncSlackTeams,
   "cleanup-processed-messages": cleanupProcessedMessages,
-  "mark-read-slack-messages": markReadSlackMessages,
 };
 
 interface CronPayload {

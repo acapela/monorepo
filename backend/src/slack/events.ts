@@ -1,5 +1,3 @@
-import assert from "assert";
-
 import { addSeconds, subHours, subSeconds } from "date-fns";
 
 import { HasuraEvent } from "@aca/backend/src/hasura";
@@ -61,66 +59,4 @@ export async function markSlackConversationsAsRead() {
       })),
     },
   });
-}
-
-// Mark read messages as such in the db
-export async function markReadSlackMessages() {
-  // Get all slack user installations
-  const userSlackInstallations = await db.user_slack_installation.findMany();
-
-  await Promise.all(
-    userSlackInstallations.map(async (installation) => {
-      const installData = installation.data as unknown as SlackInstallation;
-      const token = installData.user.token;
-
-      // Get all conversations of user
-      const conversations = await slackClient.users.conversations({
-        token: token,
-        types: "public_channel,private_channel,mpim,im",
-        user: installData.user.id,
-        exclude_archived: true,
-      });
-
-      if (!conversations.channels) {
-        // Empty conversations list
-        return;
-      }
-
-      await Promise.all(
-        conversations.channels?.map(async (channel) => {
-          assert(channel.id, "Slack channel doesn't have id");
-          const info = await slackClient.conversations.info({
-            token: token,
-            channel: channel.id,
-          });
-
-          // Current read timestamp of the user for this channel
-          // NOTE: Doesn't currently work for threads
-          const timestamp = info.channel?.last_read;
-
-          // Get all messages that are older than the current read timestamp and not yet marked as read
-          const newlyReadMessages = await db.notification_slack_message.findMany({
-            where: {
-              slack_conversation_id: info.channel?.id,
-              user_slack_installation_id: installation.id,
-              is_read: false,
-              slack_message_ts: { lte: timestamp },
-            },
-          });
-
-          // Mark messages as read
-          await Promise.all(
-            newlyReadMessages.map(async (message) => {
-              await db.notification_slack_message.update({
-                where: { id: message.id },
-                data: {
-                  is_read: true,
-                },
-              });
-            })
-          );
-        })
-      );
-    })
-  );
 }
