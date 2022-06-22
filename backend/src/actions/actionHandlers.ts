@@ -1,4 +1,5 @@
 import { linearUsers } from "@aca/backend/src/linear/hasuraActions";
+import { sendMessage } from "@aca/backend/src/sendMessage/hasuraActions";
 import {
   getIndividualSlackInstallationURLHandler,
   handleRevertUrlView,
@@ -22,4 +23,5 @@ export const handlers: ActionHandler<any, any>[] = [
   switchSubscriptionPlanAction,
   handleRevertUrlView,
   updateSlackMessagesReadStatus,
+  sendMessage,
 ];
