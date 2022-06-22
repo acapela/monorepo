@@ -21,7 +21,6 @@ const notificationSlackMessageFragment = gql`
     conversation_name
     conversation_type
     user_slack_installation_id
-    is_read
   }
 `;
 

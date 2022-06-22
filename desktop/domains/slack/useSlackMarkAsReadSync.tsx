@@ -3,7 +3,7 @@ import { uniqBy } from "lodash";
 import { useEffect } from "react";
 
 import { apolloClient } from "@aca/desktop/apolloClient";
-import { getDb } from "@aca/desktop/clientdb";
+import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { uiStore } from "@aca/desktop/store/ui";
 import { UpdateSlackMessagesReadStatusMutation } from "@aca/gql/generated";
 import { assert } from "@aca/shared/assert";
@@ -45,35 +45,39 @@ const useSlackMarkAsReadSync = (listId: string) => {
     }
 
     // Check if list contains unread slack messages, otherwise don't update
-    const slackNotifications = list?.getAllNotifications();
+    const notifications = list?.getAllNotifications();
 
-    if (!slackNotifications) {
+    if (!notifications) {
       return;
     }
 
-    const extractConversationInfoFromNotification = async (notificationId: string) => {
-      const messageData = await getDb().notificationSlackMessage.findFirst({ notification_id: notificationId });
+    const extractConversationInfoFromNotification = async (notification: NotificationEntity) => {
+      const slackNotificationInner = notification.inner;
 
-      if (!messageData || !messageData.user_slack_installation_id) {
+      assert(
+        slackNotificationInner && slackNotificationInner.__typename === "notification_slack_message",
+        "Non-slack notification used for marking read slack messages"
+      );
+
+      if (!slackNotificationInner.user_slack_installation_id) {
         return;
       }
 
       return {
-        conversationId: messageData.slack_conversation_id,
-        slackInstallation: messageData.user_slack_installation_id,
+        conversationId: slackNotificationInner.slack_conversation_id,
+        slackInstallation: slackNotificationInner.user_slack_installation_id,
       };
     };
 
     const collectConversationsInfo = async () => {
       const conversationsInfo: { conversationId: string; slackInstallation: string }[] = [];
 
-      for (const notification of slackNotifications) {
-        if (notification.last_seen_at) {
-          // Notification already read, continue
+      for (const notification of notifications) {
+        if (notification.last_seen_at || notification.kind !== "notification_slack_message") {
           continue;
         }
 
-        const info = await extractConversationInfoFromNotification(notification.id);
+        const info = await extractConversationInfoFromNotification(notification);
 
         if (info) {
           conversationsInfo.push(info);
