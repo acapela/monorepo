@@ -26,6 +26,10 @@ type Query {
   linear_users: [ServiceUser!]!
 }
 
+type Mutation {
+  send_message(msg: SendMessageInput!): SendMessageOutput
+}
+
 type Query {
   slack_conversations: [SlackConversation!]!
 }
@@ -93,6 +97,12 @@ input UpdateSlackMessagesReadStatusInput {
 input ConversationInfo {
   conversationId: String!
   slackInstallation: uuid!
+}
+
+input SendMessageInput {
+  integration: String!
+  to: String!
+  message: String!
 }
 
 type UpgradeUserResponse {
@@ -184,4 +194,8 @@ type HandleRevertUrlViewOutput {
 
 type UpdateSlackMessagesReadStatusOutput {
   success: Boolean!
+}
+
+type SendMessageOutput {
+  url: String
 }

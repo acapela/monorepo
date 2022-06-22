@@ -63,6 +63,15 @@ actions:
           value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
     permissions:
       - role: user
+  - name: send_message
+    definition:
+      kind: synchronous
+      handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    permissions:
+      - role: user
   - name: slack_conversations
     definition:
       kind: ""
@@ -147,6 +156,7 @@ custom_types:
     - name: HandleRevertUrlViewInput
     - name: UpdateSlackMessagesReadStatusInput
     - name: ConversationInfo
+    - name: SendMessageInput
   objects:
     - name: UpgradeUserResponse
       relationships:
@@ -176,4 +186,5 @@ custom_types:
     - name: SwitchSubscriptionPlanOutput
     - name: HandleRevertUrlViewOutput
     - name: UpdateSlackMessagesReadStatusOutput
+    - name: SendMessageOutput
   scalars: []
