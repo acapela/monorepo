@@ -6,6 +6,7 @@ import { authTokenBridgeValue, figmaAuthTokenBridgeValue, loginFigmaBridge } fro
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { addToast } from "@aca/desktop/domains/toasts/store";
 import { FigmaSessionData, clearFigmaSessionData, figmaURL } from "@aca/desktop/electron/auth/figma";
+import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 
 import { KnownSyncError, ServiceSyncController, makeServiceSyncController } from "../serviceSyncController";
 import {
@@ -115,6 +116,11 @@ function transformAndSyncFigmaNotifications(figmaUserNotifications: FigmaUserNot
     // We've seen notifications when a user gets different access permissions
     // We only want to handle new comments for now
     if (!isCommentNotification(userNotification.locals)) {
+      log.error("Unhandled notification", {
+        body: JSON.stringify(userNotification),
+        fileName: "figma-notification.txt",
+        type: "plain/text",
+      } as LogAttachment);
       continue;
     }
 
