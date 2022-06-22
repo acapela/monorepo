@@ -63,7 +63,7 @@ export function redisCached<A extends unknown[], R>(
       // get new value and save it to redis
       const newValue = await getter(...args);
 
-      await redisClient.set(cacheKey, JSON.stringify(newValue), "EX", expireTime);
+      await redisClient.set(cacheKey, JSON.stringify(newValue), "PX", expireTime);
 
       // When done - remove pending promise before resolving it
       currentResultPromiseForCacheKey.delete(cacheKey);
