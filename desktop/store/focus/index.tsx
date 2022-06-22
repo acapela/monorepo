@@ -70,6 +70,10 @@ function createFocusSession({ notificationsGetter, activeNotification, listId }:
         animationStore.upcomingEmbedAnimation = "swipe-up";
 
         session.activeNotification = session.next;
+
+        return () => {
+          session.goToPrev();
+        };
       },
       goToPrev() {
         if (!session.prev) return;
@@ -77,6 +81,10 @@ function createFocusSession({ notificationsGetter, activeNotification, listId }:
         animationStore.upcomingEmbedAnimation = "swipe-down";
 
         session.activeNotification = session.prev;
+
+        return () => {
+          session.goToNext();
+        };
       },
       activeNotification,
     },
