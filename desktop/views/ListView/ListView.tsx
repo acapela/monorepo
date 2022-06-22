@@ -1,10 +1,12 @@
 import { gql } from "@apollo/client";
+import { uniqBy } from "lodash";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
 import { apolloClient } from "@aca/desktop/apolloClient";
+import { getDb } from "@aca/desktop/clientdb";
 import { getIsNotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
 import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
@@ -112,38 +114,55 @@ export const ListView = observer(({ listId }: Props) => {
     }
 
     // Check if list contains unread slack messages, otherwise don't update
-    const groups = list?.getGroups();
-    const slackNotifications = groups?.find((group) => group.kind === "notification_slack_message");
+    const slackNotifications = list?.getAllNotifications();
 
     if (!slackNotifications) {
       return;
     }
 
-    if (getIsNotificationsGroup(slackNotifications)) {
-      if (
-        slackNotifications.notifications.some((notification) => {
-          const { tags } = getNotificationMeta(notification);
-          return !tags?.some((tag) => tag.category === "read");
-        })
-      ) {
-        return;
-      }
-    } else {
-      const { tags } = getNotificationMeta(slackNotifications);
-      if (tags?.some((tag) => tag.category === "read")) {
-        return;
-      }
-    }
+    let conversationsInfo: { conversationId: string; slackInstallation: string }[] = [];
 
-    apolloClient.mutate<UpdateSlackMessagesReadStatusMutation>({
-      mutation: gql`
-        mutation UpdateSlackMessagesReadStatus {
-          result: update_slack_messages_read_status {
-            success
-          }
+    const extractConversationInfoFromNotification = async (notificationId: string) => {
+      const messageData = await getDb().notificationSlackMessage.findFirst({ notification_id: notificationId });
+
+      if (!messageData || !messageData.user_slack_installation_id) {
+        return;
+      }
+
+      conversationsInfo.push({
+        conversationId: messageData.slack_conversation_id,
+        slackInstallation: messageData.user_slack_installation_id,
+      });
+    };
+
+    const collectConversationsInfo = async () => {
+      for (const notification of slackNotifications) {
+        const { tags } = getNotificationMeta(notification);
+
+        if (tags?.some((tag) => tag.category === "read")) {
+          // Notification already read, continue
+          continue;
         }
-      `,
-      fetchPolicy: "no-cache",
+
+        await extractConversationInfoFromNotification(notification.id);
+      }
+    };
+
+    //Run the whole thing asynchronously as nothing depends on it
+    collectConversationsInfo().then(() => {
+      conversationsInfo = uniqBy(conversationsInfo, (data) => data.conversationId + data.slackInstallation);
+
+      apolloClient.mutate<UpdateSlackMessagesReadStatusMutation>({
+        mutation: gql`
+          mutation UpdateSlackMessagesReadStatus($input: [ConversationInfo!]!) {
+            result: update_slack_messages_read_status(input: $input) {
+              success
+            }
+          }
+        `,
+        variables: { input: conversationsInfo },
+        fetchPolicy: "no-cache",
+      });
     });
   };
 

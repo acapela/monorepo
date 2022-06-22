@@ -47,7 +47,7 @@ type Mutation {
 }
 
 type Mutation {
-  update_slack_messages_read_status: UpdateSlackMessagesReadStatusOutput
+  update_slack_messages_read_status(input: [ConversationInfo!]!): UpdateSlackMessagesReadStatusOutput
 }
 
 type Mutation {
@@ -83,6 +83,16 @@ input GetSlackInstallationURLInput {
 input HandleRevertUrlViewInput {
   inner_notification_id: uuid!
   inner_table_type: String!
+}
+
+input UpdateSlackMessagesReadStatusInput {
+  conversationId: String!
+  slackInstallation: uuid!
+}
+
+input ConversationInfo {
+  conversationId: String!
+  slackInstallation: uuid!
 }
 
 type UpgradeUserResponse {
