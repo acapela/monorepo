@@ -5,7 +5,6 @@ import { getUUID } from "@aca/shared/uuid";
 import {
   IconAt,
   IconBell,
-  IconBookOpen,
   IconBookQueue,
   IconComment,
   IconCrosshair,
@@ -105,11 +104,6 @@ const tagCategoryConfigMap = createTypeGuard<Record<string, TagConfig>>()({
     color: colorsMap.contextInfo,
     icon: <IconCrosshair />,
     label: "Workspace",
-  },
-  read: {
-    color: colorsMap.contextInfo,
-    icon: <IconBookOpen />,
-    label: "Read",
   },
 });
 

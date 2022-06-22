@@ -1,17 +1,13 @@
-import { gql } from "@apollo/client";
-import { uniqBy } from "lodash";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { deleteNotificationList, renameNotificationList } from "@aca/desktop/actions/lists";
-import { apolloClient } from "@aca/desktop/apolloClient";
-import { getDb } from "@aca/desktop/clientdb";
 import { getIsNotificationsGroup, getNotificationsGroupMeta } from "@aca/desktop/domains/group/group";
 import { getInboxListsById } from "@aca/desktop/domains/list/all";
-import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
 import { NotificationTag } from "@aca/desktop/domains/notification/tag";
 import { OneTimeTip } from "@aca/desktop/domains/onboarding/OneTimeTip";
+import useSlackMarkAsReadSync from "@aca/desktop/domains/slack/useSlackMarkAsReadSync";
 import { ActionSystemMenuItem } from "@aca/desktop/domains/systemMenu/ActionSystemMenuItem";
 import { appViewContainerStyles } from "@aca/desktop/layout/Container";
 import { TraySidebarLayout } from "@aca/desktop/layout/TraySidebarLayout/TraySidebarLayout";
@@ -19,9 +15,6 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { DarkModeThemeProvider } from "@aca/desktop/styles/DesktopThemeProvider";
 import { ListFiltersEditor } from "@aca/desktop/ui/Filters";
 import { ListViewPreloader } from "@aca/desktop/views/ListView/ListViewPreloader";
-import { UpdateSlackMessagesReadStatusMutation } from "@aca/gql";
-import { assert } from "@aca/shared/assert";
-import { createInterval } from "@aca/shared/time";
 import { Button } from "@aca/ui/buttons/Button";
 import { LazyChildrenRender } from "@aca/ui/performance/LazyChildrenRender";
 import { theme } from "@aca/ui/theme";
@@ -38,19 +31,11 @@ interface Props {
   listId: string;
 }
 
-const SLACK_READ_UPDATE_INTERVAL = 30000;
-
-// Keep those 2 vars outside the component, so we can keep an interval across multiple instances of a list view for
-// performance reasons
-
-// Number of mounted list views, used to decide if we should keep a slack read update interval running
-let mountedListCount = 0;
-// Clear function for the slack read update interval, also used to check if an interval is currently running
-let clearSlackReadUpdateInterval: (() => void) | undefined = undefined;
-
 export const ListView = observer(({ listId }: Props) => {
   const [tagFilters, setTagFilters] = useState<NotificationTag[]>([]);
   const list = getInboxListsById(listId);
+
+  useSlackMarkAsReadSync(listId);
 
   const notificationGroups = list?.getGroups() ?? [];
 
@@ -73,103 +58,21 @@ export const ListView = observer(({ listId }: Props) => {
   useEffect(() => {
     if (!list) return;
 
-    mountedListCount++;
-
     list.listEntity?.update({ seen_at: new Date().toISOString() });
-
-    if (!clearSlackReadUpdateInterval) {
-      // No slack read update interval running, set it up!
-      setupSlackReadUpdateInterval();
-    }
 
     return () => {
       const listEntity = list.listEntity;
       if (listEntity && !listEntity.isRemoved()) {
         listEntity.update({ seen_at: new Date().toISOString() });
       }
-      mountedListCount--;
     };
   }, [list]);
-
-  useEffect(() => {
-    // App got focused and we currently have no slack read update interval, create it!
-    if (uiStore.isAppFocused && !clearSlackReadUpdateInterval) {
-      setupSlackReadUpdateInterval();
-    }
-  }, [uiStore.isAppFocused]);
 
   useEffect(() => {
     if (isInCelebrationMode && notificationGroupsToShow.length > 0) {
       uiStore.isDisplayingZenImage = false;
     }
   }, [isInCelebrationMode, notificationGroupsToShow.length]);
-
-  const updateSlackMessagesReadStatus = () => {
-    // If there are no more list views or the app isn't focused when this gets called, delete the interval
-    if (!mountedListCount || !uiStore.isAppFocused) {
-      assert(clearSlackReadUpdateInterval, "Slack read status update interval running but no clear function set");
-      clearSlackReadUpdateInterval();
-      clearSlackReadUpdateInterval = undefined;
-      return;
-    }
-
-    // Check if list contains unread slack messages, otherwise don't update
-    const slackNotifications = list?.getAllNotifications();
-
-    if (!slackNotifications) {
-      return;
-    }
-
-    let conversationsInfo: { conversationId: string; slackInstallation: string }[] = [];
-
-    const extractConversationInfoFromNotification = async (notificationId: string) => {
-      const messageData = await getDb().notificationSlackMessage.findFirst({ notification_id: notificationId });
-
-      if (!messageData || !messageData.user_slack_installation_id) {
-        return;
-      }
-
-      conversationsInfo.push({
-        conversationId: messageData.slack_conversation_id,
-        slackInstallation: messageData.user_slack_installation_id,
-      });
-    };
-
-    const collectConversationsInfo = async () => {
-      for (const notification of slackNotifications) {
-        const { tags } = getNotificationMeta(notification);
-
-        if (tags?.some((tag) => tag.category === "read")) {
-          // Notification already read, continue
-          continue;
-        }
-
-        await extractConversationInfoFromNotification(notification.id);
-      }
-    };
-
-    //Run the whole thing asynchronously as nothing depends on it
-    collectConversationsInfo().then(() => {
-      conversationsInfo = uniqBy(conversationsInfo, (data) => data.conversationId + data.slackInstallation);
-
-      apolloClient.mutate<UpdateSlackMessagesReadStatusMutation>({
-        mutation: gql`
-          mutation UpdateSlackMessagesReadStatus($input: [ConversationInfo!]!) {
-            result: update_slack_messages_read_status(input: $input) {
-              success
-            }
-          }
-        `,
-        variables: { input: conversationsInfo },
-        fetchPolicy: "no-cache",
-      });
-    });
-  };
-
-  const setupSlackReadUpdateInterval = () => {
-    updateSlackMessagesReadStatus();
-    clearSlackReadUpdateInterval = createInterval(updateSlackMessagesReadStatus, SLACK_READ_UPDATE_INTERVAL);
-  };
 
   return (
     <TraySidebarLayout footer={<ListViewFooter />}>

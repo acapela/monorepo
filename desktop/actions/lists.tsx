@@ -11,6 +11,7 @@ import { pluralize } from "@aca/shared/text/pluralize";
 import {
   IconArrowBottom,
   IconArrowTop,
+  IconBookOpen,
   IconEdit2,
   IconListUnordered4,
   IconPlus,
@@ -127,6 +128,78 @@ export const resolveAllNotifications = defineAction({
       for (const nextNotification of allNotifications) {
         if (nextNotification.isResolved) continue;
         cancel.next = nextNotification.resolve()?.undo;
+      }
+    });
+
+    if (!cancel.size) return;
+
+    // Waiting for lists to get updated
+    defer(() => {
+      displayZenModeIfFinished(context);
+    });
+
+    addToast({
+      title: "Notifications resolved",
+      message: pluralize`${cancel.size} ${["notification"]} was resolved`,
+      action: {
+        label: "Undo",
+        callback() {
+          cancel.clean("from-last");
+        },
+      },
+    });
+  },
+});
+
+export const resolveAllReadNotifications = defineAction({
+  icon: <IconBookOpen />,
+  group: currentListActionsGroup,
+  name: (ctx) => {
+    if (ctx.isContextual) {
+      return "Resolve all read";
+    }
+    const list = ctx.getTarget("list", true);
+
+    if (list) {
+      return `Resolve all read notifications in "${list.name}"`;
+    }
+
+    return "Resolve all read notifications in list";
+  },
+  analyticsEvent: (ctx) => {
+    const list = ctx.getTarget("list", true);
+
+    if (list) {
+      return createAnalyticsEvent("All Notifications Resolved", { list_id: list.id, readOnly: true });
+    }
+  },
+  keywords: ["done", "next", "mark", "complete", "every", "clean", "read"],
+  supplementaryLabel: (ctx) => ctx.getTarget("list", true)?.name ?? undefined,
+  canApply: (ctx) => {
+    return !!ctx.getTarget("list", true)?.getAllNotifications().length;
+  },
+  async handler(context) {
+    const list = context.assertTarget("list");
+
+    const didConfirm = await showConfirmDialogRequest({
+      message: "Resolve all read notifications?",
+      detail: `Are you sure to resolve all read notifications in "${list.name}"?`,
+      confirmLabel: "Resolve all read",
+    });
+
+    if (!didConfirm) return;
+
+    const allNotifications = list.getAllNotifications();
+
+    const cancel = createCleanupObject();
+
+    runInAction(() => {
+      for (const nextNotification of allNotifications) {
+        if (nextNotification.isResolved) continue;
+
+        if (nextNotification.last_seen_at) {
+          cancel.next = nextNotification.resolve()?.undo;
+        }
       }
     });
 

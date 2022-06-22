@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { resolveAllNotifications } from "@aca/desktop/actions/lists";
+import { resolveAllNotifications, resolveAllReadNotifications } from "@aca/desktop/actions/lists";
 import { resolveNotification } from "@aca/desktop/actions/notification";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -80,9 +80,10 @@ export const BatchResolver = observer(({ list }: Props) => {
         </UITagsList>
       </UISection>
 
-      <UISection>
+      <ResolveAllSection>
+        <ActionButton isWide kind="secondary" action={resolveAllReadNotifications} target={list}></ActionButton>
         <ActionButton isWide kind="primary" action={resolveAllNotifications} target={list}></ActionButton>
-      </UISection>
+      </ResolveAllSection>
     </UIHolder>
   );
 });
@@ -104,6 +105,15 @@ const UISection = styled.div`
     border-top: 1px solid ${theme.colors.layout.divider.value};
     padding-top: 16px;
   }
+`;
+
+const ResolveAllSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+
+  border-top: 1px solid ${theme.colors.layout.divider.value};
+  padding-top: 16px;
 `;
 
 const UITitle = styled.div`

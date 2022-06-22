@@ -231,27 +231,19 @@ export const updateSlackMessagesReadStatus: ActionHandler<
       // Current read timestamp of the user for this channel
       const timestamp = channel.last_read;
 
-      // Get all messages that are older than the current read timestamp and not yet marked as read
-      const newlyReadMessages = await db.notification_slack_message.findMany({
+      await db.notification.updateMany({
         where: {
-          slack_conversation_id: channel.id,
-          user_slack_installation_id: conversation.slackInstallation,
-          is_read: false,
-          slack_message_ts: { lte: timestamp },
+          notification_slack_message: {
+            slack_conversation_id: channel.id,
+            user_slack_installation_id: conversation.slackInstallation,
+            slack_message_ts: { lte: timestamp },
+          },
+          last_seen_at: null,
+        },
+        data: {
+          last_seen_at: new Date().toISOString(),
         },
       });
-
-      // Mark messages as read
-      await Promise.all(
-        newlyReadMessages.map(async (message) => {
-          await db.notification_slack_message.update({
-            where: { id: message.id },
-            data: {
-              is_read: true,
-            },
-          });
-        })
-      );
     }
 
     return { success: true };
