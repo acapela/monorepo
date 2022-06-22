@@ -17,7 +17,7 @@ import { assert } from "@aca/shared/assert";
 import { logger } from "@aca/shared/logger";
 import { isNotNullish } from "@aca/shared/nullish";
 
-import { getSlackInstallationData } from "./utils";
+import { getPermalink, getSlackInstallationData } from "./utils";
 
 async function getSlackUserName(token?: string, teamId?: string, userId?: string): Promise<string> {
   if (!token || !userId || !teamId) return "Unknown";
@@ -188,30 +188,6 @@ async function isMessageAllowedByTeamFilters(user: User, message: TeamFilterMess
   return channelsByTeam.some(({ included_channels, are_bots_enabled }) => {
     return jsonIncludesChannel(included_channels, message.channel) && (isMessageFromBot ? are_bots_enabled : true);
   });
-}
-
-function getPermalink({
-  url,
-  team,
-  channel,
-  messageTs,
-  threadTs,
-}: {
-  url?: string;
-  team: string;
-  channel: string;
-  messageTs: string;
-  threadTs?: string;
-}) {
-  if (!url) {
-    const permalink = `https://app.slack.com/client/${team}/${channel}/`;
-    if (!threadTs) return permalink + messageTs;
-    return permalink + `thread/${channel}-${threadTs}/${messageTs}`;
-  }
-
-  const permalink = `${url}archives/${channel}/p${messageTs.replace(".", "")}`;
-  if (!threadTs) return permalink;
-  return permalink + `?thread_ts=${threadTs}&cid=${channel}`;
 }
 
 /**
