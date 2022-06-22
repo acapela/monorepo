@@ -31,7 +31,8 @@
         "users:read",
         "reactions:read",
 
-        "team:read"
+        "team:read",
+        "chat:write"
       ]
     }
   },
