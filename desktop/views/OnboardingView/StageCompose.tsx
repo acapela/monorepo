@@ -21,6 +21,7 @@ import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
+import { OnboardingTip } from "./ui/Tip";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 const FAKE_APP_FADE_OUT_DURATION = 350;
@@ -120,7 +121,7 @@ export const StageCompose = observer(({ onContinue }: OnboardingStageProps) => {
             </UIFakeApp>
           </OnboardingAnimationItem>
           <OnboardingAnimationItem>
-            <UITip>Tip: Click the icon with the Pencil located in the top left.</UITip>
+            <OnboardingTip>Click the icon with the Pencil located in the top left.</OnboardingTip>
           </OnboardingAnimationItem>
 
           <OnboardingContinueButton label="Continue" onClick={onContinue} />
@@ -150,8 +151,4 @@ const UIFakeApp = styled.div`
 
 const UITitleIcon = styled.div`
   ${theme.iconSize.item};
-`;
-
-const UITip = styled.div`
-  ${theme.typo.noteTitle.secondary};
 `;
