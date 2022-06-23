@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
-import { action } from "mobx";
-import React, { useEffect, useMemo, useRef } from "react";
+import { action, computed } from "mobx";
+import { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
@@ -103,7 +103,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
 
   const allPeople = uniq(group.notifications.map((notification) => notification.from));
 
-  const isUnread: boolean = useMemo(() => {
+  const isUnread: boolean = computed(() => {
     if (group.notifications.every((n) => n.isResolved)) {
       return false;
     }
@@ -114,7 +114,7 @@ export const NotificationsGroupRow = styledObserver(({ group }: Props) => {
       return group.notifications.every((n) => !n.last_seen_at);
     }
     return group.notifications.some((n) => !n.last_seen_at);
-  }, [group]);
+  }).get();
 
   useStoreRowVisibility(elementRef, group.id);
 
