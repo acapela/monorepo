@@ -1,8 +1,8 @@
 import { createHmac } from "crypto";
+import { timingSafeEqual } from "crypto";
 
 import { AnyMiddlewareArgs } from "@slack/bolt";
 import { Express } from "express";
-import tsscmp from "tsscmp";
 
 import { getIndividualSlackInstallURL } from "@aca/backend/src/slack/install";
 import { getPublicBackendURL } from "@aca/backend/src/utils";
@@ -47,7 +47,7 @@ export function setupSlack(app: Express) {
     try {
       body = verifySignatureAndParseBody(sharedOptions.signingSecret, rawBody, headers);
     } catch (e) {
-      logger.error(e, "Error verifying slack webhook");
+      logger.error(e, "error verifying slack webhook");
       return;
     }
 
@@ -91,7 +91,7 @@ function verifySignatureAndParseBody(signingSecret: string, rawBody: string, hea
   const [version, hash] = signature.split("=");
   hmac.update(`${version}:${ts}:${rawBody}`);
 
-  if (!tsscmp(hash, hmac.digest("hex"))) {
+  if (!timingSafeEqual(Buffer.from(hash, "hex"), hmac.digest())) {
     throw new Error("Slack request signing verification failed. Signature mismatch.");
   }
 
