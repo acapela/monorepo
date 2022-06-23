@@ -25,6 +25,7 @@ import { openedNotificationsGroupsStore } from "@aca/desktop/domains/group/opene
 import { NotificationAppIcon } from "@aca/desktop/domains/notification/NotificationAppIcon";
 import { uiStore } from "@aca/desktop/store/ui";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
+import { UICountIndicator } from "@aca/desktop/ui/CountIndicator";
 import { styledObserver } from "@aca/shared/component";
 import { useDebouncedBoolean } from "@aca/shared/hooks/useDebouncedValue";
 import { useUserFocusedOnElement } from "@aca/shared/hooks/useUserFocusedOnElement";
@@ -233,18 +234,6 @@ const UINotifications = styled.div`
   margin-left: 18px;
   padding-left: 20px;
   border-left: 2px solid ${theme.colors.layout.divider};
-`;
-
-const UICountIndicator = styled.div`
-  ${theme.colors.panels.selectedTab.asBgWithReadableText};
-  width: 24px;
-  height: 24px;
-  aspect-ratio: 1;
-  ${theme.radius.circle};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ${theme.typo.noteTitle};
 `;
 
 const UIToggleIconAnimator = styled(motion.div)`
