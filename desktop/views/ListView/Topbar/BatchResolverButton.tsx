@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { cachedComputed } from "@aca/clientdb";
@@ -21,8 +21,15 @@ const shouldShowResolveManyIndicator = cachedComputed((list: NotificationsList) 
 
 export const BatchResolverButton = observer(({ list }: Props) => {
   const [isOpened, setIsOpened] = useState(false);
+  const notifications = list.getAllNotifications();
 
   const holderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpened && notifications.length === 0) {
+      setIsOpened(false);
+    }
+  }, [isOpened, !!notifications.length]);
 
   return (
     <>
