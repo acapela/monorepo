@@ -496,10 +496,10 @@ async function handleReactionAdded({ event }: SlackEventMiddlewareArgs<"reaction
 
 export function setupSlackCapture(app: SlackApp) {
   app.event("message", async function (event) {
-    await nr.startBackgroundTransaction("slack_event_message", async () => handleMessages(event));
+    await nr.startSegment("slack/handleMessages", true, async () => handleMessages(event));
   });
 
   app.event("reaction_added", async function (event) {
-    await nr.startBackgroundTransaction("slack_event_reaction_added", async () => handleReactionAdded(event));
+    await nr.startSegment("slack/handleReactionAdded", true, async () => handleReactionAdded(event));
   });
 }
