@@ -24,7 +24,7 @@ export function extractMentionedAccountIds(text: string | null) {
   return result;
 }
 
-export async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: string) {
+export async function fetchIssueWatchers(jiraAccount: JiraAccountWithAllDetails, issueKey: string) {
   const response = await jiraRequest(jiraAccount, getIssueWatchers(issueKey));
 
   if (!response) {
@@ -36,10 +36,13 @@ export async function getWatchers(jiraAccount: JiraAccountWithAllDetails, issueK
   return watchers?.watchers?.map((w) => w.accountId) ?? [];
 }
 
-export async function getLeastRecentlyUsedAtlassianAccount(
-  atlassianCloudUrl: string
-): Promise<JiraAccountWithAllDetails> {
-  const jiraAccount = await db.jira_account.findFirst({
+type WatcherId = string;
+export async function getWatchersIfPermitted(
+  atlassianCloudUrl: string,
+  issueKey: string,
+  knownAccountsWithIssuePermissions?: string[]
+): Promise<WatcherId[]> {
+  const jiraAccounts = await db.jira_account.findMany({
     where: {
       atlassian_site: {
         url: atlassianCloudUrl,
@@ -54,7 +57,32 @@ export async function getLeastRecentlyUsedAtlassianAccount(
     },
   });
 
-  assert(jiraAccount, "jira account not found for atlassianCloudUrl " + atlassianCloudUrl, logger.error.bind(logger));
+  assert(
+    !!jiraAccounts.length,
+    "jira account not found for atlassianCloudUrl " + atlassianCloudUrl,
+    logger.error.bind(logger)
+  );
 
-  return jiraAccount;
+  const knownAccountWithAccess = jiraAccounts.filter((ja) =>
+    (knownAccountsWithIssuePermissions ?? []).includes(ja.account_id)
+  );
+
+  const accountsThatWillAttemptToGetWatchers =
+    knownAccountWithAccess.length > 0 ? knownAccountWithAccess : jiraAccounts;
+
+  let attempts = 0;
+  let watchers: string[] = [];
+  for (const account of accountsThatWillAttemptToGetWatchers) {
+    watchers = await fetchIssueWatchers(account, issueKey);
+    if (watchers.length > 0) {
+      break;
+    }
+    attempts++;
+  }
+
+  if (attempts > 0) {
+    logger.error(`Failed to get watchers ${attempts} times out of ${accountsThatWillAttemptToGetWatchers.length}`);
+  }
+
+  return watchers;
 }

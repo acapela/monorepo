@@ -28,7 +28,7 @@ const jiraBaseApiUrl = `https://api.atlassian.com/ex/jira`;
 
 export function getWebhooks(): JiraRequest<{ values: Array<{ id: string }> }> {
   return async function getWebhooksRest(headers, meta) {
-    return await axios.get(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook`, {
+    return axios.get(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook`, {
       headers,
     });
   };
@@ -62,7 +62,7 @@ export function createWebhooks(): JiraRequest<JiraWebhookCreationResult> {
 
 export function deleteWebhooks(webhookIds: string[]): JiraRequest<void> {
   return async function deleteWebhooksRest(headers, meta) {
-    return await axios.delete(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook`, {
+    return axios.delete(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook`, {
       headers,
       data: { webhookIds },
     });
@@ -71,7 +71,7 @@ export function deleteWebhooks(webhookIds: string[]): JiraRequest<void> {
 
 export function refreshWebhooks(webhookIds: number[]): JiraRequest<void> {
   return async function refreshWebhooksRest(headers, meta) {
-    return await axios.put(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook/refresh`, {
+    return axios.put(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/webhook/refresh`, {
       headers,
       data: { webhookIds },
     });
@@ -80,7 +80,7 @@ export function refreshWebhooks(webhookIds: number[]): JiraRequest<void> {
 
 export function getIssueWatchers(issueKey: string): JiraRequest<GetWatchersResponse> {
   return async function getWatchersRest(headers, meta) {
-    return await axios.get(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/issue/${issueKey}/watchers`, { headers });
+    return axios.get(`${jiraBaseApiUrl}/${meta.jiraCloudId}/rest/api/3/issue/${issueKey}/watchers`, { headers });
   };
 }
 
