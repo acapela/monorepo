@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
@@ -8,6 +7,7 @@ import { useActionContext } from "@aca/desktop/actions/action/context";
 import { useActionsContextMenu } from "@aca/desktop/domains/contextMenu/useActionsContextMenu";
 import { runAction } from "@aca/desktop/domains/runAction";
 import { ActionTrigger } from "@aca/desktop/ui/ActionTrigger";
+import { UICountIndicator } from "@aca/desktop/ui/CountIndicator";
 import { Thunk, resolveThunk } from "@aca/shared/thunk";
 import { IconFolder, IconRefreshCcwAlert } from "@aca/ui/icons";
 import { Shortcut } from "@aca/ui/keyboard/Shortcut";
@@ -69,7 +69,7 @@ export const SidebarItem = observer(function SidebarItem({
         <UIName>{name}</UIName>
       </UILabelBody>
 
-      {!!resolvedBadgeCount && <UICount>{resolvedBadgeCount}</UICount>}
+      {!!resolvedBadgeCount && <UICountIndicator>{resolvedBadgeCount}</UICountIndicator>}
       {additionalShortcut && (
         <Shortcut
           shortcut={additionalShortcut}
@@ -91,16 +91,6 @@ const UILabelBody = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-`;
-
-const UICount = styled.div`
-  ${theme.box.panel.badge.size.padding.radius};
-  min-width: 4ch;
-
-  ${theme.colors.layout.divider.asBg};
-  ${theme.typo.noteTitle};
-  text-align: center;
-  justify-content: center;
 `;
 
 const UIHolder = styled(ActionTrigger)<{ $isActive: boolean; $requiresReconnection?: boolean }>`

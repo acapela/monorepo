@@ -1,11 +1,9 @@
-import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { UICountIndicator } from "@aca/desktop/ui/CountIndicator";
 import { styledObserver } from "@aca/shared/component";
 import { useElementHasOverflow } from "@aca/shared/hooks/useElementHasOverflow";
-import { useIsElementOrChildHovered } from "@aca/shared/hooks/useIsElementOrChildHovered";
-import { PopPresenceAnimator } from "@aca/ui/animations";
 import { theme } from "@aca/ui/theme";
 
 interface Props {
@@ -23,8 +21,6 @@ export const TagLabel = styledObserver(({ label, color, icon, onClick, isSelecte
   const labelRef = useRef<HTMLDivElement>(null);
 
   const hasOverflow = useElementHasOverflow(labelRef);
-
-  const isHovered = useIsElementOrChildHovered(holderRef);
 
   function getTooltip() {
     if (tooltip) return tooltip;
@@ -44,7 +40,7 @@ export const TagLabel = styledObserver(({ label, color, icon, onClick, isSelecte
     >
       <UIIcon $color={color}>{icon}</UIIcon>
       {<UILabel ref={labelRef}>{label}</UILabel>}
-      <AnimatePresence>{isHovered && !!count && <UICount>{count}</UICount>}</AnimatePresence>
+      {!!count && <UICount>{count}</UICount>}
     </UITag>
   );
 })``;
@@ -52,8 +48,7 @@ export const TagLabel = styledObserver(({ label, color, icon, onClick, isSelecte
 const tagBgBase = theme.colors.layout.backgroundAccent;
 
 const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
-  border-radius: 6px;
-  padding: 8px;
+  ${theme.box.items.selectItem.size.padding.radius};
   ${theme.typo.bodyTitle};
   display: flex;
   gap: 8px;
@@ -82,15 +77,4 @@ const UIIcon = styled.div<{ $color?: string }>`
   ${theme.iconSize.item};
 `;
 
-const UICount = styled(PopPresenceAnimator)`
-  position: absolute;
-  top: -1em;
-  right: -0.75em;
-  min-width: 3ch;
-  text-align: center;
-  ${theme.typo.noteTitle};
-  padding: 4px 2px;
-  border-radius: 4px;
-  line-height: 1em;
-  ${tagBgBase.active.withBorder.asBgWithReadableText};
-`;
+const UICount = styled(UICountIndicator)``;
