@@ -227,6 +227,7 @@ const UITitle = styled(UINotificationGroupTitle)`
 `;
 
 const UITitleText = styled.div`
+  opacity: 0.6;
   ${theme.common.ellipsisText};
 `;
 

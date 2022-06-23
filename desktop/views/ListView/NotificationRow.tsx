@@ -101,7 +101,7 @@ export const NotificationRow = styledObserver(({ notification }: Props) => {
         <UINotificationAppIcon notification={notification} />
         <UISendersLabel>{notification.from}</UISendersLabel>
         {tags && <NotificationTags tags={tags} />}
-        {<UINotificationRowTitle>{title}&nbsp;</UINotificationRowTitle>}
+        {<UITitleText>{title}&nbsp;</UITitleText>}
         {!notification.isResolved && <UIReminderLabel notificationOrGroup={notification} />}
         {isFocused && <UIRowQuickActions target={notification} />}
         <NotificationDate notification={notification} key={notification.id} />
@@ -135,4 +135,8 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: Preloading
   ${NotificationAppIcon} {
     ${theme.iconSize.item};
   }
+`;
+
+const UITitleText = styled(UINotificationRowTitle)`
+  opacity: 0.6;
 `;

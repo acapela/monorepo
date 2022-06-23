@@ -93,7 +93,6 @@ export const UINotificationRowTitle = styled.div`
   z-index: ${NotificationRowZIndex.rowItem};
   flex-grow: 1;
   flex-basis: 0;
-  opacity: 0.6;
 `;
 
 export const UINotificationGroupTitle = styled(UINotificationRowTitle)`
