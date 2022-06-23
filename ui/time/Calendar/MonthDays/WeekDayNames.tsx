@@ -31,7 +31,7 @@ const UIDays = styled.div<{}>`
 `;
 
 const UILabel = styled.div<{}>`
-  ${theme.typo.functional.hint.size(10).semibold.upper};
+  ${theme.typo.noteTitle.upper};
   user-select: none;
   opacity: 0.2;
 `;
