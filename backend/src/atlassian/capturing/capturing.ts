@@ -8,8 +8,8 @@ import { handleJiraIssueUpdate } from "./captureIssueUpdates";
 import {
   EXTRACT_MENTIONED_ACCOUNT_REGEX,
   extractMentionedAccountIds,
+  fetchIssueWatchers,
   getLeastRecentlyUsedAtlassianAccount,
-  getWatchers,
 } from "./utils";
 
 export async function captureJiraWebhook(payload: JiraWebhookPayload) {
@@ -55,7 +55,7 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
 
   // Mention notifications are more important than watcher notifications
   // We're excluding mentions from watcher to prevent double notifications
-  const watchersThatAreNotMentioned = (await getWatchers(jiraAccount, payload.issue.key)).filter(
+  const watchersThatAreNotMentioned = (await fetchIssueWatchers(jiraAccount, payload.issue.key)).filter(
     (watcherAccountId) => !atlassianAccountsMentioned.includes(watcherAccountId) && isNotCommentAuthor(watcherAccountId)
   );
 

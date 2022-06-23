@@ -5,8 +5,8 @@ import { JiraWebhookPayload } from "../types";
 import {
   EXTRACT_MENTIONED_ACCOUNT_REGEX,
   extractMentionedAccountIds,
+  fetchIssueWatchers,
   getLeastRecentlyUsedAtlassianAccount,
-  getWatchers,
 } from "./utils";
 
 type ChangeLogItem = JiraWebhookPayload["changelog"]["items"][number];
@@ -164,7 +164,7 @@ async function notifyWatchersOnUpdate({
 
   // Mention notifications are more important than watcher notifications
   // We're excluding mentions from watcher to prevent double notifications
-  const watchersExceptUserThatUpdatedIssue = (await getWatchers(jiraAccount, payload.issue.key)).filter(
+  const watchersExceptUserThatUpdatedIssue = (await fetchIssueWatchers(jiraAccount, payload.issue.key)).filter(
     (watcherAccountId) => watcherAccountId !== accountThatUpdatedIssue?.accountId
   );
 
