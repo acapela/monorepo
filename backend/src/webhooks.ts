@@ -1,5 +1,6 @@
 import { PubSub, Subscription } from "@google-cloud/pubsub";
 import * as Sentry from "@sentry/node";
+import { addHours, isAfter } from "date-fns";
 import nr from "newrelic";
 
 import { logger } from "@aca/shared/logger";
@@ -27,13 +28,19 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
   subscription.on("message", async (message) => {
     let lock = null;
     let shouldAck = false;
+    const messageTimestamp = new Date(message.publishTime.toISOString());
     try {
       lock = await acquireLock(service, message.id);
       if (!(await markAsProcessed(service, message.id))) {
-        logger.info(`message ${message.id} from ${service} was already processed`);
+        logger.info(`message ${message.id} from ${service} was already processed (${messageTimestamp.toISOString()})`);
         lock.unlock().catch((err) => logger.warn("unlock error (processed)", err));
-        // we do not acknowledge the message if it was already processed
-        message.nack();
+        if (isAfter(addHours(new Date(), -3), messageTimestamp)) {
+          // message was already processed, but it still exists in the pubsub queue
+          message.ack();
+        } else {
+          // we do not acknowledge the message if it was already processed
+          message.nack();
+        }
         return;
       }
       const data = JSON.parse(message.data.toString());
