@@ -22,7 +22,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
   const topicName = `${process.env.STAGE}-webhooks-${service}`;
   logger.info(`listening for webhooks on topic ${topicName}`);
   const subscription = pubsub.topic(topicName).subscription(`${topicName}-sub`, {
-    flowControl: { maxMessages: 10, allowExcessMessages: false },
+    flowControl: { maxMessages: 50, allowExcessMessages: false },
   });
   subscription.on("message", async (message) => {
     let lock = null;
