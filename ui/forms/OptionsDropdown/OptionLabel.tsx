@@ -30,16 +30,16 @@ const UIHolder = styled.div<{}>`
   }
 
   svg {
-    font-size: 24px;
+    ${theme.iconSize.item};
   }
 `;
 
 const UIBody = styled.div`
-  ${theme.typo.content.resetLineHeight};
+  ${theme.typo.body.resetLineHeight};
   ${theme.common.ellipsisText};
 `;
 
 const UIIcon = styled.div<{}>`
   margin-right: 8px;
-  font-size: 24px;
+  ${theme.iconSize.item};
 `;

@@ -122,11 +122,11 @@ const UIToolbar = styled.div<{ isFlying: boolean }>`
 `;
 
 const UITitle = styled.h3`
-  ${theme.typo.secondaryTitle};
+  ${theme.typo.pageTitle};
   flex-grow: 1;
   min-width: 0;
 `;
 
 const UIDescription = styled.h3`
-  ${theme.typo.content.secondary};
+  ${theme.typo.body.secondary};
 `;

@@ -18,6 +18,7 @@ import { getObjectKey } from "@aca/shared/object";
 import { wait } from "@aca/shared/time";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { IconArrowBottom, IconArrowLeft, IconArrowTop, IconBell, IconCheck } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { FakeIntegrationScreen, FakeIntegrationScreenProps } from "./focus/FakeIntegrationScreen";
 import { FakeWindow } from "./focus/FakeWindow";
@@ -218,5 +219,5 @@ const UIFakeApp = styled.div`
 `;
 
 const UITitleIcon = styled.div`
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;

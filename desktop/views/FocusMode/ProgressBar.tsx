@@ -85,7 +85,7 @@ export const ProgressBar = observer(function ProgressBar({ all, done, title, avg
   );
 });
 
-const labels = theme.typo.content.size(13).medium;
+const labels = theme.typo.body.size(13).medium;
 
 const UIHolder = styled.div`
   max-width: 200px;

@@ -22,7 +22,7 @@ export function EmptyStatePlaceholder({ title, description, noSpacing = false, i
 }
 
 const UIIcon = styled.div<{}>`
-  font-size: 32px;
+  ${theme.iconSize.section};
   margin-bottom: 16px;
   opacity: 0.4;
 `;
@@ -45,7 +45,7 @@ const UIHolder = styled.div<{ noSpacing: boolean }>`
 `;
 
 const UITitle = styled.div<{}>`
-  ${theme.typo.secondaryTitle}
+  ${theme.typo.pageTitle}
 `;
 
 const UIBody = styled.div<{}>`

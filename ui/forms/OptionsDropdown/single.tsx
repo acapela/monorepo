@@ -68,5 +68,5 @@ export function SingleOptionDropdown<I>({
 }
 
 const UIBody = styled.div`
-  ${theme.typo.content}
+  ${theme.typo.body}
 `;

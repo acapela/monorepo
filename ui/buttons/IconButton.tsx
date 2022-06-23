@@ -25,12 +25,6 @@ export interface IconButtonProps {
   indicateNotification?: boolean;
 }
 
-/**
- * By default icon occupy 0.75 of circle size. It might 'look' good for various icons or use cases to modify this ratio.
- * eg. 0.5 means if circle has 32px size, icon will have 16px size.
- */
-export const DEFAULT_ICON_SIZE_RATIO = 1.45;
-
 export const IconButton = styledForwardRef<HTMLButtonElement, IconButtonProps>(function CircleIconButton(
   {
     icon,
@@ -100,7 +94,7 @@ export const UIButton = styled.button<{
   ${(props) => getButtonSizeStyles(props.$size).square}
 
   svg {
-    font-size: ${DEFAULT_ICON_SIZE_RATIO}em;
+    ${theme.iconSize.itemLarge};
     transform: scale(${(props) => props.iconScaleFactor});
   }
 

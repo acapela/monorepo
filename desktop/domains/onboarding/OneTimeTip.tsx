@@ -47,9 +47,9 @@ const UIHolder = styled.div`
 `;
 
 const UIIcon = styled.div`
-  font-size: 24px;
+  ${theme.iconSize.item};
 `;
 
 const UIContent = styled.div`
-  line-height: 1.5em;
+  ${theme.typo.body};
 `;

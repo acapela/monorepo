@@ -93,10 +93,8 @@ const UISummaryItem = styled.div`
 
 const UITitle = styled.div`
   font-weight: 600;
-  font-size: 16px;
 `;
 const UIDescription = styled.div`
-  font-size: 14px;
   opacity: 0.8;
   line-height: 1.5em;
 `;
@@ -109,7 +107,6 @@ const UILimiter = styled.div`
 const shortcutBgColor = theme.colors.layout.backgroundAccent.hover;
 
 const PrimaryShortcut = styled(ShortcutDescriptor)`
-  font-size: 24px;
   gap: 10px;
 
   .key {
@@ -138,7 +135,7 @@ const UICopySection = styled.div`
   align-items: center;
 
   svg {
-    font-size: 24px;
+    ${theme.iconSize.section};
   }
 `;
 

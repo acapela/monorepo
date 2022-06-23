@@ -66,7 +66,7 @@ export const ListViewTopBar = observer(({ list }: Props) => {
 });
 
 const UITitle = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   display: flex;
   align-items: center;
   gap: 2px;

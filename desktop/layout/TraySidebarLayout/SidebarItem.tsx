@@ -84,7 +84,7 @@ export const SidebarItem = observer(function SidebarItem({
 });
 
 const UILabelBody = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   min-width: 0;
   flex-grow: 1;
 
@@ -98,7 +98,7 @@ const UICount = styled.div`
   min-width: 4ch;
 
   ${theme.colors.layout.divider.asBg};
-  ${theme.typo.label.semibold}
+  ${theme.typo.noteTitle};
   text-align: center;
   justify-content: center;
 `;
@@ -119,7 +119,7 @@ const UIHolder = styled(ActionTrigger)<{ $isActive: boolean; $requiresReconnecti
 `;
 
 const UIIcon = styled.div<{ $isDanger?: boolean }>`
-  font-size: 1.2em;
+  ${theme.iconSize.item};
   ${(props) =>
     props.$isDanger &&
     css`

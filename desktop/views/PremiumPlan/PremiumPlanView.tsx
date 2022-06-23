@@ -7,6 +7,7 @@ import { getCurrentPlan, switchSubscription } from "@aca/desktop/domains/plan/ap
 import { SubscriptionPlan } from "@aca/gql";
 import { styledObserver } from "@aca/shared/component";
 import { useDependencyChangeEffect } from "@aca/shared/hooks/useChangeEffect";
+import { theme } from "@aca/ui/theme";
 
 import { AwaitingCheckoutCover } from "./AwaitingCheckoutCover";
 import { Plans } from "./Plans";
@@ -82,17 +83,13 @@ const UIHead = styled.div`
 `;
 
 const UIHero = styled.div`
-  font-size: 44px;
-  font-weight: 600;
+  ${theme.typo.pageTitle};
   text-align: center;
 `;
 const UIIntro = styled.div`
-  line-height: 1.5em;
-  font-size: 16px;
+  ${theme.typo.body.secondary};
   text-align: center;
-  opacity: 0.5;
   max-width: 420px;
-  font-weight: 400;
 `;
 
 const UIPlans = styled.div``;

@@ -227,14 +227,15 @@ const UIBody = styled(PopPresenceAnimator)`
 const UIInputHolder = styled.div<{ $hasKeyword: boolean }>`
   position: relative;
   margin-bottom: 15px;
+  ${theme.typo.pageSubtitle};
   & > svg {
     position: absolute;
     left: 15px;
     top: 15px;
     transition: 0.2s all;
     opacity: ${(props) => (props.$hasKeyword ? 1 : 0.5)};
+    ${theme.iconSize.item};
 
-    ${theme.typo.pageTitle};
     top: 50%;
     transform: translateY(-50%);
     left: 24px;
@@ -245,9 +246,9 @@ const UIInput = styled.input`
   ${theme.common.transparentInput}
   width: 100%;
   ${theme.box.items.primarySelectItem.size.padding};
-  ${theme.typo.pageTitle};
+  font-size: inherit;
 
-  padding-left: 60px;
+  padding-left: 2.75em;
 
   ::placeholder {
     color: inherit;

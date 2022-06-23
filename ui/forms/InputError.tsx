@@ -12,6 +12,6 @@ export function InputError({ message }: Props) {
 }
 
 const UIHolder = styled(PresenceAnimator)<{}>`
-  ${theme.typo.label};
+  ${theme.typo.note};
   ${theme.colors.status.danger.asBg};
 `;

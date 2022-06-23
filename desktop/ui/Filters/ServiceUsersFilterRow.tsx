@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { IntegrationClient } from "@aca/desktop/domains/integrations/types";
 import { ServiceUser } from "@aca/gql";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
+import { theme } from "@aca/ui/theme";
 import { Avatar, OverlayingAvatars } from "@aca/ui/users/Avatar";
 
 import { FilterSettingRow, getWorkspaceLabel } from "./utils";
@@ -54,7 +55,7 @@ export const ServiceUsersFilterRow = ({
 );
 
 const UISelectedPreview = styled.div`
-  font-size: 22px;
+  ${theme.iconSize.avatar}
   display: flex;
   align-items: center;
   flex-grow: 1;

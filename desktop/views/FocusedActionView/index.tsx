@@ -82,16 +82,16 @@ const UITypo = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.item.title};
+  ${theme.typo.bodyTitle};
 `;
 
 const UIDescription = styled.div`
-  ${theme.typo.content.medium.secondary};
+  ${theme.typo.body.medium.secondary};
   max-width: 40ch;
 `;
 
 const UILogo = styled(Logo)<{}>`
-  font-size: 40px;
+  ${theme.iconSize.section};
 `;
 
 const UIWindowDragger = styled.div`

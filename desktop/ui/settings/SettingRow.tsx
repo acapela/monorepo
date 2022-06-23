@@ -36,16 +36,16 @@ const UIInfo = styled.div`
 `;
 
 const UIIcon = styled.div`
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.item.title}
+  ${theme.typo.bodyTitle}
   ${theme.common.ellipsisText}
 `;
 
 const UIDescription = styled.div`
-  ${theme.typo.item.description}
+  ${theme.typo.noteTitle.secondary}
 `;
 
 const UIOption = styled.div<{ $fixedWidth?: number }>`

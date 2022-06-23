@@ -41,7 +41,7 @@ export const TextButton = styledForwardRef<HTMLButtonElement, ButtonProps>(funct
 
 const kindStyles = {
   primary: css`
-    ${theme.typo.content};
+    ${theme.typo.body};
     ${theme.colors.action.primary.asColor};
     text-decoration: underline;
     ${theme.transitions.hover("color")};
@@ -51,7 +51,7 @@ const kindStyles = {
     }
   `,
   secondary: css`
-    ${theme.typo.label};
+    ${theme.typo.note};
     opacity: 0.4;
     ${theme.transitions.hover("opacity")};
 

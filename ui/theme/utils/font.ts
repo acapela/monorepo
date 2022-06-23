@@ -13,6 +13,9 @@ type FontVariants = {
   inter: Font;
   permanentMarker: Font;
 
+  family(family: string): Font;
+  weight(weight: number): Font;
+
   semibold: Font;
   medium: Font;
   black: Font;
@@ -36,7 +39,7 @@ type FontVariants = {
 
 type Font = ThemeTarget<FontVariants>;
 
-const BACKUP_FONT_FAMILIES = `"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif"`;
+const BACKUP_FONT_FAMILIES = `"-apple-system", "BlinkMacSystemFont", "Segoe UI", "Inter", "Arial", "sans-serif"`;
 
 const BASE_FONT_SIZE_PX = 16;
 
@@ -119,6 +122,17 @@ export function font(parentStyles: StylesPart[] = []): Font {
           font-family: "Permanent Marker", ${BACKUP_FONT_FAMILIES};
         `);
       },
+      family(family) {
+        return withStyles(css`
+          font-family: ${family}, ${BACKUP_FONT_FAMILIES};
+        `);
+      },
+      weight(weight) {
+        return withStyles(css`
+          font-weight: ${weight};
+        `);
+      },
+
       size(px, mobilePx = px) {
         return withFontSize(px, mobilePx);
       },

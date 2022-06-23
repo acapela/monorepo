@@ -56,7 +56,7 @@ export const CommandMenuAction = observer(function CommandMenuAction({
 });
 
 const UIIcon = styled.div`
-  font-size: 1.33em;
+  ${theme.iconSize.item};
   transition: 0.2s all;
   ${theme.colors.layout.backgroundAccent.active.asBg}
   padding: 0.2em;
@@ -65,7 +65,7 @@ const UIIcon = styled.div`
 
 const UIHolder = styled(motion.div)<{ $isActive: boolean }>`
   ${theme.box.items.primarySelectItem.size.padding};
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   display: flex;
   gap: 15px;
   align-items: center;
@@ -98,7 +98,7 @@ const UIEllipsis = styled.div`
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)`
-  ${theme.typo.content.semibold};
+  ${theme.typo.body.semibold};
   .key {
     transition: 0.2s all;
     display: flex;

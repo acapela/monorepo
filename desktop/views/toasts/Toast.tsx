@@ -157,7 +157,7 @@ const UICopy = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
 `;
 
 const UIDescriptionHolder = styled.div`
@@ -167,11 +167,11 @@ const UIDescriptionHolder = styled.div`
 `;
 
 const UIDescription = styled.div<{ $isOnlyContent: boolean }>`
-  ${theme.typo.secondaryContent.secondary};
+  ${theme.typo.note.secondary};
   ${theme.common.capLines(5)}
   flex-grow: 1;
 
-  ${(props) => props.$isOnlyContent && theme.typo.content};
+  ${(props) => props.$isOnlyContent && theme.typo.body};
 `;
 
 const UIActions = styled.div``;

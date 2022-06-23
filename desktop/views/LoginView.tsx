@@ -94,7 +94,7 @@ const UIHolder = styled.div`
 `;
 
 const UIBody = styled(PopPresenceAnimator)`
-  max-width: 340px;
+  max-width: 380px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -112,12 +112,11 @@ const UIHead = styled(motion.div)`
 `;
 
 const UILogo = styled(Logo)`
-  font-size: 64px;
+  ${theme.iconSize.hero};
 `;
 
 const UITitle = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
+  ${theme.typo.pageTitle};
 `;
 
 const UIMethods = styled(PopPresenceAnimator)`

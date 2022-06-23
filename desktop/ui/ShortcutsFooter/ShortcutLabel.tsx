@@ -57,7 +57,7 @@ const UIHolder = styled(ActionTrigger)<{ $isEnabled: boolean }>`
 `;
 
 const UIName = styled.div`
-  ${theme.typo.action.regular.medium};
+  ${theme.typo.noteTitle};
   white-space: nowrap;
   ${theme.common.ellipsisText};
 `;
@@ -66,5 +66,5 @@ export const UIShortcut = styled(ShortcutDescriptor)`
   ${theme.colors.layout.backgroundAccent.asBg};
   ${theme.transitions.hover("all")};
   ${theme.box.panel.shortcut.padding.radius};
-  ${theme.typo.action.regular.medium};
+  ${theme.typo.noteTitle};
 `;

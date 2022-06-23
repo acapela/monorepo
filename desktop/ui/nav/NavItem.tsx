@@ -6,7 +6,7 @@ export const UINavItem = styled.div<{ $isActive?: boolean }>`
   ${theme.colors.layout.background.interactive};
   ${theme.transitions.hover("background-color")}
   ${theme.box.control.regular.size.padding.radius}
-  ${theme.typo.content.medium}
+  ${theme.typo.body.medium}
 
   ${(props) => props.$isActive && theme.colors.layout.background.hover.asBg};
 

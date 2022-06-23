@@ -320,7 +320,7 @@ const UISearch = styled.div``;
 
 const UISearchInput = styled.input`
   ${theme.colors.panels.popover.border.asBg};
-  ${theme.typo.content.resetLineHeight};
+  ${theme.typo.body.resetLineHeight};
   ${theme.box.control.regular.padding.size.radius};
   ${theme.radius.button};
   width: 100%;
@@ -336,7 +336,7 @@ const UIHeader = styled.div`
   height: ${EMOJI_SIZE}px;
   display: flex;
   align-items: center;
-  ${theme.typo.item.title};
+  ${theme.typo.bodyTitle};
 `;
 
 const UIEmojiRow = styled.div`

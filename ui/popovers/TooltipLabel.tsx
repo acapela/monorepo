@@ -37,7 +37,7 @@ const TooltipFlyer = styled(Popover)`
 `;
 
 const UITooltip = styled(PresenceAnimator)<{}>`
-  ${theme.typo.functional.tooltip};
+  ${theme.typo.noteTitle};
   ${theme.colors.panels.tooltip.asBgWithReadableText};
   ${theme.box.panel.tooltip.padding.radius};
   ${theme.radius.secondaryItem};
@@ -55,5 +55,4 @@ const UIShortcut = styled(Shortcut)`
   ${theme.colors.panels.tooltip.hover.asBgWithReadableText};
   ${theme.radius.badge};
   padding: 3px 6px;
-  font-size: 13px;
 `;

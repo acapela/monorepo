@@ -48,7 +48,7 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UIDateTitle = styled.div<{}>`
-  ${theme.typo.content.bold};
+  ${theme.typo.body.bold};
   flex: 17;
   display: inline-block;
 `;

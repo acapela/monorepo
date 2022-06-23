@@ -77,7 +77,7 @@ export function useStoreRowVisibility(ref: RefObject<HTMLElement>, id: string) {
 }
 
 export const UISendersLabel = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   ${theme.common.ellipsisText};
   width: ${SENDERS_WIDTH}px;
   max-width: ${SENDERS_WIDTH}px;
@@ -88,7 +88,7 @@ export const UISendersLabel = styled.div`
 `;
 
 export const UINotificationRowTitle = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   ${theme.common.ellipsisText};
   z-index: ${NotificationRowZIndex.rowItem};
   flex-grow: 1;
@@ -104,7 +104,7 @@ export const UINotificationGroupTitle = styled(UINotificationRowTitle)`
 `;
 
 export const UINotificationPreviewText = styled.div`
-  ${theme.typo.content.opacity(0.6)};
+  ${theme.typo.body.opacity(0.6)};
   ${theme.common.ellipsisText};
   flex-grow: 1;
   flex-basis: 0;

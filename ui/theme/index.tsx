@@ -6,6 +6,7 @@ import { box } from "./box";
 import { darkThemeColors, defaultColors } from "./colors";
 import { common } from "./common";
 import { gradients } from "./gradients";
+import { iconSize } from "./iconSize";
 import { layout } from "./layout";
 import { shadow } from "./shadow";
 import { spacing } from "./spacing";
@@ -29,6 +30,7 @@ export const defaultTheme = {
   gradients,
   common,
   layout,
+  iconSize: iconSize,
 } as const;
 
 export const darkTheme: typeof defaultTheme = {

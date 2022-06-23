@@ -4,6 +4,7 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 
 import { Logo } from "@aca/desktop/ui/Logo";
+import { theme } from "@aca/ui/theme";
 
 import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
@@ -37,7 +38,7 @@ const UILogoHolder = styled.div`
 const LOGO_SIZE = 64;
 
 const UILogo = styled(Logo)`
-  font-size: ${LOGO_SIZE}px;
+  ${theme.iconSize.hero};
   z-index: 1;
 `;
 

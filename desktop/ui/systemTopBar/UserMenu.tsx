@@ -24,7 +24,7 @@ const outline = theme.colors.layout.backgroundAccent.active;
 
 const UIHolder = styled.div`
   ${Avatar} {
-    font-size: 24px;
+    ${theme.iconSize.avatar};
     box-shadow: 0 0 0px 2px ${outline.opacity(0).value};
 
     ${theme.transitions.hover()}

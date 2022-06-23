@@ -92,7 +92,6 @@ export function OnboardingNotificationRow({
 const UIHolder = styled.div<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
-  font-size: 14px;
   font-weight: 500;
   gap: 10px;
   height: 48px;
@@ -100,7 +99,7 @@ const UIHolder = styled.div<{ $isSelected: boolean }>`
   ${(props) => props.$isSelected && theme.colors.layout.backgroundAccent.hover.asBg};
 `;
 const UIIcon = styled.div`
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;
 const UIAuthor = styled.div`
   width: 60px;

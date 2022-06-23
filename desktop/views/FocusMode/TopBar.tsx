@@ -92,12 +92,12 @@ const UIHeader = styled.div`
   min-width: 0;
 
   ${NotificationAppIcon} {
-    ${theme.typo.secondaryTitle}
+    ${theme.iconSize.item};
   }
 `;
 
 const UITitleLabel = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   ${theme.common.ellipsisText};
   min-width: 0;
   flex-grow: 1;

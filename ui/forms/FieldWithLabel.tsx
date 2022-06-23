@@ -141,7 +141,7 @@ const UIIconHolder = styled.div<{}>`
   align-items: center;
   padding: 16px;
   padding-left: 0;
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;
 
 const UIPlaceholdersHolder = styled.div<{}>`
@@ -169,7 +169,7 @@ const UIPlaceholder = styled(motion.div)<{}>`
 const UIFocusedPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   align-self: flex-start;
-  font-size: 12px;
+  ${theme.typo.note};
 
   /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
   margin-top: calc(-0.75em + 2px);
@@ -183,7 +183,7 @@ const UIContentHolder = styled.div<{}>`
 `;
 
 const UIDropdownIcon = styled(IconChevronDown)<{}>`
-  font-size: 1.5rem;
+  ${theme.iconSize.item};
   opacity: 0.6;
   align-self: center;
   ${theme.common.clickable}

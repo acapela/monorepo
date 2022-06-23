@@ -13,6 +13,7 @@ import { getObjectKey } from "@aca/shared/object";
 import { IconBell, IconCheck } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { OnboardingNotificationRow } from "./list/Row";
 import { OnboardingNotificationRowData } from "./list/types";
@@ -174,7 +175,5 @@ const UINotifications = styled(NeverDecreaseHeight)`
 const UIShortcut = styled(ShortcutDescriptor)``;
 
 const UITip = styled.div`
-  font-weight: 500;
-  font-size: 14px;
-  opacity: 0.6;
+  ${theme.typo.noteTitle.secondary};
 `;

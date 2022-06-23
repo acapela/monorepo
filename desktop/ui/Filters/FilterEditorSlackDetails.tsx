@@ -354,7 +354,7 @@ const UISegment = styled.div<{ $isActive?: boolean }>`
     `;
   }}
 
-  ${theme.typo.action.regular.semibold}
+  ${theme.typo.bodyTitle}
 
   &:not(:last-child) {
     border-right: 1px solid ${theme.colors.layout.divider.value};

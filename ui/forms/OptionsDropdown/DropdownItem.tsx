@@ -75,7 +75,7 @@ const UIOption = styled.div<{ $isHighlighted: boolean }>`
   ${theme.spacing.actions.asGap};
 
   svg {
-    font-size: 1.25em;
+    ${theme.iconSize.item};
   }
 
   ${OptionLabel} {
