@@ -145,6 +145,8 @@ custom_types:
     - name: InviteUserInput
     - name: GetSlackInstallationURLInput
     - name: HandleRevertUrlViewInput
+    - name: UpdateSlackMessagesReadStatusInput
+    - name: ConversationInfo
   objects:
     - name: UpgradeUserResponse
       relationships:

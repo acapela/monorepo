@@ -4,6 +4,7 @@ import { orderBy } from "lodash";
 import { getIndividualSlackInstallURL } from "@aca/backend/src/slack/install";
 import { db } from "@aca/db";
 import {
+  ConversationInfo,
   GetSlackInstallationUrlInput,
   GetSlackInstallationUrlOutput,
   HandleRevertUrlViewInput,
@@ -13,6 +14,7 @@ import {
   UpdateSlackMessagesReadStatusOutput,
 } from "@aca/gql";
 import { assert, assertDefined } from "@aca/shared/assert";
+import { logger } from "@aca/shared/logger";
 import { MINUTE } from "@aca/shared/time";
 
 import { ActionHandler } from "../actions/actionHandlers";
@@ -161,79 +163,89 @@ export const handleRevertUrlView: ActionHandler<
   },
 };
 
-export const updateSlackMessagesReadStatus: ActionHandler<void, UpdateSlackMessagesReadStatusOutput> = {
+export const updateSlackMessagesReadStatus: ActionHandler<
+  { input: ConversationInfo[] },
+  UpdateSlackMessagesReadStatusOutput
+> = {
   actionName: "update_slack_messages_read_status",
 
-  async handle(userId) {
-    // Get all installations for user
-    const userSlackInstallations = await db.user_slack_installation.findMany({
-      where: {
-        user_id: userId,
-      },
-    });
+  async handle(userId, { input: conversations }) {
+    // Cache slack installations and conversations so we don't compute anything multiple times
+    const slackInstallationMap = new Map<
+      string,
+      { installation: SlackInstallation; conversations: Map<string, boolean> }
+    >();
 
-    for (const installation of userSlackInstallations) {
-      const installData = installation.data as unknown as SlackInstallation;
-      const token = installData.user.token;
+    for (const conversation of conversations) {
+      let slackInstallationData = slackInstallationMap.get(conversation.slackInstallation);
 
-      if (!token) {
-        continue;
-      }
-
-      // Get all conversations of user
-      let conversations;
-      try {
-        conversations = await slackClient.users.conversations({
-          token: token,
-          types: "public_channel,private_channel,mpim,im",
-          user: installData.user.id,
-          exclude_archived: true,
-        });
-      } catch (error) {
-        continue;
-      }
-
-      if (!conversations.channels) {
-        // Empty conversations list
-        return { success: true };
-      }
-
-      for (const channel of conversations.channels) {
-        if (!channel.id) {
-          // Don't know why this would happen, but safeguard against it anyway
-          continue;
-        }
-        const info = await slackClient.conversations.info({
-          token: token,
-          channel: channel.id,
-        });
-
-        // Current read timestamp of the user for this channel
-        const timestamp = info.channel?.last_read;
-
-        // Get all messages that are older than the current read timestamp and not yet marked as read
-        const newlyReadMessages = await db.notification_slack_message.findMany({
+      // Installation not in map yet, fetch it
+      if (!slackInstallationData) {
+        const installationRawData = await db.user_slack_installation.findUnique({
           where: {
-            slack_conversation_id: info.channel?.id,
-            user_slack_installation_id: installation.id,
-            is_read: false,
-            slack_message_ts: { lte: timestamp },
+            id: conversation.slackInstallation,
           },
         });
 
-        // Mark messages as read
-        await Promise.all(
-          newlyReadMessages.map(async (message) => {
-            await db.notification_slack_message.update({
-              where: { id: message.id },
-              data: {
-                is_read: true,
-              },
-            });
-          })
-        );
+        if (!installationRawData) {
+          logger.error("Tried to mark Slack message as read for missing Slack installation");
+          continue;
+        }
+
+        const slackInstallation = installationRawData?.data as unknown as SlackInstallation;
+
+        slackInstallationData = { installation: slackInstallation, conversations: new Map<string, boolean>() };
+        slackInstallationMap.set(conversation.slackInstallation, slackInstallationData);
       }
+
+      if (slackInstallationData.conversations.has(conversation.conversationId)) {
+        // Conversation has already been processed
+        continue;
+      }
+
+      slackInstallationData.conversations.set(conversation.conversationId, true);
+
+      const token = slackInstallationData.installation.user.token;
+
+      if (!token) {
+        logger.error(`Missing user token for slack installation ${conversation.slackInstallation}`);
+        continue;
+      }
+
+      const conversationInfo = await slackClient.conversations.info({
+        token: token,
+        channel: conversation.conversationId,
+      });
+
+      if (!conversationInfo.channel) {
+        continue;
+      }
+
+      const channel = conversationInfo.channel;
+
+      if (!channel.id) {
+        // Don't know why this would happen, but safeguard against it anyway
+        continue;
+      }
+
+      // Current read timestamp of the user for this channel
+      const timestamp = channel.last_read;
+
+      await db.notification.updateMany({
+        where: {
+          notification_slack_message: {
+            slack_conversation_id: channel.id,
+            user_slack_installation_id: conversation.slackInstallation,
+            slack_message_ts: { lte: timestamp },
+          },
+          last_seen_at: null,
+        },
+        data: {
+          last_seen_at: new Date().toISOString(),
+        },
+      });
     }
+
     return { success: true };
   },
 };

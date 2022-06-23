@@ -54,7 +54,7 @@ export type AnalyticsEventsMap = {
   // Feature related events
 
   "Notification Resolved": { notification_id: string };
-  "All Notifications Resolved": { list_id: string };
+  "All Notifications Resolved": { list_id: string; readOnly?: boolean };
   "Notification Reminder Added": { notification_id: string };
   "Notification Saved": { notification_id: string };
   "Notification Unsaved": { notification_id: string };
