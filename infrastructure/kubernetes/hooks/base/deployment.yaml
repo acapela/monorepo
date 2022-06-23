@@ -27,7 +27,7 @@ spec:
           command: ["./scripts/start.sh"]
           resources:
             requests:
-              cpu: 50m
+              cpu: 75m
           ports:
             - containerPort: 1338
           envFrom:
