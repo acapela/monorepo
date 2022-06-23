@@ -36,7 +36,6 @@ export const getSlackConversations = createObservablePromiseCache(async () => {
         }
       }
     `,
-    fetchPolicy: "no-cache",
   });
   return data?.slack_conversations ?? [];
 }, []);
