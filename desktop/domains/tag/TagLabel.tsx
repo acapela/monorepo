@@ -57,7 +57,7 @@ const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
   min-width: 30px;
   ${theme.transitions.hover()}
 
-  ${(props) => (props.$isClickable ? tagBgBase.withBorder.interactive : tagBgBase.asBgWithReadableText)}
+  ${(props) => (props.$isClickable ? tagBgBase.withBorder.interactive : tagBgBase.withBorder.asBgWithReadableText)}
 
   ${(props) =>
     props.$isSelected &&

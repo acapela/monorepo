@@ -14,7 +14,7 @@ interface Props {
 const UIContainer = styled.label<{ selected: boolean }>`
   position: relative;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 8px;
   display: flex;
   justify-content: center;
