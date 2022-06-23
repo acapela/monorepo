@@ -93,7 +93,13 @@ const UIHolder = styled.div`
   flex-direction: column;
   gap: 16px;
   max-width: 450px;
+  max-height: 450px;
   width: 100%;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+  }
 `;
 
 const UISection = styled.div`

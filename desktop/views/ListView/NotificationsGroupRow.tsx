@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { uniq } from "lodash";
 import { action, computed } from "mobx";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { toggleNotificationsGroup } from "@aca/desktop/actions/group";
