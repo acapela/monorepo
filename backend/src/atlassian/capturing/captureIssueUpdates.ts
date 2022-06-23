@@ -1,13 +1,11 @@
+import { uniq } from "lodash";
+
 import { db } from "@aca/db";
 import { SUPPORTED_FIELDS } from "@aca/shared/attlassian";
+import { isNotNullish } from "@aca/shared/nullish";
 
 import { JiraWebhookPayload } from "../types";
-import {
-  EXTRACT_MENTIONED_ACCOUNT_REGEX,
-  extractMentionedAccountIds,
-  fetchIssueWatchers,
-  getLeastRecentlyUsedAtlassianAccount,
-} from "./utils";
+import { EXTRACT_MENTIONED_ACCOUNT_REGEX, extractMentionedAccountIds, getWatchersIfPermitted } from "./utils";
 
 type ChangeLogItem = JiraWebhookPayload["changelog"]["items"][number];
 
@@ -156,17 +154,15 @@ async function notifyWatchersOnUpdate({
   baseSitePath,
   notificationJiraIssueTypeValue,
 }: UpdateIssueData): Promise<string[]> {
-  // We're attempting to do a round-robin of access_token usage based on "least recently used access token"
-  // The point is that we would like to distribute api rate limit "cost" of making an api call between
-  // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
-  // where it could reach rate limits really fast
-  const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
+  const knownAccountsWithIssuePermissions = uniq(
+    [accountThatUpdatedIssue?.accountId, payload.issue.fields.assignee?.accountId].filter(isNotNullish)
+  );
 
   // Mention notifications are more important than watcher notifications
   // We're excluding mentions from watcher to prevent double notifications
-  const watchersExceptUserThatUpdatedIssue = (await fetchIssueWatchers(jiraAccount, payload.issue.key)).filter(
-    (watcherAccountId) => watcherAccountId !== accountThatUpdatedIssue?.accountId
-  );
+  const watchersExceptUserThatUpdatedIssue = (
+    await getWatchersIfPermitted(baseSitePath, payload.issue.key, knownAccountsWithIssuePermissions)
+  ).filter((watcherAccountId) => watcherAccountId !== accountThatUpdatedIssue?.accountId);
 
   const watchersToNotify = (
     await db.user.findMany({

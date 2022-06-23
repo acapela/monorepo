@@ -1,16 +1,14 @@
+import { uniq } from "lodash";
+
 import { db } from "@aca/db";
 import { assert } from "@aca/shared/assert";
 import { LogAttachment } from "@aca/shared/debug/logAttachment.types";
 import { logger } from "@aca/shared/logger";
+import { isNotNullish } from "@aca/shared/nullish";
 
 import { JiraWebhookPayload } from "../types";
 import { handleJiraIssueUpdate } from "./captureIssueUpdates";
-import {
-  EXTRACT_MENTIONED_ACCOUNT_REGEX,
-  extractMentionedAccountIds,
-  fetchIssueWatchers,
-  getLeastRecentlyUsedAtlassianAccount,
-} from "./utils";
+import { EXTRACT_MENTIONED_ACCOUNT_REGEX, extractMentionedAccountIds, getWatchersIfPermitted } from "./utils";
 
 export async function captureJiraWebhook(payload: JiraWebhookPayload) {
   try {
@@ -50,12 +48,22 @@ async function handleNewJiraComment(payload: JiraWebhookPayload) {
   // The point is that we would like to distribute api rate limit "cost" of making an api call between
   // all users of the same jira cloud is. This way, we don't overexpose a single users' access_token
   // where it could reach rate limits really fast
-  const jiraAccount = await getLeastRecentlyUsedAtlassianAccount(baseSitePath);
   const atlassianAccountsMentioned = extractMentionedAccountIds(payload.comment?.body ?? "").filter(isNotCommentAuthor);
+
+  const knownAccountsWithIssuePermissions = uniq(
+    [
+      payload.user?.accountId,
+      payload.issue.fields.assignee?.accountId,
+      commentAuthorId,
+      ...atlassianAccountsMentioned,
+    ].filter(isNotNullish)
+  );
 
   // Mention notifications are more important than watcher notifications
   // We're excluding mentions from watcher to prevent double notifications
-  const watchersThatAreNotMentioned = (await fetchIssueWatchers(jiraAccount, payload.issue.key)).filter(
+  const watchersThatAreNotMentioned = (
+    await getWatchersIfPermitted(baseSitePath, payload.issue.key, knownAccountsWithIssuePermissions)
+  ).filter(
     (watcherAccountId) => !atlassianAccountsMentioned.includes(watcherAccountId) && isNotCommentAuthor(watcherAccountId)
   );
 
