@@ -7,6 +7,7 @@ import { addToast } from "@aca/desktop/domains/toasts/store";
 import { accountStore } from "@aca/desktop/store/account";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { Button } from "@aca/ui/buttons/Button";
+import { theme } from "@aca/ui/theme";
 
 export const ReferralsView = observer(function ThemeSelector() {
   function handleCopy() {
@@ -41,6 +42,9 @@ export const ReferralsView = observer(function ThemeSelector() {
 
 const UIHolder = styled.div`
   display: flex;
+  display: flex;
+  ${theme.colors.layout.backgroundAccent.withBorder.asBgWithReadableText};
+  ${theme.box.panel.pageCart.padding.radius};
   flex-direction: column;
   align-items: flex-start;
   gap: 32px;
@@ -51,7 +55,10 @@ const UIInfo = styled.div`
     font-weight: 600;
   }
   p {
-    margin-bottom: 16px;
-    line-height: 1.6;
+    ${theme.typo.body};
+  }
+
+  p + p {
+    margin-top: 1em;
   }
 `;

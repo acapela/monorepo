@@ -42,7 +42,7 @@ const UINotificationZeroPanel = styled(PresenceAnimator)`
   display: inline-flex;
   padding: 30px 45px;
   ${theme.colors.layout.background.opacity(0.7).asBgWithReadableText};
-  ${theme.typo.pageTitle}
+  ${theme.typo.pageSubtitle}
   backdrop-filter: blur(16px);
   ${theme.radius.primaryItem}
 `;

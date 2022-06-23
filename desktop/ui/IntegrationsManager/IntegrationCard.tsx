@@ -94,7 +94,7 @@ export const IntegrationCard = observer(({ service }: Props) => {
 const UIHolder = styled.div`
   display: flex;
   gap: 16px;
-  border: 1px solid #8882;
+  ${theme.colors.layout.backgroundAccent.withBorder.asBgWithReadableText};
   padding: 16px;
   border-radius: 8px;
 `;

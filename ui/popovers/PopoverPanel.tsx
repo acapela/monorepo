@@ -24,6 +24,6 @@ export const UIDropdownPanelBody = styled(PopPresenceAnimator)<{}>`
   flex-direction: column;
   ${theme.colors.layout.background.withBorder.asBgWithReadableText};
   box-sizing: border-box;
-  ${theme.shadow.popover};
+  ${theme.shadow.popoverPrimaryPanel};
   min-width: 240px;
 `;

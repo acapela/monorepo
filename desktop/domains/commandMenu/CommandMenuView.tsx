@@ -211,7 +211,7 @@ const UICover = styled(FadePresenceAnimator)`
   ${theme.colors.layout.background.opacity(0.7).asBg};
 `;
 const UIBody = styled(PopPresenceAnimator)`
-  ${theme.colors.layout.actionPanel.asBg};
+  ${theme.colors.layout.actionPanel.withBorder.asBg};
   max-width: 560px;
   max-height: 60vh;
   width: 100%;

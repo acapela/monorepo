@@ -27,7 +27,7 @@ export function SettingRow({ title, description, children, fixedOptionWidth, ico
 const UIHolder = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 `;
 
 const UIInfo = styled.div`
@@ -35,9 +35,7 @@ const UIInfo = styled.div`
   min-width: 0;
 `;
 
-const UIIcon = styled.div`
-  ${theme.iconSize.item};
-`;
+const UIIcon = styled.div``;
 
 const UITitle = styled.div`
   ${theme.typo.bodyTitle}
