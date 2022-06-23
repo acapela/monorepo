@@ -35,9 +35,11 @@ export const SettingsLayout = observer(function SettingsLayout({
       <UIHolder>
         <UIBody>
           <UINav>
-            <UIHeader key="settings-header">
-              <UIHeaderMain>{headerTitle}</UIHeaderMain>
-            </UIHeader>
+            {headerTitle && (
+              <UIHeader key="settings-header">
+                <UIHeaderMain>{headerTitle}</UIHeaderMain>
+              </UIHeader>
+            )}
             {navItems}
           </UINav>
           <UIActiveSection>{body}</UIActiveSection>
@@ -58,7 +60,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UINav = styled.nav`
-  margin-top: 24px;
+  margin-top: 80px;
   display: flex;
   flex-direction: column;
   gap: 4px;
