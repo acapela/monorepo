@@ -64,18 +64,20 @@ const getSlackUsersForUser = redisCached("getSlackUsersForUser_v2", MINUTE, asyn
       getUserConversationIdMap(team.token),
     ]);
 
-    return (members ?? []).map(
-      (member) =>
-        ({
-          workspace_id: team.id,
-          id: assertDefined(member.id, `missing id for member ${JSON.stringify(member)}`),
-          display_name: assertDefined(member.name, `missing name for member ${JSON.stringify(member)}`),
-          real_name: member.real_name ?? null,
-          avatar_url: member.profile?.image_original ?? null,
-          conversation_id: userConversationIdLookup.get(member.id!) ?? null,
-          is_bot: member.is_bot ?? false,
-        } as ServiceUser)
-    );
+    return (members ?? [])
+      .filter((member) => !member.deleted)
+      .map(
+        (member) =>
+          ({
+            workspace_id: team.id,
+            id: assertDefined(member.id, `missing id for member ${JSON.stringify(member)}`),
+            display_name: assertDefined(member.name, `missing name for member ${JSON.stringify(member)}`),
+            real_name: member.real_name ?? null,
+            avatar_url: member.profile?.image_original ?? null,
+            conversation_id: userConversationIdLookup.get(member.id!) ?? null,
+            is_bot: member.is_bot ?? false,
+          } as ServiceUser)
+      );
   });
   return orderBy((await Promise.all(teamUserPromises)).flat(), (u) => u.real_name ?? u.display_name);
 });
