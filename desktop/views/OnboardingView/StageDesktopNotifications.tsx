@@ -18,6 +18,7 @@ import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
+import { OnboardingTip } from "./ui/Tip";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 const FAKE_APP_FADE_OUT_DURATION = 350;
@@ -72,7 +73,7 @@ export const StageDesktopNotifications = observer(({ onContinue }: OnboardingSta
             </UIFakeApp>
           </OnboardingAnimationItem>
           <OnboardingAnimationItem>
-            <UITip>Tip: Click an Application Button to define specific rules.</UITip>
+            <OnboardingTip>Click an Application Button to define specific rules.</OnboardingTip>
           </OnboardingAnimationItem>
 
           <OnboardingContinueButton label="Launch Acapela" onClick={onContinue} />
@@ -105,10 +106,6 @@ const UIFakeApp = styled.div`
 
 const UITitleIcon = styled.div`
   ${theme.iconSize.item};
-`;
-
-const UITip = styled.div`
-  ${theme.typo.noteTitle.secondary};
 `;
 
 const UIEditor = styled.div`

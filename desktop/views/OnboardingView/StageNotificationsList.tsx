@@ -13,7 +13,6 @@ import { getObjectKey } from "@aca/shared/object";
 import { IconBell, IconCheck } from "@aca/ui/icons";
 import { ShortcutDescriptor } from "@aca/ui/keyboard/ShortcutLabel";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
-import { theme } from "@aca/ui/theme";
 
 import { OnboardingNotificationRow } from "./list/Row";
 import { OnboardingNotificationRowData } from "./list/types";
@@ -23,6 +22,7 @@ import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { NeverDecreaseHeight } from "./ui/NeverDecreaseHeight";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
+import { OnboardingTip } from "./ui/Tip";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageNotificationsList = observer(({ onContinue }: OnboardingStageProps) => {
@@ -155,7 +155,7 @@ export const StageNotificationsList = observer(({ onContinue }: OnboardingStageP
           </UIOnboardingCard>
         </OnboardingAnimationItem>
         <OnboardingAnimationItem>
-          <UITip>Tip: Press ↑↓ or hover mouse to select notifications</UITip>
+          <OnboardingTip>Press ↑↓ or hover mouse to select notifications</OnboardingTip>
         </OnboardingAnimationItem>
 
         <OnboardingContinueButton label="Continue" onClick={onContinue} />
@@ -173,7 +173,3 @@ const UINotifications = styled(NeverDecreaseHeight)`
 `;
 
 const UIShortcut = styled(ShortcutDescriptor)``;
-
-const UITip = styled.div`
-  ${theme.typo.noteTitle.secondary};
-`;

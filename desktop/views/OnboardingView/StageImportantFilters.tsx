@@ -16,6 +16,7 @@ import { OnboardingStageProps } from "./stage";
 import { OnboardingContinueButton } from "./ui/ContinueButton";
 import { OnboardingAnimationItem } from "./ui/enterAnimations";
 import { OnboardingStageContainer, OnboardingStageSections } from "./ui/StageContainer";
+import { OnboardingTip } from "./ui/Tip";
 import { OnboardingSecondaryHero } from "./ui/typo";
 
 export const StageImportantFilters = observer(({ onContinue }: OnboardingStageProps) => {
@@ -56,7 +57,7 @@ export const StageImportantFilters = observer(({ onContinue }: OnboardingStagePr
             </UIFakeApp>
           </OnboardingAnimationItem>
           <OnboardingAnimationItem>
-            <UITip>Tip: Click an Application Button to define specific rules.</UITip>
+            <OnboardingTip>Click an Application Button to define specific rules.</OnboardingTip>
           </OnboardingAnimationItem>
 
           <OnboardingContinueButton label="Continue" onClick={onContinue} />
@@ -89,10 +90,6 @@ const UIFakeApp = styled.div`
 
 const UITitleIcon = styled.div`
   ${theme.iconSize.item};
-`;
-
-const UITip = styled.div`
-  ${theme.typo.noteTitle.secondary};
 `;
 
 const UIEditor = styled.div`
