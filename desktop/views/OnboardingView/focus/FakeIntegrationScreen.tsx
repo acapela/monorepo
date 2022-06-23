@@ -86,7 +86,7 @@ const UISidebar = styled.div`
 `;
 
 const UILogo = styled(FakeContentItem)`
-  font-size: 32px;
+  ${theme.iconSize.section};
 `;
 
 const UIBody = styled.div`

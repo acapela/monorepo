@@ -100,7 +100,7 @@ const UIHolder = styled.div`
 `;
 
 const UILogo = styled.div`
-  font-size: 40px;
+  ${theme.iconSize.section};
 `;
 
 const UIBody = styled.div`
@@ -122,11 +122,11 @@ const UIInfoAboutIntegration = styled.div`
 `;
 
 const UIName = styled.div`
-  ${theme.typo.item.title};
+  ${theme.typo.bodyTitle};
 `;
 
 const UIDescription = styled.div`
-  ${theme.typo.item.subtitle.medium.secondary};
+  ${theme.typo.noteTitle.secondary};
 `;
 
 const UIConnectAction = styled.div``;

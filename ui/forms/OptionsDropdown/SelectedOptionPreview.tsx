@@ -5,12 +5,12 @@ import { theme } from "@aca/ui/theme";
 import { OptionLabel } from "./OptionLabel";
 
 export const SelectedOptionPreview = styled(OptionLabel)<{}>`
-  ${theme.typo.label.medium.resetLineHeight}
+  ${theme.typo.note.medium.resetLineHeight}
   ${theme.common.ellipsisText};
 `;
 
 export const CommaSelectedOptionsPreview = styled.div<{}>`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   white-space: normal;
   display: flex;
   flex: 1;

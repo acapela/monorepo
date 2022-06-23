@@ -72,7 +72,6 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
     <SettingsLayout
       topBarNavigationItems={<TopBarActionButton action={exitSettings} />}
       topBarTitle="Settings"
-      headerTitle="Settings"
       navItems={
         <>
           {Object.entries(settingsSections)
@@ -102,7 +101,7 @@ export const SettingsView = observer(function SettingsView({ sectionId }: Props)
 });
 
 const UIVersionInfo = styled.div`
-  ${theme.typo.label};
+  ${theme.typo.note};
   opacity: 0.3;
   position: absolute;
   bottom: 24px;

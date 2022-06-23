@@ -81,7 +81,7 @@ const UIHolder = styled(motion.div)<{ $isVisible: boolean }>`
   transition: 0.2s all;
 
   ${Logo} {
-    font-size: 64px;
+    ${theme.iconSize.hero};
     animation: ${scaleDown} 7s ease-out;
     animation-fill-mode: both;
     will-change: transform;
@@ -89,7 +89,7 @@ const UIHolder = styled(motion.div)<{ $isVisible: boolean }>`
 `;
 
 const UILoadingLabel = styled(PresenceAnimator)`
-  ${theme.typo.label.medium};
+  ${theme.typo.note.medium};
 `;
 
 const UIMain = styled(motion.div)`

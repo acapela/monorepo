@@ -146,15 +146,11 @@ const UIContent = styled.div`
 `;
 
 const UITitle = styled.div`
-  font-weight: 600;
-  font-size: 24px;
+  ${theme.typo.pageSubtitle};
 `;
 
 const UIMessage = styled.div`
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.5em;
-  opacity: 0.8;
+  ${theme.typo.body.secondary};
 `;
 
 const UIIllustration = styled.img`

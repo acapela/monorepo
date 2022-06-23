@@ -1,46 +1,16 @@
 import { font } from "./utils/font";
 
-const inter = font().inter;
+const bodyBase = font().family("SF Pro Display");
+const headerBase = font().family("Spezia Extended").headerLineHeight;
 
-const readable = inter.inter.readingLineHeight;
-const header = inter.inter.headerLineHeight;
-
-const subtitle = readable.size(11);
-const content = readable.size(14);
-
-const textTitle = content.medium;
+const body = bodyBase.readingLineHeight;
 
 export const typo = {
-  hero: header.size(36).bold,
-  content: readable.size(14),
-  secondaryContent: readable.size(12),
-  pageTitle: header.size(24, 18),
-  secondaryTitle: header.size(18),
-  input: {
-    placeholder: inter.secondary,
-  },
-  action: {
-    // Used for all sort of buttons
-    regular: readable.bold.size(13),
-  },
-  label: subtitle,
-  item: {
-    // Used for message title, topic list title, options section title etc
-    title: textTitle,
-    description: subtitle.medium.secondary,
-    // Used for topic message snippet, options section item description, team member email etc.
-    subtitle: subtitle,
-    // Used eg. for attachment titles
-    secondaryTitle: readable.size(11).semibold.secondary,
-  },
-  section: {
-    // Used for 'open', 'closed' topic groups titles,
-    minorTitle: subtitle,
-    title: readable.size(13).medium,
-  },
-  functional: {
-    // eg "Hit ⌘ + Enter to create Topic"
-    hint: subtitle,
-    tooltip: readable.size(13).medium,
-  },
+  hero: headerBase.size(36).bold,
+  pageTitle: headerBase.size(36),
+  pageSubtitle: headerBase.size(24),
+  body: body.size(14),
+  bodyTitle: body.size(14).medium,
+  note: body.size(12),
+  noteTitle: body.size(12).semibold,
 };

@@ -12,6 +12,7 @@ import { TopBarDivider, UITopBarButtonsGroup } from "@aca/desktop/ui/systemTopBa
 import { wait } from "@aca/shared/time";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { IconEdit, IconLightning } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { FakeNotificationRows } from "./focus/FakeNotificationRows";
 import { FakeWindow } from "./focus/FakeWindow";
@@ -148,11 +149,9 @@ const UIFakeApp = styled.div`
 `;
 
 const UITitleIcon = styled.div`
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;
 
 const UITip = styled.div`
-  font-weight: 500;
-  font-size: 14px;
-  opacity: 0.6;
+  ${theme.typo.noteTitle.secondary};
 `;

@@ -48,7 +48,7 @@ const UIHolder = styled(ActionTrigger)`
 
   /* this allows enough space for the active indicator to be shown */
 
-  ${theme.typo.secondaryTitle}
+  ${theme.typo.pageTitle}
   ${theme.common.clickable};
   ${theme.transitions.hover()}
   white-space: nowrap;

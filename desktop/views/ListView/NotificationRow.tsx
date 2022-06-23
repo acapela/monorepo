@@ -133,6 +133,6 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: Preloading
   }}
 
   ${NotificationAppIcon} {
-    font-size: 24px;
+    ${theme.iconSize.item};
   }
 `;

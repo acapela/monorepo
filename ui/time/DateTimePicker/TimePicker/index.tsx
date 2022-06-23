@@ -55,7 +55,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
 };
 
 const UIBody = styled.div`
-  ${theme.typo.content.bold};
+  ${theme.typo.body.bold};
 `;
 
 const UIHolder = styled.div<{}>``;

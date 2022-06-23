@@ -185,7 +185,7 @@ const UIEscapeFlyer = styled(PresenceAnimator)`
 `;
 
 const UIEscapeLabel = styled(PresenceAnimator)`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   ${theme.colors.layout.actionPanel.asBgWithReadableText};
   ${theme.box.panel.hint.padding.radius};
   ${theme.radius.primaryItem};
@@ -202,7 +202,7 @@ const UIErrorHolder = styled.div`
 `;
 
 const UIErrorLabel = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,7 +214,7 @@ const UIErrorLabel = styled.div`
 
 const UIErrorUrlLabel = styled.div`
   opacity: 0.6;
-  ${theme.typo.label};
+  ${theme.typo.note};
   white-space: nowrap;
   overflow: hidden;
   min-width: 0;

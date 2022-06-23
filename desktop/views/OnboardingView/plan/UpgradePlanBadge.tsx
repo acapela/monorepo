@@ -59,7 +59,7 @@ const UIHolder = styled.div`
   ${theme.box.panel.toast.padding.radius}
 
   svg {
-    font-size: 24px;
+    ${theme.iconSize.section};
   }
 `;
 

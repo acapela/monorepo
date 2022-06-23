@@ -91,7 +91,7 @@ const UIIntegrationBox = styled.div`
 `;
 
 const UICheckPlaceholder = styled.div`
-  font-size: 24px;
+  ${theme.iconSize.item};
   height: 1em;
   max-height: 1em;
   line-height: 1em;
@@ -119,7 +119,7 @@ const UIIntegrationButton = styled.div<{ $forceHighlight: boolean }>`
 `;
 
 const UIIntegrationIcon = styled.div`
-  font-size: 32px;
+  ${theme.iconSize.section};
 `;
 
 const UIButtons = styled.div`

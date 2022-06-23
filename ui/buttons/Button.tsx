@@ -128,11 +128,8 @@ export const Button = styledForwardRef<HTMLButtonElement, ButtonProps>(function 
   );
 })``;
 
-const ICON_SIZE_TO_TEXT_RATIO = 1.5;
-
 const UIIconHolder = styled.div<{}>`
-  font-size: ${ICON_SIZE_TO_TEXT_RATIO}em;
-  height: ${1 / ICON_SIZE_TO_TEXT_RATIO}em;
+  ${theme.iconSize.item};
   display: flex;
   align-items: center;
 `;
@@ -144,7 +141,7 @@ export const baseButtonStyles = css`
   white-space: nowrap;
   cursor: var(--pointer);
 
-  ${theme.typo.content.medium.resetLineHeight};
+  ${theme.typo.body.medium.resetLineHeight};
   ${theme.radius.secondaryItem};
   ${theme.spacing.actions.asGap};
 

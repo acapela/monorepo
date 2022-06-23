@@ -7,6 +7,7 @@ import { getSystemList } from "@aca/desktop/domains/list/system";
 import { ListFiltersEditor } from "@aca/desktop/ui/Filters";
 import { FadePresenceAnimator } from "@aca/ui/animations";
 import { IconLightning } from "@aca/ui/icons";
+import { theme } from "@aca/ui/theme";
 
 import { FakeRows } from "./focus/fakeContent";
 import { FakeWindow } from "./focus/FakeWindow";
@@ -87,13 +88,11 @@ const UIFakeApp = styled.div`
 `;
 
 const UITitleIcon = styled.div`
-  font-size: 20px;
+  ${theme.iconSize.item};
 `;
 
 const UITip = styled.div`
-  font-weight: 500;
-  font-size: 14px;
-  opacity: 0.6;
+  ${theme.typo.noteTitle.secondary};
 `;
 
 const UIEditor = styled.div`

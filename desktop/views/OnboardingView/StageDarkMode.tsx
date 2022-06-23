@@ -6,6 +6,7 @@ import { trackEvent } from "@aca/desktop/analytics";
 import { AppTheme, uiSettingsBridge } from "@aca/desktop/bridge/ui";
 import { Button } from "@aca/ui/buttons/Button";
 import { useShortcuts } from "@aca/ui/keyboard/useShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { darkTheme, lightTheme } from "./assets";
 import { OnboardingStageProps } from "./stage";
@@ -88,6 +89,5 @@ const UIModeIllustration = styled.img`
 `;
 
 const UIModeLabel = styled.div`
-  font-size: 16px;
-  font-weight: 500;
+  ${theme.typo.bodyTitle};
 `;

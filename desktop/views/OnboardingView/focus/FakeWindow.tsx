@@ -55,5 +55,5 @@ const UITopbarBody = styled.div`
 const UIBody = styled.div``;
 
 const UIUser = styled.div`
-  font-size: 24px;
+  ${theme.iconSize.avatar};
 `;

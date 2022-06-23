@@ -51,7 +51,7 @@ const UIHolder = styled.div`
   gap: 8px;
   padding: 4px;
   ${theme.radius.badge};
-  ${theme.typo.label.semibold}
+  ${theme.typo.note.semibold}
   ${theme.colors.primary.asBgWithReadableText};
 
   svg {

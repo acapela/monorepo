@@ -103,7 +103,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  ${theme.typo.action.regular.readingLineHeight.medium};
+  ${theme.typo.bodyTitle.readingLineHeight};
   ${theme.transitions.hover()};
   ${theme.box.items.selectItem.padding.size.radius};
 
@@ -127,6 +127,6 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
 `;
 
 const UIItemIcon = styled.div<{}>`
-  font-size: 1.5em;
+  ${theme.iconSize.item};
   margin-right: 12px;
 `;

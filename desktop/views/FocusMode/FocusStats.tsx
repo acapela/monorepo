@@ -12,6 +12,7 @@ import { isNotFalsy } from "@aca/shared/nullish";
 import { MINUTE } from "@aca/shared/time";
 import { IconWatch2 } from "@aca/ui/icons";
 import { describeShortcut } from "@aca/ui/keyboard/describeShortcut";
+import { theme } from "@aca/ui/theme";
 
 import { ProgressBar } from "./ProgressBar";
 
@@ -110,6 +111,6 @@ const UIHolder = styled.div`
   gap: 16px;
 
   svg {
-    font-size: 1.33em;
+    ${theme.iconSize.item};
   }
 `;

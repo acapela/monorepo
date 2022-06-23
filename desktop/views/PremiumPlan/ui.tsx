@@ -16,14 +16,12 @@ const badgeStyles = {
 };
 
 export const UIPricingBadge = styled.div<{ $kind?: keyof typeof badgeStyles }>`
-  line-height: 1em;
   padding: 4px 10px;
   text-transform: uppercase;
   ${theme.colors.primary.asBgWithReadableText};
   display: inline-flex;
   ${theme.radius.circle};
-  font-size: 11px;
-  font-weight: 600;
+  ${theme.typo.noteTitle.resetLineHeight};
   white-space: nowrap;
 
   ${(props) => {

@@ -206,14 +206,13 @@ const NonClickablePopover = styled(Popover)`
 const UIGuidePanel = styled(PresenceAnimator)`
   padding: 10px 15px;
   ${theme.colors.primary.withBorder.asBgWithReadableText};
+  ${theme.typo.noteTitle};
   border-radius: 6px;
   margin-top: 10px;
   display: flex;
   flex-direction: column;
   position: relative;
   max-width: 260px;
-  line-height: 1.5;
-  font-weight: 500;
   text-align: center;
 
   &:before {

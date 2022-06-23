@@ -57,12 +57,12 @@ const UIHeader = styled.div`
   ${theme.transitions.hover()}
 
   ${NotificationAppIcon} {
-    ${theme.typo.secondaryTitle}
+    ${theme.iconSize.item};
   }
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.medium};
+  ${theme.typo.body.medium};
   ${theme.common.ellipsisText}
   min-width: 0;
   flex-grow: 1;

@@ -1,6 +1,8 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
+import { theme } from "@aca/ui/theme";
+
 import { OnboardingAnimationItem } from "./enterAnimations";
 
 interface OnboardingHeroProps {
@@ -41,19 +43,14 @@ const commonTypoStyles = css`
 
 const UIHero = styled(OnboardingAnimationItem)`
   ${commonTypoStyles}
-  font-size: 36px;
-  font-weight: 600;
+  ${theme.typo.pageTitle};
 `;
 const UISecondaryHero = styled(OnboardingAnimationItem)`
   ${commonTypoStyles};
-  font-size: 24px;
-  font-weight: 600;
+  ${theme.typo.pageSubtitle};
 `;
 
 const UIDescription = styled(OnboardingAnimationItem)`
-  ${commonTypoStyles}
-  font-size: 16px;
-  opacity: 0.8;
-  line-height: 1.5em;
-  font-weight: 400;
+  ${commonTypoStyles};
+  ${theme.typo.body.readingLineHeight.secondary};
 `;

@@ -2,6 +2,8 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
+import { theme } from "@aca/ui/theme";
+
 interface Props {
   price: string;
   period: string;
@@ -32,9 +34,7 @@ const UIPriceAndDescription = styled.div`
 const UIPrice = styled.div`
   display: flex;
   align-items: flex-end;
-  font-weight: 600;
-  font-size: 36px;
-  line-height: 1em;
+  ${theme.typo.pageTitle.resetLineHeight};
   gap: 10px;
 `;
 
@@ -46,14 +46,9 @@ const UICrossedPriceLabel = styled.div`
 `;
 
 const UIPriceMeta = styled.div`
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1em;
-  line-height: 22px;
-  /* identical to box height, or 133% */
+  ${theme.typo.noteTitle.secondary};
 
   text-transform: uppercase;
-  opacity: 0.5;
 `;
 
 const UIPriceIntro = styled.div`

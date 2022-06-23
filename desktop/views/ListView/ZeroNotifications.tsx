@@ -35,9 +35,9 @@ const UIHolder = styled(FadePresenceAnimator)`
 `;
 
 const UITitle = styled.span`
-  ${theme.typo.content.semibold.opacity(0.5)};
+  ${theme.typo.body.semibold.opacity(0.5)};
 `;
 
 const UIAdditionalInfo = styled.div`
-  ${theme.typo.content.opacity(0.5)};
+  ${theme.typo.body.opacity(0.5)};
 `;

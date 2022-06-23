@@ -63,6 +63,6 @@ const TextInputElem = styled(motion.input)<{}>`
 
 const UIErrorMessage = styled.div<{}>`
   height: 1rem;
-  ${theme.typo.label}
+  ${theme.typo.note}
   ${theme.colors.status.danger.asColor}
 `;

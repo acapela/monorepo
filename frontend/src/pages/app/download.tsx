@@ -119,12 +119,12 @@ const UITitle = styled.div`
 `;
 
 const UIDescription = styled.div`
-  ${theme.typo.content.medium.secondary};
+  ${theme.typo.body.medium.secondary};
   max-width: 40ch;
 `;
 
 const UILogo = styled(Logo)<{}>`
-  font-size: 64px;
+  ${theme.iconSize.hero};
 `;
 
 const UIIFrameHolder = styled.div<{}>`

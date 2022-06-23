@@ -63,7 +63,7 @@ const UIHolder = styled(motion.div)``;
 
 const UIGroupLabel = styled.div`
   padding: 6px 24px;
-  ${theme.typo.label.semibold.secondary}
+  ${theme.typo.note.semibold.secondary}
   ${theme.colors.layout.actionPanel.hover.asBg};
   ${theme.common.ellipsisText}
 `;

@@ -97,5 +97,5 @@ const UILogEntry = styled.div`
   padding: 4px;
   white-space: pre-wrap;
 
-  ${theme.typo.item.secondaryTitle}
+  ${theme.typo.noteTitle.secondary}
 `;

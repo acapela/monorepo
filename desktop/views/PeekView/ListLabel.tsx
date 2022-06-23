@@ -34,7 +34,7 @@ const UILabel = styled.div`
 const UIHolder = styled(ActionTrigger)`
   display: flex;
   gap: 8px;
-  ${theme.typo.content.medium}
+  ${theme.typo.body.medium}
   ${theme.common.clickable};
   ${theme.common.ellipsisText}
   position: relative;

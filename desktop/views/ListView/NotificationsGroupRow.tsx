@@ -198,7 +198,7 @@ const UIHolder = styled.div<{ $isFocused: boolean; $preloadingState?: Preloading
   ${theme.box.items.listRow.size.padding};
 
   ${NotificationAppIcon} {
-    font-size: 24px;
+    ${theme.iconSize.item};
   }
 
   ${(props) => {
@@ -244,35 +244,9 @@ const UICountIndicator = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
-
-  ${(props) => {
-    const children = props.children;
-
-    if (typeof children !== "number" && typeof children !== "string") {
-      return null;
-    }
-
-    const digitAsString = `${children}`;
-
-    const digitsCount = digitAsString.length;
-
-    if (digitsCount <= 1) return;
-
-    if (digitsCount === 2) {
-      return css`
-        font-size: 0.8em;
-        font-weight: bold;
-      `;
-    }
-
-    return css`
-      font-size: 0.66em;
-      font-weight: bolder;
-    `;
-  }}
+  ${theme.typo.noteTitle};
 `;
 
 const UIToggleIconAnimator = styled(motion.div)`
-  font-size: 1.5em;
+  ${theme.iconSize.item};
 `;

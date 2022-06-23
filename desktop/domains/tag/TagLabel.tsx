@@ -53,10 +53,8 @@ const tagBgBase = theme.colors.layout.backgroundAccent;
 
 const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
   border-radius: 6px;
-  line-height: 1em;
   padding: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  ${theme.typo.bodyTitle};
   display: flex;
   gap: 8px;
   align-items: center;
@@ -73,8 +71,6 @@ const UITag = styled.div<{ $isSelected: boolean; $isClickable: boolean }>`
     `};
 `;
 
-const ICON_SCALE_INCREASE = 0.125;
-
 const UILabel = styled.div`
   ${theme.common.ellipsisText};
   max-width: 130px;
@@ -83,8 +79,7 @@ const UILabel = styled.div`
 
 const UIIcon = styled.div<{ $color?: string }>`
   color: ${(props) => props.$color};
-  font-size: ${1 + ICON_SCALE_INCREASE}em;
-  margin: ${-ICON_SCALE_INCREASE / 2}em;
+  ${theme.iconSize.item};
 `;
 
 const UICount = styled(PopPresenceAnimator)`
@@ -93,8 +88,7 @@ const UICount = styled(PopPresenceAnimator)`
   right: -0.75em;
   min-width: 3ch;
   text-align: center;
-  font-size: 10px;
-  font-weight: bold;
+  ${theme.typo.noteTitle};
   padding: 4px 2px;
   border-radius: 4px;
   line-height: 1em;

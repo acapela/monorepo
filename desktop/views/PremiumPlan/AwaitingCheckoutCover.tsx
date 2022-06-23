@@ -48,7 +48,7 @@ const UIHolder = styled(FadePresenceAnimator)`
   z-index: ${theme.zIndex.top};
 
   ${UISpinner} {
-    font-size: 32px;
+    ${theme.iconSize.section};
   }
 `;
 
@@ -60,9 +60,7 @@ const UIHead = styled.div`
 `;
 
 const UITitle = styled.div`
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 24px;
+  ${theme.typo.pageSubtitle};
 `;
 
 const UIActions = styled.div`

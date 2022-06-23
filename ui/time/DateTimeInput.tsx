@@ -68,5 +68,5 @@ const UIHolder = styled.div<{ isReadonly: boolean }>`
 `;
 
 const UIBody = styled.div`
-  ${theme.typo.content};
+  ${theme.typo.body};
 `;

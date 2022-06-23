@@ -67,8 +67,8 @@ const UIUpdateInfoBox = styled(PopPresenceAnimator)`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.content.semibold};
+  ${theme.typo.body.semibold};
 `;
 const UIDescription = styled.div`
-  ${theme.typo.label.secondary};
+  ${theme.typo.note.secondary};
 `;

@@ -123,7 +123,7 @@ const ResolveAllSection = styled.div`
 `;
 
 const UITitle = styled.div`
-  ${theme.typo.section.title.secondary}
+  ${theme.typo.bodyTitle.secondary}
 `;
 
 const UITagsList = styled.div`
