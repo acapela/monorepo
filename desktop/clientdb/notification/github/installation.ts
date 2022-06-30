@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { GitHubInstallationFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const githubInstallationFragment = gql`
   fragment GitHubInstallation on github_installation {
@@ -22,7 +22,7 @@ const githubInstallationFragment = gql`
 export const githubInstallationEntity = defineEntity<GitHubInstallationFragment>({
   name: "github_installation",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<GitHubInstallationFragment>(githubInstallationFragment),
   sync: createHasuraSyncSetupFromFragment<GitHubInstallationFragment>(githubInstallationFragment),
 });

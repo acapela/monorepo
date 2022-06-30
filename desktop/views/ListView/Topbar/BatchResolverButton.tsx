@@ -3,11 +3,11 @@ import { observer } from "mobx-react";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { TopBarButton } from "@aca/desktop/ui/systemTopBar/TopBarButton";
 import { IconListUnordered4 } from "@aca/ui/icons";
 import { PopoverPanel } from "@aca/ui/popovers/PopoverPanel";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { BatchResolver } from "./BatchResolver";
 

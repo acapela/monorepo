@@ -1,10 +1,9 @@
 import { commaListsAnd, oneLineInlineLists } from "common-tags";
 import { isEqual, maxBy } from "lodash";
 
-import { cachedComputed } from "@aca/clientdb";
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
-import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { NotificationListEntity, notificationListEntity } from "@aca/desktop/clientdb/list";
 import { getNotificationTitle } from "@aca/desktop/domains/notification/title";
 import { startFocusSession } from "@aca/desktop/store/focus";
 import { createCleanupObject } from "@aca/shared/cleanup";
@@ -12,6 +11,7 @@ import { niceFormatTimeAndDateIfNeeded } from "@aca/shared/dates/format";
 import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { MINUTE, SECOND } from "@aca/shared/time";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { makeLogger } from "../dev/makeLogger";
 import { allNotificationsList } from "../list/all";
@@ -131,10 +131,12 @@ const doesListNeedNotification = cachedComputed(function doesListNeedNotificatio
 });
 
 const getListsToScheduleNotifications = cachedComputed(() =>
-  getDb().notificationList.query((list) => {
-    // ! Don't convert it to filter(doesListNeedNotification) - it'd break caching as it'd pass 3 arguments
-    return doesListNeedNotification(list);
-  })
+  getDb()
+    .entity(notificationListEntity)
+    .query((list) => {
+      // ! Don't convert it to filter(doesListNeedNotification) - it'd break caching as it'd pass 3 arguments
+      return doesListNeedNotification(list);
+    })
 );
 
 function tryToScheduleNextNotifications() {

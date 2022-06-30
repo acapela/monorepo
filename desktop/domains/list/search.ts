@@ -1,5 +1,5 @@
-import { cachedComputed } from "@aca/clientdb";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { getInboxLists } from "./all";
 import { NotificationsList } from "./defineList";

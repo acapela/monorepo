@@ -2,8 +2,6 @@ import gql from "graphql-tag";
 import { isEqual } from "lodash";
 import { observable } from "mobx";
 
-import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
-import { EntityDataByDefinition } from "@aca/clientdb/entity/definition";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -17,6 +15,8 @@ import {
   Notification_List_Set_Input,
 } from "@aca/gql";
 import { FiltersInput, getIsItemMatchingFilters } from "@aca/shared/filters";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@acapela/clientdb";
+import { EntityDataByDefinition } from "@acapela/clientdb";
 
 import { NotificationEntity, notificationEntity } from "./notification";
 
@@ -43,6 +43,7 @@ const notificationFragment = gql`
     seen_at
     emoji
     system_id
+    user_id
   }
 `;
 
@@ -56,11 +57,11 @@ type NotificationListConstraints = {
 export const notificationListEntity = defineEntity<NotificationListFragment>({
   name: "notification_list",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationListFragment>(notificationFragment),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notification_list",
-    user_id: getContextValue(userIdContext) ?? null,
+    user_id: getContextValue(userIdContext) ?? undefined,
     notifications_interval_ms: null,
     emoji: null,
     system_id: null,
@@ -87,7 +88,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     updateColumns: ["updated_at", "title", "filters", "notifications_interval_ms", "seen_at", "emoji"],
     upsertConstraint: "notification_filter_pkey",
   }),
-}).addConnections((list, { getEntity }) => {
+}).addView((list, { db: { entity } }) => {
   const cachedGetIsNotificationPassingFilters = cachedComputed((notification: NotificationEntity) => {
     if (connections.typedFilters.length === 0) return false;
 
@@ -96,7 +97,7 @@ export const notificationListEntity = defineEntity<NotificationListFragment>({
     return isPassing;
   });
 
-  const notificationsDb = getEntity(notificationEntity);
+  const notificationsDb = entity(notificationEntity);
 
   const resolvedNotificationsQuery = notificationsDb
     .query({ isResolved: true })

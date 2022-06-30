@@ -1,7 +1,7 @@
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
+import { cachedComputed } from "@acapela/clientdb";
 
 export const getCountIndicatorFromGroups = cachedComputed((groups: NotificationOrGroup[]) => {
   return groups.reduce((count, groupOrNotification) => {

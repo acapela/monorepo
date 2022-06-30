@@ -2,6 +2,7 @@ import { action, autorun, computed, makeAutoObservable, observable, runInAction 
 
 import { applicationStateBridge } from "@aca/desktop/bridge/system";
 import { uiSettingsBridge } from "@aca/desktop/bridge/ui";
+import { devAssignWindowVariable } from "@aca/shared/dev";
 import { createWindowEvent } from "@aca/shared/domEvents";
 
 import { desktopRouter } from "../routes";
@@ -119,6 +120,8 @@ const isSystemDarkBox = observable.box(window.matchMedia(preferDarkMediaQuery).m
 window.matchMedia(preferDarkMediaQuery).addEventListener("change", (event) => {
   isSystemDarkBox.set(event.matches);
 });
+
+devAssignWindowVariable("uiStore", uiStore);
 
 autorun(() => {
   const {

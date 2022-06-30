@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { accountEntity } from "@aca/desktop/clientdb/account";
 import { GmailAccountFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const gmailAccountFragment = gql`
   fragment GmailAccount on gmail_account {
@@ -19,12 +19,12 @@ const gmailAccountFragment = gql`
 export const gmailAccountEntity = defineEntity<GmailAccountFragment>({
   name: "gmail_account",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<GmailAccountFragment>(gmailAccountFragment),
   sync: createHasuraSyncSetupFromFragment<GmailAccountFragment>(gmailAccountFragment),
-}).addConnections((gmailAccount, { getEntity }) => ({
+}).addView((gmailAccount, { db }) => ({
   get account() {
-    return getEntity(accountEntity).findById(gmailAccount.account_id);
+    return db.entity(accountEntity).findById(gmailAccount.account_id);
   },
 }));
 

@@ -1,12 +1,12 @@
 import { ApolloClient } from "@apollo/client";
 
-import { createClientDb } from "@aca/clientdb";
 import { createIndexedDbAdapter } from "@aca/clientdb/adapters/indexed-db";
 import { apolloContext, teamIdContext, userIdContext } from "@aca/clientdb/utils/context";
 import { setupDevIncorrectMobxUseageWarnings } from "@aca/clientdb/utils/devIncorrectUsageWarnings";
 import { clientdbForceRefreshCount, increaseClientDBForceRefreshCount } from "@aca/clientdb/utils/recoveryCounter";
 import { IS_DEV, devAssignWindowVariable } from "@aca/shared/dev";
 import { isClient } from "@aca/shared/document";
+import { DbContextInstance, createClientDb } from "@acapela/clientdb";
 
 import { accountEntity } from "./account";
 import { alertEntity } from "./alert";
@@ -62,69 +62,71 @@ devAssignWindowVariable("reloadClientDb", () => {
  *
  * Entities that depend on other entities should be listed lower
  */
-export const appClientDbEntities = {
-  user: userEntity,
+export const appClientDbEntities = [
+  userEntity,
 
-  team: teamEntity,
-  teamMember: teamMemberEntity,
+  teamEntity,
+  teamMemberEntity,
 
-  notionSpace: notionSpaceEntity,
-  notionSpaceUser: notionSpaceUserEntity,
+  notionSpaceEntity,
+  notionSpaceUserEntity,
 
-  notificationList: notificationListEntity,
-  notificationSlackMessage: notificationSlackMessageEntity,
+  notificationListEntity,
+  notificationSlackMessageEntity,
 
-  notificationAcapela: notificationAcapelaEntity,
+  notificationAcapelaEntity,
 
-  notificationNotionUserMentioned: notificationNotionUserMentionedEntity,
-  notificationNotionCommented: notificationNotionCommentedEntity,
-  notificationNotionUserInvited: notificationNotionUserInvitedEntity,
-  notificationNotionReminder: notificationNotionReminderEntity,
+  notificationNotionUserMentionedEntity,
+  notificationNotionCommentedEntity,
+  notificationNotionUserInvitedEntity,
+  notificationNotionReminderEntity,
 
-  notificationNotion: notificationNotionEntity,
+  notificationNotionEntity,
 
-  notificationFigmaComment: notificationFigmaCommentEntity,
-  notificationLinear: notificationLinearEntity,
-  notificationJira: notificationJiraEntity,
-  notificationGitHub: notificationGitHubEntity,
-  notificationGmail: notificationGmailEntity,
-  notificationAsana: notificationAsanaEntity,
-  notificationDrive: notificationDriveEntity,
-  notificationClickUp: notificationClickUpEntity,
+  notificationFigmaCommentEntity,
+  notificationLinearEntity,
+  notificationJiraEntity,
+  notificationGitHubEntity,
+  notificationGmailEntity,
+  notificationAsanaEntity,
+  notificationDriveEntity,
+  notificationClickUpEntity,
 
-  notification: notificationEntity,
+  notificationEntity,
 
-  account: accountEntity,
+  accountEntity,
 
-  gmailAccount: gmailAccountEntity,
-  googleDriveFile: googleDriveFileEntity,
+  gmailAccountEntity,
+  googleDriveFileEntity,
 
-  asanaAccount: asanaAccountEntity,
-  asanaWebhook: asanaWebhookEntity,
-  clickupTeam: clickupTeamEntity,
+  asanaAccountEntity,
+  asanaWebhookEntity,
+  clickupTeamEntity,
 
-  githubInstallation: githubInstallationEntity,
+  githubInstallationEntity,
 
-  userSlackInstallation: userSlackInstallationEntity,
-  userSlackChannelsByTeam: userSlackChannelsByTeamEntity,
-  slackTeam: slackTeamEntity,
+  userSlackInstallationEntity,
+  userSlackChannelsByTeamEntity,
+  slackTeamEntity,
 
-  alert: alertEntity,
-  alertReadReceipt: alertReadReceiptEntity,
-};
+  alertEntity,
+  alertReadReceiptEntity,
+];
 
 export function createNewClientDb({ userId, teamId, apolloClient, onDestroyRequest }: CreateNewClientDbInput) {
-  const clientdb = createClientDb(
-    {
-      db: {
-        adapter: createIndexedDbAdapter(),
-        key: `${teamId ?? "no-team"}-${userId}-${clientdbForceRefreshCount.get()}`,
-      },
-      contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
-      onDestroyRequest,
+  const clientdb = createClientDb(appClientDbEntities, {
+    persistance: {
+      adapter: createIndexedDbAdapter(),
+      key: `${teamId ?? "no-team"}-${userId}-${clientdbForceRefreshCount.get()}`,
     },
-    appClientDbEntities
-  );
+    // TODO: some typing is wrong here
+    contexts: [
+      userIdContext(userId) as DbContextInstance<unknown>,
+      teamIdContext(teamId) as DbContextInstance<unknown>,
+      apolloContext(apolloClient) as DbContextInstance<unknown>,
+    ],
+    onDestroyRequest,
+  });
 
   return clientdb;
 }

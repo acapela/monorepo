@@ -2,6 +2,7 @@ import { uniq } from "lodash";
 
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationListEntity } from "@aca/desktop/clientdb/list";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 
 import { allNotificationsList } from "../list/all";
@@ -14,7 +15,8 @@ function getOpenNotificationsForBadge(): NotificationEntity[] {
     return allNotificationsList.getAllNotifications();
   }
 
-  const listsToShowNotifications = getNullableDb()?.notificationList.find({ id: listIdsToShowBadge }) ?? [];
+  const listsToShowNotifications =
+    getNullableDb()?.entity(notificationListEntity).find({ id: listIdsToShowBadge }) ?? [];
 
   return uniq(
     listsToShowNotifications

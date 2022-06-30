@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { AlertReadReceiptFragment, Alert_Read_Receipt_Bool_Exp, Alert_Read_Receipt_Insert_Input } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const alertReadReceiptFragment = gql`
   fragment AlertReadReceipt on alert_read_receipt {
@@ -27,7 +27,7 @@ type AlertReadReceiptConstraints = {
 export const alertReadReceiptEntity = defineEntity<AlertReadReceiptFragment>({
   name: "alert_read_receipt",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<AlertReadReceiptFragment>(alertReadReceiptFragment),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "alert_read_receipt",

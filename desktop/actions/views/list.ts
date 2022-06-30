@@ -1,4 +1,3 @@
-import { cachedComputed } from "@aca/clientdb";
 import { createActionView } from "@aca/desktop/actions/action/view";
 import { getNotificationParentGroupInList } from "@aca/desktop/domains/group/findGroup";
 import { getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
@@ -10,6 +9,7 @@ import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { desktopRouter } from "@aca/desktop/routes";
 import { uiStore } from "@aca/desktop/store/ui";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
+import { cachedComputed } from "@acapela/clientdb";
 
 export const listPageView = createActionView((context) => {
   if (!desktopRouter.getIsRouteActive("list")) return null;

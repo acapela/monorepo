@@ -4,6 +4,8 @@ import { getNullableDb } from "@aca/desktop/clientdb";
 import { assert } from "@aca/shared/assert";
 import { devAssignWindowVariable } from "@aca/shared/dev";
 
+import { teamEntity } from "../clientdb/team";
+import { userEntity } from "../clientdb/user";
 import { authStore } from "./auth";
 
 /**
@@ -14,7 +16,7 @@ export const accountStore = makeAutoObservable({
   get user() {
     if (!authStore.userTokenData) return null;
 
-    return getNullableDb()?.user.findById(authStore.userTokenData.id) ?? null;
+    return getNullableDb()?.entity(userEntity).findById(authStore.userTokenData.id) ?? null;
   },
   get assertUser() {
     const user = accountStore.user;
@@ -29,7 +31,7 @@ export const accountStore = makeAutoObservable({
 
     if (!db || !teamId) return null;
 
-    return db.team.findById(teamId);
+    return db.entity(teamEntity).findById(teamId);
   },
   get assertTeam() {
     const team = accountStore.team;

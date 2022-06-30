@@ -1,14 +1,14 @@
 import { chain } from "lodash";
 import React from "react";
 
-import { cachedComputed } from "@aca/clientdb";
 import { getDb } from "@aca/desktop/clientdb";
-import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { NotificationListEntity, notificationListEntity } from "@aca/desktop/clientdb/list";
 import { integrationClients } from "@aca/desktop/domains/integrations";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
 import { getNextItemInArray, getPreviousItemInArray } from "@aca/shared/array";
 import { weakMemoize } from "@aca/shared/deepMap";
 import { IconBookmark, IconInbox, IconListUnordered4 } from "@aca/ui/icons";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { NotificationsList, defineNotificationsList } from "./defineList";
 import { ListSystemId, SYSTEM_LISTS_TIP } from "./system";
@@ -75,9 +75,9 @@ const createNotificationsListFromListEntity = weakMemoize((listEntity: Notificat
 
 export const getInboxLists = cachedComputed(
   () => {
-    const customLists = getDb().notificationList.all.map((listEntity) =>
-      createNotificationsListFromListEntity(listEntity)
-    );
+    const customLists = getDb()
+      .entity(notificationListEntity)
+      .all.map((listEntity) => createNotificationsListFromListEntity(listEntity));
     return [...customLists, savedNotificationsList, allNotificationsList, ...getAvailableIntegrationLists()];
   },
   // Result of this function is observable (eg. depends on database being present and notifications lists) - let's guard ourself from accidentally saving result of this function outside of observable context (eg. module root variable)

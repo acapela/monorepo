@@ -1,6 +1,7 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { loginJiraBridge } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationNotionEntity } from "@aca/desktop/clientdb/notification/notion/baseNotification";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationClient } from "./types";
@@ -35,7 +36,7 @@ export const jiraIntegrationClient: IntegrationClient = {
       return false;
     }
 
-    const hasReceivedJiraNotifications = !!getNullableDb()?.notificationNotion.hasItems;
+    const hasReceivedJiraNotifications = !!getNullableDb()?.entity(notificationNotionEntity).hasItems;
     return hasReceivedJiraNotifications;
   },
 };

@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { FindInput } from "@aca/clientdb/entity/find";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
@@ -13,6 +12,7 @@ import {
   Notification_Notion_Insert_Input,
   Notification_Notion_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { notificationNotionCommentedEntity } from "./commented";
 import { notionSpaceEntity } from "./notionSpace";
@@ -52,8 +52,8 @@ const notionInnerEntities = [
 export const notificationNotionEntity = defineEntity<NotificationNotionFragment>({
   name: "notification_notion",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["notification_id", "notion_original_notification_id"],
-  keyField: "id",
+  uniqueProps: ["notification_id", "notion_original_notification_id"],
+  idField: "id",
   keys: getFragmentKeys<NotificationNotionFragment>(notificationNotion),
   getDefaultValues: () => ({
     __typename: "notification_notion",
@@ -84,12 +84,12 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
     }
   ),
 })
-  .addConnections((notificationNotion, { getEntity }) => {
+  .addView((notificationNotion, { db }) => {
     const connections = {
       get inner(): EntityByDefinition<typeof notionInnerEntities[number]> {
         for (const entity of notionInnerEntities) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const client = getEntity(entity as any);
+          const client = db.entity(entity as any);
 
           const foundInner = client.findFirst({ notification_notion_id: notificationNotion.id } as FindInput<
             unknown,
@@ -108,7 +108,7 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
           space_id:
             notificationNotion.space_id ||
             (notificationNotion.notion_space_id &&
-              getEntity(notionSpaceEntity).findById(notificationNotion.notion_space_id)?.space_id),
+              db.entity(notionSpaceEntity).findById(notificationNotion.notion_space_id)?.space_id),
           notion_original_notification_id: notificationNotion.notion_original_notification_id,
         };
       },
@@ -116,19 +116,19 @@ export const notificationNotionEntity = defineEntity<NotificationNotionFragment>
         return connections.inner.__typename;
       },
       get notification() {
-        return getEntity(notificationEntity).findById(notificationNotion.notification_id);
+        return db.entity(notificationEntity).findById(notificationNotion.notification_id);
       },
       get workspaceName() {
         if (!notificationNotion.notion_space_id) {
           return;
         }
-        return getEntity(notionSpaceEntity).assertFindById(notificationNotion.notion_space_id).name;
+        return db.entity(notionSpaceEntity).findById(notificationNotion.notion_space_id)!.name;
       },
     };
 
     return connections;
   })
-  .addAccessValidation((entity) => {
+  .addRootFilter((entity) => {
     if (!entity.inner) {
       console.warn(`No inner for entity`, entity);
       return false;

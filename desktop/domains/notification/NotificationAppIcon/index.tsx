@@ -8,6 +8,7 @@ import { appLogo } from "@aca/desktop/assets";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { getNullableDb } from "@aca/desktop/clientdb";
 import { NotificationEntity, NotificationInner } from "@aca/desktop/clientdb/notification";
+import { googleDriveFileEntity } from "@aca/desktop/clientdb/notification/drive/file";
 import { makeLogger } from "@aca/desktop/domains/dev/makeLogger";
 import { uiStore } from "@aca/desktop/store/ui";
 import { styledObserver } from "@aca/shared/component";
@@ -75,7 +76,7 @@ function getIconSource(notification: NotificationInner, isOnDarkBackground: bool
   }
 
   if (notification.__typename === "notification_drive") {
-    const driveFile = getNullableDb()?.googleDriveFile.findById(notification.google_drive_file_id);
+    const driveFile = getNullableDb()?.entity(googleDriveFileEntity).findById(notification.google_drive_file_id);
     if (driveFile?.source === "presentation") {
       return { icon: drivePresentation, isInverted: false };
     }

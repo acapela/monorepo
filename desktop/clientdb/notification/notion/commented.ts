@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -11,6 +10,7 @@ import {
   Notification_Notion_Commented_Insert_Input,
   Notification_Notion_Commented_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const notificationNotionCommented = gql`
   fragment NotificationNotionCommented on notification_notion_commented {
@@ -32,8 +32,8 @@ type NotificationNotionCommentedConstraints = {
 export const notificationNotionCommentedEntity = defineEntity<NotificationNotionCommentedFragment>({
   name: "notification_notion_commented",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["notification_notion_id"],
-  keyField: "id",
+  uniqueProps: ["notification_notion_id"],
+  idField: "id",
   keys: getFragmentKeys<NotificationNotionCommentedFragment>(notificationNotionCommented),
   getDefaultValues: () => ({
     __typename: "notification_notion_commented",

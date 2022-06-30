@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { cachedComputed } from "@aca/clientdb";
 import { ActionData, resolveActionData } from "@aca/desktop/actions/action";
 import { ActionContext } from "@aca/desktop/actions/action/context";
 import { commandMenuStore } from "@aca/desktop/domains/commandMenu/store";
@@ -22,6 +21,7 @@ import { BodyPortal } from "@aca/ui/BodyPortal";
 import { IconSearch } from "@aca/ui/icons";
 import { useShortcut } from "@aca/ui/keyboard/useShortcut";
 import { theme } from "@aca/ui/theme";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { CommandMenuActionsGroup } from "./CommandMenuActionsGroup";
 import { groupActions } from "./groups";

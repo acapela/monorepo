@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { notificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationGmailFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const notificationGmailFragment = gql`
   fragment NotificationGmail on notification_gmail {
@@ -21,12 +21,12 @@ const notificationGmailFragment = gql`
 export const notificationGmailEntity = defineEntity<NotificationGmailFragment>({
   name: "notification_gmail",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationGmailFragment>(notificationGmailFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationGmailFragment>(notificationGmailFragment),
-}).addConnections((gmailMessage, { getEntity }) => ({
+}).addView((gmailMessage, { db }) => ({
   get notification() {
-    return getEntity(notificationEntity).findById(gmailMessage.notification_id);
+    return db.entity(notificationEntity).findById(gmailMessage.notification_id);
   },
 }));
 

@@ -1,5 +1,6 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { gmailAccountEntity } from "@aca/desktop/clientdb/notification/gmail/account";
 
 import { IntegrationClient } from "./types";
 
@@ -13,11 +14,13 @@ export const googleDriveIntegrationClient: IntegrationClient = {
   getCanConnect: () => false,
   getAccounts: () => {
     return (
-      getNullableDb()?.gmailAccount.all.map((gmailAccount) => ({
-        kind: "account",
-        id: gmailAccount.id,
-        name: "Drive",
-      })) ?? []
+      getNullableDb()
+        ?.entity(gmailAccountEntity)
+        .all.map((gmailAccount) => ({
+          kind: "account",
+          id: gmailAccount.id,
+          name: "Drive",
+        })) ?? []
     );
   },
   connect() {

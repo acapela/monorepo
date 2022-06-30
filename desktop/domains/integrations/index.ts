@@ -1,5 +1,5 @@
-import { cachedComputed } from "@aca/clientdb";
 import { unsafeAssertType } from "@aca/shared/assert";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { acapelaIntegrationClient } from "./acapela";
 import { asanaIntegrationClient } from "./asana";

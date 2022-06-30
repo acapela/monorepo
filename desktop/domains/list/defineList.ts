@@ -1,7 +1,6 @@
 import { orderBy } from "lodash";
 import { ReactNode } from "react";
 
-import { cachedComputed } from "@aca/clientdb";
 import { EntityFindInputByDefinition } from "@aca/clientdb/entity/find";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
@@ -9,6 +8,7 @@ import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/no
 import { unsafeAssertType } from "@aca/shared/assert";
 import { weakMemoize } from "@aca/shared/deepMap";
 import { runUntracked } from "@aca/shared/mobx/utils";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { createNotificationsListModel } from "./model";
 import { CUSTOM_SYSTEM_LIST_ICONS, ListSystemId } from "./system";
@@ -57,7 +57,7 @@ export function defineNotificationsList({
     const db = getDb();
 
     const notifications: NotificationEntity[] =
-      "filter" in config ? db.notification.find(config.filter) : config.getNotifications();
+      "filter" in config ? db.entity(notificationEntity).find(config.filter) : config.getNotifications();
 
     // If we have custom sort - we always apply it
     if (sort) {

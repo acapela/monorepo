@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -13,6 +12,7 @@ import {
   Notion_Space_User_Insert_Input,
   Notion_Space_User_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { notionSpaceEntity } from "./notionSpace";
 
@@ -38,7 +38,7 @@ type NotionSpaceUserConstraints = {
 export const notionSpaceUserEntity = defineEntity<NotionSpaceUserFragment>({
   name: "notion_space_user",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotionSpaceUserFragment>(notionSpaceUser),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notion_space_user",
@@ -60,24 +60,26 @@ export const notionSpaceUserEntity = defineEntity<NotionSpaceUserFragment>({
     upsertConstraint: "notion_space_user_user_id_notion_space_id_key",
   }),
 })
-  .addConnections((notionSpaceUser, { getEntity }) => ({
+  .addView((notionSpaceUser, { db }) => ({
     get notionSpace() {
-      return getEntity(notionSpaceEntity).assertFindById(notionSpaceUser.notion_space_id);
+      return db.entity(notionSpaceEntity).findById(notionSpaceUser.notion_space_id)!;
     },
   }))
   .addEventHandlers({
-    itemAdded(dataNow, { getEntity }) {
+    created(dataNow, { db }) {
       if (dataNow.is_sync_enabled) {
-        const selected = getEntity(notionSpaceUserEntity)
+        const selected = db
+          .entity(notionSpaceUserEntity)
           .find({ is_sync_enabled: true })
           .map((spaceUser) => spaceUser.notionSpace.space_id);
         notionSelectedSpaceValue.set({ selected });
       }
     },
 
-    itemUpdated(dataNow, dataBefore, { getEntity }) {
-      if (dataNow.is_sync_enabled !== dataBefore.is_sync_enabled) {
-        const selected = getEntity(notionSpaceUserEntity)
+    updated(entity, { dataBefore, db }) {
+      if (entity.is_sync_enabled !== dataBefore.is_sync_enabled) {
+        const selected = db
+          .entity(notionSpaceUserEntity)
           .find({ is_sync_enabled: true })
           .map((spaceUser) => spaceUser.notionSpace.space_id);
         notionSelectedSpaceValue.set({ selected });

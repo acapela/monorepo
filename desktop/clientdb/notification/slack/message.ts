@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userSlackInstallationEntity } from "@aca/desktop/clientdb/userSlackInstallation";
 import { NotificationSlackMessageFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const notificationSlackMessageFragment = gql`
   fragment NotificationSlackMessage on notification_slack_message {
@@ -27,13 +27,13 @@ const notificationSlackMessageFragment = gql`
 export const notificationSlackMessageEntity = defineEntity<NotificationSlackMessageFragment>({
   name: "notification_slack_message",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationSlackMessageFragment>(notificationSlackMessageFragment),
-}).addConnections((slackMessage, { getEntity }) => {
+}).addView((slackMessage, { db }) => {
   const getSlackInstallation = () => {
     const slackInstallationId = slackMessage.user_slack_installation_id;
-    return slackInstallationId ? getEntity(userSlackInstallationEntity).findById(slackInstallationId) : null;
+    return slackInstallationId ? db.entity(userSlackInstallationEntity).findById(slackInstallationId) : null;
   };
   return {
     get slackInstallation() {

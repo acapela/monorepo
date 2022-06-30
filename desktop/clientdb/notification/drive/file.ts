@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { GoogleDriveFileFragment } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 export const googleDriveFileFragment = gql`
   fragment GoogleDriveFile on google_drive_file {
@@ -16,7 +16,7 @@ export const googleDriveFileFragment = gql`
   }
 `;
 export const googleDriveFileEntity = defineEntity<GoogleDriveFileFragment>({
-  keyField: "id",
+  idField: "id",
   name: "google_drive_file",
   updatedAtField: "updated_at",
   keys: getFragmentKeys<GoogleDriveFileFragment>(googleDriveFileFragment),

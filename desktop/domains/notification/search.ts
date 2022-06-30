@@ -1,8 +1,8 @@
-import { cachedComputed } from "@aca/clientdb";
 import { getNullableDb } from "@aca/desktop/clientdb";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { fuzzySearch } from "@aca/shared/fuzzy/fuzzySearch";
 import { isNotNullish } from "@aca/shared/nullish";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { getNotificationTitle } from "./title";
 
@@ -21,5 +21,10 @@ export function notificationsFuzzySearch(keyword: string) {
 
   if (!db) return [];
 
-  return fuzzySearch(db.notification.find({ isResolved: false }), getNotificationSearchTerms, keyword, 0.1);
+  return fuzzySearch(
+    db.entity(notificationEntity).find({ isResolved: false }),
+    getNotificationSearchTerms,
+    keyword,
+    0.1
+  );
 }

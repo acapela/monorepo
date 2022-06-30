@@ -1,9 +1,9 @@
 import { sortBy, uniq } from "lodash";
 
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotifications";
 import { getNotificationMeta } from "@aca/desktop/domains/notification/meta";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { NotificationTag } from "./tag";
 

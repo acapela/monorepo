@@ -2,6 +2,7 @@ import { trackEvent } from "@aca/desktop/analytics";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { clearServiceCookiesBridge, figmaAuthTokenBridgeValue, loginFigmaBridge } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationFigmaCommentEntity } from "@aca/desktop/clientdb/notification/figma/comment";
 
 import { IntegrationClient } from "./types";
 
@@ -38,7 +39,7 @@ export const figmaIntegrationClient: IntegrationClient = {
       return false;
     }
 
-    const hasPreviousNotifications = !!getNullableDb()?.notificationFigmaComment.hasItems;
+    const hasPreviousNotifications = !!getNullableDb()?.entity(notificationFigmaCommentEntity).hasItems;
     return hasPreviousNotifications;
   },
   imageURL: integrationLogos.figma,

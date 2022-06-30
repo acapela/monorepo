@@ -1,6 +1,6 @@
-import { cachedComputed } from "@aca/clientdb";
 import { ActionData } from "@aca/desktop/actions/action";
 import { ActionContext } from "@aca/desktop/actions/action/context";
+import { cachedComputed } from "@acapela/clientdb";
 
 export interface CommandMenuSession {
   actionContext: ActionContext;

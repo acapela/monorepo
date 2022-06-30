@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { observable } from "mobx";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -13,6 +12,7 @@ import {
   User_Slack_Channels_By_Team_Insert_Input,
   User_Slack_Channels_By_Team_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const userSlackChannelsByTeamFragment = gql`
   fragment UserSlackChannelsByTeam on user_slack_channels_by_team {
@@ -39,7 +39,7 @@ type Constraints = {
 export const userSlackChannelsByTeamEntity = defineEntity<UserSlackChannelsByTeamFragment>({
   name: "user_slack_channels_by_team",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "user_slack_channels_by_team",
     user_id: getContextValue(userIdContext) ?? undefined,

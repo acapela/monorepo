@@ -28,6 +28,8 @@ export function analyzeFragment<T>(fragment: DocumentNode) {
     keys.push(fieldName as keyof T);
   }
 
+  keys.push("__typename" as keyof T);
+
   return {
     name,
     type,

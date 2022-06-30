@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
 import { NotionSpaceFragment, Notion_Space_Bool_Exp, Notion_Space_Insert_Input } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const notionSpace = gql`
   fragment notionSpace on notion_space {
@@ -28,8 +28,8 @@ type NotionSpaceConstraints = {
 export const notionSpaceEntity = defineEntity<NotionSpaceFragment>({
   name: "notion_space",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["space_id"],
-  keyField: "id",
+  uniqueProps: ["space_id"],
+  idField: "id",
   keys: getFragmentKeys<NotionSpaceFragment>(notionSpace),
   getDefaultValues: ({ getContextValue }) => ({
     __typename: "notion_space",

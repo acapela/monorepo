@@ -1,4 +1,3 @@
-import { cachedComputed, cachedComputedWithoutArgs } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsGroup, getIsNotificationsGroup } from "@aca/desktop/domains/group/group";
 import { NotificationOrGroup, groupNotifications } from "@aca/desktop/domains/group/groupNotifications";
@@ -6,6 +5,7 @@ import { uiStore } from "@aca/desktop/store/ui";
 import { findAndMap } from "@aca/shared/array";
 import { assert } from "@aca/shared/assert";
 import { None } from "@aca/shared/none";
+import { cachedComputed, cachedComputedWithoutArgs } from "@acapela/clientdb";
 
 import { collectTags } from "../tag/collectTags";
 import { getCountIndicatorFromGroups } from "./count";
