@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { FindInput } from "@aca/clientdb/entity/find";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -12,6 +11,7 @@ import {
   Notification_Notion_Insert_Input,
   Notification_Notion_Set_Input,
 } from "@aca/gql";
+import { FindInput } from "@acapela/clientdb";
 import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { notificationNotionCommentedEntity } from "./commented";
