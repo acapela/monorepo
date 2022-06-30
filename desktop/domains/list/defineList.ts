@@ -1,13 +1,13 @@
 import { orderBy } from "lodash";
 import { ReactNode } from "react";
 
-import { EntityFindInputByDefinition } from "@aca/clientdb/entity/find";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotificationListEntity } from "@aca/desktop/clientdb/list";
 import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { unsafeAssertType } from "@aca/shared/assert";
 import { weakMemoize } from "@aca/shared/deepMap";
 import { runUntracked } from "@aca/shared/mobx/utils";
+import { EntityFindInputByDefinition } from "@acapela/clientdb";
 import { cachedComputed } from "@acapela/clientdb";
 
 import { createNotificationsListModel } from "./model";
