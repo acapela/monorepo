@@ -330,15 +330,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@acapela/clientdb@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "@acapela/clientdb@npm:0.1.4"
+"@acapela/clientdb@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@acapela/clientdb@npm:0.1.5"
   dependencies:
     flexsearch: ^0.7.21
     lodash: ^4.17.21
   peerDependencies:
     mobx: "*"
-  checksum: dd2a749c0f1c26fccd1255a89d6b593b71afe217756d674eb63c05c6f461fc22fe3ebbd6e3e750c721450c69af4e29b3e141cbbde3f961adb9b3fdd066ad11ab
+  checksum: dcbfab6d799f8defd7c6001915cd685dc3d9c317d305129bea5c692c2f1e84ab457bf98aaafcffbda7214c9c5bdc6c83cd9b1e5d43c0d75ce11a9d484e7f0bec
   languageName: node
   linkType: hard
 
@@ -347,7 +347,7 @@ __metadata:
   resolution: "@acapela/root@workspace:."
   dependencies:
     "@aca/tooling": 0.1.0
-    "@acapela/clientdb": ^0.1.4
+    "@acapela/clientdb": ^0.1.5
     "@install-binary/berglas": 0.6.2
     "@install-binary/hasura": 2.7.0
     "@tiptap/extension-placeholder": ^2.0.0-beta.31
