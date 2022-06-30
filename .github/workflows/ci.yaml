@@ -46,7 +46,6 @@ jobs:
           yarn generate
       - run: yarn backend:test
       - run: yarn shared test
-      - run: yarn clientdb test
 
   e2e:
     name: E2E Tests
