@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -11,6 +10,7 @@ import {
   Notification_Notion_Reminder_Insert_Input,
   Notification_Notion_Reminder_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const notificationNotionReminder = gql`
   fragment NotificationNotionReminder on notification_notion_reminder {
@@ -31,8 +31,8 @@ type NotificationNotionReminderConstraints = {
 export const notificationNotionReminderEntity = defineEntity<NotificationNotionReminderFragment>({
   name: "notification_notion_reminder",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["notification_notion_id"],
-  keyField: "id",
+  uniqueProps: ["notification_notion_id"],
+  idField: "id",
   keys: getFragmentKeys<NotificationNotionReminderFragment>(notificationNotionReminder),
   getDefaultValues: () => ({
     __typename: "notification_notion_reminder",

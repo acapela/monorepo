@@ -1,5 +1,6 @@
 import { appLogo } from "@aca/desktop/assets";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationEntity } from "@aca/desktop/clientdb/notification";
 
 import { IntegrationClient } from "./types";
 
@@ -19,7 +20,9 @@ export const acapelaIntegrationClient: IntegrationClient = {
     },
   ],
   isHiddenFromSidebar: () =>
-    !getNullableDb()?.notification.query({ kind: "notification_acapela", isResolved: false, isSaved: false }).hasItems,
+    !getNullableDb()
+      ?.entity(notificationEntity)
+      .query({ kind: "notification_acapela", isResolved: false, isSaved: false }).hasItems,
   connect() {
     return Promise.resolve();
   },

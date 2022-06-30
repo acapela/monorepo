@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { NotificationClickUpFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const notificationClickUpFragment = gql`
   fragment NotificationClickUp on notification_clickup {
@@ -21,7 +21,7 @@ const notificationClickUpFragment = gql`
 export const notificationClickUpEntity = defineEntity<NotificationClickUpFragment>({
   name: "notification_clickup",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationClickUpFragment>(notificationClickUpFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationClickUpFragment>(notificationClickUpFragment),
 });

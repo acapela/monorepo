@@ -8,6 +8,7 @@ import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/deskt
 import { notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
 import { NotionSpaceEntity } from "@aca/desktop/clientdb/notification/notion/notionSpace";
+import { notionSpaceUserEntity } from "@aca/desktop/clientdb/notification/notion/notionSpaceUser";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 import { Button } from "@aca/ui/buttons/Button";
@@ -25,9 +26,9 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
 
   const notionAuthBridge = notionAuthTokenBridgeValue.use();
 
-  const selectedUserSpaces = db.notionSpaceUser.find({ is_sync_enabled: true });
+  const selectedUserSpaces = db.entity(notionSpaceUserEntity).find({ is_sync_enabled: true });
   const selectedSpaces = selectedUserSpaces.map((spaceUser) => spaceUser.notionSpace);
-  const allAvailableSpaces = db.notionSpaceUser.all.map((spaceUser) => spaceUser.notionSpace);
+  const allAvailableSpaces = db.entity(notionSpaceUserEntity).all.map((spaceUser) => spaceUser.notionSpace);
 
   useEffect(() => {
     // Covers corner case of losing notion session without resetting spaces
@@ -62,7 +63,7 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
   }
 
   function selectSpace(space: NotionSpaceEntity) {
-    const userSpace = db.notionSpaceUser.assertFindByUniqueIndex("notion_space_id", space.id);
+    const userSpace = db.entity(notionSpaceUserEntity).findFirst({ notion_space_id: space.id })!;
 
     userSpace.update({
       is_sync_enabled: true,
@@ -72,7 +73,7 @@ export const NotionSettings = observer(function NotionSpaceSelector() {
   }
 
   function unselectSpace(space: NotionSpaceEntity) {
-    const userSpace = db.notionSpaceUser.assertFindByUniqueIndex("notion_space_id", space.id);
+    const userSpace = db.entity(notionSpaceUserEntity).findFirst({ notion_space_id: space.id })!;
     userSpace.update({
       is_sync_enabled: false,
     });

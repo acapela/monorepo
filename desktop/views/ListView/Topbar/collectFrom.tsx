@@ -1,7 +1,7 @@
 import { sortBy, uniq } from "lodash";
 
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { cachedComputed } from "@acapela/clientdb";
 
 export const collectFromInfo = cachedComputed(function collectFromInfo(items: NotificationEntity[]) {
   const fromMap = new Map<string, NotificationEntity[]>();

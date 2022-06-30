@@ -6,21 +6,21 @@ import { HandleRevertUrlViewMutation, HandleRevertUrlViewMutationVariables } fro
 
 import { apolloClient } from "../apolloClient";
 import { previewLoadedChannel, previewUnattachedChannel } from "../bridge/preview";
-import { NotificationEntity } from "../clientdb/notification";
+import { NotificationEntity, notificationEntity } from "../clientdb/notification";
 import { useOnClientReadyEffect } from "./useOnClientReady";
 
 export const IntegrationReadSyncManager = observer(function IntegrationReadSyncManager() {
   useOnClientReadyEffect(
     (db) => {
       previewLoadedChannel.subscribe(({ url }) => {
-        const notification = db.notification.find({ url })?.[0] ?? null;
+        const notification = db.entity(notificationEntity).find({ url })?.[0] ?? null;
         if (notification) {
           notification.update({ last_preloaded_at: new Date().toISOString() });
         }
       });
 
       previewUnattachedChannel.subscribe(({ url }) => {
-        const notification = db.notification.find({ url })?.[0] ?? null;
+        const notification = db.entity(notificationEntity).find({ url })?.[0] ?? null;
         if (notification) {
           handleUnattachedPreload(notification);
         }

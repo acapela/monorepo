@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { teamIdContext } from "@aca/clientdb/utils/context";
@@ -12,6 +11,7 @@ import {
   Team_Member_Insert_Input,
   Team_Member_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { userEntity } from "./user";
 
@@ -21,6 +21,7 @@ const teamMemberFragment = gql`
     team_id
     user_id
     updated_at
+    created_at
     has_joined
     timezone
     work_start_hour_in_utc
@@ -38,7 +39,7 @@ type TeamMemberConstraints = {
 export const teamMemberEntity = defineEntity<TeamMemberFragment>({
   name: "team_member",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<TeamMemberFragment>(teamMemberFragment),
   getDefaultValues: () => ({
     __typename: "team_member",
@@ -53,9 +54,9 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
     upsertConstraint: "team_member_id_key",
     teamScopeCondition: (teamId) => ({ team_id: { _eq: teamId } }),
   }),
-}).addConnections((teamMember, { getEntity, getContextValue }) => ({
+}).addView((teamMember, { db: { entity, getContextValue } }) => ({
   get user() {
-    return getEntity(userEntity).findById(teamMember.user_id);
+    return entity(userEntity).findById(teamMember.user_id);
   },
   get isMemberOfCurrentTeam() {
     return teamMember.team_id === getContextValue(teamIdContext);

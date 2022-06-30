@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { ClickUpTeamFragment } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const clickupTeamFragment = gql`
   fragment ClickUpTeam on clickup_team {
@@ -18,7 +18,7 @@ const clickupTeamFragment = gql`
 export const clickupTeamEntity = defineEntity<ClickUpTeamFragment>({
   name: "clickup_team",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<ClickUpTeamFragment>(clickupTeamFragment),
   sync: createHasuraSyncSetupFromFragment<ClickUpTeamFragment>(clickupTeamFragment),
 });

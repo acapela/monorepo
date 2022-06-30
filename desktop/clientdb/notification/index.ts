@@ -2,9 +2,6 @@ import { isPast } from "date-fns";
 import gql from "graphql-tag";
 import { action, createAtom } from "mobx";
 
-import { EntityByDefinition, cachedComputed, defineEntity } from "@aca/clientdb";
-import { EntityDataByDefinition, EntityDefinition } from "@aca/clientdb/entity/definition";
-import { EntityQueryByDefinition } from "@aca/clientdb/entity/query";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { userIdContext } from "@aca/clientdb/utils/context";
@@ -22,6 +19,9 @@ import {
 import { IS_DEV } from "@aca/shared/dev";
 import { autorunEffect } from "@aca/shared/mobx/utils";
 import { createDateTimeout } from "@aca/shared/time";
+import { EntityByDefinition, cachedComputed, defineEntity } from "@acapela/clientdb";
+import { EntityDataByDefinition, EntityDefinition } from "@acapela/clientdb";
+import { EntityQueryByDefinition } from "@acapela/clientdb";
 
 import { innerEntities } from "./inner";
 import { NotificationNotionEntity } from "./notion/baseNotification";
@@ -40,6 +40,7 @@ const notificationFragment = gql`
     notified_user_at
     saved_at
     last_preloaded_at
+    user_id
   }
 `;
 
@@ -59,24 +60,26 @@ export const getReverseTime = (timestamp: string) => -1 * new Date(timestamp).ge
 export const notificationEntity = defineEntity<DesktopNotificationFragment>({
   name: "notification",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<DesktopNotificationFragment>(notificationFragment),
   // Show newest first
   defaultSort: (notification) => {
     return getReverseTime(notification.created_at);
   },
-  getDefaultValues: ({ getContextValue }) => ({
-    __typename: "notification",
-    user_id: getContextValue(userIdContext) ?? undefined,
-    resolved_at: null,
-    snoozed_until: null,
-    text_preview: null,
-    last_seen_at: null,
-    saved_at: null,
-    notified_user_at: null,
-    last_preloaded_at: null,
-    ...getGenericDefaultData(),
-  }),
+  getDefaultValues: ({ getContextValue }) => {
+    return {
+      __typename: "notification",
+      user_id: getContextValue(userIdContext) ?? undefined,
+      resolved_at: null,
+      snoozed_until: null,
+      text_preview: null,
+      last_seen_at: null,
+      saved_at: null,
+      notified_user_at: null,
+      last_preloaded_at: null,
+      ...getGenericDefaultData(),
+    };
+  },
   functionalFilterCheck: IS_DEV
     ? (notification, filter) => {
         if (notification.resolved_at) {
@@ -120,14 +123,11 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     }
   ),
 })
-  .addConnections((notification, { getEntity, updateSelf, cleanup }) => {
+  .addView((notification, { db, updateSelf, cleanup }) => {
     const getInner = cachedComputed((): EntityByDefinition<typeof innerEntities[number]> | undefined => {
       for (const entity of innerEntities) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = getEntity(entity as EntityDefinition<any, any>).findByUniqueIndex(
-          "notification_id",
-          notification.id
-        );
+        const result = db.entity(entity as EntityDefinition<any, any>).findFirst({ notification_id: notification.id });
 
         if (result) {
           return result as unknown as EntityByDefinition<typeof innerEntities[number]>;
@@ -218,7 +218,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
     return connections;
   })
   .addEventHandlers({
-    itemUpdated(notification, dataBefore) {
+    updated(notification, { dataBefore }) {
       const isResolvedNow = !dataBefore.resolved_at && notification.resolved_at;
       const hasReminderNow = !dataBefore.snoozed_until && notification.snoozed_until;
 
@@ -245,7 +245,7 @@ export const notificationEntity = defineEntity<DesktopNotificationFragment>({
       }
     },
   })
-  .addAccessValidation((notification) => {
+  .addRootFilter((notification) => {
     if (!notification.inner) {
       setTimeout(() => {
         if (!notification.inner) {

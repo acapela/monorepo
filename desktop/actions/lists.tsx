@@ -21,6 +21,7 @@ import {
 
 import { createAnalyticsEvent } from "../analytics";
 import { showConfirmDialogRequest } from "../bridge/dialogs";
+import { notificationListEntity } from "../clientdb/list";
 import { addToast } from "../domains/toasts/store";
 import { defineAction } from "./action";
 import { ActionContext } from "./action/context";
@@ -374,7 +375,7 @@ export const createNotificationList = defineAction({
           if (!title) {
             return false;
           }
-          const notificationFilter = getDb().notificationList.create({
+          const notificationFilter = getDb().entity(notificationListEntity).create({
             title,
             filters: [],
             seen_at: new Date().toISOString(),

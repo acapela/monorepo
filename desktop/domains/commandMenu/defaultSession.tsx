@@ -1,6 +1,5 @@
 import React from "react";
 
-import { cachedComputed } from "@aca/clientdb";
 import { defineAction } from "@aca/desktop/actions/action";
 import { ActionContext, createActionContext } from "@aca/desktop/actions/action/context";
 import { allActions } from "@aca/desktop/actions/all";
@@ -11,6 +10,7 @@ import { listsFuzzySearch } from "@aca/desktop/domains/list/search";
 import { runActionWith } from "@aca/desktop/domains/runAction";
 import { pluralize } from "@aca/shared/text/pluralize";
 import { IconFolder } from "@aca/ui/icons";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { CommandMenuSession, createCommandMenuSession } from "./session";
 

@@ -40,7 +40,13 @@ export const getSlackConversations = createObservablePromiseCache(async () => {
   return data?.slack_conversations ?? [];
 }, []);
 
-setTimeout(() => {
-  getSlackUsers.reloadValue();
-  getSlackConversations.reloadValue();
-}, 500);
+setTimeout(
+  () => {
+    getSlackUsers.reloadValue();
+    getSlackConversations.reloadValue();
+  },
+  // Important! Don't set it to too short, as it is using apollo, and apollo is batching requests together. If it starts quickly
+  // it would get batched together with 'bootstrap' requests. As getting slack users is quite long and not really needed for initial boot
+  // it would unnecesarily slow down the initial boot.
+  2000
+);

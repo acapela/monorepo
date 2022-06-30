@@ -1,6 +1,5 @@
 import React from "react";
 
-import { cachedComputed } from "@aca/clientdb";
 import { defineAction } from "@aca/desktop/actions/action";
 import { trackEvent } from "@aca/desktop/analytics";
 import { IntegrationIcon } from "@aca/desktop/domains/integrations/IntegrationIcon";
@@ -10,8 +9,11 @@ import { isNotFalsy } from "@aca/shared/nullish";
 import { mapArrayToObject } from "@aca/shared/object";
 import { IconArrowLeft, IconEdit } from "@aca/ui/icons";
 import { Avatar } from "@aca/ui/users/Avatar";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { getNullableDb } from "../clientdb";
+import { gmailAccountEntity } from "../clientdb/notification/gmail/account";
+import { slackTeamEntity } from "../clientdb/slackTeam";
 import { slackIntegrationClient } from "../domains/integrations/slack";
 import { getSlackConversations, getSlackUsers } from "../domains/slack/conversations";
 import { ActionContext } from "./action/context";
@@ -37,7 +39,7 @@ const getIsEmail = (email: string) => {
 };
 
 const getGmailComposeTargetActions = cachedComputed((context: ActionContext) => {
-  const accounts = getNullableDb()?.gmailAccount.all ?? [];
+  const accounts = getNullableDb()?.entity(gmailAccountEntity).all ?? [];
 
   const accountsGroups = accounts.map((account) => {
     return defineGroup({ id: `compose-group-${account.id}`, name: `Gmail - ${account.account?.email}` });
@@ -79,7 +81,7 @@ const getGmailComposeTargetActions = cachedComputed((context: ActionContext) => 
 
 const getSlackComposeTargetActions = cachedComputed(
   () => {
-    const slackTeamLookup = mapArrayToObject(getNullableDb()?.slackTeam.all ?? [], (team) => {
+    const slackTeamLookup = mapArrayToObject(getNullableDb()?.entity(slackTeamEntity).all ?? [], (team) => {
       return {
         key: team.slack_team_id,
         value: defineGroup({ id: `compose-group-${team.id}`, name: `Slack Team - ${team.team_info_data?.name}` }),

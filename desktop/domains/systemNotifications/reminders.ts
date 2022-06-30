@@ -1,6 +1,6 @@
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
-import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { NotificationEntity, notificationEntity } from "@aca/desktop/clientdb/notification";
 import { startFocusSession } from "@aca/desktop/store/focus";
 import { createCleanupObject } from "@aca/shared/cleanup";
 import { debouncedAutorunEffect } from "@aca/shared/mobx/debouncedAutorun";
@@ -51,7 +51,7 @@ function scheduleReminderNotifications() {
 
   if (!db) return;
 
-  const notificationsWithReminders = db.notification.find({ hasReminder: true });
+  const notificationsWithReminders = db.entity(notificationEntity).find({ hasReminder: true });
 
   const groupsWithReminders = groupNotifications(notificationsWithReminders);
 

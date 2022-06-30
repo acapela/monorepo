@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { AsanaWebhookFragment } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const asanaAccountFragment = gql`
   fragment AsanaWebhook on asana_webhook {
@@ -21,7 +21,7 @@ const asanaAccountFragment = gql`
 export const asanaWebhookEntity = defineEntity<AsanaWebhookFragment>({
   name: "asana_webhook",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<AsanaWebhookFragment>(asanaAccountFragment),
   sync: createHasuraSyncSetupFromFragment<AsanaWebhookFragment>(asanaAccountFragment),
 });

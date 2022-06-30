@@ -1,6 +1,6 @@
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { NotificationsGroup, getIsNotificationsGroup } from "./group";
 

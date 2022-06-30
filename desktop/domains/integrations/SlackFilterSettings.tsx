@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { getDb } from "@aca/desktop/clientdb";
+import { userSlackChannelsByTeamEntity } from "@aca/desktop/clientdb/userSlackChannelsByTeam";
 import { accountStore } from "@aca/desktop/store/account";
 import { SlackTeamConversationsDropdown } from "@aca/desktop/ui/Filters/SlackTeamConversationsDropdown";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
@@ -34,7 +35,7 @@ export const SlackChannelsByTeamFilters = observer(() => {
   const slackInstallations = accountStore.user?.slackInstallations;
   const user = accountStore.assertUser;
   const db = getDb();
-  const userSlackChannelsByTeam = db.userSlackChannelsByTeam;
+  const userSlackChannelsByTeam = db.entity(userSlackChannelsByTeamEntity);
 
   const [availableSlackConversationsByTeam, setAvailableSlackConversationsByTeam] = useState<SlackConversationByTeam>(
     {}
@@ -90,7 +91,9 @@ export const SlackChannelsByTeamFilters = observer(() => {
   }
 
   function handleToggleAllChannelsIncludedForTeam(teamId: string, setIncludeAllChannels: boolean) {
-    const teamChannelFilter = db.userSlackChannelsByTeam.findFirst({ user_id: user.id, slack_workspace_id: teamId });
+    const teamChannelFilter = db
+      .entity(userSlackChannelsByTeamEntity)
+      .findFirst({ user_id: user.id, slack_workspace_id: teamId });
 
     assert(teamChannelFilter, "team channel filter must be created");
 

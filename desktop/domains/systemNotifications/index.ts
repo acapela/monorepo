@@ -2,6 +2,7 @@ import { autorun } from "mobx";
 
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationListEntity } from "@aca/desktop/clientdb/list";
 import { createCleanupObject } from "@aca/shared/cleanup";
 
 import { initializeListNotificationsScheduling } from "./listScheduler";
@@ -14,7 +15,7 @@ function askForNotificationPermissionWhenNeeded() {
 
     if (!enableDesktopNotifications) return;
 
-    const allLists = getNullableDb()?.notificationList.all ?? [];
+    const allLists = getNullableDb()?.entity(notificationListEntity).all ?? [];
 
     for (const list of allLists) {
       if (typeof list.notifications_interval_ms === "number") {

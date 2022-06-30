@@ -6,8 +6,8 @@ import { max, pick, upperFirst } from "lodash";
 import { PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables } from "@aca/gql";
 import { assert } from "@aca/shared/assert";
 import { runUntracked } from "@aca/shared/mobx/utils";
+import { Entity, EntitySyncConfig } from "@acapela/clientdb";
 
-import { Entity, EntitySyncConfig } from "./entity";
 import { analyzeFragment } from "./utils/analyzeFragment";
 import { apolloContext, teamIdContext } from "./utils/context";
 
@@ -98,6 +98,26 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
   } = {}
 ): EntitySyncConfig<T> {
   const { name, type, keys } = analyzeFragment<T>(fragment);
+
+  function validateOptions() {
+    const updateColumns = ("updateColumns" in options && options.updateColumns) ?? false;
+
+    const insertColumns = ("insertColumns" in options && options.insertColumns) ?? false;
+
+    if (updateColumns) {
+      for (const updateColumn of updateColumns) {
+        assert(keys.includes(updateColumn), `Update column ${updateColumn} is not a key of ${name}`);
+      }
+    }
+
+    if (insertColumns) {
+      for (const insertColumn of insertColumns) {
+        assert(keys.includes(insertColumn), `Insert column ${insertColumn} is not a key of ${name}`);
+      }
+    }
+  }
+
+  validateOptions();
 
   const upperType = upperFirst(type);
 
@@ -240,8 +260,8 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
 
     input = getPushInputFromData({ ...entity.getData(), ...changedData }, { isUpdate: true });
 
-    const id = entity.getKey();
-    const idKey = entity.getKeyName();
+    const id = entity.getId();
+    const idKey = entity.getIdPropName();
 
     return update({ [idKey]: id }, input, apollo);
   }
@@ -335,13 +355,13 @@ export function createHasuraSyncSetupFromFragment<T, Constraints extends EntityC
     },
     async remove(entity, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
-      const id = entity.getKey();
-      const keyField = entity.getKeyName();
+      const id = entity.getId();
+      const idField = entity.getIdPropName();
       const result = await apollo.mutate<
         { deleteResult: { removedItems: T[] } },
         { where: Record<string, { _eq: string }> }
       >({
-        variables: { where: { [keyField]: { _eq: id } } },
+        variables: { where: { [idField]: { _eq: id } } },
         mutation: gqlTag`
         ${fragment}
         mutation PushDelete${upperType}($where: ${type}_bool_exp!) {

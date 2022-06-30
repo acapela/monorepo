@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { NotificationLinearFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const notificationLinearFragment = gql`
   fragment NotificationLinear on notification_linear {
@@ -23,7 +23,7 @@ const notificationLinearFragment = gql`
 export const notificationLinearEntity = defineEntity<NotificationLinearFragment>({
   name: "notification_linear",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationLinearFragment>(notificationLinearFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationLinearFragment>(notificationLinearFragment),
 });

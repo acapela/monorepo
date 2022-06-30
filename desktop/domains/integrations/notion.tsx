@@ -6,6 +6,8 @@ import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { notionAvailableSpacesValue, notionSelectedSpaceValue } from "@aca/desktop/bridge/apps/notion";
 import { clearServiceCookiesBridge, loginNotionBridge, notionAuthTokenBridgeValue } from "@aca/desktop/bridge/auth";
 import { getDb, getNullableDb } from "@aca/desktop/clientdb";
+import { notificationNotionEntity } from "@aca/desktop/clientdb/notification/notion/baseNotification";
+import { notionSpaceUserEntity } from "@aca/desktop/clientdb/notification/notion/notionSpaceUser";
 
 import { NotionSettings } from "./NotionSettings";
 import { IntegrationClient } from "./types";
@@ -28,7 +30,10 @@ export const notionIntegrationClient: IntegrationClient = {
 
     if (!db) return [];
 
-    const notificationWithWorkspaces = db.notificationNotion.all.map((n) => n.workspaceName).filter(isString);
+    const notificationWithWorkspaces = db
+      .entity(notificationNotionEntity)
+      .all.map((n) => n.workspaceName)
+      .filter(isString);
     return uniq(notificationWithWorkspaces);
   },
   convertToLocalAppUrl: async ({ url }) => {
@@ -43,7 +48,7 @@ export const notionIntegrationClient: IntegrationClient = {
     notionSelectedSpaceValue.reset();
     notionAvailableSpacesValue.reset();
     const db = getDb();
-    db.notionSpaceUser.all.forEach((nsu) => nsu.remove());
+    db.entity(notionSpaceUserEntity).all.forEach((nsu) => nsu.remove());
     await clearServiceCookiesBridge({ url: notionURL });
   },
   async connect() {
@@ -57,7 +62,7 @@ export const notionIntegrationClient: IntegrationClient = {
       return false;
     }
 
-    const hasReceivedNotionNotifications = !!getNullableDb()?.notificationNotion.hasItems;
+    const hasReceivedNotionNotifications = !!getNullableDb()?.entity(notificationNotionEntity).hasItems;
     return hasReceivedNotionNotifications;
   },
   imageURL: integrationLogos.notion,

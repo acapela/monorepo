@@ -2,6 +2,7 @@ import { autorun, runInAction } from "mobx";
 import React, { ReactNode } from "react";
 
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { notificationListEntity } from "@aca/desktop/clientdb/list";
 import { compileSlackFilter } from "@aca/desktop/ui/Filters/slackModel";
 import { IconLightning } from "@aca/ui/icons";
 
@@ -20,7 +21,7 @@ export const CUSTOM_SYSTEM_LIST_ICONS: Record<keyof typeof LIST_SYSTEM_IDS, Reac
 };
 
 export function getSystemList(systemId: ListSystemId) {
-  return getNullableDb()?.notificationList.findFirst({ system_id: systemId });
+  return getNullableDb()?.entity(notificationListEntity).findFirst({ system_id: systemId });
 }
 
 export function ensureSystemListsCreated() {
@@ -40,7 +41,7 @@ export function ensureSystemListsCreated() {
     }
 
     runInAction(() => {
-      db.notificationList.create({
+      db.entity(notificationListEntity).create({
         title: "Important",
         system_id: LIST_SYSTEM_IDS.important,
         filters: [compileSlackFilter({ directMessages: { type: "everyone" }, mentions: { type: "everyChannel" } })],

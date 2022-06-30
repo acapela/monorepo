@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { SlackTeamFragment } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const slackTeamFragment = gql`
   fragment SlackTeam on slack_team {
@@ -18,7 +18,7 @@ const slackTeamFragment = gql`
 export const slackTeamEntity = defineEntity<SlackTeamFragment>({
   name: "slack_team",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<SlackTeamFragment>(slackTeamFragment),
   sync: createHasuraSyncSetupFromFragment<SlackTeamFragment>(slackTeamFragment),
 });

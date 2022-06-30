@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "@aca/clientdb/utils/getGenericDefaultData";
@@ -12,6 +11,7 @@ import {
   Notification_Figma_Comment_Insert_Input,
   Notification_Figma_Comment_Set_Input,
 } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 const notificationFigmaComment = gql`
   fragment NotificationFigmaComment on notification_figma_comment {
@@ -38,8 +38,8 @@ type NotificationFigmaCommentConstraints = {
 export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaCommentFragment>({
   name: "notification_figma_comment",
   updatedAtField: "updated_at",
-  uniqueIndexes: ["notification_id", "figma_notification_id"],
-  keyField: "id",
+  uniqueProps: ["notification_id", "figma_notification_id"],
+  idField: "id",
   keys: getFragmentKeys<NotificationFigmaCommentFragment>(notificationFigmaComment),
   getDefaultValues: () => ({
     __typename: "notification_figma_comment",
@@ -66,9 +66,9 @@ export const notificationFigmaCommentEntity = defineEntity<NotificationFigmaComm
       upsertConstraint: "notification_figma_comment_pkey",
     }
   ),
-}).addConnections((figmaComment, { getEntity }) => ({
+}).addView((figmaComment, { db }) => ({
   get notification() {
-    return getEntity(notificationEntity).findById(figmaComment.notification_id);
+    return db.entity(notificationEntity).findById(figmaComment.notification_id);
   },
 }));
 

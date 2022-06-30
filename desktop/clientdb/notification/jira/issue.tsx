@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "@aca/clientdb";
-import { EntityByDefinition } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { NotificationJiraFragment } from "@aca/gql";
+import { defineEntity } from "@acapela/clientdb";
+import { EntityByDefinition } from "@acapela/clientdb";
 
 const notificationJiraFragment = gql`
   fragment NotificationJira on notification_jira_issue {
@@ -24,7 +24,7 @@ const notificationJiraFragment = gql`
 export const notificationJiraEntity = defineEntity<NotificationJiraFragment>({
   name: "notification_jira",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationJiraFragment>(notificationJiraFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationJiraFragment>(notificationJiraFragment),
 });

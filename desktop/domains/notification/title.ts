@@ -1,5 +1,5 @@
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { getNotificationMeta } from "./meta";
 

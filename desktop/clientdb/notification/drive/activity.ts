@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { NotificationDriveFragment } from "@aca/gql";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { googleDriveFileEntity } from "./file";
 
@@ -27,16 +27,16 @@ export const notificationDriveFragment = gql`
 export const notificationDriveEntity = defineEntity<NotificationDriveFragment>({
   name: "notification_drive",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<NotificationDriveFragment>(notificationDriveFragment),
   sync: createHasuraSyncSetupFromFragment<NotificationDriveFragment>(notificationDriveFragment),
-}).addConnections((notificationDriveEntity, { getEntity }) => {
+}).addView((notificationDriveEntity, { db }) => {
   const connections = {
     get documentName() {
-      return getEntity(googleDriveFileEntity).findById(notificationDriveEntity.google_drive_file_id)?.name;
+      return db.entity(googleDriveFileEntity).findById(notificationDriveEntity.google_drive_file_id)?.name;
     },
     get source() {
-      return getEntity(googleDriveFileEntity).findById(notificationDriveEntity.google_drive_file_id)?.source;
+      return db.entity(googleDriveFileEntity).findById(notificationDriveEntity.google_drive_file_id)?.source;
     },
   };
   return connections;

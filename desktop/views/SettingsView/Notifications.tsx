@@ -3,7 +3,7 @@ import React from "react";
 
 import { applicationWideSettingsBridge } from "@aca/desktop/bridge/system";
 import { getDb } from "@aca/desktop/clientdb";
-import { NotificationListEntity } from "@aca/desktop/clientdb/list";
+import { NotificationListEntity, notificationListEntity } from "@aca/desktop/clientdb/list";
 import { SettingRow } from "@aca/desktop/ui/settings/SettingRow";
 import { SettingsList } from "@aca/desktop/ui/settings/SettingsList";
 import { MultipleOptionsDropdown } from "@aca/ui/forms/OptionsDropdown/multiple";
@@ -12,7 +12,7 @@ import { Toggle } from "@aca/ui/toggle";
 export const NotificationsSettings = observer(function ThemeSelector() {
   const settings = applicationWideSettingsBridge.get();
 
-  const allLists = getDb().notificationList;
+  const allLists = getDb().entity(notificationListEntity);
 
   return (
     <SettingsList>

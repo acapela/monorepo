@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import React from "react";
 
-import { cachedComputed } from "@aca/clientdb";
 import { getCollapsedGroupedElementsInList } from "@aca/desktop/actions/views/list";
 import { PreviewLoadingPriority } from "@aca/desktop/domains/embed";
 import { PreloadEmbed } from "@aca/desktop/domains/embed/PreloadEmbed";
@@ -10,6 +9,7 @@ import { NotificationOrGroup } from "@aca/desktop/domains/group/groupNotificatio
 import { NotificationsList } from "@aca/desktop/domains/list/defineList";
 import { uiStore } from "@aca/desktop/store/ui";
 import { useLeadingDebouncedValue } from "@aca/shared/hooks/useDebouncedValue";
+import { cachedComputed } from "@acapela/clientdb";
 
 // Determines how many notifications around the focused one should be loaded
 const PRELOAD_NEIGHBOR_COUNT = 2;

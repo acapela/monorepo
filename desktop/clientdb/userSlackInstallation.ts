@@ -1,10 +1,10 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition, defineEntity } from "@aca/clientdb";
 import { createHasuraSyncSetupFromFragment } from "@aca/clientdb/sync";
 import { getFragmentKeys } from "@aca/clientdb/utils/analyzeFragment";
 import { DesktopUserSlackInstallationFragment } from "@aca/gql";
 import { USER_SCOPES, isSubsetOf } from "@aca/shared/slack";
+import { EntityByDefinition, defineEntity } from "@acapela/clientdb";
 
 import { userSlackChannelsByTeamEntity } from "./userSlackChannelsByTeam";
 
@@ -23,15 +23,15 @@ const userSlackInstallationFragment = gql`
 export const userSlackInstallationEntity = defineEntity<DesktopUserSlackInstallationFragment>({
   name: "user_slack_installation",
   updatedAtField: "updated_at",
-  keyField: "id",
+  idField: "id",
   keys: getFragmentKeys<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),
   sync: createHasuraSyncSetupFromFragment<DesktopUserSlackInstallationFragment>(userSlackInstallationFragment),
-}).addConnections((installation, { getEntity }) => ({
+}).addView((installation, { db: { entity } }) => ({
   get hasAllScopes() {
     return isSubsetOf(USER_SCOPES, installation.user_scopes);
   },
   get channelFilters() {
-    return getEntity(userSlackChannelsByTeamEntity).query({ user_slack_installation_id: installation.id });
+    return entity(userSlackChannelsByTeamEntity).query({ user_slack_installation_id: installation.id });
   },
 }));
 

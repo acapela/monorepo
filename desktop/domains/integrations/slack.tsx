@@ -6,6 +6,7 @@ import { apolloClient } from "@aca/desktop/apolloClient";
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { connectSlackBridge } from "@aca/desktop/bridge/auth";
 import { getNullableDb } from "@aca/desktop/clientdb";
+import { slackTeamEntity } from "@aca/desktop/clientdb/slackTeam";
 import { accountStore } from "@aca/desktop/store/account";
 import { GetIndividualSlackInstallationUrlQuery, GetIndividualSlackInstallationUrlQueryVariables } from "@aca/gql";
 import { assertDefined } from "@aca/shared/assert";
@@ -19,7 +20,9 @@ const SLACK_URL_SCHEME = "slack://";
 const log = makeLogger("SlackIntegrationClient");
 
 function getAccounts() {
-  const slackTeamsById = new Map((getNullableDb()?.slackTeam.all ?? []).map((team) => [team.slack_team_id, team]));
+  const slackTeamsById = new Map(
+    (getNullableDb()?.entity(slackTeamEntity).all ?? []).map((team) => [team.slack_team_id, team])
+  );
   return (
     accountStore.user?.slackInstallations.all.map(
       (i) =>

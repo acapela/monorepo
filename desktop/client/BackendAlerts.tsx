@@ -4,7 +4,8 @@ import React from "react";
 import semver from "semver";
 
 import { getNullableDb } from "../clientdb";
-import { AlertEntity } from "../clientdb/alert";
+import { AlertEntity, alertEntity } from "../clientdb/alert";
+import { alertReadReceiptEntity } from "../clientdb/alert/readReceipt";
 import { integrationClients } from "../domains/integrations";
 import { addToast } from "../domains/toasts/store";
 import { accountStore } from "../store/account";
@@ -34,7 +35,7 @@ export const BackendAlerts = observer(function BackendAlerts() {
   }
 
   const alert = computed(() => {
-    const unreadAlert = db.alert.query((a) => !a.isRead);
+    const unreadAlert = db.entity(alertEntity).query((a) => !a.isRead);
 
     const allAlerts = unreadAlert.query((a) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now());
 
@@ -58,7 +59,7 @@ export const BackendAlerts = observer(function BackendAlerts() {
     });
 
     // TODO: Make this work with toast.onDismiss
-    db.alertReadReceipt.create({
+    db.entity(alertReadReceiptEntity).create({
       alert_id: alert.id,
       user_id: user.id,
     });

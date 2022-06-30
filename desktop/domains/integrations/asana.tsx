@@ -1,6 +1,7 @@
 import { integrationLogos } from "@aca/desktop/assets/integrations/logos";
 import { asanaAuthTokenBridgeValue, loginAsanaBridge, logoutAsanaBridge } from "@aca/desktop/bridge/auth";
 import { getDb } from "@aca/desktop/clientdb";
+import { asanaWebhookEntity } from "@aca/desktop/clientdb/asanaWebhook";
 import { accountStore } from "@aca/desktop/store/account";
 
 import { IntegrationClient } from "./types";
@@ -28,13 +29,13 @@ export const asanaIntegrationClient: IntegrationClient = {
   async connect() {
     const db = getDb();
     // wipe all webhooks as they get recreated on login
-    db.asanaWebhook.all.forEach((w) => w.remove("sync"));
+    db.entity(asanaWebhookEntity).all.forEach((w) => w.remove("sync"));
     await loginAsanaBridge();
   },
   async disconnect(id) {
     const db = getDb();
-    await logoutAsanaBridge({ webhookId: db.asanaWebhook.all.length > 1 ? id : undefined });
-    db.asanaWebhook.removeById(id, "sync");
+    await logoutAsanaBridge({ webhookId: db.entity(asanaWebhookEntity).all.length > 1 ? id : undefined });
+    db.entity(asanaWebhookEntity).removeById(id, "sync");
   },
   imageURL: integrationLogos.asana,
 };

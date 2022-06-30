@@ -1,6 +1,6 @@
-import { cachedComputed } from "@aca/clientdb";
 import { NotificationEntity } from "@aca/desktop/clientdb/notification";
 import { isNotNullish } from "@aca/shared/nullish";
+import { cachedComputed } from "@acapela/clientdb";
 
 import { countRepeats } from "./utils";
 

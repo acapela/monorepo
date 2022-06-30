@@ -15,6 +15,16 @@ import { authStore } from "@aca/desktop/store/auth";
 import { assert } from "@aca/shared/assert";
 import { useBoolean } from "@aca/shared/hooks/useBoolean";
 
+import { notificationEntity } from "../clientdb/notification";
+import { notificationFigmaCommentEntity } from "../clientdb/notification/figma/comment";
+import { notificationNotionEntity } from "../clientdb/notification/notion/baseNotification";
+import { notificationNotionCommentedEntity } from "../clientdb/notification/notion/commented";
+import { notionSpaceEntity } from "../clientdb/notification/notion/notionSpace";
+import { notionSpaceUserEntity } from "../clientdb/notification/notion/notionSpaceUser";
+import { notificationNotionReminderEntity } from "../clientdb/notification/notion/reminder";
+import { notificationNotionUserInvitedEntity } from "../clientdb/notification/notion/userInvited";
+import { notificationNotionUserMentionedEntity } from "../clientdb/notification/notion/userMentioned";
+
 const log = makeLogger("Worker-Consolidation");
 
 export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsolidation() {
@@ -27,9 +37,9 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
   function syncNotionSpacesFromClientDbToBridge() {
     assert(db, "db must be defined", log.error.bind(log));
 
-    const selectedUserSpaces = db.notionSpaceUser.find({ is_sync_enabled: true });
+    const selectedUserSpaces = db.entity(notionSpaceUserEntity).find({ is_sync_enabled: true });
     const selectedSpaces = selectedUserSpaces.map((spaceUser) => spaceUser.notionSpace);
-    const allAvailableSpaces = db.notionSpaceUser.all.map((spaceUser) => spaceUser.notionSpace);
+    const allAvailableSpaces = db.entity(notionSpaceUserEntity).all.map((spaceUser) => spaceUser.notionSpace);
 
     const selected = selectedSpaces.map((sp) => sp.space_id);
     const spaces = allAvailableSpaces.map(({ space_id, name }) => ({ id: space_id, name }));
@@ -60,19 +70,19 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
     }
 
     notionSpaces.spaces.forEach(async (notionSpace) => {
-      let storedNotionSpace = db.notionSpace.findByUniqueIndex("space_id", notionSpace.id);
+      let storedNotionSpace = db.entity(notionSpaceEntity).findFirst({ space_id: notionSpace.id });
 
       if (!storedNotionSpace) {
-        storedNotionSpace = db.notionSpace.create({
+        storedNotionSpace = db.entity(notionSpaceEntity).create({
           name: notionSpace.name,
           space_id: notionSpace.id,
         });
       }
 
-      const notionSpaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", storedNotionSpace.id);
+      const notionSpaceUser = db.entity(notionSpaceUserEntity).findFirst({ notion_space_id: storedNotionSpace.id });
 
       if (!notionSpaceUser) {
-        db.notionSpaceUser.create({
+        db.entity(notionSpaceUserEntity).create({
           notion_space_id: storedNotionSpace.id,
           first_synced_at: new Date().toISOString(),
           // Everything is synced by default!
@@ -103,10 +113,9 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
         }`
       );
       for (const { notification, notionNotification, type, discussion_id } of data) {
-        const existingNotification = db.notificationNotion.findByUniqueIndex(
-          "notion_original_notification_id",
-          notionNotification.notion_original_notification_id
-        );
+        const existingNotification = db
+          .entity(notificationNotionEntity)
+          .findFirst({ notion_original_notification_id: notionNotification.notion_original_notification_id });
 
         if (existingNotification) {
           log.debug(
@@ -121,7 +130,7 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
             log.error(
               `[Notion] Existing notification not found for notificationNotion id: ${existingNotification.id}. Attempting to fix`
             );
-            const notification = db.notification.assertFindById(existingNotification.notification_id);
+            const notification = db.entity(notificationEntity).findById(existingNotification.notification_id)!;
             notification.remove();
             existingNotification.remove();
           } else {
@@ -129,8 +138,8 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
           }
         }
 
-        const space = db.notionSpace.findByUniqueIndex("space_id", notionNotification.synced_spaced_id);
-        const spaceUser = db.notionSpaceUser.findByUniqueIndex("notion_space_id", space?.id as string);
+        const space = db.entity(notionSpaceEntity).findFirst({ space_id: notionNotification.synced_spaced_id });
+        const spaceUser = db.entity(notionSpaceUserEntity).findFirst({ notion_space_id: space?.id as string });
 
         if (!spaceUser) {
           log.error("[Notion] space user should have existed when consolidating notifications");
@@ -157,25 +166,29 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
           continue;
         }
 
-        const createdNotification = db.notification.create(notification);
+        const createdNotification = db.entity(notificationEntity).create(notification);
 
-        const createdNotionNotification = db.notificationNotion.create({
+        const createdNotionNotification = db.entity(notificationNotionEntity).create({
           ...notionNotification,
           notification_id: createdNotification.id,
           notion_space_id: spaceUser.notion_space_id,
         });
 
         if (type === "notification_notion_commented") {
-          db.notificationNotionCommented.create({
+          db.entity(notificationNotionCommentedEntity).create({
             notification_notion_id: createdNotionNotification.id,
             discussion_id,
           });
         } else if (type === "notification_notion_user_mentioned") {
-          db.notificationNotionUserMentioned.create({ notification_notion_id: createdNotionNotification.id });
+          db.entity(notificationNotionUserMentionedEntity).create({
+            notification_notion_id: createdNotionNotification.id,
+          });
         } else if (type === "notification_notion_user_invited") {
-          db.notificationNotionUserInvited.create({ notification_notion_id: createdNotionNotification.id });
+          db.entity(notificationNotionUserInvitedEntity).create({
+            notification_notion_id: createdNotionNotification.id,
+          });
         } else if (type === "notification_notion_reminder") {
-          db.notificationNotionReminder.create({ notification_notion_id: createdNotionNotification.id });
+          db.entity(notificationNotionReminderEntity).create({ notification_notion_id: createdNotionNotification.id });
         }
       }
     });
@@ -194,18 +207,20 @@ export const ServiceWorkerConsolidation = observer(function ServiceWorkerConsoli
           continue;
         }
 
-        const existingNotification = db.notificationFigmaComment.findByUniqueIndex(
-          "figma_notification_id",
-          commentNotification.figma_notification_id
-        );
+        const existingNotification = db
+          .entity(notificationFigmaCommentEntity)
+          .findFirst({ figma_notification_id: commentNotification.figma_notification_id });
 
         if (existingNotification) {
           existingNotification.update({ file_name: commentNotification.file_name });
           continue;
         }
 
-        const createdNotification = db.notification.create(notification);
-        db.notificationFigmaComment.create({ ...commentNotification, notification_id: createdNotification.id });
+        const createdNotification = db.entity(notificationEntity).create(notification);
+        db.entity(notificationFigmaCommentEntity).create({
+          ...commentNotification,
+          notification_id: createdNotification.id,
+        });
       }
     });
   }, [isReadyToSync]);
