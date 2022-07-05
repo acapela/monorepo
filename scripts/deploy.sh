@@ -59,7 +59,7 @@ fi
 
 if [[ "${APP_VERSION}" == "latest" ]]; then
   echo "resolving latest release..."
-  latest_version=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/weareacapela/monorepo/releases/latest | jq -r '.name')
+  latest_version=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/acapela/monorepo/releases/latest | jq -r '.name')
   APP_VERSION="${latest_version:1}"
   echo "found release: $APP_VERSION"
 fi

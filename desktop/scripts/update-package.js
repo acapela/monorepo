@@ -9,7 +9,7 @@ if (arg === "reset") {
   console.info("resetting package.json");
   pkgJson.name = "@aca/desktop";
   pkgJson.version = "999.0.0-do-not-autouptdate";
-  pkgJson.repository = "github:weareacapela/releases";
+  pkgJson.repository = "github:acapela/releases";
   pkgJson.build.appId = "com.desktop.acapela";
   pkgJson.build.productName = "Acapela";
   pkgJson.build.directories.output = "dist-electron";
@@ -25,8 +25,8 @@ if (arg === "reset") {
   else pkgJson.name = "Acapela";
   console.info(`updated name to ${pkgJson.name}`);
 
-  if (isStaging) pkgJson.repository = "github:weareacapela/releases-staging";
-  else pkgJson.repository = "github:weareacapela/releases";
+  if (isStaging) pkgJson.repository = "github:acapela/releases-staging";
+  else pkgJson.repository = "github:acapela/releases";
   console.info(`updated repository to ${pkgJson.repository}`);
 
   if (isStaging) pkgJson.build.appId = "com.desktop.acapela.staging";

@@ -4,7 +4,7 @@
   "description": "Acapela makes async work more actionable by aggregating and triaging notifications from multiple tools.",
   "license": "UNLICENSED",
   "author": "Acapela GmbH",
-  "repository": "github:weareacapela/releases",
+  "repository": "github:acapela/releases",
   "peerDependencies": {
     "framer-motion": "*",
     "mobx": "*",

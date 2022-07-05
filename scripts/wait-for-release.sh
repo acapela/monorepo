@@ -21,7 +21,7 @@ fi
 
 versionJson=$(curl -sL "https://${endpoint}/api/backend/healthz" || echo "{}")
 previousVersion=$( (echo "$versionJson" | jq -r '.version') || echo "unknown" )
-./scripts/send-slack-message.sh ":arrows_counterclockwise: The deployment is running (<https://github.com/weareacapela/monorepo/compare/v${previousVersion}...v${version}|${previousVersion} :soon: ${version}>)." "$stage"
+./scripts/send-slack-message.sh ":arrows_counterclockwise: The deployment is running (<https://github.com/acapela/monorepo/compare/v${previousVersion}...v${version}|${previousVersion} :soon: ${version}>)." "$stage"
 
 if [[ "$stage" == "staging" ]]; then
   echo "not waiting for release on $stage"
@@ -46,4 +46,4 @@ while [ "$backend_version" != "$version" ] ; do
 done
 
 echo "version $version is deployed on $stage"
-./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint" "$stage"
+./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/acapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint" "$stage"

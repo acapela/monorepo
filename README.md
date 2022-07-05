@@ -1,6 +1,6 @@
 # Acapela
 
-Before setting up this repo, please read https://github.com/weareacapela/onboarding to get some better idea about our values and practices related to creating software.
+Before setting up this repo, please read https://github.com/acapela/onboarding to get some better idea about our values and practices related to creating software.
 
 Now, please head to Getting started guide in order to set up this repo on your machine.
 
@@ -328,7 +328,7 @@ Prettier config is defined at root level and is used as-is in every package.
 ## Deployment
 
 - Staging is automatically updated after every release on master.
-- Production releases require manual deployment. This is done by using the custom [deploy workflow](https://github.com/weareacapela/monorepo/actions/workflows/deploy.yaml) in GitHub Actions.
+- Production releases require manual deployment. This is done by using the custom [deploy workflow](https://github.com/acapela/monorepo/actions/workflows/deploy.yaml) in GitHub Actions.
 
 ![](./docs/deployment.jpg)
 

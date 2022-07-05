@@ -2,7 +2,7 @@
 
 ## Setup
 
-[Setup instruction in the main README.md](https://github.com/weareacapela/monorepo#asana)
+[Setup instruction in the main README.md](https://github.com/acapela/monorepo#asana)
 [Asana API Docs](https://developers.asana.com/docs)
 
 ## Discoveries

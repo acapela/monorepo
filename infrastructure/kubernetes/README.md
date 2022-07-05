@@ -94,7 +94,7 @@ then click on the _Delete_ button: ![pod-details](./docs/pod-details.png)
 
 If deleting the pod does not work, or it takes to long, you can also navigate back to the _Deployment details_ page and
 delete the whole deployment. **This action will not lead to auto-recovery**, but instead you will have to trigger a new
-release from the [_Deploy_ action over in GitHub](https://github.com/weareacapela/monorepo/actions/workflows/deploy.yaml).
+release from the [_Deploy_ action over in GitHub](https://github.com/acapela/monorepo/actions/workflows/deploy.yaml).
 You can choose the same version that was already deployed, if you don't want to upgrade.
 
 From both the _Deployment details_ and _Pod details_ page you can also see the _Logs_ section which is invaluable to

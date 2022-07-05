@@ -14,7 +14,7 @@ import { createClientBundler, createElectronBundler, removeDirectory } from "./p
  * Before you continue, strongly recommended read https://www.electronjs.org/docs/latest/tutorial/quick-start
  * (especially understanding what is main and renderer process)
  *
- * Nomenclature - we're using changed nomenclature from default Electron one (https://github.com/weareacapela/monorepo/pull/893#discussion_r781890805)
+ * Nomenclature - we're using changed nomenclature from default Electron one (https://github.com/acapela/monorepo/pull/893#discussion_r781890805)
  * electron's main process = electron
  * electron's renderer process = client
  *

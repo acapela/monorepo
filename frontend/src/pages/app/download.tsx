@@ -31,7 +31,7 @@ export default function DownloadPage(): JSX.Element {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    axios.get(`https://api.github.com/repos/weareacapela/releases/releases/latest`).then((response) => {
+    axios.get(`https://api.github.com/repos/acapela/releases/releases/latest`).then((response) => {
       const assets = response.data.assets as GitHubAsset[];
       const dmgAsset = assets.find((a) => a.name.endsWith("-universal.dmg"));
       if (!dmgAsset) return;
