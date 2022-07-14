@@ -10,4 +10,4 @@ fi
 version=$1
 
 ./scripts/build-and-push.sh $version
-./scripts/deploy.sh -s staging -a all -v $version
+./scripts/deploy.sh -s production -a all -v $version
