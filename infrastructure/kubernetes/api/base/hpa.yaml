@@ -7,8 +7,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api
-  minReplicas: 6
-  maxReplicas: 12
+  minReplicas: 3
+  maxReplicas: 5
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 180
