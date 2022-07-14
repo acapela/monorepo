@@ -16,14 +16,14 @@ jobs:
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      - run: yarn desktop upload-bundle
-        env:
-          RELEASE_VERSION: ${{ github.ref_name }}
-          GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
+      #      - run: yarn desktop upload-bundle
+      #        env:
+      #          RELEASE_VERSION: ${{ github.ref_name }}
+      #          GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
       - uses: actions/upload-artifact@v2
         with:
-          name: dist-staging
-          path: desktop/dist-staging
+          name: dist-production
+          path: desktop/dist-production
           retention-days: 1
 
   publish:
@@ -37,8 +37,8 @@ jobs:
           node-version: "16"
       - uses: actions/download-artifact@v2
         with:
-          name: dist-staging
-          path: desktop/dist-staging
+          name: dist-production
+          path: desktop/dist-production
       - name: Install dependencies
         run: |
           npm config set ignore-scripts true
@@ -49,7 +49,7 @@ jobs:
       - name: Publish
         run: |
           cd desktop/
-          ./scripts/publish.sh staging
+          ./scripts/publish.sh production
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASES_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
