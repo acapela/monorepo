@@ -8,11 +8,3 @@ configMapGenerator:
   - name: api-default
     envs:
       - default.env
-patches:
-  - patch: |-
-      - op: replace
-        path: /spec/minReplicas
-        value: 2
-    target:
-      kind: HorizontalPodAutoscaler
-      name: api
