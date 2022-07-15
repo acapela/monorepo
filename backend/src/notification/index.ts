@@ -4,6 +4,7 @@ import {
 } from "@aca/backend/src/gmail/capture";
 import { HasuraEvent, UpdateHasuraEvent } from "@aca/backend/src/hasura";
 import { Notification, db } from "@aca/db";
+import { logger } from "@aca/shared/logger";
 
 // Add newly resolved Slack message notifications to the user_slack_conversation_read debounce buffer table which
 // is used to mark messages as read in the Slack API.
@@ -29,11 +30,16 @@ async function addRelatedSlackMessageToMarkAsReadQueue(notification_id: string) 
       },
     });
   } else {
-    await db.user_slack_conversation_read.upsert({
-      where: { user_slack_installation_id_slack_conversation_id: keyFields },
-      create: { ...keyFields, slack_last_message_ts: messageTs },
-      update: {},
-    });
+    // this fails quite often and pollutes sentry with too many errors
+    try {
+      await db.user_slack_conversation_read.upsert({
+        where: { user_slack_installation_id_slack_conversation_id: keyFields },
+        create: { ...keyFields, slack_last_message_ts: messageTs },
+        update: {},
+      });
+    } catch (e) {
+      logger.warn(e);
+    }
   }
 }
 
