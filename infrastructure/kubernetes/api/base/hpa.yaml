@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: api
   minReplicas: 3
-  maxReplicas: 3
+  maxReplicas: 5
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 180

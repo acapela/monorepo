@@ -45,7 +45,7 @@
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
 - name: user-cleanup
   webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
-  schedule: '* * * * *'
+  schedule: '*/10 * * * *'
   include_in_metadata: true
   payload:
     handler: user-cleanup
