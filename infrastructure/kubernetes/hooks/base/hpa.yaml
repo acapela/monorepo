@@ -7,7 +7,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: hooks
-  minReplicas: 2
+  minReplicas: 3
   maxReplicas: 3
   behavior:
     scaleUp:
