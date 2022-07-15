@@ -1,10 +1,6 @@
 table:
   schema: public
   name: team
-object_relationships:
-  - name: owner
-    using:
-      foreign_key_constraint_on: owner_id
 array_relationships:
   - name: memberships
     using:
