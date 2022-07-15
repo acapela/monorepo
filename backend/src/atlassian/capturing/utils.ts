@@ -81,7 +81,7 @@ export async function getWatchersIfPermitted(
   }
 
   if (attempts > 0) {
-    logger.error(`Failed to get watchers ${attempts} times out of ${accountsThatWillAttemptToGetWatchers.length}`);
+    logger.warn(`Failed to get watchers ${attempts} times out of ${accountsThatWillAttemptToGetWatchers.length}`);
   }
 
   return watchers;
