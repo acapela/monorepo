@@ -34,4 +34,6 @@ export async function userCleanup() {
       logger.warn(`Failed to delete issues for organization ${outdatedLinearIssue.organization_id}`, e);
     }
   }
+
+  await db.$executeRaw`DELETE FROM public.notification WHERE updated_at < NOW() - INTERVAL '30 days' AND resolved_at IS NOT NULL;`;
 }
