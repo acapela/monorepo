@@ -190,6 +190,8 @@ async function verifyAndProcess({
   }
   if (!team.clickup_account_to_team.length) {
     logger.warn(`team has no members: ${teamId}`);
+    // cleanup clickup team in database
+    await db.clickup_account.delete({ where: { id: team.id } });
     return;
   }
 
