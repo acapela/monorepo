@@ -176,6 +176,11 @@ async function saveComment(payload: CommentWebhook) {
 }
 
 async function addIssueToDatabase(payload: IssueWebhook) {
+  const linearOauthTokens = await db.linear_oauth_token.findMany({
+    where: { linear_organization_id: payload.organizationId },
+  });
+  // only sync issues if there are users that subscribed to the organization
+  if (!linearOauthTokens.length) return;
   const issueData = {
     organization_id: payload.organizationId,
     title: payload.data.title,

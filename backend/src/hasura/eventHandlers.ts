@@ -74,27 +74,12 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
 
     if (IS_DEV) {
       logger.info(`Handling event (${hasuraEvent.trigger.name})`);
-    } else {
-      // logger.info(
-      //   {
-      //     eventId: hasuraEvent.id,
-      //     triggerName: hasuraEvent.trigger.name,
-      //     userId,
-      //   },
-      //   "Handling event"
-      // );
     }
 
     await handleHasuraEvent(hasuraEvent);
 
     if (IS_DEV) {
       logger.info(`Handled event (${hasuraEvent.trigger.name})`);
-    } else {
-      // logger.info("Handled event", {
-      //   eventId: hasuraEvent.id,
-      //   triggerName: hasuraEvent.trigger.name,
-      //   userId,
-      // });
     }
 
     res.status(200).json({
