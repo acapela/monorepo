@@ -142,7 +142,7 @@ export const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<
         return userSlackInstallation.data as unknown as SlackInstallation;
       }
 
-      logger.warn(`No Slack installation for query ${JSON.stringify(query)}`);
+      //logger.warn(`No Slack installation for query ${JSON.stringify(query)}`);
       // this returns a dummy SlackInstallation so the event is still acknowledged
       return { teamId: "XXXX", enterpriseId: "XXXX" } as unknown as SlackInstallation;
     },

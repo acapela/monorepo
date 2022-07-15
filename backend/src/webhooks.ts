@@ -32,7 +32,7 @@ export function listenForWebhooks(service: string, processFn: ProcessFunc) {
     try {
       lock = await acquireLock(service, message.id);
       if (!(await markAsProcessed(service, message.id))) {
-        logger.info(`message ${message.id} from ${service} was already processed (${messageTimestamp.toISOString()})`);
+        //logger.info(`message ${message.id} from ${service} was already processed (${messageTimestamp.toISOString()})`);
         lock.unlock().catch((err) => logger.warn("unlock error (processed)", err));
         if (isAfter(addHours(new Date(), -3), messageTimestamp)) {
           // message was already processed, but it still exists in the pubsub queue
