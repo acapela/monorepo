@@ -76,6 +76,8 @@ async function commentCreated(event: EmitterWebhookEvent<"issue_comment.created"
     }),
   ]);
 
+  if (!ghAccounts.length) return;
+
   let prId: number | null = null;
   if (event.payload.issue.pull_request) {
     const octokit = await githubApp.getInstallationOctokit(installationId);
