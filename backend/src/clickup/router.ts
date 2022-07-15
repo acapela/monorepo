@@ -188,6 +188,10 @@ async function verifyAndProcess({
     logger.warn(`webhook id mismatch: ${team.webhook_id} !== ${webhook.webhook_id}`);
     return;
   }
+  if (!team.clickup_account_to_team.length) {
+    logger.warn(`team has no members: ${teamId}`);
+    return;
+  }
 
   // validate webhook signature
   const whSignature = createHmac("sha256", team.webhook_secret!).update(JSON.stringify(webhook)).digest("hex");

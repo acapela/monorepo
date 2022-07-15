@@ -10,6 +10,7 @@ import { HttpStatus } from "../http";
 import { cleanupProcessedMessages } from "../pubsub";
 import { markSlackConversationsAsRead } from "../slack/events";
 import { syncSlackTeams } from "../slack/sync";
+import { userCleanup } from "../userCleanup";
 
 export const router = Router();
 
@@ -19,6 +20,7 @@ const handlers: Record<string, Function> = {
   "update-atlassian-refresh-token": refreshExpiringAtlassianProperties,
   "sync-slack-teams": syncSlackTeams,
   "cleanup-processed-messages": cleanupProcessedMessages,
+  "user-cleanup": userCleanup,
 };
 
 interface CronPayload {
