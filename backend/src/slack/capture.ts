@@ -104,7 +104,10 @@ async function resolveMessageNotifications(userId: string, whereMessage: Prisma.
       user_id: userId,
       notification_slack_message: whereMessage,
     },
-    data: { resolved_at: new Date().toISOString() },
+    data: {
+      resolved_at: new Date().toISOString(),
+      is_autoresolved: true,
+    },
   });
 }
 

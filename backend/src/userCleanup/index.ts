@@ -13,7 +13,7 @@ type OutdatedLinearIssue = {
 
 export async function userCleanup() {
   const outdatedUsers =
-    (await db.$queryRaw`SELECT user_id, email, latest_resolved_at FROM (SELECT user_id, MAX(resolved_at) latest_resolved_at FROM public.notification GROUP BY user_id) as nr JOIN public.user ON id = nr.user_id WHERE latest_resolved_at < NOW() - INTERVAL '10 days' OR latest_resolved_at IS NULL;`) as OutdatedUser[];
+    (await db.$queryRaw`SELECT user_id, email, latest_resolved_at FROM (SELECT user_id, MAX(resolved_at) latest_resolved_at FROM public.notification WHERE is_autoresolved = false GROUP BY user_id) as nr JOIN public.user ON id = nr.user_id WHERE latest_resolved_at < NOW() - INTERVAL '10 days' OR latest_resolved_at IS NULL;`) as OutdatedUser[];
   for (const outdatedUser of outdatedUsers) {
     logger.info(`Deleting user ${outdatedUser.user_id}`);
     try {
