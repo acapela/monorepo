@@ -22,8 +22,8 @@ command -v gcloud >/dev/null || {
 
 stage="${1:-}"
 [[ -z "$stage" ]] && {
-  echo "stage not set, using staging as default"
-  stage="staging"
+  echo "stage not set, using production as default"
+  stage="production"
 }
 
 [[ "$stage" != "staging" && "$stage" != "production" ]] && {

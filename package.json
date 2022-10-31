@@ -2,7 +2,7 @@
   "name": "@acapela/root",
   "private": true,
   "version": "0.1.0",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": "16"
   },
@@ -209,5 +209,5 @@
       "@aca"
     ]
   },
-  "packageManager": "yarn@3.1.0"
+  "packageManager": "yarn@3.2.1"
 }
